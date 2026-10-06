@@ -8,7 +8,7 @@
 1. 全量验收（主会话在每批收尾跑）::
 
      official_media_check.py --manifest <冻结清单> [--manifest …] --ledger <账本> [--ledger …]
-         --root <发布根> [--root …] --dataset {test-hard,test-hard0} [--route <路线>] [--out official-media.jsonl]
+         --root <发布根> [--root …] --dataset {ood,hard-verify} [--route <路线>] [--out official-media.jsonl]
 
    - 身份从冻结清单枚举（``eval_manifest.py`` 的分片 JSON 数组或 JSONL，每行一个身份，取 ``key``，缺省按
      ``<task>_<tier>_<seed>`` 现算），不从目录反推；
@@ -89,13 +89,27 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def official_defs():
+    """同目录 ``official_defs.py``（旧名别名表的唯一来源；已加载则复用同一模块）。"""
+    import importlib.util
+
+    mod = sys.modules.get("official_defs")
+    if mod is None:
+        spec = importlib.util.spec_from_file_location("official_defs", Path(__file__).resolve().parent / "official_defs.py")
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["official_defs"] = mod
+        spec.loader.exec_module(mod)
+    return mod
+
+
 def read_rows(path: Path) -> list[dict]:
-    """JSON 数组或 JSONL；半行跳过。"""
+    """JSON 数组或 JSONL；半行跳过。历史行的旧策略标签／数据集名／路线映射成官方名。"""
+    canon = official_defs().canonical_row
     text = Path(path).read_text(encoding="utf-8")
     s = text.lstrip()
     if s.startswith("["):
         data = json.loads(s)
-        return [r for r in data if isinstance(r, dict)]
+        return [canon(r) for r in data if isinstance(r, dict)]
     rows = []
     for line in text.splitlines():
         try:
@@ -103,7 +117,7 @@ def read_rows(path: Path) -> list[dict]:
         except json.JSONDecodeError:
             continue
         if isinstance(r, dict):
-            rows.append(r)
+            rows.append(canon(r))
     return rows
 
 
@@ -156,7 +170,7 @@ def load_sidecar(off: Path) -> tuple[str | None, dict | None]:
                 data = json.loads(p.read_text(encoding="utf-8"))
             except (OSError, ValueError):
                 return name, None
-            return name, data if isinstance(data, dict) else None
+            return name, official_defs().canonical_row(data) if isinstance(data, dict) else None
     return None, None
 
 
@@ -378,6 +392,9 @@ def main(argv=None) -> int:
     ap.add_argument("--out", type=Path)
     ap.add_argument("--ffmpeg")
     args = ap.parse_args(argv)
+    defs = official_defs()
+    if defs.canonical_dataset(args.dataset) != args.dataset or defs.canonical_route(args.route) != args.route:
+        ap.error(f"--dataset／--route 只接受官方名（收到 dataset={args.dataset} route={args.route}）")
     ff = args.ffmpeg or ffmpeg_exe()
     if not ff:
         print("OFFICIAL_MEDIA=FAIL reason=no_ffmpeg", flush=True)

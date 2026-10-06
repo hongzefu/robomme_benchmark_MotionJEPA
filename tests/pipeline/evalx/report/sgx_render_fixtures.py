@@ -57,13 +57,13 @@ def _action(k: int, dtype) -> np.ndarray:
 
 
 def write_episode(root: Path, kind: str = "normal", *, raw: str = "new", demo: int = 2, task: str = "BinFill",
-                  route: str = "mmesg/ground-sg-oracle/new", dir_name: str | None = None,
+                  route: str = "groundsg/ground-sg-oracle/new", dir_name: str | None = None,
                   action_dtype=np.float64) -> Episode:
     """写一局：``raw`` 取 ``new``（recorder.py 无损流）或 ``orig``（rgb24 + frames.json）；不写 episode.mp4。"""
     spec = KINDS[kind]
     key = f"{task}_xhard0_{100 + len(kind)}"
     ep = Path(root) / (dir_name or f"{key}.a1")
-    identity = {"task": task, "tier": "xhard0", "seed": 100 + len(kind), "dataset": "test-hard0", "source_episode": 3,
+    identity = {"task": task, "tier": "xhard0", "seed": 100 + len(kind), "dataset": "hard-verify", "source_episode": 3,
                 "builder_episode": 0, "key": key, "attempt": 1}
     # 演示段前两帧相同，验证同一流重复帧只编码一份、按 enc 展开
     fronts = [_img(1)] + [_img(1)] + [_img(10 + i) for i in range(demo - 1)]
@@ -123,7 +123,7 @@ def write_no_frame(root: Path) -> Path:
     """C3：reset 前就失败的 error 局，没有任何画面。"""
     key = "BinFill_xhard0_900"
     ep = Path(root) / f"{key}.a1"
-    identity = {"task": "BinFill", "tier": "xhard0", "seed": 900, "dataset": "test-hard0", "source_episode": 3,
+    identity = {"task": "BinFill", "tier": "xhard0", "seed": 900, "dataset": "hard-verify", "source_episode": 3,
                 "builder_episode": 0, "key": key, "attempt": 1}
     w = _tw().TraceWriter(ep / "trace.jsonl", route="smvla/new", identity=identity, max_steps=10)
     w.log_demo([], [])

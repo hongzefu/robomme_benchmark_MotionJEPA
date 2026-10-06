@@ -75,11 +75,11 @@ class _NullWriter:
 # ── 局清单（第一阶段，口径不变） ──────────────────────────────────────────
 
 def test_prepare_hard0_local_zero_is_official_episode_3():
-    """第二档身份：16 任务各取官方 test episode 3，即 test-hard0 本地局号 0（手写期望，不读被测代码的表）。"""
+    """第二档身份：16 任务各取官方 test episode 3，即 hard-verify 本地局号 0（手写期望，不读被测代码的表）。"""
     with astra_session() as (mod, astra):
         assert list(astra.core.TASKS) == ALL_TASKS
-        doc = mod.prepare_cases(recording_builder_cls(), "test-hard0", ALL_TASKS, source_episodes=[3])
-    assert doc["dataset"] == "test-hard0"
+        doc = mod.prepare_cases(recording_builder_cls(), "hard-verify", ALL_TASKS, source_episodes=[3])
+    assert doc["dataset"] == "hard-verify"
     assert len(doc["cases"]) == 16
     for case in doc["cases"]:
         assert case["episode"] == 0 and case["source_episode"] == 3 and case["tier"] == "xhard0"
@@ -88,8 +88,8 @@ def test_prepare_hard0_local_zero_is_official_episode_3():
 def test_prepare_v9_connectivity_is_videounmask_xhard1_first():
     with astra_session() as (mod, _astra):
         cls = recording_builder_cls()
-        doc = mod.prepare_cases(cls, "test-hard", ["VideoUnmask"], tier="xhard1", index=0)
-        builder = cls("VideoUnmask", dataset="test-hard", action_space="joint_angle", gui_render=False, max_steps=1600)
+        doc = mod.prepare_cases(cls, "ood", ["VideoUnmask"], tier="xhard1", index=0)
+        builder = cls("VideoUnmask", dataset="ood", action_space="joint_angle", gui_render=False, max_steps=1600)
     (case,) = doc["cases"]
     first_xhard1 = min(ep for ep in range(builder.get_episode_num()) if builder.resolve_identity(ep)["tier"] == "xhard1")
     assert case["task"] == "VideoUnmask" and case["tier"] == "xhard1" and case["episode"] == first_xhard1
@@ -104,7 +104,7 @@ def test_astra_wiring_xhard0(tmp_path, monkeypatch):
         print_upstream_digests(mod)
         tasks = ["VideoUnmask", "BinFill"]
         cls = recording_builder_cls(lambda b, ep: FakeEnv(terminal_step=40))
-        doc = mod.prepare_cases(cls, "test-hard0", tasks, source_episodes=[3])
+        doc = mod.prepare_cases(cls, "hard-verify", tasks, source_episodes=[3])
         cls.constructed.clear()
         cases = write_cases(tmp_path / "cases.json", doc)
         args = make_args(tmp_path, cases, max_steps=1300)
@@ -112,19 +112,19 @@ def test_astra_wiring_xhard0(tmp_path, monkeypatch):
         responder = FakeResponder(astra.champ)
         deps = make_deps(astra, cls, monitor=monitor, vla=vla, responder=responder, check_calls=checks)
         out = mod.run_cases(args, deps)
-        seeds = {t: cls(t, dataset="test-hard0", action_space="joint_angle", gui_render=False,
+        seeds = {t: cls(t, dataset="hard-verify", action_space="joint_angle", gui_render=False,
                         max_steps=1300).resolve_identity(0)["seed"] for t in tasks}
 
     # ① validate_checkpoints 以启动参数调用一次
     assert checks == [(args.vla_checkpoint, args.monitor_adapter)]
     # builder：真实 S1 类，构造参数逐项手写期望
     assert cls.constructed[:2] == [
-        {"env_id": t, "dataset": "test-hard0", "action_space": "joint_angle", "gui_render": False, "max_steps": 1300}
+        {"env_id": t, "dataset": "hard-verify", "action_space": "joint_angle", "gui_render": False, "max_steps": 1300}
         for t in tasks]
     assert [c["episode"] for c in cls.make_calls] == [0, 0]
     assert all(c["args"] == () and c["kwargs"] == {} for c in cls.make_calls), "步数不得逐局覆盖"
-    builder = cls("VideoUnmask", dataset="test-hard0", action_space="joint_angle", gui_render=False, max_steps=1300)
-    assert builder.dataset == "test-hard0" and builder.max_steps_without_demonstration == 1302
+    builder = cls("VideoUnmask", dataset="hard-verify", action_space="joint_angle", gui_render=False, max_steps=1300)
+    assert builder.dataset == "hard-verify" and builder.max_steps_without_demonstration == 1302
     assert builder.resolve_identity(0)["source_episode"] == 3
     builder_dataset_ok = 1
 
@@ -139,7 +139,7 @@ def test_astra_wiring_xhard0(tmp_path, monkeypatch):
             assert (ep / name).is_file(), name
         assert (ep / "monitor_inputs").is_dir()
         identity = json.loads((ep / "identity.json").read_text())
-        assert identity["dataset"] == "test-hard0" and identity["episode"] == 0
+        assert identity["dataset"] == "hard-verify" and identity["episode"] == 0
         assert identity["seed_and_difficulty"][1] == "xhard0"
         assert np.load(ep / "actions.npy").shape == (40, 8)
         # <key>.a1：key 手写期望 <task>_<tier>_<seed>
@@ -147,7 +147,7 @@ def test_astra_wiring_xhard0(tmp_path, monkeypatch):
         a_dir = _episode_dir(run / "results", task, 0)
         assert a_dir.name == f"{key}.a1"
         result = json.loads((ep / "result.json").read_text())
-        assert result["dataset"] == "test-hard0" and result["steps"] == 40 and result["planner_calls"] == 1
+        assert result["dataset"] == "hard-verify" and result["steps"] == 40 and result["planner_calls"] == 1
         assert result["key"] == key and result["attempt"] == 1 and result["episode_dir"] == f"{key}.a1"
         assert result["media_dir"] == f"{key}.a1/media" and result["route"] == "astra/new"
         assert result["exec_steps"] == 40 and result["steps_observed"] == 40 and result["recorder_verify"] == "PASS"
@@ -158,7 +158,7 @@ def test_astra_wiring_xhard0(tmp_path, monkeypatch):
         header, demo, end = rows[0], next(r for r in rows if r["kind"] == "demo"), rows[-1]
         assert header["route"] == "astra/new" and header["max_steps"] == 1300
         ident = header["identity"]
-        assert ident["source_episode"] == 3 and ident["dataset"] == "test-hard0" and ident["builder_episode"] == 0
+        assert ident["source_episode"] == 3 and ident["dataset"] == "hard-verify" and ident["builder_episode"] == 0
         assert ident["key"] == key and ident["attempt"] == 1 and ident["tier"] == "xhard0"
         # C2：FakeEnv reset 给 3 帧演示 + 1 帧初始画面，全部记入
         assert demo["frames"] == 4 and len(demo["states"]) == 4 and demo["texts"] == ["pick up the cube"]
@@ -180,7 +180,7 @@ def test_astra_wiring_xhard0(tmp_path, monkeypatch):
             assert arr["exec_action__00000"].dtype == np.float32 and arr["exec_action__00000"].shape == (8,)
         meta = json.loads((a_dir / "media" / "meta.json").read_text())
         assert meta["never_degrade"] is True and meta["level"] == 0 and meta["key"] == key
-        assert meta["builder_episode"] == 0 and meta["attempt"] == 1 and meta["dataset"] == "test-hard0"
+        assert meta["builder_episode"] == 0 and meta["attempt"] == 1 and meta["dataset"] == "hard-verify"
         rsum = json.loads((a_dir / "media" / "summary.json").read_text())
         assert rsum["RECORDER_VERIFY"] == "PASS" and rsum["frames"] == 2 * end["frames_recorded"]
         assert rsum["summary"]["exec_steps"] == 40
@@ -190,18 +190,18 @@ def test_astra_wiring_xhard0(tmp_path, monkeypatch):
     assert {json.loads((p / "request.json").read_text())["episode"] for p in calls} == {0}
     # ⑥ 正常结束写 PILOT_FINISHED.json
     finished = json.loads((run / "results" / "PILOT_FINISHED.json").read_text())
-    assert finished["dataset"] == "test-hard0" and finished["tasks"] == tasks
+    assert finished["dataset"] == "hard-verify" and finished["tasks"] == tasks
     assert responder.calls == 2 and vla.resets == 2
     assert net.calls == 0
     print(f"ASTRA_WIRING=PASS api_calls={net.calls} builder_dataset_ok={builder_dataset_ok}")
 
 
 def test_v9_connectivity_runs_exactly_1600_steps(tmp_path, monkeypatch):
-    """V9 连通局：test-hard + 1600；环境永不结束时循环恰好执行 1600 步后记 timeout（C3：不再写 loop_exit）。"""
+    """V9 连通局：ood + 1600；环境永不结束时循环恰好执行 1600 步后记 timeout（C3：不再写 loop_exit）。"""
     net = NetCounter().install(monkeypatch)
     with astra_session() as (mod, astra):
         cls = recording_builder_cls(lambda b, ep: FakeEnv(terminal_step=None))
-        doc = mod.prepare_cases(cls, "test-hard", ["VideoUnmask"], tier="xhard1", index=0)
+        doc = mod.prepare_cases(cls, "ood", ["VideoUnmask"], tier="xhard1", index=0)
         cls.constructed.clear()
         cases = write_cases(tmp_path / "cases.json", doc)
         args = make_args(tmp_path, cases, max_steps=1600)
@@ -209,7 +209,7 @@ def test_v9_connectivity_runs_exactly_1600_steps(tmp_path, monkeypatch):
         deps = make_deps(astra, cls, monitor=FakeMonitor(), vla=FakeVLA(), responder=FakeResponder(astra.champ),
                          check_calls=[])
         out = mod.run_cases(args, deps)
-    assert cls.constructed == [{"env_id": "VideoUnmask", "dataset": "test-hard", "action_space": "joint_angle",
+    assert cls.constructed == [{"env_id": "VideoUnmask", "dataset": "ood", "action_space": "joint_angle",
                                 "gui_render": False, "max_steps": 1600}]
     (result,) = out["results"]
     assert result["status"] == "timeout" and result["steps"] == 1600 and result["exec_steps"] == 1600
@@ -264,7 +264,7 @@ def test_missing_observation_step_counts(tmp_path, monkeypatch, mode):
     with astra_session() as (mod, astra):
         monkeypatch.setattr(astra.runner.imageio, "get_writer", lambda *a, **k: _NullWriter())
         cls = recording_builder_cls(lambda b, ep: env_cls(5))
-        doc = mod.prepare_cases(cls, "test-hard0", ["BinFill"], source_episodes=[3])
+        doc = mod.prepare_cases(cls, "hard-verify", ["BinFill"], source_episodes=[3])
         args = make_args(tmp_path, write_cases(tmp_path / "cases.json", doc), max_steps=1300)
         out = mod.run_cases(args, make_deps(astra, cls, monitor=FakeMonitor(), vla=FakeVLA(),
                                             responder=FakeResponder(astra.champ), check_calls=[]))
@@ -294,7 +294,7 @@ def test_env_build_failure_is_no_frame_error(tmp_path, monkeypatch):
 
     with astra_session() as (mod, astra):
         cls = recording_builder_cls(boom)
-        doc = mod.prepare_cases(cls, "test-hard0", ["BinFill"], source_episodes=[3])
+        doc = mod.prepare_cases(cls, "hard-verify", ["BinFill"], source_episodes=[3])
         args = make_args(tmp_path, write_cases(tmp_path / "cases.json", doc), max_steps=1300)
         out = mod.run_cases(args, make_deps(astra, cls, monitor=FakeMonitor(), vla=FakeVLA(),
                                             responder=FakeResponder(astra.champ), check_calls=[]))
@@ -327,7 +327,7 @@ def test_key_mapping_dir_trace_and_official_episode_id(tmp_path, monkeypatch):
     with astra_session() as (mod, astra):
         monkeypatch.setattr(astra.runner.imageio, "get_writer", lambda *a, **k: _NullWriter())
         cls = recording_builder_cls(lambda b, ep: FakeEnv(terminal_step=12))
-        doc = mod.prepare_cases(cls, "test-hard0", ["VideoUnmask"], source_episodes=[3])
+        doc = mod.prepare_cases(cls, "hard-verify", ["VideoUnmask"], source_episodes=[3])
         args = make_args(tmp_path, write_cases(tmp_path / "cases.json", doc), max_steps=1300)
         mod.run_cases(args, make_deps(astra, cls, monitor=FakeMonitor(), vla=FakeVLA(),
                                       responder=FakeResponder(astra.champ), check_calls=[]))
@@ -343,8 +343,8 @@ def test_key_mapping_dir_trace_and_official_episode_id(tmp_path, monkeypatch):
     assert start["kind"] == "attempt_start" and accept["kind"] == "accept"
     assert accept["accepted_attempt_id"] == accept["attempt_id"] == start["attempt_id"]
     assert accept["attempt_no"] == start["attempt_no"] == 1 and accept["key"] == key
-    assert accept["episode_dir"] == str(a_dir.resolve()) and accept["dataset"] == "test-hard0"
-    assert manifest["route"] == accept["route"] == "astra/new" and manifest["dataset"] == "test-hard0"
+    assert accept["episode_dir"] == str(a_dir.resolve()) and accept["dataset"] == "hard-verify"
+    assert manifest["route"] == accept["route"] == "astra/new" and manifest["dataset"] == "hard-verify"
     # 目录名与 key 不符：重绘工具与验收输入都拒绝
     wrong = a_dir.with_name(f"VideoUnmask_xhard0_999999.a1")
     os.rename(a_dir, wrong)
@@ -357,11 +357,11 @@ def test_key_mapping_dir_trace_and_official_episode_id(tmp_path, monkeypatch):
 
 # ── 第一阶段拒绝用例（口径不变） ────────────────────────────────────────
 
-@pytest.mark.parametrize("dataset,max_steps", [("test-hard0", 1600), ("test-hard", 1300)])
+@pytest.mark.parametrize("dataset,max_steps", [("hard-verify", 1600), ("ood", 1300)])
 def test_step_cap_pairing_blocks_before_any_side_effect(tmp_path, dataset, max_steps):
     with astra_session() as (mod, astra):
         cls = recording_builder_cls()
-        doc = (mod.prepare_cases(cls, dataset, ["VideoUnmask"], source_episodes=[3]) if dataset == "test-hard0"
+        doc = (mod.prepare_cases(cls, dataset, ["VideoUnmask"], source_episodes=[3]) if dataset == "hard-verify"
                else mod.prepare_cases(cls, dataset, ["VideoUnmask"], tier="xhard1", index=0))
         args = make_args(tmp_path, write_cases(tmp_path / "cases.json", doc), max_steps=max_steps)
         responder = FakeResponder(astra.champ)
@@ -374,7 +374,7 @@ def test_step_cap_pairing_blocks_before_any_side_effect(tmp_path, dataset, max_s
 def test_layout_requires_group_dir(tmp_path):
     with astra_session() as (mod, astra):
         cls = recording_builder_cls()
-        doc = mod.prepare_cases(cls, "test-hard0", ["VideoUnmask"], source_episodes=[3])
+        doc = mod.prepare_cases(cls, "hard-verify", ["VideoUnmask"], source_episodes=[3])
         args = make_args(tmp_path, write_cases(tmp_path / "cases.json", doc), max_steps=1300, group="not_a_group")
         with pytest.raises(ValueError, match="reason=layout"):
             mod.run_cases(args, make_deps(astra, cls, check_calls=[]))
@@ -386,7 +386,7 @@ def test_existing_output_or_spool_is_refused(tmp_path, existing):
     """② 两个目录都必须是新的（上游 main() 的 mkdir(exist_ok=False) 口径）。"""
     with astra_session() as (mod, astra):
         cls = recording_builder_cls()
-        doc = mod.prepare_cases(cls, "test-hard0", ["VideoUnmask"], source_episodes=[3])
+        doc = mod.prepare_cases(cls, "hard-verify", ["VideoUnmask"], source_episodes=[3])
         args = make_args(tmp_path, write_cases(tmp_path / "cases.json", doc), max_steps=1300)
         Path(getattr(args, existing)).mkdir(parents=True)
         responder = FakeResponder(astra.champ)
@@ -400,7 +400,7 @@ def test_real_validate_checkpoints_rejects_fake_dirs(tmp_path):
     """① 用上游真实 validate_checkpoints：假目录在任何目录创建与请求之前被拒。"""
     with astra_session() as (mod, astra):
         cls = recording_builder_cls()
-        doc = mod.prepare_cases(cls, "test-hard0", ["VideoUnmask"], source_episodes=[3])
+        doc = mod.prepare_cases(cls, "hard-verify", ["VideoUnmask"], source_episodes=[3])
         args = make_args(tmp_path, write_cases(tmp_path / "cases.json", doc), max_steps=1300)
         responder = FakeResponder(astra.champ)
         with pytest.raises(ValueError, match="Missing checkpoint component"):
@@ -411,7 +411,7 @@ def test_real_validate_checkpoints_rejects_fake_dirs(tmp_path):
 def test_identity_mismatch_blocks_before_requests(tmp_path):
     with astra_session() as (mod, astra):
         cls = recording_builder_cls()
-        doc = mod.prepare_cases(cls, "test-hard0", ["VideoUnmask"], source_episodes=[3])
+        doc = mod.prepare_cases(cls, "hard-verify", ["VideoUnmask"], source_episodes=[3])
         doc["cases"][0]["source_episode"] = 7
         args = make_args(tmp_path, write_cases(tmp_path / "cases.json", doc), max_steps=1300)
         responder = FakeResponder(astra.champ)
@@ -752,14 +752,14 @@ def test_episode_cap_two_across_runs(tmp_path):
     fx.round()
     with astra_session() as (mod, astra):
         gate = mod.CostGate(fx.state)
-        assert gate.register_episode("test-hard0:BinFill:0") == 1
-        assert gate.register_episode("test-hard0:BinFill:0") == 1
-        assert mod.CostGate(fx.state).register_episode("test-hard0:VideoUnmask:0") == 2
+        assert gate.register_episode("hard-verify:BinFill:0") == 1
+        assert gate.register_episode("hard-verify:BinFill:0") == 1
+        assert mod.CostGate(fx.state).register_episode("hard-verify:VideoUnmask:0") == 2
         with pytest.raises(mod.AstraStop) as info:
-            mod.CostGate(fx.state).register_episode("test-hard0:MoveCube:0")
+            mod.CostGate(fx.state).register_episode("hard-verify:MoveCube:0")
         assert info.value.reason == "episode_cap"
         cls = recording_builder_cls()
-        doc = mod.prepare_cases(cls, "test-hard0", ["BinFill", "VideoUnmask", "MoveCube"], source_episodes=[3])
+        doc = mod.prepare_cases(cls, "hard-verify", ["BinFill", "VideoUnmask", "MoveCube"], source_episodes=[3])
         args = make_args(tmp_path / "r2", write_cases(tmp_path / "cases.json", doc), max_steps=1300)
         responder = FakeResponder(astra.champ)
         deps = make_deps(astra, cls, monitor=FakeMonitor(), vla=FakeVLA(), responder=responder, check_calls=[])
@@ -1017,7 +1017,7 @@ def _cpu_run(tmp_path: Path, monkeypatch, task: str = "VideoUnmask", steps: int 
     with astra_session() as (mod, astra):
         monkeypatch.setattr(astra.runner.imageio, "get_writer", lambda *a, **k: _NullWriter())
         cls = recording_builder_cls(env_plan or (lambda b, ep: FakeEnv(terminal_step=steps)))
-        doc = mod.prepare_cases(cls, "test-hard0", [task], source_episodes=[3])
+        doc = mod.prepare_cases(cls, "hard-verify", [task], source_episodes=[3])
         args = make_args(tmp_path, write_cases(tmp_path / "cases.json", doc), max_steps=1300)
         mod.run_cases(args, make_deps(astra, cls, monitor=FakeMonitor(), vla=FakeVLA(),
                                       responder=FakeResponder(astra.champ), check_calls=[]))

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 评估席位执行器（V9／test-hard0 评估经 run_eval_gl.sh 调用；最初为 v7.5eval 编写，0929-v7.5eval-restructure-plan.md §5；
+# 评估席位执行器（V9／hard-verify 评估经 run_eval_gl.sh 调用；最初为 v7.5eval 编写，0929-v7.5eval-restructure-plan.md §5；
 # 1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.6 扩到四个策略与两个数据集）。
 #
 # 一个席位（一张 GPU）上按策略顺序逐个：起 server → 等就绪 → 起常驻客户端（env_client.py run）→ 看门狗 → 收 server；
@@ -7,39 +7,39 @@
 #
 # 用法：
 #   run_seat.sh --seat 甲 --seat-idx 1 --gpu 0 --cond N --out <dir> --identities <shard-NN.json>
-#               --dataset {test-hard,test-hard0} --max-steps N [--strict-cap]
+#               --dataset {ood,hard-verify} --max-steps N [--strict-cap]
 #               --ledger-dir <dir> --reset-budget N --infra-retry-budget N
-#               [--policies smvla,mme,mmesg,pp] [--mme-variant {ground-sg-oracle,ground-sg-qwenvl}]
-#               [--qwenvl-groundsg-adapter <dir>] [--mme-ckpt <run>/79999] [--mmesg-ckpt <run>/79999]
+#               [--policies smvla,perceptual-framesamp-modul,groundsg,pp] [--groundsg-variant {ground-sg-oracle,ground-sg-qwenvl}]
+#               [--qwenvl-groundsg-adapter <dir>] [--framesamp-modul-ckpt <run>/79999] [--groundsg-ckpt <run>/79999]
 #               [--pp-ckpt <dir>] [--smvla-ckpt <dir>] [--rec-root <dir>] [--trace-root <dir>]
-#               [--openpi-data-home <dir> --tokenizer-sha256 <hex>]（跑 mme／mmesg 时这两项必填）
+#               [--openpi-data-home <dir> --tokenizer-sha256 <hex>]（跑 perceptual-framesamp-modul／groundsg 时这两项必填）
 #               [--cpus 0-3] [--order forward|reverse|shuffle] [--compile-cache on|off] [--det on|off]
 #               [--relay on|off] [--limit N] [--never-degrade] [--noprog-s S]
-#               [--episode-wall S] [--episode-wall-smvla S] [--episode-wall-mme S]
+#               [--episode-wall S] [--episode-wall-smvla S] [--episode-wall-framesamp-modul S]
 #   --v8 已删除（env_client.py 不再接受；账本三项对两个数据集都必填）。
 #
-# 数据集与步数（计划第五节「通用」）：起跑打印并核对 --dataset 与 --max-steps 的配对——test-hard0 ↔ 1300 且不带
-#   --strict-cap，test-hard ↔ 1600 且必须带 --strict-cap；不符打印 RUN_BLOCKED reason=step_cap_pairing、退出 3。
-#   这是启动参数的一致性检查，不是按档查表。mmesg 必须给 --mme-variant；ground-sg-qwenvl 必须给已存在的
-#   --qwenvl-groundsg-adapter；变体或 adapter 配错（含给了变体却不跑 mmesg）打印 RUN_BLOCKED reason=variant_pairing。
-# 策略与目录：策略号 smvla=0、mme=1、mmesg=2、pp=3；输出与账本目录名（label）为策略名，mmesg 为
-#   mmesg-<variant>：结果 <out>/<label>/results.jsonl，账本 <ledger-dir>/<label>.ledger.jsonl，录像
+# 数据集与步数（计划第五节「通用」）：起跑打印并核对 --dataset 与 --max-steps 的配对——hard-verify ↔ 1300 且不带
+#   --strict-cap，ood ↔ 1600 且必须带 --strict-cap；不符打印 RUN_BLOCKED reason=step_cap_pairing、退出 3。
+#   这是启动参数的一致性检查，不是按档查表。groundsg 必须给 --groundsg-variant；ground-sg-qwenvl 必须给已存在的
+#   --qwenvl-groundsg-adapter；变体或 adapter 配错（含给了变体却不跑 groundsg）打印 RUN_BLOCKED reason=variant_pairing。
+# 策略与目录：策略号 smvla=0、perceptual-framesamp-modul=1、groundsg=2、pp=3；输出与账本目录名（label）为策略名，groundsg 为
+#   groundsg-<variant>：结果 <out>/<label>/results.jsonl，账本 <ledger-dir>/<label>.ledger.jsonl，录像
 #   <rec-root>/<label>/<key>.a<attempt>/，轨迹 <trace-root>/<label>/<key>.a<attempt>/。
 #   结果目录里已有别的数据集的结果行时打印 RUN_BLOCKED reason=dataset_crossed（不同数据集须用不同 --out）。
-# 服务：mme 与 mmesg 同一条 serve_policy.py 命令（--seed=7），核对 checkpoint 父目录 history_config.txt 与 server
-#   日志：mme 取 perceptual-framesamp-modul.yaml，mmesg 取 symbolic-grounded-subgoal.yaml；两者启动前都过 tokenizer
+# 服务：perceptual-framesamp-modul 与 groundsg 同一条 serve_policy.py 命令（--seed=7），核对 checkpoint 父目录 history_config.txt 与 server
+#   日志：perceptual-framesamp-modul 取 perceptual-framesamp-modul.yaml，groundsg 取 symbolic-grounded-subgoal.yaml；两者启动前都过 tokenizer
 #   sha256 闸门（不符 RUN_BLOCKED reason=tokenizer_sha，相符 TOKENIZER_SHA=PASS）。pp：third_party/PonderPounce 下
 #   "$PP_PY" -m ponderpounce.eval.robomme_server --args.checkpoint_path <pp-ckpt> --args.seed 0 --args.device cuda:0
 #   --port <端口>，就绪看 GET /health 返回 200（只证明权重已加载；首局另有 600 s 放宽）；HF_HUB_OFFLINE／
 #   TRANSFORMERS_OFFLINE 缺省为 1，HF_HOME 取调用方环境。
-# 解释器：BENCH_PY（smvla／mme 的客户端与本脚本内的小工具）、MME_PY、PP_PY 可用环境变量覆盖（有默认值）；mmesg
+# 解释器：BENCH_PY（smvla／perceptual-framesamp-modul 的客户端与本脚本内的小工具）、MME_VLA_PY、PP_PY 可用环境变量覆盖（有默认值）；groundsg
 #   与 pp 的客户端用客户端扩展环境 SGEVAL_CLIENT_PY（缺省 <repo>/artifacts/sg-evaluation/venvs/client-env/bin/python，
-#   GL 由环境变量覆盖）；SMVLA_PY 无默认值，跑 smvla 时必须显式传入。缓存根 V75_JAX_CACHE_ROOT；mme／mmesg 的
+#   GL 由环境变量覆盖）；SMVLA_PY 无默认值，跑 smvla 时必须显式传入。缓存根 V75_JAX_CACHE_ROOT；perceptual-framesamp-modul／groundsg 的
 #   XLA_PYTHON_CLIENT_MEM_FRACTION 取 SEAT_XLA_MEM_FRACTION（缺省 0.75，QwenVL 变体由预检定值）。
 #
-# 端口：18000 + 100 × 席号 + 10 × 策略号，MME 录制中继 +1；起前 /dev/tcp 探测，被占依次 +2，最多 5 次。
+# 端口：18000 + 100 × 席号 + 10 × 策略号，FrameSamp+Modulation 录制中继 +1；起前 /dev/tcp 探测，被占依次 +2，最多 5 次。
 # 超时：server 就绪 1200 s（等待中 kill -0 查 server 存活）；客户端第一局另放宽 600 s（首次推理编译）；
-#       单局墙钟 smvla 900 s、mme 1200 s、mmesg／pp 1800 s（--episode-wall 统一覆盖，--episode-wall-smvla／-mme
+#       单局墙钟 smvla 900 s、perceptual-framesamp-modul 1200 s、groundsg／pp 1800 s（--episode-wall 统一覆盖，--episode-wall-smvla／-framesamp-modul
 #       优先）→ 基础设施超时（客户端退出 75，本脚本重起客户端）；
 #       progress.json 超过「单局墙钟 + 600 + 600」秒（不小于 --noprog-s，缺省 1200）不更新 → 打印 NO_PROGRESS，
 #       杀掉 server 与客户端重起一次；server 中途死亡 → 重起（最多 2 次）。
@@ -74,23 +74,23 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/seat_media_lib.sh" \
   || { echo "RUN_BLOCKED reason=seat_media_lib_missing dir=$(dirname "${BASH_SOURCE[0]}")" >&2; return 3 2>/dev/null || exit 3; }
 BENCH_PY="${BENCH_PY:-$REPO/.venv/bin/python}"
-MME_PY="${MME_PY:-$REPO/third_party/mme-vla/.venv/bin/python}"
+MME_VLA_PY="${MME_VLA_PY:-$REPO/third_party/mme-vla/.venv/bin/python}"
 SMVLA_PY="${SMVLA_PY:-}"  # 无默认值：跑 smvla 时必须显式传入
 SGEVAL_CLIENT_PY="${SGEVAL_CLIENT_PY:-$REPO/artifacts/sg-evaluation/venvs/client-env/bin/python}"
 PP_PY="${PP_PY:-$REPO/third_party/PonderPounce/.venv/bin/python}"
-MME_COMMIT="ecf086c3be7c2223167d9bb2f6ef1f0a6e24353b"
-MME_YAML_EXPECT="perceptual-framesamp-modul.yaml"     # mme
-MMESG_YAML_EXPECT="symbolic-grounded-subgoal.yaml"    # mmesg（GroundSG 两个变体共用）
+MME_VLA_COMMIT="ecf086c3be7c2223167d9bb2f6ef1f0a6e24353b"
+FRAMESAMP_MODUL_YAML_EXPECT="perceptual-framesamp-modul.yaml"     # perceptual-framesamp-modul
+GROUNDSG_YAML_EXPECT="symbolic-grounded-subgoal.yaml"    # groundsg（GroundSG 两个变体共用）
 SEAT_XLA_MEM_FRACTION="${SEAT_XLA_MEM_FRACTION:-0.75}"
 
-SEAT="" ; SEAT_IDX="" ; GPU="" ; COND="" ; OUT="" ; IDENTS="" ; POLICIES="smvla,mme" ; CPUS=""
+SEAT="" ; SEAT_IDX="" ; GPU="" ; COND="" ; OUT="" ; IDENTS="" ; POLICIES="smvla,perceptual-framesamp-modul" ; CPUS=""
 ORDER="forward" ; COMPILE_CACHE="off" ; DET="off" ; RELAY="off" ; LIMIT="0"
-NEVER_DEGRADE="" ; WALL_SMVLA="" ; WALL_MME="" ; WALL_ALL=""
+NEVER_DEGRADE="" ; WALL_SMVLA="" ; WALL_FRAMESAMP_MODUL="" ; WALL_ALL=""
 LEDGER_DIR="" ; RESET_BUDGET="" ; INFRA_RETRY_BUDGET="" ; REC_ROOT="" ; TRACE_ROOT="" ; OPENPI_HOME="" ; TOKENIZER_SHA=""
-DATASET="" ; MAX_STEPS="" ; STRICT_CAP=0 ; MME_VARIANT="" ; QWENVL_ADAPTER=""
+DATASET="" ; MAX_STEPS="" ; STRICT_CAP=0 ; GROUNDSG_VARIANT="" ; QWENVL_ADAPTER=""
 TOKENIZER_REL="big_vision/paligemma_tokenizer.model"
-MME_CKPT="${MME_CKPT:-/data/hongzefu/robomme_policy_learning_MotionJEPA/v1-store/models/official-mme-vla/perceptual-framesamp-modul/79999}"
-MMESG_CKPT="${MMESG_CKPT:-/data/hongzefu/robomme_policy_learning-vqa-test/runs/ckpts/mme_vla_suite/symbolic-grounded-subgoal/79999}"
+FRAMESAMP_MODUL_CKPT="${FRAMESAMP_MODUL_CKPT:-/data/hongzefu/robomme_policy_learning_MotionJEPA/v1-store/models/official-mme-vla/perceptual-framesamp-modul/79999}"
+GROUNDSG_CKPT="${GROUNDSG_CKPT:-/data/hongzefu/robomme_policy_learning-vqa-test/runs/ckpts/mme_vla_suite/symbolic-grounded-subgoal/79999}"
 SMVLA_CKPT="${SMVLA_CKPT:-/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/checkpoints/simplememvla_robomme}"
 PP_CKPT="${PP_CKPT:-}"
 READY_TIMEOUT=1200 ; FIRST_EXTRA=600 ; NOPROG_S=1200 ; MAX_CLIENT_RESTARTS=8 ; MAX_SERVER_RESTARTS=2
@@ -171,29 +171,29 @@ gpu_slug() { nvidia-smi --query-gpu=name --format=csv,noheader -i "$GPU" 2>/dev/
 
 # ---------------------------------------------------------------- 策略、目录、配对核对
 
-pol_index() {  # 策略号：smvla=0、mme=1、mmesg=2、pp=3；未知返回 1
-  case "$1" in smvla) echo 0;; mme) echo 1;; mmesg) echo 2;; pp) echo 3;; *) return 1;; esac
+pol_index() {  # 策略号：smvla=0、perceptual-framesamp-modul=1、groundsg=2、pp=3；未知返回 1
+  case "$1" in smvla) echo 0;; perceptual-framesamp-modul) echo 1;; groundsg) echo 2;; pp) echo 3;; *) return 1;; esac
 }
 
-pol_label() {  # 输出与账本目录名：mmesg 为 mmesg-<variant>，其余为策略名
-  if [[ "$1" == "mmesg" ]]; then echo "mmesg-${MME_VARIANT:-novariant}"; else echo "$1"; fi
+pol_label() {  # 输出与账本目录名：groundsg 为 groundsg-<variant>，其余为策略名
+  if [[ "$1" == "groundsg" ]]; then echo "groundsg-${GROUNDSG_VARIANT:-novariant}"; else echo "$1"; fi
 }
 
 ckpt_of() {
-  case "$1" in mme) echo "$MME_CKPT";; mmesg) echo "$MMESG_CKPT";; pp) echo "$PP_CKPT";; *) echo "$SMVLA_CKPT";; esac
+  case "$1" in perceptual-framesamp-modul) echo "$FRAMESAMP_MODUL_CKPT";; groundsg) echo "$GROUNDSG_CKPT";; pp) echo "$PP_CKPT";; *) echo "$SMVLA_CKPT";; esac
 }
 
-yaml_expect_of() { if [[ "$1" == "mmesg" ]]; then echo "$MMESG_YAML_EXPECT"; else echo "$MME_YAML_EXPECT"; fi; }
+yaml_expect_of() { if [[ "$1" == "groundsg" ]]; then echo "$GROUNDSG_YAML_EXPECT"; else echo "$FRAMESAMP_MODUL_YAML_EXPECT"; fi; }
 
-client_py_of() {  # mmesg／pp 的客户端用客户端扩展环境，其余用 BENCH_PY
-  case "$1" in mmesg|pp) echo "$SGEVAL_CLIENT_PY";; *) echo "$BENCH_PY";; esac
+client_py_of() {  # groundsg／pp 的客户端用客户端扩展环境，其余用 BENCH_PY
+  case "$1" in groundsg|pp) echo "$SGEVAL_CLIENT_PY";; *) echo "$BENCH_PY";; esac
 }
 
 step_cap_pairing() {  # 全局 DATASET／MAX_STEPS／STRICT_CAP 的配对核对；打印核对行，不符返回 3
   local want_steps want_strict
   case "$DATASET" in
-    test-hard0) want_steps=1300; want_strict=0;;
-    test-hard) want_steps=1600; want_strict=1;;
+    hard-verify) want_steps=1300; want_strict=0;;
+    ood) want_steps=1600; want_strict=1;;
     *) echo "RUN_BLOCKED reason=step_cap_pairing dataset=${DATASET:-unset} max_steps=${MAX_STEPS:-unset} strict_cap=$STRICT_CAP detail=unknown_dataset"
        return 3;;
   esac
@@ -204,24 +204,24 @@ step_cap_pairing() {  # 全局 DATASET／MAX_STEPS／STRICT_CAP 的配对核对�
   echo "STEP_CAP_PAIRING=PASS dataset=$DATASET max_steps=$MAX_STEPS strict_cap=$STRICT_CAP"
 }
 
-variant_pairing() {  # $1 = 逗号分隔策略；mmesg 变体与 QwenVL adapter 的配对核对，不符返回 3
+variant_pairing() {  # $1 = 逗号分隔策略；groundsg 变体与 QwenVL adapter 的配对核对，不符返回 3
   local pols=",$1," why=""
-  if [[ "$pols" == *",mmesg,"* ]]; then
-    case "$MME_VARIANT" in
+  if [[ "$pols" == *",groundsg,"* ]]; then
+    case "$GROUNDSG_VARIANT" in
       ground-sg-oracle) [[ -z "$QWENVL_ADAPTER" ]] || why="adapter_without_qwenvl";;
       ground-sg-qwenvl)
         if [[ -z "$QWENVL_ADAPTER" ]]; then why="qwenvl_needs_adapter"
         elif [[ ! -d "$QWENVL_ADAPTER" ]]; then why="adapter_missing path=$QWENVL_ADAPTER"; fi;;
-      "") why="mmesg_needs_variant";;
-      *) why="unknown_variant variant=$MME_VARIANT";;
+      "") why="groundsg_needs_variant";;
+      *) why="unknown_variant variant=$GROUNDSG_VARIANT";;
     esac
-  elif [[ -n "$MME_VARIANT$QWENVL_ADAPTER" ]]; then
-    why="variant_without_mmesg"
+  elif [[ -n "$GROUNDSG_VARIANT$QWENVL_ADAPTER" ]]; then
+    why="variant_without_groundsg"
   fi
   if [[ -n "$why" ]]; then
-    echo "RUN_BLOCKED reason=variant_pairing policies=$1 variant=${MME_VARIANT:-none} detail=$why"; return 3
+    echo "RUN_BLOCKED reason=variant_pairing policies=$1 variant=${GROUNDSG_VARIANT:-none} detail=$why"; return 3
   fi
-  echo "VARIANT_PAIRING=PASS policies=$1 variant=${MME_VARIANT:-none} adapter=${QWENVL_ADAPTER:-none}"
+  echo "VARIANT_PAIRING=PASS policies=$1 variant=${GROUNDSG_VARIANT:-none} adapter=${QWENVL_ADAPTER:-none}"
 }
 
 dataset_crossed() {  # $1 = results.jsonl；已有别的数据集的结果行即返回 0（打印 RUN_BLOCKED）
@@ -258,12 +258,12 @@ print(f"CKPT_FINGERPRINT dir={root} sha256={h.hexdigest()} files={n} bytes={b} s
 PY
 }
 
-preflight_mme() {  # $1 = mme|mmesg
-  local pol="${1:-mme}" sub="$REPO/third_party/mme-vla" head hc ck expect
+preflight_mme_vla() {  # $1 = perceptual-framesamp-modul|groundsg
+  local pol="${1:-perceptual-framesamp-modul}" sub="$REPO/third_party/mme-vla" head hc ck expect
   ck="$(ckpt_of "$pol")"; expect="$(yaml_expect_of "$pol")"
   head="$(git -C "$sub" rev-parse HEAD 2>/dev/null)"
-  [[ "$head" == "$MME_COMMIT" ]] || { echo "RUN_BLOCKED reason=mme_commit head=$head"; return 1; }
-  git -C "$sub" diff --quiet HEAD -- src scripts packages pyproject.toml uv.lock || { echo "RUN_BLOCKED reason=mme_dirty"; return 1; }
+  [[ "$head" == "$MME_VLA_COMMIT" ]] || { echo "RUN_BLOCKED reason=mme_vla_commit head=$head"; return 1; }
+  git -C "$sub" diff --quiet HEAD -- src scripts packages pyproject.toml uv.lock || { echo "RUN_BLOCKED reason=mme_vla_dirty"; return 1; }
   if [[ -n "$(ls -A "$sub/third_party/robomme_benchmark" 2>/dev/null)" ]]; then
     echo "RUN_BLOCKED reason=nested_submodule_not_empty"; return 1
   fi
@@ -271,8 +271,8 @@ preflight_mme() {  # $1 = mme|mmesg
   [[ "$hc" == "$expect" ]] || { echo "RUN_BLOCKED reason=history_config value='$hc' expect='$expect' policy=$pol"; return 1; }
   [[ -f "$sub/src/mme_vla_suite/models/config/robomme/$hc" ]] || { echo "RUN_BLOCKED reason=yaml_missing $hc"; return 1; }
   [[ -d "$ck/params" && -d "$ck/assets" ]] || { echo "RUN_BLOCKED reason=ckpt_layout $ck"; return 1; }
-  [[ -x "$MME_PY" ]] || { echo "RUN_BLOCKED reason=mme_venv_missing $MME_PY"; return 1; }
-  echo "MME_PREFLIGHT=PASS policy=$pol commit=$head history_config=$hc ckpt=$ck py=$MME_PY"
+  [[ -x "$MME_VLA_PY" ]] || { echo "RUN_BLOCKED reason=mme_vla_venv_missing $MME_VLA_PY"; return 1; }
+  echo "MME_VLA_PREFLIGHT=PASS policy=$pol commit=$head history_config=$hc ckpt=$ck py=$MME_VLA_PY"
 }
 
 preflight_pp() {
@@ -290,10 +290,10 @@ pp_server_wrap_path() {  # pp 服务外壳的绝对路径（服务 cwd 在第三
   echo "$REPO/scripts/eval-official/pp_server_wrap.py"
 }
 
-tokenizer_gate() {  # mme／mmesg server 启动前核 OPENPI_DATA_HOME 下 tokenizer 的 sha256（不现场下载顶替）
+tokenizer_gate() {  # perceptual-framesamp-modul／groundsg server 启动前核 OPENPI_DATA_HOME 下 tokenizer 的 sha256（不现场下载顶替）
   local f actual
   if [[ -z "$OPENPI_HOME" || -z "$TOKENIZER_SHA" ]]; then
-    echo "RUN_BLOCKED reason=tokenizer_sha detail=missing_args（跑 mme／mmesg 须给 --openpi-data-home 与 --tokenizer-sha256）"
+    echo "RUN_BLOCKED reason=tokenizer_sha detail=missing_args（跑 perceptual-framesamp-modul／groundsg 须给 --openpi-data-home 与 --tokenizer-sha256）"
     return 1
   fi
   f="$OPENPI_HOME/$TOKENIZER_REL"
@@ -370,7 +370,7 @@ build_server_cmd() {  # $1 = 策略；$2 = 端口 → 设 SRV_DIR、SRV_ENV、SR
   local pol="$1" port="$2"
   SRV_ENV=() ; SRV_ARGV=()
   case "$pol" in
-    mme|mmesg)
+    perceptual-framesamp-modul|groundsg)
       SRV_DIR="$REPO/third_party/mme-vla"
       SRV_ENV=(XLA_PYTHON_CLIENT_MEM_FRACTION="$SEAT_XLA_MEM_FRACTION" GLIBC_TUNABLES=glibc.rtld.optional_static_tls=16384
                UV_LINK_MODE=copy VIRTUAL_ENV="$REPO/third_party/mme-vla/.venv")
@@ -380,7 +380,7 @@ build_server_cmd() {  # $1 = 策略；$2 = 端口 → 设 SRV_DIR、SRV_ENV、SR
       [[ "$DET" == "on" ]] && SRV_ENV+=(XLA_FLAGS="--xla_gpu_deterministic_ops=true --xla_gpu_autotune_level=0")
       # tokenizer 缓存根固定（server 在 env 清理后启动，须显式写进 server 环境）
       SRV_ENV+=(OPENPI_DATA_HOME="$OPENPI_HOME" PYTHONUNBUFFERED=1)
-      SRV_ARGV=("$MME_PY" scripts/serve_policy.py --seed=7 --port="$port"
+      SRV_ARGV=("$MME_VLA_PY" scripts/serve_policy.py --seed=7 --port="$port"
                 policy:checkpoint --policy.config=mme_vla_suite --policy.dir="$(ckpt_of "$pol")");;
     pp)
       SRV_DIR="$REPO/third_party/PonderPounce"
@@ -429,15 +429,15 @@ start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志；$4 = 结果目录�
   done
   echo "SERVER_READY policy=$pol port=$port ready_s=$(( $(ts) - t0 ))"
   FRESH_SERVER=1  # 下一个客户端的第一局享受首次推理放宽
-  if [[ "$pol" == "mme" || "$pol" == "mmesg" ]]; then
+  if [[ "$pol" == "perceptual-framesamp-modul" || "$pol" == "groundsg" ]]; then
     local expect; expect="$(yaml_expect_of "$pol")"
     if grep -q "history_config='$expect'" "$slog"; then
       echo "SERVER_CONFIG=PASS policy=$pol history_config=$expect seed=7"
     else
       echo "RUN_BLOCKED reason=server_config（日志里没有 history_config='$expect'）"; stop_server; return 3
     fi
-    if [[ "$pol" == "mme" && "$RELAY" == "on" ]]; then
-      ( exec setsid env "${NOPROXY_ENV[@]}" PYTHONUNBUFFERED=1 "$BENCH_PY" "$REPO/scripts/eval-official/mme_client.py" relay \
+    if [[ "$pol" == "perceptual-framesamp-modul" && "$RELAY" == "on" ]]; then
+      ( exec setsid env "${NOPROXY_ENV[@]}" PYTHONUNBUFFERED=1 "$BENCH_PY" "$REPO/scripts/eval-official/framesamp_modul_client.py" relay \
           --listen "$((port + 1))" --upstream "$port" --log "$rdir/relay-$port.jsonl" ) >"$rdir/relay-$port.log" 2>&1 &
       RELAY_PID=$!
       local i; for i in $(seq 1 60); do port_busy "$((port + 1))" && break; sleep 0.5; done
@@ -451,13 +451,13 @@ start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志；$4 = 结果目录�
   return 0
 }
 
-wall_of() {  # 单局墙钟：--episode-wall-smvla／-mme 优先，其次 --episode-wall，再次缺省 smvla 900／mme 1200／其余 1800
+wall_of() {  # 单局墙钟：--episode-wall-smvla／-framesamp-modul 优先，其次 --episode-wall，再次缺省 smvla 900／perceptual-framesamp-modul 1200／其余 1800
   case "$1" in
-    mme) if [[ -n "$WALL_MME" ]]; then echo "$WALL_MME"; return; fi;;
+    perceptual-framesamp-modul) if [[ -n "$WALL_FRAMESAMP_MODUL" ]]; then echo "$WALL_FRAMESAMP_MODUL"; return; fi;;
     smvla) if [[ -n "$WALL_SMVLA" ]]; then echo "$WALL_SMVLA"; return; fi;;
   esac
   if [[ -n "$WALL_ALL" ]]; then echo "$WALL_ALL"; return; fi
-  case "$1" in mme) echo 1200;; smvla) echo 900;; *) echo 1800;; esac
+  case "$1" in perceptual-framesamp-modul) echo 1200;; smvla) echo 900;; *) echo 1800;; esac
 }
 
 noprog_limit() {  # 无进展阈值：$1 = 策略；$2 = 1（缺省）含首局放宽 FIRST_EXTRA，0 不含；不小于 NOPROG_S
@@ -603,7 +603,7 @@ build_client_cmd() {  # $1 = 策略；$2 = 客户端连接端口；$3 = 单局�
   # smvla 旧官方环境与推理同进程、OMP_NUM_THREADS=1；新接口环境侧照设
   [[ "$pol" == "smvla" ]] && CLI_ENV=(OMP_NUM_THREADS=1)
   # QwenVL 预测器（ms-swift）默认走 ModelScope：一律 HF 且离线（HF_HOME 取调用方环境）
-  [[ "$pol" == "mmesg" ]] && CLI_ENV=(USE_HF=1 HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-1}" TRANSFORMERS_OFFLINE="${TRANSFORMERS_OFFLINE:-1}")
+  [[ "$pol" == "groundsg" ]] && CLI_ENV=(USE_HF=1 HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-1}" TRANSFORMERS_OFFLINE="${TRANSFORMERS_OFFLINE:-1}")
   CLI_ARGV=("$(client_py_of "$pol")" scripts/eval-official/env_client.py run --policy "$pol"
             --identities "$IDENTS" --order "$ORDER" --dataset "$DATASET" --max-steps "$MAX_STEPS"
             --cond "$COND" --seat "$SEAT" --port "$cport" --out "$OUT/$label"
@@ -611,8 +611,8 @@ build_client_cmd() {  # $1 = 策略；$2 = 客户端连接端口；$3 = 单局�
             --ledger "$LEDGER_DIR/$label.ledger.jsonl" --reset-budget "$RESET_BUDGET"
             --infra-retry-budget "$INFRA_RETRY_BUDGET")
   (( STRICT_CAP == 1 )) && CLI_ARGV+=(--strict-cap)
-  if [[ "$pol" == "mmesg" ]]; then
-    CLI_ARGV+=(--mme-variant "$MME_VARIANT")
+  if [[ "$pol" == "groundsg" ]]; then
+    CLI_ARGV+=(--groundsg-variant "$GROUNDSG_VARIANT")
     [[ -n "$QWENVL_ADAPTER" ]] && CLI_ARGV+=(--qwenvl-groundsg-adapter "$QWENVL_ADAPTER")
   fi
   [[ -n "$NEVER_DEGRADE" ]] && CLI_ARGV+=(--never-degrade)
@@ -643,7 +643,7 @@ run_policy() {  # $1 = 策略；$2 = 策略号
   mkdir -p "$dir"
   [[ -n "$SERVER_PID" ]] && { echo "RUN_BLOCKED reason=previous_server_alive pid=$SERVER_PID"; return 3; }
   case "$pol" in
-    mme|mmesg) tokenizer_gate || return 3; preflight_mme "$pol" || return 3;;
+    perceptual-framesamp-modul|groundsg) tokenizer_gate || return 3; preflight_mme_vla "$pol" || return 3;;
     pp) preflight_pp || return 3;;
   esac
   [[ "$pol" == "smvla" && -z "$SMVLA_PY" ]] && { echo "RUN_BLOCKED reason=smvla_py_unset（SMVLA_PY 必须显式传入）"; return 3; }
@@ -659,7 +659,7 @@ run_policy() {  # $1 = 策略；$2 = 策略号
   start_server "$pol" "$port" "$slog" "$dir"; rc=$?
   wait "$fp_pid"; cat "$dir/ckpt-fingerprint.txt"
   if (( rc != 0 )); then write_report "$pol" "$rc"; return "$rc"; fi
-  cport="$port"; [[ "$pol" == "mme" && "$RELAY" == "on" ]] && cport=$((port + 1))
+  cport="$port"; [[ "$pol" == "perceptual-framesamp-modul" && "$RELAY" == "on" ]] && cport=$((port + 1))
 
   rc=0
   policy_loop "$pol" "$port" "$cport" || rc=$?
@@ -734,8 +734,8 @@ parse_seat_args() {
       --policies) POLICIES="$2"; shift 2;;
       --cpus) CPUS="$2"; shift 2;;
       --order) ORDER="$2"; shift 2;;
-      --mme-ckpt) MME_CKPT="$2"; shift 2;;
-      --mmesg-ckpt) MMESG_CKPT="$2"; shift 2;;
+      --framesamp-modul-ckpt) FRAMESAMP_MODUL_CKPT="$2"; shift 2;;
+      --groundsg-ckpt) GROUNDSG_CKPT="$2"; shift 2;;
       --smvla-ckpt) SMVLA_CKPT="$2"; shift 2;;
       --pp-ckpt) PP_CKPT="$2"; shift 2;;
       --compile-cache) COMPILE_CACHE="$2"; shift 2;;
@@ -746,7 +746,7 @@ parse_seat_args() {
       --never-degrade) NEVER_DEGRADE="--never-degrade"; shift;;
       --episode-wall) WALL_ALL="$2"; shift 2;;
       --episode-wall-smvla) WALL_SMVLA="$2"; shift 2;;
-      --episode-wall-mme) WALL_MME="$2"; shift 2;;
+      --episode-wall-framesamp-modul) WALL_FRAMESAMP_MODUL="$2"; shift 2;;
       --ledger-dir) LEDGER_DIR="$2"; shift 2;;
       --reset-budget) RESET_BUDGET="$2"; shift 2;;
       --infra-retry-budget) INFRA_RETRY_BUDGET="$2"; shift 2;;
@@ -757,7 +757,7 @@ parse_seat_args() {
       --dataset) DATASET="$2"; shift 2;;
       --max-steps) MAX_STEPS="$2"; shift 2;;
       --strict-cap) STRICT_CAP=1; shift;;
-      --mme-variant) MME_VARIANT="$2"; shift 2;;
+      --groundsg-variant) GROUNDSG_VARIANT="$2"; shift 2;;
       --qwenvl-groundsg-adapter) QWENVL_ADAPTER="$2"; shift 2;;
       *) echo "未知参数 $1" >&2; exit 2;;
     esac
@@ -769,7 +769,7 @@ parse_seat_args() {
     echo "缺少必需参数 --identities" >&2; exit 2
   fi
   local _w
-  for _w in "$WALL_SMVLA" "$WALL_MME" "$WALL_ALL"; do
+  for _w in "$WALL_SMVLA" "$WALL_FRAMESAMP_MODUL" "$WALL_ALL"; do
     [[ -z "$_w" || "$_w" =~ ^[0-9]+$ ]] || { echo "--episode-wall*／须为非负整数秒" >&2; exit 2; }
   done
   [[ -z "$MAX_STEPS" || "$MAX_STEPS" =~ ^[0-9]+$ ]] || { echo "--max-steps 须为非负整数" >&2; exit 2; }
@@ -792,12 +792,12 @@ main() {
   trap 'exit 143' TERM INT
   echo "SEAT_START seat=$SEAT idx=$SEAT_IDX gpu=$GPU cpus=${CPUS:-all} cond=$COND policies=$POLICIES host=$(hostname) \
 git=$(git -C "$REPO" rev-parse HEAD 2>/dev/null) compile_cache=$COMPILE_CACHE det=$DET relay=$RELAY \
-dataset=${DATASET:-unset} max_steps=${MAX_STEPS:-unset} strict_cap=$STRICT_CAP variant=${MME_VARIANT:-none}"
+dataset=${DATASET:-unset} max_steps=${MAX_STEPS:-unset} strict_cap=$STRICT_CAP variant=${GROUNDSG_VARIANT:-none}"
   step_cap_pairing || return 3
   variant_pairing "$POLICIES" || return 3
   echo "SEAT_CONFIG ledger_dir=$LEDGER_DIR reset_budget=$RESET_BUDGET infra_retry_budget=$INFRA_RETRY_BUDGET \
-rec_root=${REC_ROOT:-<out>/<label>/rec} trace_root=${TRACE_ROOT:-none} wall_smvla=$(wall_of smvla) wall_mme=$(wall_of mme) \
-wall_mmesg=$(wall_of mmesg) wall_pp=$(wall_of pp) never_degrade=${NEVER_DEGRADE:+1} no_proxy=127.0.0.1,localhost \
+rec_root=${REC_ROOT:-<out>/<label>/rec} trace_root=${TRACE_ROOT:-none} wall_smvla=$(wall_of smvla) wall_framesamp_modul=$(wall_of perceptual-framesamp-modul) \
+wall_groundsg=$(wall_of groundsg) wall_pp=$(wall_of pp) never_degrade=${NEVER_DEGRADE:+1} no_proxy=127.0.0.1,localhost \
 client_py_ext=$SGEVAL_CLIENT_PY"
   local overall=0 pol pidx rc
   IFS=',' read -r -a POLS <<< "$POLICIES"

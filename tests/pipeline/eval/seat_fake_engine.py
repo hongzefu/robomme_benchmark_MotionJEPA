@@ -110,7 +110,7 @@ def client() -> None:
     out.mkdir(parents=True, exist_ok=True)
     emit(event="start", n=n, code=code, first_extra_s=arg("--first-extra-s"), wall_s=arg("--episode-wall-s"),
          port=arg("--port"), policy=arg("--policy"), dataset=arg("--dataset"), max_steps=arg("--max-steps"),
-         strict_cap="--strict-cap" in ARGS, mme_variant=arg("--mme-variant"),
+         strict_cap="--strict-cap" in ARGS, groundsg_variant=arg("--groundsg-variant"),
          adapter=arg("--qwenvl-groundsg-adapter"), trace_root=arg("--trace-root"), v8="--v8" in ARGS,
          ledger=arg("--ledger"), rec_root=arg("--rec-root"), out=str(out), argv=ARGS)
     signal.signal(signal.SIGTERM, on_term)
@@ -134,7 +134,7 @@ def client() -> None:
                 fh.write(json.dumps({"v8": True, "key": key, "task": row["task"], "tier": row.get("tier"),
                                      "seed": row["seed"], "source_episode": row.get("source_episode"),
                                      "dataset": arg("--dataset"), "policy": arg("--policy"),
-                                     "policy_variant": arg("--mme-variant"), "attempt": 1, "attempt_no": 1,
+                                     "policy_variant": arg("--groundsg-variant"), "attempt": 1, "attempt_no": 1,
                                      "status": "success", "infra": False, "demo_frames": 1, "exec_steps": 3,
                                      "rec_dir": str(d)}) + "\n")
     sys.exit(code)
@@ -164,8 +164,8 @@ def runner() -> None:
         (ep / "trace.jsonl").write_text(json.dumps({"kind": "header", "identity": {"key": key}}) + "\n", encoding="utf-8")
         infra = key == infra_key
         row = dict(rows[key])
-        row.update(side="orig", policy="mmesg" if arg("--variant") else "pp", policy_variant=arg("--variant"),
-                   dataset="test-hard0", attempt=attempt, status="error" if infra else "success", infra=infra,
+        row.update(side="orig", policy="groundsg" if arg("--variant") else "pp", policy_variant=arg("--variant"),
+                   dataset="hard-verify", attempt=attempt, status="error" if infra else "success", infra=infra,
                    exec_steps=1, demo_frames=1, ep_dir=str(ep))
         with open(out / "results.jsonl", "a", encoding="utf-8") as fh:
             fh.write(json.dumps(row) + "\n")

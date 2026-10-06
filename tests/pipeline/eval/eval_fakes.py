@@ -29,8 +29,8 @@ import numpy as np
 from tests._support.loaders import REPO, load_script
 
 HW = 4  # 假帧边长（像素）；形状不参与被测逻辑
-#: 启动约定的步数上限（1003 评估计划 1.2），按约定手写，不读被测代码：test-hard 为 1600 且带 --strict-cap，
-#: test-hard0 为 1300、不带 --strict-cap
+#: 启动约定的步数上限（1003 评估计划 1.2），按约定手写，不读被测代码：ood 为 1600 且带 --strict-cap，
+#: hard-verify 为 1300、不带 --strict-cap
 V9_MAX_STEPS = 1600
 HARD0_MAX_STEPS = 1300
 N_RESET_FRAMES = 3  # 假环境 reset 返回的帧数（2 帧演示 + 1 帧初始）
@@ -44,8 +44,8 @@ def env_client():
     return load_script("eval-official/env_client.py")
 
 
-def mme_client():
-    return load_script("eval-official/mme_client.py")
+def framesamp_modul_client():
+    return load_script("eval-official/framesamp_modul_client.py")
 
 
 def smvla_client():
@@ -70,7 +70,7 @@ def hard_specs():
     return hs
 
 
-def real_builder(task: str, max_steps: int | None = None, dataset: str = "test-hard"):
+def real_builder(task: str, max_steps: int | None = None, dataset: str = "ood"):
     from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
 
     kw = {} if max_steps is None else {"max_steps": int(max_steps)}
@@ -168,7 +168,7 @@ class World:
 class HybridBuilder:
     """真实 builder 的身份解析 + CPU 假环境（不构建仿真场景）。``dataset`` 原样交给真实 builder。"""
 
-    def __init__(self, task: str, max_steps: int | None, world: World, dataset: str = "test-hard"):
+    def __init__(self, task: str, max_steps: int | None, world: World, dataset: str = "ood"):
         self.task, self.max_steps, self.world, self.dataset = task, max_steps, world, dataset
         self.real = real_builder(task, max_steps, dataset)
         world.builders.append(self)
@@ -276,7 +276,7 @@ class _FakeWS:
         self.server.log.append(("close", None))
 
 
-class FakeMMEClient:
+class FakeMMEVLAWebsocketClient:
     """``MMEVLAWebsocketClientPolicy`` 的协议替身：reset／add_buffer／infer 三种消息。"""
 
     def __init__(self, server: FakePolicyServer):
@@ -346,10 +346,10 @@ class FakeSmvlaConn:
         self.closed = True
 
 
-def mme_policy(monkeypatch, server: FakePolicyServer):
-    """真 mme_client 模块，只把建 websocket 客户端的工厂换成假客户端（每局一个新客户端，同真实行为）。"""
-    mc = mme_client()
-    monkeypatch.setattr(mc, "make_recording_client", lambda host, port, recorder, timing: FakeMMEClient(server))
+def framesamp_modul_policy(monkeypatch, server: FakePolicyServer):
+    """真 framesamp_modul_client 模块，只把建 websocket 客户端的工厂换成假客户端（每局一个新客户端，同真实行为）。"""
+    mc = framesamp_modul_client()
+    monkeypatch.setattr(mc, "make_recording_client", lambda host, port, recorder, timing: FakeMMEVLAWebsocketClient(server))
     return mc
 
 
@@ -360,14 +360,14 @@ def smvla_policy(server: FakePolicyServer, **conn_kw):
 
 
 def policy_module(name: str, monkeypatch, server: FakePolicyServer):
-    return mme_policy(monkeypatch, server) if name == "mme" else smvla_policy(server)
+    return framesamp_modul_policy(monkeypatch, server) if name == "perceptual-framesamp-modul" else smvla_policy(server)
 
 
 # ---------------------------------------------------------------- 身份
 
 
 def tier_cap(tier: str) -> int:
-    """该档按启动约定的步数上限（手写常量）：xhard0 走 test-hard0 的 1300，其余档走 test-hard 的 1600。"""
+    """该档按启动约定的步数上限（手写常量）：xhard0 走 hard-verify 的 1300，其余档走 ood 的 1600。"""
     return HARD0_MAX_STEPS if tier == "xhard0" else V9_MAX_STEPS
 
 
@@ -379,7 +379,7 @@ def _resolved(task: str, xhard0_in_test_hard: bool) -> tuple[tuple[int, dict], .
 
 
 def packaged_identity(task: str, tier: str, k: int = 0) -> dict:
-    """包内真实身份（真实 builder 在 test-hard 里第 k 个该档局）→ 执行身份行（字段契约 C1，key 按契约手写）。"""
+    """包内真实身份（真实 builder 在 ood 里第 k 个该档局）→ 执行身份行（字段契约 C1，key 按契约手写）。"""
     hits = [(ep, ident) for ep, ident in _resolved(task, bool(hard_specs().XHARD0_IN_TEST_HARD)) if ident["tier"] == tier]
     ep, ident = hits[k]
     return {"task": task, "tier": tier, "seed": int(ident["seed"]), "candidate": ident["candidate"],
@@ -389,12 +389,12 @@ def packaged_identity(task: str, tier: str, k: int = 0) -> dict:
 
 @functools.lru_cache(maxsize=None)
 def _resolved_hard0(task: str) -> tuple[tuple[int, dict], ...]:
-    b = real_builder(task, dataset="test-hard0")
+    b = real_builder(task, dataset="hard-verify")
     return tuple((ep, b.resolve_identity(ep)) for ep in range(b.get_episode_num()))
 
 
 def hard0_identity(task: str, k: int = 0) -> dict:
-    """test-hard0 里第 k 局的执行身份行（字段契约同 C1；candidate／spec_sha256 为 null，key 按契约手写）。"""
+    """hard-verify 里第 k 局的执行身份行（字段契约同 C1；candidate／spec_sha256 为 null，key 按契约手写）。"""
     ep, ident = _resolved_hard0(task)[k]
     return {"task": task, "tier": "xhard0", "seed": int(ident["seed"]), "candidate": None, "builder_episode": ep,
             "source_episode": int(ident["source_episode"]), "spec_sha256": None,
@@ -409,12 +409,12 @@ def v9_cells_sorted() -> list[tuple[str, str]]:
 
 
 def seat_args(out: Path, policy: str, *, ledger: Path, reset_budget: int = 100, infra_retry_budget: int = 10,
-              seat: str = "s00", rec_root: str | None = None, dataset: str = "test-hard", **kw) -> argparse.Namespace:
-    """默认按 test-hard 的启动约定（--max-steps 1600 --strict-cap）；dataset="test-hard0" 时默认 1300、不带 strict-cap。"""
-    hard0 = dataset == "test-hard0"
+              seat: str = "s00", rec_root: str | None = None, dataset: str = "ood", **kw) -> argparse.Namespace:
+    """默认按 ood 的启动约定（--max-steps 1600 --strict-cap）；dataset="hard-verify" 时默认 1300、不带 strict-cap。"""
+    hard0 = dataset == "hard-verify"
     d = dict(policy=policy, identities=None, cond="T", seat=seat, host="127.0.0.1", port=1, out=str(out),
              order="forward", shuffle_seed=0, only=None, limit=0, dataset=dataset,
-             max_steps=HARD0_MAX_STEPS if hard0 else V9_MAX_STEPS, strict_cap=not hard0, mme_variant=None,
+             max_steps=HARD0_MAX_STEPS if hard0 else V9_MAX_STEPS, strict_cap=not hard0, groundsg_variant=None,
              qwenvl_groundsg_adapter=None, trace_root=None,
              episode_wall_s=0.0, first_extra_s=0.0, no_record=False, never_degrade=True,
              baseline=False, ledger=str(ledger), reset_budget=reset_budget,
@@ -495,7 +495,7 @@ def verdict(lines: list[str], name: str) -> dict[str, str]:
 class Stage:
     """按生产布局手写一个席位的结果行、账本行与录像目录。"""
 
-    def __init__(self, root: Path, policy: str = "mme", seat: str = "s00", dirname: str | None = None):
+    def __init__(self, root: Path, policy: str = "perceptual-framesamp-modul", seat: str = "s00", dirname: str | None = None):
         self.root, self.policy = Path(root), policy
         self.dir = self.root / seat / (dirname or policy)
         self.dir.mkdir(parents=True, exist_ok=True)

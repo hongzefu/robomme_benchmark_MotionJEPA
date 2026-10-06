@@ -36,7 +36,7 @@ PonderPounce 的噪声种子是 ``crc32(f"{seed}:{sid}:{n}")``，两侧各起自
 用本模块同一批辅助函数写轨迹，两侧字段口径一致。
 
 ``conn_info`` 读取的键：``host``（缺省 127.0.0.1）、``port``（必需）、``max_steps``（必需）、``dataset``（可选，
-``test-hard0`` 时要求 ``tier == "xhard0"``）、``trace_path``／``trace_dir``（可选；``trace_dir`` 为每局目录，
+``hard-verify`` 时要求 ``tier == "xhard0"``）、``trace_path``／``trace_dir``（可选；``trace_dir`` 为每局目录，
 见 ``resolve_trace_path``）、
 ``pp_max_reconnects``（可选，缺省 1）、``pp_phase2``（可选，见下）、``attempt``／``episode_tag``（可选，第二阶段身份用）。
 
@@ -90,7 +90,7 @@ PP_ACTION_DIMS = 8
 #: 同一局内 ConnectionClosed 后的重连次数上限（缺省）
 PP_MAX_RECONNECTS = 1
 XHARD0 = "xhard0"
-TEST_HARD0 = "test-hard0"
+HARD_VERIFY = "hard-verify"
 TRACE_SCHEMA_ROUTE_NEW = "pp-new"
 #: 原侧 route；``pp_official_runner.py``（R1 零改动）引用本常量，保持旧值使原侧输出与 BASE 逐字节相同
 TRACE_SCHEMA_ROUTE_ORIG = "pp-orig"
@@ -180,9 +180,9 @@ class SubgoalMissing(RuntimeError):
 def fixed_sid(identity: dict, dataset: str | None = None) -> str:
     """固定 sid：xhard0 ``<task>|<source_episode>|<seed>``；V9 ``<task>|<tier>|<seed>``。
 
-    ``dataset == "test-hard0"`` 时身份必须是 xhard0，否则 ``ValueError``（防止 V9 身份混进 hard0 分片）。"""
+    ``dataset == "hard-verify"`` 时身份必须是 xhard0，否则 ``ValueError``（防止 V9 身份混进 hard0 分片）。"""
     task, tier, seed = identity["task"], identity.get("tier"), identity["seed"]
-    if dataset == TEST_HARD0 and tier != XHARD0:
+    if dataset == HARD_VERIFY and tier != XHARD0:
         raise ValueError(f"dataset={dataset} 但身份 tier={tier!r}，不是 {XHARD0}")
     if tier == XHARD0:
         src = identity["source_episode"]

@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # 原侧重跑单片执行器（v7.5eval 方案 2.3 编排器，S7 改为本轮第二档批次 3a 用）：在 GL 的 srun 步骤内（或本机给定 GPU）
-# 按历史顺序先跑 SimpleMemVLA 片、再跑 MME 片，均用原版代码 + 只读观测器（run_orig_smvla.sh、run_orig_mme.sh）。
+# 按历史顺序先跑 SimpleMemVLA 片、再跑 FrameSamp+Modulation 片，均用原版代码 + 只读观测器（run_orig_smvla.sh、run_orig_framesamp_modul.sh）。
 # 用法：ORIG_STAGE_ROOT=<本轮 stage 根> bash official_rerun_shard.sh <run 名> <分片 0-9> [--run-idx K] [--port-base P] [--dry-run]
 # - run 名只许 [A-Za-z0-9._-]；--run-idx（缺省 0）决定端口号段，同节点并发的不同 run 须给不同值。
-# - 清单：/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v7-eval/eval-official-xhard0-192.jsonl（只读；MME 用 SHARD=i，
+# - 清单：/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v7-eval/eval-official-xhard0-192.jsonl（只读；FrameSamp+Modulation 用 SHARD=i，
 #   SMVLA 用 i/10）。仅当 run 名以 smoke 结尾时允许用环境变量 MANIFEST 覆盖（冒烟用小清单；分片口径不变）。
-# - 逐局结果：$ORIG_STAGE_ROOT/<run>/{smvla,mme}/s<i>/（新目录）。
+# - 逐局结果：$ORIG_STAGE_ROOT/<run>/{smvla,perceptual-framesamp-modul}/s<i>/（新目录）。
 # - 观测记录与原版 mp4：先写 NODE_TMP=/tmp/orig-<run>-s<i>-<作业号>，每个策略跑完 rsync -a 到
 #   $ORIG_STAGE_ROOT/<run>/stage/<policy>/s<i>/，核对（文件清单 + 大小 + 全部 trace.jsonl 的 sha256）后删节点副本。
 # - SMVLA 照抄原版 gl_run_official_xhard0.sh 的内层循环：最多 3 次、每次 --resume、退出码 0 或 2 即停；第 2、3 次带 ORIG_RESUME=1。
 # - 起跑前、结束后都用 E0 sha 清单（缺省 $NFS/v75eval/e0-sha.txt，可由 ORIG_E0_SHA 指定；只读）核对本片 E0 文件与清单的 sha256 未变（R7）。
-# - V75_ENCODE_CPUS = 本进程 CPU 亲和集合的最后一核（MME 代理记账用）。
-# 输出：OFFICIAL_SHARD_DONE run= shard= smvla_rows= mme_rows= smvla_rc= mme_rc= staged=yes|no，最后 EXIT_CODE=。
+# - V75_ENCODE_CPUS = 本进程 CPU 亲和集合的最后一核（FrameSamp+Modulation 代理记账用）。
+# 输出：OFFICIAL_SHARD_DONE run= shard= smvla_rows= framesamp_modul_rows= smvla_rc= framesamp_modul_rc= staged=yes|no，最后 EXIT_CODE=。
 set -uo pipefail
 OBS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NFS=/nfs/turbo/coe-chaijy-unreplicated/hongzefu
@@ -37,7 +37,7 @@ PORT=$((PORT_BASE + RUN_IDX * 100 + SHARD * 4))
 EP_ROOT="$ORIG_STAGE_ROOT/$RUN"
 STAGE_ROOT="$ORIG_STAGE_ROOT/$RUN/stage"
 NODE_TMP="/tmp/orig-$RUN-s$SHARD-${SLURM_JOB_ID:-local}"
-SMVLA_OUT="$EP_ROOT/smvla/s$SHARD"; MME_SAVE="$EP_ROOT/mme/s$SHARD"
+SMVLA_OUT="$EP_ROOT/smvla/s$SHARD"; FRAMESAMP_MODUL_SAVE="$EP_ROOT/perceptual-framesamp-modul/s$SHARD"
 E0_SHA="${ORIG_E0_SHA:-$NFS/v75eval/e0-sha.txt}"  # 原文件随 10-03 清理删除时由主会话以 artifacts/v7.5eval/input-manifest.json 重建并经此变量指定
 V75_ENCODE_CPUS="$(python3 -c 'import os; print(max(os.sched_getaffinity(0)))')"
 export V75_ENCODE_CPUS
@@ -47,9 +47,9 @@ run() {  # 执行或（--dry-run）只打印命令
   "$@"
 }
 
-e0_check() {  # 本片相关的 E0 sha256 行：清单 + MME 第 i 片 + SMVLA 第 i 片
+e0_check() {  # 本片相关的 E0 sha256 行：清单 + FrameSamp+Modulation 第 i 片 + SMVLA 第 i 片
   local tag="$1" pat
-  pat="eval-official-xhard0-192\.jsonl$|mme-official-full-s$SHARD/|episodes-shard$(printf %02d "$SHARD")of10\.jsonl$"
+  pat="eval-official-xhard0-192\.jsonl$|mme-official-full-s$SHARD/|episodes-shard$(printf %02d "$SHARD")of10\.jsonl$"  # 历史目录名：E0 sha256 文件（v7.5eval 留档）原样匹配
   local n; n=$(grep -cE "$pat" "$E0_SHA")
   if [[ "$n" != 3 ]] || ! grep -E "$pat" "$E0_SHA" | sha256sum -c --quiet -; then
     echo "E0_FREEZE_CHECK=FAIL when=$tag lines=$n"; return 1
@@ -90,10 +90,10 @@ print(len(k))" "$@"
 echo "=== OFFICIAL_RERUN_SHARD run=$RUN shard=$SHARD host=$(hostname) job=${SLURM_JOB_ID:-none} port=$PORT node_tmp=$NODE_TMP manifest=$MANIFEST encode_cpus=$V75_ENCODE_CPUS affinity=$(python3 -c 'import os; print(sorted(os.sched_getaffinity(0)))') dry=$DRY start=$(date -Is) ==="
 e0_check before || { echo "EXIT_CODE=1"; exit 1; }
 if [[ "$DRY" != 1 ]]; then
-  for d in "$SMVLA_OUT" "$MME_SAVE" "$STAGE_ROOT/smvla/s$SHARD" "$STAGE_ROOT/mme/s$SHARD" "$NODE_TMP"; do
+  for d in "$SMVLA_OUT" "$FRAMESAMP_MODUL_SAVE" "$STAGE_ROOT/smvla/s$SHARD" "$STAGE_ROOT/perceptual-framesamp-modul/s$SHARD" "$NODE_TMP"; do
     [[ -e "$d" ]] && { echo "错误: 目录已存在（原侧重跑一律新目录）: $d"; echo "EXIT_CODE=1"; exit 1; }
   done
-  mkdir -p "$NODE_TMP/smvla" "$NODE_TMP/mme" "$EP_ROOT/smvla" "$EP_ROOT/mme"
+  mkdir -p "$NODE_TMP/smvla" "$NODE_TMP/perceptual-framesamp-modul" "$EP_ROOT/smvla" "$EP_ROOT/perceptual-framesamp-modul"
 fi
 
 # ---- SimpleMemVLA 片（历史顺序：先 SMVLA）
@@ -112,23 +112,23 @@ done
 echo "SMVLA_SHARD_END rc=$SMVLA_RC"
 stage smvla "$NODE_TMP/smvla"; ST1=$?
 
-# ---- MME 片
-run env MANIFEST="$MANIFEST" SHARD="$SHARD" PORT="$PORT" RUN_TAG="orig-$RUN-s$SHARD" SAVE_ROOT="$MME_SAVE" \
-  REC_ROOT="$NODE_TMP/mme/rec" VIDEO_DIR="$NODE_TMP/mme/videos" NODE_TMP="$NODE_TMP" \
-  bash "$OBS_DIR/run_orig_mme.sh"
-MME_RC=$?
-echo "MME_SHARD_END rc=$MME_RC"
-stage mme "$NODE_TMP/mme"; ST2=$?
+# ---- FrameSamp+Modulation 片
+run env MANIFEST="$MANIFEST" SHARD="$SHARD" PORT="$PORT" RUN_TAG="orig-$RUN-s$SHARD" SAVE_ROOT="$FRAMESAMP_MODUL_SAVE" \
+  REC_ROOT="$NODE_TMP/perceptual-framesamp-modul/rec" VIDEO_DIR="$NODE_TMP/perceptual-framesamp-modul/videos" NODE_TMP="$NODE_TMP" \
+  bash "$OBS_DIR/run_orig_framesamp_modul.sh"
+FRAMESAMP_MODUL_RC=$?
+echo "FRAMESAMP_MODUL_SHARD_END rc=$FRAMESAMP_MODUL_RC"
+stage perceptual-framesamp-modul "$NODE_TMP/perceptual-framesamp-modul"; ST2=$?
 [[ "$DRY" != 1 ]] && rmdir "$NODE_TMP" 2>/dev/null
 
 e0_check after; E0_AFTER=$?
 SROWS=$(final_rows "$SMVLA_OUT"/episodes-shard*.jsonl)
-MROWS=$(final_rows "$MME_SAVE/mmevla-official-xhard0/ckpt79999/seed7/episodes.jsonl")
+MROWS=$(final_rows "$FRAMESAMP_MODUL_SAVE/mmevla-official-xhard0/ckpt79999/seed7/episodes.jsonl")  # 历史目录名：原版 eval.py 按 policy_name 落盘（同 run_orig_framesamp_modul.sh）
 STAGED=no; [[ "$ST1" = 0 && "$ST2" = 0 ]] && STAGED=yes
-echo "OFFICIAL_SHARD_DONE run=$RUN shard=$SHARD smvla_rows=$SROWS mme_rows=$MROWS smvla_rc=$SMVLA_RC mme_rc=$MME_RC staged=$STAGED"
+echo "OFFICIAL_SHARD_DONE run=$RUN shard=$SHARD smvla_rows=$SROWS framesamp_modul_rows=$MROWS smvla_rc=$SMVLA_RC framesamp_modul_rc=$FRAMESAMP_MODUL_RC staged=$STAGED"
 RC=0
 [[ "$SMVLA_RC" != 0 ]] && RC=$SMVLA_RC
-[[ "$RC" = 0 && "$MME_RC" != 0 ]] && RC=$MME_RC
+[[ "$RC" = 0 && "$FRAMESAMP_MODUL_RC" != 0 ]] && RC=$FRAMESAMP_MODUL_RC
 [[ "$RC" = 0 && "$STAGED" != yes ]] && RC=7
 [[ "$RC" = 0 && "$E0_AFTER" != 0 ]] && RC=8
 echo "EXIT_CODE=$RC"

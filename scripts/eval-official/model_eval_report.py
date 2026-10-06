@@ -3,7 +3,7 @@
 输入 ``--sets <sets.json>``，格式::
 
     {"sets": [
-      {"policy": "mmesg", "variant": "ground-sg-oracle", "dataset": "test-hard0", "side": "new", "site": "gl",
+      {"policy": "groundsg", "variant": "ground-sg-oracle", "dataset": "hard-verify", "side": "new", "site": "gl",
        "results": ["<结果 jsonl 路径或 glob>", ...], "expect_total": 192,
        "manifest": "<可选：身份清单 json/jsonl，含 task/tier/seed>"},
       ...]}
@@ -50,12 +50,29 @@ def _paths(patterns: list[str]) -> list[Path]:
     return [p for p in out if not (p in seen or seen.add(p))]
 
 
+def official_defs():
+    """同目录 ``official_defs.py``（旧名别名表的唯一来源；已加载则复用同一模块）。"""
+    import importlib.util
+    import sys
+
+    mod = sys.modules.get("official_defs")
+    if mod is None:
+        spec = importlib.util.spec_from_file_location("official_defs", Path(__file__).resolve().parent / "official_defs.py")
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["official_defs"] = mod
+        spec.loader.exec_module(mod)
+    return mod
+
+
 def _jsonl(path: Path) -> list[dict]:
+    """JSON 数组／对象或 JSONL；历史行的旧策略标签／数据集名／路线映射成官方名。"""
+    canon = official_defs().canonical_row
     text = path.read_text(encoding="utf-8")
     if path.suffix == ".json":
         data = json.loads(text)
-        return data if isinstance(data, list) else data.get("rows", data.get("identities", []))
-    return [json.loads(x) for x in text.splitlines() if x.strip()]
+        rows = data if isinstance(data, list) else data.get("rows", data.get("identities", []))
+        return [canon(r) for r in rows]
+    return [canon(json.loads(x)) for x in text.splitlines() if x.strip()]
 
 
 def tier_of(row: dict) -> str | None:
@@ -84,6 +101,8 @@ def _rate(succ: int, n: int) -> float | None:
 
 
 def summarize_set(spec: dict) -> dict:
+    defs = official_defs()
+    spec = {**spec, "policy": defs.canonical_policy(spec["policy"]), "dataset": defs.canonical_dataset(spec["dataset"])}
     files = _paths(list(spec.get("results") or []))
     rows = [r for p in files for r in _jsonl(p)]
     finals: dict[tuple, list[dict]] = defaultdict(list)

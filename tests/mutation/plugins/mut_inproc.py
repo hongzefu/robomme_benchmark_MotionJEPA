@@ -95,7 +95,7 @@ def _contract(key: str) -> None:
     if key == "M07":
         hs.V9_CELLS[("PickXtimes", "xhard1")] += 1  # EXPECTED_CELLS／CELL_TABLES["v9"] 是同一对象
     elif key == "M10":
-        orig = hard_builder._test_hard_entries
+        orig = hard_builder._ood_entries
 
         def swapped(env_id, xhard0, root):
             entries = orig(env_id, xhard0, root)
@@ -103,7 +103,7 @@ def _contract(key: str) -> None:
                 entries[0], entries[1] = entries[1], entries[0]
             return entries
 
-        hard_builder._test_hard_entries = swapped
+        hard_builder._ood_entries = swapped
     else:
         raise KeyError(key)
 
@@ -407,7 +407,7 @@ def _precheck(root: pathlib.Path, block: str, key: str) -> str | None:
 
         if key == "M07":
             return None if ("PickXtimes", "xhard1") in hs.V9_CELLS else "V9_CELLS 缺 (PickXtimes, xhard1)"
-        return _missing(hard_builder, "_test_hard_entries")
+        return _missing(hard_builder, "_ood_entries")
     if block == "pipeline/recording":
         if key == "M14a":
             import h5py

@@ -53,13 +53,13 @@ def test_tree_mem_vram_and_peaks(tmp_path):
 
     shutil.rmtree(fs.root / "101")
     sm.sample(12.0)
-    res = r.summarize(sm, route="mmesg-oracle-new", wall_s=4.0, episodes=2, rc=None, ok=True)
+    res = r.summarize(sm, route="groundsg-oracle-new", wall_s=4.0, episodes=2, rc=None, ok=True)
     assert res["rss_peak_gb"] == 1.75 and res["vram_peak_mb"] == 32000
     assert res["hwm_sum_gb"] == round((2 * 1024 * 1024 + 512 * 1024 + 256 * 1024) / 1024 / 1024, 3)
     assert res["episode_s"] == 2.0 and res["samples"] == 2 and res["rc"] == "na"
     assert res["cpu_cores_used"] == round(200 / r.CLK_TCK / 4.0, 2)  # 服务 ticks 100→300
     line = r.verdict_line(res)
-    assert line.startswith("PREFLIGHT=PASS route=mmesg-oracle-new rss_peak_gb=1.75 vram_peak_mb=32000 episode_s=2.0 "
+    assert line.startswith("PREFLIGHT=PASS route=groundsg-oracle-new rss_peak_gb=1.75 vram_peak_mb=32000 episode_s=2.0 "
                            "cpu_cores_used=")
     assert "server_vram_peak_mb=32000" in line and "client_rss_peak_gb=0.25" in line
 

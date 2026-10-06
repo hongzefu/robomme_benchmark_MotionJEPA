@@ -194,7 +194,7 @@ def test_smvla_success_partial_chunk_float64_and_readers(tmp_path):
     head, end = rows[0], rows[-1]
     assert head["route"] == "smvla/orig"
     assert head["identity"] == {"task": TASK, "tier": "xhard0", "seed": SEED, "source_episode": SRC, "key": KEY,
-                                "dataset": "test-hard0", "attempt": 1}
+                                "dataset": "hard-verify", "attempt": 1}
     steps = [r for r in rows if r["kind"] == "step"]
     assert len(steps) == 20 == details[0]["steps"]  # 16 + 部分动作块 4
     assert end["steps_attempted"] == 20 and end["steps_observed"] == 20 and end["observer_hook_errors"] == 0
@@ -344,10 +344,10 @@ def test_smvla_frames_per_step_takes_last_frame(tmp_path):
     tc.assert_renderable(ep)
 
 
-# ══════════════════════════════════════════════════════════════════════ MME 替身
+# ══════════════════════════════════════════════════════════════════════ FrameSamp+Modulation 替身
 
 
-def make_mme_classes(*, error_at=None, success_at=None, max_steps=1300, demo=2):
+def make_framesamp_modul_classes(*, error_at=None, success_at=None, max_steps=1300, demo=2):
     class FakeWS:
         """假 websocket 连接：send 记下原始载荷，recv 依次返回预置回包。"""
 
@@ -433,10 +433,10 @@ def make_mme_classes(*, error_at=None, success_at=None, max_steps=1300, demo=2):
     return EnvRunner, MMEVLAWebsocketClientPolicy, EpisodeEvaluator, FakeWS
 
 
-def setup_mme(wrap, root: Path, **kw):
+def setup_framesamp_modul(wrap, root: Path, **kw):
     wrap._state["root"] = root
     wrap.ERR.root = root
-    Runner, Client, Evaluator, WS = make_mme_classes(**kw)
+    Runner, Client, Evaluator, WS = make_framesamp_modul_classes(**kw)
     wrap._patch_env_runner(types.SimpleNamespace(EnvRunner=Runner))
     wrap._patch_ws(types.SimpleNamespace(ClientConnection=WS))
     wrap._patch_policy_client(types.SimpleNamespace(MMEVLAWebsocketClientPolicy=Client))
@@ -444,16 +444,16 @@ def setup_mme(wrap, root: Path, **kw):
     return Runner, Evaluator
 
 
-def test_mme_success_trace_requests_transport(tmp_path):
-    wrap = _wrap("mme_client_wrap")
-    Runner, Evaluator = setup_mme(wrap, tmp_path, success_at=20)
+def test_framesamp_modul_success_trace_requests_transport(tmp_path):
+    wrap = _wrap("framesamp_modul_client_wrap")
+    Runner, Evaluator = setup_framesamp_modul(wrap, tmp_path, success_at=20)
     runner = Runner(TASK, SRC)
     assert Evaluator().eval_each_episode(runner) == "success"
     ep = tmp_path / f"{KEY}.a1"
     tc.assert_renderable(ep)
     tc.assert_counts_consistent(ep, {"exec_steps": 20, "status": "success"})
     rows = _rows(ep)
-    assert rows[0]["route"] == "mme/orig"
+    assert rows[0]["route"] == "perceptual-framesamp-modul/orig"
     steps = [r for r in rows if r["kind"] == "step"]
     assert len(steps) == 20 and all(s["subgoal"] is None for s in steps)
     assert all(s["terminated"] == "NOT_OBSERVED" for s in steps) and steps[-1]["status"] == "success"
@@ -463,7 +463,7 @@ def test_mme_success_trace_requests_transport(tmp_path):
     assert reqs[1]["sha256"] == hashlib.sha256(b"buffer-0").hexdigest()
     assert reqs[2]["sha256"] == hashlib.sha256(b"infer-1").hexdigest() and reqs[2]["nbytes"] == len(b"infer-1")
     assert [r["step"] for r in reqs if r["name"] == "infer"] == [0, 16]
-    # 与新侧 mme_client.TracedClient 同口径：request → history（add_buffer）→ response（infer），边界前移
+    # 与新侧 framesamp_modul_client.TracedClient 同口径：request → history（add_buffer）→ response（infer），边界前移
     kinds = [r["kind"] for r in rows if r["kind"] in ("request", "history", "response")]
     assert kinds[:5] == ["request", "request", "history", "request", "response"]
     hist = [r for r in rows if r["kind"] == "history"]
@@ -481,10 +481,10 @@ def test_mme_success_trace_requests_transport(tmp_path):
     assert g2.compare_traces(rows, rows)["identical"] is True
 
 
-def test_mme_hook_returns_identical_objects(tmp_path):
+def test_framesamp_modul_hook_returns_identical_objects(tmp_path):
     """钩子拿到原函数的返回值原样返回（同一对象），交给原函数的动作也是同一对象。"""
-    wrap = _wrap("mme_client_wrap")
-    setup_mme(wrap, tmp_path)
+    wrap = _wrap("framesamp_modul_client_wrap")
+    setup_framesamp_modul(wrap, tmp_path)
     sentinel = ((_img(1), _img(1, 1), _st(1)), False, "ongoing")
     init = {"images": [_img(0)], "wrist_images": [_img(0, 1)], "states": [_st(0)], "task_goal": "g"}
     seen = []
@@ -505,9 +505,9 @@ def test_mme_hook_returns_identical_objects(tmp_path):
     assert E().step(a) is sentinel and seen[0] is a
 
 
-def test_mme_timeout_omits_last_frame(tmp_path):
-    wrap = _wrap("mme_client_wrap")
-    Runner, Evaluator = setup_mme(wrap, tmp_path, max_steps=5)
+def test_framesamp_modul_timeout_omits_last_frame(tmp_path):
+    wrap = _wrap("framesamp_modul_client_wrap")
+    Runner, Evaluator = setup_framesamp_modul(wrap, tmp_path, max_steps=5)
     assert Evaluator().eval_each_episode(Runner(TASK, SRC)) == "timeout"
     ep = tmp_path / f"{KEY}.a1"
     end = _rows(ep)[-1]
@@ -516,9 +516,9 @@ def test_mme_timeout_omits_last_frame(tmp_path):
     tc.assert_renderable(ep)
 
 
-def test_mme_env_exception_missing_step_and_error(tmp_path):
-    wrap = _wrap("mme_client_wrap")
-    Runner, Evaluator = setup_mme(wrap, tmp_path, error_at=4)
+def test_framesamp_modul_env_exception_missing_step_and_error(tmp_path):
+    wrap = _wrap("framesamp_modul_client_wrap")
+    Runner, Evaluator = setup_framesamp_modul(wrap, tmp_path, error_at=4)
     with pytest.raises(AttributeError):  # 原版 img.copy() 的异常原样上抛
         Evaluator().eval_each_episode(Runner(TASK, SRC))
     ep = tmp_path / f"{KEY}.a1"
@@ -531,9 +531,9 @@ def test_mme_env_exception_missing_step_and_error(tmp_path):
     assert fj["missing_steps"] == [4]
 
 
-def test_mme_unknown_flag_is_error(tmp_path):
-    wrap = _wrap("mme_client_wrap")
-    Runner, Evaluator = setup_mme(wrap, tmp_path)
+def test_framesamp_modul_unknown_flag_is_error(tmp_path):
+    wrap = _wrap("framesamp_modul_client_wrap")
+    Runner, Evaluator = setup_framesamp_modul(wrap, tmp_path)
 
     class E(Evaluator):
         def eval_each_episode(self, env_runner, *a, **k):  # 原版 has_api_error 早退：返回 unknown
@@ -546,9 +546,9 @@ def test_mme_unknown_flag_is_error(tmp_path):
     assert end["status"] == "error" and end["success_flag"] == "unknown"
 
 
-def test_mme_hook_exception_contained(tmp_path, monkeypatch):
-    wrap = _wrap("mme_client_wrap")
-    Runner, Evaluator = setup_mme(wrap, tmp_path, success_at=3)
+def test_framesamp_modul_hook_exception_contained(tmp_path, monkeypatch):
+    wrap = _wrap("framesamp_modul_client_wrap")
+    Runner, Evaluator = setup_framesamp_modul(wrap, tmp_path, success_at=3)
     monkeypatch.setattr(wrap.OE.OrigEpisode, "on_response", lambda self, a: (_ for _ in ()).throw(ValueError("x")))
     assert Evaluator().eval_each_episode(Runner(TASK, SRC)) == "success"
     end = _rows(tmp_path / f"{KEY}.a1")[-1]
@@ -561,9 +561,9 @@ def test_mme_hook_exception_contained(tmp_path, monkeypatch):
 def _trace(root: Path, attempt: int, status: str | None, key: str = KEY):
     tw = load_script("eval-official/trace_writer.py")
     ep = root / f"{key}.a{attempt}"
-    ident = {"task": TASK, "tier": "xhard0", "seed": SEED, "source_episode": SRC, "key": key, "dataset": "test-hard0",
+    ident = {"task": TASK, "tier": "xhard0", "seed": SEED, "source_episode": SRC, "key": key, "dataset": "hard-verify",
              "attempt": attempt}
-    w = tw.TraceWriter(ep / "trace.jsonl", route="mme/orig", identity=ident, max_steps=1300)
+    w = tw.TraceWriter(ep / "trace.jsonl", route="perceptual-framesamp-modul/orig", identity=ident, max_steps=1300)
     w.log_demo([_img(0)], [_img(0, 1)], [_st(0)], ["goal"])
     if status is not None:
         w.close(status=status, terminal_reason=status, demo_frames=0, steps_attempted=0, steps_observed=0,
@@ -585,7 +585,7 @@ def test_adapter_orphan_duplicate_terminal_and_mismatch(tmp_path):
     _trace(tmp_path, 3, "success")
     _trace(tmp_path, 1, "fail", key="Other_xhard0_1")
     log = _log(tmp_path / "episodes.jsonl", ["error", "success"])
-    res = ora.build(ora.read_log([log]), tmp_path, policy="mme")
+    res = ora.build(ora.read_log([log]), tmp_path, policy="perceptual-framesamp-modul")
     assert res["ORIG_ATTEMPTS"] == "PASS"
     (item,) = res["identities"]
     assert item["attempt"] == 3 and item["row_index"] == 1 and item["terminal_rows"] == 1
@@ -595,25 +595,25 @@ def test_adapter_orphan_duplicate_terminal_and_mismatch(tmp_path):
     d2 = tmp_path / "dup"
     _trace(d2, 1, "success")
     _trace(d2, 2, "fail")
-    res = ora.build(ora.read_log([_log(d2 / "e.jsonl", ["success", "fail"])]), d2, policy="mme")
+    res = ora.build(ora.read_log([_log(d2 / "e.jsonl", ["success", "fail"])]), d2, policy="perceptual-framesamp-modul")
     assert res["identities"][0]["attempt"] == 2 and res["identities"][0]["status"] == "fail"
     # 状态不符 → FAIL
     d3 = tmp_path / "mis"
     _trace(d3, 1, "fail")
-    res = ora.build(ora.read_log([_log(d3 / "e.jsonl", ["success"])]), d3, policy="mme")
+    res = ora.build(ora.read_log([_log(d3 / "e.jsonl", ["success"])]), d3, policy="perceptual-framesamp-modul")
     assert res["ORIG_ATTEMPTS"] == "FAIL" and res["counts"]["status_mismatch"] == 1
     # 缺 trace → FAIL；只有 error 行 → unresolved（不判 FAIL）
     d4 = tmp_path / "miss"
     d4.mkdir()
-    res = ora.build(ora.read_log([_log(d4 / "e.jsonl", ["success"])]), d4, policy="mme")
+    res = ora.build(ora.read_log([_log(d4 / "e.jsonl", ["success"])]), d4, policy="perceptual-framesamp-modul")
     assert res["counts"]["missing_trace"] == 1 and res["ORIG_ATTEMPTS"] == "FAIL"
     d5 = tmp_path / "unres"
     _trace(d5, 1, "error")
-    res = ora.build(ora.read_log([_log(d5 / "e.jsonl", ["error"])]), d5, policy="mme")
+    res = ora.build(ora.read_log([_log(d5 / "e.jsonl", ["error"])]), d5, policy="perceptual-framesamp-modul")
     assert res["ORIG_ATTEMPTS"] == "PASS" and res["identities"][0]["unresolved"] is True
     # CLI 写 orig-attempts.json 与判定行
     out = tmp_path / "orig-attempts.json"
-    rc = ora.main(["--policy", "mme", "--episode-log", str(log), "--rec-root", str(tmp_path), "--out", str(out)])
+    rc = ora.main(["--policy", "perceptual-framesamp-modul", "--episode-log", str(log), "--rec-root", str(tmp_path), "--out", str(out)])
     assert rc == 0 and json.loads(out.read_text())["schema"] == "orig-attempts/1"
 
 
@@ -683,7 +683,7 @@ def test_observer_status_cases(tmp_path, case, expect_report):
         kw["sealed"] = "timeout"
     if case == "force_killed":
         kw.update(sealed="no", proxy_force_killed=1)
-    st = ost.evaluate(tmp_path, policy="mme", report=str(rep), episode_logs=[str(log)], **kw)
+    st = ost.evaluate(tmp_path, policy="perceptual-framesamp-modul", report=str(rep), episode_logs=[str(log)], **kw)
     assert st["report"] == expect_report
     assert st["OBSERVER_COMPLETE"] == ("PASS" if case == "pass" else "FAIL")
     assert log.read_bytes() == before  # 成绩（逐局日志）不变
@@ -725,7 +725,7 @@ FAKE_PROXY = textwrap.dedent("""
 @pytest.mark.slow
 @pytest.mark.parametrize("mode,checker,expect", [
     ("seal", "real", "PASS"), ("ignore", "real", "FAIL"), ("seal", "crash", "FAIL")])
-def test_mme_finalize_shell_seal_and_exit_code(tmp_path, mode, checker, expect):
+def test_framesamp_modul_finalize_shell_seal_and_exit_code(tmp_path, mode, checker, expect):
     rec = tmp_path / "rec"
     rec.mkdir()
     man = _transport_fixture(rec, seal=False)
@@ -750,7 +750,7 @@ def test_mme_finalize_shell_seal_and_exit_code(tmp_path, mode, checker, expect):
         orig_stop_proxy
         echo "PID_AFTER=[$PROXY_PID]"
         orig_wait_seal {rec}/proxy "$PROXY_STOPPED_PID"
-        orig_finalize_mme {py} {OBS} {rec} {man} 0 {eplog}
+        orig_finalize_framesamp_modul {py} {OBS} {rec} {man} 0 {eplog}
         echo "EXIT_CODE=$RC"
     """
     r = _bash(script, {"PROXY_STOP_TIMEOUT": "2", "SEAL_TIMEOUT": "2"})
@@ -775,7 +775,7 @@ def _git(repo: Path, *args: str) -> str:
 
 @pytest.mark.slow
 @pytest.mark.parametrize("launcher,repo_var", [("run_orig_smvla.sh", "SMVLA_ORIG_REPO"),
-                                               ("run_orig_mme.sh", "MME_ORIG_REPO")])
+                                               ("run_orig_framesamp_modul.sh", "FRAMESAMP_MODUL_ORIG_REPO")])
 def test_launcher_blocks_on_commit_mismatch_or_dirty(tmp_path, launcher, repo_var):
     repo = tmp_path / "orig"
     repo.mkdir()
@@ -866,17 +866,17 @@ def test_budget_prepare_settle_with_real_ledger(tmp_path):
     # 额度不足：真实账本退出码 5 → RUN_BLOCKED reason=budget
     eplog.write_text("")
     env_cap = dict(env, BUDGET_LEDGER_ARGS=f"--ledger {book} --trajectory-cap 3")
-    r = _bash(f"{lib}; orig_budget_prepare {common} --resets 2 --route mme/orig; echo RC=$?", env_cap)
+    r = _bash(f"{lib}; orig_budget_prepare {common} --resets 2 --route perceptual-framesamp-modul/orig; echo RC=$?", env_cap)
     assert "RUN_BLOCKED reason=budget reserved=" in r.stdout and "RC=5" in r.stdout, r.stdout + r.stderr
     # 生产路径：不给 --ledger，账本取环境变量 SGEVAL_BUDGET_LEDGER
     book2 = tmp_path / "ledger2.jsonl"
     env2 = {"BUDGET_LEDGER_CMD": f"{sys.executable} {led}", "BUDGET_LEDGER_ARGS": "", "SGEVAL_BUDGET_LEDGER": str(book2)}
     r = _bash(f"{lib}; orig_budget_prepare {common.replace(str(state), str(tmp_path / 'r2.json'))} "
-              f"--resets 2 --route mme/orig", env2)
+              f"--resets 2 --route perceptual-framesamp-modul/orig", env2)
     assert "reserved=3" in r.stdout and len(_ledger_rows(book2)) == 3, r.stdout + r.stderr
     # 缺省命令：仓库里有 budget_ledger.py 就用它，没有则 RUN_BLOCKED reason=budget_ledger_missing
     r = _bash(f"{lib}; orig_budget_prepare {common.replace(str(state), str(tmp_path / 'r3.json'))} "
-              f"--resets 2 --route mme/orig; echo RC=$?",
+              f"--resets 2 --route perceptual-framesamp-modul/orig; echo RC=$?",
               {"BUDGET_LEDGER_CMD": "", "BUDGET_LEDGER_ARGS": "", "SGEVAL_BUDGET_LEDGER": str(tmp_path / "l3.jsonl")})
     if (REPO / "scripts" / "eval-official" / "budget_ledger.py").is_file():
         assert "BUDGET_PREPARE episodes=3 reserved=3" in r.stdout, r.stdout + r.stderr
@@ -886,11 +886,11 @@ def test_budget_prepare_settle_with_real_ledger(tmp_path):
 
 def test_restored_files_present_and_renamed():
     names = sorted(p.name for p in OBS.iterdir() if p.is_file())
-    for n in ("_obs_common.py", "smvla_wrap.py", "mme_client_wrap.py", "mme_proxy.py", "transparency_check.py",
-              "official_rerun_shard.sh", "run_orig_smvla.sh", "run_orig_mme.sh", "step_arrays.py",
+    for n in ("_obs_common.py", "smvla_wrap.py", "framesamp_modul_client_wrap.py", "framesamp_modul_proxy.py", "transparency_check.py",
+              "official_rerun_shard.sh", "run_orig_smvla.sh", "run_orig_framesamp_modul.sh", "step_arrays.py",
               "orig_results_adapter.py", "orig_episode.py", "observer_status.py", "orig_observer_lib.sh"):
         assert n in names
-    for old in ("_v75_obs_common.py", "run_official_smvla.sh", "run_official_mme.sh"):
+    for old in ("_v75_obs_common.py", "run_official_smvla.sh", "run_official_framesamp_modul.sh"):
         assert old not in names
     for p in OBS.glob("*.py"):
         assert "import _v75_obs_common" not in p.read_text(encoding="utf-8")
@@ -918,7 +918,7 @@ def _free_port() -> int:
 
 @pytest.mark.slow
 def test_real_proxy_seals_log_after_sigterm(tmp_path):
-    """真实 mme_proxy.py（回环）：转发原样、SIGTERM 后记账收完才写 proxy-<pid>.done。"""
+    """真实 framesamp_modul_proxy.py（回环）：转发原样、SIGTERM 后记账收完才写 proxy-<pid>.done。"""
     from websockets.sync.client import connect
 
     up, lp = _free_port(), _free_port()
@@ -930,7 +930,7 @@ def test_real_proxy_seals_log_after_sigterm(tmp_path):
     prx = None
     try:
         assert srv.stdout.readline().strip() == "ECHO_READY"
-        prx = subprocess.Popen([sys.executable, str(OBS / "mme_proxy.py"), "--listen", str(lp), "--upstream", str(up),
+        prx = subprocess.Popen([sys.executable, str(OBS / "framesamp_modul_proxy.py"), "--listen", str(lp), "--upstream", str(up),
                                 "--log-dir", str(log_dir)], stdout=subprocess.PIPE, text=True, env=env)
         assert prx.stdout.readline().startswith("PROXY_READY")
         with connect(f"ws://127.0.0.1:{lp}", compression=None, max_size=None) as ws:

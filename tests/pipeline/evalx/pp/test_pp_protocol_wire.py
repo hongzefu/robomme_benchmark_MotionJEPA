@@ -190,7 +190,7 @@ def test_new_and_orig_frames_identical_to_vla_eval_sync_runner(vla, monkeypatch,
         _reference_run(vla, srv.port, max_steps)
         env = FakeEnv(TASK, SRC, **env_kwargs)
         res = pp.run_episode(FakeSession(env), XH, {"host": "127.0.0.1", "port": srv.port, "max_steps": max_steps,
-                                                    "dataset": "test-hard0",
+                                                    "dataset": "hard-verify",
                                                     "trace_path": str(tmp_path / "new" / "trace.jsonl")},
                              None, connection_factory=lambda url, timeout: vla.Connection(url, timeout=timeout))
         import anyio
@@ -310,7 +310,7 @@ def _run_phase2(tmp_path, env, *, conn=None, session=None, attempt=2, max_steps=
     ep = tmp_path / f"{PH['key']}.a{attempt}"
     conn = conn or SubgoalConn(SCHEDULE)
     session = session or FakeSession(env, step_cap=step_cap)
-    ci = {"host": "127.0.0.1", "port": 18310, "max_steps": max_steps, "dataset": "test-hard0", "pp_phase2": True,
+    ci = {"host": "127.0.0.1", "port": 18310, "max_steps": max_steps, "dataset": "hard-verify", "pp_phase2": True,
           "trace_dir": str(ep), "episode_tag": ep.name}
     res = pp.run_episode(session, PH, ci, None, connection_factory=lambda url, timeout: conn)
     return res, ep, conn, session
@@ -355,7 +355,7 @@ def test_phase2_model_subgoal_goes_into_trace_and_is_renderable(tmp_path):
     # 协议帧本身不变：与开关关闭、服务端不带 subgoal 的同一局逐帧相同
     plain = FakeConn()
     _pp().run_episode(FakeSession(FakeEnv(PH_TASK, PH_SRC, demo=3, done_at=6)), PH,
-                      {"host": "127.0.0.1", "port": 18310, "max_steps": 1300, "dataset": "test-hard0",
+                      {"host": "127.0.0.1", "port": 18310, "max_steps": 1300, "dataset": "hard-verify",
                        "pp_phase2": False}, None, connection_factory=lambda url, timeout: plain)
     sent = lambda log: [(t, p) for t, p in log if t != "action"]  # noqa: E731
     fd, od, notes = compare_frames(sent(conn.log), sent(plain.log))
@@ -593,7 +593,7 @@ def test_new_side_switch_off_identical_to_base(tmp_path, monkeypatch, env_kwargs
         ep = tmp_path / name / f"{PH['key']}.a1"
         conn = SubgoalConn(SCHEDULE)  # 即使服务端带 subgoal，开关关时也与 BASE 相同
         res = mod.run_episode(FakeSession(FakeEnv(PH_TASK, PH_SRC, **env_kwargs), step_cap=step_cap), PH,
-                              {"host": "127.0.0.1", "port": 18310, "max_steps": 1300, "dataset": "test-hard0",
+                              {"host": "127.0.0.1", "port": 18310, "max_steps": 1300, "dataset": "hard-verify",
                                "trace_dir": str(ep), "episode_tag": ep.name},
                               None, connection_factory=lambda url, timeout, c=conn: c)
         res = {k: v for k, v in res.items() if k != "timing"}

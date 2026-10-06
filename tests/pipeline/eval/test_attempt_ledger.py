@@ -12,7 +12,7 @@ import eval_fakes as F
 
 def _ledger(tmp_path, **kw):
     ec = F.env_client()
-    return ec.AttemptLedger(tmp_path / "x.ledger.jsonl", seat="s00", policy="mme", **kw)
+    return ec.AttemptLedger(tmp_path / "x.ledger.jsonl", seat="s00", policy="perceptual-framesamp-modul", **kw)
 
 
 def _row(key, aid, no, **kw):
@@ -109,16 +109,16 @@ def test_last_end_final_and_dangling(tmp_path):
 def test_recover_dangling_from_result_row(tmp_path, monkeypatch):
     """悬空尝试：结果行里有同 attempt_id 的终态就按它补 attempt_end 与 accept；没有就记 infra 错误（不 accept）。"""
     ec = F.env_client()
-    out = tmp_path / "s00" / "mme"
-    led = ec.AttemptLedger(out / "mme.ledger.jsonl", seat="s00", policy="mme")
+    out = tmp_path / "s00" / "perceptual-framesamp-modul"
+    led = ec.AttemptLedger(out / "perceptual-framesamp-modul.ledger.jsonl", seat="s00", policy="perceptual-framesamp-modul")
     led.start(10, 1)
     led.attempt_start(key="k1", attempt_id="x1", attempt_no=1, retry=False)
     led.attempt_start(key="k2", attempt_id="x2", attempt_no=1, retry=False)
     ec.append_result(out / "results.jsonl", {"key": "k1", "attempt_id": "x1", "attempt_no": 1, "status": "fail",
                                               "infra": False, "exec_steps": 5})
-    runner = F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, F.FakePolicyServer()), F.World())
+    runner = F.make_runner(tmp_path, "perceptual-framesamp-modul", F.framesamp_modul_policy(monkeypatch, F.FakePolicyServer()), F.World())
     assert runner.recover_dangling() == 2
-    rows = F.read_jsonl(out / "mme.ledger.jsonl")
+    rows = F.read_jsonl(out / "perceptual-framesamp-modul.ledger.jsonl")
     ends = {r["attempt_id"]: r for r in rows if r["kind"] == "attempt_end"}
     assert ends["x1"]["status"] == "fail" and ends["x1"]["recovered"] is True
     assert ends["x2"]["status"] == "error" and ends["x2"]["infra"] is True
@@ -132,10 +132,10 @@ def test_resume_skips_accepted_and_full(tmp_path, monkeypatch, capsys):
     a, b = F.packaged_identity(t1, tier1, 0), F.packaged_identity(t2, tier2, 0)
     world = F.World({(b["task"], b["builder_episode"]): [F.Plan(raise_at=1, raise_exc=lambda: RuntimeError("svulkan2"))]})
     server = F.FakePolicyServer()
-    assert F.run_rows(F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, server), world), [a, b]) == 6
+    assert F.run_rows(F.make_runner(tmp_path, "perceptual-framesamp-modul", F.framesamp_modul_policy(monkeypatch, server), world), [a, b]) == 6
     n_envs = len(world.envs)
     assert n_envs == 3  # a 一次成功；b 两次 infra
-    assert F.run_rows(F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, server), world), [a, b]) == 6
+    assert F.run_rows(F.make_runner(tmp_path, "perceptual-framesamp-modul", F.framesamp_modul_policy(monkeypatch, server), world), [a, b]) == 6
     assert len(world.envs) == n_envs
     out = capsys.readouterr().out
     assert out.count("RUN_INCOMPLETE") == 2 and f"missing=1 first={b['key']}" in out
@@ -145,7 +145,7 @@ def test_all_accepted_returns_zero(tmp_path, monkeypatch):
     task, tier = F.v9_cells_sorted()[0]
     a = F.packaged_identity(task, tier, 0)
     world = F.World()
-    assert F.run_rows(F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, F.FakePolicyServer()), world), [a]) == 0
+    assert F.run_rows(F.make_runner(tmp_path, "perceptual-framesamp-modul", F.framesamp_modul_policy(monkeypatch, F.FakePolicyServer()), world), [a]) == 0
 
 
 @pytest.mark.parametrize("status,infra,recovered", [("fail", False, True), ("error", False, True),
@@ -156,17 +156,17 @@ def test_crash_window_final_end_without_accept_gets_accept(tmp_path, monkeypatch
     （recovered=true），不再建环境；最后一次是 infra 错误的不补，照常重试一次。"""
     task, tier = F.v9_cells_sorted()[0]
     a = F.packaged_identity(task, tier, 0)
-    out = tmp_path / "s00" / "mme"
-    led = F.env_client().AttemptLedger(out / "mme.ledger.jsonl", seat="s00", policy="mme")
+    out = tmp_path / "s00" / "perceptual-framesamp-modul"
+    led = F.env_client().AttemptLedger(out / "perceptual-framesamp-modul.ledger.jsonl", seat="s00", policy="perceptual-framesamp-modul")
     led.start(100, 10)
     led.attempt_start(key=a["key"], attempt_id="x1", attempt_no=1, retry=False)
     # 只写 attempt_end，不写 accept（模拟两行之间崩溃）
     led.append({"kind": "attempt_end", "key": a["key"], "attempt_id": "x1", "attempt_no": 1, "status": status,
                 "infra": infra, "cap_hit": False, "exec_steps": 3, "budget_exhausted": False, "late": False})
     world = F.World()
-    rc = F.run_rows(F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, F.FakePolicyServer()), world), [a])
+    rc = F.run_rows(F.make_runner(tmp_path, "perceptual-framesamp-modul", F.framesamp_modul_policy(monkeypatch, F.FakePolicyServer()), world), [a])
     assert rc == 0
-    rows = F.read_jsonl(out / "mme.ledger.jsonl")
+    rows = F.read_jsonl(out / "perceptual-framesamp-modul.ledger.jsonl")
     acc = [r for r in rows if r["kind"] == "accept"]
     assert len(acc) == 1
     if recovered:

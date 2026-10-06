@@ -1,4 +1,4 @@
-"""GroundSG（S3）测试的公共替身：假环境、两种 builder、假 MME 服务与连接、不加载权重的 swift 替身、两侧驱动。
+"""GroundSG（S3）测试的公共替身：假环境、两种 builder、假 MME-VLA 服务与连接、不加载权重的 swift 替身、两侧驱动。
 
 设计口径：
 - 官方源码只读引用 ``SGEVAL_THIRD_PARTY``，未设时取当前检出的 ``third_party``（worktree 里子模块目录为空，须显式指向主检出）；缺官方源码即失败，不跳过。
@@ -31,7 +31,7 @@ THIRD_PARTY_ENV = "SGEVAL_THIRD_PARTY"
 ORACLE = "ground-sg-oracle"
 QWENVL = "ground-sg-qwenvl"
 VARIANTS = (ORACLE, QWENVL)
-DATASET = "test-hard0"
+DATASET = "hard-verify"
 
 
 def official_dir() -> Path:
@@ -60,8 +60,8 @@ def env_client():
     return load_script("eval-official/env_client.py")
 
 
-def mmesg_client():
-    return load_script("eval-official/mmesg_client.py")
+def groundsg_client():
+    return load_script("eval-official/groundsg_client.py")
 
 
 def official_defs():
@@ -203,7 +203,7 @@ class NewSideBuilder:
         return self.world.new_env(self.task, self.ep_map[int(ep)])
 
 
-# ---------------------------------------------------------------- 假 MME 服务
+# ---------------------------------------------------------------- 假 MME-VLA 服务
 
 
 def _arr_fp(a: Any) -> bytes:
@@ -318,14 +318,14 @@ def identity(task: str = "PickXtimes", source_episode: int = 3, builder_episode:
 
 
 def seat_info(variant: str, max_steps: int, tmp: Path, port: int = 18120) -> dict:
-    return {"policy": "mmesg", "seat": "00", "host": "127.0.0.1", "port": port, "dataset": DATASET,
-            "max_steps": max_steps, "strict_cap": False, "mme_variant": variant,
+    return {"policy": "groundsg", "seat": "00", "host": "127.0.0.1", "port": port, "dataset": DATASET,
+            "max_steps": max_steps, "strict_cap": False, "groundsg_variant": variant,
             "qwenvl_groundSG_adapter_path": ADAPTER if variant == QWENVL else None,
             "trace_root": str(tmp / "trace"), "out": str(tmp)}
 
 
 class NewSide:
-    """新侧：真实 ``EnvSession`` + ``mmesg_client``（假环境、假服务、swift 替身）。"""
+    """新侧：真实 ``EnvSession`` + ``groundsg_client``（假环境、假服务、swift 替身）。"""
 
     def __init__(self, variant: str, max_steps: int, tmp: Path, world: World, *, strict_cap: bool = False,
                  port: int = 18120, real_client: bool = False):
@@ -334,7 +334,7 @@ class NewSide:
         self.port = port
         self.server = FakeServer()
         self.swift = FakeSwift()
-        self.mc = mmesg_client()
+        self.mc = groundsg_client()
         factory = None if real_client else (lambda h, p, ep: FakeClient(self.server))
         self.ctx = self.mc.make_policy_context(seat_info(variant, max_steps, tmp, port), client_factory=factory,
                                                qwen_extra=self.swift.names)
@@ -348,8 +348,8 @@ class NewSide:
                              step_cap=self.max_steps if self.strict_cap else None, dataset=DATASET)
         sess.build()
         tag = f"{ident['key']}.a{attempt}"
-        conn = {"host": "127.0.0.1", "port": self.port, "max_steps": self.max_steps, "policy": "mmesg", "seat": "00",
-                "dataset": DATASET, "strict_cap": self.strict_cap, "mme_variant": self.variant,
+        conn = {"host": "127.0.0.1", "port": self.port, "max_steps": self.max_steps, "policy": "groundsg", "seat": "00",
+                "dataset": DATASET, "strict_cap": self.strict_cap, "groundsg_variant": self.variant,
                 "qwenvl_groundSG_adapter_path": ADAPTER if self.variant == QWENVL else None,
                 "trace_root": str(self.tmp / "trace"), "trace_dir": str(self.tmp / "trace" / tag),
                 "episode_tag": tag, "rec_dir": str(self.tmp / "rec" / tag), "policy_context": self.ctx}

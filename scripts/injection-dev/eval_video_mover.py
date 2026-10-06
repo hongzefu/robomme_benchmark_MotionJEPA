@@ -5,7 +5,7 @@
 ``--mode v8``（1001-v8-post-evaluation-gl-plan.md 第一部分 §1 第 7 条、契约 C4 第二段；缺省即此模式）：
 
     python scripts/injection-dev/eval_video_mover.py --mode v8 --stage <NFS 运行根> \\
-        --dest artifacts/v8-evaluation/<R>/videos [--policies smvla,mme] [--once] [--stop-file F] [--interval S]
+        --dest artifacts/v8-evaluation/<R>/videos [--policies smvla,perceptual-framesamp-modul] [--once] [--stop-file F] [--interval S]
 
 扫 ``<stage>/sNN/<policy>/results.jsonl`` 的 V8 结果行（``v8: true``，含 error／infra／金丝雀尝试与迟到终态），按 ``rec_dir``
 的目录名（``<key>.a<n>``、``<key>.canary.a<n>``）找 ``<stage>/sNN/<policy>/rec/<目录名>/``；只搬「结果行已写出」的目录（进行中的
@@ -637,7 +637,7 @@ def main() -> int:
                     help="v8（缺省）：运行根 sNN/<policy>/rec/ 布局；sgeval：媒体根下 <label>/<dataset>/<side>/<key>.a<n>/，见 sgeval_main")
     ap.add_argument("--min-free-gib", type=float, default=50.0,
                     help="sgeval：--dest 所在盘剩余低于该值即停止搬运（MOVER_STOP reason=low_disk）")
-    ap.add_argument("--policies", default="smvla,mme", help="v8 模式：要搬的模型（运行根下 sNN/<policy>/）")
+    ap.add_argument("--policies", default="smvla,perceptual-framesamp-modul", help="v8 模式：要搬的模型（运行根下 sNN/<policy>/）")
     ap.add_argument("--decode-workers", type=int, default=4, help="v8 --once 解码核对并行数")
     ap.add_argument("--once-max-wait", type=float, default=300.0,
                     help="v8 --once：单个目录持续不稳超过该秒数即放弃（留在运行根、计入 stage_left）")

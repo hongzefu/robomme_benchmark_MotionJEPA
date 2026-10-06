@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 第二档一席的串行链（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.6、第五节「第二档」；子任务 S6）：
-# 同一分片、同一张卡，先原侧（run_official_hard.sh）后新侧（run_eval_gl.sh --dataset test-hard0 --max-steps 1300）。
+# 同一分片、同一张卡，先原侧（run_official_hard.sh）后新侧（run_eval_gl.sh --dataset hard-verify --max-steps 1300）。
 # 前一侧的服务完全退出、显存释放后才起后一侧：按该侧记下的 setsid 进程组（<stage>/sNN/orig/.v8-pgids、
 # <stage>/sNN/.v8-pgids）逐个 kill -0 核实已退出且不在 nvidia-smi 计算进程列表里（≤--release-wait 秒，缺省 120），
 # 并用 port_busy 核对本策略端口段已空；超时打印 RUN_BLOCKED reason=gpu_not_released 并停链（CHAIN_STOP）。
@@ -11,11 +11,11 @@
 #   （基础设施或额度用尽）或被信号终止（>128）时打印 CHAIN_STOP 并不跑新侧（剩余分片由主会话重分）。第二档差异不停链。
 # 用法：
 #   bash pair_seat.sh --run-name R --seat NN --repo <执行副本> --stage <NFS 运行根> --shard <shard-NN.json> \
-#     --policy {mmesg,pp} [--mme-variant V] [--qwenvl-groundsg-adapter D] \
-#     [--mmesg-ckpt D --openpi-data-home D --tokenizer-sha256 H] [--pp-ckpt D] \
+#     --policy {groundsg,pp} [--groundsg-variant V] [--qwenvl-groundsg-adapter D] \
+#     [--groundsg-ckpt D --openpi-data-home D --tokenizer-sha256 H] [--pp-ckpt D] \
 #     --reset-budget N --infra-retry-budget N --orig-infra-retry-budget N \
 #     [--cond C] [--media-root D] [--local-root D] [--limit N] [--episode-wall S] [--sync-interval S] [--release-wait S] [--gpu N]
-#   数据集与步数在本脚本里固定为 test-hard0／1300（不带 --strict-cap），起跑先过 step_cap_pairing。
+#   数据集与步数在本脚本里固定为 hard-verify／1300（不带 --strict-cap），起跑先过 step_cap_pairing。
 # 判定行：PAIR_SEAT_DONE seat=NN policy=<label> orig_rc=… new_rc=… rc=… outcome=pass|fail|aborted；末行 EXIT_CODE=。
 # 退出码：两侧都 0 为 0；任一侧为 4／5／信号时取它（显存未释放记 4）；否则取首个非零的一侧 rc；中断 130/143（HUP 129）。
 set -uo pipefail
@@ -44,9 +44,9 @@ while [[ $# -gt 0 ]]; do
     --stage) STAGE="$2"; shift 2;;
     --shard) SHARD="$2"; shift 2;;
     --policy) POLICY="$2"; shift 2;;
-    --mme-variant) MME_VARIANT="$2"; shift 2;;
+    --groundsg-variant) GROUNDSG_VARIANT="$2"; shift 2;;
     --qwenvl-groundsg-adapter) QWENVL_ADAPTER="$2"; shift 2;;
-    --mmesg-ckpt) MMESG_CKPT="$2"; shift 2;;
+    --groundsg-ckpt) GROUNDSG_CKPT="$2"; shift 2;;
     --pp-ckpt) PP_CKPT="$2"; shift 2;;
     --openpi-data-home) OPENPI_HOME="$2"; shift 2;;
     --tokenizer-sha256) TOKENIZER_SHA="$2"; shift 2;;
@@ -67,12 +67,12 @@ done
 [[ -n "$RUN_NAME" && -n "$SEAT" && -n "$REPO" && -n "$STAGE" && -n "$SHARD" && -n "$POLICY" ]] \
   || pair_die2 "缺少必需参数（--run-name --seat --repo --stage --shard --policy）"
 [[ "$SEAT" =~ ^[0-9]{2}$ ]] || pair_die2 "--seat 须为两位席号 NN"
-[[ "$POLICY" == "mmesg" || "$POLICY" == "pp" ]] || pair_die2 "--policy 只许 mmesg、pp"
+[[ "$POLICY" == "groundsg" || "$POLICY" == "pp" ]] || pair_die2 "--policy 只许 groundsg、pp"
 [[ "$NEW_RESET_BUDGET" =~ ^[0-9]+$ && "$NEW_INFRA_BUDGET" =~ ^[0-9]+$ && "$ORIG_INFRA_BUDGET" =~ ^[0-9]+$ ]] \
   || pair_die2 "--reset-budget、--infra-retry-budget、--orig-infra-retry-budget 必填且为非负整数"
 [[ "$RELEASE_WAIT" =~ ^[0-9]+$ ]] || pair_die2 "--release-wait 须为非负整数"
 SEAT_IDX=$((10#$SEAT))
-DATASET="test-hard0" ; MAX_STEPS=1300 ; STRICT_CAP=0
+DATASET="hard-verify" ; MAX_STEPS=1300 ; STRICT_CAP=0
 LABEL="$(pol_label "$POLICY")"
 SEAT_STAGE="$STAGE/s$SEAT"
 mkdir -p "$SEAT_STAGE" || { echo "RUN_BLOCKED reason=mkdir stage=$SEAT_STAGE"; echo "EXIT_CODE=3"; exit 3; }
@@ -87,8 +87,8 @@ common=(--run-name "$RUN_NAME" --seat "$SEAT" --repo "$REPO" --stage "$STAGE" --
 # 卡号缺省 0（GL 占位 job 内只见一张卡）；本机多卡并行时显式给物理卡号，两侧同卡
 common+=(--gpu "${P_GPU:-0}")
 model=()
-if [[ "$POLICY" == "mmesg" ]]; then
-  model=(--mme-variant "$MME_VARIANT" --mmesg-ckpt "$MMESG_CKPT" --openpi-data-home "$OPENPI_HOME" --tokenizer-sha256 "$TOKENIZER_SHA")
+if [[ "$POLICY" == "groundsg" ]]; then
+  model=(--groundsg-variant "$GROUNDSG_VARIANT" --groundsg-ckpt "$GROUNDSG_CKPT" --openpi-data-home "$OPENPI_HOME" --tokenizer-sha256 "$TOKENIZER_SHA")
   [[ -n "$QWENVL_ADAPTER" ]] && model+=(--qwenvl-groundsg-adapter "$QWENVL_ADAPTER")
 else
   model=(--pp-ckpt "$PP_CKPT")

@@ -15,7 +15,7 @@ import pytest
 
 import eval_fakes as F
 
-POL = "mme"
+POL = "perceptual-framesamp-modul"
 
 
 def _ident(i: int, task: str = "TaskA", tier: str = "xhard1") -> dict:
@@ -187,7 +187,7 @@ def test_manifest_header_negatives(tmp_path, capsys):
 
 def test_exec_over_cap(tmp_path, capsys):
     a = _ident(0)
-    cap = 1600  # test-hard 启动约定的上限（手写）
+    cap = 1600  # ood 启动约定的上限（手写）
     Stage(tmp_path / "stage").accepted(a, "a1", "timeout", exec_steps=cap + 1)
     _, lines, _ = _report(tmp_path, capsys, [a], "--cap", str(cap))
     rp = F.verdict(lines, "V8_EVAL_REPORT")
@@ -262,7 +262,7 @@ def _v9_fixture(tmp_path, move_one: bool):
     manifest = F.write_manifest(mdir / "manifest.json", new, reused={
         "path": "reused.json", "sha256": hashlib.sha256(rtext.encode()).hexdigest(), "count": len(reused),
         "v8_manifest": str(v8_manifest), "v8_manifest_sha256": v8_sha})
-    for pol in ("smvla", "mme"):
+    for pol in ("smvla", "perceptual-framesamp-modul"):
         v8 = Stage(tmp_path / "v8" / "run", pol)
         for i, r in enumerate(reused):
             v8.accepted(r, f"v8-{i}", "success" if i % 3 else "fail", media=False)
@@ -277,7 +277,7 @@ def test_v9_total_table_matches_v9_cells(tmp_path, capsys, move_one):
     er = F.eval_report()
     manifest, v8_manifest, n_new, n_reused = _v9_fixture(tmp_path, move_one)
     capsys.readouterr()
-    rc = er.main(["--manifest", str(manifest), "--stage", str(tmp_path / "v9" / "run"), "--policies", "smvla,mme",
+    rc = er.main(["--manifest", str(manifest), "--stage", str(tmp_path / "v9" / "run"), "--policies", "smvla,perceptual-framesamp-modul",
                   "--out", str(tmp_path / "out"), "--reuse", str(tmp_path / "v8"), "--reuse-manifest",
                   str(v8_manifest), "--expect-total", str(n_new), "--expect-reused", str(n_reused)])
     lines = capsys.readouterr().out.splitlines()
@@ -286,7 +286,7 @@ def test_v9_total_table_matches_v9_cells(tmp_path, capsys, move_one):
     want = {f"{t}@{tier}": n for (t, tier), n in F.hard_specs().V9_CELLS.items()}
     assert v9["total"] == sum(want.values()) and v9["new"] == n_new and v9["reused"] == n_reused
     rp = F.verdict(lines, "V9_EVAL_REPORT")
-    for pol in ("smvla", "mme"):
+    for pol in ("smvla", "perceptual-framesamp-modul"):
         got = {c: v["denominator"] for c, v in v9["totals"][pol]["cells"].items()}
         assert (got == want) is (not move_one)
     if move_one:
@@ -298,7 +298,7 @@ def test_v9_total_table_matches_v9_cells(tmp_path, capsys, move_one):
         assert F.verdict(lines, "V9_EVAL_COVERAGE")[""] == "PASS"
         assert rc == 1  # 未给 --videos：视频行照实 FAIL，退出码非零
         assert F.verdict(lines, "V9_EVAL_VIDEOS")[""] == "FAIL"
-        tot = v9["totals"]["mme"]["outcomes"]
+        tot = v9["totals"]["perceptual-framesamp-modul"]["outcomes"]
         assert sum(tot.values()) == sum(want.values())
         assert tot["fail"] == sum(1 for i in range(n_reused) if i % 3 == 0)
 
@@ -308,7 +308,7 @@ def test_v9_reused_sha_mismatch_is_counted(tmp_path, capsys):
     manifest, v8_manifest, n_new, n_reused = _v9_fixture(tmp_path, False)
     (manifest.parent / "reused.json").write_text("{}", encoding="utf-8")
     capsys.readouterr()
-    er.main(["--manifest", str(manifest), "--stage", str(tmp_path / "v9" / "run"), "--policies", "mme",
+    er.main(["--manifest", str(manifest), "--stage", str(tmp_path / "v9" / "run"), "--policies", "perceptual-framesamp-modul",
              "--out", str(tmp_path / "out"), "--reuse", str(tmp_path / "v8"), "--reuse-manifest", str(v8_manifest),
              "--expect-total", str(n_new), "--expect-reused", str(n_reused)])
     lines = capsys.readouterr().out.splitlines()
@@ -350,56 +350,56 @@ def _ds_report(tmp_path, capsys, idents, dataset, policies, *extra, total=None):
 
 
 def test_dataset_hard0_lines_pass_without_spec_and_skip_cap(tmp_path, capsys, monkeypatch):
-    """test-hard0：身份必备字段不含 spec_sha256；官方循环第 1301 步不算越限（exec_over_cap=skip）；视频 mp4 读得出帧即过。"""
+    """hard-verify：身份必备字段不含 spec_sha256；官方循环第 1301 步不算越限（exec_over_cap=skip）；视频 mp4 读得出帧即过。"""
     er = F.eval_report()
     monkeypatch.setattr(er, "count_media_frames", lambda path, videos: 5)
     a, b = _hard0(0), _hard0(1)
     st = Stage(tmp_path / "stage")
-    st.accepted(a, "a1", "timeout", exec_steps=1301, dataset="test-hard0")
-    st.accepted(b, "b1", "success", exec_steps=40, dataset="test-hard0")
-    _videos(tmp_path / "videos", "mme", "test-hard0", [a, b])
-    rc, lines, rep = _ds_report(tmp_path, capsys, [a, b], "test-hard0", ["mme"], "--videos", str(tmp_path / "videos"))
-    cov, rp, vid = (_lines_of(lines, n, "mme") for n in ("EVAL_COVERAGE", "EVAL_REPORT", "EVAL_VIDEOS"))
-    assert cov == {"": "PASS", "dataset": "test-hard0", "policy": "mme", "expected": "2", "missing": "0", "extra": "0",
+    st.accepted(a, "a1", "timeout", exec_steps=1301, dataset="hard-verify")
+    st.accepted(b, "b1", "success", exec_steps=40, dataset="hard-verify")
+    _videos(tmp_path / "videos", "perceptual-framesamp-modul", "hard-verify", [a, b])
+    rc, lines, rep = _ds_report(tmp_path, capsys, [a, b], "hard-verify", ["perceptual-framesamp-modul"], "--videos", str(tmp_path / "videos"))
+    cov, rp, vid = (_lines_of(lines, n, "perceptual-framesamp-modul") for n in ("EVAL_COVERAGE", "EVAL_REPORT", "EVAL_VIDEOS"))
+    assert cov == {"": "PASS", "dataset": "hard-verify", "policy": "perceptual-framesamp-modul", "expected": "2", "missing": "0", "extra": "0",
                    "duplicate": "0", "conflicting_terminal": "0", "error_final": "0"}
     assert rp[""] == "PASS" and rp["exec_over_cap"] == "skip" and rp["count_mismatch"] == "0"
     assert vid[""] == "PASS" and vid["expected"] == "2" and vid["videos"] == "2" and vid["decode_fail"] == "0"
-    assert rc == 0 and rep["cap"] is None and rep["dataset"] == "test-hard0"
+    assert rc == 0 and rep["cap"] is None and rep["dataset"] == "hard-verify"
 
 
 def test_dataset_hard0_requires_source_episode_and_decodable_video(tmp_path, capsys, monkeypatch):
     er = F.eval_report()
     monkeypatch.setattr(er, "count_media_frames", lambda path, videos: None)  # 解码失败
     a = _hard0(0)
-    Stage(tmp_path / "stage").accepted(a, "a1", "success", dataset="test-hard0", source_episode=None)
-    _videos(tmp_path / "videos", "mme", "test-hard0", [a])
-    rc, lines, rep = _ds_report(tmp_path, capsys, [a], "test-hard0", ["mme"], "--videos", str(tmp_path / "videos"))
-    rp, vid = _lines_of(lines, "EVAL_REPORT", "mme"), _lines_of(lines, "EVAL_VIDEOS", "mme")
+    Stage(tmp_path / "stage").accepted(a, "a1", "success", dataset="hard-verify", source_episode=None)
+    _videos(tmp_path / "videos", "perceptual-framesamp-modul", "hard-verify", [a])
+    rc, lines, rep = _ds_report(tmp_path, capsys, [a], "hard-verify", ["perceptual-framesamp-modul"], "--videos", str(tmp_path / "videos"))
+    rp, vid = _lines_of(lines, "EVAL_REPORT", "perceptual-framesamp-modul"), _lines_of(lines, "EVAL_VIDEOS", "perceptual-framesamp-modul")
     assert rp[""] == "FAIL" and any("source_episode" in x for x in rep["count_mismatch_detail"])
     assert vid[""] == "FAIL" and vid["decode_fail"] == "1" and rc == 1
 
 
-def test_dataset_test_hard_keeps_cap_and_spec(tmp_path, capsys):
+def test_dataset_ood_keeps_cap_and_spec(tmp_path, capsys):
     a = _ident(0)
-    Stage(tmp_path / "stage").accepted(a, "a1", "timeout", exec_steps=1601, dataset="test-hard", spec_sha256=None,
+    Stage(tmp_path / "stage").accepted(a, "a1", "timeout", exec_steps=1601, dataset="ood", spec_sha256=None,
                                        identity={"tier": a["tier"], "seed": a["seed"], "candidate": a["candidate"]})
-    _, lines, rep = _ds_report(tmp_path, capsys, [a], "test-hard", ["mme"])
-    rp = _lines_of(lines, "EVAL_REPORT", "mme")
+    _, lines, rep = _ds_report(tmp_path, capsys, [a], "ood", ["perceptual-framesamp-modul"])
+    rp = _lines_of(lines, "EVAL_REPORT", "perceptual-framesamp-modul")
     assert rp[""] == "FAIL" and rp["exec_over_cap"] == "1"
     assert any("spec_sha256" in x for x in rep["count_mismatch_detail"])
-    vid = _lines_of(lines, "EVAL_VIDEOS", "mme")  # 未给 --videos：照实 FAIL
+    vid = _lines_of(lines, "EVAL_VIDEOS", "perceptual-framesamp-modul")  # 未给 --videos：照实 FAIL
     assert vid[""] == "FAIL" and vid["videos_root"] == "absent" and vid["missing"] == "1"
 
 
 def test_dataset_crossed_rows_are_counted(tmp_path, capsys):
     """结果行的 dataset 与 --dataset 不符（两个数据集串了）→ dataset_crossed、count_mismatch、EVAL_REPORT=FAIL。"""
     a = _hard0(0)
-    Stage(tmp_path / "stage").accepted(a, "a1", "success", dataset="test-hard")
-    _, lines, rep = _ds_report(tmp_path, capsys, [a], "test-hard0", ["mme"])
-    rp = _lines_of(lines, "EVAL_REPORT", "mme")
+    Stage(tmp_path / "stage").accepted(a, "a1", "success", dataset="ood")
+    _, lines, rep = _ds_report(tmp_path, capsys, [a], "hard-verify", ["perceptual-framesamp-modul"])
+    rp = _lines_of(lines, "EVAL_REPORT", "perceptual-framesamp-modul")
     assert rp[""] == "FAIL" and rp["dataset_crossed"] == "1"
     # 清单本身声明的数据集与 --dataset 不符也计入
-    _, lines, rep = _ds_report(tmp_path, capsys, [a], "test-hard", ["mme"])
+    _, lines, rep = _ds_report(tmp_path, capsys, [a], "ood", ["perceptual-framesamp-modul"])
     assert any("manifest" in x for x in rep["count_mismatch_detail"])
 
 
@@ -409,17 +409,17 @@ def test_dataset_policy_variants_are_separate(tmp_path, capsys, monkeypatch):
     monkeypatch.setattr(er, "count_media_frames", lambda path, videos: 5)
     a, b = _hard0(0), _hard0(1)
     for var, status in (("ground-sg-oracle", "success"), ("ground-sg-qwenvl", "fail")):
-        st = Stage(tmp_path / "stage", "mmesg", dirname=f"mmesg-{var}")
+        st = Stage(tmp_path / "stage", "groundsg", dirname=f"groundsg-{var}")
         for ident in (a, b):
-            st.accepted(ident, f"{var}-{ident['key']}", status, dataset="test-hard0", policy_variant=var)
-        _videos(tmp_path / "videos", f"mmesg-{var}", "test-hard0", [a, b])
+            st.accepted(ident, f"{var}-{ident['key']}", status, dataset="hard-verify", policy_variant=var)
+        _videos(tmp_path / "videos", f"groundsg-{var}", "hard-verify", [a, b])
     # 混进 oracle 目录的另一变体结果行被过滤掉，不算 extra／duplicate
-    Stage(tmp_path / "stage", "mmesg", dirname="mmesg-ground-sg-oracle").result(
-        a, "stray", 2, "fail", dataset="test-hard0", policy_variant="ground-sg-qwenvl")
-    specs = ["mmesg:ground-sg-oracle", "mmesg:ground-sg-qwenvl"]
-    rc, lines, rep = _ds_report(tmp_path, capsys, [a, b], "test-hard0", specs, "--videos", str(tmp_path / "videos"))
-    assert rep["per_policy"]["mmesg:ground-sg-oracle"]["outcomes"]["success"] == 2
-    assert rep["per_policy"]["mmesg:ground-sg-qwenvl"]["outcomes"]["fail"] == 2
+    Stage(tmp_path / "stage", "groundsg", dirname="groundsg-ground-sg-oracle").result(
+        a, "stray", 2, "fail", dataset="hard-verify", policy_variant="ground-sg-qwenvl")
+    specs = ["groundsg:ground-sg-oracle", "groundsg:ground-sg-qwenvl"]
+    rc, lines, rep = _ds_report(tmp_path, capsys, [a, b], "hard-verify", specs, "--videos", str(tmp_path / "videos"))
+    assert rep["per_policy"]["groundsg:ground-sg-oracle"]["outcomes"]["success"] == 2
+    assert rep["per_policy"]["groundsg:ground-sg-qwenvl"]["outcomes"]["fail"] == 2
     for spec in specs:
         for name in ("EVAL_COVERAGE", "EVAL_REPORT", "EVAL_VIDEOS"):
             assert _lines_of(lines, name, spec)[""] == "PASS", (spec, name)
@@ -428,13 +428,13 @@ def test_dataset_policy_variants_are_separate(tmp_path, capsys, monkeypatch):
 
 def test_dataset_partial_always_fails(tmp_path, capsys):
     a, b = _hard0(0), _hard0(1)
-    Stage(tmp_path / "stage").accepted(a, "a1", "success", dataset="test-hard0")
-    rc, lines, _ = _ds_report(tmp_path, capsys, [a, b], "test-hard0", ["mme"], "--partial")
-    cov = _lines_of(lines, "EVAL_COVERAGE", "mme")
+    Stage(tmp_path / "stage").accepted(a, "a1", "success", dataset="hard-verify")
+    rc, lines, _ = _ds_report(tmp_path, capsys, [a, b], "hard-verify", ["perceptual-framesamp-modul"], "--partial")
+    cov = _lines_of(lines, "EVAL_COVERAGE", "perceptual-framesamp-modul")
     assert cov[""] == "FAIL" and cov["partial"] == "1" and cov["missing"] == "1" and rc == 1
 
 
 def test_dataset_requires_expect_total(tmp_path):
     er = F.eval_report()
     with pytest.raises(SystemExit):
-        er.main(["--manifest", "m", "--stage", "s", "--out", str(tmp_path), "--dataset", "test-hard0"])
+        er.main(["--manifest", "m", "--stage", "s", "--out", str(tmp_path), "--dataset", "hard-verify"])

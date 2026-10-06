@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """V9 逐身份清单导出（v9 见 1002 方案 §2.4.2 第 7 步；格式沿用 v8 方案第二部分 §2.2 第 9 条，原 v7 版见 0928 方案第一部分 §5 第 3 条）。
 
-- 经 ``robomme_hard`` 的 ``BenchmarkEnvBuilder(task, "test-hard")`` 逐任务列出全部局：总数与逐格局数由格表推出并核对
+- 经 ``robomme_hard`` 的 ``BenchmarkEnvBuilder(task, "ood")`` 逐任务列出全部局：总数与逐格局数由格表推出并核对
   （包内 ``EXPECTED_CELLS``＝V9_CELLS，43 格 800；开关打开时另加 xhard0 16 任务 × 1 档 × 12 局 = 192）。
   builder 读包内规格；``--specs-root`` 经 ``ROBOMME_HARD_SPECS_ROOT`` 覆盖。V8 的 1070 局格表与对应的 1262 局清单
   已于维护计划阶段 1b 删除（git 历史可取回）。
@@ -24,7 +24,7 @@
         --out artifacts/v9-evaluation/inputs/eval-identities-992.jsonl \\
         --official-out artifacts/v9-evaluation/inputs/eval-official-xhard0-192.jsonl
 
-**xhard0 退出 test-hard**（1002 xhard0-out-of-test-hard 方案）：builder 前置的 xhard0 局数随开关
+**xhard0 退出 OOD 数据集**（1002 号 xhard0 退出方案）：builder 前置的 xhard0 局数随开关
 ``hard_specs.XHARD0_IN_TEST_HARD``（环境变量 ``ROBOMME_HARD_XHARD0_IN_TEST_HARD=1`` 开）——开为每任务 12（共 192），
 关（默认）为 0。关档时总数只剩新值格局数（V9 800 = 0 + 800，默认文件名 ``eval-identities-800.jsonl``），
 xhard0 行须为 0；官方路线清单无行可写，``--official-out`` 跳过写文件并在判定行打 ``official=skipped``（仍可 PASS），
@@ -165,7 +165,7 @@ def main(argv: list[str] | None = None) -> int:
 
     rows = []
     for task in hard_specs.ALL_TASKS:
-        builder = BenchmarkEnvBuilder(task, dataset="test-hard")
+        builder = BenchmarkEnvBuilder(task, dataset="ood")
         items = []
         for ep in range(builder.get_episode_num()):
             ident = builder.resolve_identity(ep)
@@ -178,7 +178,7 @@ def main(argv: list[str] | None = None) -> int:
                 for r in rows if r["tier"] == hard_specs.XHARD0]
     balance(official, SHARDS)
     official.sort(key=lambda r: (r["shard"], hard_specs.ALL_TASKS.index(r["task"]), r["source_episode"]))
-    # 开关关闭（xhard0 不在 test-hard）时官方路线清单无行：跳过写文件，判定行打 official=skipped
+    # 开关关闭（xhard0 不在 ood）时官方路线清单无行：跳过写文件，判定行打 official=skipped
     skip_official = xhard0_total() == 0
     writes = [(out, rows)] + ([] if skip_official else [(args.official_out, official)])
     for path, data in writes:

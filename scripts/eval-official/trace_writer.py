@@ -16,7 +16,7 @@ S7 合入时补全实现与测试，签名与字段名不改。第二档对比�
 - ``step``：每执行一步一行：``step``（从 1 计）、``front_sha256``、``wrist_sha256``、``state``、``action``
   （均为 ``array_record``：原始 dtype、shape、sha256，另附 float32×8 的 hex 便于人读）、``subgoal``、
   ``terminated``、``truncated``、``status``。画面哈希在画面进入视频编码器之前计算。
-- ``history``：历史缓冲边界（如 MME ``add_buffer`` 覆盖的步号区间）。
+- ``history``：历史缓冲边界（如 FrameSamp+Modulation ``add_buffer`` 覆盖的步号区间）。
 - ``end``（恰好一行，最后一行）：``status``、``exec_steps``、``terminal_reason`` 与调用方附加字段。
 
 ``identical_trace`` 的含义只限于上述字段逐项相等（报告里照此写明覆盖范围）。
@@ -36,8 +36,8 @@ S7 补充（只加不改）：
 第二阶段共享契约 C1～C11（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分〇节；S0 由主会话写入，
 各路线子任务按此落地，测试助手 ``tests/pipeline/evalx/report/trace_contract.py`` 逐条核对）：
 
-- C1 ``route``：新侧一律 ``<模型>/new``（``mmesg/<variant>/new``、``pp/new``、``astra/new``、``smvla/new``、
-  ``mme/new``），原侧 ``<模型>/orig``（``mmesg/<variant>/orig``、``pp/orig``、``smvla/orig``、``mme/orig``）。
+- C1 ``route``：新侧一律 ``<模型>/new``（``groundsg/<variant>/new``、``pp/new``、``astra/new``、``smvla/new``、
+  ``perceptual-framesamp-modul/new``），原侧 ``<模型>/orig``（``groundsg/<variant>/orig``、``pp/orig``、``smvla/orig``、``perceptual-framesamp-modul/orig``）。
 - C2 演示段记全部 reset 帧（含最后一帧初始画面），``demo.frames == len(demo.states)``；收尾
   ``close(..., demo_frames=<演示帧数，不含初始帧>)``，满足 ``demo.frames == end.demo_frames + 1``。
 - C3 ``end.status`` 与 ``end.terminal_reason`` 取 ``success``／``fail``／``timeout``／``error``；strict-cap 命中一律
@@ -50,14 +50,14 @@ S7 补充（只加不改）：
 - C6 ``identity`` 含 ``task``、``tier``、``seed``、``dataset``、``source_episode`` 或 ``builder_episode``、与局目录名
   ``<key>.a<N>`` 一致的 ``key``，以及 ``attempt``（= 账本 ``accepted_attempt_id`` 对应的尝试号 N）。
 - C7 子目标为 ``None`` 表示模型等待中（官方录像以 ``[initializing...]`` 占位），轨迹里保留原始 ``None``；没有
-  子目标功能的路线（MME）全程 ``None``。
+  子目标功能的路线（FrameSamp+Modulation）全程 ``None``。
 - C8 计数三分，写进 ``end``：``steps_attempted``（交给环境的步数，含异常步，= 结果行 ``exec_steps``）、
   ``steps_observed``（返回有效观测的步数）、``frames_recorded``（官方实际录制帧数
   = ``demo_frames + 1 + steps_observed - omitted_timeout_frames``）；缺观测步用 ``log_missing_step`` 保留步号、
   动作与原因（``observed=false``），不删不补。
 - C9 两侧不可同时观察的字段写 ``NOT_OBSERVED``（如原侧的 ``terminated``／``truncated``）；比较器不把双
   ``NOT_OBSERVED`` 算相同，按维度报 ``not_observed=<n>``。
-- C10 请求／响应／历史边界按模型定义「共同逻辑输入」：GroundSG、PonderPounce、MME 两侧同协议，比原始哈希；
+- C10 请求／响应／历史边界按模型定义「共同逻辑输入」：GroundSG、PonderPounce、FrameSamp+Modulation 两侧同协议，比原始哈希；
   SimpleMemVLA 原侧内嵌、新侧 websocket，只比逻辑输入（指令、状态、帧哈希序列）与完整动作块。
 - C11 ``end.observer_hook_errors=<n>``（只读观测器路线必写）；大于 0 时该局 ``TRACE_COMPLETE`` 计失败，不影响
   任务成绩。

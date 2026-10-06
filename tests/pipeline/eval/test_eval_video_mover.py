@@ -27,7 +27,7 @@ import eval_fakes as F
 pytestmark = pytest.mark.slow
 
 MOVER = F.REPO / "scripts" / "injection-dev" / "eval_video_mover.py"
-POL = "mme"
+POL = "perceptual-framesamp-modul"
 
 if shutil.which("ffmpeg") is None:  # pragma: no cover
     pytest.skip("未验证：缺 ffmpeg", allow_module_level=True)
@@ -176,9 +176,9 @@ def test_report_catches_tamper_and_absent_move_record(tmp_path, media):
 
 # ---------------------------------------------------------------- --layout sgeval（1003 计划 1.6）
 
-SG_KEYS = ("mmesg-ground-sg-oracle/test-hard0/orig/PickXtimes_xhard0_510300.a1",
-           "mmesg-ground-sg-oracle/test-hard0/new/PickXtimes_xhard0_510300.a1",
-           "pp/test-hard/new/PickXtimes_xhard1_16100000.a2")
+SG_KEYS = ("groundsg-ground-sg-oracle/hard-verify/orig/PickXtimes_xhard0_510300.a1",
+           "groundsg-ground-sg-oracle/hard-verify/new/PickXtimes_xhard0_510300.a1",
+           "pp/ood/new/PickXtimes_xhard1_16100000.a2")
 
 
 def _sg_stage(tmp_path: Path, keys=SG_KEYS, mp4s: int = 1) -> Path:
@@ -191,7 +191,7 @@ def _sg_stage(tmp_path: Path, keys=SG_KEYS, mp4s: int = 1) -> Path:
             (d / ("episode.mp4" if i == 0 else f"extra{i}.mp4")).write_bytes(f"mp4-{k}-{i}".encode())
         (d / "trace.jsonl").write_text(json.dumps({"kind": "header", "key": k}) + "\n", encoding="utf-8")
         (d / "summary.json").write_text('{"RECORDER_VERIFY": "PASS"}', encoding="utf-8")
-    inc = stage / "pp" / "test-hard" / "new" / ".incoming" / "half"
+    inc = stage / "pp" / "ood" / "new" / ".incoming" / "half"
     inc.mkdir(parents=True)
     (inc / "episode.mp4").write_bytes(b"partial")
     return stage
@@ -218,7 +218,7 @@ def test_sgeval_moves_by_output_key_with_sha_and_deletes_source(tmp_path):
         assert {f.name: _sha(f) for f in (dest / k).iterdir()} == want[k]  # 两端逐文件 sha256 相同
         assert not (stage / k).exists()  # 核对过才删源
         assert next(r for r in moved if r["key"] == k)["files"] == want[k]
-    assert (stage / "pp" / "test-hard" / "new" / ".incoming" / "half" / "episode.mp4").is_file()  # 发布中的不碰
+    assert (stage / "pp" / "ood" / "new" / ".incoming" / "half" / "episode.mp4").is_file()  # 发布中的不碰
     # 默认布局不受影响：同一媒体根用缺省（v8）布局扫不到任何结果行，不搬不删
     stage2 = _sg_stage(tmp_path / "again")
     p = subprocess.run([sys.executable, str(MOVER), "--stage", str(stage2), "--dest", str(tmp_path / "v8dest"),

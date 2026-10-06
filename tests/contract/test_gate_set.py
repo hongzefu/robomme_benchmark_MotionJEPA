@@ -103,14 +103,14 @@ def test_each_cell_takes_smallest_candidates(rows, index):
 
 
 def test_builder_episode_equals_real_builder(rows):
-    """真 builder（test-hard，开关为 0）逐行核对 builder_episode → 身份；只构造、读元数据，不建环境。"""
+    """真 builder（ood，开关为 0）逐行核对 builder_episode → 身份；只构造、读元数据，不建环境。"""
     from robomme_hard.env_record_wrapper.hard_builder import BenchmarkEnvBuilder
 
     builders = {}
     for r in rows:
         builder = builders.get(r["task"])
         if builder is None:
-            builder = builders[r["task"]] = BenchmarkEnvBuilder(env_id=r["task"], dataset="test-hard")
+            builder = builders[r["task"]] = BenchmarkEnvBuilder(env_id=r["task"], dataset="ood")
             assert builder.get_episode_num() == PER_TASK
         ident = builder.resolve_identity(r["builder_episode"])
         assert (ident["tier"], ident["candidate"], ident["seed"], ident["spec_sha256"]) == \
@@ -223,14 +223,14 @@ def test_xhard0_rows_in_official_manifest(x0_rows):
 
 
 def test_xhard0_builder_episode_matches_switch_on_builder(x0_rows, monkeypatch):
-    """开关打开时 test-hard builder 前 12 局是 xhard0：冻结行的 builder_episode 解析回同一身份。"""
+    """开关打开时 ood builder 前 12 局是 xhard0：冻结行的 builder_episode 解析回同一身份。"""
     from robomme_hard.env_record_wrapper import hard_specs
     from robomme_hard.env_record_wrapper.hard_builder import BenchmarkEnvBuilder
 
     monkeypatch.setattr(hard_specs, "XHARD0_IN_TEST_HARD", True)
     builders = {}
     for r in x0_rows:
-        builder = builders.setdefault(r["task"], BenchmarkEnvBuilder(env_id=r["task"], dataset="test-hard"))
+        builder = builders.setdefault(r["task"], BenchmarkEnvBuilder(env_id=r["task"], dataset="ood"))
         ident = builder.resolve_identity(r["builder_episode"])
         assert (ident["tier"], ident["seed"], ident["source_episode"]) == (XHARD0, r["seed"], r["source_episode"])
 
@@ -255,7 +255,7 @@ def test_xhard0_f7_empty_or_broken_fails(G, tmp_path, content):
 
 
 def test_xhard0_build_from_source_format(G, x0_rows, tmp_path):
-    src = [{"builder_episode": r["builder_episode"], "e0_mme_order": 0, "e0_shard": i, "e0_smvla_order": 0,
+    src = [{"builder_episode": r["builder_episode"], "e0_framesamp_modul_order": 0, "e0_shard": i, "e0_smvla_order": 0,
             "seed": r["seed"], "source_episode": r["source_episode"], "task": r["task"]}
            for i, r in enumerate(reversed(x0_rows))]
     path = tmp_path / "identities-small48.json"

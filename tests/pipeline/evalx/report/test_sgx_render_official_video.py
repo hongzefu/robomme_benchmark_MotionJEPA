@@ -32,9 +32,9 @@ def _array(a):
 
 
 def _rows(*, demo=2, steps=3, max_steps=10, terminal="success", status=None, task="VideoUnmask", action_dtype="<f4"):
-    identity = {"task": task, "tier": "xhard0", "seed": 123, "dataset": "test-hard", "source_episode": 3,
+    identity = {"task": task, "tier": "xhard0", "seed": 123, "dataset": "ood", "source_episode": 3,
                 "builder_episode": 0, "key": f"{task}_xhard0_123"}
-    rows = [{"kind": "header", "schema": "sgeval-trace/1", "route": "mmesg/ground-sg-oracle/new",
+    rows = [{"kind": "header", "schema": "sgeval-trace/1", "route": "groundsg/ground-sg-oracle/new",
              "identity": identity, "max_steps": max_steps},
             {"kind": "demo", "frames": demo + 1, "front_sha256": ["front"] * (demo + 1),
              "wrist_sha256": ["wrist"] * (demo + 1), "states": [_array(np.arange(8, dtype="<f4") / 9)] * (demo + 1),
@@ -125,7 +125,7 @@ def test_timeout_only_omits_official_unrecorded_overrun(tmp_path, repo_root, ter
 def test_no_demo_no_subgoal_and_wrong_frame_count(tmp_path, repo_root):
     mod = _module()
     rows = _rows(demo=0, steps=1, task="BinFill")
-    rows[0]["route"] = "mme/new"
+    rows[0]["route"] = "perceptual-framesamp-modul/new"
     rows[2]["subgoal"] = None
     trace = _trace(tmp_path, rows)
     assert trace.init_subgoal is None and trace.demo_frames == 0 and trace.source_frames == 2

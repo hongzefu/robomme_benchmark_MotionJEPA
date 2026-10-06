@@ -1,4 +1,4 @@
-"""Astra 费用守卫：常驻汇总两侧全部规划请求的 ``usage`` × 单价，到线即在 ``group_*/`` 下写 ``STOP.json``。
+"""3-tier Astra 费用守卫：常驻汇总两侧全部规划请求的 ``usage`` × 单价，到线即在 ``group_*/`` 下写 ``STOP.json``。
 
 计划：``1003-oracle-subgoal-groundsg-eval-plan.md`` 第二部分 1.5「费用上限」与红线 R4。
 
@@ -345,7 +345,7 @@ def check_cap(cap: float) -> float:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Astra 费用守卫（每 --interval 秒汇总一次）")
+    parser = argparse.ArgumentParser(description="3-tier Astra 费用守卫（每 --interval 秒汇总一次）")
     parser.add_argument("--root", action="append", required=True,
                         help="spool 根（可多个，本机预检与 GL 各一个）；也可直接给 group_*/ 或其上层目录")
     parser.add_argument("--prices", required=True, help="单价配置 JSON（美元/百万 token）")

@@ -1,7 +1,7 @@
-"""C13-15 ``mme_client`` 的真实 websocket 客户端（``make_recording_client``）、透明中继（``relay`` 子命令）与
+"""C13-15 ``framesamp_modul_client`` 的真实 websocket 客户端（``make_recording_client``）、透明中继（``relay`` 子命令）与
 传输核对（``transport_check`` / ``transport-check`` 子命令），以及计时汇总与收发摘要。
 
-全部在 127.0.0.1 回环上跑：假策略 server 用 ``openpi_client.msgpack_numpy`` 收发（与真实 MME server 同编码），
+全部在 127.0.0.1 回环上跑：假策略 server 用 ``openpi_client.msgpack_numpy`` 收发（与真实 FrameSamp+Modulation server 同编码），
 中继就是生产的 ``cmd_relay``。期望（帧数、消息数、执行动作数、各 kind 的计数）都由本文件的假环境与假 server 手算，
 不调用被测函数生成。
 """
@@ -20,7 +20,7 @@ import pytest
 
 import eval_fakes as F
 
-pytest.importorskip("openpi_client", reason="未验证：openpi_client 未安装，无法起真实 MME websocket 客户端")
+pytest.importorskip("openpi_client", reason="未验证：openpi_client 未安装，无法起真实 FrameSamp+Modulation websocket 客户端")
 pytest.importorskip("websockets", reason="未验证：websockets 未安装")
 
 ACTION_ROWS = 50  # 假 server 每次推理回的动作行数（多于执行段 16）
@@ -49,7 +49,7 @@ def _wait_port(port: int, t: float = 10.0) -> None:
 
 
 class _FakeServer:
-    """MME 协议假 server：先发 metadata，再按 reset／add_buffer／infer 回包。``mode="error_text"`` 时 infer 回字符串。"""
+    """FrameSamp+Modulation 协议假 server：先发 metadata，再按 reset／add_buffer／infer 回包。``mode="error_text"`` 时 infer 回字符串。"""
 
     def __init__(self, mode: str = "ok"):
         self.mode = mode
@@ -160,7 +160,7 @@ class _Builder:
 
 def _episode(tmp_path, monkeypatch, plan, *, mode="ok", via_relay=True):
     """一局：假 server（＋生产中继）＋真实 RecordingClient ＋ EnvSession(假 builder)。返回 (结果, 录制器, 中继日志, server)。"""
-    mc, ec = F.mme_client(), F.env_client()
+    mc, ec = F.framesamp_modul_client(), F.env_client()
     log = tmp_path / "relay.jsonl"
     rec = F.FakeRecorder(tmp_path / "rec", {})
     b = _Builder(plan)
@@ -192,9 +192,9 @@ def _relay_done(log, srv) -> bool:
 
 
 def test_real_client_through_relay_transport_check_passes(tmp_path, monkeypatch, capsys):
-    """执行段 h（取 mme_client.OBS_HORIZON）、success_at=2h+8：决策 3 次（1～h、h+1～2h、2h+1～2h+8），
+    """执行段 h（取 framesamp_modul_client.OBS_HORIZON）、success_at=2h+8：决策 3 次（1～h、h+1～2h、2h+1～2h+8），
     手算帧数 = reset 帧 + h + h（add_buffer）+ 3×2（infer 两路图）。"""
-    mc = F.mme_client()
+    mc = F.framesamp_modul_client()
     h = mc.OBS_HORIZON
     steps = 2 * h + 8
     frames = F.N_RESET_FRAMES + 2 * h + 3 * 2
@@ -249,7 +249,7 @@ def _one_run(tmp_path, monkeypatch):
                                     "infer_image", "extra_exec"])
 def test_transport_check_detects_each_tamper(tmp_path, monkeypatch, tamper):
     """每种篡改都必须被测出（mismatch≥1）；原样输入 mismatch=0（同一局作对照）。"""
-    mc = F.mme_client()
+    mc = F.framesamp_modul_client()
     res, rec, relay, _, _ = _one_run(tmp_path, monkeypatch)
     assert res["status"] == "success"
     events = [json.loads(json.dumps(e)) for e in rec.events]
@@ -305,7 +305,7 @@ def test_relay_logs_decode_error_for_non_msgpack(tmp_path, monkeypatch):
     """中继对无法解包的二进制消息记 decode_error，仍原样转发（server 端收到同样字节）。"""
     import websockets.sync.client as wsc
 
-    mc = F.mme_client()
+    mc = F.framesamp_modul_client()
     log = tmp_path / "relay.jsonl"
 
     got: list[bytes] = []
@@ -358,7 +358,7 @@ def test_relay_logs_decode_error_for_non_msgpack(tmp_path, monkeypatch):
 
 
 def test_payload_and_response_digest_kinds():
-    mc = F.mme_client()
+    mc = F.framesamp_modul_client()
     imgs = np.stack([F.frame(1), F.frame(2)])[:, None]
     states = np.array([[0.5] * 8, [0.25] * 8], dtype=np.float32)
     d = mc.payload_digest({"images": imgs, "state": states, "add_buffer": True, "exec_start_idx": 1})
@@ -385,7 +385,7 @@ def test_payload_and_response_digest_kinds():
 def test_sha_accepts_bytes_str_and_arrays():
     import hashlib
 
-    mc = F.mme_client()
+    mc = F.framesamp_modul_client()
     assert mc.sha(b"ab") == hashlib.sha256(b"ab").hexdigest()
     assert mc.sha("中") == hashlib.sha256("中".encode("utf-8")).hexdigest()
     # 非 C 连续数组按连续拷贝取字节
@@ -395,7 +395,7 @@ def test_sha_accepts_bytes_str_and_arrays():
 
 def test_summarize_timing_hand_computed():
     """6 条 infer：首次 1.0 s、第 2/3 次 0.5/0.4 s、稳态（第 4 条起）0.1/0.2/0.3 → 均值 0.2；只有 1 条的 kind 不给第 2/3 次。"""
-    mc = F.mme_client()
+    mc = F.framesamp_modul_client()
     srv_ms = [1000.0, 500.0, 400.0, 100.0, 200.0, 300.0]
     per = [{"seq": i, "kind": "infer", "pack_s": 0.01, "rtt_s": s / 1000 + 0.05, "unpack_s": 0.02,
             "server_ms": s, "bytes": 100} for i, s in enumerate(srv_ms)]

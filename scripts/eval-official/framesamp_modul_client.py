@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """v7.5eval 新接口的 MME-VLA 客户端（0929-v7.5eval-restructure-plan.md §2.2、§3.2 第 1 步 3、第 3 步）。
 
-逐行照抄旧官方客户端（MME ``ecf086c`` ``examples/robomme/{utils.py,env_runner.py,eval.py}`` 与官方历史成绩
+逐行照抄旧官方客户端（MME-VLA ``ecf086c`` ``examples/robomme/{utils.py,env_runner.py,eval.py}`` 与官方历史成绩
 客户端 ``927c56d`` ``eval.py::evaluate_manifest``）的循环语义，不 import 子模块的 ``examples/``：
 
 * 每局新建 websocket（``openpi_client`` 的 ``MMEVLAWebsocketClientPolicy``），开局 ``client.reset()``；
@@ -407,7 +407,7 @@ def summarize_timing(timing: dict) -> dict:
 
 
 def _load_sibling(name: str):
-    """按文件路径加载本目录下的模块（与 env_client／mmesg_client 的 load_sibling 同名注册，已加载则复用）。"""
+    """按文件路径加载本目录下的模块（与 env_client／groundsg_client 的 load_sibling 同名注册，已加载则复用）。"""
     if name in sys.modules:
         return sys.modules[name]
     import importlib.util
@@ -420,7 +420,7 @@ def _load_sibling(name: str):
 
 
 class TracedClient:
-    """S4：包住 MME websocket 客户端（或替身）的 ``reset``／``add_buffer``／``infer``，原样转发后记请求与回包（C10）。
+    """S4：包住 MME-VLA websocket 客户端（或替身）的 ``reset``／``add_buffer``／``infer``，原样转发后记请求与回包（C10）。
 
     请求记原始 msgpack 帧字节的 sha256（经 ``RecordingClient._raw_hook`` 拿到实际发出的字节；替身没有该钩子时退回
     ``canonical_bytes``）；``add_buffer`` 另记历史边界行（覆盖的步号区间）；``infer`` 回包记完整动作块。转发的对象与
@@ -512,15 +512,15 @@ def traced_step_fn(session: Any, trace: Any) -> Callable[[Any], tuple]:
 
 
 def run_episode(session, identity: dict, conn_info: dict, recorder) -> dict:
-    """env_client 调用入口：一局 MME。``session`` 为已 build 的 EnvSession。
+    """env_client 调用入口：一局 FrameSamp+Modulation。``session`` 为已 build 的 EnvSession。
 
-    S4：有轨迹落点（``mmesg_client.trace_location``）时写 ``trace.jsonl``（route ``mme/new``）：``reset_fn`` 外包一层记
+    S4：有轨迹落点（``groundsg_client.trace_location``）时写 ``trace.jsonl``（route ``perceptual-framesamp-modul/new``）：``reset_fn`` 外包一层记
     演示（C2），``session.step`` 外包一层记逐步（C4、C8），客户端外包一层记请求与回包（C10），收尾按 C2、C3、C8。
     无落点时三层都不包，与 BASE 行为相同。"""
     timing: dict[str, Any] = {}
     max_steps = int(conn_info.get("max_steps", MAX_STEPS))
     sm = _load_sibling("smvla_client")  # 共用的 PolicyTrace
-    trace = sm.PolicyTrace("mme/new", identity, conn_info, recorder, max_steps=max_steps,
+    trace = sm.PolicyTrace("perceptual-framesamp-modul/new", identity, conn_info, recorder, max_steps=max_steps,
                            recorder_has_actions=sm.recorder_writes_arrays(recorder) and
                            getattr(session, "recorder", None) is recorder,
                            omit_overflow_frame=True)
@@ -693,7 +693,7 @@ def cmd_transport_check(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="v7.5eval MME 客户端辅助子命令")
+    ap = argparse.ArgumentParser(description="v7.5eval FrameSamp+Modulation 客户端辅助子命令")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("relay")
     p.add_argument("--listen", type=int, required=True)

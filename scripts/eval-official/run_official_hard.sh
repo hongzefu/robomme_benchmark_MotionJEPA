@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # 第二档原侧席位启动器（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.6、1.7；子任务 S6）。
 #
-# 一个席位（一张 GPU）上：起模型服务（与新侧同一条命令：mmesg 走 serve_policy.py --seed=7、pp 走
+# 一个席位（一张 GPU）上：起模型服务（与新侧同一条命令：groundsg 走 serve_policy.py --seed=7、pp 走
 # ponderpounce.eval.robomme_server --args.seed 0，就绪判定与 kill -0 存活检查都复用 run_seat.sh 的 start_server）→
-# 跑官方原版驱动（mmesg：official_hard_runner.py --variant …；pp：pp_official_runner.py）→ 每局 rgb24 原始帧就地转码
-# 为 episode.mp4（帧数核对一致才删原始帧）并原子发布到 NFS 输出键 <media-root>/<label>/test-hard0/orig/<key>.a<attempt>/
+# 跑官方原版驱动（groundsg：official_hard_runner.py --variant …；pp：pp_official_runner.py）→ 每局 rgb24 原始帧就地转码
+# 为 episode.mp4（帧数核对一致才删原始帧）并原子发布到 NFS 输出键 <media-root>/<label>/hard-verify/orig/<key>.a<attempt>/
 # → trap 收尾（收驱动与服务进程组、全量同步、判定行）。
 #
 # 守卫一律复用 run_seat.sh（source）：pick_port／port_busy 起前探端口、start_server 等就绪时 kill -0 查服务存活、
@@ -31,19 +31,19 @@
 #
 # 用法：
 #   bash run_official_hard.sh --run-name R --seat NN --repo <执行副本> --stage <NFS 运行根> --shard <shard-NN.json> \
-#     --policy {mmesg,pp} --dataset test-hard0 --max-steps 1300 --infra-retry-budget N \
-#     [--mme-variant {ground-sg-oracle,ground-sg-qwenvl}] [--qwenvl-groundsg-adapter D] \
-#     [--mmesg-ckpt D --openpi-data-home D --tokenizer-sha256 H] [--pp-ckpt D] \
+#     --policy {groundsg,pp} --dataset hard-verify --max-steps 1300 --infra-retry-budget N \
+#     [--groundsg-variant {ground-sg-oracle,ground-sg-qwenvl}] [--qwenvl-groundsg-adapter D] \
+#     [--groundsg-ckpt D --openpi-data-home D --tokenizer-sha256 H] [--pp-ckpt D] \
 #     [--gpu 0] [--cpus 0-3] [--media-root D] [--local-root D] [--limit N] [--episode-wall S] [--sync-interval S]
 # 判定行：OFFICIAL_SEAT_DONE seat=NN policy=<label> outcome=pass|fail|aborted rc=<rc> …；SEAT_REC_SYNC=PASS|FAIL …
 #   transcoded=<n> frame_mismatch=<n> transcode_fail=<n>；末行 EXIT_CODE=<rc>。
 # 退出码：0 全部身份有非 infra 结果行且同步 PASS；2 参数错误；3 RUN_BLOCKED（配对、预检、导入断言）；4 基础设施用尽；
 #   6 仍有身份无终态（重试额度或 2 次尝试用尽）；7 只有同步 FAIL；中断 130/143（HUP 129）。
-# 解释器：驱动用 SGEVAL_CLIENT_PY（客户端扩展环境），服务用 MME_PY／PP_PY（同 run_seat.sh）；本脚本内小工具用 BENCH_PY。
+# 解释器：驱动用 SGEVAL_CLIENT_PY（客户端扩展环境），服务用 MME_VLA_PY／PP_PY（同 run_seat.sh）；本脚本内小工具用 BENCH_PY。
 set -uo pipefail
 export PYTHONUNBUFFERED=1
 
-_ENV_SGEVAL_CLIENT_PY="${SGEVAL_CLIENT_PY:-}" ; _ENV_PP_PY="${PP_PY:-}" ; _ENV_BENCH_PY="${BENCH_PY:-}" ; _ENV_MME_PY="${MME_PY:-}"
+_ENV_SGEVAL_CLIENT_PY="${SGEVAL_CLIENT_PY:-}" ; _ENV_PP_PY="${PP_PY:-}" ; _ENV_BENCH_PY="${BENCH_PY:-}" ; _ENV_MME_VLA_PY="${MME_VLA_PY:-}"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=run_seat.sh
 source "$HERE/run_seat.sh"
@@ -72,9 +72,9 @@ parse_official_args() {
       --dataset) DATASET="$2"; shift 2;;
       --max-steps) MAX_STEPS="$2"; shift 2;;
       --strict-cap) STRICT_CAP=1; shift;;
-      --mme-variant) MME_VARIANT="$2"; shift 2;;
+      --groundsg-variant) GROUNDSG_VARIANT="$2"; shift 2;;
       --qwenvl-groundsg-adapter) QWENVL_ADAPTER="$2"; shift 2;;
-      --mmesg-ckpt) MMESG_CKPT="$2"; shift 2;;
+      --groundsg-ckpt) GROUNDSG_CKPT="$2"; shift 2;;
       --pp-ckpt) PP_CKPT="$2"; shift 2;;
       --openpi-data-home) OPENPI_HOME="$2"; shift 2;;
       --tokenizer-sha256) TOKENIZER_SHA="$2"; shift 2;;
@@ -93,13 +93,13 @@ parse_official_args() {
     || official_die2 "缺少必需参数（--run-name --seat --repo --stage --shard --policy）"
   [[ "$RUN_NAME" =~ ^[A-Za-z0-9._-]+$ ]] || official_die2 "--run-name 只许字母数字 . _ -"
   [[ "$SEAT" =~ ^[0-9]{2}$ ]] || official_die2 "--seat 须为两位席号 NN（如 03）"
-  [[ "$POLICY" == "mmesg" || "$POLICY" == "pp" ]] || official_die2 "--policy 只许 mmesg、pp（原侧）"
+  [[ "$POLICY" == "groundsg" || "$POLICY" == "pp" ]] || official_die2 "--policy 只许 groundsg、pp（原侧）"
   [[ "$INFRA_RETRY_BUDGET" =~ ^[0-9]+$ ]] || official_die2 "--infra-retry-budget 必填且为非负整数"
   [[ "$LIMIT" =~ ^[0-9]+$ && "$SYNC_INTERVAL" =~ ^[0-9]+$ ]] || official_die2 "--limit／--sync-interval 须为非负整数"
   [[ -z "$MAX_STEPS" || "$MAX_STEPS" =~ ^[0-9]+$ ]] || official_die2 "--max-steps 须为非负整数"
   [[ -z "$WALL_ALL" || "$WALL_ALL" =~ ^[0-9]+$ ]] || official_die2 "--episode-wall 须为非负整数秒"
-  if [[ "$POLICY" == "mmesg" ]]; then
-    [[ -n "$OPENPI_HOME" && -n "$TOKENIZER_SHA" ]] || official_die2 "跑 mmesg 须给 --openpi-data-home --tokenizer-sha256"
+  if [[ "$POLICY" == "groundsg" ]]; then
+    [[ -n "$OPENPI_HOME" && -n "$TOKENIZER_SHA" ]] || official_die2 "跑 groundsg 须给 --openpi-data-home --tokenizer-sha256"
   else
     [[ -n "$PP_CKPT" ]] || official_die2 "跑 pp 须给 --pp-ckpt"
   fi
@@ -115,21 +115,21 @@ parse_official_args() {
   [[ -n "$CPUS" ]] && TASKSET=(taskset -c "$CPUS")
   # 解释器：调用方覆盖优先，其余按 --repo 取缺省
   BENCH_PY="${_ENV_BENCH_PY:-$REPO/.venv/bin/python}"
-  MME_PY="${_ENV_MME_PY:-$REPO/third_party/mme-vla/.venv/bin/python}"
+  MME_VLA_PY="${_ENV_MME_VLA_PY:-$REPO/third_party/mme-vla/.venv/bin/python}"
   SGEVAL_CLIENT_PY="${_ENV_SGEVAL_CLIENT_PY:-$REPO/artifacts/sg-evaluation/venvs/client-env/bin/python}"
   PP_PY="${_ENV_PP_PY:-$REPO/third_party/PonderPounce/.venv/bin/python}"
   return 0
 }
 
-runner_script_of() { if [[ "$1" == "mmesg" ]]; then echo official_hard_runner.py; else echo pp_official_runner.py; fi; }
+runner_script_of() { if [[ "$1" == "groundsg" ]]; then echo official_hard_runner.py; else echo pp_official_runner.py; fi; }
 
 build_runner_cmd() {  # $1 = 尝试号；$2 = 逗号分隔 key；$3 = 端口 → 设 RUN_ENV、RUN_ARGV（不启动）
   RUN_ENV=(PYTHONUNBUFFERED=1)
-  [[ "$POLICY" == "mmesg" ]] && RUN_ENV+=(USE_HF=1 HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-1}" TRANSFORMERS_OFFLINE="${TRANSFORMERS_OFFLINE:-1}")
+  [[ "$POLICY" == "groundsg" ]] && RUN_ENV+=(USE_HF=1 HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-1}" TRANSFORMERS_OFFLINE="${TRANSFORMERS_OFFLINE:-1}")
   RUN_ARGV=("$SGEVAL_CLIENT_PY" "scripts/eval-official/$(runner_script_of "$POLICY")" --shard "$SHARD" --out "$RUN_OUT"
             --host 127.0.0.1 --port "$3" --max-steps "$MAX_STEPS" --attempt "$1" --only "$2")
-  if [[ "$POLICY" == "mmesg" ]]; then
-    RUN_ARGV+=(--variant "$MME_VARIANT")
+  if [[ "$POLICY" == "groundsg" ]]; then
+    RUN_ARGV+=(--variant "$GROUNDSG_VARIANT")
     [[ -n "$QWENVL_ADAPTER" ]] && RUN_ARGV+=(--qwenvl-groundsg-adapter "$QWENVL_ADAPTER")
   fi
   return 0
@@ -147,7 +147,7 @@ start_runner() {  # $1 = 尝试号；$2 = 逗号分隔 key
 # 读驱动的 results.jsonl 与节点上的每局目录。$1=plan：补 synthetic 行后给出下一轮（attempt=0 表示没有可跑的）；
 # $1=mark：只补 synthetic 行并报告 missing。打印一行 ORIG_PLAN …。
 plan_round() {
-  "$(tool_py)" - "$1" "$SHARD" "$RUN_OUT" "$INFRA_RETRY_BUDGET" "$LIMIT" "$POLICY" "${MME_VARIANT:-}" "${DATASET:-}" <<'PY'
+  "$(tool_py)" - "$1" "$SHARD" "$RUN_OUT" "$INFRA_RETRY_BUDGET" "$LIMIT" "$POLICY" "${GROUNDSG_VARIANT:-}" "${DATASET:-}" <<'PY'
 import json, os, re, sys
 mode, shard, out, budget, limit, policy, variant, dataset = sys.argv[1:9]
 budget, limit = int(budget), int(limit)
@@ -183,7 +183,7 @@ if synth:
                        infra=True, infra_reason="launcher_no_result_row", launcher_synthetic=True,
                        error="LAUNCHER: 本局目录存在但驱动未写结果行（进程被收掉或崩溃）",
                        ep_dir=os.path.join(out, f"{k}.a{a}"))
-            if policy == "mmesg" and variant:
+            if policy == "groundsg" and variant:
                 row["policy_variant"] = variant
             fh.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
             res.append(row)
@@ -383,15 +383,15 @@ official_entry() {
   exec > >(trap '' TERM INT HUP PIPE; exec tee -p -a "$ORIG_STATE/official-s$SEAT.log") 2>&1
   : > "$OUT/.v8-pgids"
   echo "OFFICIAL_SEAT_START run_name=$RUN_NAME seat=$SEAT idx=$SEAT_IDX gpu=$GPU cpus=${CPUS:-all} policy=$POLICY label=$LABEL \
-dataset=${DATASET:-unset} max_steps=${MAX_STEPS:-unset} strict_cap=$STRICT_CAP variant=${MME_VARIANT:-none} \
+dataset=${DATASET:-unset} max_steps=${MAX_STEPS:-unset} strict_cap=$STRICT_CAP variant=${GROUNDSG_VARIANT:-none} \
 runner=$(runner_script_of "$POLICY") repo=$REPO git=$(git -C "$REPO" rev-parse HEAD 2>/dev/null) state=$ORIG_STATE \
 local=$RUN_OUT publish=$PUB_ROOT infra_retry_budget=$INFRA_RETRY_BUDGET limit=$LIMIT client_py_ext=$SGEVAL_CLIENT_PY \
 pp_py=$PP_PY no_proxy=127.0.0.1,localhost hf_home=${HF_HOME:-unset} host=$(hostname) $(date -Is)"
   step_cap_pairing || official_finalize fail 3
-  [[ "$DATASET" == "test-hard0" ]] || { echo "RUN_BLOCKED reason=orig_dataset dataset=$DATASET（原侧只跑 test-hard0）"; official_finalize fail 3; }
+  [[ "$DATASET" == "hard-verify" ]] || { echo "RUN_BLOCKED reason=orig_dataset dataset=$DATASET（原侧只跑 hard-verify）"; official_finalize fail 3; }
   variant_pairing "$POLICY" || official_finalize fail 3
   case "$POLICY" in
-    mmesg) tokenizer_gate || official_finalize fail 3; preflight_mme mmesg || official_finalize fail 3;;
+    groundsg) tokenizer_gate || official_finalize fail 3; preflight_mme_vla groundsg || official_finalize fail 3;;
     pp) preflight_pp || official_finalize fail 3;;
   esac
   [[ -x "$SGEVAL_CLIENT_PY" ]] || { echo "RUN_BLOCKED reason=client_py_missing py=$SGEVAL_CLIENT_PY"; official_finalize fail 3; }

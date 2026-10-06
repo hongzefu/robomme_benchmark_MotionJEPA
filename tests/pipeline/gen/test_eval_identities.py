@@ -1,4 +1,4 @@
-"""C12／C13 交界：``export_eval_identities.py`` 经真实 ``BenchmarkEnvBuilder(test-hard)`` 逐局列身份，对包内真实 V9 规格跑。
+"""C12／C13 交界：``export_eval_identities.py`` 经真实 ``BenchmarkEnvBuilder(ood)`` 逐局列身份，对包内真实 V9 规格跑。
 
 独立期望：新值身份集合直接从包内五份 ``specs.jsonl`` 的交付行（selected 且 rollout ok）读出，不经 builder；
 xhard0 开关打开时 192 局官方路线清单按贪心均衡切片（手算小例子核贪心规则）。
@@ -16,7 +16,7 @@ from tests._support.loaders import load_script
 
 E = load_script("injection-dev/export_eval_identities.py")
 H = E.hard_specs
-PACKAGED = Path(H.__file__).resolve().parents[1] / "env_metadata" / "test-hard"
+PACKAGED = Path(H.__file__).resolve().parents[1] / "env_metadata" / "ood"
 
 
 def _delivered_rows():

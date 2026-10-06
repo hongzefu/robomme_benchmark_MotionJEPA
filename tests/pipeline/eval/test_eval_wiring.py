@@ -4,15 +4,15 @@
 调用其中的命令构造函数（``build_client_cmd``／``build_server_cmd``／``build_runner_cmd``）与核对函数
 （``step_cap_pairing``／``variant_pairing``），逐路线核对：
 
-- 新侧 8 条路线（smvla、mme 走 test-hard；mmesg 两个变体与 pp 各走 test-hard0 与 test-hard）：客户端 argv 的
-  ``--policy``、``--dataset``、``--max-steps``、``--strict-cap``（只在 test-hard）、``--mme-variant``（只在 mmesg）、
+- 新侧 8 条路线（smvla、perceptual-framesamp-modul 走 ood；groundsg 两个变体与 pp 各走 hard-verify 与 ood）：客户端 argv 的
+  ``--policy``、``--dataset``、``--max-steps``、``--strict-cap``（只在 ood）、``--groundsg-variant``（只在 groundsg）、
   ``--qwenvl-groundsg-adapter``（只在 QwenVL 变体）、``--trace-root``／``--rec-root``／``--out``／``--ledger`` 落在
-  ``<label>``（mmesg 为 ``mmesg-<variant>``）下、解释器（mmesg／pp 用客户端扩展环境）；服务 argv（mme／mmesg 的
+  ``<label>``（groundsg 为 ``groundsg-<variant>``）下、解释器（groundsg／pp 用客户端扩展环境）；服务 argv（perceptual-framesamp-modul／groundsg 的
   ``--policy.dir`` 与 history_config 期望、pp 的 ``-m ponderpounce.eval.robomme_server --args.seed 0``）；端口策略号。
-- 原侧 3 条路线（mmesg 两个变体、pp，test-hard0）：驱动脚本、``--max-steps 1300``、``--attempt``／``--only``、
+- 原侧 3 条路线（groundsg 两个变体、pp，hard-verify）：驱动脚本、``--max-steps 1300``、``--attempt``／``--only``、
   ``--variant``、adapter 只在 QwenVL 变体。
-- 配对核对拦得住错配：数据集与步数（含缺失、未知数据集、strict-cap 配错）、mmesg 变体与 adapter（含给了变体却不跑
-  mmesg、adapter 目录不存在）。
+- 配对核对拦得住错配：数据集与步数（含缺失、未知数据集、strict-cap 配错）、groundsg 变体与 adapter（含给了变体却不跑
+  groundsg、adapter 目录不存在）。
 - 守卫在场：``run_official_hard.sh``、``pair_seat.sh``、``run_eval_gl.sh`` 都 source ``run_seat.sh`` 且不另定义
   ``port_busy``／``noprog_limit``／``idle_s``／``start_server``；``run_official_hard.sh`` 用 ``pick_port``、``server_alive``、
   ``noprog_limit``、``NO_PROGRESS`` 与 ``trap``；``pair_seat.sh`` 用 ``port_busy`` 与 ``kill -0``。
@@ -36,22 +36,22 @@ if shutil.which("bash") is None:  # pragma: no cover
     pytest.skip("未验证：缺 bash", allow_module_level=True)
 
 NEW_ROUTES = [  # (策略, 变体, 数据集)
-    ("smvla", "", "test-hard"), ("mme", "", "test-hard"),
-    ("mmesg", "ground-sg-oracle", "test-hard0"), ("mmesg", "ground-sg-qwenvl", "test-hard0"), ("pp", "", "test-hard0"),
-    ("mmesg", "ground-sg-oracle", "test-hard"), ("mmesg", "ground-sg-qwenvl", "test-hard"), ("pp", "", "test-hard"),
+    ("smvla", "", "ood"), ("perceptual-framesamp-modul", "", "ood"),
+    ("groundsg", "ground-sg-oracle", "hard-verify"), ("groundsg", "ground-sg-qwenvl", "hard-verify"), ("pp", "", "hard-verify"),
+    ("groundsg", "ground-sg-oracle", "ood"), ("groundsg", "ground-sg-qwenvl", "ood"), ("pp", "", "ood"),
 ]
-ORIG_ROUTES = [("mmesg", "ground-sg-oracle"), ("mmesg", "ground-sg-qwenvl"), ("pp", "")]
-CAP = {"test-hard": ("1600", "1"), "test-hard0": ("1300", "0")}  # 手写的启动约定
-POL_IDX = {"smvla": 0, "mme": 1, "mmesg": 2, "pp": 3}
+ORIG_ROUTES = [("groundsg", "ground-sg-oracle"), ("groundsg", "ground-sg-qwenvl"), ("pp", "")]
+CAP = {"ood": ("1600", "1"), "hard-verify": ("1300", "0")}  # 手写的启动约定
+POL_IDX = {"smvla": 0, "perceptual-framesamp-modul": 1, "groundsg": 2, "pp": 3}
 
 LIB_NEW = r'''
 set -u
 source "$EO/run_seat.sh"
 OUT=/o; IDENTS=/s.json; SEAT=T; SEAT_IDX=5; GPU=0; COND=C; LEDGER_DIR=/l; RESET_BUDGET=7; INFRA_RETRY_BUDGET=3
 REC_ROOT=/r; TRACE_ROOT=/t; NEVER_DEGRADE=--never-degrade; LIMIT=0
-MME_CKPT=/ck/mme; MMESG_CKPT=/ck/sg; PP_CKPT=/ck/pp; SGEVAL_CLIENT_PY=/py/client; BENCH_PY=/py/bench
-MME_PY=/py/mme; PP_PY=/py/pp; SMVLA_PY=/py/smvla; OPENPI_HOME=/openpi
-DATASET="$W_DATASET"; MAX_STEPS="$W_MAX"; STRICT_CAP="$W_STRICT"; MME_VARIANT="$W_VARIANT"; QWENVL_ADAPTER="$W_ADAPTER"
+FRAMESAMP_MODUL_CKPT=/ck/perceptual-framesamp-modul; GROUNDSG_CKPT=/ck/sg; PP_CKPT=/ck/pp; SGEVAL_CLIENT_PY=/py/client; BENCH_PY=/py/bench
+MME_VLA_PY=/py/perceptual-framesamp-modul; PP_PY=/py/pp; SMVLA_PY=/py/smvla; OPENPI_HOME=/openpi
+DATASET="$W_DATASET"; MAX_STEPS="$W_MAX"; STRICT_CAP="$W_STRICT"; GROUNDSG_VARIANT="$W_VARIANT"; QWENVL_ADAPTER="$W_ADAPTER"
 step_cap_pairing; echo "PAIRING_RC=$?"
 variant_pairing "$W_POLS"; echo "VARIANT_RC=$?"
 if [[ -n "${W_BUILD:-}" ]]; then
@@ -70,8 +70,8 @@ fi
 LIB_ORIG = r'''
 set -u
 source "$EO/run_official_hard.sh"
-POLICY="$W_POLS"; MME_VARIANT="$W_VARIANT"; QWENVL_ADAPTER="$W_ADAPTER"; SGEVAL_CLIENT_PY=/py/client
-SHARD=/s.json; RUN_OUT=/run; MAX_STEPS=1300; DATASET=test-hard0
+POLICY="$W_POLS"; GROUNDSG_VARIANT="$W_VARIANT"; QWENVL_ADAPTER="$W_ADAPTER"; SGEVAL_CLIENT_PY=/py/client
+SHARD=/s.json; RUN_OUT=/run; MAX_STEPS=1300; DATASET=hard-verify
 variant_pairing "$POLICY"; echo "VARIANT_RC=$?"
 build_runner_cmd 2 k1,k2 18555
 for a in "${RUN_ARGV[@]}"; do printf 'RUN %s\n' "$a"; done
@@ -80,7 +80,7 @@ for a in "${RUN_ENV[@]}"; do printf 'RUNENV %s\n' "$a"; done
 
 
 def _bash(script: str, **env) -> dict:
-    e = dict(os.environ, EO=str(EO), W_POLS="smvla", W_DATASET="test-hard", W_MAX="1600", W_STRICT="1",
+    e = dict(os.environ, EO=str(EO), W_POLS="smvla", W_DATASET="ood", W_MAX="1600", W_STRICT="1",
              W_VARIANT="", W_ADAPTER="")
     e.update({k: str(v) for k, v in env.items()})
     p = subprocess.run(["bash", "-c", script], capture_output=True, text=True, env=e, timeout=60)
@@ -107,7 +107,7 @@ def _check_new_route(pol, variant, dataset, adapter_dir) -> tuple[int, int, list
               W_ADAPTER=adapter, W_BUILD=1)
     ds_bad, var_bad, why = 0, 0, []
     cli, srv = r.get("CLI", []), r.get("SRV", [])
-    label = f"mmesg-{variant}" if pol == "mmesg" else pol
+    label = f"groundsg-{variant}" if pol == "groundsg" else pol
     if r.get("PAIRING_RC") != "0" or r.get("VARIANT_RC") != "0":
         why.append(f"核对未通过 {r['raw'][-400:]}")
         return 1, 1, why
@@ -119,26 +119,26 @@ def _check_new_route(pol, variant, dataset, adapter_dir) -> tuple[int, int, list
     if _opt(cli, "--policy") != pol or int(r["PIDX"]) != POL_IDX[pol]:
         ds_bad += 1; why.append("policy／策略号")
     # 变体、adapter 与目录
-    if (_opt(cli, "--mme-variant") or "") != (variant if pol == "mmesg" else ""):
-        var_bad += 1; why.append("mme-variant")
+    if (_opt(cli, "--groundsg-variant") or "") != (variant if pol == "groundsg" else ""):
+        var_bad += 1; why.append("groundsg-variant")
     if (_opt(cli, "--qwenvl-groundsg-adapter") or "") != adapter:
         var_bad += 1; why.append("adapter")
     if r["LABEL"] != label or _opt(cli, "--out") != f"/o/{label}" or _opt(cli, "--trace-root") != f"/t/{label}" \
             or _opt(cli, "--rec-root") != f"/r/{label}" or _opt(cli, "--ledger") != f"/l/{label}.ledger.jsonl":
         var_bad += 1; why.append(f"label 目录 {cli}")
-    want_py = "/py/client" if pol in ("mmesg", "pp") else "/py/bench"
+    want_py = "/py/client" if pol in ("groundsg", "pp") else "/py/bench"
     if cli[0] != want_py or "--never-degrade" not in cli or _opt(cli, "--reset-budget") != "7" \
             or _opt(cli, "--infra-retry-budget") != "3" or _opt(cli, "--identities") != "/s.json":
         ds_bad += 1; why.append("解释器／通用参数")
-    if pol == "mmesg" and "USE_HF=1" not in r.get("CLIENV", []):
-        var_bad += 1; why.append("mmesg 客户端缺 USE_HF=1")
+    if pol == "groundsg" and "USE_HF=1" not in r.get("CLIENV", []):
+        var_bad += 1; why.append("groundsg 客户端缺 USE_HF=1")
     # 服务命令
-    if pol in ("mme", "mmesg"):
-        want_dir = "/ck/sg" if pol == "mmesg" else "/ck/mme"
-        want_yaml = "symbolic-grounded-subgoal.yaml" if pol == "mmesg" else "perceptual-framesamp-modul.yaml"
-        if srv[:2] != ["/py/mme", "scripts/serve_policy.py"] or f"--policy.dir={want_dir}" not in srv \
+    if pol in ("perceptual-framesamp-modul", "groundsg"):
+        want_dir = "/ck/sg" if pol == "groundsg" else "/ck/perceptual-framesamp-modul"
+        want_yaml = "symbolic-grounded-subgoal.yaml" if pol == "groundsg" else "perceptual-framesamp-modul.yaml"
+        if srv[:2] != ["/py/perceptual-framesamp-modul", "scripts/serve_policy.py"] or f"--policy.dir={want_dir}" not in srv \
                 or "--seed=7" not in srv or "--port=18123" not in srv or r["YAML"] != want_yaml:
-            var_bad += 1; why.append(f"mme 服务 {srv}")
+            var_bad += 1; why.append(f"perceptual-framesamp-modul 服务 {srv}")
     elif pol == "pp":
         if srv[:3] != ["/py/pp", "-m", "ponderpounce.eval.robomme_server"] or _opt(srv, "--args.seed") != "0" \
                 or _opt(srv, "--args.checkpoint_path") != "/ck/pp" or _opt(srv, "--args.device") != "cuda:0" \
@@ -154,30 +154,30 @@ def _check_orig_route(pol, variant, adapter_dir) -> tuple[int, list[str]]:
     adapter = str(adapter_dir) if variant == "ground-sg-qwenvl" else ""
     r = _bash(LIB_ORIG, W_POLS=pol, W_VARIANT=variant, W_ADAPTER=adapter)
     run, why, bad = r.get("RUN", []), [], 0
-    script = "official_hard_runner.py" if pol == "mmesg" else "pp_official_runner.py"
+    script = "official_hard_runner.py" if pol == "groundsg" else "pp_official_runner.py"
     if r.get("VARIANT_RC") != "0" or run[:2] != ["/py/client", f"scripts/eval-official/{script}"]:
         bad += 1; why.append(f"驱动 {run} {r['raw'][-300:]}")
     if _opt(run, "--max-steps") != "1300" or _opt(run, "--attempt") != "2" or _opt(run, "--only") != "k1,k2" \
             or _opt(run, "--port") != "18555" or _opt(run, "--shard") != "/s.json" or _opt(run, "--out") != "/run":
         bad += 1; why.append(f"驱动参数 {run}")
-    if (_opt(run, "--variant") or "") != (variant if pol == "mmesg" else ""):
+    if (_opt(run, "--variant") or "") != (variant if pol == "groundsg" else ""):
         bad += 1; why.append("variant")
     if (_opt(run, "--qwenvl-groundsg-adapter") or "") != adapter:
         bad += 1; why.append("adapter")
-    if (pol == "mmesg") != ("USE_HF=1" in r.get("RUNENV", [])):
+    if (pol == "groundsg") != ("USE_HF=1" in r.get("RUNENV", [])):
         bad += 1; why.append("USE_HF")
     return bad, why
 
 
-BAD_CAPS = [("test-hard0", "1600", "0"), ("test-hard0", "1300", "1"), ("test-hard", "1300", "1"),
-            ("test-hard", "1600", "0"), ("", "1600", "1"), ("test-hard", "", "1"), ("bogus", "1600", "1")]
+BAD_CAPS = [("hard-verify", "1600", "0"), ("hard-verify", "1300", "1"), ("ood", "1300", "1"),
+            ("ood", "1600", "0"), ("", "1600", "1"), ("ood", "", "1"), ("bogus", "1600", "1")]
 
 
 def _bad_variants(adapter_dir) -> list[tuple[str, str, str]]:
     a = str(adapter_dir)
-    return [("mmesg", "", ""), ("mmesg", "ground-sg-qwenvl", ""), ("mmesg", "ground-sg-qwenvl", "/nonexistent/adapter"),
-            ("mmesg", "ground-sg-oracle", a), ("mmesg", "bogus", ""), ("pp", "ground-sg-oracle", ""),
-            ("smvla,mme", "", a)]
+    return [("groundsg", "", ""), ("groundsg", "ground-sg-qwenvl", ""), ("groundsg", "ground-sg-qwenvl", "/nonexistent/adapter"),
+            ("groundsg", "ground-sg-oracle", a), ("groundsg", "bogus", ""), ("pp", "ground-sg-oracle", ""),
+            ("smvla,perceptual-framesamp-modul", "", a)]
 
 
 GUARD_USES = {

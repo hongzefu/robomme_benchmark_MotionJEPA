@@ -1,4 +1,4 @@
-"""L1 契约：``robomme_hard`` 的 ``BenchmarkEnvBuilder(dataset="test-hard")`` 对 800 局逐局交给 ``gym.make`` 的参数。
+"""L1 契约：``robomme_hard`` 的 ``BenchmarkEnvBuilder(dataset="ood")`` 对 800 局逐局交给 ``gym.make`` 的参数。
 
 手段：把 ``gym.make`` 换成「记录位置参数与 kwargs 后抛哨兵异常」的替身，逐局调真实的 ``make_env_for_episode``，
 不建任何仿真场景。期望由标准库 json 直接读包内规格得出：档序 xhard1→xhard5 主序、档内交付行（selected 且
@@ -8,7 +8,7 @@ rollout ok）按 candidate 升序拼接成 episode 0..49（hard_builder 模块�
   （header 该任务）+ native_episode_spec（该行 spec），恰好这些键；
 - 开关开：每任务前置 12 局 xhard0，seed 逐条等于官方 test 元数据 hard 子集（按原 episode 升序）、difficulty
   传 ``"hard"``、无回注参数，合计 16 × 62 = 992；
-- 规格根覆盖（参数与环境变量）与拒绝路径（含 ``dataset="test-hard0"`` 的接受与拒绝；其逐局参数见 ``test_builder_hard0.py``）。
+- 规格根覆盖（参数与环境变量）与拒绝路径（含 ``dataset="hard-verify"`` 的接受与拒绝；其逐局参数见 ``test_builder_hard0.py``）。
 """
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-from tests._support.loaders import REPO
+from tests._support.loaders import REPO, load_script
 from tests.contract.test_constants import (
     NEW_TIERS,
     PER_TASK,
@@ -32,7 +32,7 @@ from tests.contract.test_constants import (
     XHARD0_PER_TASK,
 )
 
-ROOT = REPO / "src" / "robomme_hard" / "env_metadata" / "test-hard"
+ROOT = REPO / "src" / "robomme_hard" / "env_metadata" / "ood"
 OFFICIAL_TEST = REPO / "src" / "robomme" / "env_metadata" / "test"
 EXPECTED_KEYS = {*RUNTIME, "seed", "difficulty", "sampling_config", "native_episode_spec"}
 
@@ -98,7 +98,7 @@ def test_builder_800_every_episode(recorder):
     expected = expected_rows()
     total = 0
     for task in TASKS:
-        builder = builder_cls()(env_id=task, dataset="test-hard")
+        builder = builder_cls()(env_id=task, dataset="ood")
         assert builder.get_episode_num() == PER_TASK == len(expected[task])
         for episode, (tier, header, row) in enumerate(expected[task]):
             args, kwargs = capture(builder, episode, recorder)
@@ -142,7 +142,7 @@ def test_known_defect_builder_kwargs_aliased_to_builder_state(recorder):
     make_env_for_episode 把 builder 内部 lru_cache 里的 sampling_config 与 row["spec"] 原对象直接交给 gym.make，
     调用方原地改动第一次拿到的 kwargs 会污染第二次构建（规格侧环境内 SpecRecorder 会 deepcopy，sampling_config 无此保护）。
     正确行为应当是：每次交出副本，第二次拿到的仍等于独立读出的规格值。修复时把本用例的断言反转为 `again == expected`。"""
-    builder = builder_cls()(env_id="StopCube", dataset="test-hard")
+    builder = builder_cls()(env_id="StopCube", dataset="ood")
     tier, header, row = expected_rows()["StopCube"][0]
     expected = newvalue_kwargs(tier, header, row, "StopCube")
     _, first = capture(builder, 0, recorder)
@@ -172,7 +172,7 @@ def test_builder_992_with_xhard0_switch(recorder, monkeypatch):
     expected = expected_rows()
     total = 0
     for task in TASKS:
-        builder = builder_cls()(env_id=task, dataset="test-hard")
+        builder = builder_cls()(env_id=task, dataset="ood")
         assert builder.get_episode_num() == PER_TASK_WITH_XHARD0
         hard = official_hard(task)
         assert tuple(int(r["episode"]) for r in hard) == XHARD0_EPISODES
@@ -221,17 +221,17 @@ def test_specs_root_override_param_and_env(recorder, tmp_path, monkeypatch):
     for how in ("param", "env"):
         if how == "env":
             monkeypatch.setenv(hard_specs.SPECS_ROOT_ENV, str(root))
-            builder = builder_cls()(env_id="StopCube", dataset="test-hard")
+            builder = builder_cls()(env_id="StopCube", dataset="ood")
         else:
             monkeypatch.delenv(hard_specs.SPECS_ROOT_ENV, raising=False)
-            builder = builder_cls()(env_id="StopCube", dataset="test-hard", specs_root=root)
+            builder = builder_cls()(env_id="StopCube", dataset="ood", specs_root=root)
         assert builder.get_episode_num() == len(expected["StopCube"]) > 0
         for episode, (tier, header, row) in enumerate(expected["StopCube"]):
             _, kwargs = capture(builder, episode, recorder)
             assert kwargs == newvalue_kwargs(tier, header, row, "StopCube")
             assert builder.resolve_identity(episode)["specs_root"] == str(root.resolve())
         # 局部根里没有的任务：0 局
-        assert builder_cls()(env_id="PickXtimes", dataset="test-hard", specs_root=root).get_episode_num() == 0
+        assert builder_cls()(env_id="PickXtimes", dataset="ood", specs_root=root).get_episode_num() == 0
 
 
 def test_rejections(tmp_path):
@@ -241,26 +241,28 @@ def test_rejections(tmp_path):
     with pytest.raises(ValueError):
         cls(env_id="StopCube", dataset="xhard1")
     with pytest.raises(ValueError):
-        cls(env_id="StopCube", dataset="test-hard", override_metadata_path=tmp_path)
+        cls(env_id="StopCube", dataset="ood", override_metadata_path=tmp_path)
     with pytest.raises(ValueError):
-        cls(env_id="StopCube", dataset="test-hard", action_space="torque")
+        cls(env_id="StopCube", dataset="ood", action_space="torque")
     with pytest.raises(ValueError):
-        cls(env_id="NotATask", dataset="test-hard")
-    # test-hard0：接受（每任务恰 12 局 xhard0）；拼写变体、规格根、元数据覆盖、未知任务一律拒绝
-    assert cls(env_id="StopCube", dataset="test-hard0").get_episode_num() == XHARD0_PER_TASK
-    for wrong in ("test_hard0", "test-hard1", "xhard0", "Test-Hard0"):
+        cls(env_id="NotATask", dataset="ood")
+    # hard-verify：接受（每任务恰 12 局 xhard0）；拼写变体、改名前的旧名、规格根、元数据覆盖、未知任务一律拒绝
+    assert cls(env_id="StopCube", dataset="hard-verify").get_episode_num() == XHARD0_PER_TASK
+    legacy = tuple(load_script("eval-official/official_defs.py").LEGACY_DATASET_ALIASES)  # 旧名只在别名表里
+    assert len(legacy) == 2
+    for wrong in ("hard_verify", "hard-verify0", "xhard0", "Hard-Verify", "OOD", *legacy):
         with pytest.raises(ValueError):
             cls(env_id="StopCube", dataset=wrong)
     with pytest.raises(ValueError):
-        cls(env_id="StopCube", dataset="test-hard0", specs_root=ROOT)
+        cls(env_id="StopCube", dataset="hard-verify", specs_root=ROOT)
     with pytest.raises(ValueError):
-        cls(env_id="StopCube", dataset="test-hard0", override_metadata_path=tmp_path)
+        cls(env_id="StopCube", dataset="hard-verify", override_metadata_path=tmp_path)
     with pytest.raises(ValueError):
-        cls(env_id="NotATask", dataset="test-hard0")
+        cls(env_id="NotATask", dataset="hard-verify")
     empty = tmp_path / "empty"
     empty.mkdir()
     with pytest.raises(hard_specs.SpecsError):
-        cls(env_id="StopCube", dataset="test-hard", specs_root=empty)
+        cls(env_id="StopCube", dataset="ood", specs_root=empty)
     # 档文件不是 /4
     old = tmp_path / "old"
     (old / "xhard5").mkdir(parents=True)
@@ -269,7 +271,7 @@ def test_rejections(tmp_path):
     header["schema"] = "hard-specs/3"
     (old / "xhard5" / "specs.jsonl").write_text("\n".join([json.dumps(header), *lines[1:]]) + "\n", encoding="utf-8")
     with pytest.raises(hard_specs.SpecsError):
-        cls(env_id="StopCube", dataset="test-hard", specs_root=old)
+        cls(env_id="StopCube", dataset="ood", specs_root=old)
     # 改了一行不重签：整根校验拒绝
     bad = partial_root(tmp_path / "bad")
     lines = (bad / "xhard5" / "specs.jsonl").read_text(encoding="utf-8").splitlines()
@@ -278,7 +280,7 @@ def test_rejections(tmp_path):
     lines[1] = json.dumps(row)
     (bad / "xhard5" / "specs.jsonl").write_text("\n".join(lines) + "\n", encoding="utf-8")
     with pytest.raises(hard_specs.SpecsError):
-        cls(env_id="StopCube", dataset="test-hard", specs_root=bad)
+        cls(env_id="StopCube", dataset="ood", specs_root=bad)
 
 
 def test_official_datasets_unchanged_except_hard_train(recorder):

@@ -89,7 +89,7 @@ def test_installed_files_byte_identical_to_source(installed):
            if (site / rel.removeprefix("src/")).read_bytes() != (REPO / rel).read_bytes()]
     assert bad == []
     # 规格与元数据资源确实在包内（不是只装了 .py）。
-    assert list((site / "robomme_hard" / "env_metadata" / "test-hard").rglob("specs.jsonl"))
+    assert list((site / "robomme_hard" / "env_metadata" / "ood").rglob("specs.jsonl"))
     assert list((site / "robomme" / "env_metadata").rglob("*_metadata.json"))
     assert (site / "robomme_hard" / "UPSTREAM.json").is_file()
 

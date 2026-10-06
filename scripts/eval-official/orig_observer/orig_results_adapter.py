@@ -3,7 +3,7 @@
 ``gate2_compare.py --orig-attempts``）。
 
 输入：
-- 原版逐局日志：SimpleMemVLA ``--episode_log``（``episodes-shardXXofYY.jsonl``）或 MME ``episodes.jsonl``；每行至少
+- 原版逐局日志：SimpleMemVLA ``--episode_log``（``episodes-shardXXofYY.jsonl``）或 FrameSamp+Modulation ``episodes.jsonl``；每行至少
   ``task``、``source_episode``、``seed``、``status``，每局（含 error 后的重评）追加一行；
 - 观测器录制根：逐局目录 ``<key>.a<N>/trace.jsonl``（``N`` 为该身份在录制根下的开局顺序号，含中途被杀的局）。
 
@@ -36,7 +36,21 @@ from pathlib import Path
 SCHEMA = "orig-attempts/1"
 FINAL = ("success", "fail", "timeout")
 EP_DIR_RE = re.compile(r"^(?P<key>.+)\.a(?P<attempt>\d+)$")
-ROUTES = {"smvla": "smvla/orig", "mme": "mme/orig"}
+ROUTES = {"smvla": "smvla/orig", "perceptual-framesamp-modul": "perceptual-framesamp-modul/orig"}
+
+
+def official_defs():
+    """上级目录 ``official_defs.py``（旧名别名表的唯一来源；已加载则复用同一模块）。"""
+    import importlib.util
+
+    mod = sys.modules.get("official_defs")
+    if mod is None:
+        spec = importlib.util.spec_from_file_location("official_defs",
+                                                      Path(__file__).resolve().parents[1] / "official_defs.py")
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["official_defs"] = mod
+        spec.loader.exec_module(mod)
+    return mod
 
 
 def key_of(task: str, seed: int) -> str:
@@ -51,7 +65,7 @@ def read_log(paths: list[str | Path]) -> list[dict]:
             continue
         for line in p.read_text(encoding="utf-8").splitlines():
             if line.strip():
-                rows.append(json.loads(line))
+                rows.append(official_defs().canonical_row(json.loads(line)))
     return rows
 
 
@@ -70,7 +84,7 @@ def _trace_end(tpath: Path) -> dict | None:
         return None
     if last.get("kind") != "end" or head.get("kind") != "header":
         return None
-    return {"end": last, "identity": head.get("identity") or {}, "route": head.get("route")}
+    return {"end": last, "identity": head.get("identity") or {}, "route": official_defs().canonical_route(head.get("route"))}
 
 
 def scan_episodes(rec_root: str | Path) -> dict[str, list[dict]]:
@@ -95,6 +109,7 @@ def scan_episodes(rec_root: str | Path) -> dict[str, list[dict]]:
 
 
 def build(log_rows: list[dict], rec_root: str | Path, *, policy: str) -> dict:
+    policy = official_defs().canonical_policy(policy)  # 历史调用方的旧标签只读兼容；写出只用官方名
     by_ident: dict[tuple, list[dict]] = defaultdict(list)
     for r in log_rows:
         by_ident[(r["task"], int(r["source_episode"]))].append(r)

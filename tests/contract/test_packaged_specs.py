@@ -1,4 +1,4 @@
-"""L1 契约：包内五份交付规格（``src/robomme_hard/env_metadata/test-hard/xhard{1..5}/specs.jsonl``）没被动过且逐行自洽。
+"""L1 契约：包内五份交付规格（``src/robomme_hard/env_metadata/ood/xhard{1..5}/specs.jsonl``）没被动过且逐行自洽。
 
 - 文件字节 sha256 等于钉值表 ``tests/contract/packaged_specs.sha256``（sha256sum 格式，钉值表进 git）；
 - 逐份 ``load_specs``、整根 ``load_specs_root`` 通过；
@@ -29,7 +29,7 @@ from tests.contract.test_constants import (
     V9_CELLS,
 )
 
-ROOT = REPO / "src" / "robomme_hard" / "env_metadata" / "test-hard"
+ROOT = REPO / "src" / "robomme_hard" / "env_metadata" / "ood"
 PIN = Path(__file__).with_name("packaged_specs.sha256")
 OFFICIAL_META = REPO / "src" / "robomme" / "env_metadata"
 HARD_META = REPO / "src" / "robomme_hard" / "env_metadata" / "train"

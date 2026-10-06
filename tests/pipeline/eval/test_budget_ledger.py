@@ -64,7 +64,7 @@ def test_concurrent_last_trajectory_only_one_wins(tmp_path):
         led = bm.BudgetLedger(path, trajectory_cap=3)  # 每个线程独立打开（独立文件描述）
         barrier.wait()
         try:
-            wins.append(led.reserve(resets=2, route="mme/new"))
+            wins.append(led.reserve(resets=2, route="perceptual-framesamp-modul/new"))
         except bm.BudgetExhausted:
             losses.append(1)
 
@@ -136,7 +136,7 @@ def test_astra_third_episode_rejected(tmp_path):
         bm.BudgetLedger(path).reserve(resets=2, route="astra/new", astra=True)
     r = _cli(path, "reserve", "--resets", "2", "--route", "astra/new", "--astra")
     assert r.returncode == 5 and "RUN_BLOCKED reason=budget" in r.stdout
-    led.reserve(resets=2, route="mme/new")  # 非 Astra 不受影响
+    led.reserve(resets=2, route="perceptual-framesamp-modul/new")  # 非 Astra 不受影响
     last = _cli(path, "report").stdout.strip().splitlines()[-1]
     assert last == "BUDGET_ENFORCEMENT=PASS trajectories=3/6366 resets=6/141430 astra=2/2 shared_infra=0/50"
 
@@ -155,17 +155,17 @@ def test_release_returns_trajectory_but_keeps_claimed_resets(tmp_path):
 
 
 def test_cli_reserve_commit_release_report(tmp_path):
-    """原侧启动器口径（R11）：SimpleMemVLA 每局 reserve --resets 6、MME 每局 --resets 2；commit 可写实际数。"""
+    """原侧启动器口径（R11）：SimpleMemVLA 每局 reserve --resets 6、FrameSamp+Modulation 每局 --resets 2；commit 可写实际数。"""
     path = tmp_path / "b.jsonl"
     r1 = _cli(path, "reserve", "--resets", "6", "--route", "smvla/orig", "--key", "a")
-    r2 = _cli(path, "reserve", "--resets", "2", "--route", "mme/orig", "--key", "b")
-    r3 = _cli(path, "reserve", "--resets", "2", "--route", "mme/orig", "--key", "c")
+    r2 = _cli(path, "reserve", "--resets", "2", "--route", "perceptual-framesamp-modul/orig", "--key", "b")
+    r3 = _cli(path, "reserve", "--resets", "2", "--route", "perceptual-framesamp-modul/orig", "--key", "c")
     rid1, rid2, rid3 = (r.stdout.strip().split("rid=")[-1] for r in (r1, r2, r3))
     assert _cli(path, "commit", "--id", rid1).returncode == 0
     assert _cli(path, "commit", "--id", rid2, "--resets", "4").returncode == 0
     assert _cli(path, "release", "--id", rid3).returncode == 0
-    assert _cli(path, "claim-retry", "--route", "mme/orig", "--key", "b", "--interrupt", "infra").returncode == 0
-    assert _cli(path, "claim-retry", "--route", "mme/orig", "--key", "b", "--interrupt", "expired").returncode == 5
+    assert _cli(path, "claim-retry", "--route", "perceptual-framesamp-modul/orig", "--key", "b", "--interrupt", "infra").returncode == 0
+    assert _cli(path, "claim-retry", "--route", "perceptual-framesamp-modul/orig", "--key", "b", "--interrupt", "expired").returncode == 5
     rep = _cli(path, "report")
     assert rep.returncode == 0
     assert rep.stdout.strip().splitlines()[-1] == (
@@ -269,14 +269,14 @@ def test_insufficient_budget_rejected_before_attempt(tmp_path, monkeypatch, caps
     shared = bm.BudgetLedger(tmp_path / "budget.jsonl", trajectory_cap=1)
     shared.reserve(resets=6, route="smvla/orig", key="other")  # 名额已满
     world = F.World()
-    runner = F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, F.FakePolicyServer()), world,
+    runner = F.make_runner(tmp_path, "perceptual-framesamp-modul", F.framesamp_modul_policy(monkeypatch, F.FakePolicyServer()), world,
                            budget_ledger=shared)
     assert F.run_rows(runner, [_ident()]) == 5
-    rows = F.read_jsonl(tmp_path / "s00" / "mme" / "mme.ledger.jsonl")
+    rows = F.read_jsonl(tmp_path / "s00" / "perceptual-framesamp-modul" / "perceptual-framesamp-modul.ledger.jsonl")
     assert not [r for r in rows if r["kind"] in ("attempt_start", "reset_claim", "attempt_end")]
     assert world.envs == []
-    assert not (tmp_path / "s00" / "mme" / "results.jsonl").exists()
-    assert "RUN_BLOCKED reason=budget policy=mme" in capsys.readouterr().out
+    assert not (tmp_path / "s00" / "perceptual-framesamp-modul" / "results.jsonl").exists()
+    assert "RUN_BLOCKED reason=budget policy=perceptual-framesamp-modul" in capsys.readouterr().out
 
 
 def test_shared_mode_infra_then_success(tmp_path, monkeypatch):
@@ -287,16 +287,16 @@ def test_shared_mode_infra_then_success(tmp_path, monkeypatch):
     a = _ident()
     world = F.World({(a["task"], a["builder_episode"]): [F.Plan(raise_at=1, raise_exc=lambda: RuntimeError("svulkan2")),
                                                          F.Plan(success_at=3)]})
-    runner = F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, F.FakePolicyServer()), world,
+    runner = F.make_runner(tmp_path, "perceptual-framesamp-modul", F.framesamp_modul_policy(monkeypatch, F.FakePolicyServer()), world,
                            budget_ledger=str(path))
     assert F.run_rows(runner, [a]) == 0
     st = bm.BudgetLedger(path).state()
     assert st.trajectories == 2 and len(st.commits) == 2 and st.resets == 4
-    assert [(r["route"], r["key"], r["interrupt"]) for r in st.retries] == [("mme/new", a["key"], "infra")]
-    local = F.read_jsonl(tmp_path / "s00" / "mme" / "mme.ledger.jsonl")
+    assert [(r["route"], r["key"], r["interrupt"]) for r in st.retries] == [("perceptual-framesamp-modul/new", a["key"], "infra")]
+    local = F.read_jsonl(tmp_path / "s00" / "perceptual-framesamp-modul" / "perceptual-framesamp-modul.ledger.jsonl")
     starts = [r for r in local if r["kind"] == "attempt_start"]
     assert [r.get("interrupt") for r in starts] == [None, "infra"]
-    assert all(r["route"] == "mme/new" and r["budget_rid"] in st.reserves for r in starts)
+    assert all(r["route"] == "perceptual-framesamp-modul/new" and r["budget_rid"] in st.reserves for r in starts)
     ok, lines = bm.BudgetLedger(path).report_lines()
     assert ok and lines[-1] == "BUDGET_ENFORCEMENT=PASS trajectories=2/6366 resets=4/141430 astra=0/2 shared_infra=1/50"
 
@@ -304,7 +304,7 @@ def test_shared_mode_infra_then_success(tmp_path, monkeypatch):
 def test_env_var_gate_opens_shared_mode(tmp_path, monkeypatch):
     path = tmp_path / "budget.jsonl"
     monkeypatch.setenv("SGEVAL_BUDGET_LEDGER", str(path))
-    runner = F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, F.FakePolicyServer()), F.World())
+    runner = F.make_runner(tmp_path, "perceptual-framesamp-modul", F.framesamp_modul_policy(monkeypatch, F.FakePolicyServer()), F.World())
     assert runner.ledger.shared is not None
     assert F.run_rows(runner, [_ident()]) == 0
     assert bl_mod().BudgetLedger(path).state().trajectories == 1
@@ -316,8 +316,8 @@ def test_expired_and_infra_counted_separately(tmp_path, monkeypatch):
     ec, bm = F.env_client(), bl_mod()
     path = tmp_path / "budget.jsonl"
     a, b = _ident(0), _ident(1)
-    out = tmp_path / "s00" / "mme"
-    pre = ec.AttemptLedger(out / "mme.ledger.jsonl", seat="s00", policy="mme", shared=str(path), route="mme/new")
+    out = tmp_path / "s00" / "perceptual-framesamp-modul"
+    pre = ec.AttemptLedger(out / "perceptual-framesamp-modul.ledger.jsonl", seat="s00", policy="perceptual-framesamp-modul", shared=str(path), route="perceptual-framesamp-modul/new")
     pre.start(100, 10)
     monkeypatch.setenv("SLURM_JOB_ID", "111")
     pre.attempt_start(key=a["key"], attempt_id="xa", attempt_no=1, retry=False)
@@ -328,10 +328,10 @@ def test_expired_and_infra_counted_separately(tmp_path, monkeypatch):
     jobs.write_text("111.batch\n999\n", encoding="utf-8")
     monkeypatch.setenv("SGEVAL_EXPIRED_JOBS", str(jobs))
     world = F.World()
-    runner = F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, F.FakePolicyServer()), world,
+    runner = F.make_runner(tmp_path, "perceptual-framesamp-modul", F.framesamp_modul_policy(monkeypatch, F.FakePolicyServer()), world,
                            budget_ledger=str(path))
     assert runner.recover_dangling() == 2
-    ends = {r["attempt_id"]: r for r in F.read_jsonl(out / "mme.ledger.jsonl") if r["kind"] == "attempt_end"}
+    ends = {r["attempt_id"]: r for r in F.read_jsonl(out / "perceptual-framesamp-modul.ledger.jsonl") if r["kind"] == "attempt_end"}
     assert ends["xa"]["interrupt"] == "expired" and "sacct_timeout job=111" in ends["xa"]["interrupt_evidence"]
     assert ends["xb"]["interrupt"] == "infra" and ends["xb"]["interrupt_evidence"] == "no_expiry_evidence"
     assert runner.ledger.interrupt_counts() == {"infra": 1, "expired": 1}
@@ -345,7 +345,7 @@ def test_expired_and_infra_counted_separately(tmp_path, monkeypatch):
 
 def test_classify_by_slurm_end_time(tmp_path):
     ec = F.env_client()
-    led = ec.AttemptLedger(tmp_path / "x.jsonl", seat="s", policy="mme", shared=None, expired_jobs=[])
+    led = ec.AttemptLedger(tmp_path / "x.jsonl", seat="s", policy="perceptual-framesamp-modul", shared=None, expired_jobs=[])
     start = {"attempt_id": "a", "t": 1000.0, "slurm_job_id": "5", "slurm_end_time": 2000}
     led.last_t["a"] = 1950.0
     assert led.classify_interrupt(start, now=2100.0)[0] == "expired"
@@ -360,7 +360,7 @@ def test_second_interrupt_exhausts_identity(tmp_path, monkeypatch):
     path = tmp_path / "budget.jsonl"
     a = _ident()
     world = F.World({(a["task"], a["builder_episode"]): [F.Plan(raise_at=1, raise_exc=lambda: RuntimeError("svulkan2"))]})
-    runner = F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, F.FakePolicyServer()), world,
+    runner = F.make_runner(tmp_path, "perceptual-framesamp-modul", F.framesamp_modul_policy(monkeypatch, F.FakePolicyServer()), world,
                            budget_ledger=str(path))
     assert F.run_rows(runner, [a]) == 6
     assert len(world.envs) == 2
@@ -372,13 +372,13 @@ def test_normal_outcomes_not_rerun_in_shared_mode(tmp_path, monkeypatch, status,
     ec, bm = F.env_client(), bl_mod()
     path = tmp_path / "budget.jsonl"
     a = _ident()
-    out = tmp_path / "s00" / "mme"
-    led = ec.AttemptLedger(out / "mme.ledger.jsonl", seat="s00", policy="mme", shared=str(path))
+    out = tmp_path / "s00" / "perceptual-framesamp-modul"
+    led = ec.AttemptLedger(out / "perceptual-framesamp-modul.ledger.jsonl", seat="s00", policy="perceptual-framesamp-modul", shared=str(path))
     led.start(100, 10)
     led.attempt_start(key=a["key"], attempt_id="x1", attempt_no=1, retry=False)
     led.attempt_end({"key": a["key"], "attempt_id": "x1", "attempt_no": 1, "status": status, "infra": infra})
     world = F.World()
-    runner = F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, F.FakePolicyServer()), world,
+    runner = F.make_runner(tmp_path, "perceptual-framesamp-modul", F.framesamp_modul_policy(monkeypatch, F.FakePolicyServer()), world,
                            budget_ledger=str(path))
     assert F.run_rows(runner, [a]) == 0
     assert world.envs == []
@@ -416,7 +416,7 @@ def _det(monkeypatch):
 
 
 def _ledger_script(mod, path: Path):
-    led = mod.AttemptLedger(path, seat="s00", policy="mme")
+    led = mod.AttemptLedger(path, seat="s00", policy="perceptual-framesamp-modul")
     led.start(5, 1)
     led.attempt_start(key="k", attempt_id="a1", attempt_no=1, retry=False, task="T")
     led.claim_reset(key="k", attempt_id="a1", attempt_no=1, what="build")
@@ -426,8 +426,8 @@ def _ledger_script(mod, path: Path):
     led.attempt_end({"key": "k", "attempt_id": "a2", "attempt_no": 2, "status": "fail", "infra": False,
                      "recovered": True})
     led.attempt_start(key="j", attempt_id="b1", attempt_no=1, retry=False)
-    mod.AttemptLedger(path, seat="s00", policy="mme").start(9, 1, reason="raise")
-    again = mod.AttemptLedger(path, seat="s00", policy="mme")
+    mod.AttemptLedger(path, seat="s00", policy="perceptual-framesamp-modul").start(9, 1, reason="raise")
+    again = mod.AttemptLedger(path, seat="s00", policy="perceptual-framesamp-modul")
     return (again.reset_left(), again.infra_retries_left(), again.attempts_used("k"), again.accepted,
             [r["attempt_id"] for r in again.dangling()])
 
@@ -443,11 +443,19 @@ def test_default_attempt_ledger_bytes_equal_base(tmp_path, monkeypatch):
     assert (tmp_path / "base.jsonl").read_bytes() == (tmp_path / "cur.jsonl").read_bytes()
 
 
-def _runner_of(mod, stage: Path, policy_mod, world):
-    out = stage / "s00" / "mme"
-    args = F.seat_args(out, "mme", ledger=out / "mme.ledger.jsonl", infra_retry_budget=1)
+def _legacy_dataset(name: str) -> str:
+    """改名前（BASE）接口里的数据集名：取自 official_defs 别名表（BASE 的 env_client 只认旧名）。"""
+    defs = load_script("eval-official/official_defs.py")
+    return next(o for o, n in defs.LEGACY_DATASET_ALIASES.items() if n == name)
+
+
+def _runner_of(mod, stage: Path, policy_mod, world, *, dataset: str = "ood"):
+    canon_ds = load_script("eval-official/official_defs.py").canonical_dataset  # builder 只认官方名
+    out = stage / "s00" / "perceptual-framesamp-modul"
+    args = F.seat_args(out, "perceptual-framesamp-modul", ledger=out / "perceptual-framesamp-modul.ledger.jsonl",
+                       infra_retry_budget=1, dataset=dataset)
     return mod.SeatRunner(args, policy_mod=policy_mod, recorder_factory=lambda d, m: F.FakeRecorder(d, m, world),
-                          builder_factory=lambda task, dataset, ms: F.HybridBuilder(task, ms, world, dataset),
+                          builder_factory=lambda task, dataset, ms: F.HybridBuilder(task, ms, world, canon_ds(dataset)),
                           proc_info={"gpu_name": "fake", "gpu_uuid": "fake", "git_commit": "0" * 40,
                                      "git_dirty": False, "init_timing": {}})
 
@@ -459,13 +467,19 @@ def test_default_seat_runner_ledger_bytes_equal_base(tmp_path, monkeypatch):
     a, b, c = _ident(0), _ident(1), _ident(2)
     boom = [F.Plan(raise_at=1, raise_exc=lambda: RuntimeError("svulkan2"))]
 
-    def run(mod, stage):
+    old_ds = _legacy_dataset("ood")
+
+    def run(mod, stage, dataset):
         _det(monkeypatch)
         world = F.World({(b["task"], b["builder_episode"]): list(boom), (c["task"], c["builder_episode"]): list(boom)})
-        runner = _runner_of(mod, stage, F.mme_policy(monkeypatch, F.FakePolicyServer()), world)
+        runner = _runner_of(mod, stage, F.framesamp_modul_policy(monkeypatch, F.FakePolicyServer()), world,
+                            dataset=dataset)
         return F.run_rows(runner, [a, b, c]), len(world.envs)
 
-    assert run(base, tmp_path / "base") == run(cur, tmp_path / "cur")
-    lb = (tmp_path / "base" / "s00" / "mme" / "mme.ledger.jsonl").read_bytes()
-    lc = (tmp_path / "cur" / "s00" / "mme" / "mme.ledger.jsonl").read_bytes()
+    # BASE 只认改名前的数据集名：以旧名驱动（R1 只改名，账本行不含数据集名，仍须逐字节相同）
+    assert run(base, tmp_path / "base", old_ds) == run(cur, tmp_path / "cur", "ood")
+    lb = (tmp_path / "base" / "s00" / "perceptual-framesamp-modul" / "perceptual-framesamp-modul.ledger.jsonl").read_bytes()
+    lc = (tmp_path / "cur" / "s00" / "perceptual-framesamp-modul" / "perceptual-framesamp-modul.ledger.jsonl").read_bytes()
+    # 账本行带数据集名：BASE 侧的旧名换成官方名（只换这一个 JSON 字符串值）后逐字节相同
+    lb = lb.replace(f'"{old_ds}"'.encode(), b'"ood"')
     assert lb == lc and b"budget_rid" not in lc and b"interrupt" not in lc

@@ -1,7 +1,8 @@
 """L0：顶层入口（C18 入口白名单、生产不依赖 tests、``run_example.EPISODE_LIMITS`` 与官方元数据一致）。
 
-- ``evaluation_hard.py`` 与上游 ``evaluation.py`` 恰好差 3 个单行 hunk：import、``dataset="test-hard"``、``max_steps``；
-  ``max_steps`` 的数值不断言（计划 Q16 待定），只断言它在同一位置、仍是整数字面值关键字参数。
+- ``evaluation_hard.py`` 与上游 ``evaluation.py`` 恰好差 3 个单行 hunk 加 1 个纯插入块：import、``dataset=DATASET``、
+  ``max_steps=DATASET_MAX_STEPS[DATASET]``，以及 ``TASKS`` 之前插入的数据集选择块（两个接口 ``hard-verify``↔1300、
+  ``ood``↔1600，默认 ``ood``；1006 改名计划 R1：示例改成两段）。
 - ``scripts/*.py`` 恰好四个入口（AGENTS.md P1）。
 - ``scripts/`` 与 ``challenge_interface/`` 的生产代码不 import ``tests``（AST 收集 import 语句，L0 允许）。
 """
@@ -26,20 +27,25 @@ PRODUCTION_DIRS = (REPO / "scripts", REPO / "challenge_interface")
 # ---------------------------------------------------------------- evaluation_hard 与 evaluation 的差异
 
 
-def single_line_hunks(old: str, new: str) -> list[tuple[int, str, str]]:
-    """逐行差异；每块必须是「同一行号上一行换一行」，否则返回 None 表示形态不合。
+def single_line_hunks(old: str, new: str, *, allow_insert: bool = False):
+    """逐行差异；每块必须是「一行换一行」（插入块之前行号相同，之后按插入行数平移），否则返回 None 表示形态不合。
 
-    返回 [(行号(1 起), 旧行, 新行)]。
+    ``allow_insert`` 为假时返回 [(新文件行号(1 起), 旧行, 新行)]，且不允许任何插入；为真时最多允许一个纯插入块，
+    返回 (单行替换列表, 插入块 (新文件起始行号(1 起), [插入的行]) 或 None)。
     """
     a, b = old.splitlines(), new.splitlines()
-    out = []
+    out, insert = [], None
     for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(a=a, b=b, autojunk=False).get_opcodes():
         if tag == "equal":
             continue
-        if tag != "replace" or i2 - i1 != 1 or j2 - j1 != 1 or i1 != j1:
+        if tag == "insert" and allow_insert and insert is None:
+            insert = (j1 + 1, b[j1:j2])
+            continue
+        shift = len(insert[1]) if insert else 0
+        if tag != "replace" or i2 - i1 != 1 or j2 - j1 != 1 or j1 != i1 + shift:
             return None
-        out.append((i1 + 1, a[i1], b[j1]))
-    return out
+        out.append((j1 + 1, a[i1], b[j1]))
+    return (out, insert) if allow_insert else out
 
 
 def _builder_call(tree: ast.AST) -> ast.Call:
@@ -49,11 +55,13 @@ def _builder_call(tree: ast.AST) -> ast.Call:
     return calls[0]
 
 
-def test_evaluation_hard_diff_is_exactly_three_single_line_hunks():
+def test_evaluation_hard_diff_is_three_single_line_hunks_and_dataset_block():
     old = (SCRIPTS / "evaluation.py").read_text(encoding="utf-8")
     new = (SCRIPTS / "evaluation_hard.py").read_text(encoding="utf-8")
-    hunks = single_line_hunks(old, new)
-    assert hunks is not None and len(hunks) == 3, hunks
+    res = single_line_hunks(old, new, allow_insert=True)
+    assert res is not None, "差异形态不合"
+    hunks, insert = res
+    assert len(hunks) == 3 and insert is not None, res
     (l1, o1, n1), (l2, o2, n2), (l3, o3, n3) = hunks
     # 1) import：只把包名换成 robomme_hard。
     assert o1 == "from robomme.env_record_wrapper import BenchmarkEnvBuilder"
@@ -61,19 +69,25 @@ def test_evaluation_hard_diff_is_exactly_three_single_line_hunks():
     tree = ast.parse(new)
     first_def = min(n.lineno for n in tree.body if isinstance(n, (ast.FunctionDef, ast.ClassDef)))
     assert l1 < first_def
-    # 2) dataset：test → test-hard，缩进不变。
-    assert o2.strip() == 'dataset="test",' and n2.strip() == 'dataset="test-hard",'
+    # 2) dataset：test → DATASET，缩进不变。
+    assert o2.strip() == 'dataset="test",' and n2.strip() == 'dataset=DATASET,'
     assert o2[: len(o2) - len(o2.lstrip())] == n2[: len(n2) - len(n2.lstrip())]
-    # 3) max_steps：只断言仍是整数关键字参数、缩进不变，数值不断言（Q16）。
-    pat = re.compile(r"^(\s*)max_steps=\d+,")
-    mo, mn = pat.match(o3), pat.match(n3)
+    # 3) max_steps：整数字面值 → 按数据集查 DATASET_MAX_STEPS，缩进不变。
+    mo = re.match(r"^(\s*)max_steps=\d+,", o3)
+    mn = re.match(r"^(\s*)max_steps=DATASET_MAX_STEPS\[DATASET\],", n3)
     assert mo and mn and mo.group(1) == mn.group(1)
     # 位置：后两处恰是 BenchmarkEnvBuilder(...) 调用的 dataset／max_steps 关键字参数。
     kw = {k.arg: k for k in _builder_call(tree).keywords}
     assert kw["dataset"].value.lineno == l2
-    assert isinstance(kw["dataset"].value, ast.Constant) and kw["dataset"].value.value == "test-hard"
+    assert isinstance(kw["dataset"].value, ast.Name) and kw["dataset"].value.id == "DATASET"
     assert kw["max_steps"].value.lineno == l3
-    assert isinstance(kw["max_steps"].value, ast.Constant) and isinstance(kw["max_steps"].value.value, int)
+    assert isinstance(kw["max_steps"].value, ast.Subscript)
+    # 4) 插入块：只在 TASKS 之前、只含注释与两个赋值——两个接口与步数配对（本阶段 ood 仍 1600），默认 ood。
+    start, block = insert
+    assert block[-1].startswith("DATASET = ") and new.splitlines()[start - 1 + len(block)].startswith("TASKS = ")
+    code = [ln for ln in block if not ln.startswith("#")]
+    assigns = {n.targets[0].id: ast.literal_eval(n.value) for n in ast.parse("\n".join(code)).body}
+    assert assigns == {"DATASET_MAX_STEPS": {"hard-verify": 1300, "ood": 1600}, "DATASET": "ood"}, assigns
 
 
 def test_single_line_hunks_negatives():
@@ -83,6 +97,10 @@ def test_single_line_hunks_negatives():
     assert single_line_hunks(base, "a\nb\nx\nc\n") is None  # 多一行
     assert single_line_hunks(base, "a\nc\n") is None  # 少一行
     assert single_line_hunks(base, "a\nB\nC\n") is None  # 两行连成一块
+    # 允许一个插入块：插入后的单行替换按插入行数平移；两个插入块、删行仍判不合
+    assert single_line_hunks(base, "a\nx\ny\nb\nC\n", allow_insert=True) == ([(5, "c", "C")], (2, ["x", "y"]))
+    assert single_line_hunks(base, "x\na\nb\ny\nc\n", allow_insert=True) is None
+    assert single_line_hunks(base, "a\nc\n", allow_insert=True) is None
 
 
 # ---------------------------------------------------------------- 入口清单

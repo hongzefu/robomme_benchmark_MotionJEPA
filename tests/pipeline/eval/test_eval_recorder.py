@@ -107,9 +107,9 @@ def test_seat_runner_with_real_recorder_feeds_report(tmp_path, monkeypatch, caps
     ident = F.packaged_identity(task, tier, 0)
     world = F.World({(task, ident["builder_episode"]): [F.Plan(success_at=20)]})
     ec = F.env_client()
-    out = tmp_path / "stage" / "s00" / "mme"
-    args = F.seat_args(out, "mme", ledger=out / "mme.ledger.jsonl")
-    runner = ec.SeatRunner(args, policy_mod=F.mme_policy(monkeypatch, F.FakePolicyServer()),
+    out = tmp_path / "stage" / "s00" / "perceptual-framesamp-modul"
+    args = F.seat_args(out, "perceptual-framesamp-modul", ledger=out / "perceptual-framesamp-modul.ledger.jsonl")
+    runner = ec.SeatRunner(args, policy_mod=F.framesamp_modul_policy(monkeypatch, F.FakePolicyServer()),
                            recorder_factory=lambda d, m: rec_mod.EpisodeRecorder(d, m, free_gib_fn=lambda p: 1e6),
                            builder_factory=lambda t, ms: F.HybridBuilder(t, ms, world),
                            proc_info={"init_timing": {}})
@@ -120,5 +120,5 @@ def test_seat_runner_with_real_recorder_feeds_report(tmp_path, monkeypatch, caps
     # reset 3 帧 + 20 步各 1 帧
     assert summary["frames"] == 2 * (F.N_RESET_FRAMES + 20)
     manifest = F.write_manifest(tmp_path / "m" / "manifest.json", [ident])
-    rc, lines, rep = F.run_report(capsys, manifest, tmp_path / "stage", ["mme"], tmp_path / "rep", "--expect-total", "1")
+    rc, lines, rep = F.run_report(capsys, manifest, tmp_path / "stage", ["perceptual-framesamp-modul"], tmp_path / "rep", "--expect-total", "1")
     assert rc == 0 and F.verdict(lines, "V8_EVAL_REPORT")["media_unexplained"] == "0"

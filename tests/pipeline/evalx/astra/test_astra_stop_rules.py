@@ -30,7 +30,7 @@ class _NullWriter:
 def _setup(mod, astra, tmp_path, monkeypatch, tasks, env_plan=None):
     monkeypatch.setattr(astra.runner.imageio, "get_writer", lambda *a, **k: _NullWriter())
     cls = recording_builder_cls(env_plan)
-    doc = mod.prepare_cases(cls, "test-hard0", tasks, source_episodes=[3])
+    doc = mod.prepare_cases(cls, "hard-verify", tasks, source_episodes=[3])
     args = make_args(tmp_path, write_cases(tmp_path / "cases.json", doc), max_steps=1300)
     return cls, args
 

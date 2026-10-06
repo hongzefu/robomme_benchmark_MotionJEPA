@@ -6,7 +6,7 @@
 S7（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分一节 S7）相对 v7.5eval ``_v75_obs_common.py`` 的改动：
 - 局目录改为与 GroundSG 原侧 ``official_hard_runner.run_identity`` 同布局的 ``<root>/<key>.a<N>/``，``key`` 与上一轮
   xhard0 分片相同（``<task>_xhard0_<seed>``），``N`` 按该身份在本录制根下的开局顺序编号（续跑接着编）；
-- 新增 ``load_eval_module`` 按路径加载 ``scripts/eval-official/`` 下的 ``mmesg_client``（复用其 ``RawFrameWriter``
+- 新增 ``load_eval_module`` 按路径加载 ``scripts/eval-official/`` 下的 ``groundsg_client``（复用其 ``RawFrameWriter``
   与已加载的 ``trace_writer``），不改 ``sys.path``；
 - 新增 ``HookErrors``：钩子异常只打一行 ``OBSERVER_HOOK_ERROR`` 并累加计数，同时追加到
   ``<root>/hook-errors.jsonl``（启动器据此出 ``OBSERVER_COMPLETE`` 的 ``hook_errors=``）。
@@ -30,7 +30,7 @@ EVAL_DIR = OBS_DIR.parent
 RECORDER_PATH = EVAL_DIR / "recorder.py"
 
 XHARD0 = "xhard0"
-DATASET = "test-hard0"  # 与 official_hard_runner.DATASET 相同（第二档两侧身份口径）
+DATASET = "hard-verify"  # 与 official_hard_runner.DATASET 相同（第二档两侧身份口径）
 EP_DIR_RE = re.compile(r"^(?P<key>.+)\.a(?P<attempt>\d+)$")
 FINAL_STATUSES = ("success", "fail", "timeout")
 TERMINALS = ("success", "fail", "timeout", "error")
@@ -49,7 +49,7 @@ def load_recorder():
 
 
 def load_eval_module(name: str):
-    """按路径加载 ``scripts/eval-official/<name>.py``（模块名即 ``name``，已加载则复用；与 ``mmesg_client.load_sibling``
+    """按路径加载 ``scripts/eval-official/<name>.py``（模块名即 ``name``，已加载则复用；与 ``groundsg_client.load_sibling``
     同一别名约定，故 ``trace_writer`` 只有一份）。"""
     if name in sys.modules:
         return sys.modules[name]

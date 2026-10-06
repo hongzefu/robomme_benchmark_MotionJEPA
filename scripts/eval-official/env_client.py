@@ -9,18 +9,18 @@
      状态、终态字段；``env.step`` 抛出的异常原样上抛（由策略客户端按旧官方语义处理）；
    * 逐段计时：环境构建、reset、逐步 env 时间、录制开销、close。
 2. ``run`` 子命令：常驻客户端进程。import 与 Vulkan 设备只建一次，逐身份建 EnvSession + EpisodeRecorder，调用
-   策略模块（``<policy>_client``：mme／smvla／mmesg／pp）的
+   策略模块（``POLICY_MODULES``：framesamp_modul_client／smvla_client／groundsg_client／pp_client）的
    ``run_episode(session, identity, conn_info, recorder) -> dict``，结果写 ``<out>/results.jsonl``（合同格式），
    进度心跳写 ``<out>/progress.json``。
 
-数据集与步数（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.2）：``--dataset {test-hard,test-hard0}`` 与
-``--max-steps`` 都必填、无默认值；步数上限不再按档查表，一律取 ``--max-steps``。启动约定：test-hard →
-``--max-steps 1600 --strict-cap``；test-hard0 → ``--max-steps 1300``、不带 ``--strict-cap``。``--strict-cap`` 打开时
+数据集与步数（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.2）：``--dataset {ood,hard-verify}`` 与
+``--max-steps`` 都必填、无默认值；步数上限不再按档查表，一律取 ``--max-steps``。启动约定：ood →
+``--max-steps 1600 --strict-cap``；hard-verify → ``--max-steps 1300``、不带 ``--strict-cap``。``--strict-cap`` 打开时
 ``EnvSession.step`` 在已执行 ``max_steps`` 步后不再进入环境、抛 ``StepCapReached``，``run_one`` 收为 ``status=timeout``
 （``cap_hit=true``）；不带时步数由策略客户端自己的循环决定（官方循环可执行第 ``max_steps+1`` 步）。
 
 身份清单一律是 ``eval_manifest.py`` 产出的分片 JSON（``shard-NN.json``），身份模式由 ``--dataset`` 决定：
-test-hard 逐键严格核对 tier／seed／candidate／spec_sha256（spec_sha256 为 64 位串）；test-hard0 要求
+ood 逐键严格核对 tier／seed／candidate／spec_sha256（spec_sha256 为 64 位串）；hard-verify 要求
 tier=="xhard0"、candidate 与 spec_sha256 为 null、source_episode 为整数且与 builder 解析结果相等。不符即
 「运行阻塞」（写一条 ``run_blocked`` 记录、打印 ``RUN_BLOCKED``、退出码 3）。
 
@@ -71,13 +71,16 @@ for _extra in (REPO / "src",):
 
 XHARD0 = "xhard0"
 #: 两个评估数据集：新值档（V9）与官方 test 的 hard 子集（xhard0）
-TEST_HARD = "test-hard"
-TEST_HARD0 = "test-hard0"
-DATASETS = (TEST_HARD, TEST_HARD0)
-#: 策略模块名（按 load_sibling(f"{policy}_client") 加载）
-POLICIES = ("mme", "smvla", "mmesg", "pp")
-#: mmesg（GroundSG）两个子目标来源变体
-MME_VARIANTS = ("ground-sg-oracle", "ground-sg-qwenvl")
+OOD = "ood"
+HARD_VERIFY = "hard-verify"
+DATASETS = (OOD, HARD_VERIFY)
+#: 策略标签（官方名；FrameSamp+Modulation 为 ``perceptual-framesamp-modul``、GroundSG 为 ``groundsg``）
+POLICIES = ("perceptual-framesamp-modul", "smvla", "groundsg", "pp")
+#: 策略标签 → 同目录策略模块名（按 load_sibling(POLICY_MODULES[policy]) 加载）
+POLICY_MODULES = {"perceptual-framesamp-modul": "framesamp_modul_client", "smvla": "smvla_client",
+                  "groundsg": "groundsg_client", "pp": "pp_client"}
+#: GroundSG 两个子目标来源变体
+GROUNDSG_VARIANTS = ("ground-sg-oracle", "ground-sg-qwenvl")
 EXIT_BLOCKED = 3
 EXIT_BUDGET = 5
 EXIT_INCOMPLETE = 6
@@ -206,7 +209,7 @@ class EnvSession:
     def __init__(self, task: str, builder_episode: int, *, max_steps: int | None = None, recorder=None, builder=None,
                  progress_cb: Callable[[int], None] | None = None, progress_every: int = 16,
                  step_cap: int | None = None, claim_reset: Callable[[str], None] | None = None,
-                 dataset: str = TEST_HARD, budget_claim: Any = _UNSET):
+                 dataset: str = OOD, budget_claim: Any = _UNSET):
         self.task = task
         # S8：budget_claim(what) 在本地额度领到后再记进共享预算账本（只告警、不拦）；缺省（_UNSET）或 None 时不记
         self.budget_claim = None if budget_claim is _UNSET else budget_claim
@@ -467,11 +470,11 @@ def _same_int_or_null(a: Any, b: Any) -> bool:
     return (a is None and b is None) or (_is_int(a) and _is_int(b) and a == b)
 
 
-def validate_v8_identity(row: dict, dataset: str = TEST_HARD) -> str | None:
+def validate_v8_identity(row: dict, dataset: str = OOD) -> str | None:
     """执行身份行的结构核对（字段齐全、nullable 严格、key 自洽）；不符返回说明。身份模式由 ``dataset`` 决定：
 
-    * test-hard：spec_sha256 为 64 位串，candidate 为整数或 null；
-    * test-hard0：tier=="xhard0"、candidate 与 spec_sha256 为 null、source_episode 为整数。"""
+    * ood：spec_sha256 为 64 位串，candidate 为整数或 null；
+    * hard-verify：tier=="xhard0"、candidate 与 spec_sha256 为 null、source_episode 为整数。"""
     if dataset not in DATASETS:
         return f"dataset={dataset!r}"
     bad = []
@@ -484,7 +487,7 @@ def validate_v8_identity(row: dict, dataset: str = TEST_HARD) -> str | None:
         bad.append(f"candidate={row['candidate']!r}")
     if row["source_episode"] is not None and not _is_int(row["source_episode"]):
         bad.append(f"source_episode={row['source_episode']!r}")
-    if dataset == TEST_HARD0:
+    if dataset == HARD_VERIFY:
         if row["tier"] != XHARD0:
             bad.append(f"tier={row['tier']!r} 不是 {XHARD0}")
         if row["candidate"] is not None:
@@ -500,16 +503,16 @@ def validate_v8_identity(row: dict, dataset: str = TEST_HARD) -> str | None:
     return "; ".join(bad) or None
 
 
-def check_identity(resolved: dict, want: dict, *, dataset: str = TEST_HARD) -> str | None:
+def check_identity(resolved: dict, want: dict, *, dataset: str = OOD) -> str | None:
     """builder 解析出的身份必须与清单一致；不一致返回说明（运行阻塞）。
 
-    test-hard：tier／seed／candidate／spec_sha256 逐键严格相等（candidate 可空，两边同为 null 或同一整数）。
-    test-hard0：两边 tier 都是 xhard0，seed 相等，candidate 与 spec_sha256 两边都为 null，source_episode 两边同为
+    ood：tier／seed／candidate／spec_sha256 逐键严格相等（candidate 可空，两边同为 null 或同一整数）。
+    hard-verify：两边 tier 都是 xhard0，seed 相等，candidate 与 spec_sha256 两边都为 null，source_episode 两边同为
     整数且相等。"""
     bad = []
     if resolved.get("tier") != want.get("tier"):
         bad.append(f"tier builder={resolved.get('tier')} want={want.get('tier')}")
-    if dataset == TEST_HARD0:
+    if dataset == HARD_VERIFY:
         if want.get("tier") != XHARD0:
             bad.append(f"tier want={want.get('tier')} 不是 {XHARD0}")
         for k in ("seed", "source_episode"):
@@ -540,11 +543,13 @@ def order_identities(rows: list[dict], order: str, shuffle_seed: int) -> list[di
 
 
 def read_results(path: Path) -> list[dict]:
+    """读逐局结果行；历史行里的旧策略标签／数据集名／路线经 ``official_defs.canonical_row`` 映射成官方名。"""
+    canon = load_sibling("official_defs").canonical_row
     rows = []
     if path.exists():
         for line in path.read_text(encoding="utf-8").splitlines():
             try:
-                rows.append(json.loads(line))
+                rows.append(canon(json.loads(line)))
             except json.JSONDecodeError:
                 continue  # 崩溃留下的半行
     return rows
@@ -842,15 +847,15 @@ class AttemptLedger:
 
 
 def policy_route(args) -> str:
-    """C1 新侧路线名：``mmesg/<variant>/new``，其余 ``<policy>/new``（S8 共享账本按它区分身份）。"""
-    if args.policy == "mmesg":
-        return f"mmesg/{getattr(args, 'mme_variant', None)}/new"
+    """C1 新侧路线名：``groundsg/<variant>/new``，其余 ``<policy>/new``（S8 共享账本按它区分身份）。"""
+    if args.policy == "groundsg":
+        return f"groundsg/{getattr(args, 'groundsg_variant', None)}/new"
     return f"{args.policy}/new"
 
 
 def policy_variant_of(args) -> str | None:
-    """结果行的 ``policy_variant``：mmesg 取 ``--mme-variant``，其余策略为 null。"""
-    return getattr(args, "mme_variant", None) if args.policy == "mmesg" else None
+    """结果行的 ``policy_variant``：groundsg 取 ``--groundsg-variant``，其余策略为 null。"""
+    return getattr(args, "groundsg_variant", None) if args.policy == "groundsg" else None
 
 
 def check_run_args(args, *, need_identities: bool = False) -> str | None:
@@ -868,17 +873,17 @@ def check_run_args(args, *, need_identities: bool = False) -> str | None:
             if v is None]
     if miss:
         bad.append(f"必须给 {' '.join(miss)}")
-    variant = getattr(args, "mme_variant", None)
+    variant = getattr(args, "groundsg_variant", None)
     adapter = getattr(args, "qwenvl_groundsg_adapter", None)
-    if args.policy == "mmesg":
-        if variant not in MME_VARIANTS:
-            bad.append(f"--policy mmesg 必须给 --mme-variant {'／'.join(MME_VARIANTS)}")
+    if args.policy == "groundsg":
+        if variant not in GROUNDSG_VARIANTS:
+            bad.append(f"--policy groundsg 必须给 --groundsg-variant {'／'.join(GROUNDSG_VARIANTS)}")
     elif variant is not None:
-        bad.append("--mme-variant 只能与 --policy mmesg 同用")
+        bad.append("--groundsg-variant 只能与 --policy groundsg 同用")
     if variant == "ground-sg-qwenvl" and not adapter:
-        bad.append("--mme-variant ground-sg-qwenvl 必须给 --qwenvl-groundsg-adapter")
+        bad.append("--groundsg-variant ground-sg-qwenvl 必须给 --qwenvl-groundsg-adapter")
     if adapter and variant != "ground-sg-qwenvl":
-        bad.append("--qwenvl-groundsg-adapter 只能与 --mme-variant ground-sg-qwenvl 同用")
+        bad.append("--qwenvl-groundsg-adapter 只能与 --groundsg-variant ground-sg-qwenvl 同用")
     return "; ".join(bad) or None
 
 
@@ -961,7 +966,7 @@ class SeatRunner:
 
     def policy_kwargs(self, max_steps: int) -> dict:
         """策略 ``run_episode`` 签名里有 ``max_steps``／``reset_retries`` 关键字（smvla）就显式传
-        ``max_steps=--max-steps``、``reset_retries=0``；没有（mme 等只读 conn_info）就不传。"""
+        ``max_steps=--max-steps``、``reset_retries=0``；没有（perceptual-framesamp-modul 等只读 conn_info）就不传。"""
         try:
             params = inspect.signature(self.policy_mod.run_episode).parameters
         except (TypeError, ValueError):
@@ -978,7 +983,7 @@ class SeatRunner:
         a = self.args
         return {"policy": a.policy, "seat": a.seat, "host": a.host, "port": a.port, "dataset": self.dataset,
                 "max_steps": self.max_steps, "strict_cap": self.strict_cap,
-                "mme_variant": getattr(a, "mme_variant", None),
+                "groundsg_variant": getattr(a, "groundsg_variant", None),
                 "qwenvl_groundSG_adapter_path": getattr(a, "qwenvl_groundsg_adapter", None),
                 "trace_root": str(self.trace_root) if self.trace_root else None, "out": str(self.out)}
 
@@ -1079,7 +1084,7 @@ class SeatRunner:
         trace_dir = self.trace_root / tag if self.trace_root is not None else None
         conn_info = {"host": self.args.host, "port": self.args.port, "max_steps": eff, "policy": self.args.policy,
                      "seat": self.args.seat, "dataset": self.dataset, "strict_cap": self.strict_cap,
-                     "mme_variant": getattr(self.args, "mme_variant", None),
+                     "groundsg_variant": getattr(self.args, "groundsg_variant", None),
                      "qwenvl_groundSG_adapter_path": getattr(self.args, "qwenvl_groundsg_adapter", None),
                      "trace_root": str(self.trace_root) if self.trace_root is not None else None,
                      "trace_dir": str(trace_dir) if trace_dir is not None else None,
@@ -1332,7 +1337,7 @@ def cmd_run(args) -> int:
     t_proc = time.perf_counter()
     init = timed_imports()
     proc = {"init_timing": init, "env": env_versions(), **gpu_info(), **git_info(), **cpu_info()}
-    policy_mod = load_sibling(f"{args.policy}_client")
+    policy_mod = load_sibling(POLICY_MODULES[args.policy])
     recorder_factory = None
     if not args.no_record:
         recorder_mod = load_sibling("recorder")
@@ -1359,20 +1364,20 @@ def cmd_run(args) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(description="评估环境侧常驻客户端（test-hard／test-hard0）")
+    ap = argparse.ArgumentParser(description="评估环境侧常驻客户端（ood／hard-verify）")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("run")
     p.add_argument("--policy", required=True, choices=list(POLICIES),
-                   help="策略模块按 load_sibling(f'{policy}_client') 加载")
+                   help="策略标签；模块按 POLICY_MODULES 映射加载")
     p.add_argument("--identities", required=True, help="身份清单：eval_manifest.py 产出的 shard-NN.json")
     p.add_argument("--dataset", required=True, choices=list(DATASETS),
-                   help="身份模式与 builder 数据集；test-hard 配 --max-steps 1600 --strict-cap，test-hard0 配 --max-steps 1300")
+                   help="身份模式与 builder 数据集；ood 配 --max-steps 1600 --strict-cap，hard-verify 配 --max-steps 1300")
     p.add_argument("--max-steps", type=int, required=True, help="步数上限（无默认值，由入口按数据集给出）")
     p.add_argument("--strict-cap", action="store_true",
                    help="执行满 --max-steps 步仍未成功即停（第 max_steps+1 步不进环境，记 timeout、cap_hit=true）")
-    p.add_argument("--mme-variant", default=None, choices=list(MME_VARIANTS), help="--policy mmesg 必填：子目标来源")
+    p.add_argument("--groundsg-variant", default=None, choices=list(GROUNDSG_VARIANTS), help="--policy groundsg 必填：子目标来源")
     p.add_argument("--qwenvl-groundsg-adapter", default=None,
-                   help="--mme-variant ground-sg-qwenvl 必填：QwenVL 子目标预测器的 adapter 目录")
+                   help="--groundsg-variant ground-sg-qwenvl 必填：QwenVL 子目标预测器的 adapter 目录")
     p.add_argument("--trace-root", default=None, help="每局轨迹根目录；本局目录为 <trace-root>/<key>.a<attempt>")
     p.add_argument("--cond", required=True, help="条件代号，如 E1／N")
     p.add_argument("--seat", required=True)

@@ -1,7 +1,7 @@
 """C13 执行清单 ``eval_manifest.build_v9``：真实导出产物直接喂清单（xhard0 开关开／关两种），以及各步拒绝分支。
 
 - 交付清单由包内真实规格的正式局（``hard_specs.delivered``）现场组装；身份清单由真实 ``export_eval_identities.main``
-  （真实 builder 列出 test-hard 全部局）导出——不手写 800 行。
+  （真实 builder 列出 ood 全部局）导出——不手写 800 行。
 - 已评集合（V8 manifest）= 交付行里不属于新评规则 ``V9_NEW_RULE`` 的那部分；于是新评行恰为规则行，复用行恰为其余。
 - F-2：xhard0 期望随开关；导出时与建清单时开关不一致必须在第 1 步被拒。
 """
@@ -90,7 +90,7 @@ def test_export_feeds_manifest(tmp_path, monkeypatch, inputs, on):
     # 每一行都是合法执行身份；builder_episode 由真实 builder 解析回同一身份（开关同口径）
     builders = {}
     for r in manifest["rows"]:
-        assert F.env_client().validate_v8_identity(r, "test-hard") is None
+        assert F.env_client().validate_v8_identity(r, "ood") is None
         b = builders.setdefault(r["task"], F.real_builder(r["task"]))
         got = b.resolve_identity(r["builder_episode"])
         assert (got["tier"], got["seed"], got["candidate"], got["spec_sha256"]) == \

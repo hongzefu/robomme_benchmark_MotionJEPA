@@ -26,7 +26,7 @@ def _write(root, *, route="smvla/new", status="fail", n=3, missing=(), no_frame=
            attempt=1, action_dtype=np.float32, end_extra=None, arrays=True):
     t = _tw()
     ep = root / f"{key}.a{attempt}"
-    ident = {"task": "T", "tier": "xhard0", "seed": 7, "dataset": "test-hard0", "source_episode": 3,
+    ident = {"task": "T", "tier": "xhard0", "seed": 7, "dataset": "hard-verify", "source_episode": 3,
              "key": key, "attempt": attempt}
     w = t.TraceWriter(ep / "trace.jsonl", route=route, identity=ident, max_steps=1300)
     payload = {}

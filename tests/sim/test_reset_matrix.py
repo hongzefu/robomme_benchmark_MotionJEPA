@@ -12,7 +12,7 @@
 
 格的枚举与清理前同口径扫描 ``docs/validation/test-redesign-20261003/records/reset_sweep.py`` 相同：
 遍历 ``BenchmarkEnvBuilder.get_task_list()``；xhard0 取官方 ``test`` 集里 hard 子集的首局
-（``hard_specs.XHARD0_EPISODES[0]``）；新值档按 ``dataset="test-hard"`` 的 episode 顺序取每档首局。
+（``hard_specs.XHARD0_EPISODES[0]``）；新值档按 ``dataset="ood"`` 的 episode 顺序取每档首局。
 收集阶段只做 CPU 上的元数据／规格读取，不构建场景、不初始化 GPU；单进程顺序跑，每格结束 ``env.close()``。
 
 每格断言（逐项对照该扫描的实测记录 ``reset-sweep.jsonl``，59 格全部 ok）：
@@ -71,14 +71,14 @@ def _enumerate_cells() -> list[tuple[str, str, int, str]]:
     cells: list[tuple[str, str, int, str]] = []
     for task in BenchmarkEnvBuilder.get_task_list():
         cells.append((task, "test", hard_specs.XHARD0_EPISODES[0], hard_specs.XHARD0))
-        builder = BenchmarkEnvBuilder(env_id=task, dataset="test-hard", action_space="joint_angle")
+        builder = BenchmarkEnvBuilder(env_id=task, dataset="ood", action_space="joint_angle")
         seen: set[str] = set()
         for episode in range(builder.get_episode_num()):
             tier = builder.resolve_episode(episode)[1]
             if tier == hard_specs.XHARD0 or tier in seen:
                 continue  # xhard0 统一取官方 test 集（开关 XHARD0_IN_TEST_HARD 打开时也不重复）
             seen.add(tier)
-            cells.append((task, "test-hard", episode, tier))
+            cells.append((task, "ood", episode, tier))
     return cells
 
 

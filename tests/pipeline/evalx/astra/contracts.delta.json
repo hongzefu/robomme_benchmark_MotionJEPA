@@ -6,10 +6,10 @@
       "scripts/eval-official/astra_hard_runner.py"
     ],
     "symbol": "astra_hard_runner.prepare_cases / run_cases / run_one → Astra examples/champ/runner.episode（上游只读引用）",
-    "oracle": "手写期望：BenchmarkEnvBuilder 构造参数逐项（dataset、action_space=joint_angle、gui_render=False、max_steps=1300／1600），test-hard0 本地局号 0 ↔ 官方 test episode 3（16 任务），V9 连通局为 VideoUnmask xhard1 第 0 局；urlopen 替身计数为 0",
-    "positive": "真实 S1 builder（环境打桩）下两局 success：Astra 原样产物 identity.json／decisions.jsonl／actions.npy／result.json／rollout.mp4／monitor_inputs 齐全，dataset 字段为 test-hard0；planner_calls 为分片共用目录；PILOT_FINISHED.json 写出；trace.jsonl 逐步 40 行、请求序列 vla_reset、planner×1、vla_infer×3、monitor×2；判定行 ASTRA_WIRING=PASS api_calls=0 builder_dataset_ok=1",
-    "negative": "数据集与步数配对不符（test-hard0+1600、test-hard+1300）、RUN 上层不叫 group_0／group_1、output 或 spool 已存在、局清单身份与 builder 不符、真实 validate_checkpoints 遇假目录：均在建目录与任何规划请求之前拒绝",
-    "boundaries": "test-hard 1600 步环境永不结束时循环恰好执行 1600 步、terminal_reason=loop_exit；make_env_for_episode 只传局号、不逐局覆盖步数",
+    "oracle": "手写期望：BenchmarkEnvBuilder 构造参数逐项（dataset、action_space=joint_angle、gui_render=False、max_steps=1300／1600），hard-verify 本地局号 0 ↔ 官方 test episode 3（16 任务），V9 连通局为 VideoUnmask xhard1 第 0 局；urlopen 替身计数为 0",
+    "positive": "真实 S1 builder（环境打桩）下两局 success：Astra 原样产物 identity.json／decisions.jsonl／actions.npy／result.json／rollout.mp4／monitor_inputs 齐全，dataset 字段为 hard-verify；planner_calls 为分片共用目录；PILOT_FINISHED.json 写出；trace.jsonl 逐步 40 行、请求序列 vla_reset、planner×1、vla_infer×3、monitor×2；判定行 ASTRA_WIRING=PASS api_calls=0 builder_dataset_ok=1",
+    "negative": "数据集与步数配对不符（hard-verify+1600、ood+1300）、RUN 上层不叫 group_0／group_1、output 或 spool 已存在、局清单身份与 builder 不符、真实 validate_checkpoints 遇假目录：均在建目录与任何规划请求之前拒绝",
+    "boundaries": "ood 1600 步环境永不结束时循环恰好执行 1600 步、terminal_reason=loop_exit；make_env_for_episode 只传局号、不逐局覆盖步数",
     "nodeids": [
       "tests/pipeline/evalx/astra/test_astra_wiring.py::test_prepare_hard0_local_zero_is_official_episode_3",
       "tests/pipeline/evalx/astra/test_astra_wiring.py::test_prepare_v9_connectivity_is_videounmask_xhard1_first",

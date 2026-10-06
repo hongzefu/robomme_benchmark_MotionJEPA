@@ -7,7 +7,7 @@
 探针方法写在各用例的 docstring 里。
 
 按档步数查表 ``TIER_MAX_STEPS`` 已删除（1003 评估计划 1.1，原 Q16 随之了结）：评估步数上限由入口按数据集传
-``max_steps``（``test-hard`` 1600、``test-hard0`` 1300），本文件只钉生成侧的 ``EXEC_CAP``，并断言查表不再存在。
+``max_steps``（``ood`` 1600、``hard-verify`` 1300），本文件只钉生成侧的 ``EXEC_CAP``，并断言查表不再存在。
 """
 from __future__ import annotations
 

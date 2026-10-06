@@ -21,7 +21,7 @@ import pytest
 from tests._support.loaders import REPO
 from tests.contract.test_constants import EXEC_CAP, V9_CELLS
 
-ROOT = REPO / "src" / "robomme_hard" / "env_metadata" / "test-hard"
+ROOT = REPO / "src" / "robomme_hard" / "env_metadata" / "ood"
 BASE_TIER = "xhard5"
 
 

@@ -17,7 +17,7 @@
   "expect_fail": [
    "tests/static/test_upstream_bytes.py::test_real_repo_entry_scripts_pass",
    "tests/static/test_upstream_bytes.py::test_main_check_strict_by_default",
-   "tests/static/test_entry_scripts.py::test_evaluation_hard_diff_is_exactly_three_single_line_hunks"
+   "tests/static/test_entry_scripts.py::test_evaluation_hard_diff_is_three_single_line_hunks_and_dataset_block"
   ],
   "self_check": "2026-10-04 本机实测：恰好上列 3 个失败，其余 73 过"
  },

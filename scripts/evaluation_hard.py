@@ -72,6 +72,10 @@ class DummyModel:
         return self.base_action + noise
 
 
+# 两个数据集接口：hard-verify＝官方 hard 子集每任务 12 局（第二阶段，1300 步）；
+# ood＝V9 新值局（第三阶段，1600 步）。改 DATASET 选择其一。
+DATASET_MAX_STEPS = {"hard-verify": 1300, "ood": 1600}
+DATASET = "ood"
 TASKS = BenchmarkEnvBuilder.get_task_list()
 MODEL_SEED = 7 # 7, 42, 0
 dummy_model = DummyModel(seed=MODEL_SEED)
@@ -80,9 +84,9 @@ total_success = []
 for task in TASKS:
     env_builder = BenchmarkEnvBuilder(
         env_id=task,
-        dataset="test-hard",
+        dataset=DATASET,
         action_space="joint_angle", # change this to your model's action space
-        max_steps=1600,  # V9: fixed 1600 for every episode (no per-tier lookup).
+        max_steps=DATASET_MAX_STEPS[DATASET],  # 按数据集固定（不按档查表）
     )
     episode_count = env_builder.get_episode_num()
     for episode in range(episode_count):

@@ -2,7 +2,7 @@
 
 ``src/robomme/`` 逐字节等于官方 ``1fadc0ec``（清单见 ``UPSTREAM.json``）；本包只放差异：
 16 个环境类与改过／新增／传递依赖改过模块的 utils、wrapper 一律复制，依赖闭包干净的官方模块用 shim 借用，
-``BenchmarkEnvBuilder`` 子类化并新增 ``dataset="test-hard"``。
+``BenchmarkEnvBuilder`` 子类化并新增 ``dataset="ood"``。
 
 导入本包即以 ``override=True`` 接管 16 个环境 id（用户 U-3 批准的 P2 覆盖项）：同一进程里之后 ``gym.make``
 这 16 个 id 一律得到本包的类；要官方行为须另开只导入 ``robomme`` 的进程。导入末尾断言：

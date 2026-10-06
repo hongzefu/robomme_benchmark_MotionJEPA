@@ -44,7 +44,7 @@ sys.modules``，每局结束再查一次。
            -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -movflags +faststart front.mp4
 
 结果行（``<out>/results.jsonl``，每局一行，追加并 fsync）：分片行的身份字段（``task``、``tier``、``seed``、
-``source_episode``、``builder_episode``、``key`` 等）+ ``side="orig"``、``policy="pp"``、``dataset="test-hard0"``、
+``source_episode``、``builder_episode``、``key`` 等）+ ``side="orig"``、``policy="pp"``、``dataset="hard-verify"``、
 ``attempt``、``status``、``task_success``、``exec_steps``、``steps``、``demo_frames``、``max_steps``、
 ``effective_max_steps``、``sid``、``eid``、``episode_idx``、``error``、``infra``、``infra_reason``、``ep_dir``、
 ``trace_path``、``frames_dir``、``video_frames``、``wall_s``。
@@ -83,7 +83,7 @@ import pp_client  # noqa: E402
 from trace_writer import TraceWriter  # noqa: E402
 
 MAX_STEPS = 1300
-DATASET = "test-hard0"
+DATASET = "hard-verify"
 EXIT_UNREACHABLE = 2
 EXIT_BAD_INPUT = 3
 

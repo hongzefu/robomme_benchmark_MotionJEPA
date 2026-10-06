@@ -40,8 +40,8 @@ def test_identical_sides(tmp_path):
     s = res["summary"]
     assert s["verdict"] == "INFO" and s["compared"] == 4 and s["identical_trace"] == 4 and s["same_terminal"] == 4
     assert all(s[f"first_diverge_{k}"] == 0 for k in ("obs", "state", "text", "action", "stop", "request"))
-    line = F.g2().verdict_line(res, "mmesg-oracle")
-    assert line.startswith("GATE2=INFO policy=mmesg-oracle compared=4 same_terminal=4 identical_trace=4 "
+    line = F.g2().verdict_line(res, "groundsg-oracle")
+    assert line.startswith("GATE2=INFO policy=groundsg-oracle compared=4 same_terminal=4 identical_trace=4 "
                            "first_diverge_obs=0 first_diverge_state=0 first_diverge_text=0 first_diverge_action=0 missing=0")
 
 
@@ -150,7 +150,7 @@ def test_groundsg_first_episode_with_server_epoch(tmp_path):
     res = g.compare(rows_o, rows_n, o[1], n[1], groundsg=True)
     s = res["summary"]
     assert (s["first_episode_identical"], s["server_epochs"], s["first_episode_aligned"]) == (1, 2, 2)
-    assert "first_episode_identical=1/2 first_episode_aligned=2" in g.verdict_line(res, "mmesg-oracle")
+    assert "first_episode_identical=1/2 first_episode_aligned=2" in g.verdict_line(res, "groundsg-oracle")
     # 原侧只起了一次服务：IDS[2] 在原侧不是首局，不算对齐
     for r in rows_o:
         r["server_epoch"] = 0
@@ -178,12 +178,12 @@ def test_cli_site_local_and_outputs(tmp_path, capsys):
     n = _side(tmp_path, "new", {IDS[0]: {"action_bit": 2}})
     out = tmp_path / "out" / "g.json"
     md = tmp_path / "out" / "g.md"
-    rc = F.g2().main(["--policy", "mmesg-qwenvl", "--orig-results", str(o[0]), "--new-results", str(n[0]),
+    rc = F.g2().main(["--policy", "groundsg-qwenvl", "--orig-results", str(o[0]), "--new-results", str(n[0]),
                       "--orig-traces", str(o[1]), "--new-traces", str(n[1]), "--site", "local", "--groundsg",
                       "--out-json", str(out), "--out-md", str(md)])
     assert rc == 0
     line = capsys.readouterr().out.strip().splitlines()[-1]
-    assert line.startswith("GATE2=INFO policy=mmesg-qwenvl compared=4") and line.endswith("site=local")
+    assert line.startswith("GATE2=INFO policy=groundsg-qwenvl compared=4") and line.endswith("site=local")
     data = json.loads(out.read_text(encoding="utf-8"))
     assert data["summary"]["line"] == line and len(data["table"]) == 4
     assert "| VideoUnmask | 3 | 101 | fail | fail | 1 | 0 | 2 | action |" in md.read_text(encoding="utf-8")

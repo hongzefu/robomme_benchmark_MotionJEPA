@@ -6,13 +6,13 @@
 
 一、V9 检查集（G9，确定、可重算，只读包内规格，不读 ``artifacts/``）：
 
-1. 数据源：包内 V9 规格 ``src/robomme_hard/env_metadata/test-hard/xhard{1..5}/specs.jsonl``；交付行＝
+1. 数据源：包内 V9 规格 ``src/robomme_hard/env_metadata/ood/xhard{1..5}/specs.jsonl``；交付行＝
    ``hard_specs.delivered(row)`` 为真的行（``selected`` 且 ``rollout.status == "ok"``）。交付行与 builder episode 号
-   直接复用 ``hard_regression.delivery_index``（与 ``hard_builder._test_hard_entries`` 同一排序：档序主序、档内
+   直接复用 ``hard_regression.delivery_index``（与 ``hard_builder._ood_entries`` 同一排序：档序主序、档内
    ``candidate`` 升序、xhard0 前置局数在前），本模块不另造一套。
 2. 每个交付格（任务, 档）取交付行里 ``candidate`` 升序最小的 ``PER_CELL = 3`` 个；格数按数据算（V9 为 43 格）。
 3. ``builder_episode`` 是开关 ``ROBOMME_HARD_XHARD0_IN_TEST_HARD`` 为 0（默认，V9 每任务 50 局）时该身份在
-   ``BenchmarkEnvBuilder(env_id=task, dataset="test-hard")`` 里的 episode 号（0～49）。开关为 1 时直接报错拒绝。
+   ``BenchmarkEnvBuilder(env_id=task, dataset="ood")`` 里的 episode 号（0～49）。开关为 1 时直接报错拒绝。
 
 行内排序：(16 任务规范序, tier, candidate)。规范序取 ``hard_specs.ALL_TASKS``——它与
 ``scripts/injection-dev/seed_layout.py::ALL_TASKS`` 逐字相同（hard_specs 注释约定、测试另行断言）；后者所在目录名
@@ -66,7 +66,7 @@ DEFAULT_PATH = REPO / "scripts" / "configs" / "gate-set-v9-129.json"
 ROW_KEYS = ("task", "tier", "candidate", "seed", "spec_sha256", "builder_episode")
 XHARD0_ENV = "ROBOMME_HARD_XHARD0_IN_TEST_HARD"
 RULE = ("V9 包内规格交付行（hard_specs.delivered），每个交付格（任务, 档）取 candidate 升序最小的 3 个；"
-        "builder_episode 按 XHARD0_IN_TEST_HARD=0 的 test-hard 编号")
+        "builder_episode 按 XHARD0_IN_TEST_HARD=0 的 test-hard 编号")  # 历史数据键：与冻结配置 gate-set-v9-129.json 的 rule 字段逐字节相同
 
 XHARD0_SCHEMA = "gate-set-xhard0/1"
 XHARD0_TIER = "xhard0"

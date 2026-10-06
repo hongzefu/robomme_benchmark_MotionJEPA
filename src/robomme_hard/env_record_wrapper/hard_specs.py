@@ -1,4 +1,4 @@
-"""test-hard 四档规格（``env_metadata/test-hard/xhardN/specs.jsonl``）的读取、封套校验与回注绑定摘要。
+"""ood 四档规格（``env_metadata/ood/xhardN/specs.jsonl``）的读取、封套校验与回注绑定摘要。
 
 由 ``scripts/parity/v4_specs.py`` 下沉而来（0927 计划第二部分 §1.2）；抽签与冻结留在
 ``scripts/injection-dev/``，本模块只放评估侧与生成侧都要用的纯函数，不导入仿真。
@@ -11,7 +11,7 @@ jsonl 一行分「签」与「结果」两段（0927 计划第一部分 §5.3；
 ``delivery_sha256`` 另盖「哪几局是正式交付」：排序后的
 ``(task, tier, candidate, seed, spec_sha256, rollout.h5_sha256)``，只取 ``selected`` 且 ``rollout.status=="ok"`` 的行。
 
-xhard0（官方 hard 12 局）是否前置在 test-hard 里由 ``XHARD0_IN_TEST_HARD`` 决定：V9 定稿默认关（每任务 50 局、
+xhard0（官方 hard 12 局）是否前置在 ood 里由 ``XHARD0_IN_TEST_HARD`` 决定：V9 定稿默认关（每任务 50 局、
 16 任务 800 局），环境变量 ``ROBOMME_HARD_XHARD0_IN_TEST_HARD=1`` 可恢复 12 + 50。
 """
 
@@ -38,13 +38,13 @@ XHARD0 = "xhard0"
 BUILDER_TIERS = (XHARD0, *TIERS)
 #: xhard0 每任务 12 局＝官方 test 元数据 difficulty=="hard" 的原 episode 3,7,…,47（只作核对值，筛选按 difficulty）
 XHARD0_PER_TASK = 12
-#: xhard0（官方 hard 12 局）是否前置在 test-hard 里。V9 定稿默认关（每任务恰 50 局、16 任务 800 局）；
+#: xhard0（官方 hard 12 局）是否前置在 ood 里。V9 定稿默认关（每任务恰 50 局、16 任务 800 局）；
 #: 设环境变量 ROBOMME_HARD_XHARD0_IN_TEST_HARD=1 可恢复为 12 + 50（xhard0 源码、常量与清单全部保留）。
 XHARD0_IN_TEST_HARD: bool = os.environ.get("ROBOMME_HARD_XHARD0_IN_TEST_HARD", "0") == "1"
 
 
 def xhard0_prefix() -> int:
-    """test-hard 里排在新值档前面的 xhard0 局数：开关开为 XHARD0_PER_TASK，关为 0。"""
+    """ood 里排在新值档前面的 xhard0 局数：开关开为 XHARD0_PER_TASK，关为 0。"""
     return XHARD0_PER_TASK if XHARD0_IN_TEST_HARD else 0
 
 
@@ -119,7 +119,7 @@ assert all(task in ALL_TASKS and tier in TIERS for task, tier in V9_CELLS), "V9_
 assert all(sum(n for (t, _), n in V9_CELLS.items() if t == task) == V9_PER_TASK for task in ALL_TASKS), \
     "V9_CELLS 每任务须恰为 50 局"
 #: 交付格表 {(task, tier): 正式交付局数}（builder 按它断言每格行数，表外格恰好 0 行、表内格恰好等于表值）。
-#: v9 阶段 3b 换包（env_metadata/test-hard/ 换为 V9 规格）与本行切到 V9_CELLS 在同一提交完成（v9 方案 R7），表与包始终一致。
+#: v9 阶段 3b 换包（env_metadata/ood/ 换为 V9 规格）与本行切到 V9_CELLS 在同一提交完成（v9 方案 R7），表与包始终一致。
 EXPECTED_CELLS: dict[tuple[str, str], int] = V9_CELLS
 #: 已登记的完整交付格表（按版本）。``resolve_cell_table`` 按顺序 EXPECTED_CELLS → 本表各项找第一张能覆盖
 #: 给定子表的表，作为单文件配额上限（``_validate_specs``）与 ``load_specs_root`` 的格配额上限。
@@ -546,7 +546,7 @@ def load_specs_root(root: str | Path, expected_cells: dict[tuple[str, str], int]
 
 #: 规格根覆盖（0928 方案第二部分 §1.1）：设了即从该目录读 xhard{1..5}/specs.jsonl（按 TIERS），缺省读包内
 SPECS_ROOT_ENV = "ROBOMME_HARD_SPECS_ROOT"
-PACKAGED_SPECS_ROOT = Path(__file__).resolve().parents[1] / "env_metadata" / "test-hard"
+PACKAGED_SPECS_ROOT = Path(__file__).resolve().parents[1] / "env_metadata" / "ood"
 _ANNOUNCED_ROOTS: set[str] = set()
 
 

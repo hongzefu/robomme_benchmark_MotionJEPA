@@ -31,7 +31,7 @@ from tests.contract.test_constants import (
     XHARD4_ONLY,
 )
 
-ROOT = REPO / "src" / "robomme_hard" / "env_metadata" / "test-hard"
+ROOT = REPO / "src" / "robomme_hard" / "env_metadata" / "ood"
 
 
 @pytest.fixture(scope="module")

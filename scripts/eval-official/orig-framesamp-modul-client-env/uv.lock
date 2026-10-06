@@ -2185,7 +2185,7 @@ wheels = [
 ]
 
 [[package]]
-name = "sgeval-orig-mme-client-env"
+name = "sgeval-orig-framesamp-modul-client-env"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

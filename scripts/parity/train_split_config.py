@@ -29,7 +29,7 @@ sys.path.insert(0, str(REPO_ROOT / "scripts" / "injection-dev"))
 from seed_layout import ALL_TASKS  # noqa: E402
 
 DEFAULT_RELEASE = "newtask-v7"
-# 拆包阶段 2 起 scripts/configs/newtask-v4～v6 的快照已删（新值配置真源是包内 test-hard jsonl header）；
+# 拆包阶段 2 起 scripts/configs/newtask-v4～v6 的快照已删（新值配置真源是包内 ood jsonl header）；
 # v8 阶段 1 删 V6：v6 冻结快照与 newtask-v6 条目一并移除；
 # 缺省落点改到不进 git 的 artifacts/，不再在 scripts/configs/ 下重建快照
 DEFAULT_OUTPUT = REPO_ROOT / "artifacts" / "hard-split" / f"sampling_config.{DEFAULT_RELEASE}.json"

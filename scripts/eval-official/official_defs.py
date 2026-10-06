@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """从官方源码按名摘取定义（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.3）。
 
-官方 MME 客户端 ``third_party/mme-vla/examples/robomme/eval.py`` 经 ``subgoal_predictor.py`` 无条件导入 gemini
-（``google.generativeai``）与 memer 模块，评估环境里都没装，所以 GroundSG 的新侧（``mmesg_client.py``）与原侧
+官方 MME-VLA 客户端 ``third_party/mme-vla/examples/robomme/eval.py`` 经 ``subgoal_predictor.py`` 无条件导入 gemini
+（``google.generativeai``）与 memer 模块，评估环境里都没装，所以 GroundSG 的新侧（``groundsg_client.py``）与原侧
 （``official_hard_runner.py``）都**不整模块 import** 官方文件，而是用 ``extract_defs`` 从源文件里取出指定顶层
 函数、类、单目标赋值的**原文**并执行；模块其余部分（import 行、模块级副作用）不执行，依赖由调用方经 ``extra``
 注入。返回的命名空间就是这些定义的 globals，之后往里补名字（如延迟导入的 ``PtEngine``）对已取出的函数同样生效。
@@ -36,7 +36,7 @@ from typing import Any, List, Optional, Tuple
 import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
-#: 两个变体（与 env_client.MME_VARIANTS 同值）
+#: 两个变体（与 env_client.GROUNDSG_VARIANTS 同值）
 VARIANT_ORACLE = "ground-sg-oracle"
 VARIANT_QWENVL = "ground-sg-qwenvl"
 VARIANTS = (VARIANT_ORACLE, VARIANT_QWENVL)
@@ -45,6 +45,86 @@ _SEQ = 0
 OFFICIAL_ENV = {"IMAGE_MAX_TOKEN_NUM": "256", "VIDEO_MAX_TOKEN_NUM": "64", "FPS_MAX_FRAMES": "10"}
 #: QwenVL 运行约束（ms-swift 默认走 ModelScope；本计划一律离线走 HF 缓存）
 QWEN_RUNTIME_ENV = {"USE_HF": "1", "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"}
+
+# ── 官方名与旧名兼容（1006-rename-official-names-and-stage3-eval-plan.md 第二部分八.2；全仓别名表只此一份）──
+# 写出一律用官方名，CLI 只接受官方名；只有读历史逐局行、预算账本、trace 头、v7.5eval 留档时经 canonical_* 映射。
+#: 策略标签（官方名）：FrameSamp+Modulation 与 GroundSG
+POLICY_FRAMESAMP_MODUL = "perceptual-framesamp-modul"
+POLICY_GROUNDSG = "groundsg"
+#: 数据集接口（官方名）：第三阶段 OOD（原 V9）与第二阶段 hard-verify（官方 hard 12 局）
+DATASET_OOD = "ood"
+DATASET_HARD_VERIFY = "hard-verify"
+# >>> LEGACY_NAMES（OFFICIAL_NAMES 残留检查只豁免本段）
+#: 旧策略标签 → 官方标签（v7.5eval／第二阶段留档里的 policy、route 首段、目录名）
+LEGACY_POLICY_ALIASES = {"mme": POLICY_FRAMESAMP_MODUL, "mmevla": POLICY_FRAMESAMP_MODUL, "mmesg": POLICY_GROUNDSG}
+#: 旧数据集名 → 官方数据集名
+LEGACY_DATASET_ALIASES = {"test-hard": DATASET_OOD, "test-hard0": DATASET_HARD_VERIFY}
+#: 改名前检出（如回放闸门的 base 侧）的客户端模块名与配置键 → 官方名（client_replay_eq.py 驱动旧检出时用）
+LEGACY_MODULE_ALIASES = {"mme_client": "framesamp_modul_client", "mmesg_client": "groundsg_client"}
+LEGACY_CONFIG_KEY_ALIASES = {"mme_variant": "groundsg_variant"}
+# <<< LEGACY_NAMES
+
+
+def canonical_policy(name: Any) -> Any:
+    """策略标签：旧名映射到官方名；带变体的标签（旧 GroundSG 前缀 + ``-<variant>``）同样换前缀；其余原样返回。"""
+    if not isinstance(name, str):
+        return name
+    if name in LEGACY_POLICY_ALIASES:
+        return LEGACY_POLICY_ALIASES[name]
+    for old, new in LEGACY_POLICY_ALIASES.items():
+        if new == POLICY_GROUNDSG and name.startswith(old + "-"):
+            return new + name[len(old):]
+    return name
+
+
+def canonical_dataset(name: Any) -> Any:
+    """数据集名：旧名映射到官方名，其余原样返回。"""
+    return LEGACY_DATASET_ALIASES.get(name, name) if isinstance(name, str) else name
+
+
+def canonical_route(route: Any) -> Any:
+    """路线／媒体键这类以 ``/`` 分段的串：逐段按策略标签与数据集名映射（如旧 GroundSG 路线
+    ``<旧名>/<variant>/orig`` → ``groundsg/<variant>/orig``）。"""
+    if not isinstance(route, str) or not route:
+        return route
+    return "/".join(canonical_dataset(canonical_policy(seg)) for seg in route.split("/"))
+
+
+#: canonical_row 映射的字段
+_POLICY_FIELDS = ("policy", "label", "policy_label")
+_DATASET_FIELDS = ("dataset",)
+_ROUTE_FIELDS = ("route",)
+
+
+def canonical_row(row: Any) -> Any:
+    """逐局行／账本行／trace 头：``policy``／``label``、``dataset``、``route`` 按旧名映射，``identity`` 内的
+    ``dataset`` 一并映射；返回新字典，不改入参。非字典原样返回。"""
+    if not isinstance(row, dict):
+        return row
+    out = dict(row)
+    for k in _POLICY_FIELDS:
+        if k in out:
+            out[k] = canonical_policy(out[k])
+    for k in _DATASET_FIELDS:
+        if k in out:
+            out[k] = canonical_dataset(out[k])
+    for k in _ROUTE_FIELDS:
+        if k in out:
+            out[k] = canonical_route(out[k])
+    if isinstance(out.get("identity"), dict) and "dataset" in out["identity"]:
+        out["identity"] = {**out["identity"], "dataset": canonical_dataset(out["identity"]["dataset"])}
+    return out
+
+
+def legacy_labels(label: str) -> list[str]:
+    """官方标签对应的旧标签（读历史目录用；不含官方标签自身），如 ``groundsg-<variant>`` → 旧 GroundSG 前缀版本。"""
+    out = []
+    for old, new in LEGACY_POLICY_ALIASES.items():
+        if label == new:
+            out.append(old)
+        elif new == POLICY_GROUNDSG and label.startswith(new + "-"):
+            out.append(old + label[len(new):])
+    return out
 
 
 def third_party_root() -> Path:
@@ -57,7 +137,7 @@ def official_robomme_dir() -> Path:
     """官方 ``examples/robomme`` 目录；缺 ``eval.py`` 即报错（不静默跳过）。"""
     d = third_party_root() / "mme-vla" / "examples" / "robomme"
     if not (d / "eval.py").is_file():
-        raise FileNotFoundError(f"官方 MME 源码不在：{d}/eval.py（子模块未初始化？可设 SGEVAL_THIRD_PARTY）")
+        raise FileNotFoundError(f"官方 MME-VLA 源码不在：{d}/eval.py（子模块未初始化？可设 SGEVAL_THIRD_PARTY）")
     return d
 
 

@@ -92,24 +92,24 @@ def test_variants_are_mutually_exclusive(tmp_path, clean_env):
             od.build_predictor(defs, args, tmp_path)
     with pytest.raises(ValueError):
         od.make_args(defs, variant=F.QWENVL, host="h", port=1, max_steps=10, adapter_path=None)
-    mc = F.mmesg_client()
+    mc = F.groundsg_client()
     for bad in (None, "ground-sg-gemini"):
         with pytest.raises(ValueError):
-            mc.make_policy_context(dict(F.seat_info(F.ORACLE, 60, tmp_path), mme_variant=bad))
+            mc.make_policy_context(dict(F.seat_info(F.ORACLE, 60, tmp_path), groundsg_variant=bad))
 
 
 def test_run_episode_rejects_mismatched_context(tmp_path, clean_env):
     side = F.NewSide(F.ORACLE, 60, tmp_path, F.World())
     ec = F.env_client()
-    for conn in ({"policy_context": {}, "mme_variant": F.ORACLE, "max_steps": 60},
-                 {"policy_context": side.ctx, "mme_variant": F.QWENVL, "max_steps": 60},
-                 {"policy_context": side.ctx, "mme_variant": F.ORACLE, "max_steps": 1300}):
+    for conn in ({"policy_context": {}, "groundsg_variant": F.ORACLE, "max_steps": 60},
+                 {"policy_context": side.ctx, "groundsg_variant": F.QWENVL, "max_steps": 60},
+                 {"policy_context": side.ctx, "groundsg_variant": F.ORACLE, "max_steps": 1300}):
         with pytest.raises((RuntimeError, ValueError)):
             side.mc.run_episode(object(), F.identity(), conn, ec.NullRecorder())
 
 
 class _HybridBuilder:
-    """真实 robomme_hard builder（test-hard0）只做身份解析；环境换成假环境（按解析出的 source_episode）。"""
+    """真实 robomme_hard builder（hard-verify）只做身份解析；环境换成假环境（按解析出的 source_episode）。"""
 
     def __init__(self, task, dataset, max_steps, world):
         from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
@@ -128,7 +128,7 @@ def test_policy_context_built_once_per_seat(tmp_path, clean_env):
     """SeatRunner 两局：make_policy_context 只调一次（Qwen 引擎只构造一次），每局同一上下文，close 调一次。"""
     import types
 
-    ec, mc = F.env_client(), F.mmesg_client()
+    ec, mc = F.env_client(), F.groundsg_client()
     world = F.World(default=F.Plan(success_at=12))
     server, swift = F.FakeServer(), F.FakeSwift()
     calls = {"make": 0, "close": 0, "ctx": []}
@@ -148,8 +148,8 @@ def test_policy_context_built_once_per_seat(tmp_path, clean_env):
 
     mod = types.SimpleNamespace(make_policy_context=make, run_episode=run_episode, close_policy_context=close)
     args = ec.build_parser().parse_args([
-        "run", "--policy", "mmesg", "--identities", "unused.json", "--dataset", "test-hard0", "--max-steps", "1300",
-        "--mme-variant", F.QWENVL, "--qwenvl-groundsg-adapter", F.ADAPTER, "--trace-root", str(tmp_path / "trace"),
+        "run", "--policy", "groundsg", "--identities", "unused.json", "--dataset", "hard-verify", "--max-steps", "1300",
+        "--groundsg-variant", F.QWENVL, "--qwenvl-groundsg-adapter", F.ADAPTER, "--trace-root", str(tmp_path / "trace"),
         "--cond", "N", "--seat", "00", "--port", "18120", "--out", str(tmp_path / "out"), "--first-extra-s", "0",
         "--ledger", str(tmp_path / "ledger.jsonl"), "--reset-budget", "10", "--infra-retry-budget", "0"])
     runner = ec.SeatRunner(args, policy_mod=mod,
@@ -166,7 +166,7 @@ def test_policy_context_built_once_per_seat(tmp_path, clean_env):
     assert len(swift.engines) == 1
     got = [json.loads(x) for x in (tmp_path / "out" / "results.jsonl").read_text().splitlines()]
     assert [(g["status"], g["exec_steps"], g["policy_variant"], g["side"], g["dataset"]) for g in got] == [
-        ("success", 12, F.QWENVL, "new", "test-hard0")] * 2
+        ("success", 12, F.QWENVL, "new", "hard-verify")] * 2
     for g, r in zip(got, rows):
         tdir = tmp_path / "trace" / f"{r['key']}.a1"
         assert g["trace_path"] == str(tdir / "trace.jsonl") and (tdir / "trace.jsonl").is_file()

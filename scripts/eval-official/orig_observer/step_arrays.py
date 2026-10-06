@@ -1,6 +1,6 @@
 """逐步原数组 ``arrays.npz``（计划第二部分一节 S7、审计第 12 条；契约 C4、C5）。
 
-在 ``InProcSimPool.step``（SimpleMemVLA）／``EnvRunner.step``（MME）钩子里，把每步**实际交给环境**的动作行按原 dtype、
+在 ``InProcSimPool.step``（SimpleMemVLA）／``EnvRunner.step``（FrameSamp+Modulation）钩子里，把每步**实际交给环境**的动作行按原 dtype、
 shape 复制一份（只复制主机端 numpy，不调随机函数、不做 GPU 运算、不改参数与返回值），局末 ``np.savez`` 到局目录
 ``arrays.npz``，键 ``exec_action__%05d``（0 起的步序号 = ``trace`` 的 ``step - 1``）。
 

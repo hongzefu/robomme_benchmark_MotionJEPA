@@ -20,16 +20,16 @@ IO 层（WSPolicyConn）分开，单测用假 session / 假连接直接驱动。
 
 第二阶段 S4（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分一节「S4」，契约 C1～C11 见
 ``trace_writer.py`` 模块文档串）：每局另写 ``trace.jsonl``（route ``smvla/new``），落点沿用
-``mmesg_client.trace_location`` 的约定（``trace_path`` → ``<trace_dir>/trace.jsonl`` → ``<recorder.out_dir>/trace.jsonl``，
-都没有则不写）。``PolicyTrace`` 是 SimpleMemVLA／MME 两条新侧路线共用的记录器（``mme_client`` 按文件路径复用）：
+``groundsg_client.trace_location`` 的约定（``trace_path`` → ``<trace_dir>/trace.jsonl`` → ``<recorder.out_dir>/trace.jsonl``，
+都没有则不写）。``PolicyTrace`` 是 SimpleMemVLA／FrameSamp+Modulation 两条新侧路线共用的记录器（``framesamp_modul_client`` 按文件路径复用）：
 
 - 演示段按 C2 记全部 reset 帧（含初始帧），收尾 ``demo_frames = 帧数 - 1``；
 - 每个交给环境的步一行：有观测记 ``log_step``（一步多帧取最后一帧），没有有效观测（step 抛异常且环境侧已计步、
   ``obs is None``、``status == "error"``）记 ``log_missing_step``；``steps_attempted`` 以环境会话的 ``steps``
   增量为准，与结果行 ``exec_steps`` 同口径（C8）；
-- 子目标：SimpleMemVLA 取决策回包 ``subtask``（``smvla_server.py`` ``infer`` 回包键），MME 全程 ``None``（C7）；
+- 子目标：SimpleMemVLA 取决策回包 ``subtask``（``smvla_server.py`` ``infer`` 回包键），FrameSamp+Modulation 全程 ``None``（C7）；
 - 请求／响应（C10）：SimpleMemVLA 记逻辑输入（指令、状态、上次推理以来 observe 的帧哈希序列）与完整动作块
-  ``actions_full``；MME 记原始 msgpack 帧字节的 sha256 与 ``infer`` 回包动作块；
+  ``actions_full``；FrameSamp+Modulation 记原始 msgpack 帧字节的 sha256 与 ``infer`` 回包动作块；
 - strict-cap（``StepCapReached`` 或会话 ``cap_hit``）一律按 ``timeout`` 收尾（C3）；
 - 非 float32 动作的原值：录像器会写 ``arrays.npz``（``exec_action__%05d``，与 ``recorder._write_arrays`` 的
   ``f"{name}__{k:05d}"`` 同名）时不再另写，否则在轨迹目录写 ``arrays.npz``（C4）；
@@ -66,7 +66,7 @@ class ServerError(RuntimeError):
     """server 回包 {"error": traceback}：server 侧异常，不是环境结局。"""
 
 
-# 基础设施故障标记（与 mme_client.INFRA_MARKERS 同表）：只决定 infra 标记（env_client 据此重试），不改 status。
+# 基础设施故障标记（与 framesamp_modul_client.INFRA_MARKERS 同表）：只决定 infra 标记（env_client 据此重试），不改 status。
 INFRA_MARKERS = ("RecorderError", "svulkan2", "EXCLUSIVE", "Vulkan", "vk::", "out of memory", "RESOURCE_EXHAUSTED",
                  "CUDA_ERROR", "ConnectionClosed", "ConnectionRefused", "InvalidStatus", "Connection reset")
 ENV_RESET_INFRA_MARKERS = ("svulkan2", "EXCLUSIVE", "Vulkan", "vk::")
@@ -299,7 +299,7 @@ def episode_key(identity: dict) -> str:
     return f"{identity['task']}/{identity['source_episode']}/{identity['seed']}"
 
 
-# ---- S4：两条新侧路线（smvla／mme）共用的逐局轨迹记录器 ----
+# ---- S4：两条新侧路线（smvla／perceptual-framesamp-modul）共用的逐局轨迹记录器 ----
 
 TRACE_TERMINALS = ("success", "fail", "timeout", "error")
 #: arrays.npz 的执行动作键（C4）；与 recorder._write_arrays 的 f"{name}__{k:05d}"（name="exec_action"）逐字同名
@@ -308,7 +308,7 @@ _TAG_ATTEMPT = re.compile(r"\.a(\d+)$")
 
 
 def load_sibling(name: str):
-    """按文件路径加载本目录下的模块（别名与 env_client／mmesg_client 的 load_sibling 相同，已加载则复用）。"""
+    """按文件路径加载本目录下的模块（别名与 env_client／groundsg_client 的 load_sibling 相同，已加载则复用）。"""
     if name in sys.modules:
         return sys.modules[name]
     spec = importlib.util.spec_from_file_location(name, Path(__file__).resolve().parent / f"{name}.py")
@@ -319,7 +319,7 @@ def load_sibling(name: str):
 
 
 def episode_attempt(tag: str | None) -> int:
-    """局目录名 ``<key>.a<N>`` 的尝试号 N；无后缀记 1（与 mmesg_client 的 ``f"{key}.a1"`` 缺省一致）。"""
+    """局目录名 ``<key>.a<N>`` 的尝试号 N；无后缀记 1（与 groundsg_client 的 ``f"{key}.a1"`` 缺省一致）。"""
     m = _TAG_ATTEMPT.search(str(tag or ""))
     return int(m.group(1)) if m else 1
 
@@ -331,7 +331,7 @@ def recorder_writes_arrays(recorder: Any) -> bool:
 
 
 class PolicyTrace:
-    """一局新侧轨迹（route ``smvla/new``／``mme/new``）。``enabled`` 为假时（无落点）所有方法都是空操作。
+    """一局新侧轨迹（route ``smvla/new``／``perceptual-framesamp-modul/new``）。``enabled`` 为假时（无落点）所有方法都是空操作。
 
     所有记录方法吞掉自身异常、计 ``hook_errors``（收尾写 ``end.observer_hook_errors``，C11），绝不改变调用方的
     请求、动作与控制流；动作一律先复制再记录。
@@ -355,7 +355,7 @@ class PolicyTrace:
         self.pending_frames: list[list[str | None]] = []
         self._tw = None
         try:
-            path = load_sibling("mmesg_client").trace_location(conn_info or {}, recorder)
+            path = load_sibling("groundsg_client").trace_location(conn_info or {}, recorder)
             if path is None:
                 return
             self._tw = load_sibling("trace_writer")
@@ -413,7 +413,7 @@ class PolicyTrace:
             self._err("request", e)
 
     def raw_request(self, name: str, obj: Any, raw: bytes | None) -> None:
-        """MME：原始 msgpack 帧字节的 sha256（拿不到原始字节时退回 ``canonical_bytes``，收尾标 ``request_encoding``）。"""
+        """FrameSamp+Modulation：原始 msgpack 帧字节的 sha256（拿不到原始字节时退回 ``canonical_bytes``，收尾标 ``request_encoding``）。"""
         if not self.enabled:
             return
         try:
@@ -510,7 +510,7 @@ class PolicyTrace:
                 st = "timeout"
             no_frame = self.demo_frames is None
             demo = 0 if no_frame else int(self.demo_frames)
-            # 官方循环超过 max_steps 时先 break、最后一步不录（只对 MME 这类「第 max_steps+1 步判超时」的路线）
+            # 官方循环超过 max_steps 时先 break、最后一步不录（只对 FrameSamp+Modulation 这类「第 max_steps+1 步判超时」的路线）
             omitted = int(self.omit_overflow_frame and st == "timeout" and not self.cap_hit and
                           self.steps == self.max_steps + 1)
             frames = 0 if no_frame else demo + 1 + self.observed - omitted

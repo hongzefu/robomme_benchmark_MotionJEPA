@@ -383,7 +383,7 @@ def _episode_id(trace: TraceData, ep_dir: Path, key: str | None = None) -> str:
     if trace.route.endswith("/new"):
         if identity.get("source_episode") is None and identity.get("builder_episode") is None:
             raise ValueError("新侧身份没有 source_episode 或 builder_episode")
-        mc = _load(REPO / "scripts/eval-official/mmesg_client.py", "rerender_mmesg_client")
+        mc = _load(REPO / "scripts/eval-official/groundsg_client.py", "rerender_groundsg_client")
         return mc.official_episode_id(identity, tag)
     if identity.get("source_episode") is None:
         raise ValueError("原侧缺少 source_episode")
@@ -746,7 +746,7 @@ def render_episode(ep_dir: Path, *, official_root: Path = REPO, ffmpeg: str = "/
             "tool": fingerprint(Path(__file__)),
             "official": fingerprint(official_root / "third_party/mme-vla/examples/robomme/utils.py"),
             "official_eval": fingerprint(official_root / "third_party/mme-vla/examples/robomme/eval.py"),
-            "episode_id_helper": fingerprint(REPO / "scripts/eval-official/mmesg_client.py"),
+            "episode_id_helper": fingerprint(REPO / "scripts/eval-official/groundsg_client.py"),
             "trace_reader": fingerprint(REPO / "scripts/eval-official/trace_writer.py"), "ffmpeg": fingerprint(Path(ffmpeg)),
             "runtime": {"numpy": np.__version__, "opencv": cv2.__version__, "imageio": imageio.__version__}}
     if output.exists() or sidecar.exists():
@@ -832,7 +832,7 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("episodes", nargs="*", type=Path)
     parser.add_argument("--root", type=Path)
-    parser.add_argument("--label", default="mmesg-ground-sg-oracle")
+    parser.add_argument("--label", default="groundsg-ground-sg-oracle")
     parser.add_argument("--official-root", type=Path, default=REPO)
     parser.add_argument("--ffmpeg", default=shutil.which("ffmpeg") or "/usr/bin/ffmpeg")
     parser.add_argument("--out-subdir", default="official")

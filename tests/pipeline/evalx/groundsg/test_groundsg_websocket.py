@@ -1,6 +1,6 @@
 """GroundSG 两侧经真实 websocket 客户端连回环假服务（slow；1003 评估计划 1.3，子任务 S3）。
 
-新侧走生产默认的 ``mme_client.make_recording_client``（``MMEVLAWebsocketClientPolicy`` 子类），原侧走生产默认的
+新侧走生产默认的 ``framesamp_modul_client.make_recording_client``（``MMEVLAWebsocketClientPolicy`` 子类），原侧走生产默认的
 TCP 探测 + 真实 ``MMEVLAWebsocketClientPolicy``；假服务经 msgpack 收发，其余同 ``test_groundsg_official_adapter``。
 """
 from __future__ import annotations
@@ -29,7 +29,7 @@ def test_real_websocket_clients_match(tmp_path, variant, monkeypatch):
             lb_new.close()
             lb_orig.close()
         assert len(fs_new.log) > 3 and rn["status"] == ro["status"]
-        # 新侧录制客户端的逐消息计时已按 mme_client 口径汇总
+        # 新侧录制客户端的逐消息计时已按 framesamp_modul_client 口径汇总
         assert rn["timing"]["infer"]["n"] == rn["decisions"]
         d = F.diffs((new, wn, rn), (orig, wo, ro))
         for k in total:

@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# 原侧观测器启动器共用函数（只含函数，由 run_orig_smvla.sh／run_orig_mme.sh source；计划第二部分一节 S7）。
+# 原侧观测器启动器共用函数（只含函数，由 run_orig_smvla.sh／run_orig_framesamp_modul.sh source；计划第二部分一节 S7）。
 #
 # - orig_pin_check <工作树> <期望提交> <标签> [<子模块路径> <子模块期望提交>]
 #     起跑断言原版工作树 HEAD 等于期望提交、``git status --porcelain`` 为空（R1）、子模块提交相符；打印
@@ -20,7 +20,7 @@
 #     PROXY_FORCE_KILLED=1、打印 ``proxy_force_killed pid=``；确认退出前不清空 PROXY_PID（退出后记 PROXY_STOPPED_PID）。
 # - orig_wait_seal <代理日志目录> <pid>
 #     等 ``proxy-<pid>.done`` 出现（上限 SEAL_TIMEOUT，缺省 60 s）；置 SEALED=yes|timeout（被 kill -9 的直接 no）。
-# - orig_finalize_mme <python> <obs_dir> <rec_root> <manifest> <shard> <episodes.jsonl> [only_tasks]
+# - orig_finalize_framesamp_modul <python> <obs_dir> <rec_root> <manifest> <shard> <episodes.jsonl> [only_tasks]
 #     日志封口后才跑 transparency_check.py（--manifest/--episodes），再跑 observer_status.py 写 observer-status.json
 #     并打印 ``OBSERVER_COMPLETE=…``；全程不读写调用方的 RC（评估 EXIT_CODE 语义不变）。
 
@@ -115,7 +115,7 @@ orig_wait_seal() {
   echo "PROXY_SEAL=$SEALED pid=$pid waited_s=$waited"
 }
 
-orig_finalize_mme() {
+orig_finalize_framesamp_modul() {
   local py="$1" obs="$2" rec="$3" manifest="$4" shard="$5" eplog="$6" only="${7:-}"
   local crc=0
   rm -f "$rec/transparency.json"  # 续跑时不读上一遍的旧报告
@@ -127,7 +127,7 @@ orig_finalize_mme() {
     echo "TRANSPARENCY_SKIPPED sealed=${SEALED:-no}（日志未封口，不对账）"
     crc=""
   fi
-  python3 "$obs/observer_status.py" --rec-root "$rec" --policy mme --report "$rec/transparency.json" \
+  python3 "$obs/observer_status.py" --rec-root "$rec" --policy perceptual-framesamp-modul --report "$rec/transparency.json" \
     ${crc:+--checker-rc "$crc"} --sealed "${SEALED:-no}" --proxy-force-killed "${PROXY_FORCE_KILLED:-0}" \
     --episode-log "$eplog" --out "$rec/observer-status.json"
 }

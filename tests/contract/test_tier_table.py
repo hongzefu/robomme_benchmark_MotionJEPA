@@ -18,7 +18,7 @@ import pytest
 from tests._support.loaders import REPO, load_script
 from tests.contract.test_constants import NEW_TIERS, V9_CELLS, XHARD4_ONLY
 
-ROOT = REPO / "src" / "robomme_hard" / "env_metadata" / "test-hard"
+ROOT = REPO / "src" / "robomme_hard" / "env_metadata" / "ood"
 
 #: {task: {tier: {维度: 定值 或 (lo, hi)}}}，只含交付格
 TABLE = {

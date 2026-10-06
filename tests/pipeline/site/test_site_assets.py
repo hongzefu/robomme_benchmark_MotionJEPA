@@ -133,11 +133,11 @@ def test_transcode_expands_duplicate_frames(tmp_path, monkeypatch):
                                                     for i, (e, t) in enumerate(zip(front_enc, tags))))
     (rec / "frames-wrist.jsonl").write_text("".join(json.dumps({"idx": i, "enc": e, "tag": t}) + "\n"
                                                     for i, (e, t) in enumerate(zip(wrist_enc, tags))))
-    row = {"path": str(rec), "policy": "mme", "tier": "xhard1", "task": "StopCube", "key": "k", "status": "success"}
+    row = {"path": str(rec), "policy": "perceptual-framesamp-modul", "tier": "xhard1", "task": "StopCube", "key": "k", "status": "success"}
     res = T.render_one((row, str(tmp_path / "out")))
     assert "error" not in res, res
     assert (res["frames"], res["mp4_frames"], res["demo_frames"]) == (4, 4, 2)
-    mp4 = tmp_path / "out" / "mme" / "xhard1" / "StopCube" / "k.mp4"
+    mp4 = tmp_path / "out" / "perceptual-framesamp-modul" / "xhard1" / "StopCube" / "k.mp4"
     raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(mp4), "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
                          capture_output=True, check=True).stdout
     frames = np.frombuffer(raw, np.uint8).reshape(-1, 256, 512, 3).astype(int)

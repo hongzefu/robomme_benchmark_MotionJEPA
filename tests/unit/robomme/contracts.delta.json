@@ -24,7 +24,7 @@
     "symbol": "BenchmarkEnvBuilder.__init__／resolve_episode／get_episode_num／get_task_list／make_env_for_episode；load_episode_metadata；get_episode_metadata",
     "oracle": "tmp_path 手写元数据表（合法、缺 task、非法 seed、无 episode、别的任务、字符串 seed）；gym.make 换成记录 kwargs 的替身；真实元数据第 0 局用 json 独立读取对照",
     "positive": "train/val/test 三个 split 构建；seed/difficulty 来自元数据并原样交给 gym.make（obs_mode、control_mode、render_mode、reward_mode 四项固定）；四种动作空间的包装链类名与顺序；max_steps+2；get_task_list 与三个 split 的元数据文件名集合相等且返回副本",
-    "negative": "dataset 不在白名单（含 test-hard）、action_space 不在白名单 → ValueError；元数据缺失／损坏 → 空索引、seed 与 difficulty 都不传",
+    "negative": "dataset 不在白名单（含 ood）、action_space 不在白名单 → ValueError；元数据缺失／损坏 → 空索引、seed 与 difficulty 都不传",
     "boundaries": "max_steps=0 → 2；非整数 seed → None；override_metadata_path 优先于 dataset；gui_render → render_mode=human",
     "nodeids": [
       "tests/unit/robomme/test_env_builder.py::test_rejects_unknown_dataset",
