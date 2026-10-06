@@ -32,6 +32,13 @@ tier=="xhard0"、candidate 与 spec_sha256 为 null、source_episode 为整数�
 退出码：0 全部完成；3 运行阻塞；5 reset 额度耗尽（run_seat.sh 不得重启）；6 跑完仍有身份无权威终态（infra
 重试额度或每身份 2 次尝试用尽，打印 ``RUN_INCOMPLETE``）；75 单局墙钟超时（基础设施超时，已记录，由 run_seat.sh 重起）。
 
+第二阶段共享预算（1005 计划第二部分一节 S8；R2 门控）：只有给了 ``--budget-ledger``、或环境变量
+``SGEVAL_BUDGET_LEDGER`` 非空、或构造 ``AttemptLedger(shared=...)`` 时才打开，否则行为与 BASE 相同。打开后：
+每次尝试在写 ``attempt_start`` 前向共享账本（``budget_ledger.py``）预约一条轨迹（不足即 ``RUN_BLOCKED reason=budget``、
+退出码 5、不进入 attempt），``EnvSession._claim`` 每次实际 build／reset 记进共享账本；基础设施重试名额改由共享账本
+原子领取（跨原侧／新侧、跨席位、重启换节点不刷新），中断分 ``infra`` 与 ``expired``（有 Slurm 到期证据）分别计数，
+两者都占每身份 ``V8_MAX_ATTEMPTS`` 名额。
+
 本目录只挂在 ``sys.path`` 末尾（防止同目录模块遮蔽标准库），同目录模块按文件路径加载。
 """
 from __future__ import annotations
@@ -81,6 +88,17 @@ TERMINAL_STATUSES = ("success", "fail", "timeout")
 V8_MAX_ATTEMPTS = 2
 #: 执行身份行（eval_manifest.py shard-NN.json 的元素）必须恰有的字段；与 eval_manifest.SHARD_ROW_KEYS 同步
 V8_IDENTITY_KEYS = ("task", "tier", "seed", "candidate", "builder_episode", "source_episode", "spec_sha256", "key")
+#: 「未提供」哨兵（R2）：可选新参数缺省时保持 BASE 行为；None 表示显式关闭
+_UNSET = object()
+#: S8 共享预算账本的门控环境变量；值为账本路径，空或未设即关闭
+ENV_BUDGET_LEDGER = "SGEVAL_BUDGET_LEDGER"
+#: Slurm 到期证据：文件路径，内容为到期（TIMEOUT）作业号（空白／逗号分隔，可直接存 ``sacct -X -n -s TO -o JobID``）
+ENV_EXPIRED_JOBS = "SGEVAL_EXPIRED_JOBS"
+#: 悬空尝试最后活动时刻距 Slurm 结束时刻在此秒数内且结束时刻已过 → 视为到期中断
+EXPIRE_MARGIN_S = 900.0
+#: 新侧每次尝试预约的 reset 计量（build 与 reset 各 1 次；六节口径）
+NEW_SIDE_RESETS_PER_ATTEMPT = 2
+INTERRUPTS = ("infra", "expired")
 
 
 def dumps(obj: Any) -> str:
@@ -188,8 +206,10 @@ class EnvSession:
     def __init__(self, task: str, builder_episode: int, *, max_steps: int | None = None, recorder=None, builder=None,
                  progress_cb: Callable[[int], None] | None = None, progress_every: int = 16,
                  step_cap: int | None = None, claim_reset: Callable[[str], None] | None = None,
-                 dataset: str = TEST_HARD):
+                 dataset: str = TEST_HARD, budget_claim: Any = _UNSET):
         self.task = task
+        # S8：budget_claim(what) 在本地额度领到后再记进共享预算账本（只告警、不拦）；缺省（_UNSET）或 None 时不记
+        self.budget_claim = None if budget_claim is _UNSET else budget_claim
         self.builder_episode = int(builder_episode)
         # max_steps 只在需要自建 builder 时用（构造参数）；不再逐局传给 make_env_for_episode
         self.max_steps = None if max_steps is None else int(max_steps)
@@ -239,6 +259,8 @@ class EnvSession:
             except ResetBudgetExhausted:
                 self.budget_exhausted = True
                 raise
+        if self.budget_claim is not None:
+            self.budget_claim(what)
         self.reset_calls += 1
 
     def build(self) -> None:
@@ -544,6 +566,25 @@ def append_result(path: Path, record: dict) -> None:
 # ── V8 持久尝试账本 ─────────────────────────────────────────────────────────
 
 
+def _int_or_none(v: Any) -> int | None:
+    try:
+        return int(str(v).strip())
+    except (TypeError, ValueError):
+        return None
+
+
+def _open_shared(shared: Any):
+    """S8 门控：``_UNSET`` → 取环境变量 ``SGEVAL_BUDGET_LEDGER``（空即关闭）；None／空串 → 关闭；路径 → 打开
+    ``budget_ledger.BudgetLedger``；其他对象（已打开的账本，单测注入）原样返回。"""
+    if shared is _UNSET:
+        shared = os.environ.get(ENV_BUDGET_LEDGER) or None
+    if shared is None or shared == "":
+        return None
+    if isinstance(shared, (str, Path)):
+        return load_sibling("budget_ledger").BudgetLedger(shared)
+    return shared
+
+
 class AttemptLedger:
     """V8 持久尝试账本（JSONL，追加写 + fsync；契约 C2）。一个账本只有一个写者（一席一策略一个客户端进程）。
 
@@ -557,12 +598,27 @@ class AttemptLedger:
     * infra 重试：``attempt_start.retry=true`` 且未作废的尝试数，对 ``--infra-retry-budget``；
     * 权威终态：每身份第一条 ``accept`` 行的 ``accepted_attempt_id``；success／fail／timeout 与非 infra 错误
       （status=error、infra=false）都 accept，infra 错误不 accept（重试额度或 2 次用满时该身份无 accept，汇总计 missing）。
+
+    S8 共享模式（``shared`` 给出账本路径／``budget_ledger.BudgetLedger`` 对象，或缺省时环境变量
+    ``SGEVAL_BUDGET_LEDGER`` 非空；``shared=None`` 显式关闭）：
+
+    * infra 重试名额改由共享账本 ``claim_retry`` 原子领取（跨原侧／新侧、跨席位，本地 ``--infra-retry-budget`` 不再
+      适用）；中断分 ``infra`` 与 ``expired`` 分别计数，两者都占每身份 ``V8_MAX_ATTEMPTS`` 名额；
+    * ``attempt_start`` 额外记 ``route``、``slurm_job_id``、``slurm_end_time``（到期证据的来源）与重试的 ``interrupt``；
+    * ``classify_interrupt`` 按证据把悬空尝试分为 ``expired``（Slurm 到期）或 ``infra``（其他）。
+
+    非共享模式下以上一概不发生，账本行与 BASE 逐字节相同。
     """
 
-    def __init__(self, path: Path | str, *, seat: str, policy: str):
+    def __init__(self, path: Path | str, *, seat: str, policy: str, shared: Any = _UNSET, route: Any = _UNSET,
+                 expired_jobs: Any = _UNSET):
         self.path = Path(path)
         self.seat = str(seat)
         self.policy = str(policy)
+        self.shared = _open_shared(shared)
+        self.route = f"{self.policy}/new" if route is _UNSET or route is None else str(route)
+        self._expired_jobs = expired_jobs
+        self.last_t: dict[str, float] = {}  # attempt_id -> 该尝试最后一行的时间（到期判定用）
         self.reset_budget: int | None = None
         self.infra_retry_budget: int | None = None
         self.reset_claims = 0
@@ -577,6 +633,9 @@ class AttemptLedger:
     # 状态推导
     def _apply(self, row: dict) -> None:
         kind = row.get("kind")
+        aid = row.get("attempt_id")
+        if aid and isinstance(row.get("t"), (int, float)):
+            self.last_t[aid] = max(self.last_t.get(aid, 0.0), float(row["t"]))
         if kind == "reset_claim":
             self.reset_claims += 1
         elif kind == "budget":
@@ -629,7 +688,73 @@ class AttemptLedger:
                    for rows in self.starts.values() for r in rows)
 
     def infra_retries_left(self) -> int:
+        if self.shared is not None:  # S8：共享 infra 额度余量（只读快照，真正领取走 allow_retry 的原子操作）
+            return self.shared.shared_infra_cap - self.shared.state().retries_of("infra")
         return int(self.infra_retry_budget or 0) - self.infra_retries_used()
+
+    # ── S8 共享模式 ──────────────────────────────────────────────────────
+    def retry_interrupt(self, key: str) -> str:
+        """最后一次未作废尝试的中断分类（attempt_end.interrupt；未记的一律 infra）。"""
+        live = [r for r in self.starts.get(key, []) if not self._void(r["attempt_id"])]
+        end = self.ended.get(live[-1]["attempt_id"]) if live else None
+        it = (end or {}).get("interrupt")
+        return it if it in INTERRUPTS else "infra"
+
+    def interrupt_counts(self, key: str | None = None) -> dict[str, int]:
+        """未作废、非最终结局（infra 错误）的尝试按中断分类计数；key=None 时统计整本账本。"""
+        out = {i: 0 for i in INTERRUPTS}
+        for k, rows in self.starts.items():
+            if key is not None and k != key:
+                continue
+            for r in rows:
+                end = self.ended.get(r["attempt_id"])
+                if end is None or self._void(r["attempt_id"]) or self.is_final(end):
+                    continue
+                it = end.get("interrupt")
+                out[it if it in INTERRUPTS else "infra"] += 1
+        return out
+
+    def allow_retry(self, key: str) -> bool:
+        """是否可以对 key 再开一次重试。非共享模式即 BASE 的本地额度判断；共享模式向共享账本原子领一个名额
+        （infra 或 expired，按上一尝试的中断分类），并发争抢最后一个名额只有一方成功。"""
+        if self.shared is None:
+            return self.infra_retries_left() > 0
+        return bool(self.shared.claim_retry(route=self.route, key=key, interrupt=self.retry_interrupt(key),
+                                            seat=self.seat, policy=self.policy))
+
+    def expired_jobs(self) -> set[str]:
+        """Slurm 到期作业号集合：构造参数 ``expired_jobs`` 优先，否则读环境变量 ``SGEVAL_EXPIRED_JOBS`` 指向的文件。"""
+        src = self._expired_jobs
+        if src is _UNSET:
+            src = os.environ.get(ENV_EXPIRED_JOBS) or None
+        if src is None:
+            return set()
+        if isinstance(src, (str, Path)):
+            p = Path(src)
+            if not p.is_file():
+                return set()
+            toks = p.read_text(encoding="utf-8").replace(",", " ").split()
+        else:
+            toks = [str(x) for x in src]
+        # sacct 可能带 <JobID>.batch／<JobID>_<array> 等后缀：取主作业号
+        return {t.split(".")[0] for t in toks if t.strip()}
+
+    def classify_interrupt(self, start: dict, *, now: float | None = None) -> tuple[str, str]:
+        """按证据给悬空尝试分类：返回 (interrupt, evidence)。
+
+        * 尝试记下的 ``slurm_job_id`` 在到期作业号集合里 → ``expired``（``sacct_timeout``）；
+        * 尝试记下的 ``slurm_end_time`` 已过、且该尝试最后一行距它不超过 ``EXPIRE_MARGIN_S`` → ``expired``；
+        * 其他一律 ``infra``（``no_expiry_evidence``）。"""
+        now = time.time() if now is None else float(now)
+        job = start.get("slurm_job_id")
+        if job and str(job).split(".")[0] in self.expired_jobs():
+            return "expired", f"sacct_timeout job={job}"
+        end_t = start.get("slurm_end_time")
+        if isinstance(end_t, (int, float)) and now >= end_t:
+            last = self.last_t.get(start["attempt_id"], float(start.get("t") or 0.0))
+            if last >= end_t - EXPIRE_MARGIN_S:
+                return "expired", f"slurm_end_time={int(end_t)} last_activity={last:.0f}"
+        return "infra", "no_expiry_evidence"
 
     def last_end_final(self, key: str) -> bool:
         """最后一次未作废尝试的 attempt_end 是否已是最终结局（非 infra 错误等）：是则该身份不再重跑。"""
@@ -676,6 +801,10 @@ class AttemptLedger:
             self._apply(row)
 
     def attempt_start(self, *, key: str, attempt_id: str, attempt_no: int, retry: bool, **extra) -> None:
+        if self.shared is not None:  # S8：记下到期证据的来源（作业号、Slurm 结束时刻）与路线
+            extra = {"route": self.route, "host": socket.gethostname(),
+                     "slurm_job_id": os.environ.get("SLURM_JOB_ID") or None,
+                     "slurm_end_time": _int_or_none(os.environ.get("SLURM_JOB_END_TIME")), **extra}
         self.append({"kind": "attempt_start", "key": key, "attempt_id": attempt_id, "attempt_no": attempt_no,
                      "retry": bool(retry), **extra})
 
@@ -701,13 +830,22 @@ class AttemptLedger:
         self.append({"kind": "attempt_end", **base, "status": status, "infra": bool(record.get("infra")),
                      "cap_hit": bool(record.get("cap_hit")), "exec_steps": record.get("exec_steps"),
                      "budget_exhausted": bool(record.get("budget_exhausted")), "late": late,
-                     **({"recovered": True} if record.get("recovered") else {})})
+                     **({"recovered": True} if record.get("recovered") else {}),
+                     **({"interrupt": record["interrupt"], "interrupt_evidence": record.get("interrupt_evidence")}
+                        if record.get("interrupt") else {})})
         if self.is_final(record) and not late:
             self.append({"kind": "accept", **base, "accepted_attempt_id": record["attempt_id"], "status": status})
         return late
 
 
 # ── 常驻客户端 ──────────────────────────────────────────────────────────────
+
+
+def policy_route(args) -> str:
+    """C1 新侧路线名：``mmesg/<variant>/new``，其余 ``<policy>/new``（S8 共享账本按它区分身份）。"""
+    if args.policy == "mmesg":
+        return f"mmesg/{getattr(args, 'mme_variant', None)}/new"
+    return f"{args.policy}/new"
 
 
 def policy_variant_of(args) -> str | None:
@@ -782,7 +920,10 @@ class SeatRunner:
         self.trace_root = Path(trace_root) if trace_root else None
         self._policy_context: Any = None
         self._policy_context_ready = False
-        self.ledger = AttemptLedger(args.ledger, seat=args.seat, policy=args.policy)
+        # S8：--budget-ledger 显式打开共享预算；不给时由 AttemptLedger 按环境变量 SGEVAL_BUDGET_LEDGER 门控
+        shared_kw = {"shared": args.budget_ledger} if getattr(args, "budget_ledger", None) else {}
+        self.ledger = AttemptLedger(args.ledger, seat=args.seat, policy=args.policy, route=policy_route(args),
+                                    **shared_kw)
         self.ledger.start(args.reset_budget, args.infra_retry_budget,
                           reason=getattr(args, "budget_raise_reason", None) or "cli_reset_budget")
 
@@ -909,9 +1050,12 @@ class SeatRunner:
         policy_context = self.policy_context()
         if self.ledger.reset_left() <= 0:  # 开局前就没有额度：不开尝试、不写结果，直接停
             self._budget_stop(key)
+        rid = self._reserve(key, attempt_id, attempt)  # S8：共享模式下先预约轨迹（不足即停，不进入 attempt）
+        shared_extra = {} if rid is None else {"budget_rid": rid,
+                                                **({"interrupt": self.ledger.retry_interrupt(key)} if retry else {})}
         self.ledger.attempt_start(key=key, attempt_id=attempt_id, attempt_no=attempt, retry=retry,
                                   task=ident["task"], tier=ident["tier"], dataset=self.dataset,
-                                  builder_episode=int(ident["builder_episode"]))
+                                  builder_episode=int(ident["builder_episode"]), **shared_extra)
 
         def claim_reset(what, _k=key, _a=attempt_id, _n=attempt):
             self.ledger.claim_reset(key=_k, attempt_id=_a, attempt_no=_n, what=what)
@@ -923,12 +1067,13 @@ class SeatRunner:
             record.update(status="error", task_success=False, steps=0, infra=True, infra_reason="recorder",
                           error=f"RecorderError: init: {type(e).__name__}: {e}"[:800])
             self._finish(record)
+            self._settle(rid, record)
             self._print_done(record)
             return record
         session = EnvSession(ident["task"], int(ident["builder_episode"]), max_steps=eff, recorder=recorder,
                              builder=builder, progress_cb=lambda s: self.progress(s),
                              step_cap=eff if self.strict_cap else None, claim_reset=claim_reset,
-                             dataset=self.dataset)
+                             dataset=self.dataset, **self._budget_kw(rid))
         # conn_info：除 policy_context（进程内对象）外都是可序列化的标量；trace_dir 为本局轨迹目录（不预先建，
         # 由写轨迹的一方建），未给 --trace-root 时为 null
         trace_dir = self.trace_root / tag if self.trace_root is not None else None
@@ -988,6 +1133,7 @@ class SeatRunner:
         record["timing"] = timing
         record["recorder_verify"] = (rsum or {}).get("RECORDER_VERIFY")
         self._finish(record)
+        self._settle(rid, record)
         self.episodes_done += 1
         self.progress(record.get("steps", 0), phase="done")
         self._print_done(record)
@@ -1011,6 +1157,40 @@ class SeatRunner:
                 record.update(status="timeout", infra=False, infra_reason=None, client_status=res.get("status"),
                               client_error=res.get("error"),
                               error=f"STEP_CAP exec_steps={session.steps} cap={self.max_steps} 未成功，按 timeout 计")
+
+    # ── S8 共享预算（非共享模式下全部为空操作） ─────────────────────────
+    def _reserve(self, key: str, attempt_id: str, attempt: int) -> str | None:
+        """向共享账本预约一条轨迹（reset 计量 NEW_SIDE_RESETS_PER_ATTEMPT）；不足打印 RUN_BLOCKED reason=budget 并以
+        退出码 5 停止（attempt_start 尚未写，不进入 attempt）。非共享模式返回 None。"""
+        shared = self.ledger.shared
+        if shared is None:
+            return None
+        try:
+            return shared.reserve(resets=NEW_SIDE_RESETS_PER_ATTEMPT, route=self.ledger.route, key=key,
+                                  attempt_id=attempt_id, attempt_no=attempt, seat=self.args.seat,
+                                  policy=self.args.policy, astra=False)
+        except Exception as e:  # noqa: BLE001 budget_ledger.BudgetExhausted（可能来自另一份模块副本，按属性识别）
+            if not getattr(e, "budget_exhausted", False):
+                raise
+            print(f"RUN_BLOCKED reason=budget policy={self.args.policy} seat={self.args.seat} key={key} detail={e}",
+                  flush=True)
+            raise SystemExit(EXIT_BUDGET) from e
+
+    def _budget_kw(self, rid: str | None) -> dict:
+        """EnvSession 的 budget_claim：每次实际 build／reset 记进共享账本该 rid 名下。"""
+        if rid is None:
+            return {}
+        shared = self.ledger.shared
+        return {"budget_claim": lambda what, _r=rid: shared.claim_reset(_r, what, route=self.ledger.route)}
+
+    def _settle(self, rid: str | None, record: dict) -> None:
+        """作废尝试（额度在 build／reset 前就被拒）退回轨迹名额，其余收尾。"""
+        if rid is None:
+            return
+        if record.get("budget_exhausted"):
+            self.ledger.shared.release(rid, status=record.get("status"))
+        else:
+            self.ledger.shared.commit(rid, status=record.get("status"), infra=bool(record.get("infra")))
 
     def _finish(self, record: dict) -> None:
         """写结果行，再写账本 attempt_end（终态且首个 → accept）。late 先算好写进结果行。"""
@@ -1060,6 +1240,9 @@ class SeatRunner:
             if row is None:
                 row = {"key": st["key"], "attempt_id": st["attempt_id"], "attempt_no": st["attempt_no"],
                        "status": "error", "infra": True, "exec_steps": None}
+                if self.ledger.shared is not None:  # S8：按证据分 expired／infra，而不是一律 infra
+                    interrupt, evidence = self.ledger.classify_interrupt(st)
+                    row.update(interrupt=interrupt, interrupt_evidence=evidence)
             self.ledger.attempt_end(dict(row, recovered=True))
             print(f"LEDGER_RECOVER key={st['key']} attempt_id={st['attempt_id']} status={row.get('status')}", flush=True)
             n += 1
@@ -1102,7 +1285,7 @@ class SeatRunner:
             if k in led.accepted or led.last_end_final(k) or used >= V8_MAX_ATTEMPTS:
                 continue
             retry = used >= 1
-            if retry and led.infra_retries_left() <= 0:
+            if retry and not led.allow_retry(k):
                 skip_budget += 1
                 print(f"INFRA_RETRY_BUDGET_EXHAUSTED policy={self.args.policy} key={k} "
                       f"used={led.infra_retries_used()} budget={led.infra_retry_budget}", flush=True)
@@ -1214,6 +1397,9 @@ def build_parser() -> argparse.ArgumentParser:
                      help="本账本可用的基础设施重试局数（每身份至多重试 1 次；额度按模型共享，由主会话切给各席）")
     led.add_argument("--budget-raise-reason", default=None,
                      help="--reset-budget 大于账本历史最大值时写进 budget_raise 行与 RESET_BUDGET_RAISE 的原因（默认 cli_reset_budget）")
+    led.add_argument("--budget-ledger", default=None,
+                     help="S8 共享预算账本（budget_ledger.py 格式）；给出即打开共享模式（也可用环境变量 "
+                          "SGEVAL_BUDGET_LEDGER），不给且环境变量为空时行为与 BASE 相同")
     p.set_defaults(func=cmd_run)
     return ap
 
