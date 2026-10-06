@@ -33,8 +33,10 @@ def test_row_order_and_fields(tmp_path):
                        "nbytes": 3}
     assert rows[3]["actions"]["dtype"] == "<f4" and rows[3]["actions"]["shape"] == [2, 8]
     assert rows[6]["wrist_sha256"] is None and rows[6]["terminated"] is True
-    assert rows[-1] == {"kind": "end", "status": "success", "exec_steps": 2, "terminal_reason": "env_terminated",
-                        "note": "x"}
+    # 第三阶段（冻结说明四.3）：collect_arrays 缺省打开，end 行多一个 arrays 摘要；其余字段逐项不变
+    assert {k: v for k, v in rows[-1].items() if k != "arrays"} == {
+        "kind": "end", "status": "success", "exec_steps": 2, "terminal_reason": "env_terminated", "note": "x"}
+    assert rows[-1]["arrays"] == {"path": "arrays.npz", "action_keys": 2, "state_keys": 2, "missing_state_steps": []}
     assert t.validate_trace(rows) == []
     assert t.subgoal_sequence(rows) == ["拿起"]
 

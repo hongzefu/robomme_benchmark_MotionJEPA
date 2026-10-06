@@ -28,7 +28,8 @@ def _write(root, *, route="smvla/new", status="fail", n=3, missing=(), no_frame=
     ep = root / f"{key}.a{attempt}"
     ident = {"task": "T", "tier": "xhard0", "seed": 7, "dataset": "hard-verify", "source_episode": 3,
              "key": key, "attempt": attempt}
-    w = t.TraceWriter(ep / "trace.jsonl", route=route, identity=ident, max_steps=1300)
+    # collect_arrays=False：本夹具自己按 C4 决定写不写 arrays.npz（第三阶段 TraceWriter 缺省会自动写）
+    w = t.TraceWriter(ep / "trace.jsonl", route=route, identity=ident, max_steps=1300, collect_arrays=False)
     payload = {}
     if no_frame:
         w.log_demo([], [])
