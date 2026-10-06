@@ -197,3 +197,219 @@ def test_end_to_end_with_real_ffmpeg(tmp_path, repo_root, capsys):
     replaced = mod.render_episode(ep, official_root=official, overwrite=True)
     assert replaced["render_status"] == "rendered"
     assert mod.fingerprint(ep / "episode.mp4") == source_before
+
+
+# ── 第二阶段 S2a：无损原始帧来源、逐帧哈希核验、C3／C4／C8 ─────────────────────────────
+
+from tests.pipeline.evalx.report import sgx_render_fixtures as fx  # noqa: E402
+from tests.pipeline.evalx.report import trace_contract as tc  # noqa: E402
+
+
+def _need_ffmpeg():
+    if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
+        pytest.skip("未验证：缺少 ffmpeg/ffprobe")
+
+
+def _render(ep, repo_root, **kw):
+    return _module().render_episode(ep, official_root=_official_root(repo_root), ffmpeg=shutil.which("ffmpeg"), **kw)
+
+
+def _probe_frames(path):
+    return _module().probe_video(shutil.which("ffprobe"), path)["frames"]
+
+
+def _index_rows(ep, stream="front"):
+    return [json.loads(x) for x in (ep / f"frames-{stream}.jsonl").read_text().splitlines() if x.strip()]
+
+
+def _write_index(ep, rows, stream="front"):
+    (ep / f"frames-{stream}.jsonl").write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in rows))
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("raw", ["new", "orig"])
+def test_lossless_raw_without_mp4_renders(tmp_path, repo_root, capsys, raw):
+    _need_ffmpeg()
+    ep = fx.write_episode(tmp_path, "normal", raw=raw)
+    assert not (ep.dir / "episode.mp4").exists()
+    tc.assert_renderable(ep.dir)
+    mod = _module()
+    assert mod.main([str(ep.dir), "--official-root", str(_official_root(repo_root)), "--source", "raw"]) == 0
+    out = capsys.readouterr().out
+    kind = f"raw-{raw}"
+    assert f"source_kind={kind}" in out and "OFFICIAL_RENDER_SUMMARY=PASS total=1 ok=1 fail=0" in out
+    side = json.loads((ep.dir / "official/render.json").read_text())
+    assert side["source_kind"] == kind and side["source_mp4"] is None
+    assert side["frame_hash_check"]["mode"] == "verified"
+    assert side["frame_hash_check"]["frames"] == {"front": ep.frames_recorded, "wrist": ep.frames_recorded}
+    # 流与索引以局目录相对路径登记 sha256
+    streams = sorted(side["source_media"]["streams"])
+    assert streams == (["front.mkv", "wrist.mkv"] if raw == "new" else ["frames/front.rgb24", "frames/wrist.rgb24"])
+    assert all(not Path(p).is_absolute() for p in side["source_media"]["index"])
+    assert side["frames"] == side["frames_recorded"] == ep.frames_recorded
+    assert _probe_frames(ep.dir / side["out_rel"]) == ep.frames_recorded
+    # auto 在有原始流时也选 raw，且结果可复用
+    assert _render(ep.dir, repo_root)["render_status"] == "reused"
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("defect", ["swap_streams", "wrong_enc", "missing_frame", "duplicate_idx", "lossy"])
+def test_raw_new_defects_fail_without_fallback(tmp_path, repo_root, defect):
+    _need_ffmpeg()
+    ep = fx.write_episode(tmp_path, "normal").dir
+    # 放一个合法 mp4 作诱饵：raw 失败也不得退回 mp4
+    subprocess.run([shutil.which("ffmpeg"), "-v", "error", "-f", "lavfi", "-i", "testsrc2=size=512x256:rate=30",
+                    "-frames:v", "6", "-c:v", "libx264", "-pix_fmt", "yuv420p", str(ep / "episode.mp4")], check=True)
+    rows = _index_rows(ep)
+    if defect == "swap_streams":
+        (ep / "front.mkv").rename(ep / "tmp.mkv")
+        (ep / "wrist.mkv").rename(ep / "front.mkv")
+        (ep / "tmp.mkv").rename(ep / "wrist.mkv")
+        match = "sha256 不符"
+    elif defect == "wrong_enc":
+        # 末两行 enc 互换：enc 集合仍完整覆盖解码帧，只能靠逐行 sha256 发现
+        rows[-1]["enc"], rows[-2]["enc"] = rows[-2]["enc"], rows[-1]["enc"]
+        _write_index(ep, rows)
+        match = "sha256 不符"
+    elif defect == "missing_frame":
+        _write_index(ep, rows[:-1])
+        match = "缺帧|索引损坏"
+    elif defect == "duplicate_idx":
+        _write_index(ep, rows + [rows[-1]])
+        match = "重复索引"
+    else:
+        meta = json.loads((ep / "meta.json").read_text())
+        meta.update(level=1, codec="libx264-crf18")
+        (ep / "meta.json").write_text(json.dumps(meta))
+        match = "有损降级"
+    for source in ("raw", "auto"):
+        with pytest.raises(ValueError, match=match):
+            _render(ep, repo_root, source=source)
+    assert not (ep / "official").exists() or not list((ep / "official").glob("*.mp4"))
+
+
+@pytest.mark.slow
+def test_raw_orig_missing_frame_and_raw_mode_needs_raw(tmp_path, repo_root):
+    _need_ffmpeg()
+    ep = fx.write_episode(tmp_path, "obs_none", raw="orig").dir
+    # 原侧没有逐帧索引哈希：调包两路流只能靠 trace 画面哈希发现
+    (ep / "frames/front.rgb24").rename(ep / "frames/tmp.rgb24")
+    (ep / "frames/wrist.rgb24").rename(ep / "frames/front.rgb24")
+    (ep / "frames/tmp.rgb24").rename(ep / "frames/wrist.rgb24")
+    with pytest.raises(ValueError, match="逐帧哈希不符"):
+        _render(ep, repo_root, source="raw")
+    f = ep / "frames/front.rgb24"
+    f.write_bytes(f.read_bytes()[:-fx.H * fx.W * 3])
+    with pytest.raises(ValueError, match="缺帧"):
+        _render(ep, repo_root, source="raw")
+    only_mp4 = tmp_path / "mp4only"
+    only_mp4.mkdir()
+    ep2 = fx.write_episode(only_mp4, "normal", raw="orig").dir
+    for p in ("frames/front.rgb24", "frames/wrist.rgb24"):
+        (ep2 / p).unlink()
+    (ep2 / "episode.mp4").write_bytes(b"")
+    with pytest.raises(ValueError, match="raw 模式缺原始帧"):
+        _render(ep2, repo_root, source="raw")
+
+
+@pytest.mark.slow
+def test_reuse_after_raw_deleted_but_not_after_raw_changed(tmp_path, repo_root):
+    _need_ffmpeg()
+    ep = fx.write_episode(tmp_path, "normal").dir
+    first = _render(ep, repo_root, source="raw")
+    assert first["render_status"] == "rendered"
+    # 改 raw 后复用必须失败（流指纹不符），不加 --overwrite 拒绝覆盖
+    keep = (ep / "front.mkv").read_bytes()
+    (ep / "front.mkv").write_bytes(keep + b"\0")
+    with pytest.raises(ValueError, match="拒绝覆盖"):
+        _render(ep, repo_root, source="raw")
+    (ep / "front.mkv").write_bytes(keep)
+    # 改索引同样不可复用
+    idx = (ep / "frames-wrist.jsonl").read_text()
+    (ep / "frames-wrist.jsonl").write_text(idx + "\n")
+    with pytest.raises(ValueError, match="拒绝覆盖"):
+        _render(ep, repo_root)
+    (ep / "frames-wrist.jsonl").write_text(idx)
+    # 转码后删 raw（frames-*.jsonl 保留）：重入走复用；整个目录搬走后仍可核（相对路径）
+    for p in ("front.mkv", "wrist.mkv"):
+        (ep / p).unlink()
+    moved = tmp_path / "nfs" / ep.name
+    moved.parent.mkdir()
+    ep.rename(moved)
+    for source in ("raw", "auto"):
+        again = _render(moved, repo_root, source=source)
+        assert again["render_status"] == "reused" and again["output_fingerprint"] == first["output_fingerprint"]
+    with pytest.raises(ValueError, match="拒绝覆盖"):
+        _render(moved, repo_root, source="mp4")
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("kind", ["exception", "obs_none", "natural_timeout", "strict_cap"])
+def test_episode_kinds_result_trace_media_counts_agree(tmp_path, repo_root, kind):
+    _need_ffmpeg()
+    ep = fx.write_episode(tmp_path, kind)
+    tc.assert_renderable(ep.dir)
+    tc.assert_counts_consistent(ep.dir, ep.result_row)
+    trace = _module().load_trace(ep.dir / "trace.jsonl")
+    assert len(trace.steps) == ep.result_row["exec_steps"] and len(trace.observed_steps) == ep.steps_observed
+    assert trace.output_frames == ep.frames_recorded
+    result = _render(ep.dir, repo_root, source="raw")
+    end = json.loads((ep.dir / "trace.jsonl").read_text().splitlines()[-1])
+    assert result["status"] == ep.result_row["status"] == end["status"]
+    assert result["exec_steps"] == result["steps_attempted"] == end["steps_attempted"] == ep.result_row["exec_steps"]
+    assert result["steps_observed"] == end["steps_observed"]
+    assert result["frames"] == end["frames_recorded"] == _probe_frames(Path(result["out"]))
+    index_front = len(_index_rows(ep.dir))
+    assert index_front == end["demo_frames"] + 1 + end["steps_observed"]  # 原始帧不含缺观测步
+    assert result["omitted_timeout_frames"] == int(kind == "natural_timeout")
+    assert result["missing_steps"] == list(fx.KINDS[kind]["missing"])
+
+
+@pytest.mark.slow
+def test_no_frame_error_episode_records_reason(tmp_path, repo_root, capsys):
+    _need_ffmpeg()
+    ep = fx.write_no_frame(tmp_path)
+    tc.assert_renderable(ep)
+    mod = _module()
+    trace = mod.load_trace(ep / "trace.jsonl")
+    assert trace.no_frame and trace.end_status == "error" and trace.output_frames == 0
+    assert mod.main([str(ep), "--official-root", str(_official_root(repo_root))]) == 0
+    out = capsys.readouterr().out
+    assert "OFFICIAL_RENDER=NO_FRAME" in out and "no_frame=1" in out and "fail=0" in out
+    side = json.loads((ep / "official/render.json").read_text())
+    assert side["render_status"] == "no_frame" and "reset_exception" in side["no_frame_reason"]
+    assert not list((ep / "official").glob("*.mp4"))
+    again = _render(ep, repo_root)
+    assert again["render_status"] == "no_frame" and again["reused"] is True
+
+
+def test_error_status_allowed_and_count_mismatch_rejected(tmp_path):
+    mod = _module()
+    trace = _trace(tmp_path, _rows(terminal="error", status="error", steps=2))
+    assert trace.end_status == trace.terminal_reason == "error" and trace.output_frames == 5
+    rows = _rows(steps=2)
+    rows[-1].update(steps_attempted=2, steps_observed=2, frames_recorded=99)
+    with pytest.raises(ValueError, match="frames_recorded"):
+        _trace(tmp_path, rows)
+    rows = _rows(steps=2)
+    rows[-1]["no_frame"] = True
+    with pytest.raises(ValueError, match="no_frame"):
+        _trace(tmp_path, rows)
+    assert mod.TERMINALS == ("success", "fail", "timeout", "error")
+
+
+@pytest.mark.slow
+def test_key_option_for_dir_without_key(tmp_path, repo_root):
+    _need_ffmpeg()
+    ep = fx.write_episode(tmp_path, "normal", dir_name="ep000").dir
+    with pytest.raises(ValueError, match="局目录与 trace.identity.key 不符"):
+        _render(ep, repo_root)
+    with pytest.raises(ValueError, match="--key"):
+        _render(ep, repo_root, key="Other_xhard0_1")
+    key = json.loads((ep / "trace.jsonl").read_text().splitlines()[0])["identity"]["key"]
+    mod = _module()
+    assert mod.main([str(ep), "--official-root", str(_official_root(repo_root)), "--key", key]) == 0
+    side = json.loads((ep / "official/render.json").read_text())
+    assert side["episode_tag"] == f"{key}.a1" and side["episode_id"] == "3a1"
+    with pytest.raises(SystemExit):
+        mod.main([str(ep), str(ep.parent), "--key", key])
