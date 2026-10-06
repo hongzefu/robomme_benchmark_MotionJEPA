@@ -9,16 +9,56 @@
 另有手写期望（不调用被测代码推出）：消息顺序、首批帧数与 exec_start_idx、提示词与 Oracle 子目标、执行动作 = 各
 动作块前 16 行；``count > max_steps`` 才 timeout（max_steps=1300 时执行 1301 步、原侧帧数 3 + 1301）；``--strict-cap``
 下第 max_steps+1 步不进环境；官方 ``unknown`` 记 error 且不中止后续局。
+
+第二阶段 S1（1005 计划第二部分一节「S1」、八节 3.5）：新侧保留官方叠字视频到 ``<局目录>/official/`` 并写
+``provenance.json``；新侧轨迹按共享契约收尾（C3 终态、C6 attempt、C8 三分计数与缺观测步）。原侧（R1）不变，
+所以两侧逐项比较前用 ``legacy_trace_parts`` 把新侧只增的字段还原成旧口径——还原是可逆映射（官方原返回值
+``success_flag`` 还回 ``terminal_reason``、缺观测步还回旧写法），不放过动作、画面、请求的任何差异。
 """
 from __future__ import annotations
 
+import hashlib
 import json
+import shutil
 from pathlib import Path
 
 import numpy as np
 import pytest
 
 import groundsg_fakes as F
+from tests.pipeline.evalx.report import trace_contract as TC
+
+NEW_ONLY_END = F.NEW_ONLY_END
+
+
+@pytest.fixture(autouse=True)
+def _legacy_view(monkeypatch):
+    monkeypatch.setattr(F, "trace_parts", F.legacy_trace_parts)
+
+
+def _rewrite_end(path: str, **changes) -> None:
+    rows = F.read_trace(path)
+    rows[-1].update(changes)
+    Path(path).write_text("".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows),
+                          encoding="utf-8")
+
+
+def test_legacy_view_still_reports_status_and_action_diffs(tmp_path):
+    """反例：还原只剥新增记录字段——新侧终态 status、步行动作被改动后 diffs 仍报出差异。"""
+    n, o = run_pair(F.ORACLE, F.Plan(success_at=37), 60, tmp_path)
+    assert F.diffs(n, o)["terminal"] == 0
+    _rewrite_end(n[2]["trace_path"], status="fail")
+    assert F.diffs(n, o)["terminal"] >= 1
+    _rewrite_end(n[2]["trace_path"], status="success", success_flag="fail")  # 官方原值被改也报
+    assert F.diffs(n, o)["terminal"] >= 1
+    _rewrite_end(n[2]["trace_path"], success_flag="success")
+    assert F.diffs(n, o)["terminal"] == 0
+    rows = F.read_trace(n[2]["trace_path"])
+    step = next(r for r in rows if r["kind"] == "step")
+    step["action"] = dict(step["action"], sha256="0" * 64)
+    Path(n[2]["trace_path"]).write_text("".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n"
+                                                for r in rows), encoding="utf-8")
+    assert F.diffs(n, o)["exec"] >= 1
 
 SCENARIOS = {
     "success": (F.Plan(success_at=37), 60),
@@ -50,6 +90,9 @@ def test_official_adapter_matches_official_loop(tmp_path):
                 total[k] += d[k]
             seen[(variant, name)] = (n[2]["status"], n[2]["steps"], n[2]["error"])
             assert d["payload"] == d["exec"] == d["terminal"] == 0, (variant, name, d)
+            # 还原只针对新侧确实写了的契约字段：新侧局目录整份过契约（含 error 局）
+            assert TC.contract_problems(Path(n[2]["trace_path"]).parent) == [], (variant, name)
+            assert "success_flag" in F.read_trace(n[2]["trace_path"])[-1]
     # 终态手写：每种情形两变体相同
     for variant in F.VARIANTS:
         assert seen[(variant, "success")][:2] == ("success", 37)
@@ -171,3 +214,275 @@ def test_trace_location_fallbacks(tmp_path):
         assert res["trace_path"] == (None if want is None else str(want))
         if want is not None:
             assert F.read_trace(want)[0]["kind"] == "header"
+
+
+# ---------------------------------------------------------------- S1：新侧保留官方叠字视频
+
+
+def _decoded_frames(path: Path) -> int:
+    """独立于被测代码的解码计数（imageio 逐帧读完）。"""
+    import imageio.v2 as iio
+
+    with iio.get_reader(str(path), format="FFMPEG") as rd:
+        return sum(1 for _ in rd)
+
+
+def _sha(path: Path) -> str:
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def _official(res: dict) -> tuple[Path, list[Path], dict]:
+    tdir = Path(res["trace_path"]).parent
+    odir = tdir / "official"
+    mp4s = sorted(odir.glob("*.mp4"))
+    pj = odir / "provenance.json"
+    prov = json.loads(pj.read_text(encoding="utf-8")) if pj.is_file() else {}
+    return tdir, mp4s, prov
+
+
+def _check_kept(res: dict, *, source: str, label: str, frames: int) -> dict:
+    tdir, mp4s, prov = _official(res)
+    assert res["official_source"] == source and res["official_save_error"] is None, res
+    assert len(mp4s) == 1 and res["official_videos"] == [str(mp4s[0])]
+    # 官方文件名格式 {env_id}_ep{episode_id}_{flag}_{task_goal}_{difficulty}.mp4，短编号 3a1
+    assert mp4s[0].name == f"PickXtimes_ep3a1_{label}_{F.goal_of('PickXtimes', 3)}_hard.mp4"
+    assert "ep3a1_" in mp4s[0].name
+    assert res["frames_recorded"] == frames == _decoded_frames(mp4s[0])
+    # provenance：身份、路线、数据集、attempt、终态、官方源码 sha、视频 sha、帧数依据、来源
+    ident = prov["identity"]
+    assert (ident["key"], ident["attempt"], ident["dataset"], ident["source_episode"]) == \
+        ("PickXtimes_xhard0_510300", 1, F.DATASET, 3)
+    assert prov["route"] == f"mmesg/{F.ORACLE}/new" and prov["dataset"] == F.DATASET and prov["attempt"] == 1
+    assert prov["terminal"]["status"] == res["status"] and prov["terminal"]["success_flag"] == res["success_flag"]
+    assert prov["official_sha256"] == res["official_sha256"] and {"eval.py", "utils.py"} <= set(prov["official_sha256"])
+    assert prov["video"] == {"name": mp4s[0].name, "sha256": _sha(mp4s[0]), "bytes": mp4s[0].stat().st_size}
+    assert prov["frames"]["decoded"] == prov["frames"]["expected"] == prov["frames"]["frames_recorded"] == frames
+    assert prov["frames"]["basis"] == "demo_frames + 1 + steps_observed - omitted_timeout_frames"
+    assert prov["official_source"] == source
+    # 轨迹 end 与结果行一致；video_dir 已删
+    end = F.read_trace(res["trace_path"])[-1]
+    assert (end["official_source"], end["official_videos"]) == (source, [mp4s[0].name])
+    assert (end["steps_attempted"], end["steps_observed"], end["frames_recorded"]) == \
+        (res["steps_attempted"], res["steps_observed"], res["frames_recorded"])
+    assert not (tdir / "official-video").exists()
+    return end
+
+
+def _side(tmp: Path, plan: F.Plan, max_steps: int = 60, **kw) -> tuple[F.NewSide, F.World]:
+    world = F.World(default=plan)
+    return F.NewSide(F.ORACLE, max_steps, tmp, world, **kw), world
+
+
+def test_normal_episode_keeps_one_official_video_with_provenance(tmp_path, capsys):
+    side, _ = _side(tmp_path, F.Plan(success_at=37))
+    res = side.run(F.identity())
+    assert res["status"] == "success"
+    end = _check_kept(res, source="official", label="success", frames=F.N_RESET_FRAMES + 37)
+    assert (end["status"], end["terminal_reason"], end["success_flag"]) == ("success", "success", "success")
+    assert F.read_trace(res["trace_path"])[0]["identity"]["attempt"] == 1  # C6
+    assert "OFFICIAL_VIDEO=KEPT source=official" in capsys.readouterr().out
+    TC.assert_renderable(Path(res["trace_path"]).parent)
+    TC.assert_counts_consistent(Path(res["trace_path"]).parent,
+                                {"exec_steps": res["_session_steps"], "status": res["status"]})
+    # evaluator 的 init_episode 包装已还原（实例上不留属性）
+    assert "init_episode" not in vars(side.ctx["evaluator"])
+
+
+def test_natural_timeout_omits_last_frame(tmp_path):
+    """官方 count > max_steps 先 break 后不 record：执行 41 步、官方视频 3 + 40 帧、omitted_timeout_frames=1。"""
+    side, _ = _side(tmp_path, F.Plan(), max_steps=40)
+    res = side.run(F.identity())
+    assert (res["status"], res["steps"]) == ("timeout", 41)
+    end = _check_kept(res, source="official", label="timeout", frames=F.N_RESET_FRAMES + 40)
+    assert (end["omitted_timeout_frames"], end["steps_attempted"], end["steps_observed"]) == (1, 41, 41)
+    TC.assert_renderable(Path(res["trace_path"]).parent)
+
+
+def test_strict_cap_salvages_official_video(tmp_path):
+    side, world = _side(tmp_path, F.Plan(), max_steps=30, strict_cap=True)
+    res = side.run(F.identity())
+    assert res["status"] == "timeout" and res["exception"] == "StepCapReached" and len(world.envs[0].actions) == 30
+    end = _check_kept(res, source="official-salvaged", label="timeout", frames=F.N_RESET_FRAMES + 30)
+    assert (end["status"], end["terminal_reason"], end["success_flag"]) == ("timeout", "timeout", "error")
+    assert end["omitted_timeout_frames"] == 0
+    TC.assert_renderable(Path(res["trace_path"]).parent)
+
+
+def test_exception_salvages_official_video_and_keeps_missing_step(tmp_path):
+    """环境第 5 步抛异常：该步缺观测（log_missing_step），官方循环随后抛 AttributeError；补存 3 + 4 帧。"""
+    side, _ = _side(tmp_path, F.Plan(raise_at=5))
+    res = side.run(F.identity())
+    assert res["status"] == "error" and res["error"].startswith("AttributeError")
+    end = _check_kept(res, source="official-salvaged", label="error", frames=F.N_RESET_FRAMES + 4)
+    assert (end["steps_attempted"], end["steps_observed"], end["terminal_reason"]) == (5, 4, "error")
+    last = [r for r in F.read_trace(res["trace_path"]) if r["kind"] == "step"][-1]
+    assert last["step"] == 5 and last["observed"] is False and last["front_sha256"] is None
+    assert last["missing_reason"].startswith("RuntimeError: fake env step failure at 5")
+    assert last["action"] is not None and last["terminated"] == "NOT_OBSERVED"
+    # error 局：重绘器放行由 S2a 负责，这里只断言契约部分
+    assert TC.contract_problems(Path(res["trace_path"]).parent) == []
+
+
+def test_unknown_salvages_official_video(tmp_path):
+    side, _ = _side(tmp_path, F.Plan(unknown_at=10))
+    res = side.run(F.identity())
+    assert (res["status"], res["error"]) == ("error", "success_flag=unknown")
+    end = _check_kept(res, source="official-salvaged", label="unknown", frames=F.N_RESET_FRAMES + 10)
+    assert (end["status"], end["terminal_reason"], end["success_flag"]) == ("error", "error", "unknown")
+    assert TC.contract_problems(Path(res["trace_path"]).parent) == []
+
+
+def test_failure_before_init_episode_is_none(tmp_path):
+    """策略 reset（init_episode 之前）就失败：一帧未录，official_source=none，轨迹 no_frame 局过契约。"""
+    side, _ = _side(tmp_path, F.Plan(success_at=5))
+
+    def boom(obj):
+        raise ConnectionRefusedError("fake server down")
+
+    side.server.handle = boom
+    res = side.run(F.identity())
+    assert res["status"] == "error" and res["official_source"] == "none" and res["official_videos"] == []
+    assert "一帧未录" in res["official_save_error"]
+    tdir = Path(res["trace_path"]).parent
+    assert not (tdir / "official").exists() and not (tdir / "official-video").exists()
+    end = F.read_trace(res["trace_path"])[-1]
+    assert (end["no_frame"], end["frames_recorded"], end["demo_frames"], end["steps_attempted"]) == (True, 0, 0, 0)
+    assert TC.contract_problems(tdir) == []
+    assert "init_episode" not in vars(side.ctx["evaluator"])
+
+
+def test_get_init_obs_failure_is_none(tmp_path, monkeypatch):
+    """init_episode 里取初始观测就失败（录像器尚未建）：none。"""
+    side, _ = _side(tmp_path, F.Plan(success_at=5))
+
+    def bad_reset(self):
+        raise RuntimeError("reset boom")
+
+    monkeypatch.setattr(F.FakeEnv, "reset", bad_reset)
+    res = side.run(F.identity())
+    assert res["status"] == "error" and res["official_source"] == "none" and res["no_frame"] is True
+    assert not (Path(res["trace_path"]).parent / "official").exists()
+
+
+def test_init_episode_midway_failure_is_partial(tmp_path, monkeypatch):
+    """取到 reset 帧后、官方录像器交出前失败：partial，只记原因，不出视频（不冒充完整）。"""
+    side, _ = _side(tmp_path, F.Plan(success_at=5))
+    g = type(side.ctx["evaluator"]).init_episode.__globals__
+    real = g["RolloutRecorder"]
+
+    class BrokenRecorder(real):
+        def record(self, *a, **kw):
+            if len(self.total_images) == 1:
+                raise RuntimeError("recorder boom")
+            return super().record(*a, **kw)
+
+    monkeypatch.setitem(g, "RolloutRecorder", BrokenRecorder)
+    res = side.run(F.identity())
+    assert res["status"] == "error" and res["official_source"] == "partial" and res["official_videos"] == []
+    assert "init_episode 中途失败" in res["official_save_error"]
+    tdir = Path(res["trace_path"]).parent
+    assert not (tdir / "official").exists()
+    end = F.read_trace(res["trace_path"])[-1]
+    assert end["official_source"] == "partial" and "no_frame" not in end
+    assert TC.contract_problems(tdir) == []
+
+
+def _make_mp4(path: Path, n: int) -> Path:
+    import imageio.v2 as iio
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    frames = [np.full((16, 16, 3), i * 9 % 256, dtype=np.uint8) for i in range(n)]
+    iio.mimsave(str(path), frames, fps=30)
+    assert _decoded_frames(path) == n
+    return path
+
+
+def test_keep_official_videos_accepts_exactly_one_full_video(tmp_path, capsys):
+    mc = F.mmesg_client()
+    src = _make_mp4(tmp_path / "vd" / "a.mp4", 12)
+    sha = _sha(src)
+    got = mc.keep_official_videos(tmp_path / "vd", tmp_path / "ep" / "official", expected_frames=12,
+                                  provenance={"official_source": "official", "route": "mmesg/x/new"})
+    assert got == [str(tmp_path / "ep" / "official" / "a.mp4")] and not src.exists()
+    prov = json.loads((tmp_path / "ep" / "official" / "provenance.json").read_text())
+    assert prov["video"]["sha256"] == sha and prov["frames"]["decoded"] == 12 and prov["route"] == "mmesg/x/new"
+    assert "OFFICIAL_VIDEO=KEPT" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("case", ["truncated", "wrong_frames", "two_files", "no_file", "dst_not_empty"])
+def test_keep_official_videos_rejects(tmp_path, capsys, case):
+    """截断 mp4、错帧数、多片、无片、目标非空：一律拒绝，不搬、不写 provenance、不打印 KEPT。"""
+    mc = F.mmesg_client()
+    vd, dst = tmp_path / "vd", tmp_path / "ep" / "official"
+    src = _make_mp4(vd / "a.mp4", 12)
+    expected = 12
+    if case == "truncated":
+        data = src.read_bytes()
+        src.write_bytes(data[: len(data) // 2])
+    elif case == "wrong_frames":
+        expected = 13
+    elif case == "two_files":
+        shutil.copy(src, vd / "b.mp4")
+    elif case == "no_file":
+        src.unlink()
+    elif case == "dst_not_empty":
+        dst.mkdir(parents=True)
+        (dst / "old.mp4").write_bytes(b"x")
+    before = sorted(p.name for p in vd.iterdir())
+    with pytest.raises(mc.OfficialVideoRejected):
+        mc.keep_official_videos(vd, dst, expected_frames=expected, provenance={"official_source": "official"})
+    assert sorted(p.name for p in vd.iterdir()) == before
+    assert not (dst / "provenance.json").exists() and not (dst / "a.mp4").exists()
+    assert "OFFICIAL_VIDEO=KEPT" not in capsys.readouterr().out
+
+
+def test_rejected_official_video_keeps_raw_and_records_error(tmp_path, monkeypatch):
+    """核帧失败（这里令期望帧数 +1）时局照常收尾：official_source=none、记 official_save_error、无 official/。"""
+    mc = F.mmesg_client()
+    real = mc.episode_counts
+
+    def off_by_one(*a, **kw):
+        c = real(*a, **kw)
+        return dict(c, frames_recorded=c["frames_recorded"] + 1)
+
+    monkeypatch.setattr(mc, "episode_counts", off_by_one)
+    side, _ = _side(tmp_path, F.Plan(success_at=20))
+    res = side.run(F.identity())
+    assert res["status"] == "success" and res["official_source"] == "none" and res["official_videos"] == []
+    assert res["official_save_error"].startswith("OfficialVideoRejected: 帧数不符")
+    tdir = Path(res["trace_path"]).parent
+    assert not (tdir / "official").exists() and not (tdir / "official-video").exists()
+
+
+#: BASE（b869a3df）run_official_episode 返回字典的键与顺序（手写自 BASE 源码）
+BASE_RESULT_KEYS = ["status", "task_success", "steps", "error", "success_flag", "decisions", "infra", "infra_reason",
+                    "env_exception", "exception", "qwen_log", "timing", "official_sha256"]
+
+
+@pytest.mark.parametrize("name", ["success", "unknown", "env_raise"])
+def test_keep_official_unset_is_base_behavior(tmp_path, monkeypatch, name):
+    """不传 keep_official（原侧）：返回键与 BASE 相同、不包 init_episode、不建 official/、叠字 mp4 照删；原侧轨迹不含
+    任何新增字段（缺观测步仍是旧写法）。"""
+    plan, max_steps = SCENARIOS[name]
+    orig = F.OrigSide(F.ORACLE, max_steps, tmp_path, F.World(default=plan))
+    mc = orig.ohr.mmesg  # 原侧按自己的加载器取到的那份模块
+    assert mc.run_official_episode.__kwdefaults__["keep_official"] is mc.trace_writer.UNSET
+    seen = []
+    real = mc.run_official_episode
+
+    def spy(*a, **kw):
+        seen.append(sorted(k for k in kw if k in ("keep_official", "official_provenance")))
+        out = real(*a, **kw)
+        seen.append(list(out))
+        return out
+
+    monkeypatch.setattr(mc, "run_official_episode", spy)
+    row = orig.run(F.identity())
+    assert seen == [[], BASE_RESULT_KEYS]
+    ep = Path(row["ep_dir"])
+    assert sorted(p.name for p in ep.iterdir() if p.name != "frames") == ["trace.jsonl"]
+    assert "init_episode" not in vars(orig.ctx["evaluator"])
+    rows = F.read_trace(row["trace_path"])
+    end = rows[-1]
+    assert not set(end) & (set(NEW_ONLY_END) | {"success_flag"}) and "attempt" not in rows[0]["identity"]
+    assert all("observed" not in r for r in rows if r["kind"] == "step")

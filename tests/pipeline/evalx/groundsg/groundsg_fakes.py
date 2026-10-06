@@ -396,6 +396,34 @@ def trace_parts(rows: list[dict]) -> dict:
     return out
 
 
+_BASE_TRACE_PARTS = trace_parts  # 供 legacy_trace_parts 调用（被 monkeypatch 换掉 trace_parts 后仍指向原函数）
+
+#: 第二阶段 S1 新侧 end 行只增的字段（原侧 R1 不写）
+NEW_ONLY_END = ("steps_attempted", "steps_observed", "frames_recorded", "omitted_timeout_frames", "no_frame",
+                "official_source", "official_videos")
+
+
+def legacy_trace_parts(rows: list[dict]) -> dict:
+    """新侧契约字段还原成 BASE 口径后再按种类拆开（原侧行原样；1005 计划 S1）。
+
+    只剥离新侧新增的记录字段，且是可逆映射：end 行官方原返回值 ``success_flag`` 还回 ``terminal_reason``、
+    删 ``NEW_ONLY_END``；缺观测步（``observed=false``）还回旧写法。``status``、动作、画面、请求一律不动，差异照报。
+    两侧逐项比较时用 ``monkeypatch.setattr(F, "trace_parts", F.legacy_trace_parts)`` 局部替换。"""
+    conv = []
+    for r in rows:
+        r = dict(r)
+        if r.get("kind") == "end" and "success_flag" in r:
+            r["terminal_reason"] = r.pop("success_flag")
+            for k in NEW_ONLY_END:
+                r.pop(k, None)
+        if r.get("kind") == "step" and r.get("observed") is False:
+            assert r.pop("missing_reason")
+            r.pop("observed")
+            r.update(terminated=False, truncated=False, status="error")
+        conv.append(r)
+    return _BASE_TRACE_PARTS(conv)
+
+
 # ---------------------------------------------------------------- 两侧逐项比较
 
 
