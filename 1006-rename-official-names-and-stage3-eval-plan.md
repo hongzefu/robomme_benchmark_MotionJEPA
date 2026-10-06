@@ -28,6 +28,8 @@
 >
 > 2026-10-06 用户对第 1 项裁决原话：「同意兼容层把这个写入计划详细说这个问题。把你兜底的这个情形修改之前修改之后的这个prompt完整的英文版给我然后加上中文注释不要做翻译 原始的prompt。」——MemER 兼容层方案、原始 prompt 原文与修改前后的处理流程见八.3「MemER 兼容层」。
 >
+> 2026-10-06 用户对兼容层细节裁决原话：「这里改为重新问三次如果三次都坏Json再失败」「12同意 且2的A和b都用 写入第一部分」——坑 2 的兜底改为：坏回复最多重问两次（共三次），第二、三次提问同时追加提醒句（A）并打开随机采样（B）；三次都坏再按「有上一次合法子任务则沿用、没有则记具名错误」处理。坑 3 的改法用户尚未认可，待数轴说明后再定。
+>
 > 功能范围追加原话：「给出现在所有支持模型的清单，都要支持1800步，都要支持不同seed，模型seed。」「但是我们现在实跑只跑这个。我们现在实跑只跑我说的这些模型。」因此全部模型路线统一补齐1800步与可配置模型seed，但实跑范围只保留本版指定四模型。
 
 # 第一部分（给人看）
@@ -148,17 +150,27 @@ What subtask should the robot execute and what is the keyframe position?
 ┃ 注：子任务 "move cube" 是正常答案；关键帧为空也完全合理——它只看到 1 张图、记忆栏是 []，没有什么可挑的。
 ```
 
-**官方代码收到这个回答后怎么崩的**：
+**官方代码收到这个回答后怎么崩的（三个坑，用大白话）**
 
-1. 关键帧为空，存记忆这一步跳过了——没问题；
-2. 紧接着无条件做一次「合并相邻关键帧」，在空记忆上取第一个元素——报错；
-3. 报错后走兜底「用上一次的子任务」，但存上一次子任务的那个列表在整个文件里从来没被写入过，永远是空的——兜底再报错。
+*坑 1：记忆是空的时候去「整理记忆」。* 官方程序有一个「整理关键帧记忆」的动作：记忆里有几张挨得很近的画面（相隔不到 8 步）就只留中间那一张。程序每次收到模型回复后都不管三七二十一整理一次，而整理的第一步是「拿出记忆里的第一张」。第一次提问时记忆是空的，模型也回「没有关键帧」，记忆仍是空的，程序去拿第一张，拿不到，报错。作者在「把模型挑的关键帧存进记忆」那一步写了「没挑就跳过」，说明想到过空的情况，但紧接着的「整理」忘了同样跳过。
 
-结果：这一局在机器人动第一步之前就崩了，记 error，动作模型连那句「move cube」都没收到。这不是模型答错，是官方代码自己的越界。另有一处同类问题：第二次提问起固定往前隔一张取 8 张画面，画面不够 15 张时也越界。
+*坑 2：「应急方案」本身是坏的。* 官方设计是：解析模型回复时出任何错（回的不是 JSON、缺字段、坑 1 的报错），就启动应急方案——拿上一次用过的子任务顶上，让机器人继续做之前的事，不要整局崩。思路是对的，但作者从来没把「用过的子任务」存起来：那个历史清单每局开始时建好，之后没有任何地方往里写。应急方案去取「上一次」永远取不到，再报一个错，没人接，整局在机器人动第一步之前结束，记成 error。两个坑连起来：第一次提问模型很自然地回「关键帧为空」→ 坑 1 报错 → 应急方案 → 坑 2 再报错 → 局崩。模型没答错任何东西。
 
-兼容层只做三件事：空记忆不合并；每次合法的子任务真的存进兜底列表，模型回坏 JSON 时沿用上一次，一次都没有就把这局记成具名错误 `model_response_error`，不编造子任务；画面不够 15 张时有几张取几张。两个模型看到的输入一个字不变：子目标模型的提问原文、动作模型收到的子目标文字都和官方相同（原文与六种情形的前后对照见第二部分八.3）。两侧对拍用同一份补丁、同一个指纹，成绩表注明「MemER：官方实现 + 三处越界兼容补丁」。
+*坑 3：画面不够时取画面越界。* 从第二次提问起，程序每次附「最近 8 张画面」，隔一张取一张，要往前数 15 步；画面总数不到 15 张时数到不存在的那张，报错，整局崩。（改法待用户认可后补写。）
 
-判据：`MEMER_WIRING=PASS predictor=MemERSubgoalPredictor`、`MEMER_COMPAT=PASS cases=6 fingerprint=<sha256>`、`ASSETS=PASS`、`MEMER_SMOKE=PASS`。
+**兼容层怎么改（用户 2026-10-06「12同意 且2的A和b都用」）**
+
+*坑 1 的改法*：整理记忆之前先看一眼，记忆是空的就什么都不做；记忆不空时整理逻辑一个字不改。
+
+*坑 2 的改法*，两件事：
+1. 每次成功解析出子任务，就真的把它记进历史清单，让应急方案有东西可取。
+2. 解析失败时：先重问模型，最多再问两次，共三次。因为这个模型的解码是「每次都选概率最高的词」、没有随机性，同样的提问原样再问答案几乎一定一样，所以第二、三次提问同时做两处变化——**A** 在原提问末尾追加一句 `Your previous reply was not valid JSON. Reply with the JSON object only.`（提问正文不动，只多这一句）；**B** 打开随机采样（`temperature` 由 0 改为 0.7）。三次里任何一次回复合法，按正常流程走；三次都坏，看历史清单：有上一次的子任务就沿用它继续（日志记 `fallback_used`），一次都没有（第一次提问就连坏三次）就把这局记成具名错误 `model_response_error`，不编造子任务。每次重问的提问与回复都写进该局的 MemER 日志；B 让重问结果不可逐位复现，成绩表注明。
+
+*坑 3 的改法*：待用户认可后写。
+
+**三处共同的边界**：只改我们复制出来的那份代码，官方第三方仓库不动；三处改动合起来算一个 sha256 指纹，写进验收判定行、每局结果和视频来源记录；本机对拍的原侧和新侧用同一份改动；成绩表注明「MemER：官方实现 + 三处越界修补」。不变的东西：给子目标模型的提问原文（除失败后追加的那一句）、关键帧怎么挑怎么合并、动作模型收到的子任务文字和画面。
+
+判据：`MEMER_WIRING=PASS predictor=MemERSubgoalPredictor`、`MEMER_COMPAT=PASS cases=8 fingerprint=<sha256>`、`ASSETS=PASS`、`MEMER_SMOKE=PASS`。
 
 ## 三、这一版跑什么
 
@@ -342,7 +354,7 @@ MemER 展示名以锁定官方源码 `third_party/mme-vla/docs/manual_evaluation
 兼容层改法（只动我们摘出来的那份副本，`official_defs.load_groundsg` 摘取后用 AST 级补丁落地，补丁内容 sha256 作为「实现指纹」写进 `MEMER_COMPAT` 判定行、结果行与媒体 provenance）：
 
 1. `merge_key_frame_paths` 开头加「记忆为空则直接返回」；非空时逻辑原样。
-2. `call` 里每次成功解析出 `current_subtask` 后 `self.subgoals.append(current_subtask)`；`except` 分支改为「有上一次合法子目标则沿用，否则抛出具名异常 `MemERResponseError`」，由客户端把该局记成 `status=error, terminal_reason=error, error_kind=model_response_error`，不伪造子目标、不重跑。
+2. `call` 里每次成功解析出 `current_subtask` 后 `self.subgoals.append(current_subtask)`；`except` 分支改为「最多重问两次（共三次），第二、三次的 `InferRequest` 在 user prompt 末尾追加 `Your previous reply was not valid JSON. Reply with the JSON object only.` 且 `RequestConfig(temperature=0.7)`（用户 2026-10-06「2的A和b都用」）；任一次合法即走正常流程；三次都坏则有上一次合法子目标沿用并记 `fallback_used=1`，否则抛具名异常 `MemERResponseError`」，由客户端把该局记成 `status=error, terminal_reason=error, error_kind=model_response_error`，不伪造子目标、不重跑；每次重问的请求与回复追加写入 `ep*_MemER_log.jsonl`（`retry=<n>`）。
 3. `_get_current_execution_frame_paths` 改为「不足 15 张时从现有帧里按同样间隔能取几张取几张」，够 15 张时与官方逐字相同。
 
 **原始 prompt 原文（英文照抄官方，中文为注释不是翻译；修改前后两个模型看到的内容完全相同）**
@@ -389,14 +401,14 @@ What subtask should the robot execute and what is the keyframe position?
 |---|---|---|---|
 | A 首次回复关键帧为空 | `{"current_subtask":"move cube","keyframe_positions":[]}` | 跳过存记忆 → 无条件合并 → `nums[0]` IndexError → except → `self.subgoals[-1]` 再 IndexError → 异常逃出 `call` → 该局在第一步动作前崩，记 error | 跳过存记忆 → 合并发现记忆为空直接返回 → 取出 `move cube` 交给动作模型 → `subgoals=["move cube"]` → 局继续；下一次提问关键帧栏仍是 `[]` |
 | B 后续回复关键帧为空、记忆已非空 | 同上 | 存记忆跳过 → 合并在已有记忆上正常执行 → 不崩（官方可用） | 同官方，逐字相同 |
-| C 坏 JSON，此前已有合法子目标 | 非 JSON 文本 | `json.loads` 抛错 → except → `subgoals[-1]` IndexError → 崩 | 沿用上一次合法子目标，记 `fallback_used=1`，局继续 |
-| D 坏 JSON，此前没有合法子目标 | 非 JSON 文本 | 同 C，崩 | 抛 `MemERResponseError` → 该局 `status=error, error_kind=model_response_error`，不伪造子目标、不重跑 |
+| C 坏 JSON，此前已有合法子目标 | 非 JSON 文本 | `json.loads` 抛错 → except → `subgoals[-1]` IndexError → 崩 | 重问最多两次（追加提醒句 + `temperature=0.7`）；任一次合法即正常；三次都坏沿用上一次合法子目标，记 `fallback_used=1`，局继续 |
+| D 坏 JSON，此前没有合法子目标 | 非 JSON 文本 | 同 C，崩 | 重问最多两次（同 C）；三次都坏抛 `MemERResponseError` → 该局 `status=error, error_kind=model_response_error`，不伪造子目标、不重跑 |
 | E 缺 `keyframe_positions` 键 | `{"current_subtask":"…"}` | KeyError → except → 崩 | 与 C／D 同一兜底路径 |
 | F 第二次提问时执行帧少于 15 张 | — | `_get_current_execution_frame_paths` 下标越界，在 try 之外，崩 | 有几张取几张，提问照常；够 15 张时与官方逐字相同 |
 
 动作模型（GroundSG 动作服务 `symbolic-grounded-subgoal/79999`）在所有情形下看到的都只有：当前前视图、腕部图、机器人状态、子目标文字（`current_subtask` 经 `_parse_subgoal_for_vla` 把 `<|box_start|>(x,y)<|box_end|>` 换成画面坐标后的字符串）；它看不到关键帧、看不到提问、看不到回复原文。兼容层对它的输入没有任何改变，差别只在「官方原文下它根本收不到那条子目标（程序已崩）」。
 
-验收 `MEMER_COMPAT=PASS cases=6 fingerprint=<补丁 sha256>`：CPU 夹具用真实摘取的类配假 `PtEngine`，逐一跑 A～F 六种回复，断言修改后的子目标输出、记忆内容、日志行与异常类型；另断言「记忆非空且回复合法」时兼容层与官方原函数输出逐字节相同（B 情形回归）。两侧（本机对拍原侧与新侧）同一补丁、同一指纹，`GATE2` 报告与成绩表注明「MemER：官方实现 + 三处越界兼容补丁（指纹 …）」。
+验收 `MEMER_COMPAT=PASS cases=8 fingerprint=<补丁 sha256>`：CPU 夹具用真实摘取的类配假 `PtEngine`，逐一跑 A～F 六种回复（C、D 各再分「坏坏好」与「坏坏坏」两条，共 8 条），断言第二、三次请求带提醒句且 `temperature=0.7`、日志有 `retry=1,2` 两行，断言修改后的子目标输出、记忆内容、日志行与异常类型；另断言「记忆非空且回复合法」时兼容层与官方原函数输出逐字节相同（B 情形回归）。两侧（本机对拍原侧与新侧）同一补丁、同一指纹，`GATE2` 报告与成绩表注明「MemER：官方实现 + 三处越界兼容补丁（指纹 …）」。
 
 **可配置模型seed只实现功能。** 当前 `run_seat.sh::build_server_cmd` 中 FrameSamp与GroundSG动作服务固定 `--seed=7`，`smvla_server.py::reseed` 使用 `EPISODE_SEED=0`，PonderPounce服务启动固定种子0，Astra的 `run_astra.sh` 服务固定seed42。拟新增显式 `--policy-seed`，支持模型seed整数参数、至少验 `0/7/42`，从任务配置同时传到服务、客户端与子目标预测器，在真实模型构造前初始化该路线使用的随机状态。结果行、服务元数据、trace和媒体provenance都记录 `policy_seed`。`official_defs.py::make_args` 要显式设置官方 `Args.model_seed`，不能沿用默认42；QwenVL／MemER构造前按实际使用的RNG设种子。**本版所有真实smoke／正式任务只传7**，不能让SimpleMemVLA／PonderPounce暗用旧默认0；0／42及不实跑路线的传递、随机流和隔离只用CPU夹具验证。
 
