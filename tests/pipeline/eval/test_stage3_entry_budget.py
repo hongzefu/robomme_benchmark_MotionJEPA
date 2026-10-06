@@ -150,7 +150,7 @@ def test_eval_cap_1800_strict_and_hard_verify_not_strict(tmp_path):
 LIB_SRV = r'''
 set -u
 source "$EO/run_seat.sh"
-OUT=/o; GPU=0; MME_VLA_PY=/py/mme; PP_PY=/py/pp; SMVLA_PY=/py/smvla; OPENPI_HOME=/openpi; PP_CKPT=/ck/pp
+OUT=/o; GPU=0; MME_VLA_PY=/py/mme-vla; PP_PY=/py/pp; SMVLA_PY=/py/smvla; OPENPI_HOME=/openpi; PP_CKPT=/ck/pp
 FRAMESAMP_MODUL_CKPT=/ck/fsm; GROUNDSG_CKPT=/ck/sg; SMVLA_CKPT=/ck/smvla; GROUNDSG_VARIANT="$W_VARIANT"
 MEMER_ADAPTER="${W_MEMER:-}"; POLICY_SEED="$W_SEED"; SGEVAL_PP_SERVER_WRAP="$W_WRAP"
 IDENTS=/s.json; SEAT=T; COND=C; LEDGER_DIR=/l; RESET_BUDGET=""; INFRA_RETRY_BUDGET=1; LIMIT=0; DATASET=ood; MAX_STEPS=1800
@@ -183,12 +183,12 @@ def test_policy_seeds_reach_servers_clients_seat_info_and_results(tmp_path):
         s = str(seed)
         cases = [
             ("perceptual-framesamp-modul", "", "", "0",
-             lambda srv, s=s: srv[:2] == ["/py/mme", wrap] and f"--seed={s}" in srv
+             lambda srv, s=s: srv[:2] == ["/py/mme-vla", wrap] and f"--seed={s}" in srv
              and "--sgeval-metadata-out=/o/perceptual-framesamp-modul/server-metadata-18123.json" in srv),
             ("groundsg", "ground-sg-oracle", "", "0",
-             lambda srv, s=s: srv[:2] == ["/py/mme", wrap] and f"--seed={s}" in srv),
+             lambda srv, s=s: srv[:2] == ["/py/mme-vla", wrap] and f"--seed={s}" in srv),
             ("groundsg", "ground-sg-memer", "/ad/memer", "0",  # MemER 的动作服务命令与 GroundSG 相同
-             lambda srv, s=s: srv[:2] == ["/py/mme", wrap] and f"--seed={s}" in srv and "--policy.dir=/ck/sg" in srv),
+             lambda srv, s=s: srv[:2] == ["/py/mme-vla", wrap] and f"--seed={s}" in srv and "--policy.dir=/ck/sg" in srv),
             ("smvla", "", "", "0",
              lambda srv, s=s: _opt(srv, "--policy-seed") == s and _opt(srv, "--metadata_out") == "/o/smvla/server-metadata-18123.json"),
             ("pp", "", "", "0", lambda srv, s=s: srv[:3] == ["/py/pp", "-m", "ponderpounce.eval.robomme_server"]

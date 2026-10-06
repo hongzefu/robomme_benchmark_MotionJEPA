@@ -174,7 +174,7 @@ def test_smvla_audit_does_not_change_actions_and_language_rows(tmp_path):
 # ---------------------------------------------------------------- FrameSamp+Modulation
 
 
-class _AuditMMEClient(F.FakeMMEVLAWebsocketClient):
+class _AuditFramesampClient(F.FakeMMEVLAWebsocketClient):
     def __init__(self, server, with_audit: bool):
         super().__init__(server)
         self.with_audit = with_audit
@@ -190,7 +190,7 @@ def _framesamp_run(tmp_path, monkeypatch, name, with_audit, traced=True):
     mc = F.framesamp_modul_client()
     server = F.FakePolicyServer()
     monkeypatch.setattr(mc, "make_recording_client",
-                        lambda host, port, recorder, timing: _AuditMMEClient(server, with_audit))
+                        lambda host, port, recorder, timing: _AuditFramesampClient(server, with_audit))
     sess, b = _session(F.Plan(success_at=20))
     ci, ep = _conn_info(tmp_path, name, port=1, max_steps=1300)
     if not traced:

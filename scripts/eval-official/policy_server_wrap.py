@@ -72,7 +72,7 @@ def split_wrapper_args(argv: list[str]) -> tuple[str | None, list[str]]:
     return meta, rest
 
 
-def mme_root() -> Path:
+def mme_vla_root() -> Path:
     """三方 mme-vla 根：cwd 下有锁定脚本即 cwd，否则 ``$SGEVAL_THIRD_PARTY/mme-vla``。"""
     cwd = Path.cwd()
     if (cwd / SERVE_REL).is_file():
@@ -239,7 +239,7 @@ def run(sp: Any, args: Any, *, meta_path: str | None, argv_full: list[str], toke
 def main(argv: list[str] | None = None) -> Any:
     full = list(sys.argv if argv is None else argv)
     meta, rest = split_wrapper_args(full[1:])
-    root = mme_root()
+    root = mme_vla_root()
     prepare_sys_path(root)
     sp = load_serve_policy(root)
     import tyro
