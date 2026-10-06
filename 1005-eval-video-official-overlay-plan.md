@@ -25,6 +25,8 @@
 - **怎么保证一致**：单测用同一组帧分别喂官方类与本工具，逐帧逐位相等；真实一局抽帧目视；全量 800 局末行 `OFFICIAL_RENDER_SUMMARY=PASS total=800 ok=800 fail=0`。纯 CPU，不占显卡、不做 reset。
 - **已知差异**：画面像素来自 h264 解码（官方从原始帧直接合成），文字区逐位一致；文件名加 `official-rerender__` 前缀表明是重绘。
 - **本轮追加交付（2026-10-05）**：用户原话「/data/hongzefu/robomme_benchmark_MotionJEPANewTask/1005-eval-video-official-overlay-plan.md实现第一阶段的转码转完之后host在一个网站上。host完网站做Playeright测试。」明确执行第一阶段，随后在本机新增独立视频浏览站点，按任务、难度和终态筛选并播放重绘视频；完成真实 Playwright 播放、跳转、筛选与截图核验。沿用已有白名单视频服务，端口起跑前探测，给用户完整域名链接。
+- **网站追加要求**：用户随后明确「我只要分task的成功率。」「Task内部就不用再拆了。然后成功率要有百分比和分数。」「然后你的网页按照任务来分视频的栏目，不要堆砌在一个矩目录的列表里，并且所有的任务名字都用中文，啊，都用英文。」顶部表格固定 16 个 Task 行、V9 与 xhard0 两个结果列，每格百分比及成功局数／总局数；不按任务内难度拆分，不加总成功率行。视频改为英文任务名的独立栏目；原始／重绘视频切换继续保留。
+- **最终可见列名**：用户再纠正为「V9／xhard0 这里改名为Xhard和原版hard」，页面采用 `Xhard` 与 `原版hard`，内部来源仍为本机 V9 与 xhard0，数据不重算或替换。
 
 ## 第一阶段子代理分工与整合（简述）
 
@@ -98,6 +100,8 @@
 | 2 | S4 | SimpleMemVLA / MME 最小 trace | `smvla_client.py`、`mme_client.py`、`tests/pipeline/eval/test_policy_clients.py` | 同上 | 只读 `trace_writer.TraceWriter` | 3 | `… pytest tests/pipeline/eval/test_policy_clients.py -q` passed | CPU | 无 |
 | 2 | S5 | PonderPounce 子目标回传与换算 | `pp_client.py`、`pp_official_runner.py`、`tests/pipeline/evalx/pp/test_pp_protocol_wire.py`；`third_party/PonderPounce` 专用分支（服务端一处） | `src/`、其他 third_party | 回包键 `subgoal`；`pp_subgoal_to_official` | 4 | `… pytest tests/pipeline/evalx/pp -q` passed | CPU | gitlink 归主会话 |
 | 2 | 主会话 | 三档重跑（运行型子代理可按 `CLAUDE.md` 列入另批的分配表）、留档 | `docs/validation/sg-eval-gl-<日期>-02/` | — | 依赖 S1～S5 合入 | 5 | 沿用 1003 计划判定行 + 每模型 `OFFICIAL_RENDER_SUMMARY=PASS` | GL 占位 job、本机两卡 | — |
+
+S6 追加范围仍限上述三个文件：目录构建和浏览器检查增加 `--v9-results`、`--xhard0-results`，独立读取本机 Oracle 同一新接口的正式结果。V9 为 `local-g3/stage-oracle-00/s90/mmesg-ground-sg-oracle/results.jsonl`；xhard0 为 `local-g2/gate2-oracle/new-merged.results.jsonl`（已含接受的补跑），即 `16 任务 × 1 档 xhard0 × 12 局 = 192 局`。每 Task 成功率定义为 `100 × task_success=true 的终态局数 / 全部接受终态局数`；核对唯一身份、每任务分母、策略、数据集、status 与成功字段，不把基础设施重试算成额外评估。来源指纹写私有记录；公开表只含 Task、计数与比率。网站更新另跑真实 Playwright，旧截图与旧报告保留在第一版检查目录。
 
 派发前核对：`worktree.baseRef=head`（已核）、`git check-ignore -q .claude/worktrees/probe`（已核）、现有 worktree `.claude/worktrees/motionjepa-ckpt-branch-check-ffae44` 不动、主检出 clean。
 

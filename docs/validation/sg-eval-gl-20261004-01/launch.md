@@ -160,3 +160,62 @@ Oracle 原侧为显存复测重跑 1 局；Astra 原侧第一次因清单路径�
 - GL：`$R/{gate1,gate2-*,gate3-*,media,logs,inputs,scripts}`，约 11.9 GB，原地保留（续跑依赖这些 stage 目录）。
 - 本机：`artifacts/sg-evaluation/sg-eval-gl-20261004-01/{preflight,local-g1,local-g2,local-g3,gl-g2,astra-local}`，182 GB（其中 `local-g1` 171 GB 为第一档中间 h5）。
 - 一次性脚本逐字归档：`records/scripts/`。
+
+## ⑪ 本机第三档 Oracle 官方版式离线重绘与视频站点（2026-10-05）
+
+用户原话：「/data/hongzefu/robomme_benchmark_MotionJEPANewTask/1005-eval-video-official-overlay-plan.md实现第一阶段的转码转完之后host在一个网站上。host完网站做Playeright测试。」本轮只复用已有评估文件，零 reset、零轨迹生成、零 GPU；本机复刻成绩沿用已有结果，重绘不构成重新评估。
+
+运行代码锚点 `6a23af541b4f136e754eeb06e8fd1548700c4b23`（12.459），运行目录 `artifacts/worktrees/official-overlay-run/`，detached HEAD，起跑前 `git status --porcelain` 为空。主检出的 `third_party/SimpleMemVLA` 有既有在途修改，完全排除；运行副本不读取该子模块。官方类只读来自主检出 `third_party/mme-vla/examples/robomme/utils.py`，gitlink 锁定 `ecf086c3be7c2223167d9bb2f6ef1f0a6e24353b`，逐局清单记录实际官方代码、工具和 FFmpeg 指纹。uv 使用主仓库既有 `.venv`，只运行 `--no-sync`，不安装或变更项目依赖。
+
+媒体全集是下表的乘式之和，即 `16 任务 × 每任务合计 50 局 = 800 局`；第三档指评估阶段，不是单一难度：
+
+| 任务组 | 任务与难度乘式 | 局数 |
+|---|---|---|
+| BinFill、ButtonUnmaskSwap、PickHighlight、VideoPlaceButton、VideoPlaceOrder、VideoRepick、VideoUnmaskSwap | 7 任务 × 2 档（xhard1/2）× 25 局 | 350 |
+| ButtonUnmask、VideoUnmask | 2 任务 ×（2 档 xhard1/2 × 13 局 + 2 档 xhard3/4 × 12 局） | 100 |
+| PatternLock、PickXtimes、RouteStick | 3 任务 ×（2 档 xhard1/2 × 17 局 + 1 档 xhard3 × 16 局） | 150 |
+| StopCube、SwingXtimes | 2 任务 × 5 档（xhard1～5）× 10 局 | 100 |
+| InsertPeg、MoveCube | 2 任务 × 1 档（xhard4）× 50 局 | 100 |
+
+真实冒烟先执行 `1 任务（VideoPlaceButton）× 1 档（xhard2）× 1 局`，该局属于上述全集，正式全量会核验并复用派生结果，避免覆盖。输入 `local-g3/media/mmesg-ground-sg-oracle/test-hard/new/` 下 `episode.mp4`、`trace.jsonl`、`arrays.npz`；输出仍在对应每局 `official/`，来源记录 `official/render.json`。站点和运行日志集中在 `artifacts/sg-evaluation/sg-eval-gl-20261004-01/official-overlay/`。
+
+从运行副本执行，环境覆盖为 `UV_CACHE_DIR=/home/hongzefu/.cache/uv`、`UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv`、`PYTHONUNBUFFERED=1`、`CUDA_VISIBLE_DEVICES=''`；全量额外钉 `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1`。完整重绘命令：
+
+```bash
+uv run --no-sync python scripts/eval-official/render_official_video.py \
+  --root /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/sg-evaluation/sg-eval-gl-20261004-01/local-g3/media/mmesg-ground-sg-oracle/test-hard/new \
+  --official-root /data/hongzefu/robomme_benchmark_MotionJEPANewTask \
+  --label mmesg-ground-sg-oracle --jobs 16 --threads 2 --max-memory-mib 6144
+```
+
+长任务放独立 tmux `ovl-rerender-g3`，`set -o pipefail`、`tee` 写 `official-overlay/logs/rerender.log`，完成写 `EXIT_CODE=`。主会话保持活动，使用行缓冲日志监听接续；不是后台自动唤醒。站点使用本轮独立会话 `ovl-site-g3-8083`，端口起跑前探测，用户请求托管，因此收尾保留该会话及固定代码运行副本。既有 `site-v9-8082` 等会话不处理。
+
+目录构建、服务与浏览器完整入口：
+
+```bash
+R=/data/hongzefu/robomme_benchmark_MotionJEPANewTask
+O="$R/artifacts/sg-evaluation/sg-eval-gl-20261004-01/official-overlay"
+export UV_CACHE_DIR=/home/hongzefu/.cache/uv CUDA_VISIBLE_DEVICES=''
+uv run --no-project python scripts/injection-dev/site/official_overlay_site.py \
+  --root "$R/artifacts/sg-evaluation/sg-eval-gl-20261004-01/local-g3/media/mmesg-ground-sg-oracle/test-hard/new" \
+  --site-dir "$O/site" --expect-episodes 800
+uv run --no-project python scripts/injection-dev/site/official_overlay_site.py \
+  --serve --site-dir "$O/site" --media-root "$R/artifacts" --host 0.0.0.0 --port 8083
+uv run --no-project --with playwright python scripts/injection-dev/site/official_overlay_browser_check.py \
+  --base http://sled-vail.eecs.umich.edu:8083 --shots "$O/checks"
+```
+
+全量逐局检查来源、原动作和输出帧数/帧率/尺寸；网站构建重核 trace、NPZ 与重绘视频全量 sha256。Playwright 核目录全部身份，实际播放覆盖视频演示与非演示代表局及原视频，不能把它描述成 800 局均经浏览器逐帧播放。截图、报告和判定行在完成后写入 `result.md`；本节是起跑时记录，不预写运行通过。
+
+### 网站追加：逐 Task 成功率、英文 Task 栏目
+
+用户在首版上线后纠正为只显示逐 Task 成功率，V9 与上一版 xhard0 各给百分比和成功／总；Task 内不拆，视频按 Task 分栏目，所有任务名用英文。上述首次运行命令对应 `6a23af54`；追加版构建与浏览器都增加下列两个参数：
+
+```bash
+--v9-results "$R/artifacts/sg-evaluation/sg-eval-gl-20261004-01/local-g3/stage-oracle-00/s90/mmesg-ground-sg-oracle/results.jsonl" \
+--xhard0-results "$R/artifacts/sg-evaluation/sg-eval-gl-20261004-01/local-g2/gate2-oracle/new-merged.results.jsonl"
+```
+
+两列均用本机 Oracle 新接口接受的终态结果；xhard0 为 `16 任务 × 1 档 xhard0 × 12 局 = 192 局`，不重跑评估。公开仅 16 行计数，完整来源及 sha256 写 `site-tasks/success-private-proof.json`。新版站点目录改为 `official-overlay/site-tasks/`，截图与报告改为 `official-overlay/checks-tasks/`；旧目录与首版报告保留。只重启本轮自己的 `ovl-site-g3-8083`，删前删后核对会话差集恰好一个；新服务从主检出读取新增版页面，源码在浏览器通过后原样提交，原重绘锚点不变。最终保留该站点会话，临时工作副本清理由主会话负责。
+
+用户最后将可见列名明确为 `Xhard`、`原版hard`，仅修改 HTML 和浏览器断言；最终检查改用 `official-overlay/checks-labels/`，原 `checks-tasks/` 保留。此时服务器逐请求读取主检出的 HTML，表头更新无需再启动进程；实际两份结果文件和成功局数不变。

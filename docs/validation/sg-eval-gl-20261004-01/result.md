@@ -151,3 +151,54 @@ PonderPounce 那 1 局 error：VideoPlaceOrder_xhard2_19100901，第 1541 步 `P
 6. **生成疑点 BinFill xhard1 16400000**：新码在本机与 A40 上都生成失败、本机旧码成功；闸门判抖动非回归。若要定性需新旧码同机对照。
 7. **残留进程 PID 2961357**（`serve_policy.py --port=23310`，10-03 测试遗留，不占显卡）：未动，是否清理待定。
 8. **中间产物**：本机第一档 h5（`local-g1`，实测 171 GB；整个本机产物目录 182 GB）等按「收尾只保留最终产物」应删除；本轮按「只收尾不搬运」未删，待用户确认。
+
+## 九、本机 Oracle 存量官方版式重绘与视频站点（第一阶段完成，2026-10-05）
+
+**已完成本机 `16 任务 × 每任务合计 50 局 = 800 局` 的官方版式重绘与网站托管。** 各难度实际乘式见 `launch.md` 第⑪节，不把第三阶段误称为单一难度档。网站：[http://sled-vail.eecs.umich.edu:8083/](http://sled-vail.eecs.umich.edu:8083/)。转码代码锚点 `6a23af541b4f136e754eeb06e8fd1548700c4b23`，干净 detached 运行副本；网站追加只改三个站点文件，最终提交按 `12.460` 查找。本轮没有新增 reset、轨迹生成、GPU 或集群任务，第二阶段模型链路未实施。
+
+### 用户指令与界面口径
+
+1. 「/data/hongzefu/robomme_benchmark_MotionJEPANewTask/1005-eval-video-official-overlay-plan.md实现第一阶段的转码转完之后host在一个网站上。host完网站做Playeright测试。」
+2. 「你还需要在最上方给我一个成功率的表格，不仅要有现在的V9版本，还需要有上一版X号的0的成功画面。」随后纠正为「你还需要在最上方给我一个成功率的表格，不仅要有现在的V9版本，还需要有上一版X号的0的成功率」。最新含义只增加成功率对照，不增加旧版视频生成。
+3. 「我只要分task的成功率。」
+4. 「Task内部就不用再拆了。然后成功率要有百分比和分数。」
+5. 「然后你的网页按照任务来分视频的栏目，不要堆砌在一个矩目录的列表里，并且所有的任务名字都用中文，啊，都用英文。」最后一句明确采用英文 Task 名。
+
+6. 「V9／xhard0 这里改名为X哈尔德和原版哈尔德。」随后纠正为「V9／xhard0 这里改名为Xhard和原版hard」。仅改可见名称，真实来源与统计不变。
+
+顶部表格为固定 16 行、三列 `Task / Xhard / 原版hard`，每格同时显示一位小数百分比与成功局数／总局数，没有任务内分档及总成功率行。下方 16 个英文 Task 各有独立栏目，当前栏目只分页展示本 Task 的 50 局；支持官方版式／原始画面切换、筛选、上下局、进度拖动。成功率表不随当前视频筛选变化。
+
+### 实测重绘结果与范围
+
+`1 任务（VideoPlaceButton）× 1 档（xhard2）× 1 局` 冒烟：`OFFICIAL_RENDER=PASS dir=VideoPlaceButton_xhard2_19002401.a1 frames=1245 demo=1082 steps=162 omitted=0 size=512x528 status=rendered terminal_reason=fail end_status=fail`，退出 0。Frame 0、1082、1083、1244 抽帧目视确认演示红框、初始 Action:None、执行 Action/State/Subgoal 与黄色坐标点；这局的任务失败仍保持 fail，不重跑挑成功。
+
+全量 2026-10-05 23:18:26～23:23:51 EDT，约 325 秒；tmux `ovl-rerender-g3`，16 个 CPU worker、每个 2 核、每局内存上限 6144 MiB。`OFFICIAL_RENDER_SUMMARY=PASS total=800 ok=800 fail=0 reused=1`；`EXIT_CODE=0`。1 个复用项即冒烟局，复用前后输出哈希不变。
+
+共 848318 帧：演示 246698、初始 800、执行 600820；全部 30 fps。尺寸分别 `512×512` 311 局、`512×528` 265 局、`512×560` 224 局，来自官方 Task Goal 换行高度及 imageio 默认块对齐。原视频合计 1289673040 字节，官方重绘输出 2161212582 字节；原 `episode.mp4`、trace、NPZ 均保持来源指纹不变。17 个超长名按 UTF-8 边界截短加摘要，完整官方名保留在每局 `official/render.json`。
+
+所有原 float64 动作逐步从 NPZ 恢复且与 trace 哈希相等；若先降为 float32，600820 步中的 883 个标量会改变四位小数显示，当前均避免。194 个严格步数上限超时局 `status=timeout`、`terminal_reason=error`，全部保留 1600 执行帧，省略帧总数 0；网站用前者分组，官方文件名用后者。
+
+### 逐 Task 成功率来源
+
+两列均取 **sled-vail 本机 GroundSG+Oracle 新接口** 的接受终态结果：V9 800 局（每 Task 50）；xhard0 `16 任务 × 1 档 xhard0 × 12 局 = 192 局`（已含接受的 SwingXtimes 补跑）。不混用 GL 正式 423/800 或原版接口 140/192。仅作各任务实测成功比例展示，不据此声明新旧版本数值等价或因果差异。
+
+- V9：`local-g3/stage-oracle-00/s90/mmesg-ground-sg-oracle/results.jsonl`，sha256 `95ef1ad8aea6551d2bbd5bb09a8d31cfef5f97deef1cc56fad35ddcaade01920`，3410265 字节。
+- xhard0：`local-g2/gate2-oracle/new-merged.results.jsonl`，sha256 `a78dc420afc928a6cc393e3256ec837290e4511ca5f618477f4e282c88e09502`，788850 字节。
+
+全部身份唯一、每任务分母齐全、infra=false，成功字段与 `status=success` 一致。例如 BinFill 为 V9 `40.0%（20/50）`、xhard0 `66.7%（8/12）`；PickHighlight 两侧都为 0，未筛掉失败局。来源指纹在站点私有记录，公开目录不暴露本机路径。
+
+### 验收与证据边界
+
+独立只读核验 4 个 CPU worker、35.333 秒，退出 0；逐一核 2400 个输入指纹、800 个输出指纹、全部 600820 原动作及 800 份视频元信息。`OFFICIAL_IDENTITY_FIELDS=PASS episodes=800 fields=7 mismatches=0`、`OFFICIAL_FRAME_TOTAL=PASS source_frames=848318 frames=848318 exec_steps=600820`、`OFFICIAL_ACTION_HASH=PASS actions=600820 mismatches=0`、`OFFICIAL_VIDEO_METADATA=PASS videos=800 fps=30 full_decode=0`、`OFFICIAL_INDEPENDENT_VERIFY=PASS`。重绘器已经逐局完整解码和数帧，独立核验没有再次完整解码。
+
+最新浏览器命令见 `launch.md` 的追加参数：`official_overlay_browser_check.py --base http://sled-vail.eecs.umich.edu:8083 --shots <本轮>/checks-labels --v9-results <V9结果> --xhard0-results <xhard0结果>`。`OFFICIAL_BROWSER=PASS episodes=800 checks=13 page_errors=0 http_errors=0`，退出 0；浏览器独立重算全部 32 格比率，逐 16 栏目核无混 Task，并断言最终表头 `Task / Xhard / 原版hard`；实际播放演示／非演示代表局及原视频，验证暂停、seek、筛选、分页、版本切换与 Range 206。宽屏、390 和 768 像素截图均无横向溢出，并经目视复核。真实浏览器播放为代表局检查，不声称全部 800 局在浏览器逐帧播放。
+
+代码验证：官方逐帧对照及真实 FFmpeg 端到端 `16 passed in 1.58s`；核心短测 `2882 passed, 4 skipped, 630 deselected in 159.82s`；网站更新定向短测 `66 passed, 2 deselected in 5.18s`。三次资源守卫均 `TEST_RESOURCE=PASS native_reset=0 gpu_init=0 weights=0 network=0 violations=0`；核心短测另有 `not_verified=4`，不将四个跳过项称为实测。`UPSTREAM_GUARD=PASS`，官方受保护包、三条官方入口和第二阶段评估代码无改动。
+
+重绘保证对同一组已解码画面及核验原数组调用官方原类；画面来自既有 H.264 视频，不能宣称与官方原始相机像素逐位一致。
+
+### 保留与复现
+
+站点保留 tmux `ovl-site-g3-8083`，当前目录 `official-overlay/site-tasks/`，日志 `official-overlay/logs/site-tasks.log`；既有其他会话未处理。完整重绘日志、首次和最终浏览器报告、四张最终截图及来源指纹均在本轮产物根；Git 中归档为 `records/rerender-summary.jsonl`、`records/official-overlay/{render-summary,independent-verify,browser-initial,browser,success-sources}.json` 和四张 PNG。重绘 mp4 不进 Git。
+
+复核命令：从转码锚点按 `launch.md` 的重绘 CLI 再跑，会检查来源、完整输出和原动作后复用；按最终网站源码及两份已钉住指纹的结果文件构建新目录并运行 Playwright，可以还原当前表格与交互验收。后续第二阶段改造、重跑预算和 Turbo 重绘仍按未定清单另行处理。

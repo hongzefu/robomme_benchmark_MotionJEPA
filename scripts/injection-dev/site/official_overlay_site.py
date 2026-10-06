@@ -12,13 +12,9 @@ import sys
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[2]
-NAMES = {
-    "BinFill": "分类投放", "PickXtimes": "重复抓取", "SwingXtimes": "重复摆动",
-    "PickHighlight": "高亮目标抓取", "VideoUnmask": "视频遮挡记忆", "ButtonUnmask": "按钮遮挡记忆",
-    "VideoUnmaskSwap": "视频遮挡交换", "ButtonUnmaskSwap": "按钮遮挡交换", "VideoRepick": "视频重复抓取",
-    "PatternLock": "图案解锁", "RouteStick": "路线引导", "VideoPlaceButton": "视频放置与按钮",
-    "VideoPlaceOrder": "视频放置顺序", "MoveCube": "移动方块", "InsertPeg": "插入插销", "StopCube": "停止方块",
-}
+TASKS = ("BinFill", "PickXtimes", "SwingXtimes", "PickHighlight", "VideoUnmask", "ButtonUnmask",
+         "VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoRepick", "PatternLock", "RouteStick",
+         "VideoPlaceButton", "VideoPlaceOrder", "MoveCube", "InsertPeg", "StopCube")
 SCHEMA = "official-overlay-site/1"
 FINAL = ("success", "fail", "timeout")
 
@@ -103,7 +99,7 @@ def episode_entry(directory: Path, root: Path) -> tuple[dict, dict]:
     header, demo, end = read_trace(trace)
     identity = header.get("identity", {})
     task, tier, seed = identity.get("task"), identity.get("tier"), identity.get("seed")
-    require(task in NAMES and tier in tuple(f"xhard{i}" for i in range(1, 6)) and type(seed) is int,
+    require(task in TASKS and tier in tuple(f"xhard{i}" for i in range(1, 6)) and type(seed) is int,
             "任务、难度或种子不符")
     require(identity.get("dataset") == "test-hard" and header.get("route") == "mmesg/ground-sg-oracle/new",
             "不是本机第三档 Oracle 新侧轨迹")
@@ -147,7 +143,7 @@ def episode_entry(directory: Path, root: Path) -> tuple[dict, dict]:
     for kind, path in (("official", official), ("original", original)):
         media[f"{kind}_{media_suffix}"] = str(path)
     entry = {
-        "id": directory.name, "task": task, "task_name": NAMES[task], "tier": tier, "seed": seed,
+        "id": directory.name, "task": task, "task_name": task, "tier": tier, "seed": seed,
         "episode_id": sidecar["episode_id"], "status": end["status"], "task_goal": sidecar["task_goal"],
         "demo_frames": end["demo_frames"], "exec_steps": end["exec_steps"], "recorded_exec_steps": recorded,
         "omitted_timeout_frames": omitted, "frames": sidecar["frames"], "fps": 30,
@@ -157,7 +153,34 @@ def episode_entry(directory: Path, root: Path) -> tuple[dict, dict]:
     return entry, media
 
 
-def build_site(root: Path, site_dir: Path, expect_episodes: int) -> dict:
+def read_results(path: Path, *, baseline: bool) -> tuple[dict, dict]:
+    """只接受已合并的逐身份终态，不从多次尝试中自行挑选成功回合。"""
+    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+    wanted, per_task = (192, 12) if baseline else (800, 50)
+    require(len(rows) == wanted, f"权威结果局数不符：{path.name}")
+    records = {}
+    for row in rows:
+        task, tier, seed = row.get("task"), row.get("tier"), row.get("seed")
+        require(task in TASKS and type(seed) is int, "权威结果身份缺失")
+        require(tier == "xhard0" if baseline else tier in tuple(f"xhard{i}" for i in range(1, 6)),
+                "权威结果难度不符")
+        require(row.get("dataset") == ("test-hard0" if baseline else "test-hard"), "权威结果数据集不符")
+        require(row.get("policy") == "mmesg" and row.get("policy_variant") == "ground-sg-oracle" and
+                row.get("side") == "new" and row.get("host") == "sled-vail", "不是同本机 Oracle 新侧结果")
+        require(row.get("infra") is False and row.get("status") in FINAL and
+                type(row.get("task_success")) is bool and row["task_success"] == (row["status"] == "success"),
+                "权威结果含基础设施失败或成功字段冲突")
+        key = f"{task}_{tier}_{seed}"
+        require(row.get("key") == key and key not in records, "权威结果 key 不符或重复")
+        records[key] = row
+    counts = Counter(row["task"] for row in records.values())
+    require(set(counts) == set(TASKS) and set(counts.values()) == {per_task}, "权威结果任务覆盖不完整")
+    rates = {task: {"success": sum(row["task_success"] for row in records.values() if row["task"] == task),
+                    "total": counts[task]} for task in TASKS}
+    return records, rates
+
+
+def build_site(root: Path, site_dir: Path, expect_episodes: int, xhard0_results: Path, v9_results: Path) -> dict:
     """先逐局验全再写目录，任何缺项均不发布部分目录。"""
     reject_symlinks(root)
     reject_symlinks(site_dir)
@@ -178,23 +201,37 @@ def build_site(root: Path, site_dir: Path, expect_episodes: int) -> dict:
         require(not set(media).intersection(mapping), "媒体 ID 重复")
         media.update(mapping)
     counts = Counter(row["task"] for row in entries)
-    require(expect_episodes == 800 and set(counts) == set(NAMES) and set(counts.values()) == {50},
+    require(expect_episodes == 800 and set(counts) == set(TASKS) and set(counts.values()) == {50},
             "完整目录必须是 16 任务 × 50 局 = 800 局")
-    entries.sort(key=lambda row: (list(NAMES).index(row["task"]), row["tier"], row["seed"]))
+    entries.sort(key=lambda row: (TASKS.index(row["task"]), row["tier"], row["seed"]))
+    baseline_records, baseline_rates = read_results(xhard0_results, baseline=True)
+    v9_records, v9_rates = read_results(v9_results, baseline=False)
+    entry_keys = {f"{row['task']}_{row['tier']}_{row['seed']}" for row in entries}
+    require(entry_keys == set(v9_records), "视频身份全集与 V9 权威结果不同")
+    for row in entries:
+        result = v9_records[f"{row['task']}_{row['tier']}_{row['seed']}"]
+        require(result["status"] == row["status"], "视频终态与 V9 权威结果不同")
+    success_rates = [{"task": task, "v9": v9_rates[task], "xhard0": baseline_rates[task]} for task in TASKS]
+    private_proof = {"schema": "official-overlay-success-proof/1",
+                     "v9": {"path": str(v9_results.resolve(strict=True)), "sha256": sha256(v9_results),
+                            "size": v9_results.stat().st_size, "episodes": len(v9_records)},
+                     "xhard0": {"path": str(xhard0_results.resolve(strict=True)), "sha256": sha256(xhard0_results),
+                                "size": xhard0_results.stat().st_size, "episodes": len(baseline_records)}}
     catalog = {
         "schema": SCHEMA, "scope": "本机 V9 第三档 GroundSG+Oracle 复刻",
         "notice": "本机 Oracle 复刻视频，供版式与行为检查；不代表 Great Lakes 正式评估成绩。",
         "counts": {"episodes": len(entries), "tasks": len(counts), "per_task": 50, "media": len(media)},
-        "tasks": [{"id": task, "name": name, "episodes": counts[task]} for task, name in NAMES.items()],
+        "tasks": [{"id": task, "name": task, "episodes": counts[task]} for task in TASKS],
         "tiers": sorted({row["tier"] for row in entries}), "episodes": entries,
+        "success_rates": success_rates,
         "validation": {"trace_sha256": "逐局全量核对", "arrays_sha256": "逐局全量核对",
                        "official_sha256": "逐局全量核对",
                        "source_mp4": "身份与字节数核对，未重复全量哈希"},
     }
     site_dir.mkdir(parents=True, exist_ok=True)
-    require(not any((site_dir / name).exists() for name in ("catalog.json", "media-private.json")),
+    require(not any((site_dir / name).exists() for name in ("catalog.json", "media-private.json", "success-private-proof.json")),
             "站点目录已有目录文件，拒绝覆盖")
-    for name, data in (("catalog.json", catalog), ("media-private.json", media)):
+    for name, data in (("catalog.json", catalog), ("media-private.json", media), ("success-private-proof.json", private_proof)):
         with (site_dir / name).open("x", encoding="utf-8") as stream:
             json.dump(data, stream, ensure_ascii=False, indent=2)
             stream.write("\n")
@@ -206,6 +243,8 @@ def main() -> int:
     parser.add_argument("--root", type=Path, help="本机第三档 Oracle 媒体的 new 根目录")
     parser.add_argument("--site-dir", type=Path, required=True)
     parser.add_argument("--expect-episodes", type=int, default=800)
+    parser.add_argument("--xhard0-results", type=Path, help="上一版本机 Oracle 新侧的最终 192 局结果")
+    parser.add_argument("--v9-results", type=Path, help="本机 V9 第三档 Oracle 最终 800 局结果")
     parser.add_argument("--serve", action="store_true", help="托管已构建的目录，不重建目录")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8083)
@@ -220,7 +259,9 @@ def main() -> int:
                 server.serve_forever()
             return 0
         require(args.root is not None, "构建目录需要 --root")
-        catalog = build_site(args.root, args.site_dir, args.expect_episodes)
+        require(args.xhard0_results is not None and args.v9_results is not None,
+                "构建成功率表需要 --xhard0-results 与 --v9-results")
+        catalog = build_site(args.root, args.site_dir, args.expect_episodes, args.xhard0_results, args.v9_results)
         print(f"OFFICIAL_SITE=PASS episodes={catalog['counts']['episodes']} tasks=16 per_task=50 media=1600", flush=True)
         return 0
     except (ValueError, OSError, KeyError, TypeError) as exc:
