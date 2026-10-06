@@ -171,6 +171,8 @@ class FakeMonitor:
         (out / "input.json").write_text(json.dumps({"task": task, "goal": goal, "subgoal": subgoal,
                                                     "command_start": command_start, "images": [str(out / "0.png")]}))
         pred = self.predictions[self.calls] if self.calls < len(self.predictions) else False
+        # 与上游 Monitor.predict 同：回复原文写 response.json（语言账本读它）
+        (out / "response.json").write_text(json.dumps({"text": "true" if pred else "false"}))
         self.calls += 1
         return pred, [0], 0.0
 
@@ -203,8 +205,11 @@ class FakeResponder:
     ``after_write``：每次写完后的回调（模拟同时在跑的费用守卫）。
     """
 
-    def __init__(self, champ: Path, usage=None, fail_on_episode_index: int | None = None, after_write=None) -> None:
+    def __init__(self, champ: Path, usage=None, fail_on_episode_index: int | None = None, after_write=None,
+                 raise_on_send: BaseException | None = None, texts: list | None = None) -> None:
         self.champ = champ
+        self.raise_on_send = raise_on_send  # 「发送时」抛异常（不写 response.json），验发送前落盘
+        self.texts = list(texts or [])  # 依次替换回复原文（用完回落模板句）
         self.calls = 0
         self.usage = usage or {"input_tokens": 1000, "output_tokens": 100,
                                "input_tokens_details": {"cached_tokens": 0},
@@ -220,10 +225,13 @@ class FakeResponder:
         key = (request["task"], request["episode"])
         if key not in self.seen:
             self.seen.append(key)
+        if self.raise_on_send is not None:
+            raise self.raise_on_send
         if self.fail_on is not None and len(self.seen) == self.fail_on:
             body = {"status": "error", "error": "HTTP 500: fake planner outage"}
         else:
-            body = {"status": "ok", "text": template_text(self.champ, request["task"]), "model": "gpt-6-astra",
+            text = self.texts.pop(0) if self.texts else template_text(self.champ, request["task"])
+            body = {"status": "ok", "text": text, "model": "gpt-6-astra",
                     "effort": "medium", "response_status": "completed", "usage": self.usage}
         (out / "response.json").write_text(json.dumps(body))
         if self.after_write is not None:
@@ -231,13 +239,13 @@ class FakeResponder:
 
 
 def make_args(tmp: Path, cases_path: Path, *, max_steps: int, group: str = "group_0", run: str = "run",
-              max_planner_calls: int = MAX_PLANNER_CALLS) -> SimpleNamespace:
+              max_planner_calls: int = MAX_PLANNER_CALLS, policy_seed=7) -> SimpleNamespace:
     run_dir = tmp / group / run
     vla = tmp / "ckpt" / "symbolic-grounded-subgoal" / "79999"
     return SimpleNamespace(cases=str(cases_path), output=str(run_dir / "results"), spool=str(run_dir / "planner_calls"),
                            max_steps=max_steps, max_planner_calls=max_planner_calls, vla_checkpoint=str(vla),
                            monitor_adapter=str(tmp / "ckpt" / "monitor"), monitor_base="fake-base", port=0,
-                           trace_root=None)
+                           trace_root=None, policy_seed=policy_seed)
 
 
 def make_deps(astra, builder_cls, *, monitor=None, vla=None, responder=None, check_calls=None):
@@ -253,3 +261,68 @@ def write_cases(path: Path, document: dict) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(document))
     return path
+
+
+# ── 语言账本（冻结说明五）：R6 的 trace_writer.LanguageLog 在时用真实实现，不在时用按冻结签名写的测试替身 ─────
+
+class SpecLanguageLog:
+    """按 ``docs/plans/1006-stage3-interface-freeze.md`` 第五节签名写的测试替身（只在 R6 未合入时顶替）。"""
+
+    def __init__(self, path) -> None:
+        self.path = Path(path)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._fh = self.path.open("a", encoding="utf-8")
+        self._n = 0
+        self._open: dict = {}
+
+    def _write(self, row: dict) -> None:
+        import time
+        row["ts"] = time.time()
+        self._fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+        self._fh.flush()
+
+    def open_call(self, model, step, *, params=None, transport_attempt=0, retry=0):
+        self._n += 1
+        call_id = f"c{self._n:05d}"
+        self._open[call_id] = 0
+        self._write({"kind": "call_open", "call_id": call_id, "model": model, "step": step, "params": params,
+                     "transport_attempt": transport_attempt, "retry": retry})
+        return call_id
+
+    def message(self, call_id, *, dir, role, text, images=None, channel=None, token_ids=None, mask=None,
+                tokenizer=None, truncated=None, demo_video=None):
+        idx = self._open[call_id]
+        self._open[call_id] += 1
+        self._write({"kind": "message", "call_id": call_id, "message_index": idx, "dir": dir, "role": role,
+                     "text": text, "images": images, "channel": channel, "token_ids": token_ids, "mask": mask,
+                     "tokenizer": tokenizer, "truncated": truncated, "demo_video": demo_video})
+        return idx
+
+    def close_call(self, call_id, *, status, parsed=None, fallback=None, server_final_text=None,
+                   server_truncated=None):
+        self._open.pop(call_id, None)
+        self._write({"kind": "call_close", "call_id": call_id, "status": status, "parsed": parsed,
+                     "fallback": fallback, "server_final_text": server_final_text,
+                     "server_truncated": server_truncated})
+
+    def reuse(self, step, reused_call_id):
+        self._write({"kind": "reuse", "step": step, "reused_call_id": reused_call_id, "reused_previous": True})
+
+    def close(self):
+        for call_id in list(self._open):
+            self.close_call(call_id, status="cancelled")
+        self._fh.close()
+
+
+def ensure_language_log(monkeypatch) -> str:
+    """``trace_writer.LanguageLog`` 存在（R6 已合入）时用真实实现，否则临时装上 ``SpecLanguageLog``；返回 real|spec。
+    须在 ``astra_session()`` 之内调用（``trace_writer`` 由 bootstrap 放上 ``sys.path``）。"""
+    import trace_writer as tw
+    if getattr(tw, "LanguageLog", None) is not None and tw.LanguageLog is not SpecLanguageLog:
+        return "real"
+    monkeypatch.setattr(tw, "LanguageLog", SpecLanguageLog, raising=False)
+    return "spec"
+
+
+def read_language(path) -> list[dict]:
+    return [json.loads(line) for line in Path(path).read_text(encoding="utf-8").splitlines() if line.strip()]
