@@ -69,7 +69,7 @@ def test_cli_rejects_bad_input_with_exit_3(tmp_path):
     for name, (argv, want) in cases.items():
         p = _run(*argv)
         assert p.returncode == 3, (name, p.stdout[-2000:], p.stderr[-2000:])
-        assert want in _line(p.stdout, "MMESG_ORIG_BLOCKED"), name
+        assert want in _line(p.stdout, "GROUNDSG_ORIG_BLOCKED"), name
 
 
 def test_raw_frames_format_and_missing_steps(tmp_path):
@@ -114,4 +114,4 @@ def test_server_unreachable_aborts_shard(tmp_path, monkeypatch):
     assert summary["aborted"] is True and summary["episodes"] == 1
     got = [json.loads(x) for x in (tmp_path / "results.jsonl").read_text().splitlines()]
     assert len(got) == 1 and got[0]["status"] == "error" and got[0]["infra"] is True
-    assert got[0]["infra_reason"] == "mmesg_unreachable" and got[0]["exception"] == "ServerUnreachable"
+    assert got[0]["infra_reason"] == "groundsg_unreachable" and got[0]["exception"] == "ServerUnreachable"

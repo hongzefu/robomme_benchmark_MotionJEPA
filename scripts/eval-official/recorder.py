@@ -14,7 +14,7 @@
   ``STORAGE_DEGRADE level= free_gib=``；``meta["baseline"]`` 或 ``meta["never_degrade"]`` 为真时始终无损。
   1 档改 libx264 ``-crf 18 -preset medium``；2 档只留首尾各 50 帧图像（sha256 列表仍完整）。
 
-本文件只依赖 numpy 与标准库，须能在 Python 3.10（SimpleMemVLA venv）与 3.11（benchmark、旧 MME 客户端 venv）下导入。
+本文件只依赖 numpy 与标准库，须能在 Python 3.10（SimpleMemVLA venv）与 3.11（benchmark、旧 FrameSamp+Modulation 客户端 venv）下导入。
 """
 from __future__ import annotations
 

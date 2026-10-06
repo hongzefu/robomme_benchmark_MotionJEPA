@@ -1,11 +1,11 @@
-"""L1 契约：``BenchmarkEnvBuilder(dataset="test-hard0")`` 只含 xhard0，且不读规格根；按档步数查表已删除。
+"""L1 契约：``BenchmarkEnvBuilder(dataset="hard-verify")`` 只含 xhard0，且不读规格根；按档步数查表已删除。
 
-``test-hard0``（1003 评估计划 1.1）＝官方 test 元数据里每任务 ``difficulty=="hard"`` 的 12 局（原 episode
+``hard-verify``（1003 评估计划 1.1）＝官方 test 元数据里每任务 ``difficulty=="hard"`` 的 12 局（原 episode
 3, 7, …, 47），按原 episode 升序编为 episode 0..11；与开关 ``XHARD0_IN_TEST_HARD`` 无关。
 
 手段同 ``test_builder_800.py``：把 ``gym.make`` 换成「记录参数后抛哨兵异常」的替身，逐局调真实的
 ``make_env_for_episode``，不起任何仿真。期望值一律来自手写钉值（``test_constants``）与标准库 json 直接读官方
-test 元数据，不读被测代码。规格读取函数全部打桩为「调用即失败并计数」，证明 test-hard0 不读规格。
+test 元数据，不读被测代码。规格读取函数全部打桩为「调用即失败并计数」，证明 hard-verify 不读规格。
 
 - 16 任务 × 12 局 = 192，逐局 kwargs 恰为 runtime 四项 + 官方 seed + ``difficulty="hard"``；
 - ``resolve_identity`` 字段集合与取值（无 candidate／规格摘要、不带 ``specs_root``）；
@@ -32,7 +32,7 @@ from tests.contract.test_constants import (
 )
 
 OFFICIAL_TEST = REPO / "src" / "robomme" / "env_metadata" / "test"
-#: test-hard0 全量：16 任务 × 12 局（手算）
+#: hard-verify 全量：16 任务 × 12 局（手算）
 TOTAL_HARD0 = 192
 N_TASKS_HARD0 = 16
 #: xhard0 局 resolve_identity 的字段集合（手写）
@@ -44,7 +44,7 @@ SPEC_READERS = (
     ("hard_specs", "packaged_specs_path"),
     ("hard_builder", "_root_specs"),
     ("hard_builder", "_override_cells"),
-    ("hard_builder", "_test_hard_entries"),
+    ("hard_builder", "_ood_entries"),
 )
 
 
@@ -76,7 +76,7 @@ def spec_reads(monkeypatch, tmp_path):
     for module_name, attr in SPEC_READERS:
         def boom(*_args, _name=f"{module_name}.{attr}", **_kwargs):
             reads.append(_name)
-            raise AssertionError(f"test-hard0 不应读规格：调用了 {_name}")
+            raise AssertionError(f"hard-verify 不应读规格：调用了 {_name}")
 
         monkeypatch.setattr(modules[module_name], attr, boom)
     monkeypatch.setenv(hard_specs.SPECS_ROOT_ENV, str(tmp_path / "no-such-specs-root"))
@@ -104,7 +104,7 @@ def capture(builder, episode: int, calls: list) -> tuple[tuple, dict]:
 
 
 @pytest.mark.parametrize("switch", [False, True], ids=["switch-off", "switch-on"])
-def test_hard0_every_episode(recorder, spec_reads, monkeypatch, switch):
+def test_hard_verify_every_episode(recorder, spec_reads, monkeypatch, switch):
     """16 任务逐局 gym.make 参数与身份；开关 XHARD0_IN_TEST_HARD 开或关结果相同；全程不读规格。"""
     from robomme_hard.env_record_wrapper import hard_specs
 
@@ -112,8 +112,8 @@ def test_hard0_every_episode(recorder, spec_reads, monkeypatch, switch):
     total = 0
     tasks = 0
     for task in TASKS:
-        builder = builder_cls()(env_id=task, dataset="test-hard0", action_space="joint_angle", max_steps=1300)
-        assert builder.dataset == "test-hard0"
+        builder = builder_cls()(env_id=task, dataset="hard-verify", action_space="joint_angle", max_steps=1300)
+        assert builder.dataset == "hard-verify"
         assert builder.metadata_index == {}
         assert builder.get_episode_num() == XHARD0_PER_TASK
         hard = official_hard(task)
@@ -138,15 +138,15 @@ def test_hard0_every_episode(recorder, spec_reads, monkeypatch, switch):
         print(f"HARD0_INTERFACE=PASS tasks={tasks} per_task={XHARD0_PER_TASK} total={total} specs_reads={len(spec_reads)}")
 
 
-def test_hard0_rejects_specs_root(spec_reads, tmp_path):
+def test_hard_verify_rejects_specs_root(spec_reads, tmp_path):
     cls = builder_cls()
-    for root in (tmp_path, str(tmp_path), REPO / "src" / "robomme_hard" / "env_metadata" / "test-hard"):
+    for root in (tmp_path, str(tmp_path), REPO / "src" / "robomme_hard" / "env_metadata" / "ood"):
         with pytest.raises(ValueError, match="specs_root"):
-            cls(env_id="StopCube", dataset="test-hard0", specs_root=root)
+            cls(env_id="StopCube", dataset="hard-verify", specs_root=root)
     with pytest.raises(ValueError):
-        cls(env_id="StopCube", dataset="test-hard0", override_metadata_path=tmp_path)
+        cls(env_id="StopCube", dataset="hard-verify", override_metadata_path=tmp_path)
     with pytest.raises(ValueError):
-        cls(env_id="NotATask", dataset="test-hard0")
+        cls(env_id="NotATask", dataset="hard-verify")
     assert spec_reads == []
 
 
@@ -175,13 +175,13 @@ def _broken_loader(monkeypatch, how: str):
 
 
 @pytest.mark.parametrize("how", ["drop", "extra", "dup_seed"])
-def test_hard0_rejects_broken_official_subset(monkeypatch, spec_reads, how):
+def test_hard_verify_rejects_broken_official_subset(monkeypatch, spec_reads, how):
     """官方 hard 子集必须恰为原 episode 3,7,…,47 且 seed 唯一：少一局、多一局、seed 重复都在构造时报错。"""
     _broken_loader(monkeypatch, how)
     with pytest.raises(ValueError, match="xhard0"):
-        builder_cls()(env_id="BinFill", dataset="test-hard0")
+        builder_cls()(env_id="BinFill", dataset="hard-verify")
     # 其他任务不受影响
-    assert builder_cls()(env_id="StopCube", dataset="test-hard0").get_episode_num() == XHARD0_PER_TASK
+    assert builder_cls()(env_id="StopCube", dataset="hard-verify").get_episode_num() == XHARD0_PER_TASK
     assert spec_reads == []
 
 

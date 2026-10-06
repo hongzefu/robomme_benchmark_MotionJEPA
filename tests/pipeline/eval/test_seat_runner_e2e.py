@@ -1,4 +1,4 @@
-"""C13 评估贯通（核心）：包内真实身份 → 执行清单 → 真实 ``SeatRunner``（真 mme／smvla 客户端 + 假连接 + CPU 假环境）
+"""C13 评估贯通（核心）：包内真实身份 → 执行清单 → 真实 ``SeatRunner``（真 perceptual-framesamp-modul／smvla 客户端 + 假连接 + CPU 假环境）
 → 结果行与持久账本 → 真实 ``eval_report.main`` 出报告，逐项核对分母、结局计数与判定行。
 
 七种回合各自独立跑一个运行根（两种策略各一遍）；期望写成本文件里的手写表，不调用被测逻辑生成期望。
@@ -14,7 +14,7 @@ import pytest
 
 import eval_fakes as F
 
-POLICIES = ("mme", "smvla")
+POLICIES = ("perceptual-framesamp-modul", "smvla")
 
 
 def _svulkan():
@@ -110,7 +110,7 @@ def test_seat_runner_to_report(tmp_path, monkeypatch, capsys, policy, name):
 
 @pytest.mark.parametrize("policy", POLICIES)
 def test_cap_timeout_never_steps_past_cap(tmp_path, monkeypatch, capsys, policy):
-    """test-hard（--max-steps 1600 --strict-cap）上限超时：环境恰好执行 1600 步，第 1601 次 step 不进入环境；
+    """ood（--max-steps 1600 --strict-cap）上限超时：环境恰好执行 1600 步，第 1601 次 step 不进入环境；
     按 timeout 计、不算基础设施。"""
     r = _run_scenario(tmp_path, monkeypatch, capsys, policy, "cap_timeout")
     cap = 1600
@@ -119,7 +119,7 @@ def test_cap_timeout_never_steps_past_cap(tmp_path, monkeypatch, capsys, policy)
     (row,) = r["results"]
     assert row["status"] == "timeout" and row["cap_hit"] is True and row["infra"] is False
     assert row["exec_steps"] == cap and row["max_steps"] == row["effective_max_steps"] == cap
-    assert row["dataset"] == "test-hard" and row["strict_cap"] is True
+    assert row["dataset"] == "ood" and row["strict_cap"] is True
     assert r["world"].builders[0].max_steps == cap  # builder 构造参数即 --max-steps
     assert r["world"].make_calls[0][2] is None  # make_env_for_episode 不再逐局传步数
 

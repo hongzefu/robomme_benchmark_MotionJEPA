@@ -101,7 +101,7 @@ def episode_entry(directory: Path, root: Path) -> tuple[dict, dict]:
     task, tier, seed = identity.get("task"), identity.get("tier"), identity.get("seed")
     require(task in TASKS and tier in tuple(f"xhard{i}" for i in range(1, 6)) and type(seed) is int,
             "任务、难度或种子不符")
-    require(identity.get("dataset") == "test-hard" and header.get("route") == "mmesg/ground-sg-oracle/new",
+    require(identity.get("dataset") == "ood" and header.get("route") == "groundsg/ground-sg-oracle/new",
             "不是本机第三档 Oracle 新侧轨迹")
     require(sidecar.get("identity") == identity, "重绘与轨迹身份不同")
     require(sidecar.get("route") == header["route"], "重绘路线与轨迹不同")
@@ -164,8 +164,8 @@ def read_results(path: Path, *, baseline: bool) -> tuple[dict, dict]:
         require(task in TASKS and type(seed) is int, "权威结果身份缺失")
         require(tier == "xhard0" if baseline else tier in tuple(f"xhard{i}" for i in range(1, 6)),
                 "权威结果难度不符")
-        require(row.get("dataset") == ("test-hard0" if baseline else "test-hard"), "权威结果数据集不符")
-        require(row.get("policy") == "mmesg" and row.get("policy_variant") == "ground-sg-oracle" and
+        require(row.get("dataset") == ("hard-verify" if baseline else "ood"), "权威结果数据集不符")
+        require(row.get("policy") == "groundsg" and row.get("policy_variant") == "ground-sg-oracle" and
                 row.get("side") == "new" and row.get("host") == "sled-vail", "不是同本机 Oracle 新侧结果")
         require(row.get("infra") is False and row.get("status") in FINAL and
                 type(row.get("task_success")) is bool and row["task_success"] == (row["status"] == "success"),

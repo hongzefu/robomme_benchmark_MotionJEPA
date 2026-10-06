@@ -139,8 +139,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--xhard0-manifest", default=None, help="identity_source=test_metadata 时的 xhard0 清单（16×1×12）")
     parser.add_argument(
-        "--builder-route", choices=("test-hard",), default=None,
-        help="xhard0 H 侧：镜像 worker 的 gym.make 实参取自 robomme_hard 的 test-hard builder 的 xhard0 条目（v7 §1.5）",
+        "--builder-route", choices=("ood",), default=None,
+        help="xhard0 H 侧：镜像 worker 的 gym.make 实参取自 robomme_hard 的 ood builder 的 xhard0 条目（v7 §1.5）",
     )
     parser.add_argument(
         "--no-recovery", action="store_true",

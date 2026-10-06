@@ -134,17 +134,17 @@ def test_v9_strict_cap_loop_matches_cap_and_cap_hit_is_timeout_without_episode_e
 
 def test_fixed_sid_rules():
     assert pp.fixed_sid(XH) == SID
-    assert pp.fixed_sid(XH, "test-hard0") == SID
-    assert pp.fixed_sid(dict(XH, tier="xhard2", source_episode=11), "test-hard") == f"{TASK}|xhard2|{SEED}"
+    assert pp.fixed_sid(XH, "hard-verify") == SID
+    assert pp.fixed_sid(dict(XH, tier="xhard2", source_episode=11), "ood") == f"{TASK}|xhard2|{SEED}"
     with pytest.raises(ValueError):
-        pp.fixed_sid(dict(XH, tier="xhard1"), "test-hard0")
+        pp.fixed_sid(dict(XH, tier="xhard1"), "hard-verify")
     with pytest.raises(ValueError):
         pp.fixed_sid(dict(XH, source_episode=True))
     with pytest.raises(ValueError):
         pp.fixed_sid(dict(XH, source_episode=None))
     # 局号：两侧都发官方局号 source_episode（不是 builder_episode）
     env = FakeEnv(TASK, SRC, done_at=1)
-    _, conn, _, _ = run_new(env, max_steps=5, conn_info_extra={"dataset": "test-hard0"})
+    _, conn, _, _ = run_new(env, max_steps=5, conn_info_extra={"dataset": "hard-verify"})
     start = conn.log[1][1]
     assert start == {"task": {"name": TASK, "env_id": TASK, "episode_idx": SRC},
                      "recording": {"sid": SID, "eid": SID, "eval_id": "", "db_path": ""}}
@@ -350,7 +350,7 @@ def test_orig_runner_rows_frames_and_trace(tmp_path):
     assert (r0["status"], r0["exec_steps"], r0["demo_frames"]) == ("success", 4, 2)
     assert (r1["status"], r1["exec_steps"], r1["steps"]) == ("timeout", 6, 6)
     for r in rows:
-        assert r["side"] == "orig" and r["policy"] == "pp" and r["dataset"] == "test-hard0"
+        assert r["side"] == "orig" and r["policy"] == "pp" and r["dataset"] == "hard-verify"
         assert r["max_steps"] == 6 and r["sid"] == r["eid"] and r["infra"] is False
     # 原始帧：reset 全部帧（演示 2 + 初始 1）+ 每步 1 帧
     for r, n in ((r0, 2 + 1 + 4), (r1, 2 + 1 + 6)):

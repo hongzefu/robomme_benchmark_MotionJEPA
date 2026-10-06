@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # 评估新侧：GL 计算节点内跑一个席位（V8 起用，1001-v8-post-evaluation-gl-plan.md §2／§5、契约 C3；
-# 1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.6 扩到 mmesg／pp 与两个数据集、就地转码）。
+# 1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.6 扩到 groundsg／pp 与两个数据集、就地转码）。
 #
 # 已在占位 job 的 srun 步骤里（由主会话在 GL 登录节点 tmux 内发起），本脚本：
 #   1. 解释器（调用方环境变量优先，未设才取缺省；1005 计划审计第 1 条）：BENCH_PY 缺省 <repo>/.venv/bin/python、
-#      MME_PY 缺省 <repo>/third_party/mme-vla/.venv/bin/python、SMVLA_PY 缺省
-#      <repo>/artifacts/v8-two/venvs/smvla-env/bin/python；mmesg／pp 客户端用 SGEVAL_CLIENT_PY（缺省
+#      MME_VLA_PY 缺省 <repo>/third_party/mme-vla/.venv/bin/python、SMVLA_PY 缺省
+#      <repo>/artifacts/v8-two/venvs/smvla-env/bin/python；groundsg／pp 客户端用 SGEVAL_CLIENT_PY（缺省
 #      <repo>/artifacts/sg-evaluation/venvs/client-env/bin/python），pp 服务用 PP_PY（缺省
 #      <repo>/third_party/PonderPounce/.venv/bin/python）。起跑打印五个解释器、BENCH_PY 下 robomme_hard.__file__、
 #      各解释器 venv 的 editable 安装指向（RUN_INPUT_PY 行），写 RUN_INPUTS=PASS|FAIL 行；本席策略要用的解释器
@@ -14,11 +14,11 @@
 #      原始帧照常发布，见 run_seat.sh::finish_episode_dir）与 SGEVAL_PP_SERVER_WRAP=1（pp 服务走
 #      pp_server_wrap.py）；两者调用方显式设了别的值时照用。VK_ICD_FILENAMES 按候选 ICD 文件逐个探测；
 #      --cpus 取本进程 sched_getaffinity；--gpu 缺省 0（GL 占位 job 内只见本席一张卡；本机多卡并行时显式给物理卡号）；端口按 run_seat.sh 既有规则（seat-idx = 席号 NN）。
-#   2. 起跑打印并核对 --dataset 与 --max-steps 的配对（test-hard0↔1300 且不带 --strict-cap，test-hard↔1600 且必须带
-#      --strict-cap），不符 RUN_BLOCKED reason=step_cap_pairing；mmesg 的变体配对同 run_seat.sh。
+#   2. 起跑打印并核对 --dataset 与 --max-steps 的配对（hard-verify↔1300 且不带 --strict-cap，ood↔1600 且必须带
+#      --strict-cap），不符 RUN_BLOCKED reason=step_cap_pairing；groundsg 的变体配对同 run_seat.sh。
 #   3. 按策略顺序（同卡绝不同时驻留）各调一次 run_seat.sh：持久状态（results.jsonl、<label>.ledger.jsonl、
 #      results.epochs.jsonl、server-epochs.tsv、progress.json、client.log、seat 日志）直接写 NFS <stage>/sNN/<label>/
-#      （label 为策略名，mmesg 为 mmesg-<variant>；不同数据集请用不同 --stage，run_seat.sh 见到别的数据集的结果行
+#      （label 为策略名，groundsg 为 groundsg-<variant>；不同数据集请用不同 --stage，run_seat.sh 见到别的数据集的结果行
 #      即 RUN_BLOCKED reason=dataset_crossed）；录像写节点本地 <local-root>/rec/<label>/，轨迹写
 #      <local-root>/trace/<label>/（默认 local-root=/tmp/<R>-sNN）。一律带 --never-degrade，不接受 --no-record。
 #   4. 后台同步循环每 --sync-interval 秒（默认 120）处理「该 label results.jsonl 已有行的 rec_dir 指向它、且目录内
@@ -40,11 +40,11 @@
 #
 # 用法（一席一行）：
 #   bash <repo>/scripts/eval-official/run_eval_gl.sh --run-name R --seat NN --repo <NFS 执行副本> --stage <NFS 运行根> \
-#     --shard <shard-NN.json> --dataset {test-hard,test-hard0} --max-steps N [--strict-cap] \
-#     --policies smvla,mme,mmesg,pp [--mme-variant V] [--qwenvl-groundsg-adapter D] \
-#     [--mme-ckpt D] [--mmesg-ckpt D] [--smvla-ckpt D] [--pp-ckpt D] [--openpi-data-home D --tokenizer-sha256 H] \
+#     --shard <shard-NN.json> --dataset {ood,hard-verify} --max-steps N [--strict-cap] \
+#     --policies smvla,perceptual-framesamp-modul,groundsg,pp [--groundsg-variant V] [--qwenvl-groundsg-adapter D] \
+#     [--framesamp-modul-ckpt D] [--groundsg-ckpt D] [--smvla-ckpt D] [--pp-ckpt D] [--openpi-data-home D --tokenizer-sha256 H] \
 #     --reset-budget N --infra-retry-budget N [--cond C] [--media-root D] [--limit N] \
-#     [--episode-wall S] [--episode-wall-smvla S] [--episode-wall-mme S] [--sync-interval S] [--local-root DIR] [--gpu N]
+#     [--episode-wall S] [--episode-wall-smvla S] [--episode-wall-framesamp-modul S] [--sync-interval S] [--local-root DIR] [--gpu N]
 # 退出码：0 全部策略 rc=0 且录像同步 PASS；中断 130/143（HUP 129）；其余失败取首个非零策略 rc（录像同步 FAIL 且策略全 0
 #   时为 7）；参数错误 2；执行环境缺失（解释器、shard 等）与配对核对不过 3。
 # 不嵌入任何 JobID，不含 /data 默认路径。
@@ -53,16 +53,16 @@ export PYTHONUNBUFFERED=1
 
 # 调用方给的解释器覆盖先记下（source run_seat.sh 会按它自己的位置填缺省值；参数解析后再按 "${X:-缺省}" 取用）
 _ENV_SGEVAL_CLIENT_PY="${SGEVAL_CLIENT_PY:-}" ; _ENV_PP_PY="${PP_PY:-}"
-_ENV_BENCH_PY="${BENCH_PY:-}" ; _ENV_MME_PY="${MME_PY:-}" ; _ENV_SMVLA_PY="${SMVLA_PY:-}"
+_ENV_BENCH_PY="${BENCH_PY:-}" ; _ENV_MME_VLA_PY="${MME_VLA_PY:-}" ; _ENV_SMVLA_PY="${SMVLA_PY:-}"
 # 复用 run_seat.sh 的配对核对、转码与原子发布（只定义函数，不运行）
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=run_seat.sh
 source "$HERE/run_seat.sh"
 
-RUN_NAME="" ; SEAT="" ; REPO="" ; STAGE="" ; SHARD="" ; POLICIES="smvla,mme"
-MME_CKPT="" ; MMESG_CKPT="" ; SMVLA_CKPT="" ; PP_CKPT="" ; OPENPI_HOME="" ; TOKENIZER_SHA="" ; RESET_BUDGET="" ; INFRA_RETRY_BUDGET=""
-GPU="0" ; LIMIT="0" ; WALL_SMVLA="" ; WALL_MME="" ; WALL_ALL="" ; SYNC_INTERVAL=120 ; LOCAL_ROOT="" ; COND="V8" ; MEDIA_ROOT=""
-DATASET="" ; MAX_STEPS="" ; STRICT_CAP=0 ; MME_VARIANT="" ; QWENVL_ADAPTER=""
+RUN_NAME="" ; SEAT="" ; REPO="" ; STAGE="" ; SHARD="" ; POLICIES="smvla,perceptual-framesamp-modul"
+FRAMESAMP_MODUL_CKPT="" ; GROUNDSG_CKPT="" ; SMVLA_CKPT="" ; PP_CKPT="" ; OPENPI_HOME="" ; TOKENIZER_SHA="" ; RESET_BUDGET="" ; INFRA_RETRY_BUDGET=""
+GPU="0" ; LIMIT="0" ; WALL_SMVLA="" ; WALL_FRAMESAMP_MODUL="" ; WALL_ALL="" ; SYNC_INTERVAL=120 ; LOCAL_ROOT="" ; COND="V8" ; MEDIA_ROOT=""
+DATASET="" ; MAX_STEPS="" ; STRICT_CAP=0 ; GROUNDSG_VARIANT="" ; QWENVL_ADAPTER=""
 
 usage() { sed -n '2,/^# 不嵌入任何 JobID/p' "${BASH_SOURCE[0]}" >&2; }
 die2() {  # 参数错误：也写收尾两行，便于外层 Monitor 统一判定
@@ -84,10 +84,10 @@ while [[ $# -gt 0 ]]; do
     --dataset) DATASET="$2"; shift 2;;
     --max-steps) MAX_STEPS="$2"; shift 2;;
     --strict-cap) STRICT_CAP=1; shift;;
-    --mme-variant) MME_VARIANT="$2"; shift 2;;
+    --groundsg-variant) GROUNDSG_VARIANT="$2"; shift 2;;
     --qwenvl-groundsg-adapter) QWENVL_ADAPTER="$2"; shift 2;;
-    --mme-ckpt) MME_CKPT="$2"; shift 2;;
-    --mmesg-ckpt) MMESG_CKPT="$2"; shift 2;;
+    --framesamp-modul-ckpt) FRAMESAMP_MODUL_CKPT="$2"; shift 2;;
+    --groundsg-ckpt) GROUNDSG_CKPT="$2"; shift 2;;
     --smvla-ckpt) SMVLA_CKPT="$2"; shift 2;;
     --pp-ckpt) PP_CKPT="$2"; shift 2;;
     --openpi-data-home) OPENPI_HOME="$2"; shift 2;;
@@ -97,7 +97,7 @@ while [[ $# -gt 0 ]]; do
     --limit) LIMIT="$2"; shift 2;;
     --episode-wall) WALL_ALL="$2"; shift 2;;
     --episode-wall-smvla) WALL_SMVLA="$2"; shift 2;;
-    --episode-wall-mme) WALL_MME="$2"; shift 2;;
+    --episode-wall-framesamp-modul) WALL_FRAMESAMP_MODUL="$2"; shift 2;;
     --sync-interval) SYNC_INTERVAL="$2"; shift 2;;
     --local-root) LOCAL_ROOT="$2"; shift 2;;
     --gpu) GPU="$2"; shift 2;;
@@ -120,12 +120,12 @@ IFS=',' read -r -a POLS <<< "$POLICIES"
 for pol in "${POLS[@]}"; do
   case "$pol" in
     smvla) [[ -n "$SMVLA_CKPT" ]] || die2 "跑 smvla 须给 --smvla-ckpt";;
-    mme) [[ -n "$MME_CKPT" && -n "$OPENPI_HOME" && -n "$TOKENIZER_SHA" ]] \
-           || die2 "跑 mme 须给 --mme-ckpt --openpi-data-home --tokenizer-sha256";;
-    mmesg) [[ -n "$MMESG_CKPT" && -n "$OPENPI_HOME" && -n "$TOKENIZER_SHA" ]] \
-           || die2 "跑 mmesg 须给 --mmesg-ckpt --openpi-data-home --tokenizer-sha256";;
+    perceptual-framesamp-modul) [[ -n "$FRAMESAMP_MODUL_CKPT" && -n "$OPENPI_HOME" && -n "$TOKENIZER_SHA" ]] \
+           || die2 "跑 perceptual-framesamp-modul 须给 --framesamp-modul-ckpt --openpi-data-home --tokenizer-sha256";;
+    groundsg) [[ -n "$GROUNDSG_CKPT" && -n "$OPENPI_HOME" && -n "$TOKENIZER_SHA" ]] \
+           || die2 "跑 groundsg 须给 --groundsg-ckpt --openpi-data-home --tokenizer-sha256";;
     pp) [[ -n "$PP_CKPT" ]] || die2 "跑 pp 须给 --pp-ckpt";;
-    *) die2 "未知策略 $pol（只许 smvla,mme,mmesg,pp）";;
+    *) die2 "未知策略 $pol（只许 smvla,perceptual-framesamp-modul,groundsg,pp）";;
   esac
 done
 SEAT_IDX=$((10#$SEAT))
@@ -138,7 +138,7 @@ LABELS=()
 for pol in "${POLS[@]}"; do LABELS+=("$(pol_label "$pol")"); done
 
 export BENCH_PY="${_ENV_BENCH_PY:-$REPO/.venv/bin/python}"
-export MME_PY="${_ENV_MME_PY:-$REPO/third_party/mme-vla/.venv/bin/python}"
+export MME_VLA_PY="${_ENV_MME_VLA_PY:-$REPO/third_party/mme-vla/.venv/bin/python}"
 export SMVLA_PY="${_ENV_SMVLA_PY:-$REPO/artifacts/v8-two/venvs/smvla-env/bin/python}"
 export SGEVAL_CLIENT_PY="${_ENV_SGEVAL_CLIENT_PY:-$REPO/artifacts/sg-evaluation/venvs/client-env/bin/python}"
 export PP_PY="${_ENV_PP_PY:-$REPO/third_party/PonderPounce/.venv/bin/python}"
@@ -210,14 +210,14 @@ run_inputs_check() {  # 打印五个解释器与 editable 指向、robomme_hard 
   for pol in "${POLS[@]}"; do
     case "$pol" in
       smvla) need+=" smvla ";;
-      mme) need+=" mme ";;
-      mmesg) need+=" mme client ";;
+      perceptual-framesamp-modul) need+=" mme-vla ";;
+      groundsg) need+=" mme-vla client ";;
       pp) need+=" client pp ";;
     esac
   done
-  for role in bench mme smvla client pp; do
+  for role in bench mme-vla smvla client pp; do
     case "$role" in
-      bench) py="$BENCH_PY";; mme) py="$MME_PY";; smvla) py="$SMVLA_PY";; client) py="$SGEVAL_CLIENT_PY";; pp) py="$PP_PY";;
+      bench) py="$BENCH_PY";; mme-vla) py="$MME_VLA_PY";; smvla) py="$SMVLA_PY";; client) py="$SGEVAL_CLIENT_PY";; pp) py="$PP_PY";;
     esac
     if [[ -x "$py" ]]; then ed="$(editable_of "$py" | tail -n 1)"; else ed="missing"; fi
     echo "RUN_INPUT_PY role=$role py=$py needed=$([[ "$need" == *" $role "* ]] && echo 1 || echo 0) editable=$ed"
@@ -237,7 +237,7 @@ run_inputs_check() {  # 打印五个解释器与 editable 指向、robomme_hard 
     if [[ -f "$wrap" ]]; then wrap="present"; else why+=("pp_server_wrap_missing"); wrap="missing"; fi
   fi
   local verdict=PASS; (( ${#why[@]} == 0 )) || verdict=FAIL
-  echo "RUN_INPUTS=$verdict bench_py=$BENCH_PY mme_py=$MME_PY smvla_py=$SMVLA_PY client_py=$SGEVAL_CLIENT_PY pp_py=$PP_PY \
+  echo "RUN_INPUTS=$verdict bench_py=$BENCH_PY mme_vla_py=$MME_VLA_PY smvla_py=$SMVLA_PY client_py=$SGEVAL_CLIENT_PY pp_py=$PP_PY \
 robomme_hard=$rh official_render=$SGEVAL_OFFICIAL_RENDER renderer=$renderer pp_server_wrap=$SGEVAL_PP_SERVER_WRAP \
 pp_wrap_file=$wrap policies=$POLICIES${why:+ reason=$(IFS=,; echo "${why[*]}")}"
   [[ "$verdict" == PASS ]]
@@ -328,7 +328,7 @@ reap_orphans() {  # $1 = TERM 后宽限秒数；$2 = KILL 后等进程组退出�
     kill -0 "$pid" 2>/dev/null || continue
     cmd="$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null)"
     case "$cmd" in
-      *env_client.py*|*smvla_server.py*|*serve_policy.py*|*mme_client.py*|*ponderpounce.eval.robomme_server*|*pp_server_wrap.py*)
+      *env_client.py*|*smvla_server.py*|*serve_policy.py*|*framesamp_modul_client.py*|*ponderpounce.eval.robomme_server*|*pp_server_wrap.py*)
         echo "REAP_ORPHAN role=$role pgid=$pid"
         kill -TERM -- "-$pid" 2>/dev/null || kill -TERM "$pid" 2>/dev/null
         for i in $(seq 1 $((grace * 2))); do kill -0 -- "-$pid" 2>/dev/null || break; sleep 0.5; done
@@ -423,7 +423,7 @@ blocked=""
 [[ -z "$blocked" && -f "$REPO/scripts/eval-official/run_seat.sh" ]] || blocked="${blocked:-run_seat_missing}"
 for pol in "${POLS[@]}"; do
   case "$pol" in
-    mmesg|pp) [[ -n "$blocked" || -x "$SGEVAL_CLIENT_PY" ]] || blocked="client_py_missing $SGEVAL_CLIENT_PY";;
+    groundsg|pp) [[ -n "$blocked" || -x "$SGEVAL_CLIENT_PY" ]] || blocked="client_py_missing $SGEVAL_CLIENT_PY";;
   esac
 done
 if [[ -n "$blocked" ]]; then
@@ -452,11 +452,11 @@ for i in "${!POLS[@]}"; do
   (( STRICT_CAP == 1 )) && args+=(--strict-cap)
   [[ -n "$WALL_ALL" ]] && args+=(--episode-wall "$WALL_ALL")
   [[ -n "$WALL_SMVLA" ]] && args+=(--episode-wall-smvla "$WALL_SMVLA")
-  [[ -n "$WALL_MME" ]] && args+=(--episode-wall-mme "$WALL_MME")
+  [[ -n "$WALL_FRAMESAMP_MODUL" ]] && args+=(--episode-wall-framesamp-modul "$WALL_FRAMESAMP_MODUL")
   case "$pol" in
-    mme) args+=(--mme-ckpt "$MME_CKPT" --openpi-data-home "$OPENPI_HOME" --tokenizer-sha256 "$TOKENIZER_SHA");;
-    mmesg) args+=(--mmesg-ckpt "$MMESG_CKPT" --openpi-data-home "$OPENPI_HOME" --tokenizer-sha256 "$TOKENIZER_SHA"
-                  --mme-variant "$MME_VARIANT")
+    perceptual-framesamp-modul) args+=(--framesamp-modul-ckpt "$FRAMESAMP_MODUL_CKPT" --openpi-data-home "$OPENPI_HOME" --tokenizer-sha256 "$TOKENIZER_SHA");;
+    groundsg) args+=(--groundsg-ckpt "$GROUNDSG_CKPT" --openpi-data-home "$OPENPI_HOME" --tokenizer-sha256 "$TOKENIZER_SHA"
+                  --groundsg-variant "$GROUNDSG_VARIANT")
            [[ -n "$QWENVL_ADAPTER" ]] && args+=(--qwenvl-groundsg-adapter "$QWENVL_ADAPTER");;
     pp) args+=(--pp-ckpt "$PP_CKPT");;
     *) args+=(--smvla-ckpt "$SMVLA_CKPT");;

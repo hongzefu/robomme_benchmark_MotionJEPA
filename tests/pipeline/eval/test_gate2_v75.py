@@ -283,7 +283,7 @@ def test_groundsg_diagnostic_column_compares_all(tmp_path):
     assert firsts == {("VideoUnmask", 3): True, ("VideoUnmask", 7): False, ("PickXtimes", 3): True,
                       ("PickXtimes", 7): False}
     assert "first_episode_identical" not in s
-    assert "server_epoch_first=2" in g.ext_lines(res, "mmesg-oracle")[-1]
+    assert "server_epoch_first=2" in g.ext_lines(res, "groundsg-oracle")[-1]
 
 
 def test_v75_superseded_infra_error_rows_are_not_terminal():

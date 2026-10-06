@@ -51,10 +51,10 @@ def authority_rates(path: Path, *, baseline: bool) -> tuple[dict, dict]:
         key = row["key"]
         require(key not in seen and key == f"{row['task']}_{row['tier']}_{row['seed']}", "成功率来源身份重复或不符")
         seen.add(key)
-        require(row["policy"] == "mmesg" and row["policy_variant"] == "ground-sg-oracle" and
+        require(row["policy"] == "groundsg" and row["policy_variant"] == "ground-sg-oracle" and
                 row["side"] == "new" and row["host"] == "sled-vail" and row["infra"] is False,
                 "成功率来源不是本机 Oracle 新侧完成结果")
-        require(row["dataset"] == ("test-hard0" if baseline else "test-hard") and
+        require(row["dataset"] == ("hard-verify" if baseline else "ood") and
                 (row["tier"] == "xhard0" if baseline else row["tier"] in ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")),
                 "成功率来源数据集或难度不符")
         require(row["status"] in ("success", "fail", "timeout") and type(row["task_success"]) is bool and

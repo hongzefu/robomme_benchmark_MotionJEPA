@@ -1,4 +1,4 @@
-"""C13 两个策略客户端（``mme_client``、``smvla_client``）的协议与动作转换，以及席位层「普通失败不重试、唯一接受、
+"""C13 两个策略客户端（``framesamp_modul_client``、``smvla_client``）的协议与动作转换，以及席位层「普通失败不重试、唯一接受、
 必填身份」。
 
 假 server 只记录收到的消息并按输入确定性地回动作；期望（帧序列、exec_start_idx、执行的动作行、步数）都由本文件
@@ -19,7 +19,7 @@ from tests._support.loaders import load_script
 from tests.pipeline.evalx.report import trace_contract as tc
 
 
-# ---------------------------------------------------------------- MME：逐行照抄旧官方的循环语义
+# ---------------------------------------------------------------- FrameSamp+Modulation：逐行照抄旧官方的循环语义
 
 
 class _Session:
@@ -37,25 +37,25 @@ class _Session:
         return self.env.step(a)
 
 
-def _mme_run(plan, *, max_steps=None, server=None, client_factory=None):
-    mc = F.mme_client()
+def _framesamp_modul_run(plan, *, max_steps=None, server=None, client_factory=None):
+    mc = F.framesamp_modul_client()
     server = server or F.FakePolicyServer()
     sess = _Session(plan)
     kw = {} if max_steps is None else {"max_steps": max_steps}
-    res = mc.evaluate_one(client_factory or (lambda: F.FakeMMEClient(server)), sess.step,
+    res = mc.evaluate_one(client_factory or (lambda: F.FakeMMEVLAWebsocketClient(server)), sess.step,
                           lambda: mc.pre_traj_from_reset(*sess.reset()), **kw)
     return res, sess, server
 
 
 def test_pack_state_is_joint7_plus_first_gripper_float32():
-    mc = F.mme_client()
+    mc = F.framesamp_modul_client()
     s = mc.pack_state(np.arange(7, dtype=np.float64), np.array([0.25, 0.75]))
     assert s.dtype == np.float32 and s.tolist() == [0, 1, 2, 3, 4, 5, 6, 0.25]
 
 
-def test_mme_first_inference_sends_all_reset_frames_then_only_new_frames():
-    mc = F.mme_client()
-    res, sess, server = _mme_run(F.Plan(success_at=20))
+def test_framesamp_modul_first_inference_sends_all_reset_frames_then_only_new_frames():
+    mc = F.framesamp_modul_client()
+    res, sess, server = _framesamp_modul_run(F.Plan(success_at=20))
     assert res["status"] == "success" and res["steps"] == 20 and res["infra"] is False
     obs_msgs = [p for k, p in server.log if k == "observe"]
     infer_msgs = [p for k, p in server.log if k == "infer"]
@@ -79,42 +79,42 @@ def test_mme_first_inference_sends_all_reset_frames_then_only_new_frames():
     assert np.array_equal(executed[h:], infer_msgs[1]["actions"][:20 - h])
 
 
-def test_mme_timeout_counts_to_max_plus_one():
+def test_framesamp_modul_timeout_counts_to_max_plus_one():
     """count > max_steps 即 timeout，步数记 max_steps+1（该判断先于终态判断）。"""
-    res, sess, _ = _mme_run(F.Plan(), max_steps=5)
+    res, sess, _ = _framesamp_modul_run(F.Plan(), max_steps=5)
     assert res["status"] == "timeout" and res["steps"] == 6 and sess.env.n == 6
 
 
-def test_mme_env_exception_becomes_error_without_infra():
-    res, sess, _ = _mme_run(F.Plan(raise_at=3, raise_exc=lambda: RuntimeError("IK 失败")))
+def test_framesamp_modul_env_exception_becomes_error_without_infra():
+    res, sess, _ = _framesamp_modul_run(F.Plan(raise_at=3, raise_exc=lambda: RuntimeError("IK 失败")))
     assert res["status"] == "error" and res["infra"] is False
     assert res["env_exception"] == "RuntimeError: IK 失败" and res["steps"] == 3
 
 
 @pytest.mark.parametrize("message", ["svulkan2 boom", "CUDA_ERROR_LAUNCH_FAILED", "out of memory"])
-def test_mme_infra_marker_sets_infra(message):
-    res, _, _ = _mme_run(F.Plan(raise_at=1, raise_exc=lambda: RuntimeError(message)))
+def test_framesamp_modul_infra_marker_sets_infra(message):
+    res, _, _ = _framesamp_modul_run(F.Plan(raise_at=1, raise_exc=lambda: RuntimeError(message)))
     assert res["status"] == "error" and res["infra"] is True
 
 
-def test_mme_unknown_terminal_status_is_error():
+def test_framesamp_modul_unknown_terminal_status_is_error():
     class _Weird(F.FakeEnv):
         def step(self, a):
             obs, r, _, tr, _ = super().step(a)
             return obs, r, True, tr, {"status": "ongoing"}
 
-    mc = F.mme_client()
+    mc = F.framesamp_modul_client()
     env = _Weird("T", 2, F.Plan())
-    res = mc.evaluate_one(lambda: F.FakeMMEClient(F.FakePolicyServer()), env.step,
+    res = mc.evaluate_one(lambda: F.FakeMMEVLAWebsocketClient(F.FakePolicyServer()), env.step,
                           lambda: mc.pre_traj_from_reset(*env.reset()))
     assert res["status"] == "error" and res["error"] == "success_flag=ongoing"
 
 
-def test_mme_connection_refused_is_infra():
+def test_framesamp_modul_connection_refused_is_infra():
     def factory():
         raise ConnectionRefusedError("拒绝连接")
 
-    res, sess, _ = _mme_run(F.Plan(success_at=1), client_factory=factory)
+    res, sess, _ = _framesamp_modul_run(F.Plan(success_at=1), client_factory=factory)
     assert res["status"] == "error" and res["infra"] is True and sess.env.n == 0
 
 
@@ -215,7 +215,7 @@ def test_smvla_reset_failure_with_vulkan_marker_is_infra_and_retries_count():
 
 @pytest.mark.parametrize("plan", [F.Plan(fail_at=1), F.Plan(raise_at=1, raise_exc=lambda: RuntimeError("IK"))],
                          ids=["fail", "ordinary_error"])
-@pytest.mark.parametrize("policy", ("mme", "smvla"))
+@pytest.mark.parametrize("policy", ("perceptual-framesamp-modul", "smvla"))
 def test_ordinary_failure_is_not_retried(tmp_path, monkeypatch, policy, plan):
     task, tier = F.v9_cells_sorted()[0]
     ident = F.packaged_identity(task, tier, 0)
@@ -231,7 +231,7 @@ def test_ordinary_failure_is_not_retried(tmp_path, monkeypatch, policy, plan):
 def _args_for_identities(tmp_path, rows):
     p = tmp_path / "shard-00.json"
     p.write_text(json.dumps(rows), encoding="utf-8")
-    return F.seat_args(tmp_path / "out", "mme", ledger=tmp_path / "l.jsonl", identities=str(p))
+    return F.seat_args(tmp_path / "out", "perceptual-framesamp-modul", ledger=tmp_path / "l.jsonl", identities=str(p))
 
 
 @pytest.mark.parametrize("mutate", ["drop_spec", "dup_key", "float_seed"])
@@ -270,7 +270,7 @@ _LEDGER = ["--ledger", "l.jsonl", "--reset-budget", "10", "--infra-retry-budget"
 def test_dataset_and_max_steps_have_no_default(drop):
     """--dataset 与 --max-steps 都必填、无默认值：缺任一即参数错误（argparse 退出 2）。"""
     ec = F.env_client()
-    argv = _BASE + ["--policy", "mme", "--dataset", "test-hard0", "--max-steps", "1300"] + _LEDGER
+    argv = _BASE + ["--policy", "perceptual-framesamp-modul", "--dataset", "hard-verify", "--max-steps", "1300"] + _LEDGER
     i = argv.index(drop)
     with pytest.raises(SystemExit) as ei:
         ec.build_parser().parse_args(argv[:i] + argv[i + 2:])
@@ -278,16 +278,16 @@ def test_dataset_and_max_steps_have_no_default(drop):
 
 
 @pytest.mark.parametrize("extra,why", [
-    (["--policy", "mme", "--dataset", "test-hard", "--max-steps", "1600"], "必须给 --ledger"),
-    (["--policy", "mmesg", "--dataset", "test-hard0", "--max-steps", "1300", *_LEDGER], "--mme-variant"),
-    (["--policy", "mmesg", "--dataset", "test-hard0", "--max-steps", "1300", "--mme-variant", "ground-sg-qwenvl",
+    (["--policy", "perceptual-framesamp-modul", "--dataset", "ood", "--max-steps", "1600"], "必须给 --ledger"),
+    (["--policy", "groundsg", "--dataset", "hard-verify", "--max-steps", "1300", *_LEDGER], "--groundsg-variant"),
+    (["--policy", "groundsg", "--dataset", "hard-verify", "--max-steps", "1300", "--groundsg-variant", "ground-sg-qwenvl",
       *_LEDGER], "--qwenvl-groundsg-adapter"),
-    (["--policy", "mme", "--dataset", "test-hard0", "--max-steps", "1300", "--mme-variant", "ground-sg-oracle",
-      *_LEDGER], "只能与 --policy mmesg"),
-    (["--policy", "mmesg", "--dataset", "test-hard0", "--max-steps", "1300", "--mme-variant", "ground-sg-oracle",
-      "--qwenvl-groundsg-adapter", "a", *_LEDGER], "只能与 --mme-variant ground-sg-qwenvl"),
-    (["--policy", "pp", "--dataset", "test-hard0", "--max-steps", "0", *_LEDGER], "--max-steps 必须是正整数"),
-], ids=["no_ledger", "mmesg_no_variant", "qwenvl_no_adapter", "variant_on_mme", "adapter_on_oracle", "zero_steps"])
+    (["--policy", "perceptual-framesamp-modul", "--dataset", "hard-verify", "--max-steps", "1300", "--groundsg-variant", "ground-sg-oracle",
+      *_LEDGER], "只能与 --policy groundsg"),
+    (["--policy", "groundsg", "--dataset", "hard-verify", "--max-steps", "1300", "--groundsg-variant", "ground-sg-oracle",
+      "--qwenvl-groundsg-adapter", "a", *_LEDGER], "只能与 --groundsg-variant ground-sg-qwenvl"),
+    (["--policy", "pp", "--dataset", "hard-verify", "--max-steps", "0", *_LEDGER], "--max-steps 必须是正整数"),
+], ids=["no_ledger", "groundsg_no_variant", "qwenvl_no_adapter", "variant_on_framesamp_modul", "adapter_on_oracle", "zero_steps"])
 def test_run_args_blocked(capsys, extra, why):
     ec = F.env_client()
     args = ec.build_parser().parse_args(_BASE + extra)
@@ -298,10 +298,10 @@ def test_run_args_blocked(capsys, extra, why):
 
 def test_run_args_accept_all_four_policies():
     ec = F.env_client()
-    for pol, extra in (("mme", []), ("smvla", []), ("pp", []),
-                       ("mmesg", ["--mme-variant", "ground-sg-oracle"]),
-                       ("mmesg", ["--mme-variant", "ground-sg-qwenvl", "--qwenvl-groundsg-adapter", "/x"])):
-        args = ec.build_parser().parse_args(_BASE + ["--policy", pol, "--dataset", "test-hard0", "--max-steps",
+    for pol, extra in (("perceptual-framesamp-modul", []), ("smvla", []), ("pp", []),
+                       ("groundsg", ["--groundsg-variant", "ground-sg-oracle"]),
+                       ("groundsg", ["--groundsg-variant", "ground-sg-qwenvl", "--qwenvl-groundsg-adapter", "/x"])):
+        args = ec.build_parser().parse_args(_BASE + ["--policy", pol, "--dataset", "hard-verify", "--max-steps",
                                                      "1300", *_LEDGER, *extra])
         assert ec.check_run_args(args, need_identities=True) is None, pol
         assert args.strict_cap is False
@@ -332,7 +332,7 @@ def _env_session(plan, *, cap=None, recorder=None):
 
 def _conn(tmp_path, attempt=1, **kw):
     tag = f"{IDENT['key']}.a{attempt}"
-    return dict({"trace_dir": str(tmp_path / tag), "episode_tag": tag, "dataset": "test-hard0"}, **kw), tmp_path / tag
+    return dict({"trace_dir": str(tmp_path / tag), "episode_tag": tag, "dataset": "hard-verify"}, **kw), tmp_path / tag
 
 
 def _rows(ep):
@@ -381,7 +381,7 @@ def test_smvla_trace_success_is_renderable_with_subgoal_and_logical_requests(tmp
     header, end, demo = rows[0], rows[-1], _kind(rows, "demo")[0]
     assert header["route"] == "smvla/new"
     assert {k: header["identity"][k] for k in IDENT} == IDENT
-    assert header["identity"]["attempt"] == 1 and header["identity"]["dataset"] == "test-hard0"
+    assert header["identity"]["attempt"] == 1 and header["identity"]["dataset"] == "hard-verify"
     assert header["max_steps"] == res["hard_bound"] * 16  # 客户端循环的真实步数上界
     steps = _kind(rows, "step")
     assert len(steps) == sess.steps == 20  # 步数行 = 执行步数
@@ -502,7 +502,7 @@ def test_smvla_recorder_arrays_keys_match_trace_contract(tmp_path):
     rec = _bare_recorder(ep)
     sm = F.smvla_client()
     sess, _ = _env_session(F.Plan(success_at=18), recorder=rec)
-    res = sm.run_episode(sess, dict(IDENT), {"episode_tag": ep.name, "dataset": "test-hard0"}, rec,
+    res = sm.run_episode(sess, dict(IDENT), {"episode_tag": ep.name, "dataset": "hard-verify"}, rec,
                          conn=F.FakeSmvlaConn(F.FakePolicyServer()))
     assert res["status"] == "success"
     assert res["trace_path"] == str(ep / "trace.jsonl")  # trace_location 退回 recorder.out_dir
@@ -513,12 +513,12 @@ def test_smvla_recorder_arrays_keys_match_trace_contract(tmp_path):
     tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "success"})
 
 
-def _mme_traced(tmp_path, monkeypatch, plan, *, cap=None, max_steps=1300, traced=True, client_wrap=None):
-    mc = F.mme_client()
+def _framesamp_modul_traced(tmp_path, monkeypatch, plan, *, cap=None, max_steps=1300, traced=True, client_wrap=None):
+    mc = F.framesamp_modul_client()
     server = F.FakePolicyServer()
 
     def factory(host, port, recorder, timing):
-        c = F.FakeMMEClient(server)
+        c = F.FakeMMEVLAWebsocketClient(server)
         return client_wrap(c) if client_wrap else c
 
     monkeypatch.setattr(mc, "make_recording_client", factory)
@@ -531,15 +531,15 @@ def _mme_traced(tmp_path, monkeypatch, plan, *, cap=None, max_steps=1300, traced
     return res, sess, b, server, ep
 
 
-def test_mme_trace_success_is_renderable_with_null_subgoals(tmp_path, monkeypatch):
-    res, sess, b, server, ep = _mme_traced(tmp_path, monkeypatch, F.Plan(success_at=20))
+def test_framesamp_modul_trace_success_is_renderable_with_null_subgoals(tmp_path, monkeypatch):
+    res, sess, b, server, ep = _framesamp_modul_traced(tmp_path, monkeypatch, F.Plan(success_at=20))
     assert res["status"] == "success" and sess.steps == 20
     tc.assert_renderable(ep)
     tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "success"})
     rows = _rows(ep)
-    assert rows[0]["route"] == "mme/new" and rows[0]["identity"]["key"] == IDENT["key"]
+    assert rows[0]["route"] == "perceptual-framesamp-modul/new" and rows[0]["identity"]["key"] == IDENT["key"]
     steps = _kind(rows, "step")
-    assert len(steps) == 20 and all(st["subgoal"] is None for st in steps)  # MME 无子目标功能（C7）
+    assert len(steps) == 20 and all(st["subgoal"] is None for st in steps)  # FrameSamp+Modulation 无子目标功能（C7）
     assert [r["name"] for r in _kind(rows, "request")] == ["reset", "add_buffer", "infer", "add_buffer", "infer"]
     assert [(h["start"], h["end"]) for h in _kind(rows, "history")] == [(0, 0), (0, 16)]
     tw = _tw()
@@ -552,17 +552,17 @@ def test_mme_trace_success_is_renderable_with_null_subgoals(tmp_path, monkeypatc
     assert (end["steps_attempted"], end["steps_observed"], end["frames_recorded"]) == (20, 20, F.N_RESET_FRAMES + 20)
 
 
-def test_mme_trace_does_not_change_messages_or_actions(tmp_path, monkeypatch):
-    a = _mme_traced(tmp_path, monkeypatch, F.Plan(success_at=40))
-    b = _mme_traced(tmp_path, monkeypatch, F.Plan(success_at=40), traced=False)
+def test_framesamp_modul_trace_does_not_change_messages_or_actions(tmp_path, monkeypatch):
+    a = _framesamp_modul_traced(tmp_path, monkeypatch, F.Plan(success_at=40))
+    b = _framesamp_modul_traced(tmp_path, monkeypatch, F.Plan(success_at=40), traced=False)
     assert _norm(a[3].log) == _norm(b[3].log)
     assert [x.tobytes() for x in a[2].env.actions] == [x.tobytes() for x in b[2].env.actions]
     assert _strip(a[0]) == _strip(b[0]) and "trace_path" not in b[0]
 
 
-def test_mme_natural_timeout_omits_last_frame(tmp_path, monkeypatch):
+def test_framesamp_modul_natural_timeout_omits_last_frame(tmp_path, monkeypatch):
     """不带 strict-cap、max_steps=5：第 6 步照常执行并记录，官方录像不录最后一步（omitted=1）。"""
-    res, sess, _, _, ep = _mme_traced(tmp_path, monkeypatch, F.Plan(), max_steps=5)
+    res, sess, _, _, ep = _framesamp_modul_traced(tmp_path, monkeypatch, F.Plan(), max_steps=5)
     assert res["status"] == "timeout" and sess.steps == 6
     tc.assert_renderable(ep)
     tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "timeout"})
@@ -570,9 +570,9 @@ def test_mme_natural_timeout_omits_last_frame(tmp_path, monkeypatch):
     assert (end["omitted_timeout_frames"], end["frames_recorded"]) == (1, F.N_RESET_FRAMES + 6 - 1)
 
 
-def test_mme_strict_cap_trace_closes_as_timeout(tmp_path, monkeypatch):
+def test_framesamp_modul_strict_cap_trace_closes_as_timeout(tmp_path, monkeypatch):
     """strict-cap 5：第 6 步不进环境、不记步；轨迹 5 步、timeout、omitted=0。"""
-    res, sess, b, _, ep = _mme_traced(tmp_path, monkeypatch, F.Plan(), cap=5, max_steps=5)
+    res, sess, b, _, ep = _framesamp_modul_traced(tmp_path, monkeypatch, F.Plan(), cap=5, max_steps=5)
     assert sess.cap_hit is True and sess.steps == 5 and b.env.n == 5
     tc.assert_renderable(ep)
     tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "timeout"})
@@ -581,9 +581,9 @@ def test_mme_strict_cap_trace_closes_as_timeout(tmp_path, monkeypatch):
     assert len(_kind(_rows(ep), "step")) == 5
 
 
-def test_mme_env_exception_is_missing_step_with_consistent_counts(tmp_path, monkeypatch):
+def test_framesamp_modul_env_exception_is_missing_step_with_consistent_counts(tmp_path, monkeypatch):
     """第 3 步抛异常：EnvRunnerShim 返回 (None,)*3 的这一步记缺观测步；三分计数 3／2／demo+1+2。"""
-    res, sess, b, _, ep = _mme_traced(tmp_path, monkeypatch, F.Plan(raise_at=3, raise_exc=lambda: RuntimeError("IK")))
+    res, sess, b, _, ep = _framesamp_modul_traced(tmp_path, monkeypatch, F.Plan(raise_at=3, raise_exc=lambda: RuntimeError("IK")))
     assert res["status"] == "error" and sess.steps == 3 and res["steps"] == 3
     assert tc.contract_problems(ep) == []
     tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "error"})
@@ -595,7 +595,7 @@ def test_mme_env_exception_is_missing_step_with_consistent_counts(tmp_path, monk
     assert (end["steps_attempted"], end["steps_observed"], end["frames_recorded"]) == (3, 2, F.N_RESET_FRAMES + 2)
 
 
-def test_mme_non_float32_actions_write_arrays_npz(tmp_path, monkeypatch):
+def test_framesamp_modul_non_float32_actions_write_arrays_npz(tmp_path, monkeypatch):
     """服务回 float64 动作块：逐步原值进 arrays.npz（键 exec_action__%05d），可渲染。"""
 
     class _F64:
@@ -613,7 +613,7 @@ def test_mme_non_float32_actions_write_arrays_npz(tmp_path, monkeypatch):
             out = self._inner.infer(element)
             return {"actions": np.asarray(out["actions"], dtype=np.float64)}
 
-    res, sess, b, _, ep = _mme_traced(tmp_path, monkeypatch, F.Plan(success_at=7), client_wrap=_F64)
+    res, sess, b, _, ep = _framesamp_modul_traced(tmp_path, monkeypatch, F.Plan(success_at=7), client_wrap=_F64)
     assert res["status"] == "success"
     tc.assert_renderable(ep)
     assert _rows(ep)[-1]["arrays"] == "trace"
@@ -622,14 +622,14 @@ def test_mme_non_float32_actions_write_arrays_npz(tmp_path, monkeypatch):
         assert all(arr[f"exec_action__{i:05d}"].tobytes() == b.env.actions[i].tobytes() for i in range(7))
 
 
-def test_mme_real_recording_client_logs_raw_msgpack_hashes(tmp_path):
+def test_framesamp_modul_real_recording_client_logs_raw_msgpack_hashes(tmp_path):
     """真实 RecordingClient（回环假 server）：请求行记实际发出的 msgpack 字节 sha256。"""
     pytest.importorskip("openpi_client", reason="未验证：openpi_client 未安装")
     pytest.importorskip("websockets", reason="未验证：websockets 未安装")
     from openpi_client import msgpack_numpy
-    from test_mme_transport import _FakeServer
+    from test_framesamp_modul_transport import _FakeServer
 
-    mc = F.mme_client()
+    mc = F.framesamp_modul_client()
     sess, _ = _env_session(F.Plan(success_at=20))
     with _FakeServer() as srv:
         conn_info, ep = _conn(tmp_path, port=srv.port, host="127.0.0.1", max_steps=1300)

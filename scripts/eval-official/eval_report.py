@@ -1,7 +1,7 @@
 """V8 双模型评估汇总（1001-v8-post-evaluation-gl-plan.md 第一部分 §1 第 5、7 条、§4；契约 C4 第一段）。纯 CPU、只用标准库。
 
     python scripts/eval-official/eval_report.py --manifest <manifest.json> --stage <运行根> \
-        --policies smvla,mme --out <dir> [--videos <本机视频根>] [--partial] [--expect-total 1070] [--cap 1600]
+        --policies smvla,perceptual-framesamp-modul --out <dir> [--videos <本机视频根>] [--partial] [--expect-total 1070] [--cap 1600]
 
 输入（契约 C1～C3）：
 - ``--manifest``：``eval_manifest.py`` 产出的 ``manifest.json``（``rows`` 为执行身份行，``key = f"{task}_{tier}_{seed}"``）；
@@ -58,14 +58,14 @@ V9 合并复用（1002-newtask-v9-movecube-region-800-plan.md 第二部分 §2.1
 report.json 键的分工（站点 S1-E 依赖）：``per_policy.<p>.cells／tasks／tiers`` 只统计本次 manifest 的新评身份（与 V8 report
 同口径）；800 局总表只在 ``v9.totals.<p>``（``tasks／tiers／cells／outcomes``），不混进 ``per_policy``。
 
-带 ``--dataset {test-hard,test-hard0}``（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.2）：
+带 ``--dataset {ood,hard-verify}``（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.2）：
 
-    python scripts/eval-official/eval_report.py --manifest <manifest.json> --stage <运行根> --dataset test-hard0 \
-        --policies mme,mmesg:ground-sg-oracle,pp --expect-total 192 --out <dir> [--videos <本机视频根>] [--side new]
+    python scripts/eval-official/eval_report.py --manifest <manifest.json> --stage <运行根> --dataset hard-verify \
+        --policies perceptual-framesamp-modul,groundsg:ground-sg-oracle,pp --expect-total 192 --out <dir> [--videos <本机视频根>] [--side new]
 
 - ``--policies`` 接受任意 ``<policy>[:<variant>]``，运行根目录 ``sNN/<policy>[-<variant>]/``，结果行按 ``policy`` 与
   ``policy_variant`` 过滤；``--expect-total`` 必须由调用方给出（800 或 192 等）。
-- 结果行与清单的 ``dataset`` 必须等于 ``--dataset``（串了计 count_mismatch 与 dataset_crossed）；test-hard0 身份必备字段
+- 结果行与清单的 ``dataset`` 必须等于 ``--dataset``（串了计 count_mismatch 与 dataset_crossed）；hard-verify 身份必备字段
   为 tier／seed／source_episode（不含 spec_sha256），不做 exec_over_cap（官方循环允许第 1301 步）。
 - 视频在 ``<videos>/<policy>[-<variant>]/<dataset>/<side>/<key>.a<n>/``：转码后的 mp4（或 front.mkv＋wrist.mkv）读得出帧。
 逐模型三行，全部 PASS 退出 0：
@@ -97,8 +97,23 @@ MEDIA_FILES = ("front.mkv", "wrist.mkv")
 
 # ---------------------------------------------------------------- 读入
 
+def official_defs():
+    """同目录 ``official_defs.py``（旧名别名表的唯一来源；已加载则复用同一模块）。"""
+    import importlib.util
+    import sys
+
+    mod = sys.modules.get("official_defs")
+    if mod is None:
+        spec = importlib.util.spec_from_file_location("official_defs", Path(__file__).resolve().parent / "official_defs.py")
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["official_defs"] = mod
+        spec.loader.exec_module(mod)
+    return mod
+
+
 def read_jsonl(path: Path) -> list[dict]:
-    """逐行读 JSONL；评估进程正在追加的半行（解析失败）跳过。"""
+    """逐行读 JSONL；评估进程正在追加的半行（解析失败）跳过。历史行的旧策略标签／数据集名／路线映射成官方名。"""
+    canon = official_defs().canonical_row
     out: list[dict] = []
     try:
         text = path.read_text(encoding="utf-8")
@@ -112,7 +127,7 @@ def read_jsonl(path: Path) -> list[dict]:
         except json.JSONDecodeError:
             continue
         if isinstance(row, dict):
-            out.append(row)
+            out.append(canon(row))
     return out
 
 
@@ -151,15 +166,19 @@ def load_policy(stage: Path, spec: str) -> dict:
     policy, variant, dirname = parse_policy_spec(spec)
     results: list[dict] = []
     ledger: list[dict] = []
+    defs = official_defs()
+    #: 历史运行根里的旧目录名与账本文件名（读入后行内标签已映射成官方名）
+    names = [(policy, dirname)] + list(zip(defs.legacy_labels(policy) or [policy], defs.legacy_labels(dirname)))
     for sd in seat_dirs(stage):
-        for row in read_jsonl(sd / dirname / "results.jsonl"):
+        pol_file, dirname_here = next(((p, d) for p, d in names if (sd / d).is_dir()), (policy, dirname))
+        for row in read_jsonl(sd / dirname_here / "results.jsonl"):
             if row.get("policy") not in (None, policy):
                 continue
             if variant is not None and row.get("policy_variant") not in (None, variant):
                 continue
             row["_seat"], row["_seat_dir"] = sd.name, str(sd)
             results.append(row)
-        for lp in ledger_files(sd, policy, dirname):
+        for lp in ledger_files(sd, pol_file, dirname_here):
             for row in read_jsonl(lp):
                 if row.get("policy") not in (None, policy):
                     continue
@@ -291,6 +310,14 @@ def analyze_attempts(state: dict) -> dict:
 
 # ---------------------------------------------------------------- 媒体
 
+def layout_names(dirname: str, dataset: str | None = None) -> list[tuple[str, str | None]]:
+    """目录名与数据集目录名的候选：官方名在前，其后是历史运行根／视频根里的旧名组合（只读兼容）。"""
+    defs = official_defs()
+    dirs = [dirname] + defs.legacy_labels(dirname)
+    dss = [dataset] + [old for old, new in defs.LEGACY_DATASET_ALIASES.items() if new == dataset]
+    return [(d, ds) for d in dirs for ds in dss]
+
+
 def find_media(row: dict, policy: str, videos: Path | None, *, dataset: str | None = None,
                side: str = "new") -> dict:
     """在运行根（尚未搬走）与本机视频根（已搬走）里找录像目录。``policy`` 为 ``<policy>[:<variant>]``。
@@ -303,15 +330,18 @@ def find_media(row: dict, policy: str, videos: Path | None, *, dataset: str | No
     if not name:
         return {"location": "absent", "path": None, "files": []}
     cands: list[tuple[str, Path]] = []
+    names = layout_names(dirname, dataset)
     if videos is not None:
-        if dataset is None:
-            cands.append(("local", videos / dirname / str(row.get("tier") or "_notier") / str(row.get("task")) / name))
-        else:
-            cands.append(("local", videos / dirname / dataset / side / name))
+        for dn, ds in names:
+            if dataset is None:
+                cands.append(("local", videos / dn / str(row.get("tier") or "_notier") / str(row.get("task")) / name))
+            else:
+                cands.append(("local", videos / dn / ds / side / name))
     if dataset is not None and row.get("rec_dir"):
         cands.append(("stage", Path(str(row["rec_dir"]))))
     if row.get("_seat_dir"):
-        cands.append(("stage", Path(row["_seat_dir"]) / dirname / "rec" / name))
+        for dn in dict.fromkeys(dn for dn, _ in names):
+            cands.append(("stage", Path(row["_seat_dir"]) / dn / "rec" / name))
     for loc, p in cands:
         if p.is_dir():
             files = sorted(f.name for f in p.iterdir() if f.is_file())
@@ -398,20 +428,20 @@ def wall_of(row: dict) -> float | None:
         return None
 
 
-#: 每个数据集结果行必备的身份字段与逐键比对清单的字段（test-hard0 无规格指纹，改核 source_episode）
-ID_REQUIRED = {None: ("tier", "seed", "spec_sha256"), "test-hard": ("tier", "seed", "spec_sha256"),
-               "test-hard0": ("tier", "seed", "source_episode")}
+#: 每个数据集结果行必备的身份字段与逐键比对清单的字段（hard-verify 无规格指纹，改核 source_episode）
+ID_REQUIRED = {None: ("tier", "seed", "spec_sha256"), "ood": ("tier", "seed", "spec_sha256"),
+               "hard-verify": ("tier", "seed", "source_episode")}
 ID_COMPARE = {None: ("tier", "seed", "candidate", "spec_sha256"),
-              "test-hard": ("tier", "seed", "candidate", "spec_sha256"),
-              "test-hard0": ("tier", "seed", "candidate", "source_episode")}
-DATASETS = ("test-hard", "test-hard0")
+              "ood": ("tier", "seed", "candidate", "spec_sha256"),
+              "hard-verify": ("tier", "seed", "candidate", "source_episode")}
+DATASETS = ("ood", "hard-verify")
 
 
 def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: Path | None, *,
                  partial: bool, expect_total: int, cap: int | None, shard_files: str | None = None,
                  keep_internal: bool = False, dataset: str | None = None, side: str = "new") -> dict:
     """``dataset``（--dataset）为空时是 V8／V9 口径；给出时身份必备字段按数据集取、结果行与清单的数据集必须一致
-    （串了计 count_mismatch 与 dataset_crossed），``cap`` 为 None 时不做越限判定（test-hard0）。"""
+    （串了计 count_mismatch 与 dataset_crossed），``cap`` 为 None 时不做越限判定（hard-verify）。"""
     doc, mrows, shard_of = load_manifest(manifest_path)
     mkeys = {r["key"]: r for r in mrows}
     count_mismatch: list[str] = []
@@ -426,9 +456,9 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
         count_mismatch.append("manifest cells 与 rows 逐格计数不一致")
     task_den = Counter(r["task"] for r in mkeys.values())
     if dataset is not None:
-        if doc.get("dataset") not in (None, dataset):
+        if official_defs().canonical_dataset(doc.get("dataset")) not in (None, dataset):
             count_mismatch.append(f"manifest dataset={doc.get('dataset')} != --dataset {dataset}")
-        if dataset == "test-hard0":
+        if dataset == "hard-verify":
             wrong = [k for k, r in mkeys.items() if r.get("tier") != "xhard0"]
         else:
             wrong = [k for k, r in mkeys.items() if r.get("tier") == "xhard0"]
@@ -492,7 +522,7 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
         if sum(oc.values()) != len(mkeys):
             count_mismatch.append(f"{pol} 结局计数和 {sum(oc.values())} != 分母 {len(mkeys)}")
 
-        # 必备字段：缺 exec_steps 或身份字段（tier／seed／spec_sha256，test-hard0 为 tier／seed／source_episode）的
+        # 必备字段：缺 exec_steps 或身份字段（tier／seed／spec_sha256，hard-verify 为 tier／seed／source_episode）的
         # 结果行不静默放过；带 --dataset 时结果行的 dataset 必须等于它（两个数据集不串）
         crossed = 0
         for r in an["rows"]:
@@ -508,7 +538,7 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
                 count_mismatch.append(f"{pol} {key_of(r)} "
                                       f"attempt_id={r.get('attempt_id')} 缺字段 {','.join(lacks)}")
 
-        # 越限（cap 为 None 即 test-hard0：官方循环允许第 max_steps+1 步，不判）
+        # 越限（cap 为 None 即 hard-verify：官方循环允许第 max_steps+1 步，不判）
         for r in an["rows"]:
             es = r.get("exec_steps")
             if cap is not None and es is not None and int(es) > cap:
@@ -725,7 +755,7 @@ def render_md(rep: dict, *verdict_lines: str) -> str:
     L.append(f"- 生成时间：{rep['generated_at']}")
     L.append(f"- manifest：`{rep['manifest']}`；运行根：`{rep['stage']}`；本机视频根：`{rep['videos']}`")
     cap_txt = (f"执行步上限 {rep['cap']}，超过即判 FAIL。" if rep["cap"] is not None
-               else "test-hard0 不做执行步越限判定（官方循环允许第 max_steps+1 步）。")
+               else "hard-verify 不做执行步越限判定（官方循环允许第 max_steps+1 步）。")
     L.append(f"- 口径：每身份唯一权威终态取账本 `accept` 行的 `accepted_attempt_id`；迟到终态与废弃尝试单列、不入分数；"
              f"分母固定为 manifest 身份数（{rep['expect_total']}／模型）；{cap_txt}"
              + ("中途进度下「缺失」即尚未完成，不判 FAIL；判定行的 missing 不计。" if rep["partial"] and not ds else "")
@@ -882,7 +912,8 @@ def verify_dataset_videos(rep: dict, manifest_path: Path, policies: list[str], v
                 out["problems"].append({"policy": pol, "key": k,
                                         "problem": "no_accepted_terminal" if row is None else "videos_root_absent"})
                 continue
-            d = videos / dirname / dataset / side / (rec_name(row) or "_norec")
+            ds_dirs = [videos / dn / ds / side / (rec_name(row) or "_norec") for dn, ds in layout_names(dirname, dataset)]
+            d = next((x for x in ds_dirs if x.is_dir()), ds_dirs[0])
             files = sorted(f.name for f in d.iterdir() if f.is_file()) if d.is_dir() else []
             vids = media_files({"files": files}, any_mp4=True)
             if error_final_video_class(row, bool(vids)) == "explained":
@@ -1231,10 +1262,10 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--manifest", required=True)
     ap.add_argument("--stage", required=True, help="运行根（含 sNN/<policy>/）")
-    ap.add_argument("--policies", default="smvla,mme",
-                    help="逗号分隔的 <policy>[:<variant>]（如 mme,mmesg:ground-sg-oracle,pp）；运行根目录 sNN/<policy>[-<variant>]/")
+    ap.add_argument("--policies", default="smvla,perceptual-framesamp-modul",
+                    help="逗号分隔的 <policy>[:<variant>]（如 perceptual-framesamp-modul,groundsg:ground-sg-oracle,pp）；运行根目录 sNN/<policy>[-<variant>]/")
     ap.add_argument("--dataset", default=None, choices=list(DATASETS),
-                    help="逐模型出 EVAL_COVERAGE／EVAL_REPORT／EVAL_VIDEOS；test-hard0 身份必备字段不含 spec_sha256、"
+                    help="逐模型出 EVAL_COVERAGE／EVAL_REPORT／EVAL_VIDEOS；hard-verify 身份必备字段不含 spec_sha256、"
                          "不做 exec_over_cap；须同给 --expect-total（800 或 192 等，由调用方给）")
     ap.add_argument("--side", default="new", choices=["new", "orig"],
                     help="带 --dataset 时本机视频根下的侧别目录（<videos>/<policy>[-<variant>]/<dataset>/<side>/）")
@@ -1251,6 +1282,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--reuse-manifest", default=None, help="V9：V8 manifest.json（与 reused.json 的 v8_manifest_sha256 核对）")
     ap.add_argument("--expect-reused", type=int, default=V9_DEFAULT_REUSED, help="V9：复用行数（默认 720）")
     args = ap.parse_args(argv)
+    old = [p for p in args.policies.split(",") if p and official_defs().canonical_policy(p.partition(":")[0]) != p.partition(":")[0]]
+    if old:
+        ap.error(f"--policies 只接受官方名，收到旧名 {old}")
     v9 = args.reuse is not None
     if v9 != (args.reuse_manifest is not None):
         ap.error("--reuse 与 --reuse-manifest 须同时给出")
@@ -1311,7 +1345,7 @@ def main_dataset(args) -> int:
     """带 --dataset：逐模型三行判定（EVAL_COVERAGE／EVAL_REPORT／EVAL_VIDEOS），全部 PASS 退出 0，否则 1。"""
     policies = [p for p in args.policies.split(",") if p]
     videos = Path(args.videos) if args.videos else None
-    cap = None if args.dataset == "test-hard0" else args.cap
+    cap = None if args.dataset == "hard-verify" else args.cap
     rep = build_report(Path(args.manifest), Path(args.stage), policies, videos, partial=args.partial,
                        expect_total=args.expect_total, cap=cap, shard_files=args.shard_files, keep_internal=True,
                        dataset=args.dataset, side=args.side)

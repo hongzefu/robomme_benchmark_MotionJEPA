@@ -39,7 +39,7 @@ CHALLENGE = {
 # ─────────────────────────────── 评估块（tests/pipeline/eval） ───────────────────────────────
 _EO = "scripts/eval-official/"
 EVAL = {
-    "pipeline/eval:M13a": _t((_EO + "mme_client.py", "    resp = client.reset()\n", '    resp = {"reset_finished": True}\n')),
+    "pipeline/eval:M13a": _t((_EO + "framesamp_modul_client.py", "    resp = client.reset()\n", '    resp = {"reset_finished": True}\n')),
     "pipeline/eval:M13b": _t((_EO + "smvla_client.py",
                               '            reply = call("reset", {"reset": {"episode_key": episode_key(identity)}})\n',
                               "            reply = {}\n")),
@@ -48,7 +48,7 @@ EVAL = {
                               '                record.update(status="fail", infra=False, infra_reason=None, client_status')),
     "pipeline/eval:M16b": _t((_EO + "env_client.py", "        if status in TERMINAL_STATUSES:\n            return True\n",
                               '        if status in ("success", "timeout"):\n            return True\n')),
-    "pipeline/eval:M16c": _t((_EO + "mme_client.py", 'INFRA_MARKERS = ("RecorderError",',
+    "pipeline/eval:M16c": _t((_EO + "framesamp_modul_client.py", 'INFRA_MARKERS = ("RecorderError",',
                               'INFRA_MARKERS = ("Error", "RecorderError",')),
     "pipeline/eval:M17a": _t((_EO + "eval_report.py", '            "denominator": len(mkeys), "outcomes"',
                               '            "denominator": len(an["rows"]), "outcomes"')),
@@ -102,7 +102,7 @@ GEN_SITE = {
 }
 
 # ─────────────────────────────── 契约块（tests/contract）：规格 jsonl 与 builder ───────────────────────────────
-_SPECS = "src/robomme_hard/env_metadata/test-hard/xhard1/specs.jsonl"
+_SPECS = "src/robomme_hard/env_metadata/ood/xhard1/specs.jsonl"
 
 
 def _load_hs(root: Path):

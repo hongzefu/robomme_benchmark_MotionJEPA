@@ -51,8 +51,8 @@ _spec = importlib.util.spec_from_file_location("site_catalog", HERE / "site_cata
 C = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(C)
 
-METRICS = ["config", "total", "demo", "exec", "policy-simplememvla", "policy-mmevla", "n"]
-TASK_METRICS = METRICS + ["old-policy-simplememvla", "old-policy-mmevla", "max_steps"]
+METRICS = ["config", "total", "demo", "exec", "policy-simplememvla", "policy-mmevla", "n"]  # 历史数据键：FrameSamp+Modulation 的页面 ID（site_catalog.EVAL_POLICY）
+TASK_METRICS = METRICS + ["old-policy-simplememvla", "old-policy-mmevla", "max_steps"]  # 历史数据键：FrameSamp+Modulation 的页面 ID（site_catalog.EVAL_POLICY）
 
 CHECK_JS = """({cat, oracle, metrics, scope}) => {
     const root = document.querySelector(scope), bad = [], missing = [];

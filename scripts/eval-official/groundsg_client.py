@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """GroundSG（MME-VLA symbolic-grounded-subgoal）新侧客户端（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.3）。
 
-``env_client.py run --policy mmesg --mme-variant {ground-sg-oracle,ground-sg-qwenvl}`` 按
-``load_sibling("mmesg_client")`` 加载本模块，调用 ``run_episode(session, identity, conn_info, recorder)``。
+``env_client.py run --policy groundsg --groundsg-variant {ground-sg-oracle,ground-sg-qwenvl}`` 按
+``load_sibling("groundsg_client")`` 加载本模块，调用 ``run_episode(session, identity, conn_info, recorder)``。
 
 循环本身**不重写**：从官方 ``eval.py`` 用 ``official_defs.extract_defs`` 摘取 ``EpisodeEvaluator``、``Args`` 原文，
 直接调官方 ``EpisodeEvaluator.eval_each_episode``；本模块只提供一个 runner 适配对象（``SessionRunner``），把官方
@@ -29,7 +29,7 @@ QwenVL 取 ``QwenVLSubgoalPredictor`` 与 ``Qwen3VLModel``（不取 Gemini／Mem
 
 终态：官方返回 ``success``／``fail``／``timeout`` 原样；``unknown``（及其他非终态值）记 ``status="error"``、
 ``error="success_flag=<值>"``，不中止整席；官方循环抛出的异常记 ``status="error"`` + ``<异常类>: <消息>``，
-``infra`` 按 ``mme_client.INFRA_MARKERS`` 判。
+``infra`` 按 ``framesamp_modul_client.INFRA_MARKERS`` 判。
 
 第二阶段 S1（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分一节「S1」与八节 3.5）只增不改：
 
@@ -278,7 +278,7 @@ def episode_scratch(trace_dir: str | None) -> tuple[Path, bool]:
         p = Path(trace_dir)
         p.mkdir(parents=True, exist_ok=True)
         return p, False
-    return Path(tempfile.mkdtemp(prefix="mmesg-")), True
+    return Path(tempfile.mkdtemp(prefix="groundsg-")), True
 
 
 def qwen_begin(predictor: Any, scratch: Path, dataset: str, episode_tag: str) -> Path | None:
@@ -420,10 +420,10 @@ class SessionRunner:
 
 
 def default_client_factory(host: str, port: int, episode: dict) -> Any:
-    """新侧默认：``mme_client.make_recording_client``（``MMEVLAWebsocketClientPolicy`` 子类，收发与父类逐行相同，
+    """新侧默认：``framesamp_modul_client.make_recording_client``（``MMEVLAWebsocketClientPolicy`` 子类，收发与父类逐行相同，
     另把逐消息 sha256 记进录制器事件）。"""
-    mme = load_sibling("mme_client")
-    return mme.make_recording_client(host, int(port), episode.get("recorder"), episode.setdefault("timing", {}))
+    framesamp_modul = load_sibling("framesamp_modul_client")
+    return framesamp_modul.make_recording_client(host, int(port), episode.get("recorder"), episode.setdefault("timing", {}))
 
 
 def make_policy_context(seat_info: dict, *, client_factory: Callable | None = None, qwen_extra: dict | None = None,
@@ -431,9 +431,9 @@ def make_policy_context(seat_info: dict, *, client_factory: Callable | None = No
     """整席只建一次：官方定义、``Args``、子目标预测器（QwenVL 在此加载模型）、``EpisodeEvaluator``。
 
     ``client_factory(host, port, episode) -> client`` 与 ``qwen_extra``（swift 三个名字的替身）只供测试注入。"""
-    variant = seat_info.get("mme_variant")
+    variant = seat_info.get("groundsg_variant")
     if variant not in official_defs.VARIANTS:
-        raise ValueError(f"mme_variant={variant!r} 不是 {official_defs.VARIANTS} 之一")
+        raise ValueError(f"groundsg_variant={variant!r} 不是 {official_defs.VARIANTS} 之一")
     ctx: dict[str, Any] = {"variant": variant, "seat_info": dict(seat_info), "episode": None,
                            "client_factory": client_factory or default_client_factory}
 
@@ -454,7 +454,7 @@ def make_policy_context(seat_info: dict, *, client_factory: Callable | None = No
     predictor = official_defs.build_predictor(defs, args, base)
     ctx.update(defs=defs, args=args, predictor=predictor, evaluator=defs["EpisodeEvaluator"](args, base),
                predictor_init_s=time.perf_counter() - t0, official_sha256=dict(defs["sha256"]))
-    print(f"MMESG_CONTEXT variant={variant} max_steps={args.max_steps} predictor={type(predictor).__name__} "
+    print(f"GROUNDSG_CONTEXT variant={variant} max_steps={args.max_steps} predictor={type(predictor).__name__} "
           f"init_s={ctx['predictor_init_s']:.1f}", flush=True)
     return ctx
 
@@ -695,8 +695,8 @@ def run_official_episode(ctx: dict, runner: Any, tap: EpisodeTap, *, dataset: st
     env_exc_s = None if env_exc is None else f"{type(env_exc).__name__}: {env_exc}"[:800]
     infra = classify_infra(error, env_exc_s) if status == "error" else None
     timing = dict(ctx["episode"].get("timing") or {})
-    if "per_msg" in timing:  # 新侧录制客户端的逐消息计时：与 mme_client 同口径汇总
-        timing = load_sibling("mme_client").summarize_timing(timing)
+    if "per_msg" in timing:  # 新侧录制客户端的逐消息计时：与 framesamp_modul_client 同口径汇总
+        timing = load_sibling("framesamp_modul_client").summarize_timing(timing)
     timing["episode_s"] = wall
     ctx["episode"] = None
     res = {"status": status, "task_success": status == "success", "steps": tap.steps, "error": error,
@@ -713,10 +713,10 @@ def run_episode(session, identity: dict, conn_info: dict, recorder) -> dict:
     """env_client 调用入口：一局 GroundSG（新侧）。``session`` 为已 build 的 EnvSession。"""
     ctx = conn_info.get("policy_context")
     if not isinstance(ctx, dict) or "evaluator" not in ctx:
-        raise RuntimeError("mmesg 需要 SeatRunner 先以 make_policy_context 建好 policy_context")
-    variant = conn_info.get("mme_variant")
+        raise RuntimeError("groundsg 需要 SeatRunner 先以 make_policy_context 建好 policy_context")
+    variant = conn_info.get("groundsg_variant")
     if variant != ctx["variant"]:
-        raise ValueError(f"conn_info mme_variant={variant!r} 与 policy_context {ctx['variant']!r} 不一致")
+        raise ValueError(f"conn_info groundsg_variant={variant!r} 与 policy_context {ctx['variant']!r} 不一致")
     max_steps = int(conn_info["max_steps"])
     if int(ctx["args"].max_steps) != max_steps:
         raise ValueError(f"conn_info max_steps={max_steps} 与 policy_context {ctx['args'].max_steps} 不一致")
@@ -724,7 +724,7 @@ def run_episode(session, identity: dict, conn_info: dict, recorder) -> dict:
     tag = conn_info.get("episode_tag") or f"{identity.get('key')}.a1"
     attempt = attempt_of(tag)
     tpath = trace_location(conn_info, recorder)
-    route = f"mmesg/{variant}/new"
+    route = f"groundsg/{variant}/new"
     ident = {k: identity.get(k) for k in ("task", "tier", "seed", "source_episode", "builder_episode", "key")}
     ident["dataset"] = dataset
     ident["attempt"] = attempt  # C6：= 局目录名 <key>.a<N> 的 N（账本 accepted_attempt_id 对应的尝试号）

@@ -46,7 +46,7 @@ def _metadata_tasks(split):
 # --------------------------------------------------------------------------- 白名单
 
 
-@pytest.mark.parametrize("dataset", ["test-hard", "TEST", "", "dev"])
+@pytest.mark.parametrize("dataset", ["ood", "TEST", "", "dev"])
 def test_rejects_unknown_dataset(dataset):
     with pytest.raises(ValueError, match="Unsupported dataset"):
         BenchmarkEnvBuilder("PickXtimes", dataset=dataset)

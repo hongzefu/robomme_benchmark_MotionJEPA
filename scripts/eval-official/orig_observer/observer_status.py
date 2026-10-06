@@ -6,9 +6,9 @@
 而改变）；观测器失败只体现在 ``OBSERVER_COMPLETE=FAIL`` 与 ``observer-status.json``。
 
 判定（全部满足才 PASS）：
-- 透明性报告（仅 MME）：``--report`` 文件存在且可解析（否则 ``report=missing``）、检查器退出码为 0 或 1（其余视为
+- 透明性报告（仅 FrameSamp+Modulation）：``--report`` 文件存在且可解析（否则 ``report=missing``）、检查器退出码为 0 或 1（其余视为
   崩溃，``report=crashed``）、``OBSERVER_TRANSPARENT=PASS``（含清单身份覆盖与代理日志封口）、``mismatch=0``；
-- 代理收尾（仅 MME）：``--sealed yes``（代理写了 ``proxy-<pid>.done``）且未被 ``kill -9``（``--proxy-force-killed 0``）；
+- 代理收尾（仅 FrameSamp+Modulation）：``--sealed yes``（代理写了 ``proxy-<pid>.done``）且未被 ``kill -9``（``--proxy-force-killed 0``）；
 - 钩子异常：``<rec_root>/hook-errors.jsonl`` 行数为 0；所有完整 trace 的 ``end.observer_hook_errors`` 为 0；
 - attempt 映射：给了 ``--episode-log`` 时，``orig_results_adapter.build`` 判 ``ORIG_ATTEMPTS=PASS``（同时写
   ``<rec_root>/orig-attempts.json``）。
@@ -54,6 +54,7 @@ def trace_summary(rec_root: Path) -> dict:
 def evaluate(rec_root: str | Path, *, policy: str, report: str | None = None, checker_rc: int | None = None,
              sealed: str = "yes", proxy_force_killed: int = 0, episode_logs: list[str] | None = None) -> dict:
     rec_root = Path(rec_root)
+    policy = ORA.official_defs().canonical_policy(policy)  # 历史调用方的旧标签只读兼容；写出只用官方名
     reasons: list[str] = []
     ts = trace_summary(rec_root)
     hook_file = _lines(rec_root / "hook-errors.jsonl")
@@ -61,7 +62,7 @@ def evaluate(rec_root: str | Path, *, policy: str, report: str | None = None, ch
     if hook_errors:
         reasons.append(f"hook_errors={hook_errors}")
     conns, mismatch, rep_state, transparent = 0, 0, "ok", None
-    if policy == "mme":
+    if policy == "perceptual-framesamp-modul":
         rep = None
         if report and Path(report).is_file():
             try:
@@ -113,9 +114,9 @@ def verdict_line(st: dict) -> str:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="原侧观测器完整性判定（不影响评估退出码）")
     ap.add_argument("--rec-root", required=True)
-    ap.add_argument("--policy", required=True, choices=("smvla", "mme"))
-    ap.add_argument("--report", default=None, help="transparency_check.py --out 写出的报告（MME）")
-    ap.add_argument("--checker-rc", type=int, default=None, help="transparency_check.py 的退出码（MME）")
+    ap.add_argument("--policy", required=True, choices=("smvla", "perceptual-framesamp-modul"))
+    ap.add_argument("--report", default=None, help="transparency_check.py --out 写出的报告（FrameSamp+Modulation）")
+    ap.add_argument("--checker-rc", type=int, default=None, help="transparency_check.py 的退出码（FrameSamp+Modulation）")
     ap.add_argument("--sealed", default="yes", choices=("yes", "no", "timeout"))
     ap.add_argument("--proxy-force-killed", type=int, default=0)
     ap.add_argument("--episode-log", nargs="*", default=None)

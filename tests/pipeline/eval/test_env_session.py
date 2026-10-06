@@ -136,12 +136,12 @@ def test_close_is_safe_and_releases_env():
 def test_own_builder_uses_dataset_and_max_steps():
     """不注入 builder 时按 dataset 与 max_steps 自建真实 builder（只解析身份，不建场景）；缺 max_steps 即拒绝。"""
     ec = F.env_client()
-    s = ec.EnvSession("PickXtimes", 0, max_steps=1300, dataset="test-hard0")
-    assert s.builder.dataset == "test-hard0"
+    s = ec.EnvSession("PickXtimes", 0, max_steps=1300, dataset="hard-verify")
+    assert s.builder.dataset == "hard-verify"
     assert s.identity()["tier"] == "xhard0"
-    s9 = ec.EnvSession("PickXtimes", 0, max_steps=1600)  # 默认 test-hard（V9 不变）
-    assert s9.builder.dataset == "test-hard"
+    s9 = ec.EnvSession("PickXtimes", 0, max_steps=1600)  # 默认 ood（V9 不变）
+    assert s9.builder.dataset == "ood"
     with pytest.raises(ValueError, match="max_steps"):
-        _ = ec.EnvSession("PickXtimes", 0, dataset="test-hard0").builder
+        _ = ec.EnvSession("PickXtimes", 0, dataset="hard-verify").builder
     with pytest.raises(ValueError):
         ec.EnvSession("PickXtimes", 0, max_steps=1300, dataset="test")

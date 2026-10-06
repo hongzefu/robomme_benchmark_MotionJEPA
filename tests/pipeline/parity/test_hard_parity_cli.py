@@ -124,7 +124,7 @@ def test_generate_native_records_every_identity(hp, tmp_path, monkeypatch, capsy
 
 
 def test_generate_h_side_xhard0_and_missing_episode_fails(hp, tmp_path, monkeypatch, capsys):
-    """H 侧：--force-mirror、ROBOMME_ENV_PACKAGE=robomme_hard、xhard0 加 test-hard 路由；漏一局 → GENERATE=FAIL。"""
+    """H 侧：--force-mirror、ROBOMME_ENV_PACKAGE=robomme_hard、xhard0 加 ood 路由；漏一局 → GENERATE=FAIL。"""
     rows = [dict(r, tier="hard") for r in ROWS]
     fake = FakeSub(runner=_runner_writes(skip={7001}, module="robomme_hard.robomme_env.PickXtimes"))
     monkeypatch.setattr(hp, "subprocess", fake)
@@ -137,7 +137,7 @@ def test_generate_h_side_xhard0_and_missing_episode_fails(hp, tmp_path, monkeypa
     assert kw["env"]["ROBOMME_ENV_PACKAGE"] == "robomme_hard"
     for flag in ("--force-mirror", "--identity-source", "--xhard0-manifest", "--builder-route"):
         assert flag in cmd
-    assert cmd[cmd.index("--builder-route") + 1] == "test-hard"
+    assert cmd[cmd.index("--builder-route") + 1] == "ood"
 
 
 def test_generate_smoke_and_dev_smoke_labels(hp, tmp_path, monkeypatch, capsys):

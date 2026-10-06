@@ -1,5 +1,5 @@
 """C13-SG-CAP-PROBE：步数到顶的三种循环口径（CPU 假环境，不建真实仿真）。期望值手写：
-mme 1301／loop_count，range 1300／loop_exit，strict 1600／strict_cap；环境先截断时如实报 env_truncated。"""
+mme-vla 1301／loop_count，range 1300／loop_exit，strict 1600／strict_cap；环境先截断时如实报 env_truncated。"""
 from __future__ import annotations
 
 import argparse
@@ -61,7 +61,7 @@ def _hold(o):
 
 
 @pytest.mark.parametrize("loop,max_steps,steps,reason", [
-    ("mme", 1300, 1301, "loop_count"),
+    ("mme-vla", 1300, 1301, "loop_count"),
     ("range", 1300, 1300, "loop_exit"),
     ("strict", 1600, 1600, "strict_cap"),
 ])
@@ -73,9 +73,9 @@ def test_loops_against_builder_cap(loop, max_steps, steps, reason):
     res = c.run_loop(env, obs, loop, max_steps, c.hold_action)
     assert (res["exec_steps"], res["terminal_reason"]) == (steps, reason)
     assert env.steps == steps  # strict：第 1601 次不进环境
-    line = c.verdict_line(dataset="test-hard0", max_steps=max_steps, builder_cap=b.max_steps_without_demonstration,
+    line = c.verdict_line(dataset="hard-verify", max_steps=max_steps, builder_cap=b.max_steps_without_demonstration,
                           loop=loop, res=res, source="run", official=False)
-    assert line.startswith(f"STEP_CAP=PASS dataset=test-hard0 max_steps={max_steps} builder_cap={max_steps + 2} "
+    assert line.startswith(f"STEP_CAP=PASS dataset=hard-verify max_steps={max_steps} builder_cap={max_steps + 2} "
                            f"loop={loop} exec_steps={steps} terminal_reason={reason}")
     assert "builder_cap_ok=1" in line
 
@@ -85,9 +85,9 @@ def test_env_truncates_first_is_reported_honestly():
     b = FakeBuilder(1300, cap_override=1290)  # 环境上限比循环口径小
     env = b.make_env_for_episode(0)
     obs, _ = env.reset()
-    res = c.run_loop(env, obs, "mme", 1300, c.hold_action)
+    res = c.run_loop(env, obs, "mme-vla", 1300, c.hold_action)
     assert (res["exec_steps"], res["terminal_reason"]) == (1290, "env_truncated")
-    line = c.verdict_line(dataset="test-hard0", max_steps=1300, builder_cap=1290, loop="mme", res=res, source="run",
+    line = c.verdict_line(dataset="hard-verify", max_steps=1300, builder_cap=1290, loop="mme-vla", res=res, source="run",
                           official=False)
     assert line.startswith("STEP_CAP=FAIL ") and "exec_steps=1290 terminal_reason=env_truncated" in line
     assert "builder_cap_ok=0" in line
@@ -96,7 +96,7 @@ def test_env_truncates_first_is_reported_honestly():
     assert c.run_loop(env2, obs, "strict", 1600, c.hold_action)["terminal_reason"] == "env_terminated"
 
 
-def test_derive_range_from_mme_prefix():
+def test_derive_range_from_framesamp_modul_prefix():
     c = C()
     flags = [(False, False)] * 1300 + [(False, False)]
     assert c.derive_range(flags, 1300) == {"exec_steps": 1300, "terminal_reason": "loop_exit"}
@@ -115,18 +115,18 @@ def test_hold_action_keeps_joints_and_gripper():
     assert c.hold_action(obs, "0.5")[7] == 0.5
 
 
-def test_main_mme_with_derive_range(capsys):
+def test_main_framesamp_modul_with_derive_range(capsys):
     c = C()
     b = FakeBuilder(1300)
-    rc = c.main(["--dataset", "test-hard0", "--max-steps", "1300", "--task", "VideoUnmask", "--episode", "0",
-                 "--loop", "mme", "--derive-range"], builder_factory=lambda a: b)
+    rc = c.main(["--dataset", "hard-verify", "--max-steps", "1300", "--task", "VideoUnmask", "--episode", "0",
+                 "--loop", "mme-vla", "--derive-range"], builder_factory=lambda a: b)
     out = capsys.readouterr().out.strip().splitlines()
     assert rc == 0 and b.episodes == [0] and b.env.closed
-    assert out[0].startswith("CAP_PROBE builder.max_steps_without_demonstration=1302 max_steps=1300 dataset=test-hard0")
+    assert out[0].startswith("CAP_PROBE builder.max_steps_without_demonstration=1302 max_steps=1300 dataset=hard-verify")
     run = [x for x in out if x.startswith("STEP_CAP=")]
-    assert run[0].startswith("STEP_CAP=PASS dataset=test-hard0 max_steps=1300 builder_cap=1302 loop=mme "
+    assert run[0].startswith("STEP_CAP=PASS dataset=hard-verify max_steps=1300 builder_cap=1302 loop=mme-vla "
                              "exec_steps=1301 terminal_reason=loop_count") and run[0].endswith("source=run")
-    assert run[1].startswith("STEP_CAP=PASS dataset=test-hard0 max_steps=1300 builder_cap=1302 loop=range "
+    assert run[1].startswith("STEP_CAP=PASS dataset=hard-verify max_steps=1300 builder_cap=1302 loop=range "
                              "exec_steps=1300 terminal_reason=loop_exit") and run[1].endswith("source=prefix")
     # 所有动作都是「保持当前关节位置」
     assert all(np.array_equal(x[:7], np.linspace(0.1, 0.7, 7)) for x in b.env.actions)

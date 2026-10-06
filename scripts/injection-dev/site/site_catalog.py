@@ -23,8 +23,8 @@
   ``EXPECTED_CELLS``，所以阶段 3b 切换前后结果相同）；``--cells-json`` 给子表时优先于 ``--cells``。``--cells v9`` 且未显式
   给 ``--specs-root``／``--delivery``／``--identities`` 时取 V9 缺省路径（``V9_DEFAULT_SOURCES``）。
 - **V9 评估复用**（v9 方案第一部分 §1 第 7 条、第二部分 §2.4.2 第 8 步、§2.5 R-3）：``--eval-reuse <V8 site-eval 目录>``
-  ``--reused <reused.json>`` ``[--eval-new <V9 评估运行目录>]`` 三者一起用（评估侧策略 ``smvla``／``mme`` → 页面
-  ``simplememvla``／``mmevla``）：
+  ``--reused <reused.json>`` ``[--eval-new <V9 评估运行目录>]`` 三者一起用（评估侧策略 ``smvla``／``perceptual-framesamp-modul`` → 页面
+  策略 ID ``simplememvla``／FrameSamp+Modulation 的历史数据键，见 ``EVAL_POLICY``）：
   - 复用集合**只认** ``reused.json``（S1-F ``eval_manifest.py --exclude-evaluated`` 产出，schema ``v9-eval-reused/1``）；
     V8 ``site-eval/catalog.json`` 没有 ``spec_sha256``，不单独当复用依据。逐行核：``reused.json`` 的 ``v8_manifest``
     文件 sha256 等于 ``v8_manifest_sha256``，该行 ``v8_key`` 在 V8 manifest 里存在且四元组 (task, tier, seed,
@@ -74,9 +74,22 @@ ART8 = REPO_ROOT / "artifacts/newtask-v8"
 ART7 = REPO_ROOT / "artifacts/newtask-v7"
 TIERS = ("xhard0", "xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
 NEW_TIERS = TIERS[1:]
-POLICIES = (("simplememvla", "SimpleMemVLA"), ("mmevla", "MME-VLA"))
-#: 评估侧策略名 → 页面策略 ID
-EVAL_POLICY = {"smvla": "simplememvla", "mme": "mmevla"}
+#: 页面策略 ID 与展示名；FrameSamp+Modulation 的页面 ID 是已发布 catalog.json 里的历史数据键，为读 V8 站点目录原样保留
+POLICIES = (("simplememvla", "SimpleMemVLA"), ("mmevla", "FrameSamp+Modulation"))  # 历史数据键（页面 ID）
+#: 评估侧策略名（官方名）→ 页面策略 ID
+EVAL_POLICY = {"smvla": "simplememvla", "perceptual-framesamp-modul": "mmevla"}  # 历史数据键（页面 ID）
+
+
+def official_defs():
+    """``scripts/eval-official/official_defs.py``（旧名别名表的唯一来源；已加载则复用同一模块）。"""
+    mod = sys.modules.get("official_defs")
+    if mod is None:
+        spec = importlib.util.spec_from_file_location("official_defs",
+                                                      REPO_ROOT / "scripts" / "eval-official" / "official_defs.py")
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["official_defs"] = mod
+        spec.loader.exec_module(mod)
+    return mod
 FINAL = ("success", "fail", "timeout")
 XHARD0_PER_TASK = 12
 DELIVERY_SCHEMA = "v8-delivery/1"
@@ -329,11 +342,13 @@ def load_eval_run(run: Path) -> tuple[dict, dict, dict]:
     out: dict[tuple, dict] = defaultdict(dict)
     for seat in sorted(glob.glob(str(run / "nfs-records/run/s[0-9]*"))):
         for pol, pid in EVAL_POLICY.items():
-            d = Path(seat) / pol
+            # 历史运行根的目录与账本文件用旧标签：官方名优先，旧名只读兼容
+            name = next((n for n in [pol] + official_defs().legacy_labels(pol) if (Path(seat) / n).is_dir()), pol)
+            d = Path(seat) / name
             if not (d / "results.jsonl").exists():
                 continue
             rows = {r["attempt_id"]: r for r in jsonl(d / "results.jsonl") if r.get("attempt_id")}
-            for led in jsonl(d / f"{pol}.ledger.jsonl"):
+            for led in jsonl(d / f"{name}.ledger.jsonl"):
                 if led.get("kind") != "accept":
                     continue
                 row = rows.get(led["accepted_attempt_id"])
@@ -348,7 +363,7 @@ def load_eval_run(run: Path) -> tuple[dict, dict, dict]:
     if manifest.exists():
         for r in jsonl(manifest):
             if r.get("mp4_frames") == r.get("frames") and not r.get("error"):
-                media[(EVAL_POLICY[r["policy"]], r["key"])] = r["mp4"]
+                media[(EVAL_POLICY[official_defs().canonical_policy(r["policy"])], r["key"])] = r["mp4"]
     report = json.loads((run / "report/report.json").read_text(encoding="utf-8"))
     return dict(out), media, report
 
@@ -746,7 +761,9 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
                 for pol, p in EVAL_POLICY.items():
                     got = dict(Counter(ep["eval"]["new"][p]["status"] for ep in eps
                                        if ep.get("eval_origin") == "new" and p in ep["eval"]["new"]))
-                    want = ((ev_report.get("per_policy") or {}).get(pol) or {}).get("cells", {}).get(f"{task}@{tier}", {})
+                    per_pol = ev_report.get("per_policy") or {}
+                    pol_rep = next((per_pol[n] for n in [pol] + official_defs().legacy_labels(pol) if n in per_pol), {})
+                    want = (pol_rep or {}).get("cells", {}).get(f"{task}@{tier}", {})
                     want = {k: want.get(k, 0) for k in FINAL if want.get(k)}
                     got = {k: v for k, v in got.items() if v}
                     if want != got:

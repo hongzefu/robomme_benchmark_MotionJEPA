@@ -52,7 +52,7 @@ def write_episode(root: Path, *, task: str, source_episode: int, seed: int, n_st
     t = tw()
     key = f"{task}_xhard0_{seed}"
     path = Path(root) / f"{key}.a{attempt}" / "trace.jsonl"
-    ident = {"task": task, "source_episode": source_episode, "seed": seed, "tier": "xhard0", "dataset": "test-hard0",
+    ident = {"task": task, "source_episode": source_episode, "seed": seed, "tier": "xhard0", "dataset": "hard-verify",
              "attempt": attempt}
     n = int(m.get("stop_at", n_steps))
     with t.TraceWriter(path, route=route, identity=ident, max_steps=1300) as w:
@@ -94,7 +94,7 @@ def result_row(*, task: str, source_episode: int, seed: int, status: str = "fail
     return {"task": task, "source_episode": source_episode, "seed": seed, "status": status, "attempt": attempt,
             "exec_steps": exec_steps, "canary": False, "infra": False, "late": False,
             "identity": {"tier": "xhard0", "seed": seed, "source_episode": source_episode},
-            "dataset": "test-hard0", "max_steps": 1300, "effective_max_steps": 1300, "strict_cap": False, **extra}
+            "dataset": "hard-verify", "max_steps": 1300, "effective_max_steps": 1300, "strict_cap": False, **extra}
 
 
 def write_jsonl(path: Path, rows: list[dict]) -> Path:

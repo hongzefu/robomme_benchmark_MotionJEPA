@@ -21,7 +21,7 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[3]
 TOOL = REPO / "scripts" / "eval-official" / "official_media_check.py"
-DATASET = "test-hard0"
+DATASET = "hard-verify"
 ROUTE = "pp/new"
 
 if shutil.which("ffmpeg") is None:  # pragma: no cover

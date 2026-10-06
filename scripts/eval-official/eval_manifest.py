@@ -43,7 +43,7 @@ shard-NN.json 与 reused.json，不留半成品）：
 - ``v9-new``（默认）：上述五步，行为与判定行不变。
 - ``v9-full``：``--identities`` + ``--delivery``，只做第 1～4 步、不剔除已评身份，全部执行行（800 局）切片；末行
   ``EVAL_SHARDS=PASS mode=v9-full total=800 cells=43 missing=0 extra=0 duplicate=0 xhard0=0``。
-- ``hard0``：不读交付清单，直接由 ``BenchmarkEnvBuilder(task, dataset="test-hard0")`` 枚举 16 任务、每任务前
+- ``hard0``：不读交付清单，直接由 ``BenchmarkEnvBuilder(task, dataset="hard-verify")`` 枚举 16 任务、每任务前
   ``--per-task N``（默认 12）局（此模式会 import robomme_hard）；行键同 ``SHARD_ROW_KEYS``、``spec_sha256=None``、
   ``candidate=None``、``key=<task>_xhard0_<seed>``；末行 ``EVAL_SHARDS=PASS mode=hard0 total=<16×N> xhard0=<16×N> ...``。
   ``--pair-shards``：原侧与新侧共用同一份 ``shard-NN.json``（同一身份两侧同分片、分片内同序）。
@@ -75,7 +75,7 @@ SOURCE_KEYS = ("task", "episode", "tier", "seed", "candidate", "source_episode",
 #: 执行身份行字段；与 env_client.V8_IDENTITY_KEYS 同步（步数上限不进身份行，由入口按数据集给 --max-steps）
 SHARD_ROW_KEYS = ("task", "tier", "seed", "candidate", "builder_episode", "source_episode", "spec_sha256", "key")
 DEFAULT_SHARDS = 10
-#: hard0 模式每任务默认取前 12 局（test-hard0 每任务恰 12 局）
+#: hard0 模式每任务默认取前 12 局（hard-verify 每任务恰 12 局）
 DEFAULT_PER_TASK = 12
 
 #: 每任务平均单局用时（秒），复制自 ``scripts/injection-dev/export_eval_identities.py::TASK_SECONDS``
@@ -404,10 +404,10 @@ def split_shards(rows: list[dict], shards: int) -> list[list[dict]]:
 
 
 def v9_builder(task: str):
-    """test-hard 的真实 builder（开关 XHARD0_IN_TEST_HARD 按当前进程取值；评估客户端默认关）。"""
+    """ood 的真实 builder（开关 XHARD0_IN_TEST_HARD 按当前进程取值；评估客户端默认关）。"""
     from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
 
-    return BenchmarkEnvBuilder(task, dataset="test-hard")
+    return BenchmarkEnvBuilder(task, dataset="ood")
 
 
 def verify_builder_episodes(rows: list[dict], builder_factory=None) -> None:
@@ -449,7 +449,7 @@ def build_v9_full(identities: Path, delivery_path: Path, shards: int,
     manifest_rows = [dict(r, shard=f"{i:02d}") for i, p in enumerate(parts) for r in p]
     manifest_rows.sort(key=lambda r: (order[(r["task"], r["tier"])], r["builder_episode"]))
     manifest = {
-        "schema": SCHEMA, "mode": "v9-full", "dataset": "test-hard",
+        "schema": SCHEMA, "mode": "v9-full", "dataset": "ood",
         "source_sha256": file_sha256(identities), "delivery_sha256": file_sha256(delivery_path),
         "xhard0_dropped": dropped, "total": len(rows),
         "cells": {cell_name(*k): cells[cell_name(*k)] for k in cells_table if cells.get(cell_name(*k))},
@@ -459,10 +459,10 @@ def build_v9_full(identities: Path, delivery_path: Path, shards: int,
 
 
 def hard0_builder(task: str):
-    """test-hard0 的真实 builder（只读官方 test 元数据的 hard 子集，不建仿真场景）。"""
+    """hard-verify 的真实 builder（只读官方 test 元数据的 hard 子集，不建仿真场景）。"""
     from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
 
-    return BenchmarkEnvBuilder(task, dataset="test-hard0")
+    return BenchmarkEnvBuilder(task, dataset="hard-verify")
 
 
 def check_hard0(rows: list[dict], hs, per_task: int) -> dict:
@@ -490,7 +490,7 @@ def check_hard0(rows: list[dict], hs, per_task: int) -> dict:
 
 def build_hard0(per_task: int, shards: int, *, pair_shards: bool = False,
                 builder_factory=None) -> tuple[dict, list[list[dict]]]:
-    """hard0：直接由 ``BenchmarkEnvBuilder(task, dataset="test-hard0")`` 枚举（不读交付清单），每任务取前 N 局。
+    """hard0：直接由 ``BenchmarkEnvBuilder(task, dataset="hard-verify")`` 枚举（不读交付清单），每任务取前 N 局。
 
     行键同 ``SHARD_ROW_KEYS``：``spec_sha256=None``、``candidate=None``、``key=<task>_xhard0_<seed>``。
     ``pair_shards``：原侧（官方入口）与新侧（本仓库客户端）共用同一份 ``shard-NN.json``，同一身份两侧落在同一分片、
@@ -504,7 +504,7 @@ def build_hard0(per_task: int, shards: int, *, pair_shards: bool = False,
         b = make(task)
         n = int(b.get_episode_num())
         if per_task > n:
-            raise ManifestError("hard0", f"{task} test-hard0 只有 {n} 局，不够 --per-task={per_task}",
+            raise ManifestError("hard0", f"{task} hard-verify 只有 {n} 局，不够 --per-task={per_task}",
                                 total=len(rows))
         for ep in range(per_task):
             ident = b.resolve_identity(ep)
@@ -519,7 +519,7 @@ def build_hard0(per_task: int, shards: int, *, pair_shards: bool = False,
     order = {t: i for i, t in enumerate(hs.ALL_TASKS)}
     manifest_rows.sort(key=lambda r: (order[r["task"]], r["builder_episode"]))
     manifest = {
-        "schema": SCHEMA, "mode": "hard0", "dataset": "test-hard0", "per_task": per_task, "total": len(rows),
+        "schema": SCHEMA, "mode": "hard0", "dataset": "hard-verify", "per_task": per_task, "total": len(rows),
         "cells": {cell_name(t, hs.XHARD0): per_task for t in hs.ALL_TASKS},
         "shards": {f"{i:02d}": len(p) for i, p in enumerate(parts)}, "rows": manifest_rows,
         "pair_shards": bool(pair_shards),
@@ -594,7 +594,7 @@ def _write_and_verify(out_dir: Path, manifest: dict, parts: list[list[dict]], sh
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--mode", default="v9-new", choices=list(MODES),
-                    help="v9-new（默认，剔除 V8 已评、只切新评行）／v9-full（V9 全量 800 局）／hard0（test-hard0 xhard0 局）")
+                    help="v9-new（默认，剔除 V8 已评、只切新评行）／v9-full（V9 全量 800 局）／hard0（hard-verify xhard0 局）")
     ap.add_argument("--identities", default=None, help="V9 两模式：export_eval_identities.py 的身份 JSONL（V9 992 行）")
     ap.add_argument("--delivery", default=None, help="V9 两模式：交付清单 delivery.local.json（schema v8-delivery/1）")
     ap.add_argument("--shards", type=int, default=DEFAULT_SHARDS)

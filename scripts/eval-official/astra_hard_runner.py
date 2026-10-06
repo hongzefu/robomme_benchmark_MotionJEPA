@@ -1,10 +1,10 @@
-"""Astra 新侧驱动：把 Astra-on-RoboMME 的单局循环 ``runner.episode`` 接到本仓库的 ``BenchmarkEnvBuilder`` 上。
+"""3-tier Astra 新侧驱动：把 Astra-on-RoboMME 的单局循环 ``runner.episode`` 接到本仓库的 ``BenchmarkEnvBuilder`` 上。
 
 计划：``1003-oracle-subgoal-groundsg-eval-plan.md`` 第二部分 1.5（S5）。原侧是原样运行 Astra 的
 ``examples/champ/run.sh``；本文件是新侧，不改 Astra 任何源码，只做三件事：
 
 1. ``sys.path`` 加 Astra 的 ``examples/champ`` 与本仓库 ``src``，``import robomme_hard.robomme_env``，
-   以 ``BenchmarkEnvBuilder(task, dataset=<test-hard0|test-hard>, action_space="joint_angle",
+   以 ``BenchmarkEnvBuilder(task, dataset=<hard-verify|ood>, action_space="joint_angle",
    gui_render=False, max_steps=<启动命令给的值>)`` 建环境；
 2. 构造 Astra 的 ``Monitor``、``Planner``、``ResponsesClient`` 与 websocket 客户端后，直接调用
    ``runner.episode(...)``（不经它的 ``main()``：其中按 ``metadata_index`` 取 50 局的断言对本仓库 builder 不成立）；
@@ -67,7 +67,7 @@ REPO_ROOT = HERE.parents[1]
 REPO_SRC = REPO_ROOT / "src"
 
 #: 新侧只接受这两个数据集；与启动命令的 ``--max-steps`` 做配对一致性检查（不是按档查表，数值由启动命令给）
-DATASET_STEP_PAIRING = {"test-hard0": 1300, "test-hard": 1600}
+DATASET_STEP_PAIRING = {"hard-verify": 1300, "ood": 1600}
 #: ``main()`` 第⑤项：错误信息以这三个前缀开头的局，单次即停整个分片
 PLANNER_STOP_PREFIXES = ("Planner API", "Pilot planner-call", "Planner bridge failed")
 #: ``main()`` 第④项：非规划类 error 连续累计到此数即停
@@ -173,7 +173,7 @@ def check_pairing(dataset: str, max_steps: int) -> None:
 
 
 def validate_cases(document: dict, tasks: list[str]) -> list[dict]:
-    """新侧局清单：``dataset`` 为 test-hard0／test-hard；``episode`` 为本地局号；身份字段必备以供逐局核对。"""
+    """新侧局清单：``dataset`` 为 hard-verify／ood；``episode`` 为本地局号；身份字段必备以供逐局核对。"""
     dataset = document.get("dataset")
     if dataset not in DATASET_STEP_PAIRING:
         raise ValueError(f"局清单 dataset 应为 {sorted(DATASET_STEP_PAIRING)}，实为 {dataset!r}")
@@ -188,7 +188,7 @@ def validate_cases(document: dict, tasks: list[str]) -> list[dict]:
         if (task, episode) in seen:
             raise ValueError(f"重复身份：{case}")
         seen.add((task, episode))
-        need = ("tier", "seed", "source_episode") if dataset == "test-hard0" else ("tier", "seed")
+        need = ("tier", "seed", "source_episode") if dataset == "hard-verify" else ("tier", "seed")
         missing = [key for key in need if key not in case]
         if missing:
             raise ValueError(f"局清单缺身份字段 {missing}：{case}")
@@ -196,7 +196,7 @@ def validate_cases(document: dict, tasks: list[str]) -> list[dict]:
 
 
 def verify_identity(builder, case: dict) -> dict:
-    """起跑前逐局核对：builder 解析出的身份与局清单一致（test-hard0 局号 0 ↔ 官方 test episode 3 即由此保证）。"""
+    """起跑前逐局核对：builder 解析出的身份与局清单一致（hard-verify 局号 0 ↔ 官方 test episode 3 即由此保证）。"""
     episode = int(case["episode"])
     if not 0 <= episode < builder.get_episode_num():
         raise ValueError(f"{case['task']} 本地局号 {episode} 超出 {builder.dataset} 的 {builder.get_episode_num()} 局")
@@ -209,24 +209,24 @@ def verify_identity(builder, case: dict) -> dict:
 
 def prepare_cases(builder_cls, dataset: str, tasks: list[str], *, source_episodes: list[int] | None = None,
                   tier: str | None = None, index: int = 0) -> dict:
-    """test-hard0：按官方 test 局号（与原侧 ``prepare_cases.py --episodes`` 同义）找本地局号；
-    test-hard：取每任务 ``tier`` 档的第 ``index`` 局（V9 连通局为 VideoUnmask xhard1 第 0 局）。"""
+    """hard-verify：按官方 test 局号（与原侧 ``prepare_cases.py --episodes`` 同义）找本地局号；
+    ood：取每任务 ``tier`` 档的第 ``index`` 局（V9 连通局为 VideoUnmask xhard1 第 0 局）。"""
     cases = []
     for task in tasks:
         builder = make_builder(builder_cls, task, dataset, DATASET_STEP_PAIRING[dataset])
         identities = [builder.resolve_identity(ep) for ep in range(builder.get_episode_num())]
-        if dataset == "test-hard0":
+        if dataset == "hard-verify":
             for source in source_episodes or []:
                 hits = [i for i in identities if i.get("source_episode") == source]
                 if len(hits) != 1:
-                    raise ValueError(f"{task} 在 test-hard0 里找不到官方 test episode {source}")
+                    raise ValueError(f"{task} 在 hard-verify 里找不到官方 test episode {source}")
                 hit = hits[0]
                 cases.append({"task": task, "episode": hit["episode"], "tier": hit["tier"], "seed": hit["seed"],
                               "source_episode": hit["source_episode"]})
         else:
             in_tier = [i for i in identities if i["tier"] == tier]
             if index >= len(in_tier):
-                raise ValueError(f"{task} 在 test-hard 的 {tier} 档只有 {len(in_tier)} 局")
+                raise ValueError(f"{task} 在 ood 的 {tier} 档只有 {len(in_tier)} 局")
             hit = in_tier[index]
             cases.append({"task": task, "episode": hit["episode"], "tier": hit["tier"], "seed": hit["seed"],
                           "candidate": hit.get("candidate"), "spec_sha256": hit.get("spec_sha256")})
@@ -982,9 +982,9 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("prepare", help="生成新侧局清单")
     p.add_argument("--dataset", required=True, choices=sorted(DATASET_STEP_PAIRING))
     p.add_argument("--tasks", nargs="+", default=None, help="默认 Astra core.TASKS 全部 16 个")
-    p.add_argument("--source-episodes", nargs="+", type=int, default=None, help="test-hard0：官方 test 局号（如 3）")
-    p.add_argument("--tier", default=None, help="test-hard：档名（如 xhard1）")
-    p.add_argument("--index", type=int, default=0, help="test-hard：该档内第几局（从 0 计）")
+    p.add_argument("--source-episodes", nargs="+", type=int, default=None, help="hard-verify：官方 test 局号（如 3）")
+    p.add_argument("--tier", default=None, help="ood：档名（如 xhard1）")
+    p.add_argument("--index", type=int, default=0, help="ood：该档内第几局（从 0 计）")
     p.add_argument("--output", required=True)
     p.add_argument("--astra-root", default=None)
 
@@ -992,7 +992,7 @@ def build_parser() -> argparse.ArgumentParser:
         q.add_argument("--cases", required=True)
         q.add_argument("--vla-checkpoint", required=True)
         q.add_argument("--monitor-adapter", required=True)
-        q.add_argument("--max-steps", type=int, required=True, help="步数只来自启动命令：test-hard0 1300，test-hard 1600")
+        q.add_argument("--max-steps", type=int, required=True, help="步数只来自启动命令：hard-verify 1300，ood 1600")
         q.add_argument("--port", type=int, default=18762)
         q.add_argument("--astra-root", default=None)
 

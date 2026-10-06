@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Astra 新侧启动器（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.5，S5）。
+# 3-tier Astra 新侧启动器（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.5，S5）。
 # 环境变量与 VLA 启动命令逐项照抄 Astra 的 examples/champ/run.sh，只把 PYTHONPATH 的环境源一段
 # （原为 Astra 嵌套的 third_party/robomme_benchmark/src）换成本仓库 src，其余三段语义不变；
 # 另设 NO_PROXY；起跑前打印 robomme_hard.__file__ 与 robomme.__file__；端口探测与 trap 清理；
@@ -24,7 +24,7 @@
 #   [VLA_GPU=0 MONITOR_GPU=1 PORT=18762 ASTRA_ROOT=… BENCH_PY=… TOOL_PY=…] \
 #   bash scripts/eval-official/run_astra.sh CASES.json <根>/group_0/<新 RUN 目录>
 #   SIM_PYTHON=… [BENCH_PY=… TOOL_PY=…] bash scripts/eval-official/run_astra.sh --finish <已有 RUN 目录>
-# CASES.json 由 astra_hard_runner.py prepare 生成（dataset 为 test-hard0 或 test-hard）。
+# CASES.json 由 astra_hard_runner.py prepare 生成（dataset 为 hard-verify 或 ood）。
 # RUN 目录的上一层必须叫 group_0 或 group_1：STOP.json 停机口（费用守卫写、Astra 读）就在那一层。
 # 密钥只从调用者环境变量 OPENAI_API_KEY 读；本脚本不读任何密钥文件、不回显密钥。
 set -euo pipefail
@@ -81,7 +81,7 @@ astra_media_check() {  # $1 = 局目录 <key>.a<N>；$2 = RUN
     --manifest "$out/$key.manifest.jsonl" --ledger "$out/$key.ledger.jsonl")" || return $?
   echo "$line"
   dataset="${line##* dataset=}"
-  if [[ "$dataset" != test-hard && "$dataset" != test-hard0 ]]; then
+  if [[ "$dataset" != ood && "$dataset" != hard-verify ]]; then
     echo "OFFICIAL_MEDIA=FAIL dir=$name reason=bad_dataset dataset=$dataset"
     return 2
   fi
@@ -146,7 +146,7 @@ fi
 : "${VLA_CHECKPOINT:?Set VLA_CHECKPOINT to symbolic-grounded-subgoal/79999}"
 : "${MONITOR_BASE:?Set MONITOR_BASE to the downloaded Qwen3-VL-4B-Instruct directory}"
 : "${MONITOR_ADAPTER:?Set MONITOR_ADAPTER to the released checkpoint-2246 directory}"
-: "${MAX_STEPS:?Set MAX_STEPS from the launch command (test-hard0 1300, test-hard 1600)}"
+: "${MAX_STEPS:?Set MAX_STEPS from the launch command (hard-verify 1300, ood 1600)}"
 : "${OPENAI_API_KEY:?Supply your own API credential through OPENAI_API_KEY}"
 if [[ -n "${ASTRA_ROOT:-}" ]]; then
   ASTRA=$ASTRA_ROOT

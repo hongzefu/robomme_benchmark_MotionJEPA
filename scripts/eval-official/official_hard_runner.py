@@ -16,12 +16,12 @@
 
 * ``TapRunner`` 包住官方 ``EnvRunner`` 实例的 ``get_init_obs``／``step``（其余属性原样转发）；
 * ``EnvTap`` 包住 ``EnvRunner.env`` 这个对象：``step`` 原样转发并记下 ``terminated``／``truncated``，其余属性转发；
-* 客户端经 ``eval.py`` 的 ``_websocket_client_policy`` 名字注入 ``mmesg_client.TracingClient``（包住真实
+* 客户端经 ``eval.py`` 的 ``_websocket_client_policy`` 名字注入 ``groundsg_client.TracingClient``（包住真实
   ``MMEVLAWebsocketClientPolicy``）。
 
 每局目录 ``<out>/<key>.a<attempt>/``（已存在即报错，分片开跑前统一检查）::
 
-    trace.jsonl                 # trace_writer，route mmesg/<variant>/orig；字段与新侧同一套代码写出
+    trace.jsonl                 # trace_writer，route groundsg/<variant>/orig；字段与新侧同一套代码写出
     frames/front.rgb24          # 逐帧 H×W×3 uint8 原始字节顺序拼接（ffmpeg rawvideo rgb24）
     frames/wrist.rgb24
     frames/frames.json          # {"pix_fmt":"rgb24","streams":{"front":{"width","height","count"},"wrist":{…}},
@@ -33,10 +33,10 @@
 ``count = demo_frames + 1 + exec_steps - len(missing_steps)``。官方循环 ``count > max_steps`` 才判超时，所以超时局
 执行第 ``max_steps+1`` 步，外围帧含这一步（xhard0：1300 → 执行 1301 步、``count = demo_frames + 1302``）；官方
 循环自己写的叠字 mp4 只录到第 ``max_steps`` 步，局末删除、不交付。Qwen 临时目录在每局目录下的
-``qwen-tmp/test-hard0/<key>.a<attempt>/``，局末删除。
+``qwen-tmp/hard-verify/<key>.a<attempt>/``，局末删除。
 
-结果行（``<out>/results.jsonl``，每局一行，追加并 fsync）：分片行的身份字段 + ``side="orig"``、``policy="mmesg"``、
-``policy_variant``、``dataset="test-hard0"``、``attempt``、``status``、``task_success``、``exec_steps``、``steps``、
+结果行（``<out>/results.jsonl``，每局一行，追加并 fsync）：分片行的身份字段 + ``side="orig"``、``policy="groundsg"``、
+``policy_variant``、``dataset="hard-verify"``、``attempt``、``status``、``task_success``、``exec_steps``、``steps``、
 ``demo_frames``、``max_steps``、``effective_max_steps``、``success_flag``、``decisions``、``error``、``infra``、
 ``infra_reason``、``ep_dir``、``trace_path``、``frames_dir``、``video_frames``（``{"front":n,"wrist":n}``）、
 ``wall_s``、``official_sha256``。官方 ``unknown`` 记 ``status="error"``、``error="success_flag=unknown"``，**不中止**
@@ -72,8 +72,8 @@ from typing import Any, Callable  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 SIDE = "orig"
-POLICY = "mmesg"
-DATASET = "test-hard0"
+POLICY = "groundsg"
+DATASET = "hard-verify"
 XHARD0 = "xhard0"
 MAX_STEPS = 1300
 EXIT_UNREACHABLE = 2
@@ -94,7 +94,7 @@ def _load(name: str):
 
 
 official_defs = _load("official_defs")
-mmesg = _load("mmesg_client")
+groundsg = _load("groundsg_client")
 trace_writer = _load("trace_writer")
 
 
@@ -259,7 +259,7 @@ def make_context(variant: str, *, host: str, port: int, max_steps: int, adapter:
 
     def ws_factory(h, p):
         ep = ctx["episode"]
-        client = mmesg.TracingClient(ctx["client_factory"](h, p, ep), ep["tap"])
+        client = groundsg.TracingClient(ctx["client_factory"](h, p, ep), ep["tap"])
         ep["clients"].append(client)
         return client
 
@@ -296,9 +296,9 @@ def run_identity(ctx: dict, row: dict, *, out: Path, attempt: int = 1, write_fra
     tpath = ep_dir / "trace.jsonl"
     tid = {k: row.get(k) for k in ("task", "tier", "seed", "source_episode", "builder_episode", "key")}
     tid["dataset"] = DATASET
-    trace = trace_writer.TraceWriter(tpath, route=f"mmesg/{variant}/orig", identity=tid, max_steps=max_steps)
-    frames = mmesg.RawFrameWriter(ep_dir / "frames") if write_frames else None
-    tap = mmesg.EpisodeTap(trace, frames)
+    trace = trace_writer.TraceWriter(tpath, route=f"groundsg/{variant}/orig", identity=tid, max_steps=max_steps)
+    frames = groundsg.RawFrameWriter(ep_dir / "frames") if write_frames else None
+    tap = groundsg.EpisodeTap(trace, frames)
     video_dir = ep_dir / "official-video"
     t0 = time.perf_counter()
     runner = None
@@ -309,11 +309,11 @@ def run_identity(ctx: dict, row: dict, *, out: Path, attempt: int = 1, write_fra
         runner.make_env(int(row["source_episode"]))
         difficulty = getattr(runner, "difficulty", None)
         runner.env = EnvTap(runner.env)
-        res = mmesg.run_official_episode(ctx, TapRunner(runner, tap), tap, dataset=DATASET, episode_tag=tag,
+        res = groundsg.run_official_episode(ctx, TapRunner(runner, tap), tap, dataset=DATASET, episode_tag=tag,
                                          scratch=ep_dir, archive_dir=ep_dir)
     except Exception as e:  # noqa: BLE001 官方 EnvRunner 构建／make_env 失败（官方 evaluate 同样整局记 error）
         err = f"{type(e).__name__}: {e}"[:800]
-        infra = mmesg.classify_infra(err)
+        infra = groundsg.classify_infra(err)
         res = {"status": "error", "task_success": False, "steps": tap.steps, "error": err, "success_flag": "error",
                "decisions": tap.decisions, "infra": True, "infra_reason": infra or "env_build",
                "env_exception": None, "exception": type(e).__name__, "qwen_log": None, "timing": {}}
@@ -324,7 +324,7 @@ def run_identity(ctx: dict, row: dict, *, out: Path, attempt: int = 1, write_fra
             except Exception as e:  # noqa: BLE001
                 print(f"close_env error: {e!r}", flush=True)
     if res.get("exception") == "ServerUnreachable":
-        res.update(infra=True, infra_reason="mmesg_unreachable")
+        res.update(infra=True, infra_reason="groundsg_unreachable")
     shutil.rmtree(video_dir, ignore_errors=True)
     wall = time.perf_counter() - t0
     trace.close(status=res["status"], terminal_reason=res.get("success_flag"), side=SIDE, demo_frames=tap.demo_frames,
@@ -426,31 +426,31 @@ def main(argv: list[str] | None = None) -> int:
     miss = [n for n, v in (("--shard", args.shard), ("--out", args.out), ("--port", args.port),
                            ("--variant", args.variant)) if v is None]
     if miss:
-        print(f"MMESG_ORIG_BLOCKED reason=args missing={' '.join(miss)}", flush=True)
+        print(f"GROUNDSG_ORIG_BLOCKED reason=args missing={' '.join(miss)}", flush=True)
         return EXIT_BAD_INPUT
     if (args.variant == official_defs.VARIANT_QWENVL) != bool(args.qwenvl_groundsg_adapter):
-        print("MMESG_ORIG_BLOCKED reason=args --qwenvl-groundsg-adapter 仅且必须与 ground-sg-qwenvl 同用", flush=True)
+        print("GROUNDSG_ORIG_BLOCKED reason=args --qwenvl-groundsg-adapter 仅且必须与 ground-sg-qwenvl 同用", flush=True)
         return EXIT_BAD_INPUT
     try:
         rows = load_shard(args.shard, args.only)
     except (ValueError, OSError) as e:
-        print(f"MMESG_ORIG_BLOCKED reason=shard detail={e}", flush=True)
+        print(f"GROUNDSG_ORIG_BLOCKED reason=shard detail={e}", flush=True)
         return EXIT_BAD_INPUT
     exists = [str(ep_dir_of(args.out, r, args.attempt)) for r in rows if ep_dir_of(args.out, r, args.attempt).exists()]
     if exists:
-        print(f"MMESG_ORIG_BLOCKED reason=ep_dir_exists n={len(exists)} first={exists[0]}", flush=True)
+        print(f"GROUNDSG_ORIG_BLOCKED reason=ep_dir_exists n={len(exists)} first={exists[0]}", flush=True)
         return EXIT_BAD_INPUT
     args.out.mkdir(parents=True, exist_ok=True)
     ctx = make_context(args.variant, host=args.host, port=args.port, max_steps=args.max_steps,
                        adapter=args.qwenvl_groundsg_adapter, builder_cls=info["BenchmarkEnvBuilder"],
                        scratch_root=args.out)
     url = f"ws://{args.host}:{args.port}"
-    print(f"MMESG_ORIG_START shard={args.shard} variant={args.variant} episodes={len(rows)} url={url} "
+    print(f"GROUNDSG_ORIG_START shard={args.shard} variant={args.variant} episodes={len(rows)} url={url} "
           f"max_steps={args.max_steps} robomme={info['robomme_file']} sys_path_added={','.join(added)} "
           + " ".join(f"{k}={s}" for k, s in sorted(ctx["official_sha256"].items())), flush=True)
     summary = run_shard(ctx, rows, out=args.out, attempt=args.attempt, write_frames=not args.no_frames,
                         import_check=assert_no_robomme_hard)
-    print(f"MMESG_ORIG_DONE shard={args.shard} variant={args.variant} episodes={summary['episodes']} "
+    print(f"GROUNDSG_ORIG_DONE shard={args.shard} variant={args.variant} episodes={summary['episodes']} "
           f"errors={summary['errors']} success={summary['success']} fail={summary['fail']} "
           f"timeout={summary['timeout']} aborted={int(summary['aborted'])}", flush=True)
     return EXIT_UNREACHABLE if summary["aborted"] else 0

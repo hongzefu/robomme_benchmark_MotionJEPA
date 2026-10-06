@@ -2,7 +2,7 @@
 
 ## ① 一句话与对拍结论
 
-`robomme_hard` 与官方 `robomme` 并列、分层继承：`src/robomme/` 逐字节等于官方 `1fadc0ec`（`UPSTREAM_BYTES=PASS`），本包只放差异——16 个环境类与改过／新增／传递依赖改过模块的 utils、wrapper 复制；依赖闭包干净的官方模块用 shim 借用；`BenchmarkEnvBuilder` 子类化并新增 `dataset="test-hard"`（V9 定稿，12.333 换包、12.341 起 xhard0 退出 test-hard：每任务按交付格表 `EXPECTED_CELLS`＝`V9_CELLS` 恰 50 局、43 格共 800 局，builder 每任务发 50 局；官方 hard 12 局（xhard0）默认不前置，设 `ROBOMME_HARD_XHARD0_IN_TEST_HARD=1` 可恢复为 12 + 50 = 62 局、合计 992，源码与清单保留。v8 的 1262 局包与 v7 的 1292 局包分别由 git 历史（12.332 `b462e358` 之前）与标签 `parity-anchor-v7` 保存）。
+`robomme_hard` 与官方 `robomme` 并列、分层继承：`src/robomme/` 逐字节等于官方 `1fadc0ec`（`UPSTREAM_BYTES=PASS`），本包只放差异——16 个环境类与改过／新增／传递依赖改过模块的 utils、wrapper 复制；依赖闭包干净的官方模块用 shim 借用；`BenchmarkEnvBuilder` 子类化并新增 `dataset="ood"`（V9 定稿，12.333 换包、12.341 起 xhard0 退出 ood：每任务按交付格表 `EXPECTED_CELLS`＝`V9_CELLS` 恰 50 局、43 格共 800 局，builder 每任务发 50 局；官方 hard 12 局（xhard0）默认不前置，设 `ROBOMME_HARD_XHARD0_IN_TEST_HARD=1` 可恢复为 12 + 50 = 62 局、合计 992，源码与清单保留。v8 的 1262 局包与 v7 的 1292 局包分别由 git 历史（12.332 `b462e358` 之前）与标签 `parity-anchor-v7` 保存）。
 
 三侧对拍（A40@greatlakes，16 worker，判定为「输入绑定、结构与任务成功一致，且动作／状态／图像／帧数差异在标定容差内」，不是字节级）：
 
@@ -122,13 +122,13 @@ v7（12.237 起）另跑：上面四行以 tag `parity-anchor-v6` 为 P 侧重�
 
 ```python
 from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder   # 与官方唯一不同的 import
-builder = BenchmarkEnvBuilder(env_id="BinFill", dataset="test-hard", action_space="joint_angle", max_steps=1600)  # V9 入口固定 1600
+builder = BenchmarkEnvBuilder(env_id="BinFill", dataset="ood", action_space="joint_angle", max_steps=1600)  # V9 入口固定 1600
 for episode in range(builder.get_episode_num()):             # BinFill 50 局：xhard1、xhard2 各 25 局
     env = builder.make_env_for_episode(episode)               # 与官方一样不传 max_steps，五档一律 1600
     obs, info = env.reset()
 ```
 
-- 与官方 `dataset="test"` 的对应：`test` 每任务 50 局、三档混排、步数上限一个数；`test-hard` 每任务 50 局（见 ①），按 xhard1→xhard5 只排该任务交付的档、档内按 `candidate` 升序（开关 `ROBOMME_HARD_XHARD0_IN_TEST_HARD=1` 时 xhard0 12 局在前，按官方原 episode 号）；步数上限由入口 `evaluation_hard.py` 构造时写死 `max_steps=1600`、逐局不传（五档一律 1600；官方入口为 1300）；包内常量表 `TIER_MAX_STEPS = {xhard0: 1300, xhard1～xhard5: 1600}` 入口不再引用、只剩 eval-official 评估流水线在用（去留待定，`docs/1002-pending-decisions.md` B5）。上限不从 episode 或规格文件读（规格 header 只签 `exec_cap`＝1600，行里没有 `max_steps`）。`specs_root` 覆盖（或环境变量 `ROBOMME_HARD_SPECS_ROOT`）可指局部 v8／v9 根，只发存在的档；v7 `hard-specs/3` 根在换包后不再被 builder 接受。
+- 与官方 `dataset="test"` 的对应：`test` 每任务 50 局、三档混排、步数上限一个数；`ood` 每任务 50 局（见 ①），按 xhard1→xhard5 只排该任务交付的档、档内按 `candidate` 升序（开关 `ROBOMME_HARD_XHARD0_IN_TEST_HARD=1` 时 xhard0 12 局在前，按官方原 episode 号）；步数上限由入口 `evaluation_hard.py` 构造时写死 `max_steps=1600`、逐局不传（五档一律 1600；官方入口为 1300）；包内常量表 `TIER_MAX_STEPS = {xhard0: 1300, xhard1～xhard5: 1600}` 入口不再引用、只剩 eval-official 评估流水线在用（去留待定，`docs/1002-pending-decisions.md` B5）。上限不从 episode 或规格文件读（规格 header 只签 `exec_cap`＝1600，行里没有 `max_steps`）。`specs_root` 覆盖（或环境变量 `ROBOMME_HARD_SPECS_ROOT`）可指局部 v8／v9 根，只发存在的档；v7 `hard-specs/3` 根在换包后不再被 builder 接受。
 - `builder.resolve_identity(episode)` 只读返回 `{episode, tier, candidate, seed, spec_sha256, source_run}`（开关打开时的 xhard0 行另带 `source_dataset`、`source_episode`，`candidate` 为空）；`spec_binding(env)` 须在 `reset()` 之后调用。
 - `train`／`test`／`val` 行为同官方；只有四个 Unmask 任务的 `train` 元数据改读本包 `env_metadata/train`（400 条）。`override_metadata_path` 语义同官方。
 - 生产命令（不随包分发，在仓库 `scripts/injection-dev/` 下，路径直跑；详见 `scripts/README.md` 第 4 节）：每档一次 `freeze_specs.py --tier <档> --seed-profile v8 --cells v9`（v8 seed 规则，V9 沿用；档内逐任务独立抽，只抽交付格）→ `generate_h5.py --mode continue --specs <规格根> --cells v9`（或 `split` → 各片 `continue` → `aggregate`）（只认 `hard-specs/4`，逐格递补、执行步超过 1600 记 `exec_over_cap` 并递补）。V9 实际只对 MoveCube 整任务重抽（`--cells v9shard1`），其余 720 局复用 V8 交付，见 `scripts/README.md` 第 4 节。
@@ -144,4 +144,4 @@ for episode in range(builder.get_episode_num()):             # BinFill 50 局：
 
 ## ⑦ `dataset_for_parent="test"` 绕行
 
-官方父类 `__init__` 的 `_ALLOWED_DATASETS` 只认 `train/test/val`，而官方代码不能改。子类对 `test-hard` 先以 `dataset="test"` 过父类校验，再把 `self.dataset` 改回 `"test-hard"`；父类顺手读的 test 元数据随即清空、不被使用。官方父类签名若变化属于升级流程（`UPSTREAM.json` 换锚点、重跑全部闸门）。
+官方父类 `__init__` 的 `_ALLOWED_DATASETS` 只认 `train/test/val`，而官方代码不能改。子类对 `ood` 先以 `dataset="test"` 过父类校验，再把 `self.dataset` 改回 `"ood"`；父类顺手读的 test 元数据随即清空、不被使用。官方父类签名若变化属于升级流程（`UPSTREAM.json` 换锚点、重跑全部闸门）。

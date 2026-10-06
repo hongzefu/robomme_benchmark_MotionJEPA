@@ -20,7 +20,7 @@ import numpy as np
 from tests._support.loaders import load_script
 
 TERMINALS = ("success", "fail", "timeout", "error")
-NEW_ROUTES = re.compile(r"^(mmesg/[A-Za-z0-9_.-]+|pp|astra|smvla|mme)/(new|orig)$")
+NEW_ROUTES = re.compile(r"^(groundsg/[A-Za-z0-9_.-]+|pp|astra|smvla|perceptual-framesamp-modul)/(new|orig)$")
 EP_DIR = re.compile(r"^(?P<key>.+)\.a(?P<attempt>\d+)$")
 NOT_OBSERVED = "NOT_OBSERVED"
 

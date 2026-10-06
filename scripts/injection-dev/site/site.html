@@ -545,7 +545,7 @@
       Object.entries(STATUS_ZH).filter(([k]) => k !== 'generation_failed').forEach(([k, v]) => {
         const s = node('span'); const i = node('i', 's-' + k); s.append(i, document.createTextNode(v)); lg.append(s);
       });
-      if (S.tier === 'xhard0') lg.append(node('span', '', '橙底 = 新旧入口成败翻转；虚线框 = 已做同卡重跑（MME）'));
+      if (S.tier === 'xhard0') lg.append(node('span', '', '橙底 = 新旧入口成败翻转；虚线框 = 已做同卡重跑（FrameSamp+Modulation）'));
     }
 
     function renderChips() {
@@ -788,11 +788,11 @@
       return wrap;
     }
 
-    // ---- MME 同卡重跑（12.248）----
+    // ---- FrameSamp+Modulation 同卡重跑（12.248）----
     const stSpan = r => { const x = node('span', 'st-' + r.status, `${STATUS_ZH[r.status]}/${r.steps} 步`); return x; };
     const same = (a, b) => a && b && a.status === b.status && a.steps === b.steps;
     function rerunFacts(ep) {
-      const o0 = ep.eval.old.mmevla, n0 = ep.eval.new.mmevla, o1 = ep.rerun.mmevla.old, n1 = ep.rerun.mmevla.new;
+      const o0 = ep.eval.old.mmevla, n0 = ep.eval.new.mmevla, o1 = ep.rerun.mmevla.old, n1 = ep.rerun.mmevla.new;  // 历史数据键：FrameSamp+Modulation 的页面 ID（site_catalog.EVAL_POLICY）
       const facts = [];
       facts.push(['旧入口自己重跑', o0.status === o1.status ? `成败不变（${STATUS_ZH[o0.status]}）` : `${STATUS_ZH[o0.status]} → ${STATUS_ZH[o1.status]}，自己就复现不了`]);
       facts.push(['新入口自己重跑', n0.status === n1.status ? `成败不变（${STATUS_ZH[n0.status]}）` : `${STATUS_ZH[n0.status]} → ${STATUS_ZH[n1.status]}，自己就复现不了`]);
@@ -816,7 +816,7 @@
       const v = node('div', 'verdict');
       const t = node('table', 'rr-table');
       const hr = node('tr'); ['', '原评估', '同卡重跑'].forEach(x => hr.append(node('th', '', x))); t.append(hr);
-      [['旧入口（官方 robomme）', ep.eval.old.mmevla, ep.rerun.mmevla.old], ['新入口（robomme_hard）', ep.eval.new.mmevla, ep.rerun.mmevla.new]].forEach(([name, a, b]) => {
+      [['旧入口（官方 robomme）', ep.eval.old.mmevla, ep.rerun.mmevla.old], ['新入口（robomme_hard）', ep.eval.new.mmevla, ep.rerun.mmevla.new]].forEach(([name, a, b]) => {  // 历史数据键：FrameSamp+Modulation 的页面 ID（site_catalog.EVAL_POLICY）
         const tr = node('tr'); tr.append(node('td', '', name));
         [a, b].forEach(r => { const td = node('td'); td.append(stSpan(r)); tr.append(td); }); t.append(tr);
       });
@@ -824,10 +824,10 @@
       const ul = node('ul');
       rerunFacts(ep).forEach(([k, val]) => { const li = node('li'); li.append(node('b', '', k + '：'), document.createTextNode(val)); ul.append(li); });
       v.append(ul);
-      v.append(node('div', '', '结论见上方「MME 两个入口为什么会有 11 局成败相反？」面板。'));
+      v.append(node('div', '', '结论见上方「FrameSamp+Modulation 两个入口为什么会有 11 局成败相反？」面板。'));
       card.append(v); cols.append(card);
       [['new', '新入口重跑 · MME-VLA'], ['old', '旧入口重跑 · MME-VLA']].forEach(([entry, title]) => {
-        const r = ep.rerun.mmevla[entry];
+        const r = ep.rerun.mmevla[entry];  // 历史数据键：FrameSamp+Modulation 的页面 ID（site_catalog.EVAL_POLICY）
         const col = node('div', 'col'); const hd = node('div', 'col-head');
         hd.append(node('span', 'col-title', title), node('span', 'badge s-' + r.status, STATUS_ZH[r.status]));
         col.append(hd, node('div', 'col-meta', `步数 ${r.steps} / 上限 ${r.max_steps}`), videoEl(r.media));
@@ -845,14 +845,14 @@
       const box = el('rerun-panel');
       if (S.tier !== 'xhard0' || !S.cat.rerun11) { box.hidden = true; return; }
       box.hidden = false; box.textContent = '';
-      box.append(node('summary', '', 'MME 两个入口为什么会有 11 局成败相反？——已查明：MME 策略自己的计算每次都有细微差别，入口没有问题'));
+      box.append(node('summary', '', 'FrameSamp+Modulation 两个入口为什么会有 11 局成败相反？——已查明：FrameSamp+Modulation 策略自己的计算每次都有细微差别，入口没有问题'));
       const b = node('div', 'rerun-body');
       const P = html => { const p = node('p'); p.innerHTML = html; b.append(p); };
-      P('<b>现象。</b>xhard0 的 192 局用两个入口各评了一次：旧入口（官方 <code>robomme</code>，<code>dataset="test"</code>）与新入口（<code>robomme_hard</code>，<code>dataset="test-hard"</code>）。两个入口建出的环境已证明逐字节相同（192/192）。SimpleMemVLA 两入口成败逐局相同，<b>MME-VLA 却有 11 局成败相反</b>（5 局成→败、5 局败→成、1 局超时→成，总数 50 对 51 几乎持平）。');
-      P('<b>两种可能。</b>A：MME 自己不稳定——GPU／JAX 数值在不同卡、不同编译历史下有微小差异，被策略放大。B：两个入口喂给 MME 的输入有系统差别——那就是 benchmark 的 bug。');
+      P('<b>现象。</b>xhard0 的 192 局用两个入口各评了一次：旧入口（官方 <code>robomme</code>，<code>dataset="test"</code>）与新入口（<code>robomme_hard</code>，<code>dataset="ood"</code>）。两个入口建出的环境已证明逐字节相同（192/192）。SimpleMemVLA 两入口成败逐局相同，<b>MME-VLA 却有 11 局成败相反</b>（5 局成→败、5 局败→成、1 局超时→成，总数 50 对 51 几乎持平）。');
+      P('<b>两种可能。</b>A：FrameSamp+Modulation 自己不稳定——GPU／JAX 数值在不同卡、不同编译历史下有微小差异，被策略放大。B：两个入口喂给 FrameSamp+Modulation 的输入有系统差别——那就是 benchmark 的 bug。');
       P('<b>怎么验证。</b>在同一张 A40 上，先用旧入口、再用新入口，把这 11 局各重跑一次（11 局 × 2 入口 = 22 局）。代码、模型、服务端种子（7）都和原评估相同。同入口重跑就变了 → A；各自稳定、两入口仍不同 → B。');
       P('<b>结果。</b>① 同一个入口自己就复现不了：旧入口 5／11 局、新入口 4／11 局与自己原来成败不同。② 同一条轨迹会在另一个入口原样出现，连步数都逐步相同（下表绿底）：例如 ButtonUnmaskSwap 新入口重跑「成功/458 步」＝旧入口原来那次；VideoPlaceButton 新入口重跑「失败/178」＝旧入口两次。能跑出完全相同的轨迹，说明两个入口给策略的输入没有区别。③ 同一张卡上两入口仍有 6 局不同，说明不稳定不只来自换节点。');
-      P('<b>结论：A 成立，B 不成立。</b>benchmark 的新入口没有 bug；MME 在这些局上的成败接近随机，单次成功率本身带几个百分点的波动。MoveCube、SwingXtimes、VideoUnmaskSwap 552300 两次都是「两入口不同」，但每入口只有 2 个样本，不足以单独判为 B。');
+      P('<b>结论：A 成立，B 不成立。</b>benchmark 的新入口没有 bug；FrameSamp+Modulation 在这些局上的成败接近随机，单次成功率本身带几个百分点的波动。MoveCube、SwingXtimes、VideoUnmaskSwap 552300 两次都是「两入口不同」，但每入口只有 2 个样本，不足以单独判为 B。');
       P(`判定行：<code>${S.cat.rerun11.parity}</code>（留档 <code>docs/validation/newtask-v7/README.md</code> ⑥，提交 ${S.cat.rerun11.commit}）`);
       const t = node('table', 'rr-table');
       const hr = node('tr'); ['任务', '局', 'seed', '旧入口 原评估', '旧入口 重跑', '新入口 原评估', '新入口 重跑'].forEach(x => hr.append(node('th', '', x))); t.append(hr);
@@ -860,7 +860,7 @@
         const tr = node('tr'); if (task.id === S.task && ep.idx === S.ep) tr.className = 'is-here';
         const a = node('a', '', `${task.id}`); a.addEventListener('click', () => select(task.id, 'xhard0', ep.idx));
         const td0 = node('td'); td0.append(a); tr.append(td0, node('td', '', `第 ${ep.idx} 局`), node('td', '', String(ep.seed)));
-        const cells = [ep.eval.old.mmevla, ep.rerun.mmevla.old, ep.eval.new.mmevla, ep.rerun.mmevla.new];
+        const cells = [ep.eval.old.mmevla, ep.rerun.mmevla.old, ep.eval.new.mmevla, ep.rerun.mmevla.new];  // 历史数据键：FrameSamp+Modulation 的页面 ID（site_catalog.EVAL_POLICY）
         cells.forEach((r, i) => {
           const td = node('td'); const sp = stSpan(r);
           if (cells.some((q, j) => j !== i && same(q, r))) sp.classList.add('rr-same');

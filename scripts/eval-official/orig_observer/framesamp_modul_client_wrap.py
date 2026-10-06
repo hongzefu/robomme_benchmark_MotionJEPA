@@ -1,20 +1,20 @@
-"""MME 原侧（``robomme_policy_learning`` 原版分支 ``official-xhard0-0929``／``927c56d``）客户端的包装启动器：同进程 runpy
+"""FrameSamp+Modulation 原侧（``robomme_policy_learning`` 原版分支 ``official-xhard0-0929``／``927c56d``）客户端的包装启动器：同进程 runpy
 运行原版 ``examples/robomme/eval.py``，外挂只读钩子，写出与 GroundSG 原侧同布局的逐局
-``<key>.a<N>/{trace.jsonl,frames/,arrays.npz}``（route ``mme/orig``）。
+``<key>.a<N>/{trace.jsonl,frames/,arrays.npz}``（route ``perceptual-framesamp-modul/orig``）。
 
 用法（cwd = 原版工作树 examples/robomme，REC_ROOT 必设）：
-    python mme_client_wrap.py eval.py --args.host=127.0.0.1 --args.port=<代理端口> ...（参数原样透传给 eval.py）
-    python mme_client_wrap.py --orig-preflight   # 只装钩子并核对导入，不跑评估
+    python framesamp_modul_client_wrap.py eval.py --args.host=127.0.0.1 --args.port=<代理端口> ...（参数原样透传给 eval.py）
+    python framesamp_modul_client_wrap.py --orig-preflight   # 只装钩子并核对导入，不跑评估
 
 钩子（计划第二部分一节 S7「钩子铁律」：只复制主机端 numpy、不调随机函数、不做 GPU 运算、不改参数与返回值；
 钩子内异常只记 ``OBSERVER_HOOK_ERROR`` 并累加 ``observer_hook_errors``，绝不外抛）：
 - ``EnvRunner.get_init_obs``：reset 返回的全部演示帧 + 初始帧（前视、腕部）、8 维状态、task_goal → ``demo`` 行（C2）。
 - ``EnvRunner.step``：调用前复制实际交给 env 的动作（原 dtype／shape），调用后记返回的 (img, wrist, state)、
   ``stop``、``status``；原版吞掉环境异常返回 ``(None, None, None)`` 的一步记 ``observed=false`` 与原因（C8）；
-  ``terminated``／``truncated`` 原版不向调用方返回，写 ``NOT_OBSERVED``（C9）；MME 无子目标功能，``subgoal`` 全程
+  ``terminated``／``truncated`` 原版不向调用方返回，写 ``NOT_OBSERVED``（C9）；FrameSamp+Modulation 无子目标功能，``subgoal`` 全程
   ``None``（C7）。
 - ``MMEVLAWebsocketClientPolicy.reset／add_buffer／infer``：标记当前请求名，``ClientConnection.send`` 在标记期间
-  发出的原始字节暂存；往返成功后按新侧 ``mme_client.TracedClient`` 同口径记 ``request``（名即方法名，载荷为原始
+  发出的原始字节暂存；往返成功后按新侧 ``framesamp_modul_client.TracedClient`` 同口径记 ``request``（名即方法名，载荷为原始
   msgpack 字节，C10「同协议比原始哈希」）、``add_buffer`` 的历史边界行、``infer`` 的完整动作块 ``response``；调用
   抛异常时不记该请求（与新侧相同）。
 - ``ClientConnection.send/recv``：另把每条发出／收到消息的帧类型、长度、sha256 写 ``REC_ROOT/client-transport-<pid>.jsonl``
@@ -42,7 +42,7 @@ if _OBS_DIR not in sys.path:
 import _obs_common as C  # noqa: E402
 import orig_episode as OE  # noqa: E402
 
-ROUTE = "mme/orig"
+ROUTE = "perceptual-framesamp-modul/orig"
 ERR = C.HookErrors()
 _lock = threading.RLock()
 _state: dict = {"ep": None, "ep_name": None, "conn_seq": 0, "log": None, "root": None, "req": None}
@@ -122,7 +122,7 @@ def _patch_env_runner(mod) -> None:
 # ------------------------------------------------------------------ 策略客户端钩子（请求名与动作块）
 
 def record_call(ep, name: str, obj, out, raw: bytes | None) -> None:
-    """与新侧 ``mme_client.TracedClient._record`` 同口径（C10）：往返成功后才记；``request`` 载荷为实际发出的原始
+    """与新侧 ``framesamp_modul_client.TracedClient._record`` 同口径（C10）：往返成功后才记；``request`` 载荷为实际发出的原始
     msgpack 字节（拿不到时退回 ``canonical_bytes``，并在 ``end`` 记 ``request_encoding``）；``add_buffer`` 另记历史边界
     ``history(<上次边界>, <当前步>, note="add_buffer frames=<n> exec_start_idx=<…>")``；``infer`` 记完整动作块。"""
     if raw is not None:
@@ -321,10 +321,10 @@ def main() -> None:
         assert getattr(wcp.MMEVLAWebsocketClientPolicy, "_orig_observer_hooked", False), "策略客户端未挂钩"
         assert "robomme_hard" not in sys.modules, "原侧不得导入 robomme_hard"
         print(f"OBSERVER_PREFLIGHT=PASS route={ROUTE} robomme={robomme.__file__} trace_writer={OE.tw.__file__} "
-              f"mmesg_client={OE.mmesg.__file__}", flush=True)
+              f"groundsg_client={OE.groundsg.__file__}", flush=True)
         return
     if not argv or not argv[0].endswith(".py"):
-        raise SystemExit("用法：mme_client_wrap.py eval.py [eval.py 参数...]")
+        raise SystemExit("用法：framesamp_modul_client_wrap.py eval.py [eval.py 参数...]")
     script = os.path.abspath(argv[0])
     install(argv[1:])
     # 与 ``python eval.py`` 一致：sys.path[0] 为脚本所在目录，sys.argv 为 [eval.py, 参数...]

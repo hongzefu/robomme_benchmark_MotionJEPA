@@ -262,7 +262,7 @@ def main() -> None:
         assert getattr(bp.BatchedEvalPolicy, "_orig_observer_hooked", False), "BatchedEvalPolicy 未挂钩"
         assert "robomme_hard" not in sys.modules, "原侧不得导入 robomme_hard"
         print(f"OBSERVER_PREFLIGHT=PASS route={ROUTE} robomme_sim={ip.__file__} trace_writer={tw.__file__} "
-              f"mmesg_client={OE.mmesg.__file__}", flush=True)
+              f"groundsg_client={OE.groundsg.__file__}", flush=True)
         return
     seeds = install(argv)
     run_observed("robomme_sim.eval_success", argv, seeds)

@@ -1,23 +1,23 @@
 """``robomme_hard`` 的评估构建器：官方 ``BenchmarkEnvBuilder`` 的子类（0927 计划第一部分 §4.2）。
 
-对外新增 ``dataset="test-hard"`` 与 ``dataset="test-hard0"`` 两个取值；``xhard1``～``xhard5`` 不是合法的 ``dataset``。
+对外新增 ``dataset="ood"`` 与 ``dataset="hard-verify"`` 两个取值；``xhard1``～``xhard5`` 不是合法的 ``dataset``。
 
 * ``train`` / ``test`` / ``val``：沿用官方父类的元数据逻辑；只把四个 Unmask 任务的 ``train`` 元数据改读
   ``robomme_hard/env_metadata/train``（400 条，E-12）。
-* ``test-hard``：xhard0 12 局仅在开关 ``hard_specs.XHARD0_IN_TEST_HARD`` 打开时在前（默认关，V9 每任务 50 局），再依次读包内 ``env_metadata/test-hard/<tier>/specs.jsonl``（xhard1→xhard5，
+* ``ood``：xhard0 12 局仅在开关 ``hard_specs.XHARD0_IN_TEST_HARD`` 打开时在前（默认关，V9 每任务 50 局），再依次读包内 ``env_metadata/ood/<tier>/specs.jsonl``（xhard1→xhard5，
   v8 ``hard-specs/4``，经 ``load_specs_root`` 整根校验），取本任务 ``selected`` 且 ``rollout.status=="ok"`` 的行，
   档内按 ``candidate`` 升序，拼接编为 episode 0..N-1。每格行数对照交付格表 ``EXPECTED_CELLS``（43 格逐格局数）
   断言：(任务, 档) 必须在表内才可有正式局，表内格恰好等于表值，表外格恰好 0 行（xhard5 只含 SwingXtimes、StopCube）。
   规格根覆盖（冒烟／分片等局部根）只读存在的档文件，按各档 header 的 ``delivery_per_cell`` 自洽校验，且须是表的子集。
   只读 ``hard-specs/4``（旧格式 /2、/3 的读写校验已删除）。
-* ``test-hard0``：只含 xhard0，即官方 test 元数据里本任务 ``difficulty=="hard"`` 的 12 局（原 episode 3, 7, …, 47），
+* ``hard-verify``：只含 xhard0，即官方 test 元数据里本任务 ``difficulty=="hard"`` 的 12 局（原 episode 3, 7, …, 47），
   编为 episode 0..11；与开关 ``XHARD0_IN_TEST_HARD`` 无关，不读规格根、不接受 ``specs_root``。
   步数上限不由数据集给出：评估入口按数据集传 ``max_steps``（xhard0 用 1300，新值档用 1600）。
-* ``make_env_for_episode`` 整段覆写：runtime 四项、seed、difficulty 照抄官方拼法；test-hard 时在 ``gym.make`` 前加
+* ``make_env_for_episode`` 整段覆写：runtime 四项、seed、difficulty 照抄官方拼法；ood 时在 ``gym.make`` 前加
   ``sampling_config`` 与 ``native_episode_spec``（回注）；包装链与官方逐项相同，但 wrapper 一律绝对导入
   ``robomme_hard`` 的类（``DemonstrationWrapper``、``OraclePlannerDemonstrationWrapper`` 是复制件，其余是借用）。
 
-⚠ 官方父类 ``__init__`` 的 ``_ALLOWED_DATASETS`` 只认 train/test/val 且官方代码不能改：test-hard／test-hard0 先以
+⚠ 官方父类 ``__init__`` 的 ``_ALLOWED_DATASETS`` 只认 train/test/val 且官方代码不能改：ood／hard-verify 先以
 ``dataset="test"`` 过父类校验，再把 ``self.dataset`` 改回原值；父类读的 test 元数据取出 xhard0 后随即清空、不再使用。
 
 P2：本子类覆写 ``__init__``、``_resolve_metadata_path``、``resolve_episode``、``get_episode_num``、
@@ -37,11 +37,11 @@ from robomme.env_record_wrapper.episode_config_resolver import BenchmarkEnvBuild
 
 from . import hard_specs
 
-TEST_HARD = "test-hard"
+OOD = "ood"
 #: 只含 xhard0（官方 test 的 hard 子集，每任务 12 局）的评估数据集；不读规格根
-TEST_HARD0 = "test-hard0"
-_ALLOWED_DATASETS = {"train", "test", "val", TEST_HARD, TEST_HARD0}
-_HARD_DATASETS = frozenset({TEST_HARD, TEST_HARD0})
+HARD_VERIFY = "hard-verify"
+_ALLOWED_DATASETS = {"train", "test", "val", OOD, HARD_VERIFY}
+_HARD_DATASETS = frozenset({OOD, HARD_VERIFY})
 _ALLOWED_ACTION_SPACES = {"joint_angle", "ee_pose", "waypoint", "multi_choice"}
 HARD_METADATA_ROOT = Path(__file__).resolve().parents[1] / "env_metadata"
 #: 这四个任务的 train 元数据在 robomme_hard 里是 400 条，其余任务读官方
@@ -84,7 +84,7 @@ def _root_specs(root: str):
 def _xhard0_entries(env_id: str, metadata_index: Dict) -> List[Dict[str, Any]]:
     """xhard0＝官方 test 元数据里本任务 ``difficulty=="hard"`` 的全部记录，按原 episode 升序（v7 方案第二部分 §1.1）。
 
-    ``test-hard`` 在开关打开时把它前置，``test-hard0`` 只用它（每任务恰 ``XHARD0_PER_TASK`` 局）。
+    ``ood`` 在开关打开时把它前置，``hard-verify`` 只用它（每任务恰 ``XHARD0_PER_TASK`` 局）。
 
     seed 逐条照抄元数据、运行难度传 ``"hard"``，无 ``sampling_config``、无规格（走官方原生 hard 分支）。
     与 ``scripts/configs/xhard0/xhard0_manifest.json`` 的逐条核对在 XHARD0_IDENTITY 闸门里做（本包不反向依赖 scripts/）。
@@ -96,7 +96,7 @@ def _xhard0_entries(env_id: str, metadata_index: Dict) -> List[Dict[str, Any]]:
     episodes = tuple(int(record["episode"]) for record in hard)
     seeds = [int(record["seed"]) for record in hard]
     if episodes != hard_specs.XHARD0_EPISODES or len(set(seeds)) != len(seeds):
-        raise ValueError(f"test-hard {env_id}@xhard0：官方 test hard 子集应为原 episode {hard_specs.XHARD0_EPISODES}、seed 唯一，"
+        raise ValueError(f"ood {env_id}@xhard0：官方 test hard 子集应为原 episode {hard_specs.XHARD0_EPISODES}、seed 唯一，"
                          f"实际 episode {episodes}")
     return [{
         "tier": hard_specs.XHARD0,
@@ -107,22 +107,22 @@ def _xhard0_entries(env_id: str, metadata_index: Dict) -> List[Dict[str, Any]]:
     } for episode, seed in zip(episodes, seeds)]
 
 
-def _test_hard_entries(env_id: str, xhard0: List[Dict[str, Any]], root: str) -> List[Dict[str, Any]]:
+def _ood_entries(env_id: str, xhard0: List[Dict[str, Any]], root: str) -> List[Dict[str, Any]]:
     if env_id not in hard_specs.ALL_TASKS:
-        raise ValueError(f"test-hard 不含环境 {env_id!r}")
+        raise ValueError(f"ood 不含环境 {env_id!r}")
     entries: List[Dict[str, Any]] = list(xhard0)
     specs, cells = _root_specs(root)
     for tier in hard_specs.TIERS:
         expected = cells.get((env_id, tier), 0)
         if expected and (env_id, tier) not in hard_specs.EXPECTED_CELLS:
-            raise ValueError(f"test-hard ({env_id}, {tier}) 不在交付格表 EXPECTED_CELLS 内")
+            raise ValueError(f"ood ({env_id}, {tier}) 不在交付格表 EXPECTED_CELLS 内")
         if tier not in specs:
             continue  # 覆盖根缺该档文件：本档不发局（cells 里也没有该档）
         header, rows = specs[tier]
         chosen = sorted((row for row in rows if row["task"] == env_id and hard_specs.delivered(row)),
                         key=lambda row: int(row["candidate"]))
         if len(chosen) != expected:
-            raise ValueError(f"test-hard {env_id}@{tier} 正式局 {len(chosen)} 行，交付格表要求恰好 {expected} 行")
+            raise ValueError(f"ood {env_id}@{tier} 正式局 {len(chosen)} 行，交付格表要求恰好 {expected} 行")
         for row in chosen:
             entries.append({
                 "tier": tier,
@@ -135,7 +135,7 @@ def _test_hard_entries(env_id: str, xhard0: List[Dict[str, Any]], root: str) -> 
 
 
 class BenchmarkEnvBuilder(_OfficialBuilder):
-    """官方构建器 + ``dataset="test-hard"``／``"test-hard0"``；其余取值行为与官方相同（四个 Unmask 任务的 train 元数据除外）。"""
+    """官方构建器 + ``dataset="ood"``／``"hard-verify"``；其余取值行为与官方相同（四个 Unmask 任务的 train 元数据除外）。"""
 
     def __init__(
         self,
@@ -151,11 +151,11 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
             raise ValueError(f"Unsupported dataset '{dataset}'. Allowed datasets: {sorted(_ALLOWED_DATASETS)}")
         if dataset in _HARD_DATASETS and override_metadata_path is not None:
             raise ValueError(f"{dataset} 的 xhard0 只读官方 test 元数据，不接受 override_metadata_path")
-        if dataset == TEST_HARD0:
+        if dataset == HARD_VERIFY:
             if specs_root is not None:
-                raise ValueError("test-hard0 只含 xhard0、不读规格根，不接受 specs_root")
+                raise ValueError("hard-verify 只含 xhard0、不读规格根，不接受 specs_root")
             if env_id not in hard_specs.ALL_TASKS:
-                raise ValueError(f"test-hard0 不含环境 {env_id!r}")
+                raise ValueError(f"hard-verify 不含环境 {env_id!r}")
         self._episode_map: Optional[Dict[int, Dict[str, Any]]] = None
         self._specs_root: Optional[Path] = None
         super().__init__(
@@ -167,19 +167,19 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
             max_steps=max_steps,
         )
         self.dataset = dataset
-        if dataset == TEST_HARD:
+        if dataset == OOD:
             # 父类按 dataset="test" 读了官方 test 元数据：先取出 xhard0（hard 子集）再清空（v7 §1.1）
             xhard0 = _xhard0_entries(env_id, self.metadata_index) if hard_specs.XHARD0_IN_TEST_HARD else []
             self.metadata_index = {}
             root = hard_specs.specs_root(specs_root)
             self._specs_root = None if root == hard_specs.PACKAGED_SPECS_ROOT else root
-            self._episode_map = dict(enumerate(_test_hard_entries(env_id, xhard0, str(root))))
-        elif dataset == TEST_HARD0:
+            self._episode_map = dict(enumerate(_ood_entries(env_id, xhard0, str(root))))
+        elif dataset == HARD_VERIFY:
             # 只取官方 test 元数据的 hard 子集（12 局），随即清空元数据；不读规格根，与 XHARD0_IN_TEST_HARD 无关
             self._episode_map = dict(enumerate(_xhard0_entries(env_id, self.metadata_index)))
             self.metadata_index = {}
 
-    # ── 旧 V4 快照的薄包装（episode 号＝候选序号）；新代码一律用 dataset="test-hard" ──
+    # ── 旧 V4 快照的薄包装（episode 号＝候选序号）；新代码一律用 dataset="ood" ──
     @classmethod
     def from_v4_specs(
         cls,
@@ -230,7 +230,7 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
         return entry
 
     def resolve_episode(self, episode: int):
-        """返回 ``(seed, difficulty)``，与官方二元组同形；test-hard／test-hard0 下 difficulty 就是档位（xhard0..5）。"""
+        """返回 ``(seed, difficulty)``，与官方二元组同形；ood／hard-verify 下 difficulty 就是档位（xhard0..5）。"""
         if self._episode_map is None:
             return super().resolve_episode(episode)
         entry = self._entry(episode)
@@ -239,8 +239,8 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
     def resolve_identity(self, episode: int) -> Dict[str, Any]:
         """只读：本局身份 ``{episode, tier, candidate, seed, spec_sha256, source_run}``（官方二元 resolve_episode 不动）。
 
-        xhard0 局（test-hard 前置部分或 test-hard0 全部）另带 ``source_dataset="test"``、``source_episode``（官方原 episode），
-        ``candidate``／``spec_sha256``／``source_run`` 为 None；test-hard0 不读规格根，故永不带 ``specs_root``。"""
+        xhard0 局（ood 前置部分或 hard-verify 全部）另带 ``source_dataset="test"``、``source_episode``（官方原 episode），
+        ``candidate``／``spec_sha256``／``source_run`` 为 None；hard-verify 不读规格根，故永不带 ``specs_root``。"""
         if self._episode_map is None:
             seed, difficulty = super().resolve_episode(episode)
             return {"episode": int(episode), "tier": difficulty, "candidate": None, "seed": seed,
@@ -272,7 +272,7 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
         return len(self._episode_map)
 
     def _hard_env_kwargs(self, episode_idx: int) -> Dict[str, Any]:
-        """test-hard／test-hard0 局在 ``gym.make`` 前追加的参数：xhard0 只有 seed 与 difficulty="hard"，新值档加回注参数。"""
+        """ood／hard-verify 局在 ``gym.make`` 前追加的参数：xhard0 只有 seed 与 difficulty="hard"，新值档加回注参数。"""
         entry = self._entry(episode_idx)
         if entry["tier"] == hard_specs.XHARD0:
             # xhard0 走官方原生 hard 分支：只有 seed 与 difficulty="hard"，无 sampling_config、无规格（R2、R9）
@@ -303,9 +303,9 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
         include_front_camera_intrinsic: bool = False,
         include_wrist_camera_intrinsic: bool = False,
     ):
-        """与官方同名方法逐项同构；wrapper 取 robomme_hard 的类，test-hard 新值档加回注参数。
+        """与官方同名方法逐项同构；wrapper 取 robomme_hard 的类，ood 新值档加回注参数。
 
-        test-hard0（全为 xhard0）与官方 test 的 hard 局起法相同：只传 seed 与 difficulty="hard"。
+        hard-verify（全为 xhard0）与官方 test 的 hard 局起法相同：只传 seed 与 difficulty="hard"。
         ``max_steps`` 不随数据集自动取值：调用方不传时退回构造参数 ``max_steps``（xhard0 评估用 1300）。"""
         from robomme_hard.env_record_wrapper.DemonstrationWrapper import DemonstrationWrapper
 

@@ -4,14 +4,14 @@
 
 - ``--loop strict``：本仓库 V9 的 ``EnvSession(step_cap=max_steps)`` 语义——已执行 ``max_steps`` 步后再要 step 即不进入
   环境、记 ``strict_cap``（本文件内按同一语义实现，不依赖 ``env_client.py`` 的构造签名）。预期 1600／``strict_cap``。
-- ``--loop mme``：GroundSG 官方 ``eval_each_episode``——先 ``step``、``count += 1``，再判 ``count > max_steps`` 记
+- ``--loop mme-vla``：MME-VLA 官方 ``eval_each_episode``（GroundSG／FrameSamp+Modulation 共用）——先 ``step``、``count += 1``，再判 ``count > max_steps`` 记
   ``loop_count``，否则 ``terminated or truncated`` 即停。预期 ``max_steps + 1``／``loop_count``。
 - ``--loop range``：PonderPounce ``SyncEpisodeRunner``、Astra 的 ``for t in range(max_steps)``（环境结束即 break）。
   预期 ``max_steps``／``loop_exit``。
 
 环境先于循环口径结束时如实报 ``env_terminated``／``env_truncated`` 与实际步数（判 FAIL，记入决策项）。
 
-``--derive-range``（只配 ``--loop mme``）：xhard0 只真跑一局 mme 循环，``range`` 的结论取这一局的前 ``max_steps`` 步
+``--derive-range``（只配 ``--loop mme-vla``）：xhard0 只真跑一局 mme-vla（MME-VLA 官方 eval.py）循环，``range`` 的结论取这一局的前 ``max_steps`` 步
 （空动作确定、前缀相同），另出一行判定、标 ``source=prefix``，不写成真实跑过两条循环。
 
 判定行::
@@ -21,10 +21,10 @@
 
 用法::
 
-    python scripts/eval-official/cap_probe.py --dataset test-hard0 --max-steps 1300 --task VideoUnmask --episode 0 \
-        --loop mme --derive-range
-    python scripts/eval-official/cap_probe.py --dataset test-hard --max-steps 1600 --task VideoUnmask --episode <局> --loop strict
-    python scripts/eval-official/cap_probe.py --official --max-steps 1300 --task VideoUnmask --episode 3 --loop mme
+    python scripts/eval-official/cap_probe.py --dataset hard-verify --max-steps 1300 --task VideoUnmask --episode 0 \
+        --loop mme-vla --derive-range
+    python scripts/eval-official/cap_probe.py --dataset ood --max-steps 1600 --task VideoUnmask --episode <局> --loop strict
+    python scripts/eval-official/cap_probe.py --official --max-steps 1300 --task VideoUnmask --episode 3 --loop mme-vla
 
 ``--official`` 用官方 ``robomme`` builder 与 ``dataset="test"``（``--episode`` 为官方局号）；否则用
 ``robomme_hard`` builder（``--episode`` 为 builder 局号）。
@@ -38,11 +38,11 @@ from typing import Any, Callable
 
 import numpy as np
 
-LOOPS = ("strict", "mme", "range")
+LOOPS = ("strict", "mme-vla", "range")
 
 
 def expected(loop: str, max_steps: int) -> tuple[int, str]:
-    return {"strict": (max_steps, "strict_cap"), "mme": (max_steps + 1, "loop_count"),
+    return {"strict": (max_steps, "strict_cap"), "mme-vla": (max_steps + 1, "loop_count"),
             "range": (max_steps, "loop_exit")}[loop]
 
 
@@ -93,7 +93,7 @@ def run_loop(env, obs: dict, loop: str, max_steps: int, act: Callable[[dict], np
             if term or trunc:
                 reason = "env_terminated" if term else "env_truncated"
                 break
-    elif loop == "mme":
+    elif loop == "mme-vla":
         while True:
             obs, (term, trunc) = _step(obs)
             if steps > max_steps:
@@ -114,7 +114,7 @@ def run_loop(env, obs: dict, loop: str, max_steps: int, act: Callable[[dict], np
 
 
 def derive_range(flags: list[tuple[bool, bool]], max_steps: int) -> dict:
-    """由 mme 那一局的逐步标志推出 range 口径的结果（前 ``max_steps`` 步前缀）。"""
+    """由 mme-vla 那一局的逐步标志推出 range 口径的结果（前 ``max_steps`` 步前缀）。"""
     for i, (term, trunc) in enumerate(flags[:max_steps]):
         if term or trunc:
             return {"exec_steps": i + 1, "terminal_reason": "env_terminated" if term else "env_truncated"}
@@ -151,21 +151,21 @@ def make_builder(args):
 
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description="步数到顶实测（不加载模型，保持当前关节位置）")
-    ap.add_argument("--dataset", choices=["test-hard0", "test-hard"], default="test-hard0")
+    ap.add_argument("--dataset", choices=["hard-verify", "ood"], default="hard-verify")
     ap.add_argument("--max-steps", type=int, required=True)
     ap.add_argument("--task", required=True)
     ap.add_argument("--episode", type=int, required=True)
     ap.add_argument("--official", action="store_true", help="官方 robomme builder、dataset=test，--episode 为官方局号")
     ap.add_argument("--loop", choices=LOOPS, required=True)
-    ap.add_argument("--derive-range", action="store_true", help="只配 --loop mme：另出 range 口径（source=prefix）")
+    ap.add_argument("--derive-range", action="store_true", help="只配 --loop mme-vla：另出 range 口径（source=prefix）")
     ap.add_argument("--gripper", default="auto", help="夹爪指令：auto（按当前开度）或数值")
     return ap
 
 
 def main(argv: list[str] | None = None, *, builder_factory: Callable | None = None) -> int:
     args = build_parser().parse_args(argv)
-    if args.derive_range and args.loop != "mme":
-        raise SystemExit("--derive-range 只配 --loop mme")
+    if args.derive_range and args.loop != "mme-vla":
+        raise SystemExit("--derive-range 只配 --loop mme-vla")
     builder = (builder_factory or make_builder)(args)
     builder_cap = getattr(builder, "max_steps_without_demonstration", None)
     ds = "test" if args.official else args.dataset

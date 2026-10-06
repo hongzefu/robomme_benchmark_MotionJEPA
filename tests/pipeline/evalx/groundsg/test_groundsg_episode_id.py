@@ -12,7 +12,7 @@ SWING_GOAL = ("pick up the green cube, move it to the top of the right-side targ
 
 
 def _mc():
-    return load_script("eval-official/mmesg_client.py")
+    return load_script("eval-official/groundsg_client.py")
 
 
 def test_short_official_episode_id():

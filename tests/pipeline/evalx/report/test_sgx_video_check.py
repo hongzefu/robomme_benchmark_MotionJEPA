@@ -32,12 +32,12 @@ class FakeTools:
 
 def _row(seed, *, demo=2, exec_steps=5, attempt=1, **kw):
     return {**F.result_row(task="VideoUnmask", source_episode=3, seed=seed, exec_steps=exec_steps, attempt=attempt),
-            "key": f"VideoUnmask_xhard0_{seed}", "policy": "mmesg", "policy_variant": "ground-sg-oracle",
+            "key": f"VideoUnmask_xhard0_{seed}", "policy": "groundsg", "policy_variant": "ground-sg-oracle",
             "demo_frames": demo, **kw}
 
 
 def _ep(root: Path, seed: int, content: str = "codec=h264 ok=1 frames=8", attempt: int = 1, side: str = "new") -> Path:
-    d = root / "mmesg-ground-sg-oracle" / "test-hard0" / side / f"VideoUnmask_xhard0_{seed}.a{attempt}"
+    d = root / "groundsg-ground-sg-oracle" / "hard-verify" / side / f"VideoUnmask_xhard0_{seed}.a{attempt}"
     d.mkdir(parents=True, exist_ok=True)
     (d / "episode.mp4").write_text(content)
     (d / "summary.json").write_text("{}")
@@ -47,7 +47,7 @@ def _ep(root: Path, seed: int, content: str = "codec=h264 ok=1 frames=8", attemp
 
 def _run(tmp_path, rows, *extra, capsys=None, tools=None):
     res = F.write_jsonl(tmp_path / "res.jsonl", rows)
-    rc = V().main(["--route", "mmesg-oracle-new", "--root", str(tmp_path / "root"), "--results", str(res),
+    rc = V().main(["--route", "groundsg-oracle-new", "--root", str(tmp_path / "root"), "--results", str(res),
                    "--side", "new", "--frame-offset", "1", *extra], tools=tools or FakeTools())
     return rc, capsys.readouterr().out.strip().splitlines()[-1] if capsys else None
 
@@ -60,12 +60,12 @@ def test_pass_layout_and_frame_formula(tmp_path, capsys):
     rc, line = _run(tmp_path, [_row(1), _row(2, exec_steps=6), infra, _row(3, attempt=2, exec_steps=0, demo=7)],
                     capsys=capsys)
     assert rc == 1  # 第 3 个身份的 a2 目录没建 → missing
-    assert line.startswith("VIDEO_SAVED=FAIL route=mmesg-oracle-new episodes=3 missing=1 decode_fail=0 "
+    assert line.startswith("VIDEO_SAVED=FAIL route=groundsg-oracle-new episodes=3 missing=1 decode_fail=0 "
                            "frame_mismatch=0 raw_left=0")
     _ep(root, 3, "codec=h264 ok=1 frames=8", attempt=2)
     rc, line = _run(tmp_path, [_row(1), _row(2, exec_steps=6), infra, _row(3, attempt=2, exec_steps=0, demo=7)],
                     capsys=capsys)
-    assert rc == 0 and line == ("VIDEO_SAVED=PASS route=mmesg-oracle-new episodes=3 missing=0 decode_fail=0 "
+    assert rc == 0 and line == ("VIDEO_SAVED=PASS route=groundsg-oracle-new episodes=3 missing=0 decode_fail=0 "
                                 "frame_mismatch=0 raw_left=0 bytes=72 codec_bad=0 multi_mp4=0 key_mismatch=0")
 
 
@@ -85,7 +85,7 @@ def test_each_failure_kind_counted(tmp_path, capsys):
     rows = [_row(s) for s in (1, 2, 3, 4, 5)]
     rc, line = _run(tmp_path, rows, capsys=capsys)
     assert rc == 1
-    assert line.startswith("VIDEO_SAVED=FAIL route=mmesg-oracle-new episodes=5 missing=0 decode_fail=1 "
+    assert line.startswith("VIDEO_SAVED=FAIL route=groundsg-oracle-new episodes=5 missing=0 decode_fail=1 "
                            "frame_mismatch=2 raw_left=3 ")
     assert line.endswith("codec_bad=1 multi_mp4=1 key_mismatch=1")
     assert d3.exists()

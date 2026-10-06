@@ -657,9 +657,9 @@ def cmd_generate(args) -> int:
             env["ROBOMME_ENV_PACKAGE"] = "robomme_hard"
             meta["worker"] = "train_split_worker.run_one"
             if args.tier == "xhard0":
-                # H 侧 gym.make 实参取自 robomme_hard 的 test-hard builder 的 xhard0 条目（R9）
-                command += ["--builder-route", "test-hard"]
-                meta["builder_route"] = "test-hard"
+                # H 侧 gym.make 实参取自 robomme_hard 的 ood builder 的 xhard0 条目（R9）
+                command += ["--builder-route", "ood"]
+                meta["builder_route"] = "ood"
         else:
             env["ROBOMME_ENV_PACKAGE"] = "robomme"
             meta["worker"] = "official._worker"
@@ -1448,7 +1448,7 @@ def _builder_xhard0_rows() -> list[dict[str, Any]]:
     code = ("import json;from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder as B;"
             f"tasks={list(_all_tasks())!r};out=[]\n"
             "for t in tasks:\n"
-            " b=B(t,dataset='test-hard')\n"
+            " b=B(t,dataset='ood')\n"
             " for ep in range(12):\n"
             "  i=b.resolve_identity(ep);assert i['tier']=='xhard0',i;assert b._hard_env_kwargs(ep)=={'seed':i['seed'],'difficulty':'hard'}\n"
             "  out.append({'task':t,'episode':i['source_episode'],'seed':i['seed']})\n"

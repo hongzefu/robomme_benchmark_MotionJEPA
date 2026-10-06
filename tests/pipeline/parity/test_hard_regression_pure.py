@@ -175,7 +175,7 @@ def test_xhard0_switch_guard(hr):
     legacy = type("HS", (), {"XHARD0_PER_TASK": 7})  # 旧 hard_specs 无开关：视为开、前置局数取 XHARD0_PER_TASK
     hr._require_xhard0_in_test_hard(on)
     hr._require_xhard0_in_test_hard(legacy)
-    with pytest.raises(SystemExit, match="xhard0 已退出 test-hard"):
+    with pytest.raises(SystemExit, match="xhard0 已退出 ood"):
         hr._require_xhard0_in_test_hard(off)
     assert (hr._xhard0_prefix(on), hr._xhard0_prefix(off), hr._xhard0_prefix(legacy)) == (12, 0, 7)
     assert re.fullmatch(r"\d+", str(hr._xhard0_prefix(hr._hs_light())))

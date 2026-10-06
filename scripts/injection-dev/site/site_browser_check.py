@@ -53,7 +53,7 @@ _spec.loader.exec_module(C)
 SECTIONS = ("sidebar", "task-search", "task-nav", "status-panel", "outlier-section", "oracle-section", "task-section",
             "matrix", "tier-tabs", "filters", "legend", "rerun-panel", "chips", "episode", "notes")
 FINAL = ("success", "fail", "timeout", "error")
-POLICY_IDS = ("simplememvla", "mmevla")
+POLICY_IDS = ("simplememvla", "mmevla")  # 历史数据键：FrameSamp+Modulation 的页面 ID（site_catalog.EVAL_POLICY）
 
 
 def ev_status(ep: dict, entry: str, p: str) -> str:
@@ -122,7 +122,7 @@ def main() -> int:
                         for entry in (("new", "old") if tier == "xhard0" else ("new",)):
                             for p in POLICY_IDS:
                                 r = ((ep.get("eval") or {}).get(entry) or {}).get(p)
-                                need_media = tier != "xhard0" or p == "mmevla"
+                                need_media = tier != "xhard0" or p == "mmevla"  # 历史数据键：FrameSamp+Modulation 的页面 ID（site_catalog.EVAL_POLICY）
                                 if r is None or r.get("status") not in FINAL or (need_media and not r.get("media")):
                                     n["eval_missing"] += 1
             if n["eval_missing"]:

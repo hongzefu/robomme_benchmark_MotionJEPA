@@ -2,9 +2,9 @@
 相同（计划第二部分一节 S7；契约 C1～C11）。
 
 局目录 ``<root>/<key>.a<N>/``：
-- ``trace.jsonl``：本仓库 ``trace_writer.TraceWriter``，``route`` 为 ``smvla/orig`` 或 ``mme/orig``（C1）；``identity`` 含
-  ``task``、``tier``（xhard0）、``seed``、``source_episode``、``key``、``dataset``（test-hard0）、``attempt``（= N，C6）；
-- ``frames/``：``mmesg_client.RawFrameWriter``（只读复用），reset 全部帧后逐步追加该步观测，缺观测步记 ``missing_steps``；
+- ``trace.jsonl``：本仓库 ``trace_writer.TraceWriter``，``route`` 为 ``smvla/orig`` 或 ``perceptual-framesamp-modul/orig``（C1）；``identity`` 含
+  ``task``、``tier``（xhard0）、``seed``、``source_episode``、``key``、``dataset``（hard-verify）、``attempt``（= N，C6）；
+- ``frames/``：``groundsg_client.RawFrameWriter``（只读复用），reset 全部帧后逐步追加该步观测，缺观测步记 ``missing_steps``；
 - ``arrays.npz``：``step_arrays.StepArrays``，每个执行步的实际动作原值（C4）。
 
 计数三分（C8）写进 ``end``：``steps_attempted``（交给环境的步数）、``steps_observed``（返回有效观测的步数）、
@@ -25,8 +25,8 @@ if _OBS_DIR not in sys.path:
 import _obs_common as C  # noqa: E402
 import step_arrays as SA  # noqa: E402
 
-mmesg = C.load_eval_module("mmesg_client")
-tw = mmesg.trace_writer
+groundsg = C.load_eval_module("groundsg_client")
+tw = groundsg.trace_writer
 NOT_OBSERVED = tw.NOT_OBSERVED
 
 
@@ -44,7 +44,7 @@ class OrigEpisode:
                          "key": self.key, "dataset": C.DATASET, "attempt": int(self.attempt)}
         self.trace = tw.TraceWriter(self.dir / "trace.jsonl", route=route, identity=self.identity,
                                     max_steps=self.max_steps)
-        self.frames = mmesg.RawFrameWriter(self.dir / "frames") if write_frames else None
+        self.frames = groundsg.RawFrameWriter(self.dir / "frames") if write_frames else None
         self.arrays = SA.StepArrays()
         self.steps = 0
         self.observed = 0

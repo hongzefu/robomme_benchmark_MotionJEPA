@@ -1,6 +1,6 @@
 """GroundSG 新侧适配与官方循环的逐项一致（1003 评估计划 1.3，子任务 S3；判定行 OFFICIAL_ADAPTER）。
 
-两侧都跑官方 ``EpisodeEvaluator.eval_each_episode`` 原文：新侧经 ``mmesg_client.SessionRunner`` 委托到真实
+两侧都跑官方 ``EpisodeEvaluator.eval_each_episode`` 原文：新侧经 ``groundsg_client.SessionRunner`` 委托到真实
 ``EnvSession``，原侧经 ``official_hard_runner`` 用官方 ``EnvRunner`` 原文 + 官方 builder 替身。两侧给同一组假环境
 （下一帧由所执行动作决定）、各自一个同实现的假服务（动作块由本局请求指纹决定）、各自一份 swift 替身——任何
 一个请求、动作或子目标不同都会向后传播。比较三类：请求（轨迹 request 行、假服务收到的指纹、Qwen 请求）、
@@ -134,7 +134,7 @@ def test_oracle_messages_hand_expected(tmp_path):
     assert rn["decisions"] == 3 and rn["side"] == "new" and rn["demo_frames"] == F.N_RESET_FRAMES - 1
 
 
-def test_mme_loop_times_out_only_after_count_exceeds_1300(tmp_path):
+def test_framesamp_modul_loop_times_out_only_after_count_exceeds_1300(tmp_path):
     """官方 ``count > max_steps``：max_steps=1300 时两侧都真实执行 1301 步再记 timeout；原侧外围帧含第 1301 步。"""
     (new, wn, rn), (orig, wo, ro) = run_pair(F.ORACLE, F.Plan(), 1300, tmp_path)
     assert (rn["status"], rn["steps"], rn["_session_steps"]) == ("timeout", 1301, 1301)
@@ -187,8 +187,8 @@ def test_unknown_is_error_and_does_not_stop_seat(tmp_path, variant):
     assert summary == {"episodes": 2, "errors": 1, "aborted": False, "success": 1, "fail": 0, "timeout": 0}
     got = [json.loads(x) for x in (tmp_path / "orig" / "results.jsonl").read_text().splitlines()]
     assert [(g["status"], g["error"]) for g in got] == [("error", "success_flag=unknown"), ("success", None)]
-    assert all(g["side"] == "orig" and g["policy"] == "mmesg" and g["policy_variant"] == variant
-               and g["dataset"] == "test-hard0" for g in got)
+    assert all(g["side"] == "orig" and g["policy"] == "groundsg" and g["policy_variant"] == variant
+               and g["dataset"] == "hard-verify" for g in got)
 
 
 def test_trace_location_fallbacks(tmp_path):
@@ -206,7 +206,7 @@ def test_trace_location_fallbacks(tmp_path):
         sess = ec.EnvSession(ident["task"], 0, max_steps=60, builder=F.NewSideBuilder(ident["task"], world, {0: 3}),
                              dataset=F.DATASET)
         sess.build()
-        conn = {"max_steps": 60, "dataset": F.DATASET, "mme_variant": F.ORACLE, "episode_tag": "x.a1",
+        conn = {"max_steps": 60, "dataset": F.DATASET, "groundsg_variant": F.ORACLE, "episode_tag": "x.a1",
                 "policy_context": side.ctx, **conn_extra}
         res = side.mc.run_episode(sess, ident, conn, rec)
         sess.close()
@@ -252,7 +252,7 @@ def _check_kept(res: dict, *, source: str, label: str, frames: int) -> dict:
     ident = prov["identity"]
     assert (ident["key"], ident["attempt"], ident["dataset"], ident["source_episode"]) == \
         ("PickXtimes_xhard0_510300", 1, F.DATASET, 3)
-    assert prov["route"] == f"mmesg/{F.ORACLE}/new" and prov["dataset"] == F.DATASET and prov["attempt"] == 1
+    assert prov["route"] == f"groundsg/{F.ORACLE}/new" and prov["dataset"] == F.DATASET and prov["attempt"] == 1
     assert prov["terminal"]["status"] == res["status"] and prov["terminal"]["success_flag"] == res["success_flag"]
     assert prov["official_sha256"] == res["official_sha256"] and {"eval.py", "utils.py"} <= set(prov["official_sha256"])
     assert prov["video"] == {"name": mp4s[0].name, "sha256": _sha(mp4s[0]), "bytes": mp4s[0].stat().st_size}
@@ -398,21 +398,21 @@ def _make_mp4(path: Path, n: int) -> Path:
 
 
 def test_keep_official_videos_accepts_exactly_one_full_video(tmp_path, capsys):
-    mc = F.mmesg_client()
+    mc = F.groundsg_client()
     src = _make_mp4(tmp_path / "vd" / "a.mp4", 12)
     sha = _sha(src)
     got = mc.keep_official_videos(tmp_path / "vd", tmp_path / "ep" / "official", expected_frames=12,
-                                  provenance={"official_source": "official", "route": "mmesg/x/new"})
+                                  provenance={"official_source": "official", "route": "groundsg/x/new"})
     assert got == [str(tmp_path / "ep" / "official" / "a.mp4")] and not src.exists()
     prov = json.loads((tmp_path / "ep" / "official" / "provenance.json").read_text())
-    assert prov["video"]["sha256"] == sha and prov["frames"]["decoded"] == 12 and prov["route"] == "mmesg/x/new"
+    assert prov["video"]["sha256"] == sha and prov["frames"]["decoded"] == 12 and prov["route"] == "groundsg/x/new"
     assert "OFFICIAL_VIDEO=KEPT" in capsys.readouterr().out
 
 
 @pytest.mark.parametrize("case", ["truncated", "wrong_frames", "two_files", "no_file", "dst_not_empty"])
 def test_keep_official_videos_rejects(tmp_path, capsys, case):
     """截断 mp4、错帧数、多片、无片、目标非空：一律拒绝，不搬、不写 provenance、不打印 KEPT。"""
-    mc = F.mmesg_client()
+    mc = F.groundsg_client()
     vd, dst = tmp_path / "vd", tmp_path / "ep" / "official"
     src = _make_mp4(vd / "a.mp4", 12)
     expected = 12
@@ -438,7 +438,7 @@ def test_keep_official_videos_rejects(tmp_path, capsys, case):
 
 def test_rejected_official_video_keeps_raw_and_records_error(tmp_path, monkeypatch):
     """核帧失败（这里令期望帧数 +1）时局照常收尾：official_source=none、记 official_save_error、无 official/。"""
-    mc = F.mmesg_client()
+    mc = F.groundsg_client()
     real = mc.episode_counts
 
     def off_by_one(*a, **kw):
@@ -465,7 +465,7 @@ def test_keep_official_unset_is_base_behavior(tmp_path, monkeypatch, name):
     任何新增字段（缺观测步仍是旧写法）。"""
     plan, max_steps = SCENARIOS[name]
     orig = F.OrigSide(F.ORACLE, max_steps, tmp_path, F.World(default=plan))
-    mc = orig.ohr.mmesg  # 原侧按自己的加载器取到的那份模块
+    mc = orig.ohr.groundsg  # 原侧按自己的加载器取到的那份模块
     assert mc.run_official_episode.__kwdefaults__["keep_official"] is mc.trace_writer.UNSET
     seen = []
     real = mc.run_official_episode

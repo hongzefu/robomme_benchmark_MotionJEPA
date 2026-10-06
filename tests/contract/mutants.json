@@ -1,7 +1,7 @@
 [
  {
   "id": "M04",
-  "target": "src/robomme_hard/env_metadata/test-hard/xhard1/specs.jsonl",
+  "target": "src/robomme_hard/env_metadata/ood/xhard1/specs.jsonl",
   "method": "隔离副本（scratchpad 复制 src/scripts/tests/challenge_interface/pyproject.toml）：xhard1 第一个 selected 行 seed 加 1，只改这一行、不重签",
   "expect_fail": [
    "tests/contract/test_packaged_specs.py::test_packaged_bytes_equal_pins",
@@ -43,7 +43,7 @@
  },
  {
   "id": "M05",
-  "target": "src/robomme_hard/env_metadata/test-hard/xhard1/specs.jsonl",
+  "target": "src/robomme_hard/env_metadata/ood/xhard1/specs.jsonl",
   "method": "隔离副本：xhard1 第一个 PickXtimes selected 行 spec.objects.num_repeats 加 1，重算 spec_sha256 与 header 三个散列（植入后 validate_specs 仍通过）",
   "expect_fail": [
    "tests/contract/test_packaged_specs.py::test_packaged_bytes_equal_pins",
@@ -65,7 +65,7 @@
  },
  {
   "id": "M06",
-  "target": "src/robomme_hard/env_metadata/test-hard/xhard1/specs.jsonl",
+  "target": "src/robomme_hard/env_metadata/ood/xhard1/specs.jsonl",
   "method": "隔离副本：xhard1 candidate==1 的行改 True、candidate==2 的行 attempt 改浮点，重算 header 三个散列",
   "expect_fail": [
    "tests/contract/test_packaged_specs.py::test_packaged_bytes_equal_pins",
@@ -144,7 +144,7 @@
  {
   "id": "M10",
   "target": "src/robomme_hard/env_record_wrapper/hard_builder.py",
-  "method": "进程内（pytest 插件，不落盘）：包装 _test_hard_entries，返回列表的前两个身份互换（总数不变）",
+  "method": "进程内（pytest 插件，不落盘）：包装 _ood_entries，返回列表的前两个身份互换（总数不变）",
   "expect_fail": [
    "tests/contract/test_builder_800.py::test_builder_800_every_episode",
    "tests/contract/test_gate_set.py::test_builder_episode_equals_real_builder",

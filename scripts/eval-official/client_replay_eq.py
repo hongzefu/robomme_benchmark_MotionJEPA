@@ -1,11 +1,14 @@
-"""客户端回放等价核对 ``CLIENT_REPLAY_EQ``（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分一节「主会话」、三节闸门）。
+"""客户端回放等价核对 ``CLIENT_REPLAY_EQ``（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分一节「主会话」、三节闸门；
+1006-rename-official-names-and-stage3-eval-plan.md 八.10 第 2 条改造：两侧检出目录 + sha 核对、两侧接口分别适配、
+同 crash／零事件一律 FAIL、自检强制）。
 
-目的：证明第二阶段给新侧客户端加的记录与媒体接线不改变策略行为。固定观测（确定性假环境）与固定服务回包（按调用
-序号确定、与请求内容无关）下，分别用 ``--base`` 与 ``--candidate`` 两个检出里的客户端各跑同一组局，比较：
+目的：证明候选检出的客户端改动（如 R1 只改名）不改变策略行为。固定观测（确定性假环境）与固定服务回包（按调用
+序号确定、与请求内容无关）下，分别用 ``--base`` 与 ``--candidate`` 两个检出目录里的客户端各跑同一组局，比较：
 
-- ``request``：发给模型服务的每条消息。mme、mmesg 在 websocket 字节层截获（``websockets.sync.client.connect`` 换成
-  进程内假连接，比的是 msgpack 打包后的原始字节 sha256）；smvla 注入假连接，比消息对象的规范化字节；pp 注入假
-  vla-eval 连接，比协议帧载荷的规范化字节（EPISODE_END 的墙钟 ``elapsed_sec`` 剔除）。
+- ``request``：发给模型服务的每条消息。FrameSamp+Modulation、GroundSG 在 websocket 字节层截获
+  （``websockets.sync.client.connect`` 换成进程内假连接，比的是 msgpack 打包后的原始字节 sha256）；SimpleMemVLA
+  注入假连接，比消息对象的规范化字节；PonderPounce 注入假 vla-eval 连接，比协议帧载荷的规范化字节（EPISODE_END 的
+  墙钟 ``elapsed_sec`` 剔除）。
 - ``action``：交给环境 ``step`` 的每个动作的 dtype／shape／原始字节。
 - ``control``：环境与服务调用的先后顺序与次数（reset、step、各消息类型）。
 - ``terminal``：返回字典的 ``status``、``task_success``、``steps``。
@@ -13,20 +16,31 @@
 新增的记录与媒体字段（轨迹文件、录像事件、返回字典里的其他键）列为允许差异，不参与判定。
 
 每个检出在独立子进程里运行（``--_worker``），模块一律从该检出的 ``scripts/eval-official`` 按路径加载、``src`` 置于
-``sys.path`` 最前，避免两个检出互相串味；子进程先打印 ``robomme_hard.__file__`` 供核对。
+``sys.path`` 最前，避免两个检出互相串味；子进程先核对 ``robomme_hard.__file__`` 落在该检出的 ``src`` 下。
 
-路线：``mmesg``（GroundSG oracle 变体；qwenvl 与 oracle 只差子目标预测器，客户端代码同一份）、``smvla``、``mme``、
-``pp``。每条路线三个场景：第 37 步成功（跨多次决策）、第 5 步环境异常、步数上限 40 触发超时。Astra 不在本工具覆盖
-范围（批次 5 只跑 2 局付费 smoke，由 S3 的零外联夹具测试覆盖）。
+**两侧接口**：每个检出按文件是否存在判定接口——官方名接口（``framesamp_modul_client``／``groundsg_client``、配置键
+``groundsg_variant``、数据集 ``hard-verify``）或改名前接口（模块名、配置键、数据集名取自 ``official_defs.py`` 的
+``LEGACY_*`` 别名表）；同一路线在两侧各用本侧的名字驱动，比较的是行为而不是名字。
+
+**检出身份**：``--base``／``--candidate`` 必须是检出目录，``--base-sha``／``--candidate-sha`` 必填；工具以
+``git -C <目录> rev-parse HEAD`` 核对，不等即 ``CLIENT_REPLAY_SHA=FAIL``、不跑比较、退出 1。
+
+路线（官方名）：``groundsg-oracle``（GroundSG oracle 变体；qwenvl 与 oracle 只差子目标预测器，客户端代码同一份）、
+``smvla``（SimpleMemVLA）、``perceptual-framesamp-modul``（FrameSamp+Modulation）、``pp``（PonderPounce）。每条路线三个
+场景：第 37 步成功（跨多次决策）、第 5 步环境异常、步数上限 40 触发超时。任一场景缺失、任一侧崩溃（**两侧同样崩溃
+也算 FAIL**）、任一侧零环境 step 事件或零服务事件，都计 ``control_diff``。3-tier Astra（代码 ID astra）不在本工具覆盖范围（零外联夹具测试
+覆盖）。
 
 用法：
-  uv run --no-sync python scripts/eval-official/client_replay_eq.py --base <检出目录> --candidate <检出目录> \
-      --routes mmesg,smvla,mme,pp [--third-party <含 mme-vla 的 third_party 目录>] [--self-test]
-判定行（每路线一行）：
+  uv run --no-sync python scripts/eval-official/client_replay_eq.py \
+      --base <检出目录> --base-sha <40 位 sha> --candidate <检出目录> --candidate-sha <40 位 sha> \
+      [--routes groundsg-oracle,smvla,perceptual-framesamp-modul,pp] [--third-party <含 mme-vla 的 third_party 目录>]
+判定行（每路线一行，另有一条汇总行）：
   CLIENT_REPLAY_EQ=PASS|FAIL base=<sha> candidate=<sha> route=<r> request_diff=<n> action_diff=<n> control_diff=<n>
   terminal_diff=<n>
-``--self-test`` 另以「故意改动」的候选（在子进程内对动作、请求、调用顺序各做一处篡改）跑一遍，必须得到 FAIL，输出
-``CLIENT_REPLAY_SELFTEST=PASS|FAIL``。
+  CLIENT_REPLAY_EQ_SUMMARY=PASS|FAIL base=<sha> candidate=<sha> routes=<n> scenarios=<n> route_pass=<n> selftest_pass=<n>
+自检**强制执行**（``--self-test`` 旗标保留以兼容旧命令，给不给都跑）：以「故意改动」的候选（在子进程内对动作、
+请求、调用顺序各做一处篡改）跑一遍，三类都必须被抓到，输出 ``CLIENT_REPLAY_SELFTEST=PASS|FAIL``；自检不过整体 FAIL。
 """
 from __future__ import annotations
 
@@ -43,7 +57,7 @@ import zlib
 from pathlib import Path
 from typing import Any
 
-ROUTES = ("mmesg", "smvla", "mme", "pp")
+ROUTES = ("groundsg-oracle", "smvla", "perceptual-framesamp-modul", "pp")
 SCENARIOS = ({"name": "success", "done_at": 37, "raise_at": None, "max_steps": 200},
              {"name": "env_error", "done_at": None, "raise_at": 5, "max_steps": 200},
              {"name": "timeout", "done_at": None, "raise_at": None, "max_steps": 40})
@@ -200,9 +214,38 @@ def _load(root: Path, name: str):
     return mod
 
 
-def _identity(scen):
+def official_defs():
+    """本工具同目录的 ``official_defs.py``（官方名与 ``LEGACY_*`` 别名表；不从被比较的检出里取）。"""
+    mod = sys.modules.get("official_defs")
+    if mod is None:
+        spec = importlib.util.spec_from_file_location("official_defs", Path(__file__).resolve().parent / "official_defs.py")
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["official_defs"] = mod
+        spec.loader.exec_module(mod)
+    return mod
+
+
+def side_interface(root: Path) -> dict:
+    """按检出里实际存在的文件判定该侧接口：官方名优先，其次改名前的名字（取自别名表）；都不全即 ValueError。"""
+    defs = official_defs()
+    d = Path(root) / "scripts" / "eval-official"
+    official = {"name": "official", "fsm_module": "framesamp_modul_client", "gsg_module": "groundsg_client",
+                "variant_key": "groundsg_variant", "dataset": defs.DATASET_HARD_VERIFY}
+    rev_mod = {new: old for old, new in defs.LEGACY_MODULE_ALIASES.items()}
+    rev_key = {new: old for old, new in defs.LEGACY_CONFIG_KEY_ALIASES.items()}
+    rev_ds = {new: old for old, new in defs.LEGACY_DATASET_ALIASES.items()}
+    legacy = {"name": "legacy", "fsm_module": rev_mod[official["fsm_module"]],
+              "gsg_module": rev_mod[official["gsg_module"]], "variant_key": rev_key[official["variant_key"]],
+              "dataset": rev_ds[official["dataset"]]}
+    for iface in (official, legacy):
+        if (d / f"{iface['fsm_module']}.py").is_file() and (d / f"{iface['gsg_module']}.py").is_file():
+            return iface
+    raise ValueError(f"{d} 既不是官方名接口也不是改名前接口（客户端模块缺失）")
+
+
+def _identity(scen, iface: dict):
     return {"task": "PickXtimes", "tier": "xhard0", "seed": 1234, "source_episode": 3, "builder_episode": 0,
-            "key": "PickXtimes_xhard0_1234", "dataset": "test-hard0", "attempt": 1}
+            "key": "PickXtimes_xhard0_1234", "dataset": iface["dataset"], "attempt": 1}
 
 
 def _patch_ws(log, counters):
@@ -210,26 +253,28 @@ def _patch_ws(log, counters):
     wsc.connect = lambda *a, **k: FakeWS(log, counters)
 
 
-def run_route(root: Path, route: str, scen: dict, tamper: str | None, tmp: Path) -> dict:
+def run_route(root: Path, route: str, scen: dict, tamper: str | None, tmp: Path, iface: dict | None = None) -> dict:
+    iface = iface or side_interface(root)
     log = Log(tamper)
     sess = FakeSession(log, scen)
-    ident = _identity(scen)
+    ident = _identity(scen, iface)
     ep_dir = tmp / f"{ident['key']}.a1"
     ep_dir.mkdir(parents=True, exist_ok=True)
     rec = NullRecorder(ep_dir)
-    conn_info = {"host": "127.0.0.1", "port": 1, "max_steps": scen["max_steps"], "dataset": "test-hard0",
+    conn_info = {"host": "127.0.0.1", "port": 1, "max_steps": scen["max_steps"], "dataset": iface["dataset"],
                  "trace_dir": str(ep_dir), "episode_tag": f"{ident['key']}.a1"}
     counters = {"infer": 0}
-    if route == "mme":
+    if route == "perceptual-framesamp-modul":
         _patch_ws(log, counters)
-        mod = _load(root, "mme_client")
+        mod = _load(root, iface["fsm_module"])
         res = mod.run_episode(sess, ident, conn_info, rec)
-    elif route == "mmesg":
+    elif route == "groundsg-oracle":
         _patch_ws(log, counters)
-        mod = _load(root, "mmesg_client")
-        ctx = mod.make_policy_context({"mme_variant": "ground-sg-oracle", "port": 1, "max_steps": scen["max_steps"],
+        mod = _load(root, iface["gsg_module"])
+        vkey = iface["variant_key"]
+        ctx = mod.make_policy_context({vkey: "ground-sg-oracle", "port": 1, "max_steps": scen["max_steps"],
                                        "out": str(tmp)})
-        conn_info.update(policy_context=ctx, mme_variant="ground-sg-oracle")
+        conn_info.update({"policy_context": ctx, vkey: "ground-sg-oracle"})
         res = mod.run_episode(sess, ident, conn_info, rec)
     elif route == "smvla":
         srv = _load(root, "smvla_server")
@@ -334,10 +379,18 @@ def worker(args) -> int:
     out = {"root": str(root), "robomme_hard": robomme_hard.__file__, "runs": {}}
     if not str(Path(robomme_hard.__file__).resolve()).startswith(str(root / "src")):
         out["import_error"] = f"robomme_hard 来自 {robomme_hard.__file__}，不在 {root}/src"
+    try:
+        iface = side_interface(root)
+    except ValueError as e:
+        out["import_error"] = str(e)
+        Path(args.out).write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
+        return 0
+    out["iface"] = iface["name"]
     with tempfile.TemporaryDirectory(prefix="replay-") as td:
         for scen in SCENARIOS:
             try:
-                out["runs"][scen["name"]] = run_route(root, args.route, scen, args.tamper, Path(td) / scen["name"])
+                out["runs"][scen["name"]] = run_route(root, args.route, scen, args.tamper, Path(td) / scen["name"],
+                                                      iface)
             except Exception as e:  # 驱动本身崩溃也是一种可比较的结果
                 out["runs"][scen["name"]] = {"crash": f"{type(e).__name__}: {e}"[:400]}
     Path(args.out).write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
@@ -365,22 +418,39 @@ def _run_side(root: Path, route: str, third_party: Path, tamper: str | None, py:
     return data
 
 
+def _count(events: list, kind: str, name: str | None = None) -> int:
+    return sum(1 for e in events if e[0] == kind and (name is None or e[1] == name))
+
+
 def compare(a: dict, b: dict) -> dict:
+    """两侧一条路线的比较。场景集合以 ``SCENARIOS`` 为准；缺场景、任一侧崩溃（两侧同样崩溃也算）、任一侧零环境
+    step 事件或零服务事件都计 ``control_diff``，不跳过。"""
     d = {"request_diff": 0, "action_diff": 0, "control_diff": 0, "terminal_diff": 0, "notes": []}
-    for side in (a, b):
+    for tag, side in (("base", a), ("cand", b)):
         if "worker_failed" in side or "import_error" in side:
             d["control_diff"] += 1
-            d["notes"].append(side.get("worker_failed") or side.get("import_error"))
+            d["notes"].append(f"{tag}: {side.get('worker_failed') or side.get('import_error')}")
     if d["notes"]:
         return d
-    for name in sorted(set(a["runs"]) | set(b["runs"])):
-        ra, rb = a["runs"].get(name, {}), b["runs"].get(name, {})
+    for name in [sc["name"] for sc in SCENARIOS]:
+        ra, rb = a.get("runs", {}).get(name), b.get("runs", {}).get(name)
+        if ra is None or rb is None:
+            d["control_diff"] += 1
+            d["notes"].append(f"{name}: 场景缺失 base={ra is not None} cand={rb is not None}")
+            continue
         if "crash" in ra or "crash" in rb:
-            if ra.get("crash") != rb.get("crash"):
-                d["control_diff"] += 1
-                d["notes"].append(f"{name}: 崩溃不一致 base={ra.get('crash')} cand={rb.get('crash')}")
+            d["control_diff"] += 1
+            same = ra.get("crash") == rb.get("crash")
+            d["notes"].append(f"{name}: 驱动崩溃（{'两侧相同' if same else '两侧不同'}）base={ra.get('crash')} "
+                              f"cand={rb.get('crash')}")
             continue
         ea, eb = ra["events"], rb["events"]
+        empty = [tag for tag, ev in (("base", ea), ("cand", eb))
+                 if _count(ev, "env", "step") == 0 or _count(ev, "srv") == 0]
+        if empty:
+            d["control_diff"] += 1
+            d["notes"].append(f"{name}: 零事件 sides={','.join(empty)}（环境 step 或服务调用为 0）")
+            continue
         if [e[:2] for e in ea] != [e[:2] for e in eb]:
             d["control_diff"] += 1
             d["notes"].append(f"{name}: 调用序列不同（{len(ea)} vs {len(eb)} 个事件）")
@@ -397,22 +467,47 @@ def compare(a: dict, b: dict) -> dict:
     return d
 
 
+def is_clean(d: dict) -> bool:
+    return not any(d[k] for k in ("request_diff", "action_diff", "control_diff", "terminal_diff"))
+
+
 def _git_sha(root: Path) -> str:
+    """检出目录的完整 HEAD sha；取不到返回 ``unknown``。"""
     try:
         return subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True,
-                              check=True).stdout.strip()[:12]
+                              check=True).stdout.strip()
     except Exception:
         return "unknown"
 
 
+def check_checkouts(pairs: list[tuple[str, Path, str]]) -> list[str]:
+    """[(侧名, 目录, 期望 sha)] → 不符说明列表（空表示全部相符）。期望 sha 须为 40 位、目录须存在且 HEAD 相等。"""
+    bad = []
+    for side, root, want in pairs:
+        if not root.is_dir():
+            bad.append(f"side={side} dir_missing={root}")
+            continue
+        got = _git_sha(root)
+        if len(want or "") != 40 or got != want:
+            bad.append(f"side={side} want={want} got={got} dir={root}")
+    return bad
+
+
+def _default_third_party() -> str:
+    env = os.environ.get("SGEVAL_THIRD_PARTY")
+    return env or str(Path(__file__).resolve().parents[2] / "third_party")
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
-    ap.add_argument("--base")
-    ap.add_argument("--candidate")
+    ap.add_argument("--base", help="base 检出目录")
+    ap.add_argument("--base-sha", help="base 检出应有的 HEAD（40 位）")
+    ap.add_argument("--candidate", help="candidate 检出目录")
+    ap.add_argument("--candidate-sha", help="candidate 检出应有的 HEAD（40 位）")
     ap.add_argument("--routes", default=",".join(ROUTES))
-    ap.add_argument("--third-party", default=str(Path(__file__).resolve().parents[2] / "third_party"))
+    ap.add_argument("--third-party", default=_default_third_party())
     ap.add_argument("--python", default=sys.executable)
-    ap.add_argument("--self-test", action="store_true")
+    ap.add_argument("--self-test", action="store_true", help="兼容旧命令；自检一律强制执行")
     ap.add_argument("--_worker", action="store_true")
     ap.add_argument("--root")
     ap.add_argument("--route")
@@ -421,35 +516,48 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     if args._worker:
         return worker(args)
+    missing = [f for f in ("base", "base_sha", "candidate", "candidate_sha") if not getattr(args, f)]
+    if missing:
+        ap.error(f"缺少 {', '.join('--' + m.replace('_', '-') for m in missing)}")
     base, cand = Path(args.base).resolve(), Path(args.candidate).resolve()
     tp = Path(args.third_party).resolve()
     routes = [r for r in args.routes.split(",") if r]
     bad = [r for r in routes if r not in ROUTES]
-    if bad:
+    if bad or not routes:
         print(f"未知路线 {bad}；可选 {ROUTES}")
         return 2
-    bs, cs = _git_sha(base), _git_sha(cand)
-    all_ok = True
+    sha_bad = check_checkouts([("base", base, args.base_sha), ("candidate", cand, args.candidate_sha)])
+    for b in sha_bad:
+        print(f"CLIENT_REPLAY_SHA=FAIL {b}", flush=True)
+    bs, cs = args.base_sha, args.candidate_sha
+    if sha_bad:
+        print(f"CLIENT_REPLAY_EQ_SUMMARY=FAIL base={bs} candidate={cs} routes={len(routes)} scenarios=0 route_pass=0 "
+              f"selftest_pass=0 reason=sha_mismatch", flush=True)
+        return 1
+    print(f"CLIENT_REPLAY_SHA=PASS base={bs} candidate={cs}", flush=True)
+    route_pass = selftest_pass = 0
     for r in routes:
         a = _run_side(base, r, tp, None, args.python)
         b = _run_side(cand, r, tp, None, args.python)
+        print(f"CLIENT_REPLAY_IFACE route={r} base={a.get('iface')} candidate={b.get('iface')}", flush=True)
         d = compare(a, b)
-        ok = not any(d[k] for k in ("request_diff", "action_diff", "control_diff", "terminal_diff"))
-        all_ok &= ok
-        for n in d["notes"][:5]:
+        ok = is_clean(d)
+        route_pass += ok
+        for n in d["notes"][:8]:
             print(f"CLIENT_REPLAY_NOTE route={r} {n}")
         print(f"CLIENT_REPLAY_EQ={'PASS' if ok else 'FAIL'} base={bs} candidate={cs} route={r} "
               f"request_diff={d['request_diff']} action_diff={d['action_diff']} control_diff={d['control_diff']} "
               f"terminal_diff={d['terminal_diff']}", flush=True)
-        if args.self_test:
-            caught = {}
-            for t in TAMPERS:
-                dt = compare(a, _run_side(cand, r, tp, t, args.python))
-                caught[t] = any(dt[k] for k in ("request_diff", "action_diff", "control_diff", "terminal_diff"))
-            st = all(caught.values())
-            all_ok &= st
-            print(f"CLIENT_REPLAY_SELFTEST={'PASS' if st else 'FAIL'} route={r} "
-                  + " ".join(f"{t}={'caught' if v else 'missed'}" for t, v in caught.items()), flush=True)
+        caught = {}
+        for t in TAMPERS:
+            caught[t] = not is_clean(compare(a, _run_side(cand, r, tp, t, args.python)))
+        st = ok and all(caught.values())  # 基线本身不等时自检无意义，一并判 FAIL
+        selftest_pass += st
+        print(f"CLIENT_REPLAY_SELFTEST={'PASS' if st else 'FAIL'} route={r} "
+              + " ".join(f"{t}={'caught' if v else 'missed'}" for t, v in caught.items()), flush=True)
+    all_ok = route_pass == len(routes) and selftest_pass == len(routes)
+    print(f"CLIENT_REPLAY_EQ_SUMMARY={'PASS' if all_ok else 'FAIL'} base={bs} candidate={cs} routes={len(routes)} "
+          f"scenarios={len(routes) * len(SCENARIOS)} route_pass={route_pass} selftest_pass={selftest_pass}", flush=True)
     return 0 if all_ok else 1
 
 

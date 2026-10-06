@@ -1,4 +1,4 @@
-# MME 原侧重跑的客户端环境（1005-eval-video-phase2-all-models-rerun-plan.md 批次 3a）：在 client-env 之上只加官方
+# FrameSamp+Modulation 原侧重跑的客户端环境（1005-eval-video-phase2-all-models-rerun-plan.md 批次 3a）：在 client-env 之上只加官方
 # robomme_policy_learning examples/robomme/requirements.txt 钉死的 google-generativeai==0.8.6——原版 eval.py 经
 # subgoal_predictor.py 无条件导入 gemini（google.generativeai），本轮 client-env 没有它（E0 当时的 robomme_env 已删）。
 # 以下为 client-env 原注释：
@@ -13,7 +13,7 @@
 #   flash-attn==2.8.3 在环境建好后单独编译安装（--no-build-isolation），构建信息记入留档，不写进本文件。
 #   客户端解释器：BENCH_PY="$E/bin/python"
 [project]
-name = "sgeval-orig-mme-client-env"
+name = "sgeval-orig-framesamp-modul-client-env"
 version = "0.1.0"
 requires-python = "==3.11.*"
 dependencies = [

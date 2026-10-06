@@ -158,12 +158,12 @@
   "domain": "C18",
   "source": "scripts/evaluation_hard.py",
   "symbol": "与 scripts/evaluation.py 的逐行差异；BenchmarkEnvBuilder(...) 的 dataset／max_steps 关键字",
-  "oracle": "恰好 3 个同行号单行 hunk：import 包名、dataset=\"test-hard\"、max_steps=<整数>；后两处为 BenchmarkEnvBuilder 调用的关键字参数",
+  "oracle": "恰好 3 个单行 hunk 加 TASKS 之前 1 个纯插入块：import 包名、dataset=DATASET、max_steps=DATASET_MAX_STEPS[DATASET]；后两处为 BenchmarkEnvBuilder 调用的关键字参数；插入块只含两个赋值 DATASET_MAX_STEPS={\"hard-verify\": 1300, \"ood\": 1600}、DATASET=\"ood\"（1006 改名计划 R1：示例两段）",
   "positive": "真实入口满足",
-  "negative": "判定器：多一行、少一行、两行连块均判形态不合",
-  "boundaries": "不断言 max_steps 数值（Q16）",
+  "negative": "判定器：多一行、少一行、两行连块、两个插入块均判形态不合",
+  "boundaries": "本阶段 ood 配 1600（1800 由后续子任务改）",
   "nodeids": [
-   "tests/static/test_entry_scripts.py::test_evaluation_hard_diff_is_exactly_three_single_line_hunks",
+   "tests/static/test_entry_scripts.py::test_evaluation_hard_diff_is_three_single_line_hunks_and_dataset_block",
    "tests/static/test_entry_scripts.py::test_single_line_hunks_negatives"
   ],
   "resource": "cpu",
@@ -175,7 +175,7 @@
   "domain": "C18",
   "source": "scripts/evaluation_hard.py",
   "symbol": "BenchmarkEnvBuilder(max_steps=...)",
-  "oracle": "按档步数查表 TIER_MAX_STEPS 已删除（1003 评估计划 1.1，原 Q16 了结）：步数上限由入口按数据集给出，test-hard 为 1600、test-hard0 为 1300；evaluation_hard.py 保持 dataset=\"test-hard\"、max_steps=1600 不改，xhard0 的用法是把这两个实参改成 \"test-hard0\"、1300",
+  "oracle": "按档步数查表 TIER_MAX_STEPS 已删除（1003 评估计划 1.1，原 Q16 了结）：步数上限由入口按数据集给出，ood 为 1600、hard-verify 为 1300；evaluation_hard.py 的数据集选择块给出两个接口 hard-verify↔1300、ood↔1600（默认 ood），xhard0 的用法是把 DATASET 改成 \"hard-verify\"",
   "positive": "",
   "negative": "",
   "boundaries": "本块只断言形态（见 C18-EVAL-HARD-DIFF），不读查表、不钉数值",
@@ -246,6 +246,29 @@
    "tests/static/test_package.py::test_import_resolves_to_tmp_env_outside_repo"
   ],
   "resource": "cpu,slow",
+  "mutants": [],
+  "status": "verified"
+ },
+ {
+  "id": "C13-OFFICIAL-NAMES",
+  "domain": "C13",
+  "source": [
+   "scripts/eval-official/official_defs.py"
+  ],
+  "symbol": "OFFICIAL_NAMES 残留检查：scripts/、src/robomme_hard/、tests/ 下 git 跟踪的活代码（冻结配置、vendored 官方源码、三个上游入口、包内规格、UPSTREAM.json、*.md 除外）",
+  "oracle": "1006 改名计划第一部分一、第二部分八.2：旧名写法由测试独立列出（mme 标签／标识符、MME 名／标识符、mmesg、mmevla、test-hard、TEST_HARD 常量、test_hard0）；豁免只有官方家族名形式、official_defs.py 的 LEGACY_NAMES 段、标注「历史目录名」或「历史数据键」的行、XHARD0_IN_TEST_HARD 系列、测试自身",
+  "positive": "真实仓库 OFFICIAL_NAMES=PASS files=<n> hits=0；别名表段在 official_defs.py 恰一对且别处没有",
+  "negative": "15 种旧写法逐条被抓；官方名、家族名、XHARD0_IN_TEST_HARD、test_hard_parity 一类测试名、标注行不误报；别名表段只在 official_defs.py 豁免",
+  "boundaries": "*.md 不扫（现行文档由主会话另改）；只看文本，不判语义",
+  "nodeids": [
+   "tests/static/test_official_names.py::test_official_names_no_legacy_residue",
+   "tests/static/test_official_names.py::test_alias_block_present_and_closed",
+   "tests/static/test_official_names.py::test_scan_catches_legacy_spellings",
+   "tests/static/test_official_names.py::test_scan_ignores_official_and_whitelisted",
+   "tests/static/test_official_names.py::test_alias_block_whitelist_only_in_alias_file",
+   "tests/static/test_official_names.py::test_verdict_line_format"
+  ],
+  "resource": "cpu",
   "mutants": [],
   "status": "verified"
  }

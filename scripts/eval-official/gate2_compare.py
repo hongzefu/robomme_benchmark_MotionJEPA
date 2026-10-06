@@ -35,7 +35,7 @@ header 的 ``identity`` 三元组找，同一身份多份时按 ``identity.attem
 
 用法::
 
-    python scripts/eval-official/gate2_compare.py --policy mmesg-oracle \
+    python scripts/eval-official/gate2_compare.py --policy groundsg-oracle \
         --orig-results <原侧结果 jsonl>... --new-results <新侧结果 jsonl>... \
         --orig-traces <原侧轨迹根> --new-traces <新侧轨迹根> [--groundsg] [--mode astra] \
         [--expect-total 192] [--site local] [--out-json gate2.json] [--out-md gate2.md]
@@ -128,13 +128,27 @@ def is_final(row: dict) -> bool:
     return not (row.get("canary") or row.get("infra") or row.get("late"))
 
 
+def official_defs():
+    """同目录 ``official_defs.py``（旧名别名表的唯一来源；已加载则复用同一模块）。"""
+    import importlib.util
+
+    mod = sys.modules.get("official_defs")
+    if mod is None:
+        spec = importlib.util.spec_from_file_location("official_defs", Path(__file__).resolve().parent / "official_defs.py")
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["official_defs"] = mod
+        spec.loader.exec_module(mod)
+    return mod
+
+
 def read_rows(paths: list[str | Path]) -> list[dict]:
-    """读多份结果 jsonl；每行附加 ``_file``（来源文件）与 ``_line``（文件内行序）。"""
+    """读多份结果 jsonl；每行附加 ``_file``（来源文件）与 ``_line``（文件内行序）。历史行的旧标签映射成官方名。"""
+    canon = official_defs().canonical_row
     rows: list[dict] = []
     for p in paths:
         with Path(p).open(encoding="utf-8") as fh:
             for i, line in enumerate(x for x in fh if x.strip()):
-                r = json.loads(line)
+                r = canon(json.loads(line))
                 r["_file"] = str(p)
                 r["_line"] = i
                 rows.append(r)
@@ -1088,7 +1102,7 @@ def to_markdown_ext(res: dict, policy: str) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description="第二档：原侧对新侧逐身份差异表")
-    ap.add_argument("--policy", required=True, help="报告用的模型标签，如 mmesg-oracle、pp、astra")
+    ap.add_argument("--policy", required=True, help="报告用的模型标签，如 groundsg-oracle、pp、astra")
     ap.add_argument("--orig-results", nargs="+", required=True)
     ap.add_argument("--new-results", nargs="+", required=True)
     ap.add_argument("--orig-traces", default=None)

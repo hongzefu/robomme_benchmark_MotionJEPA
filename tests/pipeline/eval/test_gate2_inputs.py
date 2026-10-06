@@ -85,7 +85,7 @@ def run_cli(capsys, argv):
     return rc, capsys.readouterr().out.strip().splitlines()
 
 
-def base_args(o, n, policy="mmesg-oracle"):
+def base_args(o, n, policy="groundsg-oracle"):
     return ["--policy", policy, "--orig-results", str(o[0]), "--new-results", str(n[0]),
             "--orig-traces", str(o[1]), "--new-traces", str(n[1])]
 
@@ -108,7 +108,7 @@ def test_aligned_inputs_pass(tmp_path, capsys):
                                                "ambiguous=0 trace_binding_mismatch=0")
     assert line_of(lines, "GATE2_PROVENANCE=") == "GATE2_PROVENANCE=PASS local_rows=0 unknown_rows=0"
     last = lines[-1]
-    assert last.startswith("GATE2=INFO policy=mmesg-oracle compared=4 same_terminal=4 s2f=0 f2s=0 "
+    assert last.startswith("GATE2=INFO policy=groundsg-oracle compared=4 same_terminal=4 s2f=0 f2s=0 "
                            "sr_orig=0.0000 sr_new=0.0000 sr_diff_pp=0.00 mcnemar_p=1 ")
     assert "identical_trace=4" in last and "matrix=ss:0,sf:0,st:0,fs:0,ff:4,ft:0,ts:0,tf:0,tt:0" in last
     assert "reason=" not in last and last.endswith("expect_total=4")
@@ -121,7 +121,7 @@ def test_missing_pair_incomplete_without_manifest_invalid_with(tmp_path, capsys)
     o, n, led, man, att = setup(tmp_path, new={"skip": (IDS[3],)})
     rc, lines = run_cli(capsys, base_args(o, n) + ["--new-ledger", str(led), "--orig-attempts", str(att)])
     assert rc == 0 and not any(x.startswith("GATE2_INPUTS=") for x in lines)
-    assert lines[-1].startswith("GATE2=INCOMPLETE policy=mmesg-oracle compared=3 ")
+    assert lines[-1].startswith("GATE2=INCOMPLETE policy=groundsg-oracle compared=3 ")
     assert " missing=1 " in lines[-1]
     rc, lines = run_cli(capsys, base_args(o, n) + ["--manifest", str(man), "--new-ledger", str(led),
                                                     "--orig-attempts", str(att)])
@@ -283,14 +283,14 @@ def test_supplement_must_equal_manifest_difference(tmp_path, capsys):
     n = write_side(tmp_path, "new")
     led = write_ledger(tmp_path / "l.jsonl", {key(t, s): (n[2][(t, e, s)], 1) for t, e, s in n[2]})
     man = write_manifest(tmp_path / "m.jsonl")
-    args = ["--policy", "mmesg-qwenvl", "--orig-results", str(old[0]), "--orig-supplement", str(supp[0]),
+    args = ["--policy", "groundsg-qwenvl", "--orig-results", str(old[0]), "--orig-supplement", str(supp[0]),
             "--new-results", str(n[0]), "--orig-traces", str(troot), "--new-traces", str(n[1]),
             "--manifest", str(man), "--new-ledger", str(led)]
     rc, lines = run_cli(capsys, args)
     assert line_of(lines, "GATE2_SUPPLEMENT=") == ("GATE2_SUPPLEMENT=PASS old=1 supplement=3 expected=3 missing=0 "
                                                    "extra=0 overlap=0")
     assert line_of(lines, "GATE2_INPUTS=").startswith("GATE2_INPUTS=PASS")
-    assert lines[-1].startswith("GATE2=INFO policy=mmesg-qwenvl compared=4 ")
+    assert lines[-1].startswith("GATE2=INFO policy=groundsg-qwenvl compared=4 ")
     # 条数相同但身份错一个：补跑里有旧原侧已有的 IDS[0]、少了 IDS[3] → FAIL（不凭条数）
     supp2 = write_side(tmp_path / "supp2", "orig", ids=[IDS[0], IDS[1], IDS[2]], trace_root=tmp_path / "t2")
     args2 = list(args)

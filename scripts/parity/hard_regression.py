@@ -71,9 +71,9 @@ def _xhard0_in_test_hard(hs) -> bool:
 
 
 def _require_xhard0_in_test_hard(hs) -> None:
-    """逻辑上必须有 test-hard 里 xhard0 的子命令：开关关闭时明确报错，不许静默错位。"""
+    """逻辑上必须有 ood 里 xhard0 的子命令：开关关闭时明确报错，不许静默错位。"""
     if not _xhard0_in_test_hard(hs):
-        raise SystemExit("xhard0 已退出 test-hard：需设 ROBOMME_HARD_XHARD0_IN_TEST_HARD=1 再跑本子命令")
+        raise SystemExit("xhard0 已退出 ood：需设 ROBOMME_HARD_XHARD0_IN_TEST_HARD=1 再跑本子命令")
 
 
 # ── 记录点路径（静态收集 SpecRecorder.record 的第一个参数）─────────────────────
@@ -158,7 +158,7 @@ def _hs_light():
 
 
 #: xhard0 的执行步上限（与官方 scripts/evaluation.py 的默认步数相同）。按档的步数查表已从 hard_specs 删除，
-#: 评估入口按数据集传 max_steps；本工具在 dataset="test-hard" 下混跑 xhard0 与新值档，故在模块内按档取值。
+#: 评估入口按数据集传 max_steps；本工具在 dataset="ood" 下混跑 xhard0 与新值档，故在模块内按档取值。
 XHARD0_STEP_CAP = 1300
 
 
@@ -309,7 +309,7 @@ def cmd_reset_replay(args) -> int:
         record = dict(target)
         env = None
         try:
-            builder = builders.setdefault(target["task"], BenchmarkEnvBuilder(target["task"], dataset="test-hard"))
+            builder = builders.setdefault(target["task"], BenchmarkEnvBuilder(target["task"], dataset="ood"))
             identity = builder.resolve_identity(target["builder_episode"])
             assert identity["seed"] == target["seed"] and identity["tier"] == target["tier"], identity
             assert identity.get("spec_sha256") == target["spec_sha256"], (identity, target["spec_sha256"])
@@ -356,7 +356,7 @@ def cmd_eval_smoke(args) -> int:
     from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder, spec_binding
 
     hs = _hard_specs()
-    builder = BenchmarkEnvBuilder(env_id=args.task, dataset="test-hard", action_space="joint_angle", max_steps=1300)
+    builder = BenchmarkEnvBuilder(env_id=args.task, dataset="ood", action_space="joint_angle", max_steps=1300)
     num = builder.get_episode_num()
     seed, tier = builder.resolve_episode(args.episode)
     env = builder.make_env_for_episode(args.episode, max_steps=_cap_for(tier))
@@ -414,7 +414,7 @@ if side == "official":
     builder = BenchmarkEnvBuilder(task, dataset="test")
 else:
     from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
-    builder = BenchmarkEnvBuilder(task, dataset="test-hard")
+    builder = BenchmarkEnvBuilder(task, dataset="ood")
 def digest(x):
     if hasattr(x, "detach"):
         x = x.detach().cpu().numpy()
@@ -462,7 +462,7 @@ def _run_probe(side: str, task: str, src: Path, eps: list[int], gpu: str) -> lis
 
 def cmd_xhard0_reset_parity(args) -> int:
     """XHARD0_RESET_PARITY（D-16）：同卡两进程——官方侧只导入 robomme（dataset="test"，原 episode 号），
-    robomme_hard 侧 dataset="test-hard" episode 0～11。确定性层逐位比：gym.make 实参（除 hard 侧不应有的键）、
+    robomme_hard 侧 dataset="ood" episode 0～11。确定性层逐位比：gym.make 实参（除 hard 侧不应有的键）、
     包装链类名序列、演示回放前的底层状态（另起底层环境 reset 取 get_state_dict）、seed、task_goal、多选项；
     演示层（演示帧数、演示帧、演示后状态）只报告。开关 ``XHARD0_IN_TEST_HARD`` 关闭时 builder 无 xhard0，直接报错。"""
     hs = _hard_specs()
@@ -1719,7 +1719,7 @@ def cmd_env_digest_worker(args) -> int:
                     "proc_init": proc if position == 0 else {"note": "见本进程 position_in_proc=0 的行"}, "error": None})
         try:
             builder = builders.setdefault(ident["task"], BenchmarkEnvBuilder(
-                env_id=ident["task"], dataset="test-hard", action_space="joint_angle", max_steps=1300))
+                env_id=ident["task"], dataset="ood", action_space="joint_angle", max_steps=1300))
             npz = cell_dir / "arrays" / f"{ident['task']}-ep{ident['source_episode']}-b{ident['builder_episode']}.npz"
             row.update(_env_digest_one(ident, builder, hub, args.fixed_steps, npz))
         except Exception as exc:  # noqa: BLE001 如实记录，续跑时重做

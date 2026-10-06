@@ -1,4 +1,4 @@
-"""MME 原侧客户端与 policy server 之间的透明 websocket 代理（v7.5eval 方案 §2.5；S7 只改输出与日志封口）。
+"""FrameSamp+Modulation 原侧客户端与 policy server 之间的透明 websocket 代理（v7.5eval 方案 §2.5；S7 只改输出与日志封口）。
 
 - 监听 127.0.0.1:<listen>，每个客户端连接新开一条到 127.0.0.1:<upstream> 的上游连接（官方客户端每局新连接）。
 - 双向逐条转发，保持帧类型（二进制／文本）与顺序，包括 server 连上后先发的 metadata 帧；不开压缩、
@@ -21,7 +21,7 @@
   ``<log_dir>/proxy-<pid>.done``（``{"pid","t","sealed":true,"accountant_alive":false}``）；记账线程 600 s 内没收完则
   不写 ``.done``，启动器据此判封口超时。透明性对账只在看到 ``.done`` 之后才跑。
 
-用法：python mme_proxy.py --listen 19001 --upstream 19000 --log-dir <REC_ROOT>/proxy
+用法：python framesamp_modul_proxy.py --listen 19001 --upstream 19000 --log-dir <REC_ROOT>/proxy
 """
 from __future__ import annotations
 

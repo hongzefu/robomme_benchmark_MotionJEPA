@@ -68,6 +68,19 @@ def _dumps(obj: Any) -> str:
     return json.dumps(obj, sort_keys=True, ensure_ascii=False)
 
 
+def _canonical_row(row: Any) -> Any:
+    """历史账本行的旧路线名映射成官方名（别名表在 ``official_defs.py``，已加载则复用同一模块）。"""
+    mod = sys.modules.get("official_defs")
+    if mod is None:
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location("official_defs", Path(__file__).resolve().parent / "official_defs.py")
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["official_defs"] = mod
+        spec.loader.exec_module(mod)
+    return mod.canonical_row(row)
+
+
 class BudgetState:
     """从账本行推出的计数（只读快照）。"""
 
@@ -169,7 +182,7 @@ class BudgetLedger:
             if not line:
                 continue
             try:
-                rows.append(json.loads(line))
+                rows.append(_canonical_row(json.loads(line)))
             except json.JSONDecodeError:
                 rows.append({"kind": "__bad__"})  # 半行（写入中被杀）：计 bad_rows，report 判 FAIL
         return rows

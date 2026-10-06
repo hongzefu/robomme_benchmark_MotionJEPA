@@ -1,4 +1,4 @@
-"""代理透明性对账（MME 原侧观测器）：客户端逐条 send/recv 的 sha256 与代理入口／出口逐条对照（方案第二部分 §2 ``OBSERVER_TRANSPARENT``）。
+"""代理透明性对账（FrameSamp+Modulation 原侧观测器）：客户端逐条 send/recv 的 sha256 与代理入口／出口逐条对照（方案第二部分 §2 ``OBSERVER_TRANSPARENT``）。
 
 对账口径：
 - 客户端 ``send`` 第 i 条 ↔ 代理同一连接 ``c2s`` 第 i 条（代理收到并原样转发给 server 的那条）；

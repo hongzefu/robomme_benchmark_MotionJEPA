@@ -27,8 +27,8 @@
 
 用法::
 
-    python scripts/eval-official/video_check.py --route mmesg-oracle-new --root <结果根> --results <结果 jsonl>... \
-        --side new [--policy-label mmesg-ground-sg-oracle] [--dataset test-hard0] \
+    python scripts/eval-official/video_check.py --route groundsg-oracle-new --root <结果根> --results <结果 jsonl>... \
+        --side new [--policy-label groundsg-ground-sg-oracle] [--dataset hard-verify] \
         --frames-rule demo+exec --frame-offset 1 [--raw-root <节点临时目录>] [--out-json v.json]
 
 测试里 ``FFTools`` 可替换为替身（非 slow 用例不调 ffmpeg）。
@@ -79,6 +79,19 @@ def is_final(row: dict) -> bool:
     return not (row.get("canary") or row.get("infra") or row.get("late"))
 
 
+def official_defs():
+    """同目录 ``official_defs.py``（旧名别名表的唯一来源；已加载则复用同一模块）。"""
+    import importlib.util
+
+    mod = sys.modules.get("official_defs")
+    if mod is None:
+        spec = importlib.util.spec_from_file_location("official_defs", Path(__file__).resolve().parent / "official_defs.py")
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["official_defs"] = mod
+        spec.loader.exec_module(mod)
+    return mod
+
+
 def key_of(row: dict) -> str:
     if row.get("key"):
         return str(row["key"])
@@ -127,7 +140,12 @@ def check(rows: list[dict], root: Path, args, tools: FFTools) -> dict:
             continue
         label = args.policy_label or label_of(r)
         ds = args.dataset or r.get("dataset")
-        d = root / label / str(ds) / side / f"{key_of(r)}.a{int(r.get('attempt') or 1)}"
+        name = f"{key_of(r)}.a{int(r.get('attempt') or 1)}"
+        # 官方名目录在前；历史发布根里的旧标签／旧数据集目录只读兼容
+        cands = [root / dn / str(x) / side / name
+                 for dn in [label] + official_defs().legacy_labels(label)
+                 for x in [ds] + [o for o, n in official_defs().LEGACY_DATASET_ALIASES.items() if n == ds]]
+        d = next((c for c in cands if c.exists()), cands[0])
         parents.add(d.parent)
         claimed[d] = claimed.get(d, 0) + 1
         if not is_final(r):
@@ -210,7 +228,8 @@ def main(argv: list[str] | None = None, *, tools: FFTools | None = None) -> int:
         raise SystemExit("--frames-rule fixed 需要 --expect-frames")
     rows: list[dict] = []
     for p in args.results:
-        rows += [json.loads(x) for x in Path(p).read_text(encoding="utf-8").splitlines() if x.strip()]
+        rows += [official_defs().canonical_row(json.loads(x))
+                 for x in Path(p).read_text(encoding="utf-8").splitlines() if x.strip()]
     res = check(rows, Path(args.root), args, tools or FFTools(args.ffmpeg, args.ffprobe))
     line = verdict_line(res, args.route)
     if args.out_json:

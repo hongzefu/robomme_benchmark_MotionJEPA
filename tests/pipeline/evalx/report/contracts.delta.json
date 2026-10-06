@@ -100,17 +100,17 @@
     "source": [
       "scripts/eval-official/cap_probe.py"
     ],
-    "symbol": "cap_probe.run_loop / derive_range / hold_action / verdict_line / main（--loop strict|mme|range、--derive-range、--official）",
+    "symbol": "cap_probe.run_loop / derive_range / hold_action / verdict_line / main（--loop strict|mme-vla|range、--derive-range、--official）",
     "oracle": "CPU 假环境仿 DemonstrationWrapper 的 max_steps+2 截断；期望步数与终止原因手写",
-    "positive": "mme 1301／loop_count、range 1300／loop_exit、strict 1600／strict_cap 且第 1601 次不进环境；--derive-range 由同一局前 1300 步得出 range 行并标 source=prefix；动作恒为当前关节位置",
-    "negative": "环境先截断 → 如实报 env_truncated 与实际步数、STEP_CAP=FAIL、builder_cap_ok=0；环境提前 terminated → env_terminated；--derive-range 配非 mme 循环被拒",
+    "positive": "mme-vla 1301／loop_count、range 1300／loop_exit、strict 1600／strict_cap 且第 1601 次不进环境；--derive-range 由同一局前 1300 步得出 range 行并标 source=prefix；动作恒为当前关节位置",
+    "negative": "环境先截断 → 如实报 env_truncated 与实际步数、STEP_CAP=FAIL、builder_cap_ok=0；环境提前 terminated → env_terminated；--derive-range 配非 perceptual-framesamp-modul 循环被拒",
     "boundaries": "真实仿真不在测试里跑（预检时由主会话在本机跑）；--official 判定行标 official=1、dataset=test",
     "nodeids": [
       "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_loops_against_builder_cap",
       "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_env_truncates_first_is_reported_honestly",
-      "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_derive_range_from_mme_prefix",
+      "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_derive_range_from_framesamp_modul_prefix",
       "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_hold_action_keeps_joints_and_gripper",
-      "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_main_mme_with_derive_range",
+      "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_main_framesamp_modul_with_derive_range",
       "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_main_strict_official_label_and_rejects_bad_combo"
     ],
     "resource": "cpu",

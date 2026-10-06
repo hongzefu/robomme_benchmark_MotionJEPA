@@ -62,7 +62,7 @@ def _env(tmp_path, **extra):
 
 def _run(tmp_path, run_dir, **extra):
     cases = tmp_path / "cases.json"
-    cases.write_text('{"dataset": "test-hard0", "cases": []}')
+    cases.write_text('{"dataset": "hard-verify", "cases": []}')
     proc = subprocess.run(["bash", str(SCRIPT), str(cases), str(run_dir)], capture_output=True, text=True,
                           env=_env(tmp_path, **extra), timeout=60)
     assert SENTINEL not in proc.stdout + proc.stderr, "密钥不得出现在输出里"

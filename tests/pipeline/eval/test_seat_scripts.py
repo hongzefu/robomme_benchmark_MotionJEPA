@@ -4,8 +4,8 @@ ffmpeg（16×16 微型帧）。
 
 覆盖：端口占用顺延、server 未就绪先死、客户端首推理放宽只给 server 新起后的第一个客户端、客户端重启预算、
 server 中途死亡的重启预算（每次就绪记一个 server_epoch）、额度耗尽／阻塞／账本未齐（6）不重启、TERM 收尾（含 server
-忽略 TERM 时的 KILL）、``SMVLA_PY`` 未设与 mme tokenizer 参数缺失的 RUN_BLOCKED、参数错误（含已删除的 ``--v8``）、
-``--dataset``↔``--max-steps`` 配对与 mmesg 变体配对的 RUN_BLOCKED、pp 路线（/health 就绪、``--args.seed 0``、
+忽略 TERM 时的 KILL）、``SMVLA_PY`` 未设与 perceptual-framesamp-modul tokenizer 参数缺失的 RUN_BLOCKED、参数错误（含已删除的 ``--v8``）、
+``--dataset``↔``--max-steps`` 配对与 groundsg 变体配对的 RUN_BLOCKED、pp 路线（/health 就绪、``--args.seed 0``、
 results.epochs.jsonl）；``run_eval_gl.sh`` 的就地转码（帧数核对、删原始帧、并入轨迹）与按输出键原子发布、重复发布
 不覆盖、中断收尾只写一次；``run_official_hard.sh`` 的分轮重试（先重启服务再重发、重试额度、synthetic 之外的正常路径）
 与原侧转码发布；``pair_seat.sh`` 先原侧后新侧、前一侧服务退出后才起后一侧。轮询间隔用
@@ -69,7 +69,7 @@ def _free_seat_idx() -> int:
 
 
 def _hard0_rows(n: int) -> list[dict]:
-    """test-hard0 执行身份行（手写；假引擎不解析 builder）。"""
+    """hard-verify 执行身份行（手写；假引擎不解析 builder）。"""
     out = []
     for k in range(n):
         seed = 510300 + k
@@ -124,10 +124,10 @@ esac
     assert left == [], f"teardown 后仍有存活进程 {left}"
 
 
-def _seat_cmd(rig, *extra, out=None, policies="smvla", dataset="test-hard", max_steps=None, strict=None, ledger=True):
+def _seat_cmd(rig, *extra, out=None, policies="smvla", dataset="ood", max_steps=None, strict=None, ledger=True):
     out = out or rig["tmp"] / "out"
-    max_steps = max_steps or (1300 if dataset == "test-hard0" else 1600)
-    strict = (dataset == "test-hard") if strict is None else strict
+    max_steps = max_steps or (1300 if dataset == "hard-verify" else 1600)
+    strict = (dataset == "ood") if strict is None else strict
     cmd = ["bash", str(EO / "run_seat.sh"), "--seat", "T", "--seat-idx", str(rig["idx"]), "--gpu", "0",
            "--cond", "C", "--out", str(out), "--identities", str(rig["shard"]), "--policies", policies,
            "--episode-wall-smvla", "30", "--dataset", dataset, "--max-steps", str(max_steps)]
@@ -263,12 +263,12 @@ def test_normal_run_and_first_extra_only_on_fresh_server(rig):
     rc, out = _run(_seat_cmd(rig), rig["env"])
     assert rc == 0, out
     assert out.rstrip().splitlines()[-1] == "EXIT_CODE=0"
-    assert "STEP_CAP_PAIRING=PASS dataset=test-hard max_steps=1600 strict_cap=1" in out
+    assert "STEP_CAP_PAIRING=PASS dataset=ood max_steps=1600 strict_cap=1" in out
     assert "SERVER_READY policy=smvla" in out and "SERVER_STOPPED" in out
     assert "SEAT_DONE policy=smvla cond=C seat=T done=2 errors=0 infra=0" in out
     (c,) = _events(rig, "client", "start")
     assert c["first_extra_s"] == "600" and c["wall_s"] == "30"
-    assert c["v8"] is False and c["dataset"] == "test-hard" and c["max_steps"] == "1600" and c["strict_cap"] is True
+    assert c["v8"] is False and c["dataset"] == "ood" and c["max_steps"] == "1600" and c["strict_cap"] is True
     assert c["ledger"].endswith("/ledger/smvla.ledger.jsonl")
     (s,) = _events(rig, "server", "start")
     assert s["port"] == 18000 + 100 * rig["idx"]
@@ -377,16 +377,16 @@ def test_smvla_py_unset_blocks(rig):
     assert _events(rig) == []
 
 
-@pytest.mark.parametrize("pol", ["mme", "mmesg"])
-def test_mme_and_mmesg_require_tokenizer_args(rig, pol):
-    extra = ["--mme-variant", "ground-sg-oracle"] if pol == "mmesg" else []
+@pytest.mark.parametrize("pol", ["perceptual-framesamp-modul", "groundsg"])
+def test_framesamp_modul_and_groundsg_require_tokenizer_args(rig, pol):
+    extra = ["--groundsg-variant", "ground-sg-oracle"] if pol == "groundsg" else []
     rc, out = _run(_seat_cmd(rig, *extra, policies=pol), rig["env"])
     assert rc == 3 and "RUN_BLOCKED reason=tokenizer_sha" in out
     assert _events(rig) == []
 
 
-@pytest.mark.parametrize("dataset,max_steps,strict", [("test-hard0", 1600, False), ("test-hard0", 1300, True),
-                                                       ("test-hard", 1300, True), ("test-hard", 1600, False),
+@pytest.mark.parametrize("dataset,max_steps,strict", [("hard-verify", 1600, False), ("hard-verify", 1300, True),
+                                                       ("ood", 1300, True), ("ood", 1600, False),
                                                        ("bogus", 1600, True)])
 def test_step_cap_pairing_blocks_before_any_process(rig, dataset, max_steps, strict):
     rc, out = _run(_seat_cmd(rig, dataset=dataset, max_steps=max_steps, strict=strict), rig["env"])
@@ -396,16 +396,16 @@ def test_step_cap_pairing_blocks_before_any_process(rig, dataset, max_steps, str
 
 
 @pytest.mark.parametrize("pol,extra,detail", [
-    ("mmesg", [], "mmesg_needs_variant"),
-    ("mmesg", ["--mme-variant", "ground-sg-qwenvl"], "qwenvl_needs_adapter"),
-    ("smvla", ["--mme-variant", "ground-sg-oracle"], "variant_without_mmesg")])
+    ("groundsg", [], "groundsg_needs_variant"),
+    ("groundsg", ["--groundsg-variant", "ground-sg-qwenvl"], "qwenvl_needs_adapter"),
+    ("smvla", ["--groundsg-variant", "ground-sg-oracle"], "variant_without_groundsg")])
 def test_variant_pairing_blocks(rig, pol, extra, detail):
     rc, out = _run(_seat_cmd(rig, *extra, policies=pol), rig["env"])
     assert rc == 3 and f"RUN_BLOCKED reason=variant_pairing policies={pol}" in out and detail in out, out
     assert _events(rig) == []
 
 
-@pytest.mark.parametrize("extra", [["--episode-wall-mme", "abc"], ["--bogus"], ["--v8"], ["--max-steps", "x"]])
+@pytest.mark.parametrize("extra", [["--episode-wall-framesamp-modul", "abc"], ["--bogus"], ["--v8"], ["--max-steps", "x"]])
 def test_bad_args_exit_2(rig, extra):
     rc, _ = _run(_seat_cmd(rig) + extra, rig["env"])
     assert rc == 2
@@ -417,8 +417,8 @@ def test_missing_ledger_args_exit_2(rig):
 
 
 def test_pp_route_health_ready_and_epochs(rig):
-    """pp：/health 200 才就绪；服务 argv 带 --args.seed 0 与 checkpoint；客户端走 test-hard0／1300、不带 strict-cap。"""
-    cmd = _seat_cmd(rig, "--pp-ckpt", str(rig["pp_ckpt"]), policies="pp", dataset="test-hard0")
+    """pp：/health 200 才就绪；服务 argv 带 --args.seed 0 与 checkpoint；客户端走 hard-verify／1300、不带 strict-cap。"""
+    cmd = _seat_cmd(rig, "--pp-ckpt", str(rig["pp_ckpt"]), policies="pp", dataset="hard-verify")
     rc, out = _run(cmd, rig["env"])
     assert rc == 0, out
     assert "PP_PREFLIGHT=PASS" in out and "SERVER_CONFIG=INFO policy=pp health=200 seed=0" in out
@@ -429,7 +429,7 @@ def test_pp_route_health_ready_and_epochs(rig):
     assert argv[argv.index("--args.checkpoint_path") + 1] == str(rig["pp_ckpt"])
     assert argv[argv.index("--args.device") + 1] == "cuda:0"
     (c,) = _events(rig, "client", "start")
-    assert (c["policy"], c["dataset"], c["max_steps"], c["strict_cap"]) == ("pp", "test-hard0", "1300", False)
+    assert (c["policy"], c["dataset"], c["max_steps"], c["strict_cap"]) == ("pp", "hard-verify", "1300", False)
     assert c["first_extra_s"] == "600" and c["wall_s"] == "1800"
     rows = F.read_jsonl(rig["tmp"] / "out" / "pp" / "results.epochs.jsonl")
     assert len(rows) == 2 and {r["server_epoch"] for r in rows} == {1}
@@ -516,7 +516,7 @@ def _trace_dir(td: Path, key: str = KEY0, attempt: int = 1) -> None:
     """契约 trace（C6 身份、C8 frames_recorded = 演示 1 + 初始 1 + 观测 2 = 4）。"""
     td.mkdir(parents=True, exist_ok=True)
     ident = {"task": "PickXtimes", "tier": "xhard0", "seed": 510300, "source_episode": 0, "builder_episode": 0,
-             "dataset": "test-hard0", "key": key, "attempt": attempt}
+             "dataset": "hard-verify", "key": key, "attempt": attempt}
     rows = [{"kind": "header", "schema": "sgeval-trace/1", "route": "pp/new", "identity": ident, "max_steps": 1300},
             {"kind": "end", "status": "success", "terminal_reason": "success", "exec_steps": 2, "demo_frames": 1,
              "steps_attempted": 2, "steps_observed": 2, "frames_recorded": 4}]
@@ -570,7 +570,7 @@ def test_finish_chain_renders_official_after_trace_merge_before_transcode(tmp_pa
     ledger.write_text(json.dumps({"kind": "accept", "key": KEY0, "attempt_id": "x", "attempt_no": 1,
                                   "accepted_attempt_id": "x", "status": "success"}) + "\n")
     p = subprocess.run([sys.executable, str(EO / "official_media_check.py"), "--manifest", str(manifest), "--ledger",
-                        str(ledger), "--root", str(root), "--dataset", "test-hard0", "--route", "pp/new"],
+                        str(ledger), "--root", str(root), "--dataset", "hard-verify", "--route", "pp/new"],
                        capture_output=True, text=True)
     assert p.returncode == 0, p.stdout + p.stderr
     assert "OFFICIAL_MEDIA=PASS total=1 skip=0 fail=0 no_frame_error=0" in p.stdout
@@ -656,7 +656,7 @@ def gl_repo(rig):
     _reap(rig["tmp"])  # 各脚本的 .v8-pgids 落在运行根里，同样由 _recorded_pids 收集
 
 
-def _gl_cmd(rig, repo, stage, seat, *extra, dataset="test-hard", max_steps=1600, strict=True):
+def _gl_cmd(rig, repo, stage, seat, *extra, dataset="ood", max_steps=1600, strict=True):
     cmd = ["bash", str(repo / "scripts" / "eval-official" / "run_eval_gl.sh"), "--run-name", "R", "--seat", seat,
            "--repo", str(repo), "--stage", str(stage), "--shard", str(rig["shard"]), "--policies", "smvla",
            "--smvla-ckpt", str(rig["ckpt"]), "--reset-budget", "10", "--infra-retry-budget", "2",
@@ -678,7 +678,7 @@ def test_gl_transcodes_publishes_by_output_key_and_rerun_does_not_overwrite(rig,
     sync = F.verdict(out.splitlines(), "SEAT_REC_SYNC")
     assert sync[""] == "PASS" and sync["n"] == "2" and sync["left"] == "0"
     assert sync["transcoded"] == "2" and sync["frame_mismatch"] == "0" and sync["transcode_fail"] == "0"
-    pub = stage / "media" / "smvla" / "test-hard" / "new"
+    pub = stage / "media" / "smvla" / "ood" / "new"
     for ident in rig["idents"]:
         d = pub / f"{ident['key']}.a1"
         assert sorted(p.name for p in d.glob("*.mp4")) == ["episode.mp4"]
@@ -700,9 +700,9 @@ def test_gl_transcodes_publishes_by_output_key_and_rerun_does_not_overwrite(rig,
 
 
 def test_gl_step_cap_pairing_blocks(rig, gl_repo):
-    rc, out = _run(_gl_cmd(rig, gl_repo, rig["tmp"] / "stage", "01", dataset="test-hard0", max_steps=1600, strict=False),
+    rc, out = _run(_gl_cmd(rig, gl_repo, rig["tmp"] / "stage", "01", dataset="hard-verify", max_steps=1600, strict=False),
                    rig["env"])
-    assert rc == 3 and "RUN_BLOCKED reason=step_cap_pairing dataset=test-hard0 max_steps=1600" in out, out
+    assert rc == 3 and "RUN_BLOCKED reason=step_cap_pairing dataset=hard-verify max_steps=1600" in out, out
     assert "V8_SEAT_DONE seat=01 outcome=fail rc=3" in out
     assert _events(rig) == []
 
@@ -744,28 +744,28 @@ def _wrapper_py(rig, name: str) -> Path:
 
 
 def test_gl_interpreter_overrides_survive_source_and_render_failure_still_publishes(rig, gl_repo):
-    """BENCH_PY／SMVLA_PY／MME_PY 由调用方给出：经 source run_seat.sh 与参数解析后原样保留（RUN_INPUT_PY、RUN_INPUTS=
+    """BENCH_PY／SMVLA_PY／MME_VLA_PY 由调用方给出：经 source run_seat.sh 与参数解析后原样保留（RUN_INPUT_PY、RUN_INPUTS=
     行与实际起服务的解释器）。官方重绘默认开启；假引擎的轨迹只有 header，重绘后核验不过 → 每局保留原始帧、写
     official-render.failed、照常转码发布，SEAT_REC_SYNC 仍 PASS。"""
     seat = f"{rig['idx']:02d}"
     stage = rig["tmp"] / "stage"
     bench, smvla = _wrapper_py(rig, "bench-py"), _wrapper_py(rig, "smvla-py")
-    rig["env"].update(BENCH_PY=str(bench), SMVLA_PY=str(smvla), MME_PY="/nonexistent/custom-mme-python")
+    rig["env"].update(BENCH_PY=str(bench), SMVLA_PY=str(smvla), MME_VLA_PY="/nonexistent/custom-mme-vla-python")
     rc, out = _run(_gl_cmd(rig, gl_repo, stage, seat), rig["env"], timeout=150)
     assert rc == 0, out
     ri = F.verdict(out.splitlines(), "RUN_INPUTS")
     assert ri[""] == "PASS" and ri["bench_py"] == str(bench) and ri["smvla_py"] == str(smvla), out
-    assert ri["mme_py"] == "/nonexistent/custom-mme-python" and ri["official_render"] == "1"
+    assert ri["mme_vla_py"] == "/nonexistent/custom-mme-vla-python" and ri["official_render"] == "1"
     assert ri["renderer"] == "source_raw" and ri["robomme_hard"].endswith("robomme_hard/__init__.py")
     assert f"RUN_INPUT_PY role=smvla py={smvla} needed=1" in out
-    assert "RUN_INPUT_PY role=mme py=/nonexistent/custom-mme-python needed=0 editable=missing" in out
+    assert "RUN_INPUT_PY role=mme-vla py=/nonexistent/custom-mme-vla-python needed=0 editable=missing" in out
     assert "smvla_server.py" in (rig["tmp"] / "smvla-py.calls").read_text()  # 服务确由覆盖的解释器起
     assert "robomme_hard" in (rig["tmp"] / "bench-py.calls").read_text()
     assert out.count(f"OFFICIAL_RENDER_KEEP_RAW dir=") == 2
     assert f"OFFICIAL_RENDER_TALLY ok=0 fail=2 seat={seat}" in out
     sync = F.verdict(out.splitlines(), "SEAT_REC_SYNC")
     assert sync[""] == "PASS" and sync["transcoded"] == "2", out
-    pub = stage / "media" / "smvla" / "test-hard" / "new"
+    pub = stage / "media" / "smvla" / "ood" / "new"
     for ident in rig["idents"]:
         d = pub / f"{ident['key']}.a1"
         assert (d / "official-render.failed").is_file() and sorted(p.name for p in d.glob("*.mkv")) == ["front.mkv", "wrist.mkv"]
@@ -785,7 +785,7 @@ def test_gl_run_inputs_blocks_when_renderer_lacks_source(rig, gl_repo):
 def test_pp_server_wrap_starts_by_absolute_path(rig, gl_repo):
     """SGEVAL_PP_SERVER_WRAP=1：pp 服务以绝对路径起 pp_server_wrap.py（cwd 在第三方目录），参数与原服务相同。"""
     rig["env"]["SGEVAL_PP_SERVER_WRAP"] = "1"
-    cmd = _seat_cmd(rig, "--pp-ckpt", str(rig["pp_ckpt"]), policies="pp", dataset="test-hard0")
+    cmd = _seat_cmd(rig, "--pp-ckpt", str(rig["pp_ckpt"]), policies="pp", dataset="hard-verify")
     cmd[1] = str(gl_repo / "scripts" / "eval-official" / "run_seat.sh")
     rc, out = _run(cmd, rig["env"])
     assert rc == 0, out
@@ -800,7 +800,7 @@ def test_pp_server_wrap_starts_by_absolute_path(rig, gl_repo):
 def test_pp_server_wrap_missing_blocks(rig, gl_repo):
     rig["env"]["SGEVAL_PP_SERVER_WRAP"] = "1"
     (gl_repo / "scripts" / "eval-official" / "pp_server_wrap.py").unlink()
-    cmd = _seat_cmd(rig, "--pp-ckpt", str(rig["pp_ckpt"]), policies="pp", dataset="test-hard0")
+    cmd = _seat_cmd(rig, "--pp-ckpt", str(rig["pp_ckpt"]), policies="pp", dataset="hard-verify")
     cmd[1] = str(gl_repo / "scripts" / "eval-official" / "run_seat.sh")
     rc, out = _run(cmd, rig["env"])
     assert rc == 3 and "RUN_BLOCKED reason=pp_server_wrap_missing" in out, out
@@ -810,7 +810,7 @@ def test_pp_server_wrap_missing_blocks(rig, gl_repo):
 def _official_cmd(rig, repo, stage, seat, *extra, budget=1):
     return ["bash", str(repo / "scripts" / "eval-official" / "run_official_hard.sh"), "--run-name", "R", "--seat", seat,
             "--repo", str(repo), "--stage", str(stage), "--shard", str(rig["shard0"]), "--policy", "pp",
-            "--pp-ckpt", str(rig["pp_ckpt"]), "--dataset", "test-hard0", "--max-steps", "1300",
+            "--pp-ckpt", str(rig["pp_ckpt"]), "--dataset", "hard-verify", "--max-steps", "1300",
             "--infra-retry-budget", str(budget), "--sync-interval", "1", "--local-root", str(rig["tmp"] / "local"),
             *extra]
 
@@ -835,7 +835,7 @@ def test_official_pp_retries_after_server_restart_and_publishes(rig, gl_repo):
         [(k1, 1, False, 1), (k2, 1, True, 1), (k2, 2, False, 2)]
     sync = F.verdict(out.splitlines(), "SEAT_REC_SYNC")
     assert sync[""] == "PASS" and sync["transcoded"] == "3" and sync["frame_mismatch"] == "0"
-    pub = stage / "media" / "pp" / "test-hard0" / "orig"
+    pub = stage / "media" / "pp" / "hard-verify" / "orig"
     for name in (f"{k1}.a1", f"{k2}.a1", f"{k2}.a2"):
         d = pub / name
         assert _mp4_frames(d / "episode.mp4") == 3
@@ -868,12 +868,12 @@ def test_pair_seat_runs_orig_then_new_on_released_gpu(rig, gl_repo):
     runner = _events(rig, "runner", "start")
     client = _events(rig, "client", "start")
     assert len(servers) == 2 and len(runner) == 1 and len(client) == 1
-    # 原侧服务收掉之后才起新侧服务；新侧客户端是 test-hard0／1300、不带 strict-cap
+    # 原侧服务收掉之后才起新侧服务；新侧客户端是 hard-verify／1300、不带 strict-cap
     orig_term = next(t for t in terms if t["pid"] == servers[0]["pid"])
     assert orig_term["t"] < servers[1]["t"]
-    assert (client[0]["dataset"], client[0]["max_steps"], client[0]["strict_cap"]) == ("test-hard0", "1300", False)
+    assert (client[0]["dataset"], client[0]["max_steps"], client[0]["strict_cap"]) == ("hard-verify", "1300", False)
     for side in ("orig", "new"):
-        pub = stage / "media" / "pp" / "test-hard0" / side
+        pub = stage / "media" / "pp" / "hard-verify" / side
         assert sorted(p.name for p in pub.iterdir() if not p.name.startswith(".")) == \
             sorted(f"{r['key']}.a1" for r in rig["hard0"])
         assert all((pub / f"{r['key']}.a1" / "episode.mp4").is_file() for r in rig["hard0"])
