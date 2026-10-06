@@ -5,6 +5,15 @@ site-packages），用它的 ``SyncEpisodeRunner`` + ``RoboMMEBenchmark``（环�
 ``Connection`` 跑一局，假服务逐帧记下收到的协议帧；再用同一假服务跑新侧 ``pp_client.run_episode``（同样用真实
 ``Connection``）与原侧 ``pp_official_runner.run_shard``，三份帧序列逐帧比对（帧类型、顺序、观测键、dtype/shape、
 字节、sid、局号、seq）。vla-eval 源码缺失时测试失败，不跳过。依赖本机 artifacts，故标 slow、不进日常门禁。
+
+第二阶段 S5（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分一节「S5」）在本文件追加日常门禁用例
+（全部 CPU 替身、无网络；只有上面那条真实 vla-eval 对拍标 slow）：
+
+- ``pp_subgoal_to_official`` 坐标换算：``at [612, 247]`` → ``at <63, 156>``、0～255 全量往返、多组坐标、越界夹取、``None``；
+- 第二阶段新侧（``pp_phase2``）：外壳回包的 ``subgoal`` 进轨迹（换算后文本 + 原文）、标准答案改记 history 行、
+  C1／C2／C3／C4／C6／C8 落地，并过 ``trace_contract.assert_renderable``／``assert_counts_consistent``；
+- 原侧（``pp_official_runner.run_shard``）与开关关闭的新侧：与 ``BASE`` 版 ``pp_client``（``git show``）逐字节比
+  轨迹、原始帧、结果行与协议帧序列。
 """
 from __future__ import annotations
 
@@ -21,10 +30,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from pp_fakes import REPO, FakeEnv, FakeSession, action_for, compare_frames
+from pp_fakes import REPO, FakeConn, FakeEnv, FakeSession, action_for, compare_frames
 from tests._support.loaders import load_script
-
-pytestmark = pytest.mark.slow
+from tests.pipeline.evalx.report import trace_contract as tc
 
 CLIENT_ENV_SITE = "artifacts/sg-evaluation/venvs/client-env/lib/python3.11/site-packages"
 TASK, SRC, SEED = "VideoUnmask", 5, 98765
@@ -168,6 +176,7 @@ def _strip(log):
     return [(t, p) for t, p, _ in log]
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("env_kwargs,max_steps,n_actions", [({"demo": 4, "done_at": 7}, 1300, 7),
                                                              ({"demo": 3}, 1300, 1300)])
 def test_new_and_orig_frames_identical_to_vla_eval_sync_runner(vla, monkeypatch, tmp_path, env_kwargs, max_steps,
@@ -226,3 +235,369 @@ def test_new_and_orig_frames_identical_to_vla_eval_sync_runner(vla, monkeypatch,
     assert [r for r in tn if r["kind"] == "demo"] == [r for r in to if r["kind"] == "demo"]
     print(f"PP_PROTOCOL=PASS frames_diff={fd_new + fd_org} order_diff={od_new + od_org} source=vla_eval_sync_runner "
           f"frames={len(ref)} actions={n_actions}")
+
+
+# ── 第二阶段 S5：子目标坐标换算、外壳回包进轨迹、原侧与 BASE 逐字节一致（日常门禁，CPU 替身） ──────────
+
+BASE_SHA = os.environ.get("SGEVAL_PP_BASE", "b869a3df9e7406b8f5458697f22656165b9c50b3")
+PH_TASK, PH_SRC, PH_SEED = "PickXtimes", 7, 123457
+PH = {"task": PH_TASK, "tier": "xhard0", "seed": PH_SEED, "source_episode": PH_SRC, "builder_episode": 1,
+      "key": f"{PH_TASK}_xhard0_{PH_SEED}", "candidate": None, "spec_sha256": None}
+
+
+def _pp():
+    return load_script("eval-official/pp_client.py")
+
+
+def _tw():
+    return load_script("eval-official/trace_writer.py")
+
+
+def test_pp_subgoal_to_official_examples():
+    f = _pp().pp_subgoal_to_official
+    assert f("pick up the cube at [612, 247]") == "pick up the cube at <63, 156>"
+    # 多组坐标、空白与小数
+    assert (f("pick the red cube at [0, 1000] and put it at[1000,0] then press at [ 500.0 , 500 ]")
+            == "pick the red cube at <255, 0> and put it at <0, 255> then press at <128, 128>")
+    # 越界夹到 0～255
+    assert f("move at [-50, 1200]") == "move at <255, 0>"
+    assert f("move at [2000, -3]") == "move at <0, 255>"
+    # 没有坐标的文本原样；None 原样（C7 等待中）；不是「at [x, y]」形式的方括号不动
+    assert f("open the drawer") == "open the drawer"
+    assert f("") == ""
+    assert f(None) is None
+    assert f("cube [612, 247]") == "cube [612, 247]"
+
+
+def test_pp_subgoal_to_official_roundtrip_0_255_and_monotonic():
+    import re as _re
+
+    f = _pp().pp_subgoal_to_official
+
+    def back(x: int, y: int) -> tuple[int, int]:
+        m = _re.fullmatch(r"at <(\d+), (\d+)>", f(f"at [{x}, {y}]"))
+        return int(m.group(1)), int(m.group(2))  # (行 y', 列 x')
+
+    for v in range(256):  # 官方 0～255 → 模型 0～1000 → 换回恰好是 v（行列两个维度都查）
+        x = round(v * 1000 / 255)
+        assert back(x, 0) == (0, v), v
+        assert back(0, x) == (v, 0), v
+    vals = [back(x, 0)[1] for x in range(1001)]
+    assert vals[0] == 0 and vals[-1] == 255 and all(b >= a for a, b in zip(vals, vals[1:]))
+    assert all(0 <= v <= 255 for v in vals) and len(set(vals)) == 256
+
+
+class SubgoalConn(FakeConn):
+    """外壳服务的替身：ACTION 回包另带 ``subgoal``（``schedule[i]`` 为第 i 个回包的子目标，越界取最后一个）。"""
+
+    def __init__(self, schedule, **kw):
+        super().__init__(**kw)
+        self.schedule = list(schedule)
+
+    async def act(self, obs):
+        a = await super().act(obs)
+        i = self.n_actions - 1
+        a["subgoal"] = self.schedule[min(i, len(self.schedule) - 1)]
+        return a
+
+
+SCHEDULE = [None, None, "pick up the cube at [612, 247]", "pick up the cube at [612, 247]", "put it at [10, 990]",
+            "put it at [10, 990]"]
+
+
+def _run_phase2(tmp_path, env, *, conn=None, session=None, attempt=2, max_steps=1300, step_cap=None):
+    pp = _pp()
+    ep = tmp_path / f"{PH['key']}.a{attempt}"
+    conn = conn or SubgoalConn(SCHEDULE)
+    session = session or FakeSession(env, step_cap=step_cap)
+    ci = {"host": "127.0.0.1", "port": 18310, "max_steps": max_steps, "dataset": "test-hard0", "pp_phase2": True,
+          "trace_dir": str(ep), "episode_tag": ep.name}
+    res = pp.run_episode(session, PH, ci, None, connection_factory=lambda url, timeout: conn)
+    return res, ep, conn, session
+
+
+def test_phase2_model_subgoal_goes_into_trace_and_is_renderable(tmp_path):
+    tw = _tw()
+    env = FakeEnv(PH_TASK, PH_SRC, demo=3, done_at=6)
+    res, ep, conn, session = _run_phase2(tmp_path, env)
+    assert res["status"] == "success" and res["steps"] == 6 and res["demo_frames"] == 3
+    rows = tw.read_trace(ep / "trace.jsonl")
+    header, demo, end = rows[0], rows[1], rows[-1]
+    assert header["route"] == "pp/new"
+    assert header["identity"]["attempt"] == 2 and header["identity"]["key"] == PH["key"]
+    # C2：演示段含初始帧
+    assert demo["kind"] == "demo" and demo["frames"] == 4 and len(demo["states"]) == 4
+    ref = FakeEnv(PH_TASK, PH_SRC, demo=3)
+    assert demo["front_sha256"] == [tw.image_sha256(ref.frames_at(k)["front"]) for k in range(4)]
+    steps = [r for r in rows if r["kind"] == "step"]
+    assert [s["subgoal"] for s in steps] == [None, None, "pick up the cube at <63, 156>",
+                                             "pick up the cube at <63, 156>", "put it at <252, 3>",
+                                             "put it at <252, 3>"]
+    assert [s["subgoal_raw"] for s in steps] == SCHEDULE
+    # 标准答案不再进 subgoal，改记同步号的 history 行
+    hist = [r for r in rows if r["kind"] == "history"]
+    assert [(h["start"], h["end"], h["note"]) for h in hist] == [(k, k, f"oracle_simple_subgoal:sg{k}")
+                                                                 for k in range(1, 7)]
+    # C3／C8
+    assert (end["status"], end["terminal_reason"], end["exit_reason"]) == ("success", "success", "env_done")
+    assert (end["demo_frames"], end["steps_attempted"], end["steps_observed"], end["frames_recorded"]) == (3, 6, 6, 10)
+    assert "no_frame" not in end
+    # C4：arrays.npz 与 trace 动作逐字节一致，且就是交给环境的值
+    with np.load(ep / "arrays.npz") as arr:
+        assert sorted(arr.files) == [f"exec_action__{i:05d}" for i in range(6)]
+        for s in steps:
+            a = arr[f"exec_action__{s['step'] - 1:05d}"]
+            assert a.dtype == np.float64 and a.shape == (8,)
+            assert hashlib.sha256(a.tobytes()).hexdigest() == s["action"]["sha256"]
+            assert a.tolist() == [float(x) for x in env.actions[s["step"] - 1]]
+    tc.assert_renderable(ep)
+    tc.assert_counts_consistent(ep, {"exec_steps": session.steps, "status": res["status"]})
+    # 协议帧本身不变：与开关关闭、服务端不带 subgoal 的同一局逐帧相同
+    plain = FakeConn()
+    _pp().run_episode(FakeSession(FakeEnv(PH_TASK, PH_SRC, demo=3, done_at=6)), PH,
+                      {"host": "127.0.0.1", "port": 18310, "max_steps": 1300, "dataset": "test-hard0",
+                       "pp_phase2": False}, None, connection_factory=lambda url, timeout: plain)
+    sent = lambda log: [(t, p) for t, p in log if t != "action"]  # noqa: E731
+    fd, od, notes = compare_frames(sent(conn.log), sent(plain.log))
+    assert (fd, od) == (0, 0), notes
+    print(f"PP_NEW_PHASE2=PASS route=pp/new steps={len(steps)} subgoal_steps={sum(s['subgoal'] is not None for s in steps)}")
+
+
+def test_phase2_strict_cap_timeout_is_renderable(tmp_path):
+    env = FakeEnv(PH_TASK, PH_SRC, demo=2)
+    res, ep, _, session = _run_phase2(tmp_path, env, max_steps=5, step_cap=5)
+    end = _tw().read_trace(ep / "trace.jsonl")[-1]
+    assert res["status"] == "timeout" and session.steps == 5
+    assert (end["status"], end["terminal_reason"], end["steps_attempted"], end["frames_recorded"]) == (
+        "timeout", "timeout", 5, 8)
+    tc.assert_renderable(ep)
+    tc.assert_counts_consistent(ep, {"exec_steps": session.steps, "status": res["status"]})
+
+
+def test_phase2_missing_obs_and_env_exception_keep_step_numbers(tmp_path):
+    tw = _tw()
+    # 空观测步（环境报 error、观测为 None）：保留步号、动作与原因
+    env = FakeEnv(PH_TASK, PH_SRC, demo=1, none_obs_at=3)
+    res, ep, _, session = _run_phase2(tmp_path / "a", env)
+    rows = tw.read_trace(ep / "trace.jsonl")
+    steps = [r for r in rows if r["kind"] == "step"]
+    assert res["status"] == "error" and [s["step"] for s in steps] == [1, 2, 3]
+    assert steps[2]["observed"] is False and steps[2]["missing_reason"] == "obs_none"
+    assert steps[2]["subgoal"] == "pick up the cube at <63, 156>" and steps[2]["action"]["shape"] == [8]
+    end = rows[-1]
+    assert (end["steps_attempted"], end["steps_observed"], end["frames_recorded"]) == (3, 2, 1 + 1 + 2)
+    assert tc.contract_problems(ep) == []
+    tc.assert_counts_consistent(ep, {"exec_steps": session.steps, "status": res["status"]})
+
+    # 环境 step 抛异常：EnvSession 已把这一步计入 exec_steps，轨迹同样留一行缺观测步
+    class Boom(FakeSession):
+        def step(self, action):
+            if self.steps == 1:
+                self.steps += 1  # 与 EnvSession 一致：进入环境后异常也计步
+                raise RuntimeError("physx exploded")
+            return super().step(action)
+
+    env2 = FakeEnv(PH_TASK, PH_SRC, demo=1)
+    res2, ep2, _, s2 = _run_phase2(tmp_path / "b", env2, session=Boom(env2))
+    rows2 = tw.read_trace(ep2 / "trace.jsonl")
+    steps2 = [r for r in rows2 if r["kind"] == "step"]
+    assert res2["status"] == "error" and res2["steps"] == 1 and s2.steps == 2
+    assert steps2[1]["observed"] is False and steps2[1]["missing_reason"] == "env_exception:RuntimeError"
+    assert rows2[-1]["steps_attempted"] == 2 and rows2[-1]["steps_observed"] == 1
+    assert tc.contract_problems(ep2) == []
+    tc.assert_counts_consistent(ep2, {"exec_steps": s2.steps, "status": res2["status"]})
+
+
+def test_phase2_without_server_subgoal_is_infra_error_not_oracle(tmp_path):
+    env = FakeEnv(PH_TASK, PH_SRC, demo=2, done_at=4)
+    res, ep, _, _ = _run_phase2(tmp_path, env, conn=FakeConn())
+    assert res["status"] == "error" and res["infra"] is True and res["infra_reason"] == "pp_subgoal_missing"
+    assert env.actions == []  # 第一个回包就判外壳未生效，不把动作交给环境
+    rows = _tw().read_trace(ep / "trace.jsonl")
+    assert not [r for r in rows if r["kind"] == "step"] and rows[-1]["steps_attempted"] == 0
+    assert tc.contract_problems(ep) == []
+
+
+def test_phase2_reset_failure_is_no_frame(tmp_path):
+    class BadReset(FakeSession):
+        def reset(self):
+            raise RuntimeError("vulkan")
+
+    env = FakeEnv(PH_TASK, PH_SRC, demo=2)
+    res, ep, _, _ = _run_phase2(tmp_path, env, session=BadReset(env))
+    end = _tw().read_trace(ep / "trace.jsonl")[-1]
+    assert res["status"] == "error" and end["no_frame"] is True
+    assert (end["demo_frames"], end["frames_recorded"], end["steps_attempted"]) == (0, 0, 0)
+    assert tc.contract_problems(ep) == []
+    tc.assert_renderable(ep)  # 无帧 error 局只核契约、不调重绘器
+
+
+def test_phase2_switch_from_env_var(monkeypatch):
+    pp = _pp()
+    monkeypatch.delenv("SGEVAL_PP_SERVER_WRAP", raising=False)
+    assert pp.phase2_enabled({}) is False
+    monkeypatch.setenv("SGEVAL_PP_SERVER_WRAP", "1")
+    assert pp.phase2_enabled({}) is True and pp.phase2_enabled({"pp_phase2": False}) is False
+    monkeypatch.setenv("SGEVAL_PP_SERVER_WRAP", "0")
+    assert pp.phase2_enabled({}) is False and pp.phase2_enabled({"pp_phase2": True}) is True
+
+
+def test_traced_connection_last_subgoal():
+    import anyio
+
+    pp = _pp()
+
+    async def go():
+        t1 = pp.TracedConnection(SubgoalConn([None, "a at [612, 247]"]))
+        assert type(t1.last_subgoal).__name__ == "_Unset"
+        await t1.act({})
+        assert t1.last_subgoal is None
+        await t1.act({})
+        assert t1.last_subgoal == "a at [612, 247]"
+        t2 = pp.TracedConnection(FakeConn())
+        await t2.act({})
+        assert type(t2.last_subgoal).__name__ == "_Unset"
+
+    anyio.run(go)
+
+
+# ── 原侧与开关关闭的新侧：对 BASE 版 pp_client 逐字节 ─────────────────────────────
+
+
+def _load_pp_from(path: Path):
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("pp_client", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _load_base_pp(tmp_path):
+    """``git show <BASE>:scripts/eval-official/pp_client.py`` 写到临时目录后按模块名 ``pp_client`` 载入。"""
+    out = subprocess.run(["git", "show", f"{BASE_SHA}:scripts/eval-official/pp_client.py"], cwd=REPO,
+                         capture_output=True, timeout=60)
+    assert out.returncode == 0, out.stderr.decode(errors="replace")
+    d = tmp_path / "base_src"
+    d.mkdir()
+    (d / "pp_client.py").write_bytes(out.stdout)
+    return _load_pp_from(d / "pp_client.py")
+
+
+class _Res:
+    def __init__(self, obs, info, done):
+        self.obs, self.info, self.done = obs, info, done
+
+
+class _Bench:
+    """RoboMMEBenchmark 的最小替身（同 test_pp_protocol.FakeRoboBench）。"""
+
+    env_kwargs: dict = {}
+
+    def __init__(self, tasks, action_space, max_steps):
+        self._env = None
+
+    def reset(self, task):
+        if self._env is not None:
+            self._env.close()
+        self._env = FakeEnv(task["env_id"], task["episode_idx"], **self.env_kwargs.get(task["episode_idx"], {}))
+        obs, _info = self._env.reset()
+        return obs
+
+    def step(self, action):
+        obs, _r, term, trunc, info = self._env.step(list(action))
+        return _Res(obs, info, bool(term) or bool(trunc) or info.get("status") == "error")
+
+    def cleanup(self):
+        pass
+
+
+class _HandRunner:
+    """按 SyncEpisodeRunner 源码事实手写的流程（同 test_pp_protocol.HandSyncRunner）。"""
+
+    async def run_episode(self, bench, task, conn, *, max_steps, recorder):
+        bench.reset(task)
+        await conn.start_episode({"task": task, "recording": {"sid": recorder.sid, "eid": recorder.eid,
+                                                              "eval_id": recorder.eval_id, "db_path": recorder.db_path}})
+        step, res = -1, None
+        for step in range(max_steps):
+            a = await conn.act({"step": step})
+            res = bench.step(a["actions"].flatten().tolist())
+            if res.done:
+                break
+        await conn.end_episode({"metrics": {"success": bool(res and res.info.get("status") == "success")},
+                                "steps": step + 1, "elapsed_sec": 0.0})
+        return {"steps": step + 1}
+
+
+class _BaseRec:
+    def __init__(self):
+        pass
+
+
+def _orig_run(pp_mod, out_dir, conn, monkeypatch):
+    """以给定 pp_client 模块跑原侧 run_shard（pp_official_runner 原文件，其 ``import pp_client`` 解析到 ``pp_mod``）。"""
+    import anyio
+
+    monkeypatch.setitem(sys.modules, "pp_client", pp_mod)
+    orig = load_script("eval-official/pp_official_runner.py", fresh=True)
+    assert orig.pp_client is pp_mod
+    _Bench.env_kwargs = {3: {"demo": 2, "done_at": 4}, 7: {"demo": 2, "none_obs_at": 3}, 9: {"demo": 1}}
+    rows = [dict(PH, source_episode=3, seed=11, key=f"{PH_TASK}_xhard0_11"),
+            dict(PH, source_episode=7, seed=22, key=f"{PH_TASK}_xhard0_22"),
+            dict(PH, source_episode=9, seed=33, key=f"{PH_TASK}_xhard0_33")]
+    anyio.run(lambda: orig.run_shard(
+        rows, out_dir=out_dir, url="ws://127.0.0.1:1", bench_cls=orig.make_tracing_bench_class(_Bench),
+        runner=_HandRunner(), conn_factory=lambda url, timeout: conn,
+        recorder_cls=orig.make_fixed_sid_recorder_class(_BaseRec), max_steps=6))
+    return [json.loads(x) for x in (out_dir / "results.jsonl").read_text().splitlines()]
+
+
+def _norm_row(row: dict, root: Path) -> dict:
+    return {k: (v.replace(str(root), "<ROOT>") if isinstance(v, str) else v) for k, v in row.items() if k != "wall_s"}
+
+
+@pytest.mark.parametrize("server_sends_subgoal", [False, True])
+def test_orig_side_serialized_output_identical_to_base(tmp_path, monkeypatch, server_sends_subgoal):
+    monkeypatch.setattr(sys, "path", list(sys.path))
+    monkeypatch.delenv("SGEVAL_PP_SERVER_WRAP", raising=False)
+    base = _load_base_pp(tmp_path)
+    cur = _load_pp_from(REPO / "scripts" / "eval-official" / "pp_client.py")
+    assert cur.TRACE_SCHEMA_ROUTE_ORIG == base.TRACE_SCHEMA_ROUTE_ORIG == "pp-orig"
+    files = {}
+    for name, mod in (("base", base), ("cur", cur)):
+        conn = SubgoalConn(SCHEDULE) if server_sends_subgoal else FakeConn()
+        out = tmp_path / name
+        rows = _orig_run(mod, out, conn, monkeypatch)
+        files[name] = ({str(p.relative_to(out)): p.read_bytes() for p in sorted(out.rglob("*"))
+                        if p.is_file() and p.name != "results.jsonl"}, [_norm_row(r, out) for r in rows], conn.log)
+    (fb, rb, lb), (fc, rc, lc) = files["base"], files["cur"]
+    assert sorted(fb) == sorted(fc)
+    assert sum(k.endswith("trace.jsonl") for k in fb) == 3 and any(k.endswith(".rgb24") for k in fb)
+    diff = [k for k in fb if fb[k] != fc[k]]
+    assert diff == [], diff
+    assert rb == rc and len(rb) == 3
+    assert len(lb) == len(lc) and compare_frames(lb, lc)[:2] == (0, 0)
+    print(f"ORIG_SIDE_UNCHANGED=PASS route=pp-orig files={len(fb)} rows={len(rb)} subgoal_reply={server_sends_subgoal}")
+
+
+@pytest.mark.parametrize("env_kwargs,step_cap", [({"demo": 3, "done_at": 5}, None), ({"demo": 1, "none_obs_at": 2}, None),
+                                                 ({"demo": 2}, 4)])
+def test_new_side_switch_off_identical_to_base(tmp_path, monkeypatch, env_kwargs, step_cap):
+    monkeypatch.setattr(sys, "path", list(sys.path))
+    monkeypatch.delenv("SGEVAL_PP_SERVER_WRAP", raising=False)
+    base = _load_base_pp(tmp_path)
+    cur = _load_pp_from(REPO / "scripts" / "eval-official" / "pp_client.py")
+    out = {}
+    for name, mod in (("base", base), ("cur", cur)):
+        ep = tmp_path / name / f"{PH['key']}.a1"
+        conn = SubgoalConn(SCHEDULE)  # 即使服务端带 subgoal，开关关时也与 BASE 相同
+        res = mod.run_episode(FakeSession(FakeEnv(PH_TASK, PH_SRC, **env_kwargs), step_cap=step_cap), PH,
+                              {"host": "127.0.0.1", "port": 18310, "max_steps": 1300, "dataset": "test-hard0",
+                               "trace_dir": str(ep), "episode_tag": ep.name},
+                              None, connection_factory=lambda url, timeout, c=conn: c)
+        res = {k: v for k, v in res.items() if k != "timing"}
+        out[name] = (res, sorted(p.name for p in ep.iterdir()), (ep / "trace.jsonl").read_bytes(), conn.log)
+    (rb, lsb, tb, lb), (rc, lsc, tcur, lc) = out["base"], out["cur"]
+    assert rb == rc and lsb == lsc == ["trace.jsonl"] and tb == tcur
+    assert compare_frames(lb, lc)[:2] == (0, 0)
