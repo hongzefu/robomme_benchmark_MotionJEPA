@@ -15,11 +15,11 @@
 1. **只改新接口**：「我澄清一下所有的修改都是只对新接口对于我们自己的接口。原版接口你你尽可能保存就可以」。`official_hard_runner.py`、`pp_official_runner.py`、`run_official_hard.sh`、Astra 的 `run.sh` 与 `third_party/` 全部不改；共享函数里的新行为默认关闭、只由新侧打开。
 2. **所有模型都改、都做三档**：「所有的模型都要改改完了之后都要做一二3阶段。的对拍」。
 3. **第二档不重跑原版**：「不需要跑原版的接口啊你不是有Xhard0的对拍吗?还是做那个呀」——新接口只与上一轮 `sg-eval-gl-20261004-01` 的原版结果比。
-4. **上一轮原版缺的部分在 GL 补跑**（用户选「GL 补跑原版」）：PonderPounce 分片 1 共 96 局、QwenVL 上一轮未跑的 153 局、Astra 原版 16 局；补跑用上一轮的 GL 执行副本，与已有原版结果同码。
+4. **上一轮原版缺的部分在 GL 补跑**（用户选「GL 补跑原版」）：PonderPounce 分片 1 共 96 局、QwenVL 上一轮未跑的 153 局；补跑用上一轮的 GL 执行副本，与已有原版结果同码。
 5. **SimpleMemVLA、MME 第二档只记录不对比**（用户选「可以，只记录」）：两者没有原版接口、上一轮也没跑过。
 6. **三档全部在 GL**：「第一第二第三档全部在greatlace上进行」。本机只做每条新路线 1 局 smoke。
 7. **排期**（用户选「第一档提前+按模型分批」）：第一档在改代码期间就跑；第二、三档哪个模型的依赖合完就先上 GL，各记各的冻结 sha。
-8. **Astra 原侧不出官方版式视频**（用户选「原侧不出」）；新侧出。
+8. **Astra 只做本机 smoke，其余一局不跑**：「Astra仍然是只跑smoke 其他不跑」（2026-10-06）。Astra 新侧照样改（S3），只用本机 smoke（≤2 局，付费）验证；第二档原版与新接口、第三档连通局全部取消。原侧不出官方版式视频（用户选「原侧不出」）。
 9. **GroundSG 的视频全部由官方录像器自己写出**：用户问「能否实现？」——可以，见第三节 GroundSG 一段。
 10. **上一轮 NFS 上约 11.9 GB 产物保留到本轮结束**（用户选「保留到本轮结束」），本轮要读它们当对照。
 11. **第一、二档只出结论不阻塞**，一路跑到第三档结束（沿用 1003 口径）。
@@ -53,13 +53,10 @@
 |---|---|---|---|
 | 第一档 生成对拍（提前跑） | 只测生成，与模型无关 | V9 43 格 × 3 局 + xhard0 16 任务 × 3 局 = 177 局 | 噪声基线 `scripts/configs/noise-ref-20261003.json` |
 | 第二档 xhard0 新接口 | GroundSG Oracle、QwenVL、PonderPounce、SimpleMemVLA、MME | 5 模型 × 16 任务 × 1 档 × 12 局 = 960 局 | 前三个对上一轮原版结果；后两个只记录 |
-| 第二档 xhard0 新接口 | Astra（付费） | 16 任务 × 1 档 × 1 局 = 16 局 | 本轮补跑的 Astra 原版 16 局 |
 | 第二档 原版补跑 | PonderPounce 分片 1、QwenVL 未跑部分 | 96 局 + (192 − 39) = 153 局，共 249 局 | 与上一轮已有原版结果合成完整对照 |
-| 第二档 原版补跑 | Astra（付费） | 16 任务 × 1 档 × 1 局 = 16 局 | — |
 | 第三档 V9 正式评估 | 五个模型 | 5 模型 × 800 局 = 4000 局（800 的乘式见第二部分六） | 新成绩 |
-| 第三档 V9 | Astra（付费） | 1 局，只确认链路通 | — |
 
-本机只做 smoke：五条非 Astra 新路线各 1 局，Astra 新侧 1 局（失败可再 1 局）。
+本机只做 smoke：五条非 Astra 新路线各 1 局，Astra 新侧 1 局（失败可再 1 局）；Astra 在 GL 上一局不跑。
 
 ## 五、验收（查什么／怎么查／判定行）
 
@@ -82,7 +79,7 @@
 |---|---|---|
 | 0 | 用户「开工」+ 一次性批预算与占位 job；提交占位 job；主检出 clean，记 `BASE` | JobID 记 `launch.md` |
 | 1a | 第一档：占位 job 排到即在 GL 起跑（不等改代码） | `GEN_REGRESS=` 行 |
-| 1b | 原版补跑：PonderPounce 96 + QwenVL 153 + Astra 16，用上一轮执行副本 | 每路线 `EPISODE_DONE` 计数齐 |
+| 1b | 原版补跑：PonderPounce 96 + QwenVL 153，用上一轮执行副本 | 每路线 `EPISODE_DONE` 计数齐 |
 | 1c | 主会话写 S0 契约与共享测试助手并提交；同批派 S1、S2a、S2b、S3、S4、S5 | 各子任务定向测试 passed |
 | 2 | 依次审查合并 S2a → S2b → S1 → S4 → S5 → S3，每次合并后核心短测 + push | `PRE_MERGE_REVIEW=PASS`、`POST_MERGE_REVIEW=PASS` ×6 |
 | 3 | 每条路线依赖合完即本机 smoke 1 局 → GL 冻结执行副本 → 第二档接第三档 | smoke：`OFFICIAL_MEDIA=PASS total=1`；GL 各档判定行 |
@@ -103,7 +100,7 @@
 - R3 官方 `RolloutRecorder` 不复制、不改写；GroundSG 只调用官方实例的 `save_video`；其他路线一律经 `render_official_video.py` 以 `importlib` 加载官方类。
 - R4 `episode.mp4` 口径、`video_check.py`、`eval_video_mover.py` 不改；官方版式文件一律放局目录 `official/`。
 - R5 第一阶段产物（重绘工具既有 16 个用例、站点、`sg-eval-gl-20261004-01/` 留档）不回滚；重绘工具只做向后兼容的重构。
-- R6 预算按六节一次性批准，不拆阶段再问；超出即停，合并补充授权。Astra 局数与金额逐项审批，已批范围外一局不跑。
+- R6 预算按六节一次性批准，不拆阶段再问；超出即停，合并补充授权。Astra 只许本机 smoke ≤2 局，GL 上一局不跑；局数与金额逐项审批，已批范围外一局不跑。
 - R7 上一轮 NFS 产物 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/sgeval-20261004/` 本轮只读，到本轮结束不删不移。
 - R9 第二档对照只取同为 GL A40 的结果：上一轮 GL 原版已有 Oracle 192/192、PonderPounce 分片 0 共 96、QwenVL 分片 00 共 39（`docs/validation/sg-eval-gl-20261004-01/result.md` 第三节表 1），其余在 GL 补跑；`gate2_compare.py` 的输入清单只列 GL 路径，合表时逐行核对来源节点在 GL，出现本机路径即 `GATE2=INVALID reason=cross_machine`。
 - R8 子代理 worktree 内只跑 CPU 定向测试：`UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv PYTHONPATH=<worktree>/src uv run --no-sync python -m pytest <定向> -q`，先打印 `robomme_hard.__file__` 确认在 `<worktree>/src/`。
@@ -193,11 +190,11 @@ S0 同时提交测试助手 `tests/pipeline/evalx/report/trace_contract.py::asse
 
 ## 四、runbook（主会话）
 
-1. **开工与占位 job**：用户「开工」并批六节后，按 `greatlakes.md` 与 1003 第五节规格提交（单卡 `--gres=gpu:a40:1 --gpu_cmode=shared --cpus-per-task=4 --mem=64G --time=48:00:00`；Astra 两卡 `--gres=gpu:a40:2 --cpus-per-task=6 --mem=64G`），规格高于默认 1 CPU／24G、提交后提醒用户；上一轮 9 个 job（`63188711`～`16`、`63188719`、`63188720`、`63188721`）续用、释放或重交，开工时由用户定。同时在用 ≤10 张卡。JobID 记 `launch.md`。
+1. **占位 job**（用户 2026-10-06 授权：「我授权你最多要求10张卡你现在自行启动和kill job那还是我说的必须要4十八小时然后尽可能早占用排队」；这不是开工令）：同时请求（RUNNING + PENDING）≤10 张卡，全部单卡 `--account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=gpu:a40:1 --gpu_cmode=shared --cpus-per-task=4 --mem=64G --time=48:00:00 --wrap='sleep infinity'`，到期立即同规格续交。2026-10-06 00:52 起的 10 张：`sgev-hold-00～07` = 63188711～16、63188719、63188720，`sgev-hold-08`、`09` = 63325534、63325535（Astra 两卡 63188721 因 Astra 只跑 smoke 已取消）；清单 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/gl-hold-logs/hold-jobs-sgeval-20261004.txt`。JobID 同时记 `launch.md`，收尾按清单逐个 `scancel`。
 2. **第一档（提前）**：沿用 1003 第五节第一档做法，执行副本为 `robomme_benchmark-noise`，检出开工时的 HEAD；`--attempts n --resets 3n --retries 0`；1 个单卡席位。
-3. **原版补跑**：用上一轮 GL 执行副本 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-sgeval`（不同步、不改动，起跑前记录其 HEAD）；`run_official_hard.sh` 跑 PonderPounce 分片 1 与 QwenVL 未跑分片（QwenVL 单局墙钟 3600 s，用上一轮 `launch_seat_v2.sh` 体例）；Astra 原版 16 局在两卡 job 内按 1003 第五节「第二档（Astra）」跑，`astra_cost_guard.py` 同时起。结果写入本轮新 stage，合表时与上一轮原版结果按身份并起来。
+3. **原版补跑**：用上一轮 GL 执行副本 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-sgeval`（不同步、不改动，起跑前记录其 HEAD）；`run_official_hard.sh` 跑 PonderPounce 分片 1 与 QwenVL 未跑分片（QwenVL 单局墙钟 3600 s，用上一轮 `launch_seat_v2.sh` 体例）。结果写入本轮新 stage，合表时与上一轮原版结果按身份并起来。
 4. **改代码**：S0 提交 → 同一消息派 S2a、S2b、S1、S4、S5、S3（`model: "opus"`、`isolation: "worktree"`）→ 按顺序逐个第一次审查、`git merge --no-ff <TIP sha> -F <消息文件>`、第二次审查、push。
-5. **按模型分批上 GL**：某模型依赖的子任务全部合入后：本机 smoke 1 局（tmux 前缀 `ovl2-`）→ 在 NFS 新建执行副本 `robomme_benchmark-sgeval2-<批次>`（`git clone --no-hardlinks` + `git submodule update --init`，检出冻结 sha，主 `.venv` 用 `UV_LINK_MODE=copy uv sync --frozen --group eval-client`；三方服务 venv 经 `MME_PY`／`PP_PY`／`SMVLA_PY` 指向上一轮执行副本中的对应 venv，第三方代码未变）→ 各席位链「第二档分片 → 第三档分片」。批次：A = GroundSG（S2a、S2b、S1 后），B = SimpleMemVLA／MME（+S4），C = PonderPounce（+S5），D = Astra（+S3）。
+5. **按模型分批上 GL**：某模型依赖的子任务全部合入后：本机 smoke 1 局（tmux 前缀 `ovl2-`）→ 在 NFS 新建执行副本 `robomme_benchmark-sgeval2-<批次>`（`git clone --no-hardlinks` + `git submodule update --init`，检出冻结 sha，主 `.venv` 用 `UV_LINK_MODE=copy uv sync --frozen --group eval-client`；三方服务 venv 经 `MME_PY`／`PP_PY`／`SMVLA_PY` 指向上一轮执行副本中的对应 venv，第三方代码未变）→ 各席位链「第二档分片 → 第三档分片」。批次：A = GroundSG（S2a、S2b、S1 后），B = SimpleMemVLA／MME（+S4），C = PonderPounce（+S5）。Astra（S3）合入后只做本机 smoke，不上 GL。
 6. **本轮全新目录**：run 名 `sg-eval-gl-<开工日期>-02`；stage、账本、media、trace、日志全部新建，命令逐条写进 `launch.md`，不复用上一轮 stage（防 `resume_skip`）；未知路线即报错退出。起跑后核对每条路线首局确有新 attempt。
 7. **监听**：每份日志一个 Monitor，过滤 `EXIT_CODE=|RUN_BLOCKED|INFRA|OFFICIAL_RENDER=FAIL|OFFICIAL_MEDIA=|Traceback|CUDA|svulkan2|EXCLUSIVE|NO RECORD|reset 拒绝`；开工后按 1003 第五节挂「排到卡即唤醒」。
 8. **收尾**：各模型 `OFFICIAL_MEDIA` 汇总、成绩表、第二档差异表、视频索引；留档 `docs/validation/sg-eval-gl-<日期>-02/{launch.md,result.md,records/}`；commit、push；按清单逐个 `scancel`。
@@ -230,14 +227,12 @@ S0 同时提交测试助手 `tests/pipeline/evalx/report/trace_contract.py::asse
 | GL smoke（非 Astra 新侧） | 5 路线 × 1 局 | 5 | 10 |
 | GL 第二档新接口 | 5 模型 × 16 任务 × 1 档 × 12 局 | 960 | 1920 |
 | GL 第二档原版补跑 | PonderPounce 分片 1 共 96 局 + QwenVL（16 任务 × 1 档 × 12 局 − 已有 39）= 153 局 | 249 | 498 |
-| Astra 第二档（付费） | 2 侧（原版补跑、新接口）× 16 任务 × 1 档 × 1 局 | 32 | 64 |
 | GL 第三档 | 5 模型 × 800 局 | 4000 | 8000 |
-| Astra V9 连通（付费） | 1 局 | 1 | 2 |
 | 基础设施重试 | 非 Astra 5 模型 × ≤10 次（整批共享，原版补跑计入所属模型）；Astra 0 | 50 | 100 |
 | 到期续跑 | 非 Astra 5 模型 × ≤100 局 | 500 | 1000 |
-| **合计** | | **6013** | **12225** |
+| **合计** | | **5980** | **12159** |
 
-正常 fail／timeout 不重试；smoke 不进正式分母；账本持久化，重启不重新获得额度。**Astra**：本轮付费局合计 ≤35 局（smoke ≤2 + 第二档 32 + V9 1），金额上限待用户定（上一轮 2 局花费 0.5149 美元；建议沿用 30 美元上限，到线即停 Astra）。**占位 job**：同时在用 ≤10 张卡（单卡席位 + Astra 两卡 1 个），数量与是否续用上一轮 9 个由用户在开工时定。
+正常 fail／timeout 不重试；smoke 不进正式分母；账本持久化，重启不重新获得额度。**Astra**：本轮付费局只有本机 smoke ≤2 局（上一轮 2 局花费 0.5149 美元），金额上限待用户定（建议 5 美元，到线即停）。**占位 job**：见第四节第 1 条，已获授权。
 
 ## 七、留档与 commit 纪律
 
