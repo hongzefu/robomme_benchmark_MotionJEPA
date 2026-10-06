@@ -98,7 +98,57 @@
 
 MemER 的子目标模型每一步被问同一个问题：「任务目标是 X，这是以前挑出来的重要画面（关键帧），这是最近几张画面，现在该做哪个子任务？哪几张是关键帧？」它回一个 JSON：`current_subtask`（子任务文字，直接交给动作模型）和 `keyframe_positions`（挑中的帧序号，程序据此把画面存进「关键帧记忆」）。
 
-第一次提问时记忆是空的，模型看到的关键帧栏是字面上的 `[]`，画面只有 1 张，所以它最自然的回答就是「关键帧为空」。官方代码收到这个回答后：
+**子目标模型每次收到的完整 prompt**（英文逐字照抄官方 `api_memer.py`；`┃ 注：` 开头的行是我加的中文注释，不是 prompt 内容，也不是翻译）
+
+system prompt，每次提问都带，固定不变：
+
+```text
+You are a robot program that predicts actions.
+┃ 注：给模型定角色——它是「预测动作的机器人程序」。
+The current input images from the front-view camera shows the most recent actions the robot has executed.
+┃ 注：「current input images」指下面 user prompt 里「当前画面列表」那一栏的图，是最近几步机器人执行后的前视图。
+The past keyframes are selected frames of particular importance from all the actions the robot has executed so far.
+┃ 注：「past keyframes」指「关键帧」那一栏的图，是模型自己在之前回合里挑出来、程序存进「关键帧记忆」的画面。
+Based on these, output the current subtask the robot should execute and nothing else.
+┃ 注：只要它输出「现在该做的子任务」，别的不要。
+Some tasks may have a video input for initial setup, some may not.
+┃ 注：有的任务开头给一段演示视频（见 user prompt 第一行），有的没有。
+
+Return a JSON with:
+- current_subtask: the action that should be executed at the current timestep
+┃ 注：子任务文字，例如 "move cube"；程序把它交给动作模型，是动作模型唯一能看到的文字输入。
+- keyframe_positions: list of frame positions (1-indexed) from the current input images where actions change
+┃ 注：从「当前画面列表」里挑出「动作发生变化」的帧序号，从 1 数；程序据此把那几张图存进关键帧记忆。
+┃ 注：官方提示词没说这个列表不能为空，也没说空了怎么办——坑就在程序处理空列表的方式上。
+```
+
+user prompt，第一次提问时实际送出的内容（关键帧记忆为空、只有 1 张画面）：
+
+```text
+The task goal is: <任务目标全文>
+┃ 注：任务目标，比如 "pick up the red cube and place it on the plate"，整局不变。
+Here are the selected frames from the entirety of the full execution that are of particular importance:[]
+┃ 注：关键帧栏。第一次提问时记忆为空，这里就是字面上的 "[]"，不附任何图。
+┃ 注：以后记忆非空时，这里会变成 "[<image>, <image>]"，每个 <image> 对应请求里附的一张 png。
+Here is current input image list from the front-view camera: [<image>]
+┃ 注：当前画面栏。第一次只有 1 张，就是机器人还没动时的前视图；
+┃ 注：第二次起固定取最近的 8 张（隔一张取一张），官方代码在画面不够 15 张时这里会越界——兼容层改成有几张取几张。
+
+What subtask should the robot execute and what is the keyframe position?
+┃ 注：问两件事：该做哪个子任务、哪几张是关键帧。
+```
+
+┃ 注：任务带演示视频时，user prompt 最前面多一行 `The task has a video input for initial setup: <video>`，并附上那段视频。
+┃ 注：解码参数 `max_tokens=128, temperature=0`，贪心解码，所以模型 seed 对这个子目标模型没有影响。
+
+模型对第一次提问的典型回复：
+
+```text
+{"current_subtask": "move cube", "keyframe_positions": []}
+┃ 注：子任务 "move cube" 是正常答案；关键帧为空也完全合理——它只看到 1 张图、记忆栏是 []，没有什么可挑的。
+```
+
+**官方代码收到这个回答后怎么崩的**：
 
 1. 关键帧为空，存记忆这一步跳过了——没问题；
 2. 紧接着无条件做一次「合并相邻关键帧」，在空记忆上取第一个元素——报错；
