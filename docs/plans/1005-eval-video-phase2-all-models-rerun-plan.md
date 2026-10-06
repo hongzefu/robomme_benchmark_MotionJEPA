@@ -34,16 +34,43 @@
 
 **已定口径（用户原话，2026-10-05～06）**：只改新接口，原版接口「尽可能保存」；所有模型都改、都做三档（不含 Astra）；第二档「原版是原版robomme 只跑hard 和修改后的xhard0对拍」；SimpleMemVLA、MME 原侧「不接受只能对比success fail 你需要重跑」；缺的原侧 GL 补跑；「不允许进行跨机的对比」；三档全部在 GL；Astra 只跑 smoke；第一、二档只出结论不阻塞；批次同号并行；GroundSG 每局都是官方录像器写的视频；上一轮产物与 v7.5eval 结果保留到本轮结束。
 
-## 二、第二档：每个模型两侧各是什么
+## 二、第二档：每个模型的原侧是什么、和官方 repo 的 `main` 差在哪
 
 两侧跑同一批 192 局（官方 test 集里 hard 难度的 12 局 × 16 任务）。**原侧** = 官方 `robomme` 环境 + 模型自己的原版评估代码；**新侧** = 我们的 `robomme_hard`（`test-hard0`）+ 我们的客户端。模型服务进程两侧一条命令。
 
-| 模型 | 原侧跑的是什么 | 它和模型上游原版的差别 | 原侧从哪来 | 新侧 |
-|---|---|---|---|---|
-| GroundSG Oracle／QwenVL | 我们的驱动 `official_hard_runner.py` 调官方评估循环原文 | 只跑 192 局清单、加只读观测、`unknown` 不中止；单局与官方相同 | 上一轮 GL（Oracle 齐；QwenVL 缺 153 局，批次 1 补） | 同一份官方循环，环境换成 `robomme_hard` |
-| PonderPounce | 我们的驱动 `pp_official_runner.py` 调 vla-eval 上游 runner + 上游 server | 只跑清单、GPU 渲染代替 docker CPU、加只读观测 | 上一轮 GL 分片 0；分片 1 共 96 局批次 1 补 | 我们逐行复刻的客户端，环境换成 `robomme_hard` |
-| SimpleMemVLA | 模型仓库原版分支 `4e0c04f` 的 `eval_success.py`（产出官方成绩 E0 的那份） | 相对上游 `c564c17` 只多「按清单跑 192 局、每局写一行终态」 | **本轮重跑**，外挂只读观测器 | 我们把它的策略拆成 server + 客户端，环境换成 `robomme_hard` |
-| MME | 模型仓库原版分支 `927c56d` 的 `eval.py`（产出 E0 的那份） | 相对上游 `ecf086c` 只多「按清单跑 192 局、每局写一行终态」 | **本轮重跑**，外挂只读观测器 + 透明代理 | 我们逐行复刻的客户端，环境换成 `robomme_hard` |
+**总结论**（2026-10-06 实际克隆四个官方仓库的 `main` 比对，不是和我们 fork 的 `main` 比）：三个模型仓库的 `main` HEAD 恰好就是我们钉死的提交，环境仓库的 `main` 之后只有文档提交。所以「原侧 vs 官方 main」的差别没有一条来自版本漂移，全部是我们自己加的驱动、清单模式和观测。
+
+**1. GroundSG Oracle／QwenVL**（官方 `RoboMME/robomme_policy_learning`）
+
+- 官方 `main` = `ecf086c`（2026-04-08 之后没有新提交）。原侧执行的就是这个提交里 `examples/robomme` 的类原文，用 ast 摘出来、整文件 sha256 写进结果行。**代码零差异**。
+- 差别全在我们包在外面的驱动 `official_hard_runner.py`：只跑 192 局清单而不是每任务 50 局；遇 `unknown` 记 error 继续而不是中止整个评估；服务连不上探测 300 秒后停而不是无限重试；用 `results.jsonl` 加我们的重试调度代替官方 `progress.json`；加只读观测写逐步记录和帧；官方叠字 mp4 局末被删（本阶段 S1 要在新侧改回保留）。
+- 环境、`max_steps=1300`、服务端 `--seed=7` 都和官方一样。
+- 原侧来源：上一轮 GL 结果（Oracle 192 局齐，成功 144/192；QwenVL 只有 39 局，缺 153 局批次 1 补跑）。
+
+**2. MME**（同一个官方仓库）
+
+- 原侧分支 `927c56d` 的父提交就是官方 `main` 的 `ecf086c`。它只增不删，4 个文件共 299 行：`eval.py` 加 81 行清单模式，新增 `xhard0_manifest.py`、它的单测、GL 启动脚本。
+- 清单模式由 `--args.episode_manifest` 开关门控，不给就是官方原来的循环。开了之后和官方不同的只有三件事：每局追加一行终态到 `episodes.jsonl`、视频在终态之后再写、支持续评。脚本层另设了 `XLA_PYTHON_CLIENT_MEM_FRACTION=0.75`。
+- 这就是产出官方成绩 E0（50/192）的代码；本轮重跑 192 局，再在进程外挂只读观测器和透明代理，这些不在分支里。
+
+**3. SimpleMemVLA**（官方 `OpenBMB/SimpleMemVLA`）
+
+- 官方 `main` = `c564c17`（2026-09-24，整条历史只有 3 个提交）。原侧分支 `4e0c04f` 的父提交就是它，3 个文件 +324／−1，评估核心、内置环境 `robomme_sim/robomme`、`batched_policy.py`、`inproc_pool.py` 全部零差异。
+- 清单模式与官方默认跑法有三处实质不同：组大小恒为 1（官方默认 2 局一组 batched 推理）；每局开头重设种子（官方整轮只设一次）；每局必录像（官方每任务只抽 1 成功 1 失败）。另加逐局终态 jsonl 和两个启动脚本。不给清单就走官方路线。
+- 这就是产出官方成绩 E0（141/192）的代码；本轮重跑 192 局，再外挂观测器。
+
+**4. PonderPounce**（官方 `worv-ai/ponderpounce`）
+
+- 官方 `main` = `723df357`（2026-09-29，3 个提交），和子模块 gitlink 一致。vla-eval 在官方锁文件、我们的锁文件、实装 venv 三处都是 0.7.0。**代码零差异**。
+- 差别全在运行方式。最实质的一条是渲染：官方一键跑用 docker 镜像里的 CPU lavapipe，我们原侧用本机 GPU 渲染，像素不会逐位一致。其余：只跑 192 局清单；固定 sid 的空操作 recorder；`EnvProxy` 和 `TracedConnection` 只读观测；我们的重试加重启服务；单连接串行而不是官方的多模拟器分片。
+- 原侧来源：上一轮 GL 分片 0 共 96 局（39 成功）；分片 1 共 96 局批次 1 补跑。
+
+**环境（四个模型共用，官方 `RoboMME/robomme_benchmark`）**
+
+- 官方 `main` = `016ac1c`（10 月 3 日）。从我们钉的 `1fadc0ec` 到 `main` 只有 4 个提交，改的是微信二维码图和一份 PonderPounce 提交说明文档。
+- `src/robomme` 目录树 sha 在 `856bc3a`（MME 子模块）、`1fadc0ec`（我们）、`main` 三点完全相同，对本仓库 `src/robomme` 做 `diff -rq` 为空。环境逻辑、test 元数据、wrapper 链官方从未改过。`vqa_options copy.py` 是官方仓库自带的杂散文件。
+
+**一句话**：模型代码和环境代码四处都与官方 `main` 同一版本；原侧和官方一键跑的差别只有「跑哪些局、怎么记、怎么重试、怎么渲染」。
 
 **为什么 SimpleMemVLA、MME 要外挂观测器**：GroundSG、PonderPounce 的原侧驱动是我们写的，逐步记录本来就在驱动里。SimpleMemVLA、MME 的原侧是模型自己仓库的完整入口，每局只写一行成功／失败，不许改它又要逐步对比，只能从进程外挂只读钩子复制每步数据（v7.5eval 做过、已删，本轮恢复）。观测器不改结果的证据：同一局有无观测器视频逐字节相同；MME 代理逐条消息对账 `mismatch=0`；本轮再查 SimpleMemVLA 重跑对 E0 应 0 翻转。
 
