@@ -22,8 +22,8 @@
    关闭的 ``subgoal_model`` 调用数。
 8. 外壳最终文字（``server_text_empty``）：该局任一 ``action_model`` 调用关闭时带了 ``server_final_text``（说明该路线有服务
    外壳），或给了 ``--require-server-text``，则每个以 ``reply`` 关闭的 ``action_model`` 调用都必须带非空 ``server_final_text``。
-9. system 一致（``system_inconsistent``）：所有被核的局里，同一模型的 ``system`` 消息原文必须相同（与多数不同的消息逐条
-   计数）；``--expect-system <model>=<sha256>`` 时另须等于给定哈希（文字 UTF-8 字节的 sha256）。
+9. system 一致（``system_inconsistent``）：所有被核的局里，同一（模型, trace header ``route``）的 ``system`` 消息原文必须
+   相同（按两者分组后与组内多数不同的消息逐条计数；同一 ``--root`` 混放 QwenVL 与 MemER 等不同路线时各比各的）；``--expect-system <model>=<sha256>`` 时另须等于给定哈希（文字 UTF-8 字节的 sha256）。
 
 判定行（末行）::
 
@@ -152,6 +152,7 @@ def check_episode(ep: Path, *, require_server_text: bool = False) -> dict:
 
     trace, tb = _jsonl(ep / "trace.jsonl")
     c["bad_rows"] += tb
+    route = next((r for r in trace if r.get("kind") == "header"), {}).get("route")  # system 一致按路线分组
     steps = [r for r in trace if r.get("kind") == "step"]
     responses = Counter(int(r["step"]) for r in trace if r.get("kind") == "response" and isinstance(r.get("step"), int))
     lp = ep / LANG_FILE
@@ -159,7 +160,7 @@ def check_episode(ep: Path, *, require_server_text: bool = False) -> dict:
         if steps:
             bad("language_missing", str(lp))
             bad("unresolved_steps", "无 language.jsonl", len(steps))
-        return {"dir": str(ep), "counts": dict(c), "problems": problems, "systems": systems}
+        return {"dir": str(ep), "counts": dict(c), "problems": problems, "systems": systems, "route": route}
     lang, lb = _jsonl(lp)
     if lb:
         bad("bad_rows", f"language.jsonl 坏行 {lb}", lb)
@@ -268,7 +269,7 @@ def check_episode(ep: Path, *, require_server_text: bool = False) -> dict:
         replied = sum(1 for call in sg if call["closed"] == "reply")
         if req != len(sg) or resp != replied:
             bad("retry_mismatch", f"MemER 日志 请求 {req}／回复 {resp}，语言账本 subgoal_model 调用 {len(sg)}／回复 {replied}")
-    return {"dir": str(ep), "counts": dict(c), "problems": problems, "systems": systems}
+    return {"dir": str(ep), "counts": dict(c), "problems": problems, "systems": systems, "route": route}
 
 
 def check(episodes: list[Path], *, require_server_text: bool = False, expect_system: dict | None = None) -> dict:
@@ -276,13 +277,13 @@ def check(episodes: list[Path], *, require_server_text: bool = False, expect_sys
     total = Counter({k: 0 for k in COUNT_KEYS})
     for r in per:
         total.update(r["counts"])
-    # system 一致：同一模型全部 system 原文与多数相同；给了哈希时另须等于它
-    by_model: dict = defaultdict(list)
+    # system 一致：按（模型, trace header route）分组，组内全部 system 原文与组内多数相同；给了哈希时另须等于它
+    by_group: dict = defaultdict(list)
     for r in per:
         for model, text in r["systems"]:
-            by_model[model].append((r, text))
+            by_group[(model, r.get("route"))].append((r, text))
     sys_problems = []
-    for model, items in by_model.items():
+    for (model, route), items in by_group.items():
         cnt = Counter(t for _, t in items)
         major = cnt.most_common(1)[0][0]
         want = (expect_system or {}).get(model)
@@ -290,9 +291,10 @@ def check(episodes: list[Path], *, require_server_text: bool = False, expect_sys
             sha = hashlib.sha256(t.encode("utf-8")).hexdigest()
             if t != major or (want is not None and sha != want):
                 total["system_inconsistent"] += 1
-                sys_problems.append({"dir": r["dir"], "model": model, "sha256": sha})
+                sys_problems.append({"dir": r["dir"], "model": model, "route": route, "sha256": sha})
     for r in per:
         r.pop("systems")
+        r.pop("route", None)
     ok = len(per) > 0 and all(total[k] == 0 for k in COUNT_KEYS)
     line = (f"LANG_IO={'PASS' if ok else 'FAIL'} episodes={len(per)} "
             + " ".join(f"{k}={total[k]}" for k in COUNT_KEYS))

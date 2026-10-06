@@ -25,11 +25,12 @@ def _write(path: Path, rows: list[dict]) -> None:
 
 
 def episode(root: Path, name: str = "PickXtimes_xhard1_7.a1", *, tag: str = "", system: str = SYS,
-            server_text: str | None = "Task: pick;\nCurrent Subgoal: pick red;\nAction: ") -> Path:
+            server_text: str | None = "Task: pick;\nCurrent Subgoal: pick red;\nAction: ", route: str | None = None) -> Path:
     """一局：4 个执行步、2 次动作模型调用（第 0、2 步，各执行 2 步）、1 次子目标模型调用（第 0 步）。"""
     d = root / name
     d.mkdir(parents=True)
-    trace = [{"kind": "header", "identity": {"key": name.split(".a")[0]}, "max_steps": 1800},
+    trace = [{"kind": "header", "identity": {"key": name.split(".a")[0]}, "max_steps": 1800,
+              **({"route": route} if route is not None else {})},
              {"kind": "demo", "frames": 2, "front_sha256": [f"df0{tag}", f"df1{tag}"],
               "wrist_sha256": [f"dw0{tag}", f"dw1{tag}"], "texts": ["pick"]},
              {"kind": "response", "step": 0}]
@@ -100,6 +101,25 @@ def test_changed_system_fails(tmp_path, capsys):
     one = tmp_path / "one"
     episode(one, system=SYS + " (edited)")
     rc, v, _ = _run(capsys, "--root", one, "--expect-system", f"subgoal_model={hashlib.sha256(SYS.encode()).hexdigest()}")
+    assert rc == 1 and v["system_inconsistent"] == "1"
+
+
+def test_system_grouped_by_route_mixed_root(tmp_path, capsys):
+    """MERGE-1（R7 审查 finding 2）：system 一致按（模型, trace header route）分组——QwenVL 与 MemER 两种路线混放在
+    同一 --root、各自 system 不同，不误判；同一路线内改了 system 照样抓到。"""
+    q, m = "groundsg/ground-sg-qwenvl/new", "groundsg/ground-sg-memer/new"
+    memer_sys = "You are MemER, a memory-augmented subgoal predictor."
+    episode(tmp_path, "A_xhard1_1.a1", route=q)
+    episode(tmp_path, "A_xhard1_2.a1", route=q)
+    episode(tmp_path, "A_xhard1_3.a1", route=m, system=memer_sys)
+    rc, v, line = _run(capsys, "--root", tmp_path)
+    print(line)
+    assert rc == 0 and v["system_inconsistent"] == "0" and v["episodes"] == "3"
+    # 同一 MemER 路线里再放两局、其一改了 system：只有它一条与组内多数不同
+    episode(tmp_path, "A_xhard1_4.a1", route=m, system=memer_sys)
+    episode(tmp_path, "A_xhard1_5.a1", route=m, system=memer_sys + " (edited)")
+    rc, v, line = _run(capsys, "--root", tmp_path)
+    print(line)
     assert rc == 1 and v["system_inconsistent"] == "1"
 
 

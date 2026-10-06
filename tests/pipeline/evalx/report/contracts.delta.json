@@ -189,7 +189,8 @@
       "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_language_from_wrong_attempt_fails",
       "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_empty_server_final_text_fails",
       "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_memer_retry_count_against_archived_log",
-      "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_unresolved_step_reuse_and_missing_language"
+      "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_unresolved_step_reuse_and_missing_language",
+      "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_system_grouped_by_route_mixed_root"
     ],
     "resource": "cpu",
     "mutants": [],
