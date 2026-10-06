@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """GroundSG（MME-VLA symbolic-grounded-subgoal）新侧客户端（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.3）。
 
-``env_client.py run --policy groundsg --groundsg-variant {ground-sg-oracle,ground-sg-qwenvl}`` 按
+``env_client.py run --policy groundsg --groundsg-variant {ground-sg-oracle,ground-sg-qwenvl,ground-sg-memer}`` 按
 ``load_sibling("groundsg_client")`` 加载本模块，调用 ``run_episode(session, identity, conn_info, recorder)``。
 
 循环本身**不重写**：从官方 ``eval.py`` 用 ``official_defs.extract_defs`` 摘取 ``EpisodeEvaluator``、``Args`` 原文，
@@ -13,9 +13,24 @@
 本模块收住后返回，由 ``run_one`` 按 ``cap_hit`` 记 timeout）、``RecorderError``（基础设施）、``ResetBudgetExhausted``。
 
 子目标预测器只取所选变体需要的类：Oracle 取 ``OracleSubgoalPredictor``（不读 qwenvl/api.py、不导入 swift）；
-QwenVL 取 ``QwenVLSubgoalPredictor`` 与 ``Qwen3VLModel``（不取 Gemini／MemER）。构造前断言 ``use_oracle`` 与
-``use_qwenvl`` 恰一个为真。预测器与评估器放在 ``policy_context`` 里整席只建一次（``make_policy_context``），
+QwenVL 取 ``QwenVLSubgoalPredictor`` 与 ``Qwen3VLModel``（不取 Gemini／MemER）；MemER 取 ``MemERSubgoalPredictor``
+与套了兼容层的 ``Qwen3VLModelMemER``（``official_defs`` 模块文档串）。构造前断言 ``use_oracle``／``use_qwenvl``／
+``use_memer`` 恰一个为真。预测器与评估器放在 ``policy_context`` 里整席只建一次（``make_policy_context``），
 与官方「一次评估只建一个预测器、跨局复用」相同。
+
+第三阶段（1006-rename-official-names-and-stage3-eval-plan.md 八.3、八.11；接口冻结说明 2.2、2.3、五、七）：
+
+* ``seat_info["policy_seed"]`` 必填（非负整数），经 ``official_defs.make_args(model_seed=)`` 显式写进 ``Args.model_seed``，
+  QwenVL／MemER 预测器构造前 ``seed_everything``；MemER adapter 取 ``seat_info["memer_adapter_path"]``；
+* 子目标模型临时区：QwenVL ``<trace_dir>/qwen-tmp/…``、MemER ``<trace_dir>/memer-tmp/…``，局末把
+  ``ep*_QwenVL_log.jsonl``／``ep*_MemER_log.jsonl`` 归档进局目录，临时区整删（异常同样清理）；
+* 语言账本 ``language.jsonl``（``trace_writer.LanguageLog``，可选探测：缺这个类时不记、不报错）：QwenVL／MemER 每次
+  提问一次 ``subgoal_model`` 调用（system、user 原文、附图引用；MemER 重问每次单独一次调用带 ``retry``），回复原文与
+  ``parsed``；QwenVL keep_period 复用步记 ``reuse``；每次动作推理一次 ``action_model`` 调用（结构化字段，Oracle 带
+  ``subgoal_source: oracle``）；动作服务回包里的 ``_sgeval_audit`` 在交给官方代码前 ``pop`` 掉并记进该调用（缺失记
+  ``None``）；执行步 ``source_call_id``／``chunk_index`` 指向动作来源调用；
+* 结果行记 ``policy_seed``、``policy_variant``、``memer_compat_sha256``（MemER）、``error_kind``（MemER 三次坏回复
+  且无上一次合法子目标 → ``model_response_error``，``status=error``、非基础设施、不重跑）。
 
 每局外围记录（两侧同一套代码，原侧 ``official_hard_runner.py`` 也用这里的 ``EpisodeTap``／``TracingClient``）：
 
@@ -23,9 +38,9 @@ QwenVL 取 ``QwenVLSubgoalPredictor`` 与 ``Qwen3VLModel``（不取 Gemini／Mem
   ``<trace_dir>/trace.jsonl``，否则 ``<recorder.out_dir>/trace.jsonl``，都没有则不写；
 * 发给模型的每个请求（``reset``／``add_buffer``／``infer``）以 ``official_defs.canonical_bytes`` 规范化后记 sha256，
   ``infer`` 回复记完整动作块；
-* Qwen 临时目录 ``<trace_dir>/qwen-tmp/<dataset>/<episode_tag>/``（无 ``trace_dir`` 时落在临时目录），局末把
-  ``ep<id>_QwenVL_log.jsonl`` 归档到轨迹所在目录，临时目录整个删除（``unknown``／异常早退同样清理）；
-* 官方循环自己写的叠字 mp4 局末删除（交付视频走本仓库录像器）——原侧（不传 ``keep_official``）保持如此。
+* Qwen／MemER 临时目录 ``<trace_dir>/{qwen,memer}-tmp/<dataset>/<episode_tag>/``（无 ``trace_dir`` 时落在临时目录），
+  局末把 ``ep<id>_{QwenVL,MemER}_log.jsonl`` 归档到轨迹所在目录，临时目录整个删除（``unknown``／异常早退同样清理）；
+* 官方循环自己写的叠字 mp4：两侧都传 ``keep_official=True``，核验后搬进 ``<局目录>/official/``（第三阶段原侧同新侧）。
 
 终态：官方返回 ``success``／``fail``／``timeout`` 原样；``unknown``（及其他非终态值）记 ``status="error"``、
 ``error="success_flag=<值>"``，不中止整席；官方循环抛出的异常记 ``status="error"`` + ``<异常类>: <消息>``，
@@ -62,6 +77,7 @@ import re  # noqa: E402
 import shutil  # noqa: E402
 import subprocess  # noqa: E402
 import tempfile  # noqa: E402
+import inspect  # noqa: E402
 import time  # noqa: E402
 from pathlib import Path  # noqa: E402
 from typing import Any, Callable  # noqa: E402
@@ -184,6 +200,9 @@ class EpisodeTap:
         self.demo_frames: int | None = None
         self.task_goal: str | None = None
         self.requests: list[str] = []  # 请求规范化字节 sha256（测试与摘要用）
+        self.lang: LangTap | None = None  # 语言账本接线（run_official_episode 按需挂上）
+        self.chunk_call: str | None = None  # 当前动作块的来源调用（action_model call_id）
+        self.chunk_pos = 0
 
     def on_reset(self, pre: dict) -> None:
         imgs, wrists, states = list(pre["images"]), list(pre["wrist_images"]), list(pre["states"])
@@ -212,9 +231,19 @@ class EpisodeTap:
             self.decisions += 1
             self.last_subgoal = obj.get("grounded_subgoal") if isinstance(obj, dict) else None
 
-    def on_response(self, actions: Any) -> None:
+    def on_response(self, actions: Any, call_id: str | None = None) -> None:
         if self.trace is not None:
             self.trace.log_response(actions, step=self.steps)
+        if self.lang is not None:
+            self.chunk_call, self.chunk_pos = call_id, 0
+
+    def _source_kw(self) -> dict:
+        """语言账本打开时执行步关联动作来源调用（接口冻结说明四.2）；未打开时不加键（step 行仍为旧 9 键）。"""
+        if self.lang is None or self.chunk_call is None:
+            return {}
+        kw = {"source_call_id": self.chunk_call, "chunk_index": self.chunk_pos}
+        self.chunk_pos += 1
+        return kw
 
     def on_step(self, action: Any, obs3: tuple, stop: bool, flag: str, terminated: Any, truncated: Any,
                 reason: str | None = None) -> None:
@@ -230,17 +259,21 @@ class EpisodeTap:
                     self.frames.write("wrist", wrist)
             else:
                 self.frames.meta["missing_steps"].append(self.steps)
+        src = self._source_kw()
         if self.trace is not None and img is None and self.missing_step_contract:
             self.trace.log_missing_step(step=self.steps, action=action, subgoal=self.last_subgoal,
-                                        reason=reason or f"no_observation status={flag}")
+                                        reason=reason or f"no_observation status={flag}", **src)
         elif self.trace is not None:
             self.trace.log_step(step=self.steps, front=img, wrist=wrist, state=state, action=action,
                                 subgoal=self.last_subgoal, terminated=bool(terminated), truncated=bool(truncated),
-                                status=flag)
+                                status=flag, **src)
 
 
 class TracingClient:
-    """包住 ``MMEVLAWebsocketClientPolicy``（或替身）的 ``reset``／``add_buffer``／``infer``：先记请求再原样转发。"""
+    """包住 ``MMEVLAWebsocketClientPolicy``（或替身）的 ``reset``／``add_buffer``／``infer``：先记请求再原样转发。
+
+    ``infer`` 回包里的服务外壳审计键 ``_sgeval_audit``（接口冻结说明五）一律在交给官方代码前 ``pop`` 掉；语言账本
+    打开时记进本次 ``action_model`` 调用（缺该键记 ``server_final_text=None``）。"""
 
     def __init__(self, inner: Any, tap: EpisodeTap):
         self._inner = inner
@@ -256,8 +289,18 @@ class TracingClient:
 
     def infer(self, obs):
         self._tap.on_request("infer", obs)
-        out = self._inner.infer(obs)
-        self._tap.on_response(out["actions"])
+        lang = self._tap.lang
+        cid = lang.action_open(obs) if lang is not None else None
+        try:
+            out = self._inner.infer(obs)
+        except BaseException:
+            if lang is not None:
+                lang.close(cid, status="error")
+            raise
+        audit = out.pop(AUDIT_KEY, None) if isinstance(out, dict) else None
+        if lang is not None:
+            lang.action_close(cid, audit)
+        self._tap.on_response(out["actions"], call_id=cid)
         return out
 
     def close(self) -> None:
@@ -272,6 +315,256 @@ class TracingClient:
         return getattr(self._inner, name)
 
 
+#: 服务外壳回包审计键（接口冻结说明五；R3 写入，客户端交给官方代码前 pop）
+AUDIT_KEY = "_sgeval_audit"
+
+
+def open_language_log(trace_path: str | Path | None) -> Any:
+    """语言账本 ``<trace 同目录>/language.jsonl``：``trace_writer.LanguageLog`` 存在且有轨迹位置时打开，否则 None
+    （R6 接口尚未合入时的可选探测：不记、不报错）。"""
+    cls = getattr(trace_writer, "LanguageLog", None)
+    if cls is None or trace_path is None:
+        return None
+    return cls(Path(trace_path).parent / "language.jsonl")
+
+
+_STEP_IMG_RE = re.compile(r"step_(\d+)_image\.png$")
+
+
+def _png_sha256(path: str) -> str | None:
+    """子目标模型附图（官方存的 png）读回后按 ``trace_writer.image_sha256`` 口径算哈希；png 无损，与轨迹帧哈希同值。"""
+    try:
+        import imageio.v2 as iio
+
+        return trace_writer.image_sha256(np.asarray(iio.imread(path)))
+    except Exception:  # noqa: BLE001 读不到只记 None，不影响评估
+        return None
+
+
+def _request_fields(request: Any) -> dict:
+    """swift ``InferRequest``（或测试替身）的 messages／images／videos／objects（只读，发送前取）。"""
+    if hasattr(request, "kw"):
+        def get(k):
+            return request.kw.get(k)
+    else:
+        def get(k):
+            return getattr(request, k, None)
+    return {"messages": list(get("messages") or []), "images": list(get("images") or []),
+            "videos": list(get("videos") or []), "objects": get("objects")}
+
+
+def _config_fields(request_config: Any) -> dict:
+    kw = getattr(request_config, "kw", None)
+    if isinstance(kw, dict):
+        return kw
+    return {k: getattr(request_config, k, None) for k in ("temperature", "max_tokens")}
+
+
+class LangTap:
+    """一局的语言账本接线（新侧与原侧共用；接口冻结说明五、计划八.11）。
+
+    * ``subgoal_open``／``subgoal_reply``：子目标模型（QwenVL／MemER）每次真实 ``engine.infer`` 一次调用，``in`` 先于
+      发送写入（system、user 原文 + 附图引用 + 演示视频段），``out`` 为回复原文；同一次 ``get_subgoal`` 里的前几次
+      （MemER 重问前的坏回复）在下一次提问时以 ``parsed=None`` 关闭，最后一次在 ``get_subgoal`` 返回后带 ``parsed``
+      与 ``fallback`` 关闭；``get_subgoal`` 没有真实提问（QwenVL keep_period 复用）记 ``reuse``；
+    * ``action_open``／``action_close``：动作服务每次 ``infer`` 一次 ``action_model`` 调用，``in`` 为结构化字段
+      （``prompt``、``grounded_subgoal``、``simple_subgoal``、``subgoal_source``、``subgoal_call_id``）与当前前视／腕部
+      帧引用（先于发送写入）；回包审计键的分词通道原文在收到回包后补记（服务端视角），``server_final_text``／
+      ``server_truncated`` 写进 ``call_close``。
+
+    附图 ``frame_idx`` 口径：执行段已执行步数（0 = reset 后的初始帧，即演示段最后一帧；n = 第 n 步执行后的观测），
+    ``raw_sha256`` 与轨迹 ``step`` 行（或 ``demo`` 末帧）的 ``front_sha256`` 同口径。
+    """
+
+    def __init__(self, log: Any, tap: EpisodeTap, *, variant: str, api: Any = None, params: dict | None = None):
+        self.log, self.tap, self.variant, self.api = log, tap, variant, api
+        self.params = dict(params or {})
+        self.pending: list[str] = []  # 本次 get_subgoal 内已开、未关的子目标调用
+        self.last_subgoal_call: str | None = None
+        self.subgoal_calls = 0
+        self.action_calls = 0
+        self.reuses = 0
+
+    @property
+    def memer(self) -> bool:
+        return self.variant == official_defs.VARIANT_MEMER
+
+    # ── 通用 ──────────────────────────────────────────────────────────
+    def close(self, call_id: str | None, **kw) -> None:
+        if call_id is None:
+            return
+        self.log.close_call(call_id, **kw)
+        if call_id in self.pending:
+            self.pending.remove(call_id)
+
+    # ── 子目标模型 ────────────────────────────────────────────────────
+    def _subgoal_images(self, paths: list[str]) -> list[dict]:
+        n_recent = len(getattr(self.api, "current_execution_frame_paths", None) or []) if self.memer else len(paths)
+        n_key = max(0, len(paths) - n_recent)
+        out = []
+        for i, path in enumerate(paths):
+            m = _STEP_IMG_RE.search(str(path))
+            ref = "keyframe" if i < n_key else ("recent" if self.memer else "current")
+            out.append({"slot": i, "ref": ref, "phase": "exec", "frame_idx": int(m.group(1)) if m else None,
+                        "cam": "front", "raw_sha256": _png_sha256(path), "sources": [Path(str(path)).name],
+                        "transform": {"encode": "png"}, "encoded_sha256": None})
+        return out
+
+    def subgoal_open(self, request: Any, request_config: Any) -> str:
+        for cid in list(self.pending):  # 上一次（坏回复）在重问前关闭：模型回了，但不合法
+            self.close(cid, status="reply", parsed=None, fallback=None)
+        f = _request_fields(request)
+        cfg = _config_fields(request_config)
+        params = dict(self.params, temperature=cfg.get("temperature"), max_tokens=cfg.get("max_tokens"))
+        if f["objects"] is not None:
+            params["objects"] = f["objects"]
+        retry = int(getattr(self.api, "_memer_retry", 0) or 0) if self.memer else 0
+        cid = self.log.open_call("subgoal_model", int(self.tap.steps), params=params, retry=retry)
+        demo = f"demo[0:{self.tap.demo_frames}]" if f["videos"] and self.tap.demo_frames is not None else None
+        for msg in f["messages"]:
+            if msg.get("role") == "system":
+                self.log.message(cid, dir="in", role="system", text=msg.get("content"))
+            else:
+                self.log.message(cid, dir="in", role=msg.get("role"), text=msg.get("content"),
+                                 images=self._subgoal_images(f["images"]), demo_video=demo)
+        self.pending.append(cid)
+        self.subgoal_calls += 1
+        return cid
+
+    def subgoal_reply(self, call_id: str, out: Any) -> None:
+        try:
+            text = out[0].choices[0].message.content
+        except Exception:  # noqa: BLE001
+            text = None
+        self.log.message(call_id, dir="out", role="assistant", text=text)
+
+    def subgoal_begin(self) -> None:
+        for cid in list(self.pending):
+            self.close(cid, status="cancelled")
+
+    def subgoal_end(self, value: Any, exc: BaseException | None = None) -> None:
+        """``get_subgoal`` 返回（或抛出）后收尾：最后一次调用带 parsed／fallback 关闭；没有真实提问记 reuse。"""
+        if not self.pending:
+            if exc is None and self.last_subgoal_call is not None:
+                self.log.reuse(int(self.tap.steps), self.last_subgoal_call)
+                self.reuses += 1
+            return
+        last = self.pending[-1]
+        for cid in self.pending[:-1]:
+            self.close(cid, status="reply", parsed=None, fallback=None)
+        if exc is not None:
+            if type(exc).__name__ == "MemERResponseError":
+                self.close(last, status="reply", parsed=None, fallback="model_response_error")
+            else:
+                self.close(last, status="error", parsed=None, fallback=None)
+            return
+        fb = getattr(self.api, "_memer_fallback", None) if self.memer else None
+        parsed: dict[str, Any] = {"subgoal": value}
+        if self.memer:
+            parsed["keyframe_positions"] = getattr(self.api, "_memer_last_positions", None)
+            parsed["key_frame_ids"] = sorted(getattr(self.api, "key_frame_paths", None) or {})
+        if fb == "last_valid":  # 第三次也坏：沿用上一次合法子目标（parsed 记沿用的值，标 fallback）
+            parsed = {"subgoal": value, "reused_from_last_valid": True}
+        self.close(last, status="reply", parsed=parsed, fallback=fb)
+        self.last_subgoal_call = last
+
+    # ── 动作模型 ──────────────────────────────────────────────────────
+    def action_open(self, obs: Any) -> str:
+        obs = obs if isinstance(obs, dict) else {}
+        step = int(self.tap.steps)
+        oracle = self.variant == official_defs.VARIANT_ORACLE
+        fields = {"prompt": obs.get("prompt"), "grounded_subgoal": obs.get("grounded_subgoal"),
+                  "simple_subgoal": obs.get("simple_subgoal"),
+                  "subgoal_source": "oracle" if oracle else "subgoal_model",
+                  "subgoal_call_id": None if oracle else self.last_subgoal_call}
+        imgs = []
+        for key, ref, cam in (("observation/image", "current", "front"), ("observation/wrist_image", "wrist", "wrist")):
+            if key in obs:
+                imgs.append({"slot": len(imgs), "ref": ref, "phase": "exec", "frame_idx": step, "cam": cam,
+                             "raw_sha256": trace_writer.image_sha256(obs[key]), "sources": [], "transform": None,
+                             "encoded_sha256": None})
+        cid = self.log.open_call("action_model", step, params=None)
+        self.log.message(cid, dir="in", role="fields", text=fields, images=imgs)
+        self.action_calls += 1
+        return cid
+
+    def action_close(self, call_id: str, audit: Any) -> None:
+        audit = audit if isinstance(audit, dict) else {}
+        chans = [c for c in (audit.get("channels") or []) if isinstance(c, dict)]
+        for ch in chans:
+            self.log.message(call_id, dir="in", role="fields", text=ch.get("text"), channel=ch.get("channel"),
+                             token_ids=ch.get("token_ids"), mask=ch.get("mask"), tokenizer=ch.get("tokenizer"),
+                             truncated=ch.get("truncated"))
+        truncated = any(bool(c.get("truncated")) for c in chans) if chans else None
+        self.close(call_id, status="reply", server_final_text=audit.get("server_final_text"),
+                   server_truncated=truncated)
+
+    def summary(self) -> dict:
+        return {"subgoal_calls": self.subgoal_calls, "action_calls": self.action_calls, "reuses": self.reuses}
+
+
+class _EngineTap:
+    """子目标模型 ``engine`` 的委托包装：``infer`` 前后各记一次语言账本，其余属性原样转发。"""
+
+    def __init__(self, inner: Any, lang: LangTap):
+        self._inner, self._lang = inner, lang
+
+    def infer(self, reqs, request_config=None):
+        cid = self._lang.subgoal_open(reqs[0], request_config)
+        try:
+            out = self._inner.infer(reqs, request_config=request_config)
+        except BaseException:
+            self._lang.close(cid, status="error")
+            raise
+        self._lang.subgoal_reply(cid, out)
+        return out
+
+    def __getattr__(self, name):
+        return getattr(self._inner, name)
+
+
+def install_language(predictor: Any, lang: LangTap) -> Callable[[], None]:
+    """把语言账本挂到预测器（实例属性包一层 ``get_subgoal``、``api.engine`` 换成委托包装）；返回还原函数。
+    Oracle 没有子目标模型，不包。"""
+    restore: list[Callable[[], None]] = []
+    if type(predictor).__name__ not in SUBGOAL_TMP:
+        return lambda: None
+    api = getattr(predictor, "api", None)
+    if api is not None and hasattr(api, "engine"):
+        inner = api.engine
+        api.engine = _EngineTap(inner, lang)
+        restore.append(lambda: setattr(api, "engine", inner))
+    had = "get_subgoal" in vars(predictor)
+    saved = vars(predictor).get("get_subgoal")
+    orig = predictor.get_subgoal
+
+    def get_subgoal(count, current_subgoal, last_subgoal):
+        lang.subgoal_begin()
+        try:
+            out = orig(count, current_subgoal, last_subgoal)
+        except BaseException as e:
+            lang.subgoal_end(None, exc=e)
+            raise
+        lang.subgoal_end(out[0] if isinstance(out, tuple) else out)
+        return out
+
+    predictor.get_subgoal = get_subgoal
+
+    def _undo():
+        if had:
+            predictor.get_subgoal = saved
+        else:
+            vars(predictor).pop("get_subgoal", None)
+
+    restore.append(_undo)
+
+    def undo_all():
+        for fn in reversed(restore):
+            fn()
+
+    return undo_all
+
+
 def episode_scratch(trace_dir: str | None) -> tuple[Path, bool]:
     """本局临时区：有 ``trace_dir`` 用它（返回 False：不整删），否则新建临时目录（返回 True：局末整删）。"""
     if trace_dir:
@@ -281,12 +574,17 @@ def episode_scratch(trace_dir: str | None) -> tuple[Path, bool]:
     return Path(tempfile.mkdtemp(prefix="groundsg-")), True
 
 
+#: 有子目标模型的预测器：临时区目录名与官方日志名中缀（``ep<id>_<中缀>_log.jsonl``）
+SUBGOAL_TMP = {"QwenVLSubgoalPredictor": ("qwen-tmp", "QwenVL"), "MemERSubgoalPredictor": ("memer-tmp", "MemER")}
+
+
 def qwen_begin(predictor: Any, scratch: Path, dataset: str, episode_tag: str) -> Path | None:
-    """QwenVL 预测器：把官方 ``save_dir`` 指到 ``<scratch>/qwen-tmp/<dataset>/<episode_tag>/``（官方再拼
-    ``<env_name>/ep<episode_id>``）。Oracle 预测器返回 None。"""
-    if type(predictor).__name__ != "QwenVLSubgoalPredictor":
+    """QwenVL／MemER 预测器：把官方 ``save_dir`` 指到 ``<scratch>/{qwen,memer}-tmp/<dataset>/<episode_tag>/``（官方再拼
+    ``<env_name>/ep<episode_id>``，两者的日志都写在 ``<env_name>/ep<id>_{QwenVL,MemER}_log.jsonl``）。Oracle 返回 None。"""
+    kind = SUBGOAL_TMP.get(type(predictor).__name__)
+    if kind is None:
         return None
-    base = scratch / "qwen-tmp" / str(dataset) / str(episode_tag)
+    base = scratch / kind[0] / str(dataset) / str(episode_tag)
     base.mkdir(parents=True, exist_ok=True)
     predictor.save_dir = base
     predictor.episode_dir = None
@@ -294,12 +592,12 @@ def qwen_begin(predictor: Any, scratch: Path, dataset: str, episode_tag: str) ->
 
 
 def qwen_end(predictor: Any, base: Path | None, archive_dir: Path | None) -> str | None:
-    """局末（正常、``unknown``、异常都调）：``ep<id>_QwenVL_log.jsonl`` 归档到 ``archive_dir``，再整删临时目录，
-    并逐级删掉空的 ``qwen-tmp`` 父目录。返回归档路径。"""
+    """局末（正常、``unknown``、异常都调）：``ep<id>_{QwenVL,MemER}_log.jsonl`` 归档到 ``archive_dir``，再整删临时目录，
+    并逐级删掉空的 ``<dataset>``、``{qwen,memer}-tmp`` 父目录。返回归档路径。"""
     if base is None:
         return None
     archived = None
-    logs = sorted(base.glob("*/ep*_QwenVL_log.jsonl"))
+    logs = sorted([*base.glob("*/ep*_QwenVL_log.jsonl"), *base.glob("*/ep*_MemER_log.jsonl")])
     if archive_dir is not None:
         archive_dir.mkdir(parents=True, exist_ok=True)
         for log in logs:
@@ -309,7 +607,7 @@ def qwen_end(predictor: Any, base: Path | None, archive_dir: Path | None) -> str
     shutil.rmtree(base, ignore_errors=True)
     predictor.episode_dir = None
     p = base.parent
-    for _ in range(2):  # <dataset>、qwen-tmp 两层，空了才删
+    for _ in range(2):  # <dataset>、{qwen,memer}-tmp 两层，空了才删
         try:
             p.rmdir()
         except OSError:
@@ -428,14 +726,17 @@ def default_client_factory(host: str, port: int, episode: dict) -> Any:
 
 def make_policy_context(seat_info: dict, *, client_factory: Callable | None = None, qwen_extra: dict | None = None,
                         save_dir: str | Path | None = None) -> dict:
-    """整席只建一次：官方定义、``Args``、子目标预测器（QwenVL 在此加载模型）、``EpisodeEvaluator``。
+    """整席只建一次：官方定义、``Args``、子目标预测器（QwenVL／MemER 在此加载模型）、``EpisodeEvaluator``。
 
+    ``seat_info`` 读 ``groundsg_variant``、``policy_seed``（必填，非负整数；缺失抛 ``ValueError``，文本含
+    ``RUN_BLOCKED reason=policy_seed``）、``qwenvl_groundSG_adapter_path``（QwenVL）、``memer_adapter_path``（MemER）。
     ``client_factory(host, port, episode) -> client`` 与 ``qwen_extra``（swift 三个名字的替身）只供测试注入。"""
     variant = seat_info.get("groundsg_variant")
     if variant not in official_defs.VARIANTS:
         raise ValueError(f"groundsg_variant={variant!r} 不是 {official_defs.VARIANTS} 之一")
+    policy_seed = official_defs.check_policy_seed(seat_info.get("policy_seed"))
     ctx: dict[str, Any] = {"variant": variant, "seat_info": dict(seat_info), "episode": None,
-                           "client_factory": client_factory or default_client_factory}
+                           "client_factory": client_factory or default_client_factory, "policy_seed": policy_seed}
 
     def ws_factory(host, port):
         ep = ctx["episode"]
@@ -449,14 +750,50 @@ def make_policy_context(seat_info: dict, *, client_factory: Callable | None = No
                                                  tempfile.gettempdir()) / "qwen-tmp"
     args = official_defs.make_args(defs, variant=variant, host=seat_info.get("host", "127.0.0.1"),
                                    port=int(seat_info["port"]), max_steps=int(seat_info["max_steps"]),
-                                   adapter_path=seat_info.get("qwenvl_groundSG_adapter_path"), save_dir=str(base))
+                                   model_seed=policy_seed,
+                                   adapter_path=seat_info.get("qwenvl_groundSG_adapter_path"),
+                                   memer_adapter_path=seat_info.get("memer_adapter_path"), save_dir=str(base))
     t0 = time.perf_counter()
     predictor = official_defs.build_predictor(defs, args, base)
     ctx.update(defs=defs, args=args, predictor=predictor, evaluator=defs["EpisodeEvaluator"](args, base),
-               predictor_init_s=time.perf_counter() - t0, official_sha256=dict(defs["sha256"]))
+               predictor_init_s=time.perf_counter() - t0, official_sha256=dict(defs["sha256"]),
+               memer_compat_sha256=defs.get("memer_compat_sha256"))
     print(f"GROUNDSG_CONTEXT variant={variant} max_steps={args.max_steps} predictor={type(predictor).__name__} "
+          f"policy_seed={args.model_seed} memer_compat_sha256={ctx['memer_compat_sha256'] or 'none'} "
           f"init_s={ctx['predictor_init_s']:.1f}", flush=True)
     return ctx
+
+
+def language_params(ctx: dict) -> dict:
+    """子目标模型调用的固定解码参数部分（每次调用另补 temperature、max_tokens）。"""
+    args = ctx.get("args")
+    variant = ctx.get("variant")
+    adapter = None
+    if variant == official_defs.VARIANT_QWENVL:
+        adapter = getattr(args, "qwenvl_groundSG_adapter_path", None)
+    elif variant == official_defs.VARIANT_MEMER:
+        adapter = getattr(args, "memer_adapter_path", None)
+    out = {"model_id": "Qwen/Qwen3-VL-4B-Instruct" if adapter else None, "adapter": adapter,
+           "policy_seed": getattr(args, "model_seed", None)}
+    if variant == official_defs.VARIANT_MEMER:
+        out["memer_compat_sha256"] = ctx.get("memer_compat_sha256")
+    return out
+
+
+def make_trace(tpath: Path, *, route: str, identity: dict, max_steps: int, policy_seed: int | None,
+               effective_cap: Any = None) -> Any:
+    """``TraceWriter``：header 的 ``policy_seed``／``effective_cap``（接口冻结说明四.1，R6 加的构造参数）按签名
+    可选传入——当前 ``TraceWriter`` 没有这两个参数时不传（identity 与 end 行照样记 ``policy_seed``）。"""
+    kw: dict[str, Any] = {}
+    try:
+        params = inspect.signature(trace_writer.TraceWriter).parameters
+    except (TypeError, ValueError):
+        params = {}
+    if "policy_seed" in params:
+        kw["policy_seed"] = policy_seed
+    if "effective_cap" in params and effective_cap is not None:
+        kw["effective_cap"] = effective_cap
+    return trace_writer.TraceWriter(tpath, route=route, identity=identity, max_steps=max_steps, **kw)
 
 
 def close_policy_context(ctx: Any) -> None:
@@ -638,16 +975,28 @@ def _finish_official(captured: dict, runner: Any, tap: EpisodeTap, video_dir: Pa
 
 def run_official_episode(ctx: dict, runner: Any, tap: EpisodeTap, *, dataset: str, episode_tag: str,
                          scratch: Path, archive_dir: Path | None, recorder: Any = None,
-                         keep_official: Any = _UNSET, official_provenance: Any = _UNSET) -> dict:
+                         keep_official: Any = _UNSET, official_provenance: Any = _UNSET,
+                         language_log: Any = _UNSET) -> dict:
     """两侧共用：在 ``ctx`` 的官方评估器上跑一局 ``eval_each_episode``，收住异常、清理临时目录，返回终态字典。
 
-    ``keep_official`` 不传（原侧）时行为与返回值与此前逐字节相同；传真值时保留官方叠字视频（见模块文档串 S1），
-    ``official_provenance`` 为写进 ``provenance.json`` 的身份、路线等（dict）。"""
+    ``keep_official`` 不传时行为与返回值与此前逐字节相同；传真值时保留官方叠字视频（见模块文档串 S1），
+    ``official_provenance`` 为写进 ``provenance.json`` 的身份、路线等（dict）。``language_log``（``open_language_log``
+    的返回值）非 None 时按 ``LangTap`` 接线语言账本，局末还原预测器与引擎（调用方负责 ``close`` 账本）。
+
+    MemER 三次坏回复且无上一次合法子目标（``MemERResponseError``）：``status=error``、``error_kind=model_response_error``、
+    非基础设施（不重跑）。"""
     keep = keep_official is not _UNSET and bool(keep_official)
     predictor, evaluator = ctx["predictor"], ctx["evaluator"]
     ctx["episode"] = {"tap": tap, "clients": [], "recorder": recorder, "timing": {}}
     video_dir = scratch / "official-video"
     qbase = qwen_begin(predictor, scratch, dataset, episode_tag)
+    lang = None
+    undo_lang = None
+    if language_log is not _UNSET and language_log is not None:
+        lang = LangTap(language_log, tap, variant=ctx.get("variant"), api=getattr(predictor, "api", None),
+                       params=language_params(ctx))
+        tap.lang = lang
+        undo_lang = install_language(predictor, lang)
     error = None
     exc_name = None
     flag = None
@@ -679,6 +1028,9 @@ def run_official_episode(ctx: dict, runner: Any, tap: EpisodeTap, *, dataset: st
                 evaluator.init_episode = saved_attr
             else:
                 vars(evaluator).pop("init_episode", None)
+        if undo_lang is not None:
+            undo_lang()
+        tap.lang = None
         for c in ctx["episode"]["clients"]:
             c.close()
         qlog = qwen_end(predictor, qbase, archive_dir)
@@ -703,10 +1055,24 @@ def run_official_episode(ctx: dict, runner: Any, tap: EpisodeTap, *, dataset: st
            "success_flag": flag, "decisions": tap.decisions, "infra": infra is not None, "infra_reason": infra,
            "env_exception": env_exc_s, "exception": exc_name, "qwen_log": qlog, "timing": timing,
            "official_sha256": dict(ctx.get("official_sha256") or {})}
+    if "policy_seed" in ctx:  # 第三阶段字段（接口冻结说明七）；旧上下文不带 policy_seed 时结果行与此前相同
+        res.update(policy_seed=ctx["policy_seed"], policy_variant=ctx.get("variant"), subgoal_log=qlog,
+                   error_kind=error_kind_of(exc_name, status, infra))
+        if ctx.get("variant") == official_defs.VARIANT_MEMER:
+            res["memer_compat_sha256"] = ctx.get("memer_compat_sha256")
+        if lang is not None:
+            res["language"] = lang.summary()
     if keep:
         res.update(counts)
         res.update(official)
     return res
+
+
+def error_kind_of(exc_name: str | None, status: str, infra: Any) -> str | None:
+    """具名错误（接口冻结说明七）：MemER 三次坏回复且无上一次合法子目标 → ``model_response_error``；其余 None。"""
+    if status == "error" and not infra and exc_name == "MemERResponseError":
+        return official_defs.MemERResponseError.error_kind
+    return None
 
 
 def run_episode(session, identity: dict, conn_info: dict, recorder) -> dict:
@@ -728,20 +1094,28 @@ def run_episode(session, identity: dict, conn_info: dict, recorder) -> dict:
     ident = {k: identity.get(k) for k in ("task", "tier", "seed", "source_episode", "builder_episode", "key")}
     ident["dataset"] = dataset
     ident["attempt"] = attempt  # C6：= 局目录名 <key>.a<N> 的 N（账本 accepted_attempt_id 对应的尝试号）
-    trace = (trace_writer.TraceWriter(tpath, route=route, identity=ident, max_steps=max_steps)
-             if tpath is not None else None)
+    policy_seed = ctx.get("policy_seed")
+    ident["policy_seed"] = policy_seed  # 接口冻结说明四.1：identity 必含 attempt 与 policy_seed
+    trace = (make_trace(tpath, route=route, identity=ident, max_steps=max_steps, policy_seed=policy_seed,
+                        effective_cap=conn_info.get("effective_cap")) if tpath is not None else None)
     tap = EpisodeTap(trace, missing_step_contract=True)
     runner = SessionRunner(session, tag, ctx["defs"]["pack_state"], tap,
                            official_episode_id=official_episode_id(identity, tag))
     scratch, own_scratch = episode_scratch(conn_info.get("trace_dir"))
     archive_dir = tpath.parent if tpath is not None else None
     prov = {"identity": dict(ident), "route": route, "dataset": dataset, "attempt": attempt, "episode_tag": tag,
-            "official_episode_id": runner.episode_id, "official_sha256": dict(ctx.get("official_sha256") or {})}
+            "official_episode_id": runner.episode_id, "official_sha256": dict(ctx.get("official_sha256") or {}),
+            "policy_seed": policy_seed, "policy_variant": variant}
+    if variant == official_defs.VARIANT_MEMER:
+        prov["memer_compat_sha256"] = ctx.get("memer_compat_sha256")
+    lang_log = open_language_log(tpath)
     try:
         res = run_official_episode(ctx, runner, tap, dataset=dataset, episode_tag=tag, scratch=scratch,
                                    archive_dir=archive_dir, recorder=recorder, keep_official=True,
-                                   official_provenance=prov)
+                                   official_provenance=prov, language_log=lang_log)
     finally:
+        if lang_log is not None:
+            lang_log.close()
         if own_scratch:
             shutil.rmtree(scratch, ignore_errors=True)
     demo = (getattr(session, "timing", None) or {}).get("demo_frames", tap.demo_frames)
@@ -755,7 +1129,8 @@ def run_episode(session, identity: dict, conn_info: dict, recorder) -> dict:
         trace.close(status=res["status"], terminal_reason=res["status"], side="new", demo_frames=demo,
                     decisions=res["decisions"], success_flag=res["success_flag"],
                     official_source=res["official_source"],
-                    official_videos=[Path(p).name for p in res["official_videos"]], **extra)
+                    official_videos=[Path(p).name for p in res["official_videos"]], policy_seed=policy_seed,
+                    **extra)
     res.update(side="new", demo_frames=demo, max_steps=max_steps, policy_variant=variant,
                trace_path=str(tpath) if tpath is not None else None)
     return res

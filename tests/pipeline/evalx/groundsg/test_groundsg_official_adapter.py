@@ -11,9 +11,12 @@
 下第 max_steps+1 步不进环境；官方 ``unknown`` 记 error 且不中止后续局。
 
 第二阶段 S1（1005 计划第二部分一节「S1」、八节 3.5）：新侧保留官方叠字视频到 ``<局目录>/official/`` 并写
-``provenance.json``；新侧轨迹按共享契约收尾（C3 终态、C6 attempt、C8 三分计数与缺观测步）。原侧（R1）不变，
-所以两侧逐项比较前用 ``legacy_trace_parts`` 把新侧只增的字段还原成旧口径——还原是可逆映射（官方原返回值
-``success_flag`` 还回 ``terminal_reason``、缺观测步还回旧写法），不放过动作、画面、请求的任何差异。
+``provenance.json``；新侧轨迹按共享契约收尾（C3 终态、C6 attempt、C8 三分计数与缺观测步）。两侧逐项比较前用
+``legacy_trace_parts`` 把契约字段还原成旧口径——还原是可逆映射（官方原返回值 ``success_flag`` 还回
+``terminal_reason``、缺观测步还回旧写法），不放过动作、画面、请求的任何差异。
+
+第三阶段（1006 计划八.3、八.10 第 8 条；R2）：原侧也传 ``keep_official=True``、identity 补 ``attempt``／
+``policy_seed``、end 补三分计数，两侧 end 行同一套字段；三个变体（含 MemER）两侧逐项相同。
 """
 from __future__ import annotations
 
@@ -162,7 +165,7 @@ def test_strict_cap_stops_before_env_and_reports_timeout(tmp_path):
 @pytest.mark.parametrize("variant", F.VARIANTS)
 def test_unknown_is_error_and_does_not_stop_seat(tmp_path, variant):
     """官方 ``unknown`` → status=error、error=success_flag=unknown、非基础设施；同一上下文的下一局照常跑。
-    Qwen 临时目录与官方叠字视频局末都不留，Qwen 日志归档到轨迹目录。"""
+    Qwen／MemER 临时目录与官方叠字视频临时目录局末都不留，子目标模型日志归档到轨迹目录。"""
     world = F.World(plans={3: F.Plan(unknown_at=10), 7: F.Plan(success_at=20)})
     side = F.NewSide(variant, 60, tmp_path, world)
     r1 = side.run(F.identity())
@@ -172,11 +175,17 @@ def test_unknown_is_error_and_does_not_stop_seat(tmp_path, variant):
     # 官方 episode_id 用短编号 <source_episode>a<attempt>（12.453：长 episode_tag 使叠字视频文件名超 255 字节）
     for r, eid in ((r1, "3a1"), (r2, "7a1")):
         tdir = Path(r["trace_path"]).parent
-        assert not (tdir / "qwen-tmp").exists() and not (tdir / "official-video").exists()
-        logs = sorted(p.name for p in tdir.glob("*_QwenVL_log.jsonl"))
+        assert not (tdir / "qwen-tmp").exists() and not (tdir / "memer-tmp").exists()
+        assert not (tdir / "official-video").exists()
+        logs = sorted(p.name for p in tdir.glob("*_log.jsonl"))
         if variant == F.QWENVL:
             assert logs == [f"ep{eid}_QwenVL_log.jsonl"] and r["qwen_log"] == str(tdir / logs[0])
             assert all(json.loads(x)["messages"] for x in (tdir / logs[0]).read_text().splitlines())
+        elif variant == F.MEMER:
+            assert logs == [f"ep{eid}_MemER_log.jsonl"] and r["qwen_log"] == str(tdir / logs[0])
+            lines = [json.loads(x) for x in (tdir / logs[0]).read_text().splitlines()]
+            assert lines and all(("messages" in x) != ("response" in x) for x in lines)  # 请求、回复交替
+            assert r["memer_compat_sha256"] == side.mc.official_defs.MEMER_COMPAT_SHA256
         else:
             assert logs == [] and r["qwen_log"] is None
     # 原侧：同一分片两行，unknown 不中止
@@ -184,11 +193,12 @@ def test_unknown_is_error_and_does_not_stop_seat(tmp_path, variant):
     orig = F.OrigSide(variant, 60, tmp_path / "orig", orig_world)
     rows = [F.identity(), F.identity(source_episode=7, builder_episode=1, seed=510700)]
     summary = orig.ohr.run_shard(orig.ctx, rows, out=tmp_path / "orig")
-    assert summary == {"episodes": 2, "errors": 1, "aborted": False, "success": 1, "fail": 0, "timeout": 0}
+    assert summary == {"episodes": 2, "errors": 1, "aborted": False, "budget_blocked": False, "retry_denied": 0,
+                       "success": 1, "fail": 0, "timeout": 0}
     got = [json.loads(x) for x in (tmp_path / "orig" / "results.jsonl").read_text().splitlines()]
     assert [(g["status"], g["error"]) for g in got] == [("error", "success_flag=unknown"), ("success", None)]
     assert all(g["side"] == "orig" and g["policy"] == "groundsg" and g["policy_variant"] == variant
-               and g["dataset"] == "hard-verify" for g in got)
+               and g["dataset"] == "hard-verify" and g["policy_seed"] == F.POLICY_SEED for g in got)
 
 
 def test_trace_location_fallbacks(tmp_path):
@@ -460,29 +470,53 @@ BASE_RESULT_KEYS = ["status", "task_success", "steps", "error", "success_flag", 
 
 
 @pytest.mark.parametrize("name", ["success", "unknown", "env_raise"])
-def test_keep_official_unset_is_base_behavior(tmp_path, monkeypatch, name):
-    """不传 keep_official（原侧）：返回键与 BASE 相同、不包 init_episode、不建 official/、叠字 mp4 照删；原侧轨迹不含
-    任何新增字段（缺观测步仍是旧写法）。"""
+def test_keep_official_unset_is_base_behavior(tmp_path, name):
+    """不传 keep_official、上下文不带 policy_seed（旧调用方）：返回键与 BASE 相同、不包 init_episode、不建 official/、
+    叠字 mp4 照删。直接调 ``run_official_episode``（第三阶段起原侧驱动本身已改传 keep_official，见下一用例）。"""
     plan, max_steps = SCENARIOS[name]
     orig = F.OrigSide(F.ORACLE, max_steps, tmp_path, F.World(default=plan))
-    mc = orig.ohr.groundsg  # 原侧按自己的加载器取到的那份模块
+    mc, ohr, ctx = orig.ohr.groundsg, orig.ohr, orig.ctx
     assert mc.run_official_episode.__kwdefaults__["keep_official"] is mc.trace_writer.UNSET
-    seen = []
-    real = mc.run_official_episode
+    ident = F.identity()
+    runner = ohr.runner_for(ctx, ident["task"], tmp_path / "official-video")
+    runner.make_env(ident["source_episode"])
+    tap = mc.EpisodeTap(None)
+    seed = ctx.pop("policy_seed")
+    try:
+        res = mc.run_official_episode(ctx, ohr.TapRunner(runner, tap), tap, dataset=F.DATASET, episode_tag="x.a1",
+                                      scratch=tmp_path, archive_dir=tmp_path)
+    finally:
+        ctx["policy_seed"] = seed
+        runner.close_env()
+    assert list(res) == BASE_RESULT_KEYS
+    assert "init_episode" not in vars(ctx["evaluator"])
+    assert not (tmp_path / "official").exists() and not (tmp_path / "official-video").exists()
 
-    def spy(*a, **kw):
-        seen.append(sorted(k for k in kw if k in ("keep_official", "official_provenance")))
-        out = real(*a, **kw)
-        seen.append(list(out))
-        return out
 
-    monkeypatch.setattr(mc, "run_official_episode", spy)
-    row = orig.run(F.identity())
-    assert seen == [[], BASE_RESULT_KEYS]
+@pytest.mark.parametrize("name", ["success", "unknown", "env_raise", "timeout"])
+def test_orig_side_keeps_official_video_and_counts(tmp_path, name):
+    """第三阶段原侧（八.10 第 8 条）：传 keep_official=True + provenance，官方视频核验后进 official/（归档先于清理）；
+    identity 补 attempt 与 policy_seed，end 补三分计数，缺观测步按 C8 记；结果行带 policy_seed 与官方来源。"""
+    plan, max_steps = SCENARIOS[name]
+    orig = F.OrigSide(F.ORACLE, max_steps, tmp_path, F.World(default=plan), policy_seed=42)
+    row = orig.run(F.identity(), attempt=2)
     ep = Path(row["ep_dir"])
-    assert sorted(p.name for p in ep.iterdir() if p.name != "frames") == ["trace.jsonl"]
-    assert "init_episode" not in vars(orig.ctx["evaluator"])
+    assert ep.name == "PickXtimes_xhard0_510300.a2"
+    mp4s = sorted((ep / "official").glob("*.mp4"))
+    assert len(mp4s) == 1 and row["official_videos"] == [str(mp4s[0])] and row["official_save_error"] is None
+    assert row["official_source"] == ("official" if name in ("success", "timeout") else "official-salvaged")
+    prov = json.loads((ep / "official" / "provenance.json").read_text())
+    assert prov["route"] == f"groundsg/{F.ORACLE}/orig" and prov["side"] == "orig" and prov["policy_seed"] == 42
+    assert prov["identity"]["attempt"] == 2 and prov["frames"]["decoded"] == row["frames_recorded"]
+    assert not (ep / "official-video").exists()
     rows = F.read_trace(row["trace_path"])
+    assert (rows[0]["identity"]["attempt"], rows[0]["identity"]["policy_seed"]) == (2, 42)
     end = rows[-1]
-    assert not set(end) & (set(NEW_ONLY_END) | {"success_flag"}) and "attempt" not in rows[0]["identity"]
-    assert all("observed" not in r for r in rows if r["kind"] == "step")
+    assert (end["steps_attempted"], end["steps_observed"], end["frames_recorded"]) == \
+        (row["steps_attempted"], row["steps_observed"], row["frames_recorded"])
+    assert end["policy_seed"] == 42 and end["terminal_reason"] == row["status"]
+    assert row["policy_seed"] == 42 and row["effective_cap"] == max_steps
+    if name == "env_raise":
+        last = [r for r in rows if r["kind"] == "step"][-1]
+        assert last["observed"] is False and (end["steps_attempted"], end["steps_observed"]) == (5, 4)
+    assert TC.contract_problems(ep) == []

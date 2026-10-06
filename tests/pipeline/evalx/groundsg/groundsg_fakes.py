@@ -6,7 +6,9 @@
 - 假环境的下一帧由「执行的动作字节 + 步号」确定性生成，假服务的动作块由「本局 reset 之后收到的全部请求指纹」
   确定性生成：两侧任何一个请求或动作不同，后面的帧、请求、动作都会随之不同（差异可观测，等式非平凡）。
 - 假服务的指纹函数在本文件手写，不调用被测代码（``official_defs.canonical_bytes``）。
-- swift 替身：``PtEngine`` 构造只记参数、不读任何权重；``infer`` 的回复由请求文本与所附图片字节确定性生成。
+- swift 替身：``PtEngine`` 构造只记参数、不读任何权重；``infer`` 的回复由请求文本与所附图片字节确定性生成
+  （MemER 请求——system prompt 含 ``keyframe_positions``——回 JSON；也可给 ``script`` 逐次指定回复原文）。
+- 第三阶段（1006 计划八.3）：三个变体都带 ``policy_seed``（缺省 7），MemER 走同一套两侧装配。
 """
 from __future__ import annotations
 
@@ -30,8 +32,10 @@ EXEC_HORIZON = 16  # 官方 Args.obs_horizon（手写）
 THIRD_PARTY_ENV = "SGEVAL_THIRD_PARTY"
 ORACLE = "ground-sg-oracle"
 QWENVL = "ground-sg-qwenvl"
-VARIANTS = (ORACLE, QWENVL)
+MEMER = "ground-sg-memer"
+VARIANTS = (ORACLE, QWENVL, MEMER)
 DATASET = "hard-verify"
+POLICY_SEED = 7  # 本版真实运行只传 7（计划〇.1）
 
 
 def official_dir() -> Path:
@@ -268,17 +272,32 @@ class FakeClient:
 # ---------------------------------------------------------------- swift 替身（不加载权重）
 
 
-class FakeSwift:
-    """``swift.llm`` 三个名字的替身。``PtEngine`` 构造只记参数；``infer`` 的回复由请求确定性生成。"""
+def memer_reply(h: int, n_images: int) -> str:
+    """（手写）MemER 替身回复：合法 JSON；当前输入图多于 1 张且 h%3==0 时挑第 1+h%n 张为关键帧，否则空列表。"""
+    pos = [1 + h % n_images] if n_images > 1 and h % 3 == 0 else []
+    return json.dumps({"current_subtask": f"pick up the cube at <|box_start|>({h % 1000},{(h // 1000) % 1000})<|box_end|>",
+                       "keyframe_positions": pos})
 
-    def __init__(self):
+
+class FakeSwift:
+    """``swift.llm`` 三个名字的替身。``PtEngine`` 构造只记参数；``infer`` 的回复由请求确定性生成。
+
+    ``script``：逐次指定回复原文的列表（用完后回落到确定性生成）；``InferRequest`` 与真实 swift 一样把
+    ``messages``／``images``／``videos``／``objects`` 放在同名属性上（另留 ``kw`` 原样）。"""
+
+    def __init__(self, script: list[str] | None = None):
         self.engines: list[dict] = []
         self.requests: list[dict] = []
+        self.script = list(script or [])
         outer = self
 
         class InferRequest:
             def __init__(self, **kw):
                 self.kw = kw
+                self.messages = kw.get("messages")
+                self.images = list(kw.get("images") or [])
+                self.videos = list(kw.get("videos") or [])
+                self.objects = kw.get("objects") or {}
 
         class RequestConfig:
             def __init__(self, **kw):
@@ -292,13 +311,20 @@ class FakeSwift:
             def infer(self, reqs, request_config=None):
                 (req,) = reqs
                 kw = req.kw
-                img = Path(kw["images"][0]).read_bytes()
+                imgs = [Path(x).read_bytes() for x in kw["images"]]
+                img = imgs[0]
                 text = json.dumps(kw["messages"], sort_keys=True)
                 rec = {"messages": kw["messages"], "image_sha": sha(img), "has_video": "videos" in kw,
-                       "objects": kw.get("objects"), "config": dict(request_config.kw)}
+                       "objects": kw.get("objects"), "config": dict(request_config.kw),
+                       "image_shas": [sha(b) for b in imgs]}
                 outer.requests.append(rec)
-                h = int(sha(text.encode() + img)[:6], 16)
-                content = f"pick up the cube at <|box_start|>({h % 1000},{(h // 1000) % 1000})<|box_end|>"
+                h = int(sha(text.encode() + b"".join(imgs))[:6], 16)
+                if outer.script:
+                    content = outer.script.pop(0)
+                elif "keyframe_positions" in kw["messages"][0]["content"]:
+                    content = memer_reply(h, len(imgs))
+                else:
+                    content = f"pick up the cube at <|box_start|>({h % 1000},{(h // 1000) % 1000})<|box_end|>"
                 msg = type("M", (), {"content": content})()
                 choice = type("C", (), {"message": msg})()
                 return [type("R", (), {"choices": [choice]})()]
@@ -310,6 +336,13 @@ class FakeSwift:
 
 
 ADAPTER = "/fake/qwenvl/grounded_subgoal/checkpoint-1200"
+MEMER_ADAPTER = "/fake/memer/grounded_subgoal/checkpoint-1300"
+
+
+def adapters_of(variant: str) -> dict:
+    """变体对应的 adapter 关键字（手写配对：QwenVL 只给 QwenVL 的，MemER 只给 MemER 的，Oracle 都不给）。"""
+    return {"qwenvl_groundSG_adapter_path": ADAPTER if variant == QWENVL else None,
+            "memer_adapter_path": MEMER_ADAPTER if variant == MEMER else None}
 
 
 def identity(task: str = "PickXtimes", source_episode: int = 3, builder_episode: int = 0, seed: int = 510300) -> dict:
@@ -317,27 +350,27 @@ def identity(task: str = "PickXtimes", source_episode: int = 3, builder_episode:
             "source_episode": source_episode, "spec_sha256": None, "key": f"{task}_xhard0_{seed}"}
 
 
-def seat_info(variant: str, max_steps: int, tmp: Path, port: int = 18120) -> dict:
+def seat_info(variant: str, max_steps: int, tmp: Path, port: int = 18120, policy_seed: int = POLICY_SEED) -> dict:
     return {"policy": "groundsg", "seat": "00", "host": "127.0.0.1", "port": port, "dataset": DATASET,
-            "max_steps": max_steps, "strict_cap": False, "groundsg_variant": variant,
-            "qwenvl_groundSG_adapter_path": ADAPTER if variant == QWENVL else None,
-            "trace_root": str(tmp / "trace"), "out": str(tmp)}
+            "max_steps": max_steps, "strict_cap": False, "groundsg_variant": variant, **adapters_of(variant),
+            "policy_seed": policy_seed, "trace_root": str(tmp / "trace"), "out": str(tmp)}
 
 
 class NewSide:
     """新侧：真实 ``EnvSession`` + ``groundsg_client``（假环境、假服务、swift 替身）。"""
 
     def __init__(self, variant: str, max_steps: int, tmp: Path, world: World, *, strict_cap: bool = False,
-                 port: int = 18120, real_client: bool = False):
+                 port: int = 18120, real_client: bool = False, policy_seed: int = POLICY_SEED,
+                 swift: FakeSwift | None = None, server: FakeServer | None = None):
         """``real_client=True`` 时用生产默认的客户端工厂（真实 websocket 客户端，连 ``port`` 上的回环假服务）。"""
         self.variant, self.max_steps, self.tmp, self.world, self.strict_cap = variant, max_steps, tmp, world, strict_cap
         self.port = port
-        self.server = FakeServer()
-        self.swift = FakeSwift()
+        self.server = server or FakeServer()
+        self.swift = swift or FakeSwift()
         self.mc = groundsg_client()
         factory = None if real_client else (lambda h, p, ep: FakeClient(self.server))
-        self.ctx = self.mc.make_policy_context(seat_info(variant, max_steps, tmp, port), client_factory=factory,
-                                               qwen_extra=self.swift.names)
+        self.ctx = self.mc.make_policy_context(seat_info(variant, max_steps, tmp, port, policy_seed),
+                                               client_factory=factory, qwen_extra=self.swift.names)
         self.sessions: list[Any] = []
 
     def run(self, ident: dict, *, attempt: int = 1) -> dict:
@@ -350,7 +383,7 @@ class NewSide:
         tag = f"{ident['key']}.a{attempt}"
         conn = {"host": "127.0.0.1", "port": self.port, "max_steps": self.max_steps, "policy": "groundsg", "seat": "00",
                 "dataset": DATASET, "strict_cap": self.strict_cap, "groundsg_variant": self.variant,
-                "qwenvl_groundSG_adapter_path": ADAPTER if self.variant == QWENVL else None,
+                **adapters_of(self.variant),
                 "trace_root": str(self.tmp / "trace"), "trace_dir": str(self.tmp / "trace" / tag),
                 "episode_tag": tag, "rec_dir": str(self.tmp / "rec" / tag), "policy_context": self.ctx}
         res = self.mc.run_episode(sess, ident, conn, ec.NullRecorder())
@@ -365,14 +398,16 @@ class OrigSide:
     """原侧：``official_hard_runner``（官方 ``EnvRunner`` 摘取原文 + 假 builder、假服务、swift 替身）。"""
 
     def __init__(self, variant: str, max_steps: int, tmp: Path, world: World, *, port: int = 18120,
-                 real_client: bool = False):
+                 real_client: bool = False, policy_seed: int = POLICY_SEED, swift: FakeSwift | None = None,
+                 server: FakeServer | None = None):
         self.variant, self.max_steps, self.tmp, self.world = variant, max_steps, tmp, world
-        self.server = FakeServer()
-        self.swift = FakeSwift()
+        self.server = server or FakeServer()
+        self.swift = swift or FakeSwift()
         self.ohr = official_hard_runner()
         factory = None if real_client else (lambda h, p, ep: FakeClient(self.server))
         self.ctx = self.ohr.make_context(variant, host="127.0.0.1", port=port, max_steps=max_steps,
-                                         adapter=ADAPTER if variant == QWENVL else None,
+                                         policy_seed=policy_seed, adapter=ADAPTER if variant == QWENVL else None,
+                                         memer_adapter=MEMER_ADAPTER if variant == MEMER else None,
                                          builder_cls=world.official_builder_cls(), scratch_root=tmp,
                                          client_factory=factory, qwen_extra=self.swift.names)
 
@@ -384,14 +419,20 @@ def read_trace(path: str | Path) -> list[dict]:
     return [json.loads(x) for x in Path(path).read_text(encoding="utf-8").splitlines() if x.strip()]
 
 
+#: 语言账本打开时 step 行的关联字段（call_id 是各侧账本自己的编号，两侧逐项比较时不比）
+LANG_LINK_FIELDS = ("source_call_id", "chunk_index")
+
+
 def trace_parts(rows: list[dict]) -> dict:
-    """轨迹按种类拆开；去掉两侧必然不同的字段（header.route、end.side）。"""
+    """轨迹按种类拆开；去掉两侧必然不同的字段（header.route、end.side、step 的语言账本关联编号）。"""
     out: dict[str, list] = {"request": [], "response": [], "step": [], "demo": [], "history": [], "end": []}
     for r in rows:
         k = r["kind"]
         if k in out:
             r = dict(r)
             r.pop("side", None)
+            for f in LANG_LINK_FIELDS:
+                r.pop(f, None)
             out[k].append(r)
     return out
 
@@ -445,6 +486,8 @@ def diffs(new_side, orig_side) -> dict:
     exec_ = seq_diff(acts_n, acts_o) + seq_diff(tn["step"], to["step"])
     term = int((rn["status"], rn["steps"], rn["error"], rn["success_flag"])
                != (ro["status"], ro["exec_steps"], ro["error"], ro["success_flag"])) + seq_diff(tn["end"], to["end"])
+    if new.variant == MEMER:  # MemER 的子目标模型请求另比附图逐张字节（关键帧 + 最近帧）
+        payload += seq_diff([r["image_shas"] for r in new.swift.requests], [r["image_shas"] for r in orig.swift.requests])
     return {"payload": payload, "exec": exec_, "terminal": term, "n_req": len(tn["request"]), "n_exec": len(acts_n)}
 
 

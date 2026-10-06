@@ -26,30 +26,50 @@
     frames/wrist.rgb24
     frames/frames.json          # {"pix_fmt":"rgb24","streams":{"front":{"width","height","count"},"wrist":{…}},
                                 #  "demo_frames","init_frames","exec_steps","missing_steps","order"}
-    ep<source_episode>_QwenVL_log.jsonl   # 仅 QwenVL 变体：官方 Qwen 请求日志（局末从临时目录归档）
+    official/<官方叠字视频>.mp4  # 第三阶段：官方循环自己写的视频，核验帧数后保留（归档先于清理），另写 provenance.json
+    official/provenance.json
+    language.jsonl              # 语言账本（trace_writer.LanguageLog 存在时；接口冻结说明五）
+    ep<source_episode>_{QwenVL,MemER}_log.jsonl   # QwenVL／MemER 变体：官方子目标模型日志（局末从临时目录归档）
+
+第三阶段（1006-rename-official-names-and-stage3-eval-plan.md 八.3、八.10 第 3、8 条；接口冻结说明 2.2～2.4、三、四、五）：
+
+* 变体放行 ``ground-sg-memer``（``--memer-adapter``，与 ``--qwenvl-groundsg-adapter`` 互斥配对）；
+* ``--policy-seed`` 必填（缺失 ``RUN_BLOCKED reason=policy_seed``、退出 3），贯通 ``make_args(model_seed=)``、
+  ``seed_everything``（QwenVL／MemER 构造前）、trace identity／end 与结果行；
+* 共享预算账本：``--budget-ledger --trajectory-cap --shared-infra-cap --expired-cap --planned-first-tries`` 必填（缺任一
+  ``RUN_BLOCKED reason=budget_args``、退出 3，不回落账本常量默认值）；直接 ``load_sibling("budget_ledger")`` 调
+  ``reserve``／``claim_reset``／``claim_retry``／``commit``／``release``，route ``groundsg/<variant>/seed<n>/orig``，
+  幂等 token ``<route>|<key>|a<attempt>``（``OrigBudget``）。轨迹额度不足 ``RUN_BLOCKED reason=budget``、退出 5；
+  第 2 次尝试的重试名额领不到时该身份记一行 ``infra_reason=budget_retry_denied``、不建局目录、不跑；
+* trace identity 补 ``attempt``、``policy_seed``，end 补 ``steps_attempted／steps_observed／frames_recorded``（与新侧
+  同一套 ``episode_counts``），缺观测步按 C8 用 ``log_missing_step``；
+* 数据集只跑 ``hard-verify``，``--max-steps`` 只许 1300（``RUN_BLOCKED reason=step_cap_pairing``）。
 
 帧顺序：``get_init_obs`` 返回的全部帧（``demo_frames`` 个演示帧 + 1 个初始帧），之后每执行一步追加该步观测；某步
 环境抛异常（官方 ``EnvRunner.step`` 返回 None 三元组）时不追加、步号记入 ``missing_steps``。
 ``count = demo_frames + 1 + exec_steps - len(missing_steps)``。官方循环 ``count > max_steps`` 才判超时，所以超时局
 执行第 ``max_steps+1`` 步，外围帧含这一步（xhard0：1300 → 执行 1301 步、``count = demo_frames + 1302``）；官方
-循环自己写的叠字 mp4 只录到第 ``max_steps`` 步，局末删除、不交付。Qwen 临时目录在每局目录下的
-``qwen-tmp/hard-verify/<key>.a<attempt>/``，局末删除。
+循环自己写的叠字 mp4 只录到第 ``max_steps`` 步（第三阶段起保留进 ``official/``）。Qwen／MemER 临时目录在每局目录下的
+``{qwen,memer}-tmp/hard-verify/<key>.a<attempt>/``，局末删除。
 
 结果行（``<out>/results.jsonl``，每局一行，追加并 fsync）：分片行的身份字段 + ``side="orig"``、``policy="groundsg"``、
 ``policy_variant``、``dataset="hard-verify"``、``attempt``、``status``、``task_success``、``exec_steps``、``steps``、
 ``demo_frames``、``max_steps``、``effective_max_steps``、``success_flag``、``decisions``、``error``、``infra``、
 ``infra_reason``、``ep_dir``、``trace_path``、``frames_dir``、``video_frames``（``{"front":n,"wrist":n}``）、
-``wall_s``、``official_sha256``。官方 ``unknown`` 记 ``status="error"``、``error="success_flag=unknown"``，**不中止**
+``wall_s``、``official_sha256``；第三阶段另记 ``policy_seed``、``effective_cap``、``memer_compat_sha256``（MemER）、
+``error_kind``、``budget_token``、``budget_rid``、``official_source``／``official_videos`` 与三分计数。官方 ``unknown`` 记 ``status="error"``、``error="success_flag=unknown"``，**不中止**
 （官方 ``evaluate`` 在此中止整个评估；这里只记该局，属记录在案的偏离）。
 
 用法::
 
-    python official_hard_runner.py --shard <shard-NN.json> --out <目录> --port <端口> \\
-        --variant {ground-sg-oracle,ground-sg-qwenvl} [--qwenvl-groundsg-adapter <路径>] \\
+    python official_hard_runner.py --shard <shard-NN.json> --out <目录> --port <端口> --policy-seed <n> \\
+        --variant {ground-sg-oracle,ground-sg-qwenvl,ground-sg-memer} \\
+        [--qwenvl-groundsg-adapter <路径> | --memer-adapter <路径>] \\
+        --budget-ledger <账本> --trajectory-cap <n> --shared-infra-cap <n> --expired-cap <n> --planned-first-tries <n> \\
         [--host 127.0.0.1] [--max-steps 1300] [--attempt 1] [--only <key,…>] [--no-frames]
     python official_hard_runner.py --check-imports [--variant …]   # 只做导入断言，打印 OFFICIAL_IMPORTS=PASS …
 
-退出码：0 分片跑完（含 error 局）；2 服务不可达中止；3 参数、分片或导入断言不合格。
+退出码：0 分片跑完（含 error 局）；2 服务不可达中止；3 参数、分片、导入断言或账本配置不合格；5 轨迹预算不足。
 """
 from __future__ import annotations
 
@@ -78,6 +98,11 @@ XHARD0 = "xhard0"
 MAX_STEPS = 1300
 EXIT_UNREACHABLE = 2
 EXIT_BAD_INPUT = 3
+EXIT_BUDGET = 5
+#: 原侧每次尝试预约的 reset 计量（官方 make_env 建环境与 get_init_obs 的 reset 各 1 次；与新侧同口径）
+ORIG_RESETS_PER_ATTEMPT = 2
+#: 第三阶段原侧预算参数（接口冻结说明 2.4；全部必填，不回落账本常量默认值）
+BUDGET_ARGS = ("budget_ledger", "trajectory_cap", "shared_infra_cap", "expired_cap", "planned_first_tries")
 #: 服务可达探测：每局建客户端前 TCP 探测，累计等这么久仍连不上即判「服务不可达」（官方客户端自己会无限重试）
 PROBE_TIMEOUT_S = 300.0
 
@@ -198,13 +223,17 @@ class EnvTap:
 
 class TapRunner:
     """包住官方 ``EnvRunner`` 实例：``get_init_obs``／``step`` 先调官方原方法再把结果交给 ``EpisodeTap``；其余属性
-    （``env_id``、``episode_id``、``task_goal``、``difficulty``、``info``、两个 oracle 属性）原样转发。"""
+    （``env_id``、``episode_id``、``task_goal``、``difficulty``、``info``、两个 oracle 属性）原样转发。
+    ``before_reset``（可选）在官方 ``get_init_obs`` 真正 reset 之前调用（共享账本 ``claim_reset`` 计量）。"""
 
-    def __init__(self, inner: Any, tap: Any):
+    def __init__(self, inner: Any, tap: Any, before_reset: Callable[[], Any] | None = None):
         object.__setattr__(self, "_inner", inner)
         object.__setattr__(self, "_tap", tap)
+        object.__setattr__(self, "_before_reset", before_reset)
 
     def get_init_obs(self):
+        if self._before_reset is not None:
+            self._before_reset()
         pre = self._inner.get_init_obs()
         self._tap.on_reset(pre)
         return pre
@@ -250,11 +279,14 @@ def default_client_factory(host: str, port: int, episode: dict) -> Any:
     return websocket_client_policy.MMEVLAWebsocketClientPolicy(host, port)
 
 
-def make_context(variant: str, *, host: str, port: int, max_steps: int, adapter: str | None,
+def make_context(variant: str, *, host: str, port: int, max_steps: int, policy_seed: Any,
+                 adapter: str | None = None, memer_adapter: str | None = None,
                  builder_cls: Any, scratch_root: Path, client_factory: Callable | None = None,
                  qwen_extra: dict | None = None) -> dict:
-    """进程内只建一次：官方定义（含 ``EnvRunner``）、``Args``、预测器（QwenVL 在此加载模型）、评估器。"""
-    ctx: dict[str, Any] = {"variant": variant, "episode": None,
+    """进程内只建一次：官方定义（含 ``EnvRunner``）、``Args``（``model_seed=policy_seed``）、预测器（QwenVL／MemER 在此
+    ``seed_everything`` 后加载模型）、评估器。"""
+    seed = official_defs.check_policy_seed(policy_seed)
+    ctx: dict[str, Any] = {"variant": variant, "episode": None, "policy_seed": seed,
                            "client_factory": client_factory or default_client_factory}
 
     def ws_factory(h, p):
@@ -267,12 +299,68 @@ def make_context(variant: str, *, host: str, port: int, max_steps: int, adapter:
                                        env_runner_extra={"BenchmarkEnvBuilder": builder_cls},
                                        ws_module=official_defs.ws_shim(ws_factory), qwen_extra=qwen_extra)
     base = Path(scratch_root) / "qwen-tmp"
-    args = official_defs.make_args(defs, variant=variant, host=host, port=port, max_steps=max_steps,
-                                   adapter_path=adapter, save_dir=str(base))
+    args = official_defs.make_args(defs, variant=variant, host=host, port=port, max_steps=max_steps, model_seed=seed,
+                                   adapter_path=adapter, memer_adapter_path=memer_adapter, save_dir=str(base))
     predictor = official_defs.build_predictor(defs, args, base)
     ctx.update(defs=defs, args=args, predictor=predictor, evaluator=defs["EpisodeEvaluator"](args, base),
-               official_sha256=dict(defs["sha256"]), runners={})
+               official_sha256=dict(defs["sha256"]), runners={},
+               memer_compat_sha256=defs.get("memer_compat_sha256"))
     return ctx
+
+
+# ── 共享预算账本（接口冻结说明三） ─────────────────────────────────────────────
+
+
+class RetryDenied(RuntimeError):
+    """第 2 次尝试领不到共享重试名额（infra 额度或每身份次数用尽）：该身份不跑，记一行后继续下一身份。"""
+
+
+def budget_route(variant: str, policy_seed: int) -> str:
+    """原侧账本 route：``groundsg/<variant>/seed<policy_seed>/orig``（接口冻结说明三.2）。"""
+    return f"{POLICY}/{variant}/seed{int(policy_seed)}/{SIDE}"
+
+
+def budget_token(route: str, key: str, attempt: int) -> str:
+    """幂等 token：``<route>|<key>|a<attempt>``（接口冻结说明三.3；崩溃续跑用同一 token 恢复，不重复扣额）。"""
+    return f"{route}|{key}|a{int(attempt)}"
+
+
+class OrigBudget:
+    """原侧接共享账本（``budget_ledger.BudgetLedger`` 或测试替身；只用冻结说明列出的方法与参数名）。
+
+    每个身份尝试：第 2 次起先 ``claim_retry(route=, key=, interrupt="infra", token=)``（领不到抛 ``RetryDenied``）→
+    ``reserve(resets=2, route=, key=, token=, kind_of_try="first"|"recovery")`` 取 rid（额度不足由账本抛
+    ``BudgetExhausted``，按 ``budget_exhausted`` 属性识别，交调用方停片退出 5）→ 每次真实 build／reset 前
+    ``claim_reset(rid, what, route=)`` → 局末 ``commit(rid, status=, infra=)``；没进到建环境就失败的 ``release``。"""
+
+    def __init__(self, ledger: Any, *, variant: str, policy_seed: int):
+        self.ledger = ledger
+        self.route = budget_route(variant, policy_seed)
+
+    def begin(self, key: str, attempt: int) -> dict:
+        token = budget_token(self.route, key, attempt)
+        if int(attempt) >= 2:
+            ok = self.ledger.claim_retry(route=self.route, key=key, interrupt="infra", token=token,
+                                         side=SIDE, attempt_no=int(attempt))
+            if not ok:
+                raise RetryDenied(f"claim_retry 拒绝 route={self.route} key={key} attempt={attempt}")
+        rid = self.ledger.reserve(resets=ORIG_RESETS_PER_ATTEMPT, route=self.route, key=key, token=token,
+                                  kind_of_try="first" if int(attempt) == 1 else "recovery",
+                                  attempt_no=int(attempt), side=SIDE, policy=POLICY, astra=False)
+        return {"token": token, "rid": rid, "resets_claimed": 0}
+
+    def claimer(self, handle: dict) -> Callable[[str], None]:
+        def claim(what: str) -> None:
+            handle["resets_claimed"] += 1
+            self.ledger.claim_reset(handle["rid"], what, route=self.route)
+
+        return claim
+
+    def settle(self, handle: dict, rec: dict) -> None:
+        if handle.get("resets_claimed", 0) == 0:  # 一次 build 都没到：未进入执行，退回轨迹名额
+            self.ledger.release(handle["rid"], status=rec.get("status"))
+        else:
+            self.ledger.commit(handle["rid"], status=rec.get("status"), infra=bool(rec.get("infra")))
 
 
 def runner_for(ctx: dict, task: str, video_dir: Path) -> Any:
@@ -286,38 +374,66 @@ def ep_dir_of(out: Path, row: dict, attempt: int) -> Path:
     return Path(out) / f"{row['key']}.a{int(attempt)}"
 
 
-def run_identity(ctx: dict, row: dict, *, out: Path, attempt: int = 1, write_frames: bool = True) -> dict:
-    """跑一个 hard0 身份，返回结果行（不写 results.jsonl）。每局目录已存在即抛 ``FileExistsError``。"""
+def run_identity(ctx: dict, row: dict, *, out: Path, attempt: int = 1, write_frames: bool = True,
+                 budget_claim: Callable[[str], Any] | None = None, budget: dict | None = None) -> dict:
+    """跑一个 hard0 身份，返回结果行（不写 results.jsonl）。每局目录已存在即抛 ``FileExistsError``。
+
+    ``budget_claim(what)``：每次真实 build（官方 ``make_env``）／reset（官方 ``get_init_obs``）之前调用（共享账本
+    ``claim_reset``）；``budget``：``OrigBudget.begin`` 的返回（token、rid 记进结果行）。"""
     variant = ctx["variant"]
     max_steps = int(ctx["args"].max_steps)
+    policy_seed = ctx.get("policy_seed")
     tag = f"{row['key']}.a{int(attempt)}"
     ep_dir = ep_dir_of(out, row, attempt)
     ep_dir.mkdir(parents=True, exist_ok=False)
     tpath = ep_dir / "trace.jsonl"
+    route = f"groundsg/{variant}/orig"
     tid = {k: row.get(k) for k in ("task", "tier", "seed", "source_episode", "builder_episode", "key")}
     tid["dataset"] = DATASET
-    trace = trace_writer.TraceWriter(tpath, route=f"groundsg/{variant}/orig", identity=tid, max_steps=max_steps)
+    tid["attempt"] = int(attempt)  # C6：与局目录名 <key>.a<N> 的 N 一致
+    tid["policy_seed"] = policy_seed  # 接口冻结说明四.1
+    trace = groundsg.make_trace(tpath, route=route, identity=tid, max_steps=max_steps, policy_seed=policy_seed,
+                                effective_cap=max_steps)
     frames = groundsg.RawFrameWriter(ep_dir / "frames") if write_frames else None
-    tap = groundsg.EpisodeTap(trace, frames)
+    tap = groundsg.EpisodeTap(trace, frames, missing_step_contract=True)
     video_dir = ep_dir / "official-video"
     t0 = time.perf_counter()
     runner = None
     difficulty = None
+    lang_log = groundsg.open_language_log(tpath)
+    prov = {"identity": dict(tid), "route": route, "dataset": DATASET, "attempt": int(attempt), "episode_tag": tag,
+            "official_episode_id": int(row["source_episode"]), "official_sha256": dict(ctx.get("official_sha256") or {}),
+            "policy_seed": policy_seed, "policy_variant": variant, "side": SIDE}
+    if variant == official_defs.VARIANT_MEMER:
+        prov["memer_compat_sha256"] = ctx.get("memer_compat_sha256")
     try:
         runner = runner_for(ctx, row["task"], video_dir)
         runner.video_save_dir = video_dir
+        if budget_claim is not None:
+            budget_claim("build")
         runner.make_env(int(row["source_episode"]))
         difficulty = getattr(runner, "difficulty", None)
         runner.env = EnvTap(runner.env)
-        res = groundsg.run_official_episode(ctx, TapRunner(runner, tap), tap, dataset=DATASET, episode_tag=tag,
-                                         scratch=ep_dir, archive_dir=ep_dir)
+        before = (lambda: budget_claim("reset")) if budget_claim is not None else None
+        res = groundsg.run_official_episode(ctx, TapRunner(runner, tap, before_reset=before), tap, dataset=DATASET,
+                                         episode_tag=tag, scratch=ep_dir, archive_dir=ep_dir, keep_official=True,
+                                         official_provenance=prov, language_log=lang_log)
     except Exception as e:  # noqa: BLE001 官方 EnvRunner 构建／make_env 失败（官方 evaluate 同样整局记 error）
         err = f"{type(e).__name__}: {e}"[:800]
         infra = groundsg.classify_infra(err)
         res = {"status": "error", "task_success": False, "steps": tap.steps, "error": err, "success_flag": "error",
                "decisions": tap.decisions, "infra": True, "infra_reason": infra or "env_build",
-               "env_exception": None, "exception": type(e).__name__, "qwen_log": None, "timing": {}}
+               "env_exception": None, "exception": type(e).__name__, "qwen_log": None, "timing": {},
+               "official_videos": [], "official_source": "none",
+               "official_save_error": f"官方循环未开始：{err}"[:800],
+               **groundsg.episode_counts(tap, "error", type(e).__name__, max_steps)}
+        if "policy_seed" in ctx:
+            res.update(policy_seed=policy_seed, policy_variant=variant, error_kind=None, subgoal_log=None)
+            if variant == official_defs.VARIANT_MEMER:
+                res["memer_compat_sha256"] = ctx.get("memer_compat_sha256")
     finally:
+        if lang_log is not None:
+            lang_log.close()
         if runner is not None and getattr(runner, "env", None) is not None:
             try:
                 runner.close_env()
@@ -325,20 +441,30 @@ def run_identity(ctx: dict, row: dict, *, out: Path, attempt: int = 1, write_fra
                 print(f"close_env error: {e!r}", flush=True)
     if res.get("exception") == "ServerUnreachable":
         res.update(infra=True, infra_reason="groundsg_unreachable")
-    shutil.rmtree(video_dir, ignore_errors=True)
+    shutil.rmtree(video_dir, ignore_errors=True)  # 官方视频已在 run_official_episode 里核验后搬进 official/
     wall = time.perf_counter() - t0
-    trace.close(status=res["status"], terminal_reason=res.get("success_flag"), side=SIDE, demo_frames=tap.demo_frames,
-                decisions=res.get("decisions"))
+    demo = 0 if res.get("no_frame") else tap.demo_frames  # C3：无帧 error 局 demo_frames 记 0
+    extra = {k: res[k] for k in ("steps_attempted", "steps_observed", "frames_recorded", "omitted_timeout_frames")
+             if k in res}
+    if res.get("no_frame"):
+        extra["no_frame"] = True
+    # C3：terminal_reason 取终态（与新侧同口径），官方原返回值另记 success_flag
+    trace.close(status=res["status"], terminal_reason=res["status"], side=SIDE, demo_frames=demo,
+                decisions=res.get("decisions"), success_flag=res.get("success_flag"),
+                official_source=res.get("official_source"),
+                official_videos=[Path(x).name for x in res.get("official_videos") or []], policy_seed=policy_seed,
+                **extra)
     fsum = frames.close() if frames is not None else None
     out_row = dict(row)
     out_row.update(res)
     out_row.update(side=SIDE, policy=POLICY, policy_variant=variant, dataset=DATASET, attempt=int(attempt),
                    attempt_no=int(attempt), task_success=res["status"] == "success", exec_steps=tap.steps,
-                   steps=tap.steps, demo_frames=tap.demo_frames, max_steps=max_steps, effective_max_steps=max_steps,
-                   difficulty=difficulty, ep_dir=str(ep_dir), trace_path=str(tpath),
+                   steps=tap.steps, demo_frames=demo, max_steps=max_steps, effective_max_steps=max_steps,
+                   effective_cap=max_steps, difficulty=difficulty, ep_dir=str(ep_dir), trace_path=str(tpath),
                    frames_dir=None if frames is None else str(frames.dir),
                    video_frames=None if fsum is None else {s: v["count"] for s, v in fsum["streams"].items()},
-                   wall_s=round(wall, 3), host=socket.gethostname())
+                   wall_s=round(wall, 3), host=socket.gethostname(), policy_seed=policy_seed,
+                   budget_token=(budget or {}).get("token"), budget_rid=(budget or {}).get("rid"))
     return out_row
 
 
@@ -349,16 +475,55 @@ def append_result(path: Path, row: dict) -> None:
         os.fsync(fh.fileno())
 
 
+def retry_denied_row(ctx: dict, row: dict, *, attempt: int, token: str, detail: str) -> dict:
+    """重试名额被共享账本拒绝：不建局目录、不跑，只记一行（infra，``plan_round`` 据此不再排这一身份）。"""
+    out = dict(row)
+    out.update(side=SIDE, policy=POLICY, policy_variant=ctx["variant"], dataset=DATASET, attempt=int(attempt),
+               attempt_no=int(attempt), status="error", task_success=False, exec_steps=0, steps=0, infra=True,
+               infra_reason="budget_retry_denied", error=detail[:800], policy_seed=ctx.get("policy_seed"),
+               budget_token=token, budget_rid=None, ep_dir=None, host=socket.gethostname())
+    return out
+
+
 def run_shard(ctx: dict, rows: list[dict], *, out: Path, attempt: int = 1, write_frames: bool = True,
-              import_check: Callable[[], Any] | None = None) -> dict:
-    """逐身份跑；返回 ``{"episodes","errors","aborted",<各终态计数>}``。服务不可达即停止（aborted）。"""
+              import_check: Callable[[], Any] | None = None, budget: OrigBudget | None = None) -> dict:
+    """逐身份跑；返回 ``{"episodes","errors","aborted","budget_blocked",<各终态计数>}``。服务不可达即停止（aborted）；
+    给了 ``budget``（``OrigBudget``）时每个身份先过共享账本，轨迹额度不足即停止（budget_blocked）。"""
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     results = out / "results.jsonl"
-    summary = {"episodes": 0, "errors": 0, "aborted": False, "success": 0, "fail": 0, "timeout": 0}
+    summary = {"episodes": 0, "errors": 0, "aborted": False, "budget_blocked": False, "retry_denied": 0,
+               "success": 0, "fail": 0, "timeout": 0}
     for row in rows:
-        rec = run_identity(ctx, row, out=out, attempt=attempt, write_frames=write_frames)
+        handle = None
+        if budget is not None:
+            try:
+                handle = budget.begin(row["key"], attempt)
+            except RetryDenied as e:
+                rec = retry_denied_row(ctx, row, attempt=attempt, token=budget_token(budget.route, row["key"], attempt),
+                                       detail=str(e))
+                append_result(results, rec)
+                summary["retry_denied"] += 1
+                print(f"BUDGET_RETRY_DENIED side={SIDE} route={budget.route} key={row['key']} attempt={attempt}",
+                      flush=True)
+                continue
+            except Exception as e:  # noqa: BLE001 budget_ledger.BudgetExhausted（按属性识别，可能来自另一份模块副本）
+                if not getattr(e, "budget_exhausted", False):
+                    raise
+                print(f"RUN_BLOCKED reason=budget side={SIDE} route={budget.route} key={row['key']} detail={e}",
+                      flush=True)
+                summary["budget_blocked"] = True
+                break
+        try:
+            rec = run_identity(ctx, row, out=out, attempt=attempt, write_frames=write_frames,
+                               budget_claim=budget.claimer(handle) if handle is not None else None, budget=handle)
+        except BaseException:
+            if handle is not None:
+                budget.settle(handle, {"status": "error", "infra": True})
+            raise
         append_result(results, rec)
+        if handle is not None:
+            budget.settle(handle, rec)
         summary["episodes"] += 1
         summary["errors"] += int(rec["status"] == "error")
         if rec["status"] in ("success", "fail", "timeout"):
@@ -376,7 +541,7 @@ def run_shard(ctx: dict, rows: list[dict], *, out: Path, attempt: int = 1, write
 
 
 def cmd_check_imports(args) -> int:
-    """只做导入断言：路径、``robomme`` 来源、所选（默认两个）变体的官方定义可摘取；不建环境、不连服务、不加载模型。"""
+    """只做导入断言：路径、``robomme`` 来源、所选（默认全部三个）变体的官方定义可摘取；不建环境、不连服务、不加载模型。"""
     added = setup_paths()
     info = import_official_env()
     variants = [args.variant] if args.variant else list(official_defs.VARIANTS)
@@ -409,20 +574,34 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--only", default=None, help="逗号分隔的 key，只跑这些")
     ap.add_argument("--no-frames", action="store_true", help="不写原始帧")
     ap.add_argument("--variant", choices=list(official_defs.VARIANTS))
-    ap.add_argument("--qwenvl-groundsg-adapter", default=None, help="ground-sg-qwenvl 必填")
+    ap.add_argument("--qwenvl-groundsg-adapter", default=None, help="ground-sg-qwenvl 必填（其余变体不许给）")
+    ap.add_argument("--memer-adapter", default=None, help="ground-sg-memer 必填（其余变体不许给）")
+    ap.add_argument("--policy-seed", default=None, help="模型种子（必填，非负整数；接口冻结说明 2.2）")
+    ap.add_argument("--budget-ledger", default=None, help="共享预算账本路径（必填）")
+    ap.add_argument("--trajectory-cap", type=int, default=None, help="轨迹硬上限（必填）")
+    ap.add_argument("--shared-infra-cap", type=int, default=None, help="共享基础设施重试上限（必填）")
+    ap.add_argument("--expired-cap", type=int, default=None, help="到期接续上限（必填）")
+    ap.add_argument("--planned-first-tries", type=int, default=None, help="计划首试数（必填，账本为其保留额度）")
     return ap
+
+
+def open_budget_ledger(args) -> Any:
+    """按冻结说明三的参数名打开共享账本（``budget_ledger.BudgetLedger``，不传任何默认值以外的常量）。"""
+    budget_ledger = _load("budget_ledger")
+    return budget_ledger.BudgetLedger(args.budget_ledger, trajectory_cap=int(args.trajectory_cap),
+                                      shared_infra_cap=int(args.shared_infra_cap), expired_cap=int(args.expired_cap),
+                                      planned_first_tries=int(args.planned_first_tries))
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    try:
-        if args.check_imports:
+    if args.check_imports:
+        try:
             return cmd_check_imports(args)
-        added = setup_paths()
-        info = import_official_env()
-    except (AssertionError, FileNotFoundError, KeyError) as e:
-        print(f"OFFICIAL_IMPORTS=FAIL reason={e}", flush=True)
-        return EXIT_BAD_INPUT
+        except (AssertionError, FileNotFoundError, KeyError) as e:
+            print(f"OFFICIAL_IMPORTS=FAIL reason={e}", flush=True)
+            return EXIT_BAD_INPUT
+    # 参数核对先于任何导入（不改 sys.path、不导入 robomme）：缺参数、配对、policy_seed、预算五参数、步数配对
     miss = [n for n, v in (("--shard", args.shard), ("--out", args.out), ("--port", args.port),
                            ("--variant", args.variant)) if v is None]
     if miss:
@@ -430,6 +609,28 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_BAD_INPUT
     if (args.variant == official_defs.VARIANT_QWENVL) != bool(args.qwenvl_groundsg_adapter):
         print("GROUNDSG_ORIG_BLOCKED reason=args --qwenvl-groundsg-adapter 仅且必须与 ground-sg-qwenvl 同用", flush=True)
+        return EXIT_BAD_INPUT
+    if (args.variant == official_defs.VARIANT_MEMER) != bool(args.memer_adapter):
+        print("GROUNDSG_ORIG_BLOCKED reason=args --memer-adapter 仅且必须与 ground-sg-memer 同用", flush=True)
+        return EXIT_BAD_INPUT
+    try:
+        policy_seed = official_defs.check_policy_seed(args.policy_seed)
+    except ValueError:
+        print(f"RUN_BLOCKED reason=policy_seed value={args.policy_seed!r}（--policy-seed 必填，非负整数）", flush=True)
+        return EXIT_BAD_INPUT
+    bmiss = [f"--{n.replace('_', '-')}" for n in BUDGET_ARGS if getattr(args, n) in (None, "")]
+    if bmiss:
+        print(f"RUN_BLOCKED reason=budget_args missing={' '.join(bmiss)}", flush=True)
+        return EXIT_BAD_INPUT
+    if args.max_steps != MAX_STEPS:
+        print(f"RUN_BLOCKED reason=step_cap_pairing dataset={DATASET} max_steps={args.max_steps} "
+              f"expect_max_steps={MAX_STEPS}（原侧只跑 hard-verify）", flush=True)
+        return EXIT_BAD_INPUT
+    try:
+        added = setup_paths()
+        info = import_official_env()
+    except (AssertionError, FileNotFoundError, KeyError) as e:
+        print(f"OFFICIAL_IMPORTS=FAIL reason={e}", flush=True)
         return EXIT_BAD_INPUT
     try:
         rows = load_shard(args.shard, args.only)
@@ -440,19 +641,32 @@ def main(argv: list[str] | None = None) -> int:
     if exists:
         print(f"GROUNDSG_ORIG_BLOCKED reason=ep_dir_exists n={len(exists)} first={exists[0]}", flush=True)
         return EXIT_BAD_INPUT
+    try:
+        ledger = open_budget_ledger(args)
+    except Exception as e:  # noqa: BLE001 账本配置行不一致／坏行即拒（接口冻结说明三.1、三.6），按类名识别
+        if type(e).__name__ in ("BudgetConfigMismatch", "LedgerCorrupt"):
+            print(f"RUN_BLOCKED reason=budget_config detail={type(e).__name__}: {e}", flush=True)
+            return EXIT_BAD_INPUT
+        raise
     args.out.mkdir(parents=True, exist_ok=True)
-    ctx = make_context(args.variant, host=args.host, port=args.port, max_steps=args.max_steps,
-                       adapter=args.qwenvl_groundsg_adapter, builder_cls=info["BenchmarkEnvBuilder"],
-                       scratch_root=args.out)
+    ctx = make_context(args.variant, host=args.host, port=args.port, max_steps=args.max_steps, policy_seed=policy_seed,
+                       adapter=args.qwenvl_groundsg_adapter, memer_adapter=args.memer_adapter,
+                       builder_cls=info["BenchmarkEnvBuilder"], scratch_root=args.out)
+    budget = OrigBudget(ledger, variant=args.variant, policy_seed=policy_seed)
     url = f"ws://{args.host}:{args.port}"
     print(f"GROUNDSG_ORIG_START shard={args.shard} variant={args.variant} episodes={len(rows)} url={url} "
-          f"max_steps={args.max_steps} robomme={info['robomme_file']} sys_path_added={','.join(added)} "
+          f"max_steps={args.max_steps} policy_seed={policy_seed} budget_route={budget.route} "
+          f"memer_compat_sha256={ctx.get('memer_compat_sha256') or 'none'} robomme={info['robomme_file']} "
+          f"sys_path_added={','.join(added)} "
           + " ".join(f"{k}={s}" for k, s in sorted(ctx["official_sha256"].items())), flush=True)
     summary = run_shard(ctx, rows, out=args.out, attempt=args.attempt, write_frames=not args.no_frames,
-                        import_check=assert_no_robomme_hard)
+                        import_check=assert_no_robomme_hard, budget=budget)
     print(f"GROUNDSG_ORIG_DONE shard={args.shard} variant={args.variant} episodes={summary['episodes']} "
           f"errors={summary['errors']} success={summary['success']} fail={summary['fail']} "
-          f"timeout={summary['timeout']} aborted={int(summary['aborted'])}", flush=True)
+          f"timeout={summary['timeout']} aborted={int(summary['aborted'])} "
+          f"budget_blocked={int(summary['budget_blocked'])} retry_denied={summary['retry_denied']}", flush=True)
+    if summary["budget_blocked"]:
+        return EXIT_BUDGET
     return EXIT_UNREACHABLE if summary["aborted"] else 0
 
 
