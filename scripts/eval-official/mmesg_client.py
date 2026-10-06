@@ -25,11 +25,26 @@ QwenVL 取 ``QwenVLSubgoalPredictor`` 与 ``Qwen3VLModel``（不取 Gemini／Mem
   ``infer`` 回复记完整动作块；
 * Qwen 临时目录 ``<trace_dir>/qwen-tmp/<dataset>/<episode_tag>/``（无 ``trace_dir`` 时落在临时目录），局末把
   ``ep<id>_QwenVL_log.jsonl`` 归档到轨迹所在目录，临时目录整个删除（``unknown``／异常早退同样清理）；
-* 官方循环自己写的叠字 mp4 局末删除（交付视频走本仓库录像器）。
+* 官方循环自己写的叠字 mp4 局末删除（交付视频走本仓库录像器）——原侧（不传 ``keep_official``）保持如此。
 
 终态：官方返回 ``success``／``fail``／``timeout`` 原样；``unknown``（及其他非终态值）记 ``status="error"``、
 ``error="success_flag=<值>"``，不中止整席；官方循环抛出的异常记 ``status="error"`` + ``<异常类>: <消息>``，
 ``infra`` 按 ``mme_client.INFRA_MARKERS`` 判。
+
+第二阶段 S1（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分一节「S1」与八节 3.5）只增不改：
+
+* ``run_official_episode(..., keep_official=UNSET)``：不传时与此前逐字节相同（原侧 ``official_hard_runner`` 不传，
+  R1／R2）。传真值时：调用前给 evaluator 实例包一层 ``init_episode`` 抓住官方 ``(task_goal, recorder)``（``finally``
+  还原）；正常局官方自己 ``save_video``；``StepCapReached``／其他异常／``unknown`` 而 ``video_dir`` 无 mp4 时，按官方
+  文件名格式（``official_safe_filename`` 截断）调用**官方 recorder 自己的** ``save_video`` 补存；``init_episode`` 返回前
+  失败：一帧未录为 ``none``，已取到 reset 帧但录像器没交出来为 ``partial``（只记原因，不冒充完整视频）。``finally``
+  在删 ``video_dir`` 之前经 ``keep_official_videos`` 完整解码、核帧数、核恰一个文件后搬入
+  ``<archive_dir>/official/`` 并写 ``provenance.json``；核验或补存失败只记 ``official_save_error``，原始帧照留。
+  返回另加 ``official_videos``、``official_source``（``official``／``official-salvaged``／``partial``／``none``）、
+  ``official_save_error`` 与 C8 三分计数。
+* 新侧 ``run_episode`` 传 ``keep_official=True``；轨迹按共享契约收尾：C6 identity 补 ``attempt``，缺观测步用
+  ``log_missing_step``（C8），``end`` 写 ``steps_attempted``／``steps_observed``／``frames_recorded``／
+  ``omitted_timeout_frames``，``terminal_reason`` 取终态（C3，官方原值另记 ``success_flag``），无帧局 ``no_frame=true``。
 """
 from __future__ import annotations
 
@@ -39,9 +54,13 @@ from pathlib import Path as _Path
 _HERE = str(_Path(__file__).resolve().parent)
 # 不改 sys.path：同目录模块一律按文件路径加载（原侧 official_hard_runner 要求 sys.path 只加两项）
 
+import hashlib  # noqa: E402
 import importlib.util  # noqa: E402
 import json  # noqa: E402
+import os  # noqa: E402
+import re  # noqa: E402
 import shutil  # noqa: E402
+import subprocess  # noqa: E402
 import tempfile  # noqa: E402
 import time  # noqa: E402
 from pathlib import Path  # noqa: E402
@@ -69,6 +88,13 @@ def load_sibling(name: str):
 
 official_defs = load_sibling("official_defs")
 trace_writer = load_sibling("trace_writer")
+_UNSET = trace_writer.UNSET  # R2：新增可选参数的「未提供」哨兵
+
+#: 官方叠字视频与身份清单所在子目录（R4：官方版式文件一律放 official/）
+OFFICIAL_VIDEO_SUBDIR = "official"
+OFFICIAL_SOURCES = ("official", "official-salvaged", "partial", "none")
+PROVENANCE_SCHEMA = "official-video-provenance/1"
+FRAMES_BASIS = "demo_frames + 1 + steps_observed - omitted_timeout_frames"
 
 
 def classify_infra(*texts: str | None) -> str | None:
@@ -139,11 +165,18 @@ class EpisodeTap:
     * ``on_reset(pre_traj)``：``get_init_obs`` 返回后，记演示（全部 reset 帧、状态、目标文本）；
     * ``on_request``／``on_response``：客户端请求与回复；
     * ``on_step(action, obs3, stop, flag, terminated, truncated)``：每执行一步（含异常步，``obs3`` 为 None 三元组）。
+
+    ``missing_step_contract``（S1，默认 ``UNSET`` = 旧行为逐字节不变）：真值时缺观测步按 C8 用
+    ``TraceWriter.log_missing_step`` 记（``observed=false``、``missing_reason``），只有新侧打开。
+    ``missing_steps`` 只在内存里记缺观测步号（供 C8 计数），不影响任何输出。
     """
 
-    def __init__(self, trace: Any | None, frames: RawFrameWriter | None = None):
+    def __init__(self, trace: Any | None, frames: RawFrameWriter | None = None, *,
+                 missing_step_contract: Any = _UNSET):
         self.trace = trace
         self.frames = frames
+        self.missing_step_contract = missing_step_contract is not _UNSET and bool(missing_step_contract)
+        self.missing_steps: list[int] = []
         self.steps = 0
         self.decisions = 0
         self.last_subgoal: str | None = None
@@ -183,9 +216,12 @@ class EpisodeTap:
         if self.trace is not None:
             self.trace.log_response(actions, step=self.steps)
 
-    def on_step(self, action: Any, obs3: tuple, stop: bool, flag: str, terminated: Any, truncated: Any) -> None:
+    def on_step(self, action: Any, obs3: tuple, stop: bool, flag: str, terminated: Any, truncated: Any,
+                reason: str | None = None) -> None:
         self.steps += 1
         img, wrist, state = obs3
+        if img is None:
+            self.missing_steps.append(self.steps)
         if self.frames is not None:
             self.frames.meta["exec_steps"] = self.steps
             if img is not None:
@@ -194,7 +230,10 @@ class EpisodeTap:
                     self.frames.write("wrist", wrist)
             else:
                 self.frames.meta["missing_steps"].append(self.steps)
-        if self.trace is not None:
+        if self.trace is not None and img is None and self.missing_step_contract:
+            self.trace.log_missing_step(step=self.steps, action=action, subgoal=self.last_subgoal,
+                                        reason=reason or f"no_observation status={flag}")
+        elif self.trace is not None:
             self.trace.log_step(step=self.steps, front=img, wrist=wrist, state=state, action=action,
                                 subgoal=self.last_subgoal, terminated=bool(terminated), truncated=bool(truncated),
                                 status=flag)
@@ -352,7 +391,8 @@ class SessionRunner:
                 raise
             print(f"Error: {e}")
             self.last_exception = e
-            self._tap.on_step(action, (None, None, None), True, "error", None, None)
+            self._tap.on_step(action, (None, None, None), True, "error", None, None,
+                              reason=f"{type(e).__name__}: {e}"[:400])
             return (None, None, None), True, "error"
 
         img = obs["front_rgb_list"][-1]
@@ -437,15 +477,195 @@ def close_policy_context(ctx: Any) -> None:
         pass
 
 
+# ── S1：官方叠字视频保留（只新侧打开） ──────────────────────────────────────
+
+
+class OfficialVideoRejected(ValueError):
+    """官方叠字视频核验不过（个数、可解码、帧数、目标目录），不搬入 ``official/``。"""
+
+
+def official_safe_filename(full_name: str) -> str:
+    """与 ``render_official_video.safe_filename`` 同款：去掉 ``/``、``\\``、NUL；超过 255 字节时截断并附整名摘要。
+
+    这里照写一份（6 行）而不跨文件导入，避免依赖并行重构中的重绘工具；两份规则须保持一致。"""
+    sanitized = re.sub(r"[/\\\x00]", "_", full_name)
+    if sanitized == full_name and len(sanitized.encode()) <= 255:
+        return sanitized
+    suffix = "__" + hashlib.sha256(full_name.encode()).hexdigest()[:16] + ".mp4"
+    stem = sanitized.removesuffix(".mp4").encode()[:255 - len(suffix.encode())].decode(errors="ignore")
+    return stem + suffix
+
+
+def official_video_name(runner: Any, flag: str, task_goal: str) -> str:
+    """官方 ``eval_each_episode`` 的文件名格式 ``{env_id}_ep{episode_id}_{flag}_{task_goal}_{difficulty}.mp4``（截断后）。"""
+    return official_safe_filename(
+        f"{runner.env_id}_ep{runner.episode_id}_{flag}_{task_goal}_{runner.difficulty}.mp4")
+
+
+def ffmpeg_exe() -> str:
+    """与官方 ``imageio.mimsave`` 同源的 ffmpeg：``IMAGEIO_FFMPEG_EXE`` 优先，否则 imageio-ffmpeg 自带二进制。"""
+    exe = os.environ.get("IMAGEIO_FFMPEG_EXE")
+    if exe:
+        return exe
+    import imageio_ffmpeg
+
+    return imageio_ffmpeg.get_ffmpeg_exe()
+
+
+def decode_video_frames(path: str | Path, ffmpeg: str | None = None) -> int:
+    """完整解码第一路视频流并返回帧数；ffmpeg 退出码非 0 或报任何 error 级消息即 ``OfficialVideoRejected``。"""
+    cmd = [ffmpeg or ffmpeg_exe(), "-nostdin", "-hide_banner", "-v", "error", "-i", str(path),
+           "-map", "0:v:0", "-f", "framemd5", "-"]
+    proc = subprocess.run(cmd, capture_output=True, timeout=600)
+    err = proc.stderr.decode(errors="replace").strip()
+    if proc.returncode != 0 or err:
+        raise OfficialVideoRejected(f"解码失败 rc={proc.returncode}：{err[:300]}")
+    return sum(1 for ln in proc.stdout.decode(errors="replace").splitlines() if ln.strip() and not ln.startswith("#"))
+
+
+def _file_sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with Path(path).open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def keep_official_videos(video_dir: str | Path, dst: str | Path, *, expected_frames: int,
+                         provenance: dict | None = None, ffmpeg: str | None = None) -> list[str]:
+    """把 ``video_dir`` 里官方写出的叠字视频搬进 ``dst``（即 ``<局目录>/official/``）并写 ``provenance.json``。
+
+    搬入前核：恰一个 ``*.mp4``（非符号链接）、完整解码无错、帧数等于 ``expected_frames``（= ``frames_recorded``）、
+    ``dst`` 不存在或为空。任一不过抛 ``OfficialVideoRejected``、不搬、不写。通过打印
+    ``OFFICIAL_VIDEO=KEPT``，返回搬入后的路径列表（恰 1 个）。``provenance`` 为调用方给的身份、路线、终态等，本函数
+    补 ``video``（文件名、sha256、字节数）与 ``frames``（解码帧数、期望帧数、依据）。"""
+    video_dir, dst = Path(video_dir), Path(dst)
+    mp4s = sorted(video_dir.glob("*.mp4")) if video_dir.is_dir() else []
+    if len(mp4s) != 1:
+        raise OfficialVideoRejected(f"官方视频应恰 1 个，实际 {len(mp4s)} 个：{[p.name for p in mp4s]}")
+    src = mp4s[0]
+    if src.is_symlink() or not src.is_file():
+        raise OfficialVideoRejected(f"官方视频不是普通文件：{src.name}")
+    frames = decode_video_frames(src, ffmpeg)
+    if frames != int(expected_frames):
+        raise OfficialVideoRejected(f"帧数不符：解码 {frames} != frames_recorded {int(expected_frames)}")
+    if dst.is_symlink() or (dst.exists() and (not dst.is_dir() or any(dst.iterdir()))):
+        raise OfficialVideoRejected(f"目标目录已存在且非空：{dst}")
+    sha, nbytes = _file_sha256(src), src.stat().st_size
+    dst.mkdir(parents=True, exist_ok=True)
+    target = dst / src.name
+    shutil.move(str(src), str(target))
+    prov = dict(provenance or {})
+    prov["schema"] = PROVENANCE_SCHEMA
+    prov["video"] = {"name": target.name, "sha256": sha, "bytes": nbytes}
+    frame_info = dict(prov.get("frames") or {})
+    frame_info.update(decoded=frames, expected=int(expected_frames), basis=FRAMES_BASIS)
+    prov["frames"] = frame_info
+    tmp = dst / ".provenance.json.tmp"
+    tmp.write_text(json.dumps(prov, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    os.replace(tmp, dst / "provenance.json")
+    print(f"OFFICIAL_VIDEO=KEPT source={prov.get('official_source')} frames={frames} sha256={sha[:16]} "
+          f"name={target.name}", flush=True)
+    return [str(target)]
+
+
+def episode_counts(tap: EpisodeTap, flag: Any, exc_name: str | None, max_steps: int | None) -> dict:
+    """C8 三分计数（按 ``EpisodeTap`` 的记录与官方循环语义推出）。
+
+    官方 ``count > max_steps`` 时先 ``break`` 后不 ``record``：自然超时局最后一步有观测却不进官方视频，记
+    ``omitted_timeout_frames=1``（该步若本就缺观测则为 0）。``get_init_obs`` 没返回的局 ``no_frame``。"""
+    attempted = int(tap.steps)
+    observed = attempted - len(tap.missing_steps)
+    no_frame = tap.demo_frames is None
+    omitted = int(flag == "timeout" and exc_name is None and max_steps is not None and attempted > int(max_steps)
+                  and attempted not in tap.missing_steps)
+    frames = 0 if no_frame else int(tap.demo_frames) + 1 + observed - omitted
+    return {"steps_attempted": attempted, "steps_observed": observed, "frames_recorded": frames,
+            "omitted_timeout_frames": omitted, "no_frame": no_frame}
+
+
+def _status_of(flag: Any, error: str | None, exc_name: str | None) -> tuple[str, str | None]:
+    if exc_name == "StepCapReached":
+        return "timeout", error
+    if error is None:
+        return map_flag(flag)
+    return "error", error
+
+
+def _finish_official(captured: dict, runner: Any, tap: EpisodeTap, video_dir: Path, archive_dir: Path | None, *,
+                     flag: Any, error: str | None, exc_name: str | None, counts: dict, provenance: dict) -> dict:
+    """``keep_official`` 打开时的收尾（在删 ``video_dir`` 之前调用）；本函数不抛异常，失败一律记进返回值。"""
+    out: dict[str, Any] = {"official_videos": [], "official_source": "none", "official_save_error": None}
+    rec = captured.get("recorder")
+    if rec is None:
+        if captured.get("init_started") and tap.demo_frames is not None:
+            # 已取到 reset 帧但官方 init_episode 没交出录像器：部分帧不成片，只记原因（不冒充完整视频）
+            out["official_source"] = "partial"
+            out["official_save_error"] = (f"init_episode 中途失败：已取 {tap.demo_frames + 1} 帧 reset 画面，"
+                                          f"官方录像器未交出，不成片；{error or ''}")[:800]
+        else:
+            out["official_save_error"] = f"init_episode 之前或其中取初始观测失败，一帧未录；{error or ''}"[:800]
+        return out
+    try:
+        status, _ = _status_of(flag, error, exc_name)
+        has_mp4 = video_dir.is_dir() and any(video_dir.glob("*.mp4"))
+        source = "official"
+        if not has_mp4:
+            if exc_name is None and flag != "unknown":
+                raise OfficialVideoRejected(f"官方正常收尾（flag={flag}）却没有写出 mp4")
+            label = "timeout" if exc_name == "StepCapReached" else ("unknown" if flag == "unknown" else "error")
+            name = official_video_name(runner, label, captured.get("task_goal"))
+            try:
+                rec.save_video(name)  # 官方实例自己的 save_video（R3：不复制、不改写）
+            except Exception as e:  # noqa: BLE001
+                raise OfficialVideoRejected(f"补存 save_video 失败：{type(e).__name__}: {e}") from e
+            source = "official-salvaged"
+        if archive_dir is None:
+            raise OfficialVideoRejected("没有局目录（archive_dir=None），无处保留")
+        prov = dict(provenance)
+        prov.update(official_source=source,
+                    terminal={"status": status, "success_flag": flag, "error": error, "exception": exc_name},
+                    frames={k: counts[k] for k in ("steps_attempted", "steps_observed", "frames_recorded",
+                                                   "omitted_timeout_frames")} | {"demo_frames": tap.demo_frames})
+        out["official_videos"] = keep_official_videos(video_dir, Path(archive_dir) / OFFICIAL_VIDEO_SUBDIR,
+                                                      expected_frames=counts["frames_recorded"], provenance=prov)
+        out["official_source"] = source
+    except Exception as e:  # noqa: BLE001 只记原因，原始帧照留
+        out["official_save_error"] = f"{type(e).__name__}: {e}"[:800]
+        print(f"OFFICIAL_VIDEO=REJECTED reason={out['official_save_error'][:200]!r}", flush=True)
+    return out
+
+
 def run_official_episode(ctx: dict, runner: Any, tap: EpisodeTap, *, dataset: str, episode_tag: str,
-                         scratch: Path, archive_dir: Path | None, recorder: Any = None) -> dict:
-    """两侧共用：在 ``ctx`` 的官方评估器上跑一局 ``eval_each_episode``，收住异常、清理临时目录，返回终态字典。"""
+                         scratch: Path, archive_dir: Path | None, recorder: Any = None,
+                         keep_official: Any = _UNSET, official_provenance: Any = _UNSET) -> dict:
+    """两侧共用：在 ``ctx`` 的官方评估器上跑一局 ``eval_each_episode``，收住异常、清理临时目录，返回终态字典。
+
+    ``keep_official`` 不传（原侧）时行为与返回值与此前逐字节相同；传真值时保留官方叠字视频（见模块文档串 S1），
+    ``official_provenance`` 为写进 ``provenance.json`` 的身份、路线等（dict）。"""
+    keep = keep_official is not _UNSET and bool(keep_official)
     predictor, evaluator = ctx["predictor"], ctx["evaluator"]
     ctx["episode"] = {"tap": tap, "clients": [], "recorder": recorder, "timing": {}}
     video_dir = scratch / "official-video"
     qbase = qwen_begin(predictor, scratch, dataset, episode_tag)
     error = None
     exc_name = None
+    flag = None
+    captured: dict[str, Any] = {}
+    official: dict[str, Any] = {}
+    counts: dict[str, Any] = {}
+    had_attr = "init_episode" in vars(evaluator)
+    saved_attr = vars(evaluator).get("init_episode")
+    if keep:
+        orig_init = evaluator.init_episode
+
+        def init_episode_capture(env_runner, epstate, video_save_dir):
+            captured["init_started"] = True
+            out = orig_init(env_runner, epstate, video_save_dir)
+            captured["task_goal"], captured["recorder"] = out
+            return out
+
+        evaluator.init_episode = init_episode_capture
     t0 = time.perf_counter()
     try:
         flag = evaluator.eval_each_episode(runner, predictor, video_dir)
@@ -454,17 +674,23 @@ def run_official_episode(ctx: dict, runner: Any, tap: EpisodeTap, *, dataset: st
         print(f"Error evaluating episode {episode_tag}: {e}")
         flag, error = "error", f"{exc_name}: {e}"[:800]
     finally:
+        if keep:
+            if had_attr:
+                evaluator.init_episode = saved_attr
+            else:
+                vars(evaluator).pop("init_episode", None)
         for c in ctx["episode"]["clients"]:
             c.close()
         qlog = qwen_end(predictor, qbase, archive_dir)
-        shutil.rmtree(video_dir, ignore_errors=True)  # 官方叠字 mp4 不交付
+        if keep:
+            counts = episode_counts(tap, flag, exc_name, getattr(ctx.get("args"), "max_steps", None))
+            prov = dict(official_provenance) if isinstance(official_provenance, dict) else {}
+            prov.setdefault("official_sha256", dict(ctx.get("official_sha256") or {}))
+            official = _finish_official(captured, runner, tap, video_dir, archive_dir, flag=flag, error=error,
+                                        exc_name=exc_name, counts=counts, provenance=prov)
+        shutil.rmtree(video_dir, ignore_errors=True)  # 官方叠字 mp4 不交付（keep 时已先搬入 official/）
     wall = time.perf_counter() - t0
-    if exc_name == "StepCapReached":
-        status, error = "timeout", error
-    elif error is None:
-        status, error = map_flag(flag)
-    else:
-        status = "error"
+    status, error = _status_of(flag, error, exc_name)
     env_exc = getattr(runner, "last_exception", None)
     env_exc_s = None if env_exc is None else f"{type(env_exc).__name__}: {env_exc}"[:800]
     infra = classify_infra(error, env_exc_s) if status == "error" else None
@@ -473,10 +699,14 @@ def run_official_episode(ctx: dict, runner: Any, tap: EpisodeTap, *, dataset: st
         timing = load_sibling("mme_client").summarize_timing(timing)
     timing["episode_s"] = wall
     ctx["episode"] = None
-    return {"status": status, "task_success": status == "success", "steps": tap.steps, "error": error,
-            "success_flag": flag, "decisions": tap.decisions, "infra": infra is not None, "infra_reason": infra,
-            "env_exception": env_exc_s, "exception": exc_name, "qwen_log": qlog, "timing": timing,
-            "official_sha256": dict(ctx.get("official_sha256") or {})}
+    res = {"status": status, "task_success": status == "success", "steps": tap.steps, "error": error,
+           "success_flag": flag, "decisions": tap.decisions, "infra": infra is not None, "infra_reason": infra,
+           "env_exception": env_exc_s, "exception": exc_name, "qwen_log": qlog, "timing": timing,
+           "official_sha256": dict(ctx.get("official_sha256") or {})}
+    if keep:
+        res.update(counts)
+        res.update(official)
+    return res
 
 
 def run_episode(session, identity: dict, conn_info: dict, recorder) -> dict:
@@ -492,26 +722,46 @@ def run_episode(session, identity: dict, conn_info: dict, recorder) -> dict:
         raise ValueError(f"conn_info max_steps={max_steps} 与 policy_context {ctx['args'].max_steps} 不一致")
     dataset = conn_info.get("dataset")
     tag = conn_info.get("episode_tag") or f"{identity.get('key')}.a1"
+    attempt = attempt_of(tag)
     tpath = trace_location(conn_info, recorder)
+    route = f"mmesg/{variant}/new"
     ident = {k: identity.get(k) for k in ("task", "tier", "seed", "source_episode", "builder_episode", "key")}
     ident["dataset"] = dataset
-    trace = (trace_writer.TraceWriter(tpath, route=f"mmesg/{variant}/new", identity=ident, max_steps=max_steps)
+    ident["attempt"] = attempt  # C6：= 局目录名 <key>.a<N> 的 N（账本 accepted_attempt_id 对应的尝试号）
+    trace = (trace_writer.TraceWriter(tpath, route=route, identity=ident, max_steps=max_steps)
              if tpath is not None else None)
-    tap = EpisodeTap(trace)
+    tap = EpisodeTap(trace, missing_step_contract=True)
     runner = SessionRunner(session, tag, ctx["defs"]["pack_state"], tap,
                            official_episode_id=official_episode_id(identity, tag))
     scratch, own_scratch = episode_scratch(conn_info.get("trace_dir"))
     archive_dir = tpath.parent if tpath is not None else None
+    prov = {"identity": dict(ident), "route": route, "dataset": dataset, "attempt": attempt, "episode_tag": tag,
+            "official_episode_id": runner.episode_id, "official_sha256": dict(ctx.get("official_sha256") or {})}
     try:
         res = run_official_episode(ctx, runner, tap, dataset=dataset, episode_tag=tag, scratch=scratch,
-                                   archive_dir=archive_dir, recorder=recorder)
+                                   archive_dir=archive_dir, recorder=recorder, keep_official=True,
+                                   official_provenance=prov)
     finally:
         if own_scratch:
             shutil.rmtree(scratch, ignore_errors=True)
     demo = (getattr(session, "timing", None) or {}).get("demo_frames", tap.demo_frames)
+    if res.get("no_frame"):
+        demo = 0  # C3：无帧 error 局 demo_frames 记 0
     if trace is not None:
-        trace.close(status=res["status"], terminal_reason=res["success_flag"], side="new", demo_frames=demo,
-                    decisions=res["decisions"])
+        extra = {k: res[k] for k in ("steps_attempted", "steps_observed", "frames_recorded", "omitted_timeout_frames")}
+        if res.get("no_frame"):
+            extra["no_frame"] = True
+        # C3：terminal_reason 取终态（strict-cap 为 timeout、unknown 为 error），官方原返回值另记 success_flag
+        trace.close(status=res["status"], terminal_reason=res["status"], side="new", demo_frames=demo,
+                    decisions=res["decisions"], success_flag=res["success_flag"],
+                    official_source=res["official_source"],
+                    official_videos=[Path(p).name for p in res["official_videos"]], **extra)
     res.update(side="new", demo_frames=demo, max_steps=max_steps, policy_variant=variant,
                trace_path=str(tpath) if tpath is not None else None)
     return res
+
+
+def attempt_of(episode_tag: str) -> int:
+    """局目录名 ``<key>.a<N>`` 的尝试号 N；不含 ``.a<N>`` 时为 1（与 ``official_episode_id`` 同口径）。"""
+    m = re.search(r"\.a(\d+)$", str(episode_tag))
+    return int(m.group(1)) if m else 1
