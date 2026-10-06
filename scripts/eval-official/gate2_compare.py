@@ -647,8 +647,17 @@ def expand_run(path: str | Path) -> list[Path]:
 
 
 def _v75_normalize(rows: list[dict]) -> list[dict]:
-    for r in rows:
+    """v7.5eval 逐局行：补 ``exec_steps``；同一身份在文件顺序上之后还有正常终态（success／fail／timeout）的
+    ``status=error`` 行标 ``infra=True``——这些是原版启动器 3 遍重评前的基础设施失败（如 Vulkan
+    ``createDeviceUnique`` 致 reset 失败），v7.5eval 口径取每身份最后一条正常终态，不把它们当终态。"""
+    last_ok: dict[tuple, int] = {}
+    for i, r in enumerate(rows):
         r.setdefault("exec_steps", r.get("steps"))
+        if r.get("status") in ("success", "fail", "timeout"):
+            last_ok[ident_of(r)] = i
+    for i, r in enumerate(rows):
+        if r.get("status") == "error" and last_ok.get(ident_of(r), -1) > i:
+            r.setdefault("infra", True)
     return rows
 
 

@@ -284,3 +284,17 @@ def test_groundsg_diagnostic_column_compares_all(tmp_path):
                       ("PickXtimes", 7): False}
     assert "first_episode_identical" not in s
     assert "server_epoch_first=2" in g.ext_lines(res, "mmesg-oracle")[-1]
+
+
+def test_v75_superseded_infra_error_rows_are_not_terminal():
+    """原版 3 遍重评：前面的 reset 失败 error 行被同身份后面的正常终态取代时不计终态；没被取代的 error 行仍是终态。
+    （2026-10-06 实测：O2 的 SimpleMemVLA 有 76 行 Vulkan reset 失败行，误计终态时 E0-O2 出 63 局假翻转。）"""
+    m = g2()
+    rows = [
+        {"task": "A", "source_episode": 3, "seed": 1, "status": "error", "steps": 0, "_file": "f", "_line": 0},
+        {"task": "B", "source_episode": 7, "seed": 2, "status": "error", "steps": 0, "_file": "f", "_line": 1},
+        {"task": "A", "source_episode": 3, "seed": 1, "status": "success", "steps": 10, "_file": "f", "_line": 2},
+    ]
+    finals, _ = m.final_rows(m._v75_normalize(rows))
+    assert {k: v["status"] for k, v in finals.items()} == {m.ident_of(rows[0]): "success", m.ident_of(rows[1]): "error"}
+    assert rows[0]["infra"] is True and "infra" not in rows[1] and rows[2]["exec_steps"] == 10

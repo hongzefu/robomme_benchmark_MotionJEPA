@@ -7678,6 +7678,14 @@
     "scripts/eval-official/client-env/uv.lock": {
       "category": "外部子环境依赖声明",
       "reason": "上条子项目的锁文件，由 uv 生成。"
+    },
+    "scripts/eval-official/orig-mme-client-env/pyproject.toml": {
+      "category": "外部子环境依赖声明",
+      "reason": "MME 原侧重跑客户端的独立 uv 子项目（client-env + 官方 requirements 钉死的 google-generativeai==0.8.6；原版 eval.py 无条件导入 gemini），只声明依赖、无本仓库逻辑；见 12.494 与 sg-eval-gl-20261006-02 launch.md ⑥。"
+    },
+    "scripts/eval-official/orig-mme-client-env/uv.lock": {
+      "category": "外部子环境依赖声明",
+      "reason": "上条子项目的锁文件，由 uv 生成。"
     }
   },
   "optional_keys": [
