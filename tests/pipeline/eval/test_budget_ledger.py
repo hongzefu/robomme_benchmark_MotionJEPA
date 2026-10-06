@@ -16,6 +16,7 @@ from __future__ import annotations
 import importlib.util
 import itertools
 import os
+import re
 import subprocess
 import sys
 import threading
@@ -74,7 +75,7 @@ def test_concurrent_last_trajectory_only_one_wins(tmp_path):
     for t in ts:
         t.join()
     assert len(wins) == 1 and len(losses) == n - 1
-    assert bm.BudgetLedger(path).state().trajectories == 3
+    assert bm.BudgetLedger(path, trajectory_cap=3).state().trajectories == 3  # 第三阶段：构造参数须与 config 行一致
 
 
 def test_concurrent_last_shared_infra_only_one_wins(tmp_path):
@@ -480,6 +481,11 @@ def test_default_seat_runner_ledger_bytes_equal_base(tmp_path, monkeypatch):
     assert run(base, tmp_path / "base", old_ds) == run(cur, tmp_path / "cur", "ood")
     lb = (tmp_path / "base" / "s00" / "perceptual-framesamp-modul" / "perceptual-framesamp-modul.ledger.jsonl").read_bytes()
     lc = (tmp_path / "cur" / "s00" / "perceptual-framesamp-modul" / "perceptual-framesamp-modul.ledger.jsonl").read_bytes()
-    # 账本行带数据集名：BASE 侧的旧名换成官方名（只换这一个 JSON 字符串值）后逐字节相同
+    # 账本行带数据集名：BASE 侧的旧名换成官方名（只换这一个 JSON 字符串值）
     lb = lb.replace(f'"{old_ds}"'.encode(), b'"ood"')
-    assert lb == lc and b"budget_rid" not in lc and b"interrupt" not in lc
+    assert b"budget_rid" not in lc and b"interrupt" not in lc and b"token" not in lc
+    # 第三阶段 progress.json 多了具名阶段写入（各取一次 time.time()），固定时钟下行内 t 的数值会错开：
+    # 去掉 t 后逐字节相同（行的顺序、键、其余值全部不变）
+    def _no_t(raw: bytes) -> list[bytes]:
+        return [re.sub(rb'"t": [0-9.]+(, )?', b"", line) for line in raw.splitlines()]
+    assert _no_t(lb) == _no_t(lc)
