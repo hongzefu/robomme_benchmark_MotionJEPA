@@ -31,7 +31,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 **冲突即停**（正本第 0 条）：判定输出与上表不符（主机名不是 `sled-vail`、NFS 不存在、出现第二套 GPU 等），一律停下把原始输出交用户裁决，不得自行套用。本仓库目前只有这一个环境列；出现其他机器时先补判据表再开工。
 
-<!-- AGENTMETARULES:BEGIN common-agents src=5697d963b9caf9151fcaac1db0e076f71d23df44 blob=362b7dd35228d876cf1d0388c6a24a83998f9616 -->
+<!-- AGENTMETARULES:BEGIN common-agents src=7c592e595cf4be977a1e94cf40565530bd7705f9 blob=951f00a2ee0d9af561a6834324ebf7bcb2b4a518 -->
 
 ## 强制规则（最高优先级）
 
@@ -46,7 +46,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
    来源：benchmark/AGENTS.md 规则 1；global CLAUDE.md「语言」；policy/AGENTS.md 规则 1；mjepa/AGENTS.md 规则 1。
 
 2. **所有计划必须用中文书写，计划与实施范围必须明确。** 仓库文档中的项目目标、未来 scope、roadmap、历史计划和示例命令都不等于当前实施授权；只执行用户本轮明确要求的工作，任何工具、回退机制或并行代理都不扩大这一范围。遇到范围、实现方式或破坏性操作存在歧义时，必须先询问用户，不得擅自扩展；已经明确的决定与授权沿用，不重复询问。计划默认分为两个部分（纯文档改动的计划例外，见下方第三条子项）：
-   - **第一部分（给人看）**：以可读叙述为主、结论先行，黑话仍应少用；但**关键机制与保证处必须给到代码级细节**——具体文件路径、命令、判定行、实测数字直接内联在叙述里，达到「读者不翻代码就能核对」的密度（2026-08-29 用户定标；标杆样例：robomme_policy_learning_MotionJEPA 仓库 `0829-destructive-restructure-plan.md` 第一部分「两条核心保证的原理」一节的分层写法——每层一段、层名点明结论、命令与判定行随层给出；项目可在 `<PLAN_EXEMPLAR>` 指定自己的标杆）；对文件的引用和对步骤的介绍必须精确，不能只在第二部分补足第一部分缺失的关键依据。「密度差不多」指每段的信息密度而非篇幅，不为凑长度灌水；对照标杆的六个特征写：
+   - **第一部分（给人看）**：以可读叙述为主、结论先行，黑话仍应少用；但**关键机制与保证处必须给到代码级细节**——具体文件路径、命令、判定行、实测数字直接内联在叙述里，达到「读者不翻代码就能核对」的密度（2026-08-29 用户定标；**标杆样例（2026-10-06 起所有仓库统一，用户原话「所有的密度的标杆都改成这个」）：robomme_benchmark_MotionJEPA 仓库 `docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md` 的第一部分**——先「要做什么与全部运行一览」（三句话 + ASCII 批次图 + 批次表 + 已定口径原话），再逐模型「原侧是哪份代码、和上游原版差在哪」每模型三四条，然后「我们这一侧要改什么」一行一块的表（先说为什么非改不可），最后验收判定行表、步骤表、子代理分工简述；第一部分只留决策信息（约 90～130 行），每节一张表加一两段话，逐文件逐函数的细节整段移到第二部分并在第一部分末尾一句话指向；此前的标杆 policy 仓库 `0829-destructive-restructure-plan.md` 不再作标杆；项目可在 `<PLAN_EXEMPLAR>` 指定自己的标杆）；对文件的引用和对步骤的介绍必须精确，不能只在第二部分补足第一部分缺失的关键依据。「密度差不多」指每段的信息密度而非篇幅，不为凑长度灌水；对照标杆的六个特征写：
      1. **文首引言块**先定死权威性、代码锚点 commit、工作副本路径、commit 编号体例、外部依赖锚点，以及「只规划不实施、每步须单独获批」的授权边界。
      2. **总览节**给「一句话方案」加编号的「已定死口径」清单，每条口径注明依据所在小节；用户拍板的原话逐字保留、不替用户改写。
      3. **每个机制小节**按「定义 → `文件::函数` 锚点与配置键 → 公式或代码块 → 数轴 / 示意图演示 → ⚠ 陷阱与反例 → 带实测数字的收益」展开。
@@ -342,6 +342,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
       - 计划第二部分的「子代理分配表」（第 2 条）对 Codex 同样生效：按表的可写集合、禁触、接口契约与依赖派持久代理，验收在共享目录跑，「合并顺序」读作整合顺序；Codex 子代理仍不暂存、不提交、不 push。
     - **委派说明**：每项委派（含给持久代理的 `followup_task`）都要明确目标、上下文、可读与可写范围、禁止事项、依赖、交付内容和验收方式；依任务需要限制文件、目录、分支或工作区，避免子代理自行推断更大范围。
     - **模型档位**：子代理及递归子代理的模型档位不得高于本次用户主请求所用模型；默认继承父代理模型，轻量任务可酌情降档。若无法可靠比较档位，则沿用父代理模型。模型档位与推理强度是独立设置；本条只限制前者，推理强度按任务独立选择。
+      - **Aspen 固定为 GPT-5.6 家族（2026-10-06）**：Aspen 当前只使用 `gpt-5.6-sol`、`gpt-5.6-terra`、`gpt-5.6-luna`，禁止给 Codex 主代理或子代理配置 GPT-5.5、GPT-6、Claude `opus` / `sonnet` 或其他模型。主代理与通用兜底角色用 `gpt-5.6-sol/high`；规划角色用 `gpt-5.6-sol/xhigh`；审查角色用 `gpt-5.6-sol/high`；实现与测试角色用 `gpt-5.6-terra/high`；只读探索角色用 `gpt-5.6-luna/high`。具体角色文件及安装口径见 [`codex/aspen/agents/`](https://github.com/hongzefu/AgentMetaRules-hongzefu/tree/main/codex/aspen/agents) 与 [`docs/codex-aspen-gpt56-roles.md`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/docs/codex-aspen-gpt56-roles.md)。任何指定档位不可用时必须停止并报告原始错误，不得静默切换模型；用户当前指令或宿主更高优先级要求另有规定时从其规定。
     - **整合与责任**：子代理交回结论、证据（第 22 条）、验证结果、改动文件清单和未解决事项；主代理负责整合、最终验收及经授权的提交（第 11 条），对用户的汇报按第 1 条用中文。
 
     来源：2026-09-26 用户要求「尽可能积极调用使用multi agent来实现 但是分隔要保持清晰」「子agent要小于等于主要请求agent的规格」（并澄清只限制模型档位、不限制推理强度），及同日补充「codex强调修改文件要保持subagent之间的任务的的清晰 尽可能多并发 完全是multi agent的处理流程」「而codex一般是持久化的运行多agent 几个agent互相通讯 不会因为单个任务结束就关闭这个agent」；OpenAI 官方文档 [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)；openai/codex `rust-v0.157.0` 源码 `codex-rs/prompts/src/multi_agent_instructions.rs`、`codex-rs/core/src/tools/handlers/multi_agents_spec.rs`、`codex-rs/core/src/agent/role.rs`、`codex-rs/core/src/tools/spec_plan.rs`、`codex-rs/core/src/agent/control/residency.rs`；本机实测 [`docs/codex-app-ssh-multiagent.md`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/docs/codex-app-ssh-multiagent.md)。
@@ -365,7 +366,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 | `<COMMIT_SUBJECT_STYLE>` | commit subject 体例 | 第 11 条 |
 | `<PLAN_EXEMPLAR>` | 计划密度标杆文档 | 第 2 条 |
 
-<!-- AGENTMETARULES:END common-agents src=5697d963b9caf9151fcaac1db0e076f71d23df44 blob=362b7dd35228d876cf1d0388c6a24a83998f9616 -->
+<!-- AGENTMETARULES:END common-agents src=7c592e595cf4be977a1e94cf40565530bd7705f9 blob=951f00a2ee0d9af561a6834324ebf7bcb2b4a518 -->
 
 ## 项目专属规则
 
@@ -407,7 +408,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 ## 对正本的覆盖项（按正本条号；未列出的条目按正本执行）
 
 - **覆盖第 1 条（历史英文化遗留）**：无豁免清单——原豁免对象 `scripts/data-generation-v2-noPatch/` 与 `tests/lightweight/test_no_patch_report_debug_environment.py` 已于 2026-09-09 删除。
-- **覆盖第 2 条（计划密度标杆与命名）**：`<PLAN_EXEMPLAR>` = policy 仓库 [`0901-motion-memory-plan.md`](https://github.com/hongzefu/robomme_policy_learning_MotionJEPA/blob/v2-motionmem/0901-motion-memory-plan.md) 的「第一部分（给人看）」（原链接名 `motion-memory-plan.md` 已改名）；四份 `NEWTASK_RELEASE_V3～V6_PLAN.md` 已于 2026-09-26 按用户指令改名为 `0921-newtask-release-v3-plan.md`、`0922-newtask-release-v4-plan.md`、`0924-newtask-release-v5-plan.md`、`0925-newtask-release-v6-plan.md`（日期取首次新增提交自身时区的月日）；`INJECTION_REFACTOR_PLAN.md`、`NEWTASK_V2_PLAN.md` 沿用现名；2026-09-27 拆包阶段 0b 把 V2～V5 这五份旧计划移入 `docs/plans/`（只作经验教训留档），根目录只留 0925/0926 起的现行计划；2026-10-02 起全部计划在 `docs/plans/`，新计划直接写在 `docs/plans/`（命名仍按正本 `MMDD-<主题>-plan.md`）；仓库根目录只留规则文件与 `readme.md`，未定事项清单在 `docs/1002-pending-decisions.md`（用户 2026-10-02「把根目录所有的文档都留档不要放在根目录 就像 https://github.com/hongzefu/robomme_benchmark_MotionJEPA/tree/main 的格式一样」「把这些未定事项的放在Docs跟目录」）。
+- **覆盖第 2 条（计划密度标杆与命名）**：`<PLAN_EXEMPLAR>` = 本仓库 [`docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md`](docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md) 的「第一部分（给人看）」（2026-10-06 用户原话「所有的密度的标杆都改成这个」；此前为 policy 仓库 `0901-motion-memory-plan.md`，原链接名 `motion-memory-plan.md` 已改名）；四份 `NEWTASK_RELEASE_V3～V6_PLAN.md` 已于 2026-09-26 按用户指令改名为 `0921-newtask-release-v3-plan.md`、`0922-newtask-release-v4-plan.md`、`0924-newtask-release-v5-plan.md`、`0925-newtask-release-v6-plan.md`（日期取首次新增提交自身时区的月日）；`INJECTION_REFACTOR_PLAN.md`、`NEWTASK_V2_PLAN.md` 沿用现名；2026-09-27 拆包阶段 0b 把 V2～V5 这五份旧计划移入 `docs/plans/`（只作经验教训留档），根目录只留 0925/0926 起的现行计划；2026-10-02 起全部计划在 `docs/plans/`，新计划直接写在 `docs/plans/`（命名仍按正本 `MMDD-<主题>-plan.md`）；仓库根目录只留规则文件与 `readme.md`，未定事项清单在 `docs/1002-pending-decisions.md`（用户 2026-10-02「把根目录所有的文档都留档不要放在根目录 就像 https://github.com/hongzefu/robomme_benchmark_MotionJEPA/tree/main 的格式一样」「把这些未定事项的放在Docs跟目录」）。
 - **覆盖第 4 条（核心短测）**：日常门禁 `timeout 280s uv run --no-sync python -m pytest -m 'not slow' -q`（2026-10-04 测试重构后口径：testpaths 为 tests/static、tests/contract、tests/unit、tests/pipeline，纯 CPU，资源守卫插件拦截真实仿真／CUDA／权重／外网，末行 `TEST_RESOURCE=`；实测约 2600 用例、120 s）；慢测试 `uv run --no-sync python -m pytest -m slow -q`（bash 席位脚本、ffmpeg、websocket、wheel、1024 全组合，实测约 3 分钟）；仿真冒烟 `CUDA_VISIBLE_DEVICES=<空闲卡> uv run --no-sync python -m pytest tests/sim --allow-sim-reset -q`（每次 59 + 1 = 60 次 reset，长期授权，约 4 分钟）；只改某条链路时至少跑该链路目录的定向测试；涉及实跑生成一律先做「单任务、单 episode、单 worker」smoke。旧 `tests/lightweight/`、`tests/dataset/` 已于 12.389 删除。
 - **覆盖第 5 条**：本仓库所有可视化脚本同受最近邻放大约束。
 - **本次V6覆盖第8条的收尾释放要求（2026-09-26）**：用户明确「再提交2个同样gl 48h job 为之后加速 现在的job跑完不要scancel」。本次四个占位job `61890467`、`61890468`、`62018665`、`62018666` 均保留，V6完成后不自动取消；后续释放须有新的用户指令。新增两席各1 GPU／16 CPU／192G／48小时，仅是资源预留，不扩大reset／轨迹预算、不等于已批准基础设施恢复清单。
@@ -433,11 +434,11 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 | `<GL_ACCOUNT>` / `<GL_PARTITION>` / `<SSH_HOST>` | `chaijy2` / `spgpu` / `greatlakes` |
 | `<PROTECTED_DIRS>` | `src/robomme/`（默认冻结 `src/robomme/env_record_wrapper/RecordWrapper.py`） |
 | `<COMMIT_SUBJECT_STYLE>` | `<大>.<小>[.<修订>] <中文描述>` |
-| `<PLAN_EXEMPLAR>` | policy 仓库 `0901-motion-memory-plan.md` 第一部分 |
+| `<PLAN_EXEMPLAR>` | 本仓库 `docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md` 第一部分 |
 
 ## 规则来源与未采用清单
 
-- 通用规则 = 上方标记块，当前正本 commit `5697d96`，与标记行 `src=` 一致（2026-10-04 同步「运行型子代理」——已批准计划的分配表可列运行型子任务，由 Opus 子代理启动长任务并交接，监听、预算与清理仍归主会话；2026-10-04 同步第 2 条「开工必须由用户明确、无歧义地说『开工』，其他任何事件或措辞都不是开工条件」；2026-10-03 同步「上传 HF 的文件必须读回校验，校验在 greatlakes 纯 CPU job 里做」——第 15 条加子项，`greatlakes.md` 新增「HF 上传校验 job」一节：standard 分区、直接 sbatch 跑完即退，是只用 spgpu 与一律占位 job 两条的唯一长期例外；2026-10-03 同步子代理超时统计——超过 15 分钟的 Claude Code 子代理由 SubagentStop hook 按项目（`docs/subagent-stats/over-15min.jsonl`）与全局各落一份，第 11、19 条补该统计文件的例外；2026-10-02 同步子代理模型口径——改代码的写入型子代理用 opus，探索、审查、合并等其余子代理一律 sonnet，并带入第 23 条网页链接写完整域名；2026-10-01 同步「计划执行模式」——执行已批准计划时改代码交给 worktree 隔离的写入型子代理、`sub/` 前缀 commit、`--no-ff` 合并与两次审查，第 2 条加子代理分配表、第 11 条加 `sub/` 例外；2026-09-27 同步第 2 条「两部分结构硬性格式」加强；2026-09-26 同步高频GPU查询教训；此前本文件的强制规则 1–13 是 2026-08-18 自 MotionJEPA 移植、2026-09-09 拆分后的旧版）。
+- 通用规则 = 上方标记块，当前正本 commit `7c592e5`，与标记行 `src=` 一致（2026-10-06 同步两项：第 2 条计划密度标杆改为本仓库 `docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md` 第一部分、所有仓库统一（用户原话「所有的密度的标杆都改成这个」）；第 26 条 Codex 子项新增「Aspen 固定为 GPT-5.6 家族」（用户直接改正本）；2026-10-04 同步「运行型子代理」——已批准计划的分配表可列运行型子任务，由 Opus 子代理启动长任务并交接，监听、预算与清理仍归主会话；2026-10-04 同步第 2 条「开工必须由用户明确、无歧义地说『开工』，其他任何事件或措辞都不是开工条件」；2026-10-03 同步「上传 HF 的文件必须读回校验，校验在 greatlakes 纯 CPU job 里做」——第 15 条加子项，`greatlakes.md` 新增「HF 上传校验 job」一节：standard 分区、直接 sbatch 跑完即退，是只用 spgpu 与一律占位 job 两条的唯一长期例外；2026-10-03 同步子代理超时统计——超过 15 分钟的 Claude Code 子代理由 SubagentStop hook 按项目（`docs/subagent-stats/over-15min.jsonl`）与全局各落一份，第 11、19 条补该统计文件的例外；2026-10-02 同步子代理模型口径——改代码的写入型子代理用 opus，探索、审查、合并等其余子代理一律 sonnet，并带入第 23 条网页链接写完整域名；2026-10-01 同步「计划执行模式」——执行已批准计划时改代码交给 worktree 隔离的写入型子代理、`sub/` 前缀 commit、`--no-ff` 合并与两次审查，第 2 条加子代理分配表、第 11 条加 `sub/` 例外；2026-09-27 同步第 2 条「两部分结构硬性格式」加强；2026-09-26 同步高频GPU查询教训；此前本文件的强制规则 1–13 是 2026-08-18 自 MotionJEPA 移植、2026-09-09 拆分后的旧版）。
 - 未采用的正本条目及原因：第 10 条（训练超参落点）、第 12 条（训练 / 评估留档）、第 18 条（训练链路一致性）——本仓库无训练链路；第 13 条（数据集构建 Beta 体例）——本仓库生成留档走 `docs/validation/`，不打 Beta commit；第 24 条（submodule / vendoring）——本仓库以 `scripts/parity/` 的隔离官方源码树（`--official-root`）与 AST 钉死 `scripts/` 不依赖 `tests/` 为准。
 - 旧条号对照（`docs/ledger/` 历史账本沿用旧号）：旧 1 → 正本第 1 条；旧 2 → 第 3 条；旧 3 → 第 4 条（覆盖）；旧 4 → 第 7 条；旧 5 → 第 9 条；旧 6 → 第 5 条；旧 7 → 第 11 条（覆盖）；旧 8 → 第 14 条（覆盖）；旧 9 → 第 20 条；旧 10 → 第 2 条；旧 11 → P2 / 第 21 条；旧 12 → P1；旧 13 → 第 26 条；旧 14（2026-09-26 Codex 会话新增的 reset 对拍 / rollout 生成限制）→ P3。
 - Claude Code 独有机制见同目录 `CLAUDE.md`（标记块 `common-claude`）；集群规约见 `greatlakes.md`（标记块 `common-greatlakes`）与 `docs/greatlakes.md`（本仓库实测记录）。两份文件冲突时以本文件为准。
