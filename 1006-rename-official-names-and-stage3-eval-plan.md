@@ -26,6 +26,8 @@
 >
 > 2026-10-06 用户对八.10 五项裁决原话：「345同意 4可以接续 2报告 1没看懂如果模型第一次回复的关键帧为空的话你现在改完之后是怎么处理的」——第 2 项：保留无帧 error 具名例外、报告单列；第 3 项：批准按只读核验清单从 HF 下载 MemER adapter `checkpoint-1300`；第 4 项：到期中断的局允许接续，每身份最多 1 次、计入 870；第 5 项：本轮预算 870 局一口气授权（reset 只计量）。第 1 项待用户看完兼容层说明后再定。
 >
+> 2026-10-06 用户对第 1 项裁决原话：「同意兼容层把这个写入计划详细说这个问题。把你兜底的这个情形修改之前修改之后的这个prompt完整的英文版给我然后加上中文注释不要做翻译 原始的prompt。」——MemER 兼容层方案、原始 prompt 原文与修改前后的处理流程见八.3「MemER 兼容层」。
+>
 > 功能范围追加原话：「给出现在所有支持模型的清单，都要支持1800步，都要支持不同seed，模型seed。」「但是我们现在实跑只跑这个。我们现在实跑只跑我说的这些模型。」因此全部模型路线统一补齐1800步与可配置模型seed，但实跑范围只保留本版指定四模型。
 
 # 第一部分（给人看）
@@ -86,13 +88,13 @@
 
 | 处 | 文件与锚点 | 改什么 |
 |---|---|---|
-| 1 装配 | `official_defs.py::{VARIANTS,PREDICTOR_NAMES,load_groundsg,make_args,assert_one_predictor,build_predictor}` | 加第三个变体 `ground-sg-memer`；`PREDICTOR_NAMES` 加 `MemERSubgoalPredictor`；`load_groundsg` 在该变体下摘 `qwenvl/api_memer.py::Qwen3VLModelMemER` 原文（它和 `api.py` 一样在导入时设 `IMAGE_MAX_TOKEN_NUM` 等三个环境变量，摘取时要一并落实）；`make_args` 置 `use_memer=True`、`subgoal_type="grounded_subgoal"`、`memer_adapter_path`，并显式传 `model_seed`；互斥断言改成「oracle／qwenvl／memer 恰一个为真」；`build_predictor` 对 memer 也设离线运行约束并导入 swift。摘的是官方原文，键帧、历史子目标、请求格式与解析一行不改 |
+| 1 装配 | `official_defs.py::{VARIANTS,PREDICTOR_NAMES,load_groundsg,make_args,assert_one_predictor,build_predictor}` | 加第三个变体 `ground-sg-memer`；`PREDICTOR_NAMES` 加 `MemERSubgoalPredictor`；`load_groundsg` 在该变体下摘 `qwenvl/api_memer.py::Qwen3VLModelMemER` 原文（它和 `api.py` 一样在导入时设 `IMAGE_MAX_TOKEN_NUM` 等三个环境变量，摘取时要一并落实）；`make_args` 置 `use_memer=True`、`subgoal_type="grounded_subgoal"`、`memer_adapter_path`，并显式传 `model_seed`；互斥断言改成「oracle／qwenvl／memer 恰一个为真」；`build_predictor` 对 memer 也设离线运行约束并导入 swift。摘的是官方原文；**另加两侧一致的兼容层（用户 2026-10-06 同意）**：空关键帧不做合并、合法子目标真正存入兜底列表、执行帧不足 15 张时有几张取几张；提问模板、关键帧选取与合并规则、动作模型输入一字不改；记录实现指纹，不改 gitlink，成绩表注明「MemER 用修了三处越界的官方实现」（细节与原始 prompt 见第二部分八.3） |
 | 2 客户端 | `mmesg_client.py`（改名后 `groundsg_client.py`）`::{make_policy_context,qwen_begin,qwen_end,run_episode}` | 变体检查放行 memer；adapter 多认一个 `memer_adapter_path` 键；`qwen_begin`／`qwen_end` 现在只管 QwenVL 的 `qwen-tmp` 局目录，要让 MemER 的局目录与旁边的 `ep*_MemER_log.jsonl` 一样被指到 `<trace_dir>` 下的临时目录、局末归档到该局 trace 目录、异常退出也清理；结果行 `policy_variant` 记 memer |
 | 3 席位脚本 | `run_seat.sh::{variant_pairing,build_server_cmd,start_client}`、`run_eval_gl.sh` 参数转发 | 变体配对放行 `ground-sg-memer`，新增 `--memer-adapter <dir>`（给了变体不给 adapter、或 adapter 目录不存在即 `RUN_BLOCKED`）；动作服务命令与 GroundSG 相同（同一份 `symbolic-grounded-subgoal/79999`，同一个 `--policy-seed`） |
 | 4 资产 | 资产清单与 `ASSETS` 前置核验 | adapter `checkpoint-1300` 按文件名在本机 `artifacts/` 与 NFS 下初查没有找到（只找到源码，没有权重），实施前要先定来源、落点、文件数、字节数与 SHA256，纳入起跑前核验；不得拿 QwenVL 的 `checkpoint-1200` 顶替；大下载先问落点 |
 | 5 依赖与验证 | `scripts/eval-official/client-env/{pyproject.toml,uv.lock}`（仅确有缺口时）；`tests/pipeline/evalx/groundsg/` | 现有客户端锁已含 ms-swift／transformers／peft，优先复用；CPU 夹具用假 `PtEngine` 验三预测器互斥、adapter 误配、键帧合并、日志序列化、空键帧与首个坏 JSON、异常清理；然后 GL 上 1 局真实 smoke（真 adapter + `flash_attention_2` 加载尚未验过） |
 
-判据：`MEMER_WIRING=PASS predictor=MemERSubgoalPredictor`、`ASSETS=PASS`、`MEMER_SMOKE=PASS`。已知上游隐患：`merge_key_frame_paths` 在空列表上可能访问首项、首个坏 JSON 的回退可能访问空 subgoals——CPU 先复现，真阻塞时列出上游文件与候选修法交用户裁决，不私改锁定来源。
+判据：`MEMER_WIRING=PASS predictor=MemERSubgoalPredictor`、`MEMER_COMPAT=PASS cases=6 fingerprint=<sha256>`、`ASSETS=PASS`、`MEMER_SMOKE=PASS`。上游三处越界（空关键帧合并、兜底列表永远为空、执行帧不足 15 张）已核实为确定缺陷，按用户裁决加兼容层，不私改锁定来源。
 
 ## 三、这一版跑什么
 
@@ -262,6 +264,75 @@ MemER 展示名以锁定官方源码 `third_party/mme-vla/docs/manual_evaluation
 **MemER 接入。** 当前 `scripts/eval-official/official_defs.py::{VARIANTS,PREDICTOR_NAMES,load_groundsg,make_args,assert_one_predictor,build_predictor}` 仅支持 Oracle／QwenVL，而且显式拒绝 `use_memer`；需要扩展装配，摘取锁定上游的 `subgoal_predictor.py::MemERSubgoalPredictor` 与 `subgoal_prediction/qwenvl/api_memer.py::Qwen3VLModelMemER` 原文，保持官方键帧、历史子目标、推理请求与解析机制。传入 `subgoal_type="grounded_subgoal"`、`use_memer=True`，其余预测器开关关闭，服务仍加载 `symbolic-grounded-subgoal/79999`。
 
 官方 `Args::memer_adapter_path` 默认指向 `vlm_subgoal_predictor/memer/grounded_subgoal/checkpoint-1300`。这不是已核实的本机／NFS 资产：实施前必须确定实际路径、来源提交、文件数、字节数与 SHA256，并纳入资产前置核验；不得用 QwenVL 的 `checkpoint-1200` 代替。现有 `client-env` 锁包含 ms-swift／transformers／peft，可作为复用起点，真实 adapter 和 `flash_attention_2` 加载尚未验证。新侧 `mmesg_client.py::{qwen_begin,qwen_end}`（改名后 `groundsg_client.py`）还要支持 MemER 每局临时目录、`ep*_MemER_log.jsonl` 归档及正常／异常清理；不能只给 QwenVL 换展示名。
+
+**MemER 兼容层（用户 2026-10-06 裁决「同意兼容层」；两侧同一实现，记录指纹，不改 gitlink）。**
+
+官方 `subgoal_prediction/qwenvl/api_memer.py::Qwen3VLModelMemER` 核实到三处确定越界（2026-10-06 只读子代理对锁定提交 `ecf086c3` 逐行核实）：
+
+| # | 位置 | 缺陷 | 触发条件 |
+|---|---|---|---|
+| 1 | `update_history_subgoals` 末尾无条件调用 `merge_key_frame_paths`，后者 `cur = [nums[0]]` | 关键帧记忆为空时访问空列表首项，IndexError | 任一次回复 `keyframe_positions` 为空且此前记忆仍空；首次提问输入只有 1 张画面、关键帧栏为 `[]`，模型答空列表是最自然的结果 |
+| 2 | `call` 的 `except` 分支 `subgoal = self.subgoals[-1]` | `self.subgoals` 在 `start_new_episode` 置空后全文无任何写入，永远为空，兜底本身再抛 IndexError | 任何轮次解析异常（含缺陷 1 抛出的异常、坏 JSON、缺键） |
+| 3 | `_get_current_execution_frame_paths` 从末帧起隔一张取 8 张 | 执行帧少于 15 张时下标越界 | 第二次提问时帧数不足（官方默认一次执行 16 步通常够，提前提问或短局可能不够） |
+
+兼容层改法（只动我们摘出来的那份副本，`official_defs.load_groundsg` 摘取后用 AST 级补丁落地，补丁内容 sha256 作为「实现指纹」写进 `MEMER_COMPAT` 判定行、结果行与媒体 provenance）：
+
+1. `merge_key_frame_paths` 开头加「记忆为空则直接返回」；非空时逻辑原样。
+2. `call` 里每次成功解析出 `current_subtask` 后 `self.subgoals.append(current_subtask)`；`except` 分支改为「有上一次合法子目标则沿用，否则抛出具名异常 `MemERResponseError`」，由客户端把该局记成 `status=error, terminal_reason=error, error_kind=model_response_error`，不伪造子目标、不重跑。
+3. `_get_current_execution_frame_paths` 改为「不足 15 张时从现有帧里按同样间隔能取几张取几张」，够 15 张时与官方逐字相同。
+
+**原始 prompt 原文（英文照抄官方，中文为注释不是翻译；修改前后两个模型看到的内容完全相同）**
+
+system prompt（`__init__` 里的 `self.system_prompt`，逐字）：
+
+```text
+You are a robot program that predicts actions. The current input images from the front-view camera shows the most recent actions the robot has executed. The past keyframes are selected frames of particular importance from all the actions the robot has executed so far. Based on these, output the current subtask the robot should execute and nothing else. Some tasks may have a video input for initial setup, some may not.
+
+Return a JSON with:
+- current_subtask: the action that should be executed at the current timestep
+- keyframe_positions: list of frame positions (1-indexed) from the current input images where actions change
+```
+
+注释：`current subtask` 就是交给动作模型的子目标文字；`keyframe_positions` 是模型从「当前输入图像列表」里挑出的帧序号（从 1 数），代码据此把对应画面存进关键帧记忆；提示词没有要求列表非空，也没规定空列表怎么办。
+
+user prompt 模板（`prepare_infer_request` 里的 `user_prompt`，逐字；`{...}` 为运行时填入）：
+
+```text
+{video_prefix}The task goal is: {task_goal}
+Here are the selected frames from the entirety of the full execution that are of particular importance:{keyframes}
+Here is current input image list from the front-view camera: {current_frames}
+
+What subtask should the robot execute and what is the keyframe position?
+```
+
+注释：`{video_prefix}` 在任务带演示视频时为 `The task has a video input for initial setup: <video>\n`，否则为空串；`{task_goal}` 是任务目标全文；`{keyframes}` 与 `{current_frames}` 由 `_wrap_images` 生成——列表为空时是字面 `[]`，非空时是 `[<image>, <image>, …]`，每个 `<image>` 对应 `images` 字段里的一张 png；请求的 `images` = 关键帧图片 + 当前执行帧图片，按此顺序。推理参数 `max_tokens=128, temperature=0`（贪心解码，模型 seed 对该预测器无影响）。
+
+首次提问（关键帧记忆为空、只有 1 张执行帧）实际送出的 user prompt：
+
+```text
+The task goal is: <任务目标全文>
+Here are the selected frames from the entirety of the full execution that are of particular importance:[]
+Here is current input image list from the front-view camera: [<image>]
+
+What subtask should the robot execute and what is the keyframe position?
+```
+
+注释：关键帧栏是字面 `[]`、没有图片；执行帧栏 1 张图。这段文字在修改前后一字不差——兼容层不碰 `prepare_infer_request`、不碰 system prompt、不碰 `images` 的拼法。
+
+**兜底情形：修改前 vs 修改后**
+
+| 情形 | 模型回复 | 修改前（官方原文） | 修改后（兼容层） |
+|---|---|---|---|
+| A 首次回复关键帧为空 | `{"current_subtask":"move cube","keyframe_positions":[]}` | 跳过存记忆 → 无条件合并 → `nums[0]` IndexError → except → `self.subgoals[-1]` 再 IndexError → 异常逃出 `call` → 该局在第一步动作前崩，记 error | 跳过存记忆 → 合并发现记忆为空直接返回 → 取出 `move cube` 交给动作模型 → `subgoals=["move cube"]` → 局继续；下一次提问关键帧栏仍是 `[]` |
+| B 后续回复关键帧为空、记忆已非空 | 同上 | 存记忆跳过 → 合并在已有记忆上正常执行 → 不崩（官方可用） | 同官方，逐字相同 |
+| C 坏 JSON，此前已有合法子目标 | 非 JSON 文本 | `json.loads` 抛错 → except → `subgoals[-1]` IndexError → 崩 | 沿用上一次合法子目标，记 `fallback_used=1`，局继续 |
+| D 坏 JSON，此前没有合法子目标 | 非 JSON 文本 | 同 C，崩 | 抛 `MemERResponseError` → 该局 `status=error, error_kind=model_response_error`，不伪造子目标、不重跑 |
+| E 缺 `keyframe_positions` 键 | `{"current_subtask":"…"}` | KeyError → except → 崩 | 与 C／D 同一兜底路径 |
+| F 第二次提问时执行帧少于 15 张 | — | `_get_current_execution_frame_paths` 下标越界，在 try 之外，崩 | 有几张取几张，提问照常；够 15 张时与官方逐字相同 |
+
+动作模型（GroundSG 动作服务 `symbolic-grounded-subgoal/79999`）在所有情形下看到的都只有：当前前视图、腕部图、机器人状态、子目标文字（`current_subtask` 经 `_parse_subgoal_for_vla` 把 `<|box_start|>(x,y)<|box_end|>` 换成画面坐标后的字符串）；它看不到关键帧、看不到提问、看不到回复原文。兼容层对它的输入没有任何改变，差别只在「官方原文下它根本收不到那条子目标（程序已崩）」。
+
+验收 `MEMER_COMPAT=PASS cases=6 fingerprint=<补丁 sha256>`：CPU 夹具用真实摘取的类配假 `PtEngine`，逐一跑 A～F 六种回复，断言修改后的子目标输出、记忆内容、日志行与异常类型；另断言「记忆非空且回复合法」时兼容层与官方原函数输出逐字节相同（B 情形回归）。两侧（本机对拍原侧与新侧）同一补丁、同一指纹，`GATE2` 报告与成绩表注明「MemER：官方实现 + 三处越界兼容补丁（指纹 …）」。
 
 **可配置模型seed只实现功能。** 当前 `run_seat.sh::build_server_cmd` 中 FrameSamp与GroundSG动作服务固定 `--seed=7`，`smvla_server.py::reseed` 使用 `EPISODE_SEED=0`，PonderPounce服务启动固定种子0，Astra的 `run_astra.sh` 服务固定seed42。拟新增显式 `--policy-seed`，支持模型seed整数参数、至少验 `0/7/42`，从任务配置同时传到服务、客户端与子目标预测器，在真实模型构造前初始化该路线使用的随机状态。结果行、服务元数据、trace和媒体provenance都记录 `policy_seed`。`official_defs.py::make_args` 要显式设置官方 `Args.model_seed`，不能沿用默认42；QwenVL／MemER构造前按实际使用的RNG设种子。**本版所有真实smoke／正式任务只传7**，不能让SimpleMemVLA／PonderPounce暗用旧默认0；0／42及不实跑路线的传递、随机流和隔离只用CPU夹具验证。
 
@@ -473,7 +544,7 @@ CPU 回放／夹具消耗真实 reset／轨迹均为 0。新预算账本同时�
 
 分工重拆（采纳）：R3 拆为 R3（入口／预算／服务）、R6（trace／数值）、R7（媒体／报告／比较器）；测试文件逐个定归属（二节分配表）；主会话在 R1 合入后先冻结共享接口再派功能写入；worktree 内第三方源码一律用 `SGEVAL_THIRD_PARTY` 指向已核 gitlink 的洁净检出，不取脏 `third_party/SimpleMemVLA`。
 
-**用户裁决（2026-10-06「345同意 4可以接续 2报告」）**：第 2 项保留例外、报告单列（R7 三个检查器统一口径，判定行与成绩表单列 `no_frame_error`）；第 3 项批准下载（红线 5）；第 4 项允许接续（`expired_cap=50`、每身份 1 次、计入 870）；第 5 项预算 870 已授权。第 1 项待定。原五项如下留档：
+**用户裁决（2026-10-06「345同意 4可以接续 2报告」）**：第 2 项保留例外、报告单列（R7 三个检查器统一口径，判定行与成绩表单列 `no_frame_error`）；第 3 项批准下载（红线 5）；第 4 项允许接续（`expired_cap=50`、每身份 1 次、计入 870）；第 5 项预算 870 已授权。第 1 项用户 2026-10-06「同意兼容层」，方案见八.3「MemER 兼容层」。原五项如下留档：
 1. MemER 已知缺陷：坚持官方原文（首局可能崩、记 error、媒体验收不过），或加两侧一致的兼容层（空键帧不合并、坏 JSON 取上一次合法子目标、没有则具名错误），记录实现指纹、不改 gitlink、不再称逐字原文。主会话推荐兼容层。
 2. 真实模型 error 局的交付口径：保留无帧 error 具名例外并在报告单列数量（推荐），或加硬闸门要求每组视频数等于 86。
 3. MemER adapter 获取：来源 HF `Yinpei/vlm_subgoal_predictor` 的 `memer/grounded_subgoal/checkpoint-1300`，先只读核 40 位 revision、文件数、字节数、SHA 与缓存缺口，再提交获取清单；落本机 `artifacts/sg-eval/ckpt/` 并同步 NFS；是否批准下载。
