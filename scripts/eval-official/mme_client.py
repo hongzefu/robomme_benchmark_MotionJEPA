@@ -312,6 +312,8 @@ def make_recording_client(host: str, port: int, recorder, timing: dict):
     class RecordingClient(MMEVLAWebsocketClientPolicy):
         def __init__(self):
             self._seq = 0
+            # S4：可选的原始字节观察钩子 raw_hook(obj, sent_bytes, recv_bytes)，每次往返成功后调用（只读，异常吞掉）
+            self._raw_hook = None
             super().__init__(host, port)
 
         def _wait_for_server(self):
@@ -357,6 +359,12 @@ def make_recording_client(host: str, port: int, recorder, timing: dict):
             per.append({"seq": self._seq, "kind": dig["kind"], "pack_s": t1 - t0, "rtt_s": t2 - t1,
                         "unpack_s": t3 - t2, "server_ms": server_ms, "bytes": len(data)})
             self._seq += 1
+            hook = self._raw_hook
+            if hook is not None:
+                try:
+                    hook(obj, data, response)
+                except Exception:  # noqa: BLE001 观察钩子不得影响收发
+                    pass
             return out
 
         def infer(self, obs):  # noqa: D401
@@ -398,17 +406,135 @@ def summarize_timing(timing: dict) -> dict:
     return out
 
 
+def _load_sibling(name: str):
+    """按文件路径加载本目录下的模块（与 env_client／mmesg_client 的 load_sibling 同名注册，已加载则复用）。"""
+    if name in sys.modules:
+        return sys.modules[name]
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(name, Path(_HERE) / f"{name}.py")
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class TracedClient:
+    """S4：包住 MME websocket 客户端（或替身）的 ``reset``／``add_buffer``／``infer``，原样转发后记请求与回包（C10）。
+
+    请求记原始 msgpack 帧字节的 sha256（经 ``RecordingClient._raw_hook`` 拿到实际发出的字节；替身没有该钩子时退回
+    ``canonical_bytes``）；``add_buffer`` 另记历史边界行（覆盖的步号区间）；``infer`` 回包记完整动作块。转发的对象与
+    返回值不做任何改动，请求失败（抛异常）时不记该行。"""
+
+    def __init__(self, inner: Any, trace: Any):
+        self._inner = inner
+        self._trace = trace
+        self._raw: tuple | None = None
+        self._history_from = 0
+        if hasattr(inner, "_raw_hook"):
+            inner._raw_hook = self._on_raw
+
+    def _on_raw(self, obj, data, response) -> None:
+        self._raw = (data, response)
+
+    def _record(self, name: str, obj: Any, out: Any) -> None:
+        raw, self._raw = self._raw, None
+        tr = self._trace
+        tr.raw_request(name, obj, raw[0] if raw is not None else None)
+        try:
+            if name == "add_buffer":
+                n = len(obj["images"]) if isinstance(obj, dict) and "images" in obj else 0
+                tr.history(self._history_from, tr.steps,
+                           note=f"add_buffer frames={n} exec_start_idx={obj.get('exec_start_idx')}")
+                self._history_from = tr.steps
+            elif name == "infer":
+                tr.response(out["actions"])
+        except Exception as e:  # noqa: BLE001
+            tr._err(f"client.{name}", e)
+
+    def reset(self):
+        self._raw = None
+        out = self._inner.reset()
+        self._record("reset", {"reset": True}, out)
+        return out
+
+    def add_buffer(self, buffer):
+        self._raw = None
+        out = self._inner.add_buffer(buffer)
+        self._record("add_buffer", buffer, out)
+        return out
+
+    def infer(self, obs):
+        self._raw = None
+        out = self._inner.infer(obs)
+        self._record("infer", obs, out)
+        return out
+
+    def __getattr__(self, name):
+        return getattr(self._inner, name)
+
+
+def traced_step_fn(session: Any, trace: Any) -> Callable[[Any], tuple]:
+    """S4：包一层 ``session.step`` 拿完整五元组记逐步轨迹；动作对象原样交给环境，返回值与异常原样透出。
+
+    有观测：最后一帧前视、腕部画面与 ``pack_state`` 状态（与 ``EnvRunnerShim.step`` 同算法），子目标 ``None``（C7）；
+    ``obs is None``：缺观测步；抛异常：按会话 ``steps`` 增量记缺观测步（即 ``EnvRunnerShim`` 返回 ``(None,)*3`` 的步），
+    ``StepCapReached`` 不进环境、不计步、只标 ``cap_hit``。"""
+
+    def step(action):
+        before = getattr(session, "steps", None)
+        try:
+            out = session.step(action)
+        except Exception as e:
+            trace.step_exception(action, e, before, getattr(session, "steps", None))
+            raise
+        try:
+            obs, _r, terminated, truncated, info = out
+            status = info.get("status", "unknown") if isinstance(info, dict) else None
+            if obs is None:
+                trace.missing(action, "obs_none")
+            else:
+                try:
+                    img = obs["front_rgb_list"][-1]
+                    wrist = obs["wrist_rgb_list"][-1]
+                    state = pack_state(obs["joint_state_list"][-1], obs["gripper_state_list"][-1])
+                except Exception as e:  # noqa: BLE001 观测不可读：照常透出，由官方循环自己报错
+                    trace._err("step.obs", e)
+                    trace.missing(action, f"obs_unreadable: {type(e).__name__}: {e}")
+                else:
+                    trace.step(action, img, wrist, state, subgoal=None, terminated=terminated,
+                               truncated=truncated, status=status)
+        except Exception as e:  # noqa: BLE001
+            trace._err("step", e)
+        return out
+
+    return step
+
+
 def run_episode(session, identity: dict, conn_info: dict, recorder) -> dict:
-    """env_client 调用入口：一局 MME。``session`` 为已 build 的 EnvSession。"""
+    """env_client 调用入口：一局 MME。``session`` 为已 build 的 EnvSession。
+
+    S4：有轨迹落点（``mmesg_client.trace_location``）时写 ``trace.jsonl``（route ``mme/new``）：``reset_fn`` 外包一层记
+    演示（C2），``session.step`` 外包一层记逐步（C4、C8），客户端外包一层记请求与回包（C10），收尾按 C2、C3、C8。
+    无落点时三层都不包，与 BASE 行为相同。"""
     timing: dict[str, Any] = {}
     max_steps = int(conn_info.get("max_steps", MAX_STEPS))
+    sm = _load_sibling("smvla_client")  # 共用的 PolicyTrace
+    trace = sm.PolicyTrace("mme/new", identity, conn_info, recorder, max_steps=max_steps,
+                           recorder_has_actions=sm.recorder_writes_arrays(recorder) and
+                           getattr(session, "recorder", None) is recorder,
+                           omit_overflow_frame=True)
 
     def client_factory():
-        return make_recording_client(conn_info.get("host", "127.0.0.1"), int(conn_info["port"]), recorder, timing)
+        client = make_recording_client(conn_info.get("host", "127.0.0.1"), int(conn_info["port"]), recorder, timing)
+        return TracedClient(client, trace) if trace.enabled else client
 
     def reset_fn():
         obs, info = session.reset()
-        return pre_traj_from_reset(obs, info)
+        pre = pre_traj_from_reset(obs, info)
+        if trace.enabled:
+            trace.demo(pre["images"], pre["wrist_images"], pre["states"], pre["task_goal"])
+        return pre
 
     def on_decision(idx: int, actions: np.ndarray) -> None:
         if recorder is not None:
@@ -419,10 +545,15 @@ def run_episode(session, identity: dict, conn_info: dict, recorder) -> dict:
                                 "dtype": np.asarray(actions).dtype.str, "shape": list(np.asarray(actions).shape),
                                 "exec_n": min(OBS_HORIZON, len(actions)), "env_step": session.steps})
 
+    step_fn = traced_step_fn(session, trace) if trace.enabled else session.step
     t0 = time.perf_counter()
-    res = evaluate_one(client_factory, session.step, reset_fn, max_steps=max_steps, on_decision=on_decision)
+    res = evaluate_one(client_factory, step_fn, reset_fn, max_steps=max_steps, on_decision=on_decision)
     timing["episode_s"] = time.perf_counter() - t0
     res["timing"] = summarize_timing(timing)
+    if trace.enabled:
+        trace.close(res["status"], cap_hit=bool(getattr(session, "cap_hit", False)), decisions=res["decisions"],
+                    session_steps=getattr(session, "steps", None))
+        res["trace_path"] = str(trace.path)
     return res
 
 
