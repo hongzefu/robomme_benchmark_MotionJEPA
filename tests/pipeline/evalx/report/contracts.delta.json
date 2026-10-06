@@ -108,9 +108,9 @@
     "nodeids": [
       "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_loops_against_builder_cap",
       "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_env_truncates_first_is_reported_honestly",
-      "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_derive_range_from_framesamp_modul_prefix",
+      "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_derive_range_from_mme_vla_prefix",
       "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_hold_action_keeps_joints_and_gripper",
-      "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_main_framesamp_modul_with_derive_range",
+      "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_main_mme_vla_with_derive_range",
       "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_main_strict_official_label_and_rejects_bad_combo"
     ],
     "resource": "cpu",

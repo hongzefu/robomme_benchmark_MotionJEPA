@@ -6458,9 +6458,9 @@
       "nodeids": [
         "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_loops_against_builder_cap",
         "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_env_truncates_first_is_reported_honestly",
-        "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_derive_range_from_framesamp_modul_prefix",
+        "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_derive_range_from_mme_vla_prefix",
         "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_hold_action_keeps_joints_and_gripper",
-        "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_main_framesamp_modul_with_derive_range",
+        "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_main_mme_vla_with_derive_range",
         "tests/pipeline/evalx/report/test_sgx_cap_probe.py::test_main_strict_official_label_and_rejects_bad_combo"
       ],
       "resource": "cpu",
@@ -6512,7 +6512,7 @@
         "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_official_adapter_matches_official_loop",
         "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_comparison_is_not_trivial",
         "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_oracle_messages_hand_expected",
-        "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_framesamp_modul_loop_times_out_only_after_count_exceeds_1300",
+        "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_mme_vla_loop_times_out_only_after_count_exceeds_1300",
         "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_strict_cap_stops_before_env_and_reports_timeout",
         "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_unknown_is_error_and_does_not_stop_seat",
         "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_trace_location_fallbacks",

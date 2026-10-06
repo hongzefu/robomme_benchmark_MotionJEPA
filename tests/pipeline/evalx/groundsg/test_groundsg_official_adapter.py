@@ -134,7 +134,7 @@ def test_oracle_messages_hand_expected(tmp_path):
     assert rn["decisions"] == 3 and rn["side"] == "new" and rn["demo_frames"] == F.N_RESET_FRAMES - 1
 
 
-def test_framesamp_modul_loop_times_out_only_after_count_exceeds_1300(tmp_path):
+def test_mme_vla_loop_times_out_only_after_count_exceeds_1300(tmp_path):
     """官方 ``count > max_steps``：max_steps=1300 时两侧都真实执行 1301 步再记 timeout；原侧外围帧含第 1301 步。"""
     (new, wn, rn), (orig, wo, ro) = run_pair(F.ORACLE, F.Plan(), 1300, tmp_path)
     assert (rn["status"], rn["steps"], rn["_session_steps"]) == ("timeout", 1301, 1301)

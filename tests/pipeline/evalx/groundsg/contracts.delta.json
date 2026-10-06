@@ -16,7 +16,7 @@
       "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_official_adapter_matches_official_loop",
       "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_comparison_is_not_trivial",
       "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_oracle_messages_hand_expected",
-      "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_framesamp_modul_loop_times_out_only_after_count_exceeds_1300",
+      "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_mme_vla_loop_times_out_only_after_count_exceeds_1300",
       "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_strict_cap_stops_before_env_and_reports_timeout",
       "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_unknown_is_error_and_does_not_stop_seat",
       "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_trace_location_fallbacks",

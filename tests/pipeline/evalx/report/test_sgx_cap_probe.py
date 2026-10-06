@@ -96,7 +96,7 @@ def test_env_truncates_first_is_reported_honestly():
     assert c.run_loop(env2, obs, "strict", 1600, c.hold_action)["terminal_reason"] == "env_terminated"
 
 
-def test_derive_range_from_framesamp_modul_prefix():
+def test_derive_range_from_mme_vla_prefix():
     c = C()
     flags = [(False, False)] * 1300 + [(False, False)]
     assert c.derive_range(flags, 1300) == {"exec_steps": 1300, "terminal_reason": "loop_exit"}
@@ -115,7 +115,7 @@ def test_hold_action_keeps_joints_and_gripper():
     assert c.hold_action(obs, "0.5")[7] == 0.5
 
 
-def test_main_framesamp_modul_with_derive_range(capsys):
+def test_main_mme_vla_with_derive_range(capsys):
     c = C()
     b = FakeBuilder(1300)
     rc = c.main(["--dataset", "hard-verify", "--max-steps", "1300", "--task", "VideoUnmask", "--episode", "0",
