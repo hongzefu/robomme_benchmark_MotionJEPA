@@ -1,37 +1,42 @@
 #!/usr/bin/env bash
-# v7.5eval 方案 2.3「官方自己重跑」单片执行器：在 GL 的 srun 步骤内（或本机给定 GPU）按历史顺序先跑 SimpleMemVLA 片、
-# 再跑 MME 片，均用旧官方代码 + 录制器（run_official_smvla.sh、run_official_mme.sh）。
-# 用法：bash official_rerun_shard.sh <O1|O2|R1smoke> <分片 0-9> [--port-base P] [--dry-run]
-# - 清单：/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v7-eval/eval-official-xhard0-192.jsonl（只读；MME 用 SHARD=i，SMVLA 用 i/10）。
-#   仅 R1smoke 允许用环境变量 MANIFEST 覆盖（冒烟用小清单；分片口径不变）。
-# - 逐局结果：$NFS/v75eval/official/<run>/{smvla,mme}/s<i>/（新目录）。
-# - 录制与官方 mp4：先写 NODE_TMP=/tmp/v75-<run>-s<i>-<作业号>，每个策略跑完 rsync -a 到
-#   $NFS/v75eval/stage/<run>/<policy>/s<i>/，核对（文件清单 + 大小 + 全部 summary.json 的 sha256）后删节点副本。
-# - SMVLA 照抄旧 gl_run_official_xhard0.sh 的内层循环：最多 3 次、每次 --resume、退出码 0 或 2 即停；第 2、3 次带 V75_RESUME=1。
-# - 起跑前、结束后都用 $NFS/v75eval/e0-sha.txt 核对本片 E0 文件与清单的 sha256 未变（R8）。
-# - V75_ENCODE_CPUS = 本进程 CPU 亲和集合的最后一核。
+# 原侧重跑单片执行器（v7.5eval 方案 2.3 编排器，S7 改为本轮第二档批次 3a 用）：在 GL 的 srun 步骤内（或本机给定 GPU）
+# 按历史顺序先跑 SimpleMemVLA 片、再跑 MME 片，均用原版代码 + 只读观测器（run_orig_smvla.sh、run_orig_mme.sh）。
+# 用法：ORIG_STAGE_ROOT=<本轮 stage 根> bash official_rerun_shard.sh <run 名> <分片 0-9> [--run-idx K] [--port-base P] [--dry-run]
+# - run 名只许 [A-Za-z0-9._-]；--run-idx（缺省 0）决定端口号段，同节点并发的不同 run 须给不同值。
+# - 清单：/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v7-eval/eval-official-xhard0-192.jsonl（只读；MME 用 SHARD=i，
+#   SMVLA 用 i/10）。仅当 run 名以 smoke 结尾时允许用环境变量 MANIFEST 覆盖（冒烟用小清单；分片口径不变）。
+# - 逐局结果：$ORIG_STAGE_ROOT/<run>/{smvla,mme}/s<i>/（新目录）。
+# - 观测记录与原版 mp4：先写 NODE_TMP=/tmp/orig-<run>-s<i>-<作业号>，每个策略跑完 rsync -a 到
+#   $ORIG_STAGE_ROOT/<run>/stage/<policy>/s<i>/，核对（文件清单 + 大小 + 全部 trace.jsonl 的 sha256）后删节点副本。
+# - SMVLA 照抄原版 gl_run_official_xhard0.sh 的内层循环：最多 3 次、每次 --resume、退出码 0 或 2 即停；第 2、3 次带 ORIG_RESUME=1。
+# - 起跑前、结束后都用 $NFS/v75eval/e0-sha.txt（只读）核对本片 E0 文件与清单的 sha256 未变（R7）。
+# - V75_ENCODE_CPUS = 本进程 CPU 亲和集合的最后一核（MME 代理记账用）。
 # 输出：OFFICIAL_SHARD_DONE run= shard= smvla_rows= mme_rows= smvla_rc= mme_rc= staged=yes|no，最后 EXIT_CODE=。
 set -uo pipefail
 OBS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NFS=/nfs/turbo/coe-chaijy-unreplicated/hongzefu
 RUN="${1:-}"; SHARD="${2:-}"; shift 2 2>/dev/null || true
-PORT_BASE=19200; DRY=0
+PORT_BASE=19200; DRY=0; RUN_IDX=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --port-base) PORT_BASE="$2"; shift 2;;
+    --run-idx) RUN_IDX="$2"; shift 2;;
     --dry-run) DRY=1; shift;;
     *) echo "错误: 未知参数 $1"; echo "EXIT_CODE=2"; exit 2;;
   esac
 done
-case "$RUN" in O1) RUN_IDX=0;; O2) RUN_IDX=1;; R1smoke) RUN_IDX=2;; *) echo "错误: run 只能是 O1|O2|R1smoke：$RUN"; echo "EXIT_CODE=2"; exit 2;; esac
+[[ "$RUN" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "错误: run 名只许 [A-Za-z0-9._-]：$RUN"; echo "EXIT_CODE=2"; exit 2; }
+[[ "$RUN_IDX" =~ ^[0-9]+$ ]] || { echo "错误: --run-idx 须为非负整数：$RUN_IDX"; echo "EXIT_CODE=2"; exit 2; }
+: "${ORIG_STAGE_ROOT:?必须给本轮 stage 根 ORIG_STAGE_ROOT}"
+ORIG_STAGE_ROOT="$(readlink -m "$ORIG_STAGE_ROOT")"; export ORIG_STAGE_ROOT
 [[ "$SHARD" =~ ^[0-9]$ ]] || { echo "错误: 分片须为 0-9：$SHARD"; echo "EXIT_CODE=2"; exit 2; }
 E0_MANIFEST="$NFS/v7-eval/eval-official-xhard0-192.jsonl"
-if [[ "$RUN" = R1smoke && -n "${MANIFEST:-}" ]]; then MANIFEST="$(readlink -f "$MANIFEST")"; else MANIFEST="$E0_MANIFEST"; fi
+if [[ "$RUN" == *smoke && -n "${MANIFEST:-}" ]]; then MANIFEST="$(readlink -f "$MANIFEST")"; else MANIFEST="$E0_MANIFEST"; fi
 # 端口：每个 run 占 100 个号段，每片 4 个（server、代理），同节点两遍并发也不撞
 PORT=$((PORT_BASE + RUN_IDX * 100 + SHARD * 4))
-EP_ROOT="$NFS/v75eval/official/$RUN"
-STAGE_ROOT="$NFS/v75eval/stage/$RUN"
-NODE_TMP="/tmp/v75-$RUN-s$SHARD-${SLURM_JOB_ID:-local}"
+EP_ROOT="$ORIG_STAGE_ROOT/$RUN"
+STAGE_ROOT="$ORIG_STAGE_ROOT/$RUN/stage"
+NODE_TMP="/tmp/orig-$RUN-s$SHARD-${SLURM_JOB_ID:-local}"
 SMVLA_OUT="$EP_ROOT/smvla/s$SHARD"; MME_SAVE="$EP_ROOT/mme/s$SHARD"
 E0_SHA="$NFS/v75eval/e0-sha.txt"
 V75_ENCODE_CPUS="$(python3 -c 'import os; print(max(os.sched_getaffinity(0)))')"
@@ -62,9 +67,9 @@ stage() {  # stage <policy> <节点目录>：rsync 到 NFS 中转、核对、删
   a=$(cd "$src" && find . -type f -printf '%P %s\n' | LC_ALL=C sort | sha256sum)
   b=$(cd "$dst" && find . -type f -printf '%P %s\n' | LC_ALL=C sort | sha256sum)
   [[ "$a" == "$b" ]] || { echo "STAGE_FAIL policy=$pol 文件清单或大小不符"; return 1; }
-  a=$(cd "$src" && find . -name summary.json -type f -print0 | LC_ALL=C sort -z | xargs -0r sha256sum)
-  b=$(cd "$dst" && find . -name summary.json -type f -print0 | LC_ALL=C sort -z | xargs -0r sha256sum)
-  [[ "$a" == "$b" ]] || { echo "STAGE_FAIL policy=$pol summary.json sha256 不符"; return 1; }
+  a=$(cd "$src" && find . -name trace.jsonl -type f -print0 | LC_ALL=C sort -z | xargs -0r sha256sum)
+  b=$(cd "$dst" && find . -name trace.jsonl -type f -print0 | LC_ALL=C sort -z | xargs -0r sha256sum)
+  [[ "$a" == "$b" ]] || { echo "STAGE_FAIL policy=$pol trace.jsonl sha256 不符"; return 1; }
   echo "STAGED policy=$pol files=$(cd "$dst" && find . -type f | wc -l) bytes=$(du -sb "$dst" | cut -f1) dst=$dst"
   rm -rf "$src"
 }
@@ -86,7 +91,7 @@ echo "=== OFFICIAL_RERUN_SHARD run=$RUN shard=$SHARD host=$(hostname) job=${SLUR
 e0_check before || { echo "EXIT_CODE=1"; exit 1; }
 if [[ "$DRY" != 1 ]]; then
   for d in "$SMVLA_OUT" "$MME_SAVE" "$STAGE_ROOT/smvla/s$SHARD" "$STAGE_ROOT/mme/s$SHARD" "$NODE_TMP"; do
-    [[ -e "$d" ]] && { echo "错误: 目录已存在（官方重跑一律新目录）: $d"; echo "EXIT_CODE=1"; exit 1; }
+    [[ -e "$d" ]] && { echo "错误: 目录已存在（原侧重跑一律新目录）: $d"; echo "EXIT_CODE=1"; exit 1; }
   done
   mkdir -p "$NODE_TMP/smvla" "$NODE_TMP/mme" "$EP_ROOT/smvla" "$EP_ROOT/mme"
 fi
@@ -99,8 +104,8 @@ for attempt in 1 2 3; do
   echo "XHARD0_PASS $attempt policy=smvla"
   resume=0; [[ "$attempt" -gt 1 ]] && resume=1
   run env MANIFEST="$MANIFEST" SHARD="$SHARD/$SMVLA_N" OUTDIR="$SMVLA_OUT" REC_ROOT="$NODE_TMP/smvla/rec" \
-    VIDEO_DIR="$NODE_TMP/smvla/videos" NODE_TMP="$NODE_TMP" V75_RESUME="$resume" \
-    bash "$OBS_DIR/run_official_smvla.sh"
+    VIDEO_DIR="$NODE_TMP/smvla/videos" NODE_TMP="$NODE_TMP" ORIG_RESUME="$resume" \
+    bash "$OBS_DIR/run_orig_smvla.sh"
   SMVLA_RC=$?
   [[ "$SMVLA_RC" = 0 || "$SMVLA_RC" = 2 ]] && break
 done
@@ -108,9 +113,9 @@ echo "SMVLA_SHARD_END rc=$SMVLA_RC"
 stage smvla "$NODE_TMP/smvla"; ST1=$?
 
 # ---- MME 片
-run env MANIFEST="$MANIFEST" SHARD="$SHARD" PORT="$PORT" RUN_TAG="v75-$RUN-s$SHARD" SAVE_ROOT="$MME_SAVE" \
+run env MANIFEST="$MANIFEST" SHARD="$SHARD" PORT="$PORT" RUN_TAG="orig-$RUN-s$SHARD" SAVE_ROOT="$MME_SAVE" \
   REC_ROOT="$NODE_TMP/mme/rec" VIDEO_DIR="$NODE_TMP/mme/videos" NODE_TMP="$NODE_TMP" \
-  bash "$OBS_DIR/run_official_mme.sh"
+  bash "$OBS_DIR/run_orig_mme.sh"
 MME_RC=$?
 echo "MME_SHARD_END rc=$MME_RC"
 stage mme "$NODE_TMP/mme"; ST2=$?

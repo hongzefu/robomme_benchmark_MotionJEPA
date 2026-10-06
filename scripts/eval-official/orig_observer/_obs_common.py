@@ -1,7 +1,15 @@
-"""旧官方录制器的公共小工具：按文件路径加载 recorder.py、传输日志写入、清单读取。
+"""原侧只读观测器的公共小工具：按路径加载本仓库模块、传输日志写入、清单读取、身份与局目录、导入后挂钩。
 
-文件名刻意带 ``_v75_`` 前缀：本目录会追加到旧官方客户端的 PYTHONPATH 末尾，不能与官方
+文件名刻意带下划线前缀 ``_obs_common``：本目录会追加到原版客户端的 PYTHONPATH 末尾，不能与原版
 ``examples/robomme`` 下的 ``utils``、``env_runner`` 等模块重名。
+
+S7（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分一节 S7）相对 v7.5eval ``_v75_obs_common.py`` 的改动：
+- 局目录改为与 GroundSG 原侧 ``official_hard_runner.run_identity`` 同布局的 ``<root>/<key>.a<N>/``，``key`` 与上一轮
+  xhard0 分片相同（``<task>_xhard0_<seed>``），``N`` 按该身份在本录制根下的开局顺序编号（续跑接着编）；
+- 新增 ``load_eval_module`` 按路径加载 ``scripts/eval-official/`` 下的 ``mmesg_client``（复用其 ``RawFrameWriter``
+  与已加载的 ``trace_writer``），不改 ``sys.path``；
+- 新增 ``HookErrors``：钩子异常只打一行 ``OBSERVER_HOOK_ERROR`` 并累加计数，同时追加到
+  ``<root>/hook-errors.jsonl``（启动器据此出 ``OBSERVER_COMPLETE`` 的 ``hook_errors=``）。
 """
 from __future__ import annotations
 
@@ -9,18 +17,27 @@ import hashlib
 import importlib.util
 import json
 import os
+import re
 import sys
 import threading
 import time
+import traceback
 from pathlib import Path
 from typing import Any
 
 OBS_DIR = Path(__file__).resolve().parent
-RECORDER_PATH = OBS_DIR.parent / "recorder.py"
+EVAL_DIR = OBS_DIR.parent
+RECORDER_PATH = EVAL_DIR / "recorder.py"
+
+XHARD0 = "xhard0"
+DATASET = "test-hard0"  # 与 official_hard_runner.DATASET 相同（第二档两侧身份口径）
+EP_DIR_RE = re.compile(r"^(?P<key>.+)\.a(?P<attempt>\d+)$")
+FINAL_STATUSES = ("success", "fail", "timeout")
+TERMINALS = ("success", "fail", "timeout", "error")
 
 
 def load_recorder():
-    """按路径加载 scripts/eval-official/recorder.py（模块名 v75_recorder，不改 sys.path）。"""
+    """按路径加载 scripts/eval-official/recorder.py（模块名 v75_recorder，不改 sys.path；代理记账仍用它）。"""
     name = "v75_recorder"
     if name in sys.modules:
         return sys.modules[name]
@@ -28,6 +45,22 @@ def load_recorder():
     mod = importlib.util.module_from_spec(spec)
     sys.modules[name] = mod
     spec.loader.exec_module(mod)
+    return mod
+
+
+def load_eval_module(name: str):
+    """按路径加载 ``scripts/eval-official/<name>.py``（模块名即 ``name``，已加载则复用；与 ``mmesg_client.load_sibling``
+    同一别名约定，故 ``trace_writer`` 只有一份）。"""
+    if name in sys.modules:
+        return sys.modules[name]
+    spec = importlib.util.spec_from_file_location(name, EVAL_DIR / f"{name}.py")
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[name] = mod
+    try:
+        spec.loader.exec_module(mod)
+    except BaseException:
+        sys.modules.pop(name, None)
+        raise
     return mod
 
 
@@ -44,6 +77,11 @@ def payload_sha(msg: Any) -> tuple[str, int, str]:
         b = bytes(msg)
         kind = "binary"
     return kind, len(b), hashlib.sha256(b).hexdigest()
+
+
+def payload_bytes(msg: Any) -> bytes:
+    """websocket 消息的原始字节（文本按 UTF-8）。"""
+    return msg.encode("utf-8") if isinstance(msg, str) else bytes(msg)
 
 
 class JsonlLog:
@@ -65,6 +103,36 @@ class JsonlLog:
             self._fh.close()
 
 
+class HookErrors:
+    """钩子异常计数（C11）：打印一行 ``OBSERVER_HOOK_ERROR``、累加计数、追加 ``<root>/hook-errors.jsonl``。
+
+    本类自身绝不抛异常（写日志失败也只吞掉），保证钩子异常不外抛。"""
+
+    def __init__(self) -> None:
+        self.count = 0
+        self.root: Path | None = None
+        self._lock = threading.Lock()
+
+    def note(self, where: str, episode: str | None = None) -> None:
+        try:
+            tb = traceback.format_exc(limit=3)
+        except Exception:  # noqa: BLE001
+            tb = "<traceback 不可用>"
+        with self._lock:
+            self.count += 1
+        try:
+            print(f"OBSERVER_HOOK_ERROR where={where} episode={episode} {tb!r}", flush=True)
+        except Exception:  # noqa: BLE001
+            pass
+        try:
+            if self.root is not None:
+                with open(self.root / "hook-errors.jsonl", "a", encoding="utf-8") as fh:
+                    fh.write(dumps({"where": where, "episode": episode, "t": time.time(), "pid": os.getpid(),
+                                    "traceback": tb[-2000:]}) + "\n")
+        except Exception:  # noqa: BLE001
+            pass
+
+
 def rec_root() -> Path:
     """录制根目录（环境变量 REC_ROOT，必填）。"""
     r = os.environ.get("REC_ROOT")
@@ -75,15 +143,32 @@ def rec_root() -> Path:
     return p
 
 
-def episode_dir(root: Path, task: str, source_episode: int, seed: int) -> Path:
-    """逐局目录 <task>_<source_episode>_<seed>；同名已存在（续评重跑 error 局）则加 .attemptN。"""
-    base = root / f"{task}_{int(source_episode)}_{int(seed)}"
-    if not base.exists():
-        return base
-    k = 2
-    while (root / f"{base.name}.attempt{k}").exists():
-        k += 1
-    return root / f"{base.name}.attempt{k}"
+def identity_key(task: str, seed: int) -> str:
+    """与上一轮 xhard0 分片（``eval_manifest.v8_key``）相同的身份键 ``<task>_xhard0_<seed>``。"""
+    return f"{task}_{XHARD0}_{int(seed)}"
+
+
+def existing_attempts(root: Path, key: str) -> list[int]:
+    """录制根下该身份已有的局目录尝试号（升序）。"""
+    out = []
+    if Path(root).is_dir():
+        for p in Path(root).iterdir():
+            m = EP_DIR_RE.match(p.name)
+            if m and m["key"] == key and p.is_dir():
+                out.append(int(m["attempt"]))
+    return sorted(out)
+
+
+def claim_episode_dir(root: Path, key: str) -> tuple[Path, int]:
+    """新建 ``<root>/<key>.a<N>``（N = 已有最大号 + 1，原子 mkdir，撞号即顺延）；返回 (目录, N)。"""
+    n = (existing_attempts(root, key) or [0])[-1] + 1
+    while True:
+        d = Path(root) / f"{key}.a{n}"
+        try:
+            d.mkdir(parents=True, exist_ok=False)
+            return d, n
+        except FileExistsError:
+            n += 1
 
 
 def now() -> float:
@@ -91,7 +176,7 @@ def now() -> float:
 
 
 class PostImportHooks:
-    """模块首次被导入、执行完毕后立即调用钩子（不提前导入任何模块，保持官方代码的导入顺序不变）。"""
+    """模块首次被导入、执行完毕后立即调用钩子（不提前导入任何模块，保持原版代码的导入顺序不变）。"""
 
     def __init__(self, hooks: dict):
         self.hooks = dict(hooks)  # 模块名 → fn(module)

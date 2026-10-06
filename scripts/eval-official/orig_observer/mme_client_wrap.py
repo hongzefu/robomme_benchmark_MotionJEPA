@@ -1,20 +1,28 @@
-"""旧官方 MME 客户端的包装启动器：同进程 runpy 运行官方 ``examples/robomme/eval.py``，外挂只读钩子录制。
+"""MME 原侧（``robomme_policy_learning`` 原版分支 ``official-xhard0-0929``／``927c56d``）客户端的包装启动器：同进程 runpy
+运行原版 ``examples/robomme/eval.py``，外挂只读钩子，写出与 GroundSG 原侧同布局的逐局
+``<key>.a<N>/{trace.jsonl,frames/,arrays.npz}``（route ``mme/orig``）。
 
-用法（cwd = 官方工作树 examples/robomme，REC_ROOT 必设）：
+用法（cwd = 原版工作树 examples/robomme，REC_ROOT 必设）：
     python mme_client_wrap.py eval.py --args.host=127.0.0.1 --args.port=<代理端口> ...（参数原样透传给 eval.py）
-    python mme_client_wrap.py --v75-preflight   # 只装钩子并核对导入，不跑评估
+    python mme_client_wrap.py --orig-preflight   # 只装钩子并核对导入，不跑评估
 
-钩子（方案 §2.5「钩子铁律」：只复制主机端 numpy、不调随机函数、不做 GPU 运算、不改参数与返回值）：
-- ``EnvRunner.get_init_obs``：reset 返回的全部演示帧 + 初始帧（前视、腕部）、8 维状态、task_goal；
-  调用期间录制器处于 reset 阶段（只入队、不编码）。
-- ``EnvRunner.step``：实际交给 env 的动作（调用前复制）与返回的 (img, wrist, state)、stop、status。
-- ``websockets.sync.client.ClientConnection.send/recv``：每条发出／收到消息的帧类型、长度、sha256，
-  写 ``REC_ROOT/client-transport-<pid>.jsonl``，供 transparency_check.py 与代理日志逐条对账。
-- 局边界：``EpisodeEvaluator.eval_each_episode``（在 eval.py 调 ``tyro.cli`` 时从 ``__main__`` 取类挂上），
-  每局一个 EpisodeRecorder 目录 ``<task>_<source_episode>_<seed>``。
+钩子（计划第二部分一节 S7「钩子铁律」：只复制主机端 numpy、不调随机函数、不做 GPU 运算、不改参数与返回值；
+钩子内异常只记 ``OBSERVER_HOOK_ERROR`` 并累加 ``observer_hook_errors``，绝不外抛）：
+- ``EnvRunner.get_init_obs``：reset 返回的全部演示帧 + 初始帧（前视、腕部）、8 维状态、task_goal → ``demo`` 行（C2）。
+- ``EnvRunner.step``：调用前复制实际交给 env 的动作（原 dtype／shape），调用后记返回的 (img, wrist, state)、
+  ``stop``、``status``；原版吞掉环境异常返回 ``(None, None, None)`` 的一步记 ``observed=false`` 与原因（C8）；
+  ``terminated``／``truncated`` 原版不向调用方返回，写 ``NOT_OBSERVED``（C9）；MME 无子目标功能，``subgoal`` 全程
+  ``None``（C7）。
+- ``MMEVLAWebsocketClientPolicy.reset／add_buffer／infer``：标记当前请求名；``websockets.sync.client.ClientConnection.send``
+  在标记期间发出的那条消息按原始字节记 ``request``（名即方法名，sha256／字节数取发出的原始载荷，C10「同协议比原始
+  哈希」）；``infer`` 返回的完整动作块记 ``response``。
+- ``ClientConnection.send/recv``：另把每条发出／收到消息的帧类型、长度、sha256 写 ``REC_ROOT/client-transport-<pid>.jsonl``
+  （``episode`` 字段为局目录名），供 transparency_check.py 与代理日志逐条对账、并核对清单身份都有连接。
+- 局边界：``EpisodeEvaluator.eval_each_episode``（在 eval.py 调 ``tyro.cli`` 时从 ``__main__`` 取类挂上）；终态与
+  ``evaluate_manifest`` 写 ``episodes.jsonl`` 同口径：返回值属 success／fail／timeout 原样，其余（``unknown``）与
+  异常记 ``error``；官方超时（第 ``max_steps+1`` 步先 break 不录像）记 ``omitted_timeout_frames=1``。
 
-钩子都在对应模块首次导入完成后才挂（PostImportHooks），不提前导入任何官方模块，导入顺序与直接运行一致。
-钩子内部任何异常只记一行 ``OBSERVER_HOOK_ERROR``，绝不影响官方逻辑。
+钩子都在对应模块首次导入完成后才挂（PostImportHooks），不提前导入任何原版模块，导入顺序与直接运行一致。
 """
 from __future__ import annotations
 
@@ -23,7 +31,6 @@ import runpy
 import sys
 import threading
 import time
-import traceback
 from pathlib import Path
 
 import numpy as np
@@ -31,22 +38,39 @@ import numpy as np
 _OBS_DIR = str(Path(__file__).resolve().parent)
 if _OBS_DIR not in sys.path:
     sys.path.append(_OBS_DIR)
-import _v75_obs_common as C  # noqa: E402
+import _obs_common as C  # noqa: E402
+import orig_episode as OE  # noqa: E402
 
-R = C.load_recorder()
-
+ROUTE = "mme/orig"
+ERR = C.HookErrors()
 _lock = threading.RLock()
-_state = {"rec": None, "ep": None, "step": 0, "conn_seq": 0, "log": None, "root": None}
+_state: dict = {"ep": None, "ep_name": None, "conn_seq": 0, "log": None, "root": None, "req": None}
 
 
-def _hook_error(where: str) -> None:
-    print(f"OBSERVER_HOOK_ERROR where={where} {traceback.format_exc(limit=3)!r}", flush=True)
+def _ep_error(ep, where: str) -> None:
+    if ep is not None:
+        ep.hook_error(where)
+    else:
+        ERR.note(where)
 
 
 def _log():
     if _state["log"] is None:
         _state["log"] = C.JsonlLog(_state["root"] / f"client-transport-{os.getpid()}.jsonl")
     return _state["log"]
+
+
+def _host_flag(x):
+    """主机端布尔：Python／numpy 标量直接取；CPU 张量取 item；GPU 张量不碰（返回 None）。"""
+    if isinstance(x, (bool, np.bool_)):
+        return bool(x)
+    if getattr(x, "is_cuda", False):
+        return None
+    if isinstance(x, np.ndarray) and x.size == 1:
+        return bool(x.reshape(-1)[0])
+    if hasattr(x, "item") and getattr(getattr(x, "device", None), "type", "cpu") == "cpu":
+        return bool(x.item())
+    return None
 
 
 # ------------------------------------------------------------------ EnvRunner 钩子
@@ -56,92 +80,105 @@ def _patch_env_runner(mod) -> None:
     orig_init, orig_step = cls.get_init_obs, cls.step
 
     def get_init_obs(self):
-        rec = _state["rec"]
-        try:
-            if rec is not None:
-                rec.set_phase("reset")
-        except Exception:
-            _hook_error("get_init_obs.pre")
         out = orig_init(self)
+        ep = _state["ep"]
         try:
-            if rec is not None:
-                fi = rec.add_frames("front", np.stack([np.asarray(x) for x in out["images"]]), tag="reset")
-                wi = rec.add_frames("wrist", np.stack([np.asarray(x) for x in out["wrist_images"]]), tag="reset")
-                st = np.stack([np.asarray(x) for x in out["states"]])
-                rec.add_array("reset_state", st)
-                rec.add_event({"kind": "reset", "env_id": self.env_id, "episode_id": self.episode_id,
-                               "task_goal": out["task_goal"], "n_frames": len(fi), "front_idx": [fi[0], fi[-1]],
-                               "wrist_idx": [wi[0], wi[-1]], "state_sha256": R.array_sha256(st),
-                               "difficulty": getattr(self, "difficulty", None)})
-                rec.set_phase("run")
-        except Exception:
-            _hook_error("get_init_obs.post")
+            if ep is not None:
+                ep.on_reset([np.asarray(x) for x in out["images"]], [np.asarray(x) for x in out["wrist_images"]],
+                            [np.asarray(x) for x in out["states"]], out["task_goal"])
+        except Exception:  # noqa: BLE001
+            _ep_error(ep, "get_init_obs.post")
         return out
 
     def step(self, action):
-        rec = _state["rec"]
+        ep = _state["ep"]
         a = None
         try:
-            if rec is not None:
+            if ep is not None:
                 a = np.array(action, copy=True)
-        except Exception:
-            _hook_error("step.pre")
+        except Exception:  # noqa: BLE001
+            _ep_error(ep, "step.pre")
         out = orig_step(self, action)
         try:
-            if rec is not None:
-                with _lock:
-                    k = _state["step"]
-                    _state["step"] += 1
+            if ep is not None:
+                if a is None:
+                    a = np.zeros(0, np.float32)
                 (img, wrist, state), stop, status = out
-                ev = {"kind": "step", "k": k, "stop": bool(stop), "status": status}
-                if a is not None:
-                    rec.add_array("exec_action", a, step=k)
-                    ev["action_sha256"] = R.array_sha256(a)
-                if img is not None:
-                    ev["front_idx"] = rec.add_frames("front", np.asarray(img), tag="step")[0]
-                    ev["wrist_idx"] = rec.add_frames("wrist", np.asarray(wrist), tag="step")[0]
-                    s = np.asarray(state)
-                    rec.add_array("state", s, step=k)
-                    ev["state_sha256"] = R.array_sha256(s)
+                st = status if isinstance(status, str) else f"<{type(status).__name__}>"
+                flag = _host_flag(stop)
+                if img is None:
+                    ep.on_missing_step(a, reason=f"env_step_exception status={st}", stop=flag, orig_status=st)
                 else:
-                    ev["obs_none"] = True
-                rec.add_event(ev)
-        except Exception:
-            _hook_error("step.post")
+                    ep.on_step(a, np.asarray(img), np.asarray(wrist), np.asarray(state), st, stop=flag)
+        except Exception:  # noqa: BLE001
+            _ep_error(ep, "step.post")
         return out
 
     cls.get_init_obs, cls.step = get_init_obs, step
-    cls._v75_hooked = True
+    cls._orig_observer_hooked = True
+
+
+# ------------------------------------------------------------------ 策略客户端钩子（请求名与动作块）
+
+def _patch_policy_client(mod) -> None:
+    cls = getattr(mod, "MMEVLAWebsocketClientPolicy", None)
+    if cls is None:
+        ERR.note("policy_client.missing_class")
+        return
+
+    def wrap(name, orig):
+        def method(self, *args, **kwargs):
+            prev = _state["req"]
+            _state["req"] = name
+            try:
+                out = orig(self, *args, **kwargs)
+            finally:
+                _state["req"] = prev
+            if name == "infer":
+                ep = _state["ep"]
+                try:
+                    if ep is not None:
+                        ep.on_response(np.asarray(out["actions"]))
+                except Exception:  # noqa: BLE001
+                    _ep_error(ep, "policy.infer.post")
+            return out
+
+        method.__name__ = getattr(orig, "__name__", name)
+        method.__doc__ = getattr(orig, "__doc__", None)
+        return method
+
+    for name in ("reset", "add_buffer", "infer"):
+        if hasattr(cls, name):
+            setattr(cls, name, wrap(name, getattr(cls, name)))
+    cls._orig_observer_hooked = True
 
 
 # ------------------------------------------------------------------ websocket 钩子
 
 def _conn_id(ws) -> int:
-    cid = getattr(ws, "_v75_conn", None)
+    cid = getattr(ws, "_orig_obs_conn", None)
     if cid is None:
         with _lock:
             cid = _state["conn_seq"]
             _state["conn_seq"] += 1
-        ws._v75_conn = cid
-        ws._v75_idx = {"send": 0, "recv": 0}
+        ws._orig_obs_conn = cid
+        ws._orig_obs_idx = {"send": 0, "recv": 0}
     return cid
 
 
 def _note_msg(ws, direction: str, msg) -> None:
+    ep = _state["ep"]
     try:
         cid = _conn_id(ws)
-        idx = ws._v75_idx[direction]
-        ws._v75_idx[direction] += 1
+        idx = ws._orig_obs_idx[direction]
+        ws._orig_obs_idx[direction] += 1
         ftype, n, sha = C.payload_sha(msg)
-        ep = _state["ep"]
         _log().write({"pid": os.getpid(), "conn": cid, "dir": direction, "idx": idx, "type": ftype, "len": n,
-                      "sha256": sha, "t": time.time(), "episode": ep})
-        rec = _state["rec"]
-        if rec is not None:
-            rec.add_event({"kind": "ws", "conn": cid, "dir": direction, "idx": idx, "type": ftype, "len": n,
-                           "sha256": sha})
-    except Exception:
-        _hook_error(f"ws.{direction}")
+                      "sha256": sha, "t": time.time(), "episode": _state["ep_name"]})
+        if direction == "send" and ep is not None and _state["req"] is not None:
+            ep.on_request(_state["req"], C.payload_bytes(msg))
+    except Exception:  # noqa: BLE001
+        _ep_error(ep, f"ws.{direction}")
 
 
 def _patch_ws(mod) -> None:
@@ -159,56 +196,63 @@ def _patch_ws(mod) -> None:
         return msg
 
     cls.send, cls.recv = send, recv
-    cls._v75_hooked = True
+    cls._orig_observer_hooked = True
 
 
 # ------------------------------------------------------------------ 局边界
+
+def episode_status(ret, exc) -> str:
+    """与 ``evaluate_manifest`` 同口径：异常 → error；返回值属 success／fail／timeout 原样，其余 → error。"""
+    if exc is not None:
+        return "error"
+    return ret if ret in C.FINAL_STATUSES else "error"
+
 
 def _patch_evaluator(main_mod, seeds: dict) -> None:
     cls = main_mod.EpisodeEvaluator
     orig = cls.eval_each_episode
 
     def eval_each_episode(self, env_runner, *args, **kwargs):
-        rec = None
+        ep = None
+        max_steps = 1300
         try:
-            task, ep = env_runner.env_id, int(env_runner.episode_id)
-            seed = seeds.get((task, ep), -1)
-            d = C.episode_dir(_state["root"], task, ep, seed)
-            rec = R.EpisodeRecorder(d, {"policy": "mme", "side": "official-observer", "task": task,
-                                        "source_episode": ep, "seed": seed, "never_degrade": True,
-                                        "argv": sys.argv, "host": os.uname().nodename},
-                                    fps=30)
-            with _lock:
-                _state.update(rec=rec, ep=d.name, step=0)
-        except Exception:
-            _hook_error("episode.open")
+            task, src = env_runner.env_id, int(env_runner.episode_id)
+            max_steps = int(getattr(getattr(self, "args", None), "max_steps", 1300))
+            if (task, src) not in seeds:
+                raise KeyError(f"清单里没有 ({task}, {src}) 的 seed，无法定局目录")
+            ep = OE.OrigEpisode(_state["root"], route=ROUTE, task=task, source_episode=src, seed=seeds[(task, src)],
+                                max_steps=max_steps, errors=ERR)
+        except Exception:  # noqa: BLE001
+            ERR.note("episode.open")
+        with _lock:
+            _state.update(ep=ep, ep_name=None if ep is None else ep.name)
         ret, exc = None, None
         try:
             ret = orig(self, env_runner, *args, **kwargs)
             return ret
         except BaseException as e:
-            exc = f"{type(e).__name__}: {e}"
+            exc = f"{type(e).__name__}: {e}"[:800]
             raise
         finally:
             with _lock:
-                _state.update(rec=None, ep=None)
-            if rec is not None:
+                _state.update(ep=None, ep_name=None)
+            if ep is not None:
                 try:
-                    res = rec.close({"return": ret, "exception": exc, "steps": getattr(self, "last_steps", None),
-                                     "env_steps_recorded": _state["step"]})
-                    line = R.verdict_line(res)
-                    print(f"{line} episode={rec.out_dir.name} encode_cpu_s={res['encode_cpu_s']} "
-                          f"queue_wait_s={res['queue_wait_s']} finalize_s={res['finalize_s']}", flush=True)
-                    C.JsonlLog(_state["root"] / "recorder-index.jsonl").write(
-                        {"episode": rec.out_dir.name, "return": ret, "exception": exc,
-                         **{k: res[k] for k in ("RECORDER_VERIFY", "frames", "encoded_frames", "bytes",
-                                                "decode_mismatch", "dropped", "reordered", "encode_cpu_s",
-                                                "queue_wait_s", "finalize_s", "level")}})
-                except Exception:
-                    _hook_error("episode.close")
+                    status = episode_status(ret, exc)
+                    omitted = int(status == "timeout" and ep.steps == max_steps + 1)
+                    info = ep.close(status, omitted_timeout_frames=omitted,
+                                    success_flag=ret if isinstance(ret, str) else None, exception=exc,
+                                    steps_official=getattr(self, "last_steps", None))
+                    print(f"OBSERVER_EPISODE route={ROUTE} episode={info.get('episode')} status={info.get('status')} "
+                          f"steps_attempted={info.get('steps_attempted')} steps_observed={info.get('steps_observed')} "
+                          f"frames_recorded={info.get('frames_recorded')} hook_errors={info.get('observer_hook_errors')}",
+                          flush=True)
+                    C.JsonlLog(_state["root"] / "observer-index.jsonl").write(info)
+                except Exception:  # noqa: BLE001
+                    ERR.note("episode.close", getattr(ep, "name", None))
 
     cls.eval_each_episode = eval_each_episode
-    cls._v75_hooked = True
+    cls._orig_observer_hooked = True
 
 
 def _patch_tyro(mod, seeds: dict) -> None:
@@ -220,9 +264,9 @@ def _patch_tyro(mod, seeds: dict) -> None:
             if main_mod is not None and hasattr(main_mod, "EpisodeEvaluator"):
                 _patch_evaluator(main_mod, seeds)
             else:
-                print("OBSERVER_HOOK_ERROR where=tyro.cli 找不到 __main__.EpisodeEvaluator", flush=True)
-        except Exception:
-            _hook_error("tyro.cli")
+                ERR.note("tyro.cli 找不到 __main__.EpisodeEvaluator")
+        except Exception:  # noqa: BLE001
+            ERR.note("tyro.cli")
         return orig_cli(*args, **kwargs)
 
     mod.cli = cli
@@ -230,29 +274,32 @@ def _patch_tyro(mod, seeds: dict) -> None:
 
 def install(argv: list[str]) -> None:
     _state["root"] = C.rec_root()
+    ERR.root = _state["root"]
     seeds = C.manifest_seeds(C.parse_flag(argv, ("--args.episode_manifest", "--args.episode-manifest")))
     C.PostImportHooks({
         "env_runner": _patch_env_runner,
         "websockets.sync.client": _patch_ws,
+        "openpi_client.websocket_client_policy": _patch_policy_client,
         "tyro": lambda m: _patch_tyro(m, seeds),
     }).install()
 
 
 def main() -> None:
     argv = sys.argv[1:]
-    if argv[:1] == ["--v75-preflight"]:
+    if argv[:1] == ["--orig-preflight"]:
         install([])
         sys.path[0] = os.getcwd()
         import robomme  # noqa: F401
         import env_runner
         import websockets.sync.client as wsc
+        from openpi_client import websocket_client_policy as wcp
 
-        assert getattr(env_runner.EnvRunner, "_v75_hooked", False), "EnvRunner 未挂钩"
-        assert getattr(wsc.ClientConnection, "_v75_hooked", False), "ClientConnection 未挂钩"
-        assert "robomme_hard" not in sys.modules
-        R.check_encode_cpus()
-        print(f"OBSERVER_PREFLIGHT=PASS robomme={robomme.__file__} recorder={R.__file__} ffmpeg={R.find_ffmpeg()} "
-              f"encode_cpus={os.environ.get('V75_ENCODE_CPUS', '')}", flush=True)
+        assert getattr(env_runner.EnvRunner, "_orig_observer_hooked", False), "EnvRunner 未挂钩"
+        assert getattr(wsc.ClientConnection, "_orig_observer_hooked", False), "ClientConnection 未挂钩"
+        assert getattr(wcp.MMEVLAWebsocketClientPolicy, "_orig_observer_hooked", False), "策略客户端未挂钩"
+        assert "robomme_hard" not in sys.modules, "原侧不得导入 robomme_hard"
+        print(f"OBSERVER_PREFLIGHT=PASS route={ROUTE} robomme={robomme.__file__} trace_writer={OE.tw.__file__} "
+              f"mmesg_client={OE.mmesg.__file__}", flush=True)
         return
     if not argv or not argv[0].endswith(".py"):
         raise SystemExit("用法：mme_client_wrap.py eval.py [eval.py 参数...]")

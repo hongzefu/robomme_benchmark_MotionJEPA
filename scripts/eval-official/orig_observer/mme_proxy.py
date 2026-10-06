@@ -1,4 +1,4 @@
-"""旧官方 MME 客户端与 policy server 之间的透明 websocket 代理（方案 §2.5）。
+"""MME 原侧客户端与 policy server 之间的透明 websocket 代理（v7.5eval 方案 §2.5；S7 只改输出与日志封口）。
 
 - 监听 127.0.0.1:<listen>，每个客户端连接新开一条到 127.0.0.1:<upstream> 的上游连接（官方客户端每局新连接）。
 - 双向逐条转发，保持帧类型（二进制／文本）与顺序，包括 server 连上后先发的 metadata 帧；不开压缩、
@@ -16,6 +16,10 @@
 - 记账：``<log_dir>/proxy-<pid>.jsonl`` 逐条 {conn, dir(c2s|s2c), idx, type, len, sha256, t}；
   msgpack 解码后的数值数组（动作、状态等）写进 ``<log_dir>/conn-<pid>-<NNNN>/``（EpisodeRecorder 目录，
   只有 arrays 与 events），图像只记逐帧 sha256（图像本身由客户端钩子录）。
+
+- 日志封口（S7，审计第 13 条）：收到 SIGTERM／SIGINT 后停止监听、等记账线程把积压全部写完并关闭日志，**之后**才写
+  ``<log_dir>/proxy-<pid>.done``（``{"pid","t","sealed":true,"accountant_alive":false}``）；记账线程 600 s 内没收完则
+  不写 ``.done``，启动器据此判封口超时。透明性对账只在看到 ``.done`` 之后才跑。
 
 用法：python mme_proxy.py --listen 19001 --upstream 19000 --log-dir <REC_ROOT>/proxy
 """
@@ -36,7 +40,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import _v75_obs_common as C  # noqa: E402
+import _obs_common as C  # noqa: E402
 
 import websockets  # noqa: E402
 from websockets.asyncio.client import connect  # noqa: E402
@@ -101,11 +105,13 @@ class Accountant:
             await asyncio.sleep(0.01)
         self.submit(item)
 
-    def stop(self) -> None:
+    def stop(self) -> bool:
+        """停止并等记账线程收完；返回记账线程是否已退出（日志已关闭）。"""
         with self._cv:
             self._stop = True
             self._cv.notify()
         self._t.join(timeout=600)
+        return not self._t.is_alive()
 
     def _loop(self) -> None:
         while True:
@@ -284,9 +290,21 @@ def main(argv=None) -> int:
     try:
         asyncio.run(_amain())
     finally:
-        acct.stop()
-        print("PROXY_STOPPED", flush=True)
+        sealed = acct.stop()
+        if sealed:
+            write_done(log_dir)
+        print(f"PROXY_STOPPED sealed={'yes' if sealed else 'no'} pid={os.getpid()}", flush=True)
     return 0
+
+
+def write_done(log_dir: Path) -> Path:
+    """日志封口标记 ``proxy-<pid>.done``（先写临时名再原子改名）。"""
+    p = Path(log_dir) / f"proxy-{os.getpid()}.done"
+    tmp = p.with_name(p.name + ".tmp")
+    tmp.write_text(C.dumps({"pid": os.getpid(), "t": time.time(), "sealed": True, "accountant_alive": False}) + "\n",
+                   encoding="utf-8")
+    tmp.replace(p)
+    return p
 
 
 if __name__ == "__main__":
