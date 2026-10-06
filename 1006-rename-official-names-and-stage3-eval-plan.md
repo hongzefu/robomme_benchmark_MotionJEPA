@@ -10,6 +10,8 @@
 >
 > 2026-10-06 再追加原话：「三、这一版跑什么只跑这四个模型的V9。再加上memer的hard0对拍新老接口 memer的hard0对拍新老接口最后再跑」「现在的GreatLakeSJ0B是单卡的对这个有影响吗?」——据此第三段加 MemER `test-hard0` 原侧 vs 新侧对拍，排在四模型 V9 之后最后跑；单卡占位 job 沿用上一轮 GroundSG+QwenVL 的同卡布局，不需要多卡。
 >
+> 2026-10-06 再追加原话：「astra这个改名叫 3-tier Astra 也放入」——Astra 展示名改为 3-tier Astra；代码／参数／路径 ID `astra` 不动（见第一部分一）。
+>
 > 功能范围追加原话：「给出现在所有支持模型的清单，都要支持1800步，都要支持不同seed，模型seed。」「但是我们现在实跑只跑这个。我们现在实跑只跑我说的这些模型。」因此全部模型路线统一补齐1800步与可配置模型seed，但实跑范围只保留本版指定四模型。
 
 # 第一部分（给人看）
@@ -25,14 +27,15 @@
 | `mme`、`mmevla` | FrameSamp+Modulation | `perceptual-framesamp-modul` | `framesamp_modul` |
 | `mmesg` | GroundSG+Oracle、GroundSG+QwenVL | `groundsg`，变体 `oracle`／`qwenvl` | `groundsg` |
 | （无） | MemER | 本仓库新增路线标识 `ground-sg-memer` | 复用 `groundsg` 装配 |
+| 展示名 Astra | 3-tier Astra（用户 2026-10-06 裁决） | `astra` 不变：文件名 `run_astra.sh`／`astra_hard_runner.py`、策略标签、预算账本键、route、对比工具的 mode 都不动，只改展示名 | `astra` |
 
 **改什么、不改什么**：
 
 | 类别 | 做法 |
 |---|---|
 | 改：活代码与测试 | 约 91 个文件、900 处。文件名（`mme_client.py`→拟 `framesamp_modul_client.py`、`mmesg_client.py`→`groundsg_client.py`、`orig_observer/mme_*`、`run_orig_mme.sh`、`orig-mme-client-env/`、`test_mme_transport.py`）、CLI 参数（`--mme-variant`→`--groundsg-variant`、`--mme-ckpt`、`--mmesg-ckpt`、`--episode-wall-mme`）、环境变量（`MME_PY`、`MME_CKPT`、`MMESG_CKPT`、`MME_VARIANT`）、策略标签 `mme`／`mmesg`、测试名与契约条目 |
-| 改：现行文档 | `AGENTS.md`、`CLAUDE.md` 的项目段（标记块不动）、`readme.md`、`scripts/README.md`、`tests/README.md` |
-| 不改：历史留档 | `docs/validation/`、`docs/plans/` 约 3200 处不动（里面有 NFS 真实路径与 SHA256SUMS）；指向磁盘真实目录的字符串（`sg-eval/ckpt/mme/…`、`mmevla-testhard*`）原样保留，旁注「历史目录名」；另写 `docs/validation/legacy-names.md` 旧名对照 |
+| 改：现行文档 | `AGENTS.md`、`CLAUDE.md` 的项目段（标记块不动）、`readme.md`、`scripts/README.md`、`tests/README.md`；报告与成绩表里的展示名（含 Astra → 3-tier Astra） |
+| 不改：历史留档 | `docs/validation/`、`docs/plans/` 约 3200 处不动（里面有 NFS 真实路径与 SHA256SUMS）；指向磁盘真实目录的字符串（`sg-eval/ckpt/mme/…`、`mmevla-testhard*`）原样保留，旁注「历史目录名」；另写 `docs/validation/legacy-names.md` 旧名对照（含 Astra → 3-tier Astra） |
 | 不改：官方名 | MME-VLA 家族名、`third_party/mme-vla`、`.gitmodules`、上游类 `MMEVLAWebsocketClientPolicy`、上游配置 `mme_vla_suite` |
 | 兼容旧数据 | 读历史逐局行、预算账本、v7.5eval 留档的工具读入时把旧标签映射成新名，写出只写新名，CLI 只接受新名；别名表只在 `official_defs.py` 放一份 |
 
@@ -48,7 +51,7 @@
 | GroundSG+Oracle | `mmesg_client.py`（改名后 `groundsg_client.py`） | 缺，同上 | 缺，服务固定 `--seed=7`；官方 `Args.model_seed` 默认 42 没显式设 | — |
 | GroundSG+QwenVL | 同上 | 缺，同上 | 缺，同上，另要在 QwenVL 预测器构造前设种子 | — |
 | MemER | **未接入** | 缺 | 缺 | 见下面展开 |
-| Astra | 独立 `run_astra.sh`／`astra_hard_runner.py`，不走共享席位 | 缺，入口自己钉 1600 | 缺，服务固定 42 | 云端 API 无 seed 接口，不伪造；费用与两局守卫不动 |
+| 3-tier Astra（代码 ID `astra`） | 独立 `run_astra.sh`／`astra_hard_runner.py`，不走共享席位 | 缺，入口自己钉 1600 | 缺，服务固定 42 | 云端 API 无 seed 接口，不伪造；费用与两局守卫不动 |
 
 **共同要补的两件事**：
 - **1800 步**：席位脚本 `run_seat.sh::step_cap_pairing` 配对改 `test-hard ↔ 1800`、`strict_cap=1`，沿 `SeatRunner → EnvSession.step_cap → 客户端循环 → 结果／trace／报告` 全程传；第 1801 次 `step` 在进真实环境前被拒，第 1800 步成功仍记 success；Astra 在它自己的入口同改；`test-hard0 ↔ 1300` 与生成规格 `EXEC_CAP=1600` 不动。判据 `EVAL_CAP=PASS models=7 max_steps=1800 rejected_step=1801`。
@@ -252,6 +255,7 @@ ls -1 scripts/*.py
 | 本次评估模型 | FrameSamp+Modulation | `perceptual-framesamp-modul` | `framesamp_modul` | `mme`、`mmevla` |
 | GroundSG 两变体 | GroundSG+Oracle、GroundSG+QwenVL | `groundsg`（变体 `oracle`／`qwenvl`） | `groundsg` | `mmesg` |
 | 新增评估模型 | MemER | 官方 `MODEL_TYPE=MemER`；服务权重 `symbolic-grounded-subgoal/79999`；客户端 `use_memer` | 接入现有 GroundSG 装配，新增内部变体 `ground-sg-memer` | 原计划未接入 |
+| Astra | 3-tier Astra（用户 2026-10-06 裁决，非官方文档名） | `astra`（不改） | `astra` | 展示名 Astra |
 
 MemER 展示名以锁定官方源码 `third_party/mme-vla/docs/manual_evaluation.md` 的 `MemER` 节及 `scripts/eval.sh` 的 `MODEL_TYPE == MemER` 分支为准；`ground-sg-memer` 只是本仓库拟新增的路线标识。不能将 MemER 展示为自造的「GroundSG+MemER」。
 
