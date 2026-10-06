@@ -32,7 +32,6 @@ def test_copied_items_and_differences_static():
         "export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1",
         "export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
         'env -u OPENAI_API_KEY CUDA_VISIBLE_DEVICES="$VLA_GPU" "$VLA_PYTHON" scripts/serve_policy.py',
-        '--port="$PORT" --seed=42 policy:checkpoint --policy.config=mme_vla_suite',
         "[[ \"$VLA_GPU\" != \"$MONITOR_GPU\" ]] || { echo 'Use distinct GPUs for VLA and monitor' >&2; exit 2; }",
         "[[ ! -e \"$RUN\" ]] || { echo 'Use a new run directory to preserve existing evidence' >&2; exit 2; }",
         'VLA_GPU=${VLA_GPU:-0}', 'MONITOR_GPU=${MONITOR_GPU:-1}', 'PORT=${PORT:-18762}',
@@ -40,6 +39,11 @@ def test_copied_items_and_differences_static():
     for line in copied:
         assert line in upstream, f"上游已变：{line}"
         assert line in text, f"未照抄：{line}"
+    # 第三阶段唯一改动：服务 --seed 由上游固定 42 换成 --policy-seed 的值（R5）
+    up_seed = '--port="$PORT" --seed=42 policy:checkpoint --policy.config=mme_vla_suite'
+    assert up_seed in upstream, "上游已变：VLA 启动命令"
+    assert up_seed.replace("--seed=42", '--seed="$POLICY_SEED"') in text
+    assert "--seed=42" not in text
     up_pp = re.search(r'export PYTHONPATH="([^"]+)"', upstream).group(1).split(":")
     new_pp = re.search(r'export PYTHONPATH="([^"]+)"', text).group(1).split(":")
     assert [p.replace("$REPO", "$ASTRA") for p in up_pp[:3]] == new_pp[:3]
@@ -63,8 +67,8 @@ def _env(tmp_path, **extra):
 def _run(tmp_path, run_dir, **extra):
     cases = tmp_path / "cases.json"
     cases.write_text('{"dataset": "hard-verify", "cases": []}')
-    proc = subprocess.run(["bash", str(SCRIPT), str(cases), str(run_dir)], capture_output=True, text=True,
-                          env=_env(tmp_path, **extra), timeout=60)
+    proc = subprocess.run(["bash", str(SCRIPT), "--policy-seed", "7", str(cases), str(run_dir)], capture_output=True,
+                          text=True, env=_env(tmp_path, **extra), timeout=60)
     assert SENTINEL not in proc.stdout + proc.stderr, "密钥不得出现在输出里"
     return proc
 
