@@ -28,32 +28,37 @@ import pytest
 import groundsg_fakes as F
 from tests.pipeline.evalx.report import trace_contract as TC
 
-#: 新侧 end 行只增的字段（原侧 R1 不写）
-NEW_ONLY_END = ("steps_attempted", "steps_observed", "frames_recorded", "omitted_timeout_frames", "no_frame",
-                "official_source", "official_videos")
-_ORIG_TRACE_PARTS = F.trace_parts
-
-
-def legacy_trace_parts(rows: list[dict]) -> dict:
-    """新侧契约字段还原成 BASE 口径后再按种类拆开（原侧行原样）。"""
-    conv = []
-    for r in rows:
-        r = dict(r)
-        if r.get("kind") == "end" and "success_flag" in r:
-            r["terminal_reason"] = r.pop("success_flag")
-            for k in NEW_ONLY_END:
-                r.pop(k, None)
-        if r.get("kind") == "step" and r.get("observed") is False:
-            assert r.pop("missing_reason")
-            r.pop("observed")
-            r.update(terminated=False, truncated=False, status="error")
-        conv.append(r)
-    return _ORIG_TRACE_PARTS(conv)
+NEW_ONLY_END = F.NEW_ONLY_END
 
 
 @pytest.fixture(autouse=True)
 def _legacy_view(monkeypatch):
-    monkeypatch.setattr(F, "trace_parts", legacy_trace_parts)
+    monkeypatch.setattr(F, "trace_parts", F.legacy_trace_parts)
+
+
+def _rewrite_end(path: str, **changes) -> None:
+    rows = F.read_trace(path)
+    rows[-1].update(changes)
+    Path(path).write_text("".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows),
+                          encoding="utf-8")
+
+
+def test_legacy_view_still_reports_status_and_action_diffs(tmp_path):
+    """反例：还原只剥新增记录字段——新侧终态 status、步行动作被改动后 diffs 仍报出差异。"""
+    n, o = run_pair(F.ORACLE, F.Plan(success_at=37), 60, tmp_path)
+    assert F.diffs(n, o)["terminal"] == 0
+    _rewrite_end(n[2]["trace_path"], status="fail")
+    assert F.diffs(n, o)["terminal"] >= 1
+    _rewrite_end(n[2]["trace_path"], status="success", success_flag="fail")  # 官方原值被改也报
+    assert F.diffs(n, o)["terminal"] >= 1
+    _rewrite_end(n[2]["trace_path"], success_flag="success")
+    assert F.diffs(n, o)["terminal"] == 0
+    rows = F.read_trace(n[2]["trace_path"])
+    step = next(r for r in rows if r["kind"] == "step")
+    step["action"] = dict(step["action"], sha256="0" * 64)
+    Path(n[2]["trace_path"]).write_text("".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n"
+                                                for r in rows), encoding="utf-8")
+    assert F.diffs(n, o)["exec"] >= 1
 
 SCENARIOS = {
     "success": (F.Plan(success_at=37), 60),

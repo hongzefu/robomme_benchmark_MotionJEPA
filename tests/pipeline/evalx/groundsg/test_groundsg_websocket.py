@@ -12,7 +12,9 @@ import groundsg_fakes as F
 
 @pytest.mark.slow
 @pytest.mark.parametrize("variant", F.VARIANTS)
-def test_real_websocket_clients_match(tmp_path, variant):
+def test_real_websocket_clients_match(tmp_path, variant, monkeypatch):
+    # 新侧 end 行按契约 C8 只增记录字段（原侧 R1 不写）：比较前可逆还原，status／动作／请求差异照报
+    monkeypatch.setattr(F, "trace_parts", F.legacy_trace_parts)
     total = {"payload": 0, "exec": 0, "terminal": 0}
     for name, (plan, max_steps) in {"success": (F.Plan(success_at=37), 60), "timeout": (F.Plan(), 40)}.items():
         fs_new, fs_orig = F.FakeServer(), F.FakeServer()
