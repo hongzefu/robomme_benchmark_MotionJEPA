@@ -94,7 +94,21 @@
 | 4 资产 | 资产清单与 `ASSETS` 前置核验 | adapter `checkpoint-1300` 按文件名在本机 `artifacts/` 与 NFS 下初查没有找到（只找到源码，没有权重），实施前要先定来源、落点、文件数、字节数与 SHA256，纳入起跑前核验；不得拿 QwenVL 的 `checkpoint-1200` 顶替；大下载先问落点 |
 | 5 依赖与验证 | `scripts/eval-official/client-env/{pyproject.toml,uv.lock}`（仅确有缺口时）；`tests/pipeline/evalx/groundsg/` | 现有客户端锁已含 ms-swift／transformers／peft，优先复用；CPU 夹具用假 `PtEngine` 验三预测器互斥、adapter 误配、键帧合并、日志序列化、空键帧与首个坏 JSON、异常清理；然后 GL 上 1 局真实 smoke（真 adapter + `flash_attention_2` 加载尚未验过） |
 
-判据：`MEMER_WIRING=PASS predictor=MemERSubgoalPredictor`、`MEMER_COMPAT=PASS cases=6 fingerprint=<sha256>`、`ASSETS=PASS`、`MEMER_SMOKE=PASS`。上游三处越界（空关键帧合并、兜底列表永远为空、执行帧不足 15 张）已核实为确定缺陷，按用户裁决加兼容层，不私改锁定来源。
+**官方代码的坑在哪、兜底兜的是什么**（用户 2026-10-06 同意加兼容层）
+
+MemER 的子目标模型每一步被问同一个问题：「任务目标是 X，这是以前挑出来的重要画面（关键帧），这是最近几张画面，现在该做哪个子任务？哪几张是关键帧？」它回一个 JSON：`current_subtask`（子任务文字，直接交给动作模型）和 `keyframe_positions`（挑中的帧序号，程序据此把画面存进「关键帧记忆」）。
+
+第一次提问时记忆是空的，模型看到的关键帧栏是字面上的 `[]`，画面只有 1 张，所以它最自然的回答就是「关键帧为空」。官方代码收到这个回答后：
+
+1. 关键帧为空，存记忆这一步跳过了——没问题；
+2. 紧接着无条件做一次「合并相邻关键帧」，在空记忆上取第一个元素——报错；
+3. 报错后走兜底「用上一次的子任务」，但存上一次子任务的那个列表在整个文件里从来没被写入过，永远是空的——兜底再报错。
+
+结果：这一局在机器人动第一步之前就崩了，记 error，动作模型连那句「move cube」都没收到。这不是模型答错，是官方代码自己的越界。另有一处同类问题：第二次提问起固定往前隔一张取 8 张画面，画面不够 15 张时也越界。
+
+兼容层只做三件事：空记忆不合并；每次合法的子任务真的存进兜底列表，模型回坏 JSON 时沿用上一次，一次都没有就把这局记成具名错误 `model_response_error`，不编造子任务；画面不够 15 张时有几张取几张。两个模型看到的输入一个字不变：子目标模型的提问原文、动作模型收到的子目标文字都和官方相同（原文与六种情形的前后对照见第二部分八.3）。两侧对拍用同一份补丁、同一个指纹，成绩表注明「MemER：官方实现 + 三处越界兼容补丁」。
+
+判据：`MEMER_WIRING=PASS predictor=MemERSubgoalPredictor`、`MEMER_COMPAT=PASS cases=6 fingerprint=<sha256>`、`ASSETS=PASS`、`MEMER_SMOKE=PASS`。
 
 ## 三、这一版跑什么
 
