@@ -3,10 +3,16 @@
 # 1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.6 扩到 mmesg／pp 与两个数据集、就地转码）。
 #
 # 已在占位 job 的 srun 步骤里（由主会话在 GL 登录节点 tmux 内发起），本脚本：
-#   1. 固定解释器：BENCH_PY=<repo>/.venv/bin/python、MME_PY=<repo>/third_party/mme-vla/.venv/bin/python、
-#      SMVLA_PY=<repo>/artifacts/v8-two/venvs/smvla-env/bin/python；mmesg／pp 客户端用 SGEVAL_CLIENT_PY（环境变量，
-#      缺省 <repo>/artifacts/sg-evaluation/venvs/client-env/bin/python），pp 服务用 PP_PY（环境变量，缺省
-#      <repo>/third_party/PonderPounce/.venv/bin/python）；VK_ICD_FILENAMES 按候选 ICD 文件逐个探测；
+#   1. 解释器（调用方环境变量优先，未设才取缺省；1005 计划审计第 1 条）：BENCH_PY 缺省 <repo>/.venv/bin/python、
+#      MME_PY 缺省 <repo>/third_party/mme-vla/.venv/bin/python、SMVLA_PY 缺省
+#      <repo>/artifacts/v8-two/venvs/smvla-env/bin/python；mmesg／pp 客户端用 SGEVAL_CLIENT_PY（缺省
+#      <repo>/artifacts/sg-evaluation/venvs/client-env/bin/python），pp 服务用 PP_PY（缺省
+#      <repo>/third_party/PonderPounce/.venv/bin/python）。起跑打印五个解释器、BENCH_PY 下 robomme_hard.__file__、
+#      各解释器 venv 的 editable 安装指向（RUN_INPUT_PY 行），写 RUN_INPUTS=PASS|FAIL 行；本席策略要用的解释器
+#      不可执行、robomme_hard 导入失败、官方重绘器不支持 --source、pp 外壳缺失任一即 FAIL →
+#      RUN_BLOCKED reason=run_inputs。导出 SGEVAL_OFFICIAL_RENDER=1（每局并入轨迹后、转码前出官方版式视频，失败保留
+#      原始帧照常发布，见 run_seat.sh::finish_episode_dir）与 SGEVAL_PP_SERVER_WRAP=1（pp 服务走
+#      pp_server_wrap.py）；两者调用方显式设了别的值时照用。VK_ICD_FILENAMES 按候选 ICD 文件逐个探测；
 #      --cpus 取本进程 sched_getaffinity；--gpu 缺省 0（GL 占位 job 内只见本席一张卡；本机多卡并行时显式给物理卡号）；端口按 run_seat.sh 既有规则（seat-idx = 席号 NN）。
 #   2. 起跑打印并核对 --dataset 与 --max-steps 的配对（test-hard0↔1300 且不带 --strict-cap，test-hard↔1600 且必须带
 #      --strict-cap），不符 RUN_BLOCKED reason=step_cap_pairing；mmesg 的变体配对同 run_seat.sh。
@@ -26,6 +32,7 @@
 #   5. 正常、失败、中断（trap TERM/INT/HUP）三路收尾：先回收子进程（等待 ≤25 s），再对节点上剩余的全部录像与轨迹
 #      目录做全量处理，打印 SEAT_REC_SYNC=PASS|FAIL n= bytes= left= seat= transcoded= frame_mismatch= transcode_fail=
 #      （n／bytes 为周期 + 收尾累计，left 为节点残留目录数；PASS 要求 left、frame_mismatch、transcode_fail 都为 0），
+#      官方重绘另打一行 OFFICIAL_RENDER_TALLY ok= fail=（不进 SEAT_REC_SYNC 判定，失败局原始帧已随目录发布），
 #      再打印 V8_SEAT_DONE seat=NN outcome=pass|fail|aborted rc=，末行 EXIT_CODE=<rc>。参数错误与目录创建失败也写
 #      V8_SEAT_DONE outcome=fail。
 #   信号：slurmstepd 会把 TERM/INT 发给 step 内全部进程，所以所有日志 tee 都忽略 TERM/INT/HUP/PIPE 并以 -p 运行，
@@ -44,8 +51,9 @@
 set -uo pipefail
 export PYTHONUNBUFFERED=1
 
-# 调用方给的解释器覆盖先记下（source run_seat.sh 会按它自己的位置填缺省值）
+# 调用方给的解释器覆盖先记下（source run_seat.sh 会按它自己的位置填缺省值；参数解析后再按 "${X:-缺省}" 取用）
 _ENV_SGEVAL_CLIENT_PY="${SGEVAL_CLIENT_PY:-}" ; _ENV_PP_PY="${PP_PY:-}"
+_ENV_BENCH_PY="${BENCH_PY:-}" ; _ENV_MME_PY="${MME_PY:-}" ; _ENV_SMVLA_PY="${SMVLA_PY:-}"
 # 复用 run_seat.sh 的配对核对、转码与原子发布（只定义函数，不运行）
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=run_seat.sh
@@ -56,7 +64,7 @@ MME_CKPT="" ; MMESG_CKPT="" ; SMVLA_CKPT="" ; PP_CKPT="" ; OPENPI_HOME="" ; TOKE
 GPU="0" ; LIMIT="0" ; WALL_SMVLA="" ; WALL_MME="" ; WALL_ALL="" ; SYNC_INTERVAL=120 ; LOCAL_ROOT="" ; COND="V8" ; MEDIA_ROOT=""
 DATASET="" ; MAX_STEPS="" ; STRICT_CAP=0 ; MME_VARIANT="" ; QWENVL_ADAPTER=""
 
-usage() { sed -n '2,42p' "${BASH_SOURCE[0]}" >&2; }
+usage() { sed -n '2,/^# 不嵌入任何 JobID/p' "${BASH_SOURCE[0]}" >&2; }
 die2() {  # 参数错误：也写收尾两行，便于外层 Monitor 统一判定
   echo "$1" >&2
   echo "V8_SEAT_DONE seat=${SEAT:-?} outcome=fail rc=2 reason=bad_args"
@@ -129,11 +137,14 @@ SEAT_STAGE="$STAGE/s$SEAT"
 LABELS=()
 for pol in "${POLS[@]}"; do LABELS+=("$(pol_label "$pol")"); done
 
-export BENCH_PY="$REPO/.venv/bin/python"
-export MME_PY="$REPO/third_party/mme-vla/.venv/bin/python"
-export SMVLA_PY="$REPO/artifacts/v8-two/venvs/smvla-env/bin/python"
+export BENCH_PY="${_ENV_BENCH_PY:-$REPO/.venv/bin/python}"
+export MME_PY="${_ENV_MME_PY:-$REPO/third_party/mme-vla/.venv/bin/python}"
+export SMVLA_PY="${_ENV_SMVLA_PY:-$REPO/artifacts/v8-two/venvs/smvla-env/bin/python}"
 export SGEVAL_CLIENT_PY="${_ENV_SGEVAL_CLIENT_PY:-$REPO/artifacts/sg-evaluation/venvs/client-env/bin/python}"
 export PP_PY="${_ENV_PP_PY:-$REPO/third_party/PonderPounce/.venv/bin/python}"
+# 第二阶段开关（run_seat.sh 文档串）：官方重绘、pp 服务外壳；调用方显式给了别的值时照用
+export SGEVAL_OFFICIAL_RENDER="${SGEVAL_OFFICIAL_RENDER:-1}"
+export SGEVAL_PP_SERVER_WRAP="${SGEVAL_PP_SERVER_WRAP:-1}"
 export NO_PROXY=127.0.0.1,localhost no_proxy=127.0.0.1,localhost
 for f in /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.json; do
   [[ -f "$f" ]] && { export VK_ICD_FILENAMES="$f"; break; }
@@ -166,6 +177,71 @@ PY
 }
 
 pub_root() { echo "$MEDIA_ROOT/$1/$DATASET/new"; }  # $1 = label
+
+or_count() {  # $1 = ok|fail；从 OR_TALLY 计数（官方重绘结果）
+  [[ -n "${OR_TALLY:-}" && -f "$OR_TALLY" ]] || { echo 0; return; }
+  grep -cx "$1" "$OR_TALLY" || true
+}
+
+# ---------------- 起跑输入核对（RUN_INPUTS） ----------------
+editable_of() {  # $1 = 解释器；打印该 venv 里 editable 安装的「包名=源路径」，分号分隔；没有打印 none
+  "$1" - <<'PY' 2>/dev/null || echo "probe_failed"
+import json
+try:
+    import importlib.metadata as md
+except ImportError:  # pragma: no cover
+    print("no_importlib_metadata")
+    raise SystemExit(0)
+out = []
+for d in md.distributions():
+    try:
+        t = d.read_text("direct_url.json")
+        j = json.loads(t) if t else {}
+    except Exception:
+        continue
+    if (j.get("dir_info") or {}).get("editable"):
+        out.append(f"{d.metadata['Name']}={str(j.get('url', '')).replace('file://', '', 1)}")
+print(";".join(sorted(set(out))) or "none")
+PY
+}
+
+run_inputs_check() {  # 打印五个解释器与 editable 指向、robomme_hard 位置，写 RUN_INPUTS= 行；FAIL 返回 1
+  local why=() rh role py ed need=" bench " renderer="off" wrap="off" pol
+  for pol in "${POLS[@]}"; do
+    case "$pol" in
+      smvla) need+=" smvla ";;
+      mme) need+=" mme ";;
+      mmesg) need+=" mme client ";;
+      pp) need+=" client pp ";;
+    esac
+  done
+  for role in bench mme smvla client pp; do
+    case "$role" in
+      bench) py="$BENCH_PY";; mme) py="$MME_PY";; smvla) py="$SMVLA_PY";; client) py="$SGEVAL_CLIENT_PY";; pp) py="$PP_PY";;
+    esac
+    if [[ -x "$py" ]]; then ed="$(editable_of "$py" | tail -n 1)"; else ed="missing"; fi
+    echo "RUN_INPUT_PY role=$role py=$py needed=$([[ "$need" == *" $role "* ]] && echo 1 || echo 0) editable=$ed"
+    [[ "$need" == *" $role "* && ! -x "$py" ]] && why+=("${role}_py_missing")
+  done
+  rh="$("$BENCH_PY" -c "import robomme_hard,sys;print(robomme_hard.__file__)" 2>/dev/null | tail -n 1)"
+  [[ "$rh" == */robomme_hard/__init__.py ]] || { why+=("robomme_hard_import"); rh="IMPORT_FAIL"; }
+  if [[ "$SGEVAL_OFFICIAL_RENDER" == "1" ]]; then
+    renderer="$REPO/scripts/eval-official/render_official_video.py"
+    if [[ ! -f "$renderer" ]]; then why+=("renderer_missing"); renderer="missing"
+    elif ! "$BENCH_PY" "$renderer" --help 2>/dev/null | grep -q -- '--source'; then why+=("renderer_no_source_raw"); renderer="no_source_raw"
+    else renderer="source_raw"; fi
+    [[ -f "$REPO/scripts/eval-official/official_media_check.py" ]] || why+=("media_check_missing")
+  fi
+  if [[ "$SGEVAL_PP_SERVER_WRAP" == "1" && "$need" == *" pp "* ]]; then
+    wrap="$REPO/scripts/eval-official/pp_server_wrap.py"
+    if [[ -f "$wrap" ]]; then wrap="present"; else why+=("pp_server_wrap_missing"); wrap="missing"; fi
+  fi
+  local verdict=PASS; (( ${#why[@]} == 0 )) || verdict=FAIL
+  echo "RUN_INPUTS=$verdict bench_py=$BENCH_PY mme_py=$MME_PY smvla_py=$SMVLA_PY client_py=$SGEVAL_CLIENT_PY pp_py=$PP_PY \
+robomme_hard=$rh official_render=$SGEVAL_OFFICIAL_RENDER renderer=$renderer pp_server_wrap=$SGEVAL_PP_SERVER_WRAP \
+pp_wrap_file=$wrap policies=$POLICIES${why:+ reason=$(IFS=,; echo "${why[*]}")}"
+  [[ "$verdict" == PASS ]]
+}
 
 left_on_node() {
   local lab left=0 d
@@ -207,6 +283,9 @@ sync_recordings() {
     left="$(left_on_node)"
     read -r n bytes < <(awk '{n += $1; b += $2} END {printf "%d %d\n", n, b}' "$TALLY" 2>/dev/null || echo "0 0")
     ok="$(tc_count ok)"; mism="$(tc_count frame_mismatch)"; tcf="$(tc_count fail)"
+    if [[ "$SGEVAL_OFFICIAL_RENDER" == "1" ]]; then
+      echo "OFFICIAL_RENDER_TALLY ok=$(or_count ok) fail=$(or_count fail) seat=$SEAT（失败局原始帧已随目录发布，不进 SEAT_REC_SYNC 判定）"
+    fi
     if (( fail == 0 && left == 0 && mism == 0 && tcf == 0 )); then
       echo "SEAT_REC_SYNC=PASS n=${n:-0} bytes=${bytes:-0} left=0 seat=$SEAT transcoded=$ok frame_mismatch=0 transcode_fail=0"
     else
@@ -249,7 +328,7 @@ reap_orphans() {  # $1 = TERM 后宽限秒数；$2 = KILL 后等进程组退出�
     kill -0 "$pid" 2>/dev/null || continue
     cmd="$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null)"
     case "$cmd" in
-      *env_client.py*|*smvla_server.py*|*serve_policy.py*|*mme_client.py*|*ponderpounce.eval.robomme_server*)
+      *env_client.py*|*smvla_server.py*|*serve_policy.py*|*mme_client.py*|*ponderpounce.eval.robomme_server*|*pp_server_wrap.py*)
         echo "REAP_ORPHAN role=$role pgid=$pid"
         kill -TERM -- "-$pid" 2>/dev/null || kill -TERM "$pid" 2>/dev/null
         for i in $(seq 1 $((grace * 2))); do kill -0 -- "-$pid" 2>/dev/null || break; sleep 0.5; done
@@ -319,8 +398,11 @@ if ! mkdir -p "$SEAT_STAGE" "$REC_LOCAL" "$TRACE_LOCAL" "$MEDIA_ROOT"; then
 fi
 TALLY="$LOCAL_ROOT/rec-sync-tally.txt"    # 周期 + 收尾同步的累计计数（每成功一个目录一行「1 <字节数>」）
 TC_TALLY="$LOCAL_ROOT/transcode-tally.txt"  # 每局转码结果（ok／frame_mismatch／fail／none／…）一行
+OR_TALLY="$LOCAL_ROOT/official-render-tally.txt"  # 每局官方重绘结果（ok／fail）一行；run_seat.sh::finish_episode_dir 写
+export OR_TALLY
 : > "$TALLY"
 : > "$TC_TALLY"
+: > "$OR_TALLY"
 SEAT_LOG="$SEAT_STAGE/run_eval_gl-s$SEAT.log"
 # tee 忽略 TERM/INT/HUP/PIPE 并以 -p 运行：slurmstepd 发给全组的信号不能先杀掉日志管道
 exec > >(trap '' TERM INT HUP PIPE; exec tee -p -a "$SEAT_LOG") 2>&1
@@ -346,6 +428,10 @@ for pol in "${POLS[@]}"; do
 done
 if [[ -n "$blocked" ]]; then
   echo "RUN_BLOCKED reason=$blocked"
+  finalize fail 3
+fi
+if ! run_inputs_check; then
+  echo "RUN_BLOCKED reason=run_inputs（见上一行 RUN_INPUTS=FAIL 的 reason）"
   finalize fail 3
 fi
 

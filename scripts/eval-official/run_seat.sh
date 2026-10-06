@@ -59,9 +59,20 @@
 #   pair_seat.sh 由此复用 port_busy／pick_port、start_server（含 kill -0 存活检查与就绪判定）、stop_server、
 #   noprog_limit／idle_s（NO_PROGRESS 无进展检测与首局 600 s 放宽）、step_cap_pairing、variant_pairing、
 #   note_epoch／epoch_annotate、transcode_episode_dir、publish_dir，不另写一套）。
+#   媒体函数（transcode_episode_dir 的实现、render_official_dir）在同目录 seat_media_lib.sh，本脚本加载时一并 source。
+#
+# 第二阶段开关（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分 S2b；缺省关闭、行为同 BASE）：
+#   SGEVAL_OFFICIAL_RENDER=1  finish_episode_dir 在并入轨迹之后、转码之前调 render_official_dir 出官方版式视频
+#                             （<局目录>/official/）；失败则本局转码带 --keep-raw（原始帧随目录发布）、写
+#                             official-render.failed、照常发布成绩；结果按行记进 OR_TALLY（若设）。
+#   SGEVAL_PP_SERVER_WRAP=1   pp 服务改以绝对路径起 scripts/eval-official/pp_server_wrap.py（回包带 subgoal），
+#                             参数与 ponderpounce.eval.robomme_server 相同；外壳缺失则 RUN_BLOCKED reason=pp_server_wrap_missing。
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# shellcheck source=seat_media_lib.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/seat_media_lib.sh" \
+  || { echo "RUN_BLOCKED reason=seat_media_lib_missing dir=$(dirname "${BASH_SOURCE[0]}")" >&2; return 3 2>/dev/null || exit 3; }
 BENCH_PY="${BENCH_PY:-$REPO/.venv/bin/python}"
 MME_PY="${MME_PY:-$REPO/third_party/mme-vla/.venv/bin/python}"
 SMVLA_PY="${SMVLA_PY:-}"  # 无默认值：跑 smvla 时必须显式传入
@@ -269,7 +280,14 @@ preflight_pp() {
   [[ -x "$PP_PY" ]] || { echo "RUN_BLOCKED reason=pp_venv_missing $PP_PY"; return 1; }
   [[ -n "$PP_CKPT" && -d "$PP_CKPT" ]] || { echo "RUN_BLOCKED reason=pp_ckpt_missing ckpt=${PP_CKPT:-unset}"; return 1; }
   [[ -f "$PP_CKPT/norm_stats.json" ]] || { echo "RUN_BLOCKED reason=pp_ckpt_layout ckpt=$PP_CKPT（缺 norm_stats.json）"; return 1; }
-  echo "PP_PREFLIGHT=PASS ckpt=$PP_CKPT py=$PP_PY seed=0 hf_home=${HF_HOME:-unset} hf_hub_offline=${HF_HUB_OFFLINE:-1}"
+  if [[ "${SGEVAL_PP_SERVER_WRAP:-0}" == "1" && ! -f "$(pp_server_wrap_path)" ]]; then
+    echo "RUN_BLOCKED reason=pp_server_wrap_missing path=$(pp_server_wrap_path)"; return 1
+  fi
+  echo "PP_PREFLIGHT=PASS ckpt=$PP_CKPT py=$PP_PY seed=0 hf_home=${HF_HOME:-unset} hf_hub_offline=${HF_HUB_OFFLINE:-1} server_wrap=${SGEVAL_PP_SERVER_WRAP:-0}"
+}
+
+pp_server_wrap_path() {  # pp 服务外壳的绝对路径（服务 cwd 在第三方目录，必须用绝对路径起）
+  echo "$REPO/scripts/eval-official/pp_server_wrap.py"
 }
 
 tokenizer_gate() {  # mme／mmesg server 启动前核 OPENPI_DATA_HOME 下 tokenizer 的 sha256（不现场下载顶替）
@@ -368,8 +386,12 @@ build_server_cmd() {  # $1 = 策略；$2 = 端口 → 设 SRV_DIR、SRV_ENV、SR
       SRV_DIR="$REPO/third_party/PonderPounce"
       SRV_ENV=(PYTHONUNBUFFERED=1 HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-1}" TRANSFORMERS_OFFLINE="${TRANSFORMERS_OFFLINE:-1}")
       [[ -n "${HF_HOME:-}" ]] && SRV_ENV+=(HF_HOME="$HF_HOME")
-      SRV_ARGV=("$PP_PY" -m ponderpounce.eval.robomme_server --args.checkpoint_path "$PP_CKPT" --args.seed 0
-                --args.device cuda:0 --port "$port");;
+      if [[ "${SGEVAL_PP_SERVER_WRAP:-0}" == "1" ]]; then  # 外壳子类化原服务（回包加 subgoal），参数不变
+        SRV_ARGV=("$PP_PY" "$(pp_server_wrap_path)")
+      else
+        SRV_ARGV=("$PP_PY" -m ponderpounce.eval.robomme_server)
+      fi
+      SRV_ARGV+=(--args.checkpoint_path "$PP_CKPT" --args.seed 0 --args.device cuda:0 --port "$port");;
     *)
       SRV_DIR="$REPO"
       # 确定性模式：--det + CUBLAS_WORKSPACE_CONFIG=:4096:8
@@ -422,7 +444,7 @@ start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志；$4 = 结果目录�
       echo "RELAY_READY port=$((port + 1)) pid=$RELAY_PID"
     fi
   elif [[ "$pol" == "pp" ]]; then
-    echo "SERVER_CONFIG=INFO policy=pp health=200 seed=0 ckpt=$PP_CKPT"
+    echo "SERVER_CONFIG=INFO policy=pp health=200 seed=0 ckpt=$PP_CKPT server_wrap=${SGEVAL_PP_SERVER_WRAP:-0}"
   fi
   mkdir -p "$rdir"
   note_epoch "$rdir/results.jsonl" "$rdir/server-epochs.tsv" "$port"
@@ -466,204 +488,8 @@ restart_server() {  # 起 server 失败时保留 RUN_BLOCKED 的 3，其余记�
 
 # ---------------------------------------------------------------- 转码与原子发布（run_eval_gl.sh／run_official_hard.sh 共用）
 
-transcode_episode_dir() {  # $1 = 每局目录。就地转码为 episode.mp4，帧数一致后删原始帧；打印 REC_TRANSCODE 行
-  # 返回 0：ok／already／none（无媒体）／empty；1：帧数不符（原始帧保留、mp4 删除）；2：失败（原始帧保留）
-  "$(tool_py)" - "$1" <<'PY'
-"""两种原始帧：
-- 新侧（recorder.py）：front.mkv／wrist.mkv（FFV1，同一流里重复帧只编码一份）+ frames-<stream>.jsonl（idx→enc）。
-  按 idx 展开回逐帧原图（同 scripts/injection-dev/site/eval_transcode.py），期望帧数 = 记录行数；
-- 原侧（pp_official_runner.py／official_hard_runner.py）：frames/{front,wrist}.rgb24 + frames/frames.json
-  （pix_fmt=rgb24、各流 width/height/count），期望帧数 = count。
-两路左右拼接（高度不同则下方补黑），libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -movflags +faststart，30 fps。
-转码后完整解码数帧，与期望相等才删原始帧（新侧删 *.mkv 与 .spool/，原侧删 frames/*.rgb24，frames.json 与
-frames-*.jsonl 保留），并写 transcode.json。"""
-import json, mmap, os, re, shutil, subprocess, sys
-from pathlib import Path
-
-FPS, MP4, STREAMS = 30, "episode.mp4", ("front", "wrist")
-d = Path(sys.argv[1])
-
-
-def ffmpeg_exe():
-    for c in (os.environ.get("SGEVAL_FFMPEG"), os.environ.get("V75_FFMPEG"), "/usr/bin/ffmpeg", shutil.which("ffmpeg")):
-        if c and os.path.isfile(c) and os.access(c, os.X_OK):
-            return c
-    try:
-        import imageio_ffmpeg  # type: ignore
-        return imageio_ffmpeg.get_ffmpeg_exe()
-    except Exception:  # noqa: BLE001
-        return None
-
-
-def count_frames(ff, path):
-    p = subprocess.run([ff, "-nostdin", "-v", "error", "-nostats", "-i", str(path), "-map", "0:v:0", "-f", "null", "-",
-                        "-progress", "pipe:1"], capture_output=True, text=True)
-    fr = [x.split("=", 1)[1].strip() for x in p.stdout.splitlines() if x.startswith("frame=")]
-    return int(fr[-1]) if p.returncode == 0 and fr and fr[-1].isdigit() else -1
-
-
-def video_size(ff, path):
-    p = subprocess.run([ff, "-hide_banner", "-nostdin", "-i", str(path)], capture_output=True, text=True)
-    for line in p.stderr.splitlines():
-        if "Video:" in line:
-            m = re.search(r",\s*(\d+)x(\d+)[\s,\[]", line + " ")
-            if m:
-                return int(m.group(1)), int(m.group(2))
-    raise RuntimeError(f"读不出分辨率：{path}")
-
-
-def emit(**kw):
-    kw.setdefault("dir", d.name)
-    (d / "transcode.json").write_text(json.dumps(kw, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
-    print("REC_TRANSCODE " + " ".join(f"{k}={kw[k]}" for k in ("dir", "kind", "frames", "mp4_frames", "result")
-                                       if k in kw) + (f" detail={kw['detail']}" if kw.get("detail") else ""), flush=True)
-
-
-def raw_paths(kind):
-    if kind == "new":
-        return [d / f"{s}.mkv" for s in STREAMS] + [d / ".spool"]
-    return [d / "frames" / f"{s}.rgb24" for s in STREAMS]
-
-
-def remove(paths):
-    for p in paths:
-        if p.is_dir():
-            shutil.rmtree(p, ignore_errors=True)
-        elif p.exists():
-            p.unlink()
-
-
-def main():
-    if not d.is_dir():
-        print(f"REC_TRANSCODE dir={d.name} kind=none result=none detail=no_dir", flush=True)
-        return 0
-    # 只看原始媒体是否还在：转码成功后 frames-*.jsonl／frames.json 保留，但 *.mkv／*.rgb24 已删
-    kind = "new" if any((d / f"{s}.mkv").exists() for s in STREAMS) else \
-        "orig" if any((d / "frames" / f"{s}.rgb24").exists() for s in STREAMS) else "none"
-    if kind == "none":
-        if (d / MP4).exists():  # 上一次已转码（如周期同步被收尾打断后重入）：保留原 transcode.json
-            print(f"REC_TRANSCODE dir={d.name} kind=none result=already", flush=True)
-        else:
-            print(f"REC_TRANSCODE dir={d.name} kind=none result=none", flush=True)
-        return 0
-    ff = ffmpeg_exe()
-    if ff is None:
-        emit(kind=kind, result="fail", detail="no_ffmpeg")
-        return 2
-    tmp_raw, parts = [], []
-    try:
-        if kind == "new":
-            streams = [s for s in STREAMS if (d / f"{s}.mkv").exists()]
-            recs = {}
-            for s in streams:
-                rows = [json.loads(x) for x in (d / f"frames-{s}.jsonl").read_text(encoding="utf-8").splitlines() if x.strip()]
-                rows.sort(key=lambda r: int(r["idx"]))
-                recs[s] = rows
-            n = len(recs[streams[0]])
-            if any(len(recs[s]) != n for s in streams):
-                emit(kind=kind, frames=n, result="frame_mismatch",
-                     detail="stream_len " + ",".join(f"{s}:{len(recs[s])}" for s in streams))
-                return 1
-            if n == 0:
-                remove(raw_paths(kind))
-                emit(kind=kind, frames=0, result="empty")
-                return 0
-            for s in streams:
-                if any(r.get("enc") is None for r in recs[s]):
-                    emit(kind=kind, frames=n, result="fail", detail=f"enc_none stream={s}")
-                    return 2
-                w, h = video_size(ff, d / f"{s}.mkv")
-                raw = d / f".tc-{s}.raw"
-                tmp_raw.append(raw)
-                subprocess.run([ff, "-nostdin", "-v", "error", "-y", "-i", str(d / f"{s}.mkv"), "-f", "rawvideo",
-                                "-pix_fmt", "rgb24", str(raw)], check=True)
-                fsz = w * h * 3
-                if raw.stat().st_size % fsz or max(int(r["enc"]) for r in recs[s]) >= raw.stat().st_size // fsz:
-                    emit(kind=kind, frames=n, result="fail", detail=f"decoded_short stream={s}")
-                    return 2
-                fh = open(raw, "rb")
-                parts.append((mmap.mmap(fh.fileno(), 0, access=mmap.ACCESS_READ), w, h, [int(r["enc"]) for r in recs[s]]))
-        else:
-            meta = json.loads((d / "frames" / "frames.json").read_text(encoding="utf-8"))
-            if meta.get("pix_fmt", "rgb24") != "rgb24":
-                emit(kind=kind, result="fail", detail=f"pix_fmt={meta.get('pix_fmt')}")
-                return 2
-            st = meta.get("streams") or {}
-            streams = [s for s in STREAMS if s in st]
-            counts = {s: int(st[s]["count"]) for s in streams}
-            n = counts[streams[0]] if streams else 0
-            if any(c != n for c in counts.values()):
-                emit(kind=kind, frames=n, result="frame_mismatch",
-                     detail="stream_len " + ",".join(f"{s}:{c}" for s, c in counts.items()))
-                return 1
-            if n == 0:
-                remove(raw_paths(kind))
-                emit(kind=kind, frames=0, result="empty")
-                return 0
-            for s in streams:
-                w, h = int(st[s]["width"]), int(st[s]["height"])
-                f = d / "frames" / f"{s}.rgb24"
-                if f.stat().st_size != n * w * h * 3:
-                    emit(kind=kind, frames=n, result="frame_mismatch",
-                         detail=f"raw_size stream={s} bytes={f.stat().st_size} expect={n * w * h * 3}")
-                    return 1
-                fh = open(f, "rb")
-                parts.append((mmap.mmap(fh.fileno(), 0, access=mmap.ACCESS_READ), w, h, list(range(n))))
-        W = sum(p[1] for p in parts)
-        H = max(p[2] for p in parts)
-        out = d / MP4
-        part = d / ".episode.part.mp4"
-        proc = subprocess.Popen([ff, "-nostdin", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24",
-                                 "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2",
-                                 "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p",
-                                 "-movflags", "+faststart", "-f", "mp4", str(part)], stdin=subprocess.PIPE)
-        for i in range(n):
-            if len(parts) == 1:
-                mm, w, h, idx = parts[0]
-                off = idx[i] * w * h * 3
-                proc.stdin.write(mm[off:off + w * h * 3])
-                continue
-            buf = bytearray()
-            for y in range(H):
-                for mm, w, h, idx in parts:
-                    if y < h:
-                        off = idx[i] * w * h * 3 + y * w * 3
-                        buf += mm[off:off + w * 3]
-                    else:
-                        buf += bytes(w * 3)
-            proc.stdin.write(bytes(buf))
-        proc.stdin.close()
-        if proc.wait() != 0:
-            part.unlink(missing_ok=True)
-            emit(kind=kind, frames=n, result="fail", detail="encode_rc")
-            return 2
-        m = count_frames(ff, part)
-        if m != n:
-            part.unlink(missing_ok=True)
-            emit(kind=kind, frames=n, mp4_frames=m, result="frame_mismatch")
-            return 1
-        part.replace(out)
-        for mm, *_ in parts:
-            mm.close()
-        parts.clear()
-        remove(raw_paths(kind))
-        emit(kind=kind, frames=n, mp4_frames=m, result="ok", width=W, height=H, mp4_bytes=out.stat().st_size)
-        return 0
-    except Exception as e:  # noqa: BLE001 逐局失败如实记录，原始帧保留
-        emit(kind=kind, result="fail", detail=f"{type(e).__name__}:{str(e)[:200]}".replace(" ", "_"))
-        return 2
-    finally:
-        for mm, *_ in parts:
-            try:
-                mm.close()
-            except Exception:  # noqa: BLE001
-                pass
-        for p in tmp_raw:
-            p.unlink(missing_ok=True)
-
-
-sys.exit(main())
-PY
+transcode_episode_dir() {  # [--keep-raw] <局目录>；实现在 seat_media_lib.sh（_seat_media_transcode），此处保留同名入口
+  _seat_media_transcode "$@"  # 供 test_eval_wiring 的共享函数守卫与既有 source run_seat.sh 的脚本沿用
 }
 
 # 原子发布一个目录：rsync 到 <root>/.incoming/<name>/（已存在即重试，加 -c）→ 逐文件 sha256 → 一致才 mv 成
@@ -694,16 +520,32 @@ publish_dir() {  # $1 = 源目录；$2 = 目的根；$3 = 目录名
   return 0
 }
 
-# 一局收尾：并入轨迹目录（不含 qwen-tmp）→ 就地转码 → 原子发布。转码结果按行记进 TC_TALLY（ok／frame_mismatch／fail
-# ／其他）；转码不成功时原始帧照样发布（不丢数据），由 SEAT_REC_SYNC 的 frame_mismatch／transcode_fail 判 FAIL。
+# 一局收尾：并入轨迹目录（不含 qwen-tmp）→ [SGEVAL_OFFICIAL_RENDER=1 时官方重绘] → 就地转码 → 原子发布。转码结果
+# 按行记进 TC_TALLY（ok／frame_mismatch／fail／其他）；转码不成功时原始帧照样发布（不丢数据），由 SEAT_REC_SYNC 的
+# frame_mismatch／transcode_fail 判 FAIL。官方重绘失败不影响转码与发布：本局转码带 --keep-raw（原始帧保留随目录发布）、
+# 写 official-render.failed，结果（ok／fail）记进 OR_TALLY（若设）；重入时重绘成功会删掉旧的 official-render.failed。
 finish_episode_dir() {  # $1 = 本局录像目录（可不存在）；$2 = 本局轨迹目录（可不存在）；$3 = 发布根；$4 = 目录名
-  local src="$1" tsrc="$2" root="$3" name="$4" out rc res
+  local src="$1" tsrc="$2" root="$3" name="$4" out rc res keep=()
   if [[ -d "$tsrc" ]]; then
     mkdir -p "$src"
     rsync -a --exclude=qwen-tmp "$tsrc/" "$src/" && rm -rf -- "$tsrc"
   fi
   [[ -d "$src" ]] || return 0
-  out="$(transcode_episode_dir "$src")"; rc=$?
+  if [[ "${SGEVAL_OFFICIAL_RENDER:-0}" == "1" ]]; then
+    out="$(render_official_dir "$src")"; rc=$?
+    [[ -n "$out" ]] && echo "$out"
+    if (( rc != 0 )); then
+      keep=(--keep-raw)
+      printf 'dir=%s\nrc=%s\ntime=%s\n%s\n' "$name" "$rc" "$(date -Is)" "$(grep '^OFFICIAL_RENDER=FAIL' <<<"$out" | tail -n 1)" \
+        > "$src/official-render.failed"
+      echo "OFFICIAL_RENDER_KEEP_RAW dir=$name rc=$rc（原始帧保留、照常转码发布）"
+      [[ -n "${OR_TALLY:-}" ]] && echo fail >> "$OR_TALLY"
+    else
+      rm -f -- "$src/official-render.failed"
+      [[ -n "${OR_TALLY:-}" ]] && echo ok >> "$OR_TALLY"
+    fi
+  fi
+  out="$(transcode_episode_dir "${keep[@]}" "$src")"; rc=$?
   [[ -n "$out" ]] && echo "$out"
   res="$(sed -n 's/.* result=\([a-z_]*\).*/\1/p' <<<"$out" | tail -n 1)"
   [[ -n "${TC_TALLY:-}" ]] && echo "${res:-fail}" >> "$TC_TALLY"
