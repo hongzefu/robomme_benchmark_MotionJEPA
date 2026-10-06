@@ -54,3 +54,16 @@ OFFICIAL_RENDER=PASS dir=VideoUnmask_xhard0_560300.a1 frames=349 demo=66 steps=2
 OFFICIAL_MEDIA=PASS total=1 skip=0 fail=0 no_frame_error=0
 ASTRA_COST usd=0.3043 calls=3 pending=0 projected=0.5072 cap=5
 ```
+
+## 第三档（用户指令中止时的部分结果，--partial）
+
+```
+EVAL_COVERAGE=FAIL dataset=test-hard policy=mmesg:ground-sg-oracle expected=800 missing=258 extra=0 duplicate=0 conflicting_terminal=0 error_final=0 partial=1
+EVAL_REPORT=FAIL dataset=test-hard policy=mmesg:ground-sg-oracle count_mismatch=0 dataset_crossed=0 media_unexplained=0 exec_over_cap=0 partial=1
+EVAL_VIDEOS=FAIL dataset=test-hard policy=mmesg:ground-sg-oracle expected=800 videos=541 missing=259 decode_fail=0 partial=1
+EVAL_COVERAGE=FAIL dataset=test-hard policy=mmesg:ground-sg-qwenvl expected=800 missing=637 extra=0 duplicate=0 conflicting_terminal=0 error_final=0 partial=1
+EVAL_REPORT=FAIL dataset=test-hard policy=mmesg:ground-sg-qwenvl count_mismatch=0 dataset_crossed=0 media_unexplained=0 exec_over_cap=0 partial=1
+EVAL_VIDEOS=FAIL dataset=test-hard policy=mmesg:ground-sg-qwenvl expected=800 videos=160 missing=640 decode_fail=0 partial=1
+BUDGET_DETAIL reserves=2084 committed=2056 released=20 open=8 expired=0/500 reset_soft_exceeded=0
+BUDGET_ENFORCEMENT=PASS trajectories=2064/6366 resets=4908/141430 astra=0/2 shared_infra=0/50
+```

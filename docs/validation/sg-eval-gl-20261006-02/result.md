@@ -1,10 +1,10 @@
 # sg-eval-gl-20261006-02 结果（result）
 
-> 两段式第二段。本版写到第一档、第二档、批次 5（Astra smoke）为止；第三档（五模型 V9 各 800 局）仍在 GL 队列运行，跑完后补本文件第四节并更新一句话结论。判定行原文见 [`records/verdicts.md`](records/verdicts.md)，逐局差异表见 `records/diff/`。
+> 两段式第二段。第一档、第二档、批次 5（Astra smoke）已完成；第三档按用户 2026-10-06 13:1x EDT「停止现在第三档的evaluation」「立刻收尾」中止，只有部分结果（见第四节）。判定行原文见 [`records/verdicts.md`](records/verdicts.md)，逐局差异表见 `records/diff/`。
 
-## ① 一句话结论（截至第二档）
+## ① 一句话结论
 
-六条新接口路线都已能直出官方版式视频：第二档五个模型共 5 × 192 = 960 局 `OFFICIAL_MEDIA=PASS fail=0`（GroundSG 两变体保留官方 `RolloutRecorder` 原生视频，其余由官方原类重绘），Astra 本机 1 局 smoke 通过（0.30 美元）。第二档「原侧 vs 新侧」：SimpleMemVLA 192 局在可共同观察的五个维度上逐步逐位一致；PonderPounce 终态 192/192 相同、执行动作逐步全一致；GroundSG Oracle、QwenVL 与 MME 的终态差异都在各自的服务端数值噪声范围内，成功率差不显著（McNemar p ≥ 0.63）。第一档生成回归 V9、xhard0 均 `GEN_REGRESS=PASS`。
+六条新接口路线都已能直出官方版式视频：第二档五个模型共 5 × 192 = 960 局 `OFFICIAL_MEDIA=PASS fail=0`（GroundSG 两变体保留官方 `RolloutRecorder` 原生视频，其余由官方原类重绘），Astra 本机 1 局 smoke 通过（0.30 美元）。第二档「原侧 vs 新侧」：SimpleMemVLA 192 局在可共同观察的五个维度上逐步逐位一致；PonderPounce 终态 192/192 相同、执行动作逐步全一致；GroundSG Oracle、QwenVL 与 MME 的终态差异都在各自的服务端数值噪声范围内，成功率差不显著（McNemar p ≥ 0.63）。第一档生成回归 V9、xhard0 均 `GEN_REGRESS=PASS`。第三档按用户指令中止：GroundSG Oracle 已定终态 542/800（成功 270）、QwenVL 163/800（成功 15），PonderPounce、SimpleMemVLA、MME 未开始；已跑部分的账本与媒体保留在 NFS，可续跑。
 
 ## ② 第一档：生成回归（177 局）
 
@@ -36,15 +36,25 @@ V9 43 格 × 3 局 = 129、xhard0 16 任务 × 3 局 = 48，GL A40，执行副�
 
 五模型各 `EVAL_COVERAGE=PASS expected=192 missing=0`、`EVAL_REPORT=PASS media_unexplained=0`、`EVAL_VIDEOS=PASS videos=192`、`OFFICIAL_MEDIA_INPUTS=PASS`、`OFFICIAL_MEDIA=PASS total=192 fail=0`。
 
-## ④ 第三档（待补）
+## ④ 第三档（中止，只有部分结果）
 
-V9 五模型各 800 局，GL 队列运行中。
+用户 2026-10-06 13:1x EDT：「停止现在第三档的evaluation」，随即「立刻收尾」「只保留4快卡 最新的job 其他资源全部释放 ！先做这个」。
+
+| 模型 | 分母 | 已定终态 | 成功 | 失败 | timeout | 缺失 | 已定终态内成功率 |
+|---|---|---|---|---|---|---|---|
+| GroundSG Oracle | 800 | 542 | 270 | 133 | 139 | 258 | 49.8%（270/542） |
+| GroundSG QwenVL | 800 | 163 | 15 | 115 | 33 | 637 | 9.2%（15/163） |
+| PonderPounce、SimpleMemVLA、MME | 800 | 0 | — | — | — | 800 | 未开始 |
+
+- 判定行（`--partial`）：Oracle `EVAL_COVERAGE=FAIL … missing=258 partial=1`、`EVAL_REPORT … count_mismatch=0 dataset_crossed=0 media_unexplained=0 exec_over_cap=0`、`EVAL_VIDEOS … videos=541 decode_fail=0`；QwenVL `missing=637`、`videos=160 decode_fail=0`。已定终态的局官方视频与普通视频都在 `$R2/media/` 下。
+- 已定终态的局来自按 `rows[i::k]` 等距切出的分片中先跑完的那部分，不是随机抽样，成功率不能当作全量估计。逐任务表见 `records/diff/gate3-partial-{oracle,qwenvl}.md`。
+- 续跑方法：`queue/held-gate3/` 里是 36 个未领取任务与 7 个被中断任务（`interrupted__` 前缀），删除 `queue/STOP` 后放回 `queue/pending/` 并起 worker；`run_eval_gl.sh` 按各席账本续跑，被中断的局按基础设施中断重评。
 
 ## ⑤ 批次 5：Astra 本机 smoke
 
 1 局（VideoUnmask，test-hard0 本地局号 0 = 官方 episode 3，1300 步）：success，282 步；官方视频重绘 349 帧、转码 349 帧、`OFFICIAL_MEDIA=PASS total=1`；费用守卫 `--cap 5`，3 次请求共 0.3043 美元。第 2 局额度未使用（用户「唯一需要注意的就是astra还是只跑两次」）。
 
-## ⑥ 计划外事件与处置（截至此时）
+## ⑥ 计划外事件与处置
 
 1. 12.476 回放工具、12.494 环境子项目在 `git add` 之前跑的清单测试看不到新文件，合并后核心短测才暴露 `TEST_INVENTORY=FAIL`；由 12.479、12.496 补登记。
 2. S1↔S2b 接口：GroundSG 原生视频的 provenance 帧数是字典，验收把它当整数比，本机 smoke 中原生视频被误判后改走重绘；12.488 修，QwenVL smoke 证实 `OFFICIAL_RENDER=KEPT`。
@@ -56,6 +66,14 @@ V9 五模型各 800 局，GL 队列运行中。
 8. 对比工具读 v7.5eval 历史逐局行时把被重评取代的 Vulkan reset 失败行当终态，SimpleMemVLA E0-O2 一度显示 63 局假翻转；12.496 修后与 v7.5eval 留档一致（两两 0 翻转）。
 9. PonderPounce 原侧结果行（`pp_official_runner.py`，R1 不能改）与 SimpleMemVLA、MME 原版逐局行不带节点字段：合表副本按各片任务日志 `host=` 行补注 `node` 与 `node_source`；SimpleMemVLA 原版行不带 `attempt`，按 S7 适配器映射补注。补注副本在 `$R2/gate2-report/annot/`，原文件不动。
 
-## ⑦ 预算（截至第二档完成）
+10. 第三档中止（用户指令）：先把 36 个未领取任务移到 `queue/held-gate3/` 并写 `queue/STOP`，再按精确步骤号 `scancel` 7 个 worker 步骤（63188711.6、63188712.4、63188713.1、63188714.1、63188715.1、63188716.1、63188719.0；全部 `EXIT_CODE=137` 退出，`squeue -s` 核对无残留步骤），7 个运行中任务移到 `held-gate3/interrupted__*`；登录节点上 3 个等待 PENDING job 的启动会话（p2-w534、p2-w535、p2-w720）按名精确 kill，删后 `tmux ls` 为空。
+11. 资源释放（用户「只保留4快卡 最新的job 其他资源全部释放」）：`scancel` 63188711、63188712、63188713（RUNNING）与 63188720、63325534、63325535（PENDING）；保留剩余时长最长的 4 个 RUNNING 占位 job：63188714（gl1518）、63188715（gl1503）、63188716（gl1527）、63188719（gl1525），均空闲无工作步骤。已记入 `$N/gl-hold-logs/hold-jobs-sgeval-20261004.txt`。
 
-`BUDGET_ENFORCEMENT=PASS trajectories=400/6366 resets=972/141430 astra=0/2 shared_infra=0/50`（账本只记 GL 任务与本机 smoke 中经 S8 账本的部分；Astra 本机 smoke 费用由独立守卫记账，1 局 0.30 美元）。最终数字在第三档完成后更新。
+## ⑦ 预算（中止时）
+
+`BUDGET_ENFORCEMENT=PASS trajectories=2064/6366 resets=4908/141430 astra=0/2 shared_infra=0/50`（`BUDGET_DETAIL reserves=2084 committed=2056 released=20 open=8`；open 8 为中断时在跑的局）。账本只记经 S8 账本的 GL 任务与本机 smoke；Astra 本机 smoke 费用由独立守卫记账：1 局、0.3043 美元（5 美元硬上限）。第一档生成 177 + 定性重跑 8 条轨迹走生成侧预算参数，不在评估账本内。
+
+## ⑧ 下一步（交用户决定）
+
+- 是否续跑第三档（五模型共需约 3200 局，按 7 卡估约一天；现只保留 4 卡）。
+- 是否删除中间产物：`$R2/gate2-report/traces/*` 只是符号链接；NFS 上 `$R2/media/` 体量未统计（席位内转码核对通过即删原始无损帧；pp 第二档 s30 那 48 局因重绘失败带 `--keep-raw`，原始帧约 5.3 GB 仍在）。
