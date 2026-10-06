@@ -39,3 +39,7 @@ docs/validation/<主题>/
 
 指纹能判断内容是否相同并定位到字段／记录，但**不能还原画面或计算像素差幅度**；
 需要展开时按冻结命令重跑，或从 `artifacts/` 按散列取回原图。轻量包不是完整 HDF5 备份。
+
+## 运行档案索引（新增条目追加于此）
+
+- `sg-eval-gl-20261004-01/`：四模型（GroundSG+Oracle、GroundSG+QwenVL、PonderPounce、Astra）评估，三档闸门；2026-10-05 22:17 按用户令中止，部分完成。结论与未完成清单见其 `result.md`。

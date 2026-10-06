@@ -127,3 +127,36 @@ Oracle 原侧为显存复测重跑 1 局；Astra 原侧第一次因清单路径�
 ## ⑨ 预算（计划第二部分六，已获批）
 
 合计轨迹 5673、reset 11925；Astra 金额上限 30 美元。已用：预检非 Astra 9 局 + 重跑 5 局、步数到顶 2 局、Astra 2 局（0.51 美元）、生成 smoke 2 局。
+
+## ⑩ 运行记录与收尾状态（2026-10-05 22:17 用户令中止）
+
+用户原话：「现在立刻收尾。停止本机器和gl上所有任务 但是job不要关。」「Turbo上的资源先不动。只收尾不搬运。」结果见同目录 `result.md`。
+
+### GL 席位（登录节点 gl-login3 的 tmux；`$R=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/sgeval-20261004`）
+
+| tmux 会话 | 占位 job | 内容 | 结局 |
+|---|---|---|---|
+| `sgev-seat-00` | 63188711 | Oracle：第一档两遍 → 第二档 → 第三档 | 第一档、第二档完成；第三档首局 `IDENTITY_MISMATCH`（分片局号错位 12）`CHAIN_STOP` |
+| `sgev-seat-03` | 63188711 | QwenVL 席位 03（首次） | GLIBC_2.30／2.32 ImportError，未出结果（目录改名 `gate2-qwenvl.glibc-fail`） |
+| `sgev-seat-00b` | 63188711 | Oracle 第三档（重出分片） | 800/800 完成，`SEAT_CHAIN_DONE` 13:33 |
+| `sgev-seat-01` | 63188712 | PonderPounce 第二档分片 0 → 第三档分片 0 | 完成；第三档 rc=6（1 局上下文超限 error） |
+| `sgev-after-00b` | 63188711 | 等 00b 结束 → 第二档 Oracle 12 局 SwingXtimes 补跑（`oracle_g2_swing.sh`）→ 席位 03 QwenVL 第二档分片 00 → 第三档分片 00 | 补跑 12/12；席位 03 第二档 37+2 error，第三档 9/160 时中止 |
+| `sgev-seat-04b` | 63188712 | QwenVL 席位 04（v2）第二档分片 01 → 第三档分片 01 | 22:09 起跑，约 7 分钟后中止 |
+| `sgev-seat-02`、`sgev-seat-04`、`sgev-seat-05`、`sgev-seat-06`、`sgev-seat-07` | 63188713～16、63188719 | 预挂的 v2 启动器（等 job RUNNING） | job 未排到卡；`sgev-seat-04` 改挂到 63188712 前关闭，其余在收尾时关闭 |
+
+22:17 收尾：上表在用会话全部 `tmux kill-session -t '=<名>'`；工作步骤（`63188711.3` 等）随 srun 退出，`squeue -s` 只剩各 job 的 batch／extern；**9 个占位 job 全部保留**（63188711、63188712 RUNNING 空占；63188713～16、63188719、63188720、63188721 PENDING）。
+
+### 本机会话
+
+| tmux 会话 | 内容 | 结局 |
+|---|---|---|
+| `sgev-lg3-card0` | 本机复刻第三档：Oracle 800 → PonderPounce 分片 00 → 01（`local_gate3.sh 0`） | Oracle 800 完成；PonderPounce 184/400 时中止 |
+| `sgev-lg3-card1` | 本机复刻第三档：QwenVL 分片 00～04（`local_gate3.sh 1`） | 137/160 时中止 |
+
+本机第二档 v2 续跑与 SwingXtimes 补跑会话此前已自行结束。收尾后两张卡显存 7 MB／6 MB，无残留评估进程（PID 2961357 为 10-03 遗留，未动）。
+
+### 产物位置（未搬运）
+
+- GL：`$R/{gate1,gate2-*,gate3-*,media,logs,inputs,scripts}`，约 11.9 GB，原地保留（续跑依赖这些 stage 目录）。
+- 本机：`artifacts/sg-evaluation/sg-eval-gl-20261004-01/{preflight,local-g1,local-g2,local-g3,gl-g2,astra-local}`，182 GB（其中 `local-g1` 171 GB 为第一档中间 h5）。
+- 一次性脚本逐字归档：`records/scripts/`。
