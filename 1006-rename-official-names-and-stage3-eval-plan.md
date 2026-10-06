@@ -32,6 +32,8 @@
 >
 > 2026-10-06 用户原话：「同意三个问题都要展开详细讲。然后prompt不用再说了在第一部分只把这三个问题展开讲。然后说是怎么修复的」——第一部分 MemER 一节改为只讲三个坑与修法（自然语言、坑 3 带数轴），prompt 原文与情形对照留在第二部分八.3。
 >
+> 2026-10-06 用户原话：「另外还有一个问题你现在保存了image action state等 但是双模型的交互呢 也要保存 统计所有language交互的输入输出 都要保存」「附的图片是否可以保留 引用视频帧来解决」「确认 你先完整统计 再给我计划的增量」「告诉我你改完之后的这些语言的记录是什么样的是不是都全了」「认可 写入计划」——六个只读子代理按路线统计全部语言交互点（八.11），新增每局统一语言账本 `language.jsonl`（第一部分二第 ⑤ 件），附图只记帧引用不存图片，七路线接线、实跑记五模型。
+>
 > 功能范围追加原话：「给出现在所有支持模型的清单，都要支持1800步，都要支持不同seed，模型seed。」「但是我们现在实跑只跑这个。我们现在实跑只跑我说的这些模型。」因此全部模型路线统一补齐1800步与可配置模型seed，但实跑范围只保留本版指定四模型。
 
 # 第一部分（给人看）
@@ -75,11 +77,12 @@
 | MemER | **未接入** | 缺 | 缺 | 见下面展开 |
 | 3-tier Astra（代码 ID `astra`） | 独立 `run_astra.sh`／`astra_hard_runner.py`，不走共享席位 | 缺，入口自己钉 1600 | 缺，服务固定 42 | 云端 API 无 seed 接口，不伪造；费用与两局守卫不动 |
 
-**共同要补的三件事**：
+**共同要补的四件事**：
 - **1800 步**：席位脚本 `run_seat.sh::step_cap_pairing` 配对改 `test-hard ↔ 1800`、`strict_cap=1`，沿 `SeatRunner → EnvSession.step_cap → 客户端循环 → 结果／trace／报告` 全程传；第 1801 次 `step` 在进真实环境前被拒，第 1800 步成功仍记 success；Astra 在它自己的入口同改；`test-hard0 ↔ 1300` 与生成规格 `EXEC_CAP=1600` 不动。判据 `EVAL_CAP=PASS models=7 max_steps=1800 rejected_step=1801`。
 - **模型 seed**：新增 `--policy-seed <int>`，从任务配置传到服务、客户端、子目标预测器，在模型构造前设该路线真正用的随机状态；结果行、trace、媒体 provenance 都记 `policy_seed`；每个 `(模型, policy_seed)` 独立输出目录与账本 route。七路线各在 CPU 夹具上验 0／7／42；判据 `POLICY_SEEDS=PASS models=7 seeds=0,7,42`。本版真实运行只传 7。
 - **元数据（用户 2026-10-06 选 A 档「只补数值」）**：现状每步只记 action／state 的 sha256 与前 8 个值，完整数值只在非 float32 时写 `arrays.npz`；改为所有路线每个执行步的 action 与 state 完整数组一律写 `arrays.npz`（键 `exec_action__%05d`、`exec_state__%05d`），goal 与 subgoal 原文已有不动，图像仍只留 mp4 加每帧 sha256。归 R3，判据 `TRACE_ARRAYS=PASS episodes=<n> missing=0`。
 - **执行机制补强（Codex 2026-10-06 审计核实后，主会话自定，细节见第二部分八.10）**：回放闸门改为传两个检出目录并校 sha、四条旧路线 × 三场景、两侧同样崩溃判 FAIL、强制自检；原侧驱动接共享预算与模型 seed 链、保留官方视频、trace 补 attempt 与帧计数；新侧上下文加载加绝对期限、无进展监督看具名阶段不看日志、恢复次数按运行组持久化；重试领取与预约用同一 token 幂等、分片排他锁、账本坏行即拒；比较器加「预期主机 sled-vail」来源模式；每步 action／state 由唯一收尾者合并写 NPZ；改名阶段先保持 `ood ↔ 1600` 旧行为过回放，功能阶段再改 1800。
+- **语言账本（用户 2026-10-06「统计所有language交互的输入输出 都要保存」「认可」）**：现状是统一 trace 里语言原文只有三处（任务目标一句、逐步子目标、history 备注），所有「发给模型的请求」和「模型回的文字」都只剩 sha256，旁路日志各路线格式、位置不一（QwenVL 只记请求不记回复，Astra 在自己的 `planner_calls/`，Oracle／SimpleMemVLA／PonderPounce 没有请求原文），没有任何一条路线能按步还原「模型当时看到的文字、回的文字」。改为**每局目录加一份 `language.jsonl`**，记这一局所有文字进出模型的账：每条含步号、模型角色（`subgoal_model`／`action_model`／`planner`／`monitor`）、方向（`in`／`out`）、`role`（system／user）、**文字原文逐字**、附图引用（帧步号 + 相机 + 原始帧 sha256，演示视频记演示段帧号范围，**不存图片本身**，看图按步号从该局 `episode.mp4` 取帧，mp4 有损、sha256 只核「是那一帧」）、解码参数、重问序号、是否复用上次回复；**服务端内部拼的最终文字也要出来**——SimpleMemVLA 的模板化 prompt、PonderPounce 的 S1／S2 prompt、GroundSG／FrameSamp 动作服务拼的 `Task: …; Current Subgoal: …; Action:`，由服务端外壳在每次推理回包里带回「实际进模型的最终文字」与是否截断；模型输出的文字全部记原文（SimpleMemVLA 子任务、PonderPounce S2 原文与换算后、QwenVL／MemER 回复原文与重问每一次、Astra planner／monitor 回复）。两侧都记（本机对拍的原侧经原侧驱动记同一格式）；七路线接线，实跑只记五模型，Oracle 与 Astra 只 CPU 验。判据 `LANG_IO=PASS episodes=<n> missing=0 unpaired=0`：每个执行步有动作模型输入、每次子目标／planner／monitor 调用输入输出成对、重问次数与日志一致、图引用的 sha256 能在 trace 的帧哈希里找到；对拍比较器按文字逐次比，`GATE2` 多报 `prompt_diff`、`reply_diff`。一局各路线会有什么记录、记录样例与完整统计见第二部分八.11。
 - **视频布局（用户 2026-10-06 选定「照上游 mme-vla」）**：现状是 `<模型标签>/<dataset>/new/<task>_<tier>_<环境seed>.a<attempt>/official/official-rerender__<task>_ep<源局>a<尝试>_<终态>_<task_goal>_<tier>.mp4`，没有模型 seed 层。改为每个运行根下按上游 `eval.py` 的层级发布一份：`<run 根>/<模型 ID>/seed<policy_seed>/[oracle｜qwenvl｜memer/]videos/<task>_ep<N>_<success｜fail｜timeout>_<task_goal>_<tier>.mp4`——GroundSG 三个变体多一层子目标目录（与官方同）；`ep<N>` 用局号（V9 用 builder 局号，hard0 用官方源局号），只发布账本接受的那一次 attempt，不带 `a<尝试>`；终态只允许三态，strict-cap 命中必须命名 `timeout`（旧口径超时局文件名带 `error`，本版不允许）；末尾用 tier（`xhard0`～`xhard5`）替官方的 difficulty；文件名超 255 字节沿用截断加哈希、完整名写 `render.json`。局目录里的 trace、arrays、`episode.mp4` 位置不动，只多一步「发布到上游布局」并出索引。MemER hard0 对拍的原侧由官方代码自己写出 `<save_dir>/symbolic-grounded-subgoal/ckpt79999/seed7/memer/videos/`，不改。判据 `VIDEO_LAYOUT=PASS model=<m> seed=7 videos=<n> error_named=0`。
 
 ### MemER 要改什么（展开）
@@ -178,7 +181,7 @@
 |---|---|
 | 改名只改名 | `OFFICIAL_NAMES=PASS`、`CLIENT_REPLAY_EQ=PASS` |
 | 七路线功能（CPU） | `POLICY_SEEDS=PASS models=7`、`EVAL_CAP=PASS max_steps=1800`、`MEMER_WIRING=PASS` |
-| 五模型 OOD | 每组 `EVAL_COVERAGE=PASS expected=86`、`OFFICIAL_MEDIA=PASS`、`VIDEO_LAYOUT=PASS`、`TRACE_ARRAYS=PASS`；总 `STAGE3_MATRIX=PASS combinations=5 unique_terminal=430`、`BUDGET_ENFORCEMENT=PASS trajectories=<n>/870`（reset 只报计量） |
+| 五模型 OOD | 每组 `EVAL_COVERAGE=PASS expected=86`、`OFFICIAL_MEDIA=PASS`、`VIDEO_LAYOUT=PASS`、`TRACE_ARRAYS=PASS`、`LANG_IO=PASS`；总 `STAGE3_MATRIX=PASS combinations=5 unique_terminal=430`、`BUDGET_ENFORCEMENT=PASS trajectories=<n>/870`（reset 只报计量） |
 | MemER 对拍（本机） | `GATE2_PROVENANCE=PASS`（两侧同为 sled-vail）、`GATE2=INFO compared=192` |
 
 步骤：0 等用户说「开工」→ 1 改名（含数据集接口改名）→ 2 功能 → 3 冻结提交、核 MemER 资产、五模型各 1 局 smoke（MemER 的在本机）→ 4 并行：GL 跑 OOD 10 片 ｜ 本机跑 MemER hard-verify 对拍 → 5 两边各自验收汇总 → 6 留档、commit、push。
@@ -213,6 +216,7 @@
 | `scripts/eval-official/client_replay_eq.py::{worker,compare,run_route,main}`（R1） | `--base`／`--candidate` 传检出目录并核 `git rev-parse HEAD` 等于计划冻结 sha；按两侧接口分别选模块名、数据集名、配置键；路线四条（mmesg oracle、smvla、mme、pp）× 三场景（成功、预期环境异常、timeout）；两侧同 crash 或零事件一律 FAIL；`--self-test` 强制 | 现状：同 crash 跳过仍 PASS、无事件下限、旧名写死、sha 当目录 |
 | `scripts/eval-official/env_client.py::{SeatRunner.policy_context,run_one,run_identities_v8,AttemptLedger}`、`budget_ledger.py::{reserve,claim_retry,_read,_append}`、`run_seat.sh::{policy_loop,idle_s}`、`run_eval_gl.sh`（R3） | 上下文加载、首推、单局、媒体收尾各有绝对 deadline；无进展监督读具名 phase／identity／实际步数，不看 `client.log` mtime；恢复次数按运行组持久化到文件；retry／trajectory／attempt_start 共用一个 token 幂等恢复；分片排他 lease（flock）在读 pending 前取得；`_append` 先补换行、所有写前检查 `bad_rows` 与不可变配置，坏行即拒；启动脚本显式传 `--budget-ledger` 与 `--trajectory-cap 870 --shared-infra-cap 50 --expired-cap 0` | 现状：加载期无期限、计数局部变量、领取非幂等、无跨进程锁、坏行只在收尾判 FAIL、cap 全是常量默认 |
 | `scripts/eval-official/gate2_compare.py::{compare_ext,is_gl_node,main}`（R7） | 新增 `--expect-host <name>` 来源模式：逐行核两侧 `node`／`host` 均等于预期主机，未知或跨机仍 FAIL；GL 模式原检查不变 | 现状：只认 `glNNNN`，本机对拍必 INVALID |
+| `scripts/eval-official/trace_writer.py::{LanguageLog,TraceWriter.log_language}`（新增，R6 冻结接口）；调用点：`groundsg_client.py`／`official_hard_runner.py`（R2）、`framesamp_modul_client.py`／`smvla_client.py`／`pp_client.py`（R6）、`smvla_server.py`／`pp_server_wrap.py`／GroundSG 动作服务外壳回包带 `server_final_text`（R3）、`astra_hard_runner.py`（R5）、`gate2_compare.py` 文字逐次比（R7） | 每局 `language.jsonl`：`{step, model, dir, role, text, images:[{ref,step,cam,sha256}], demo_video, params, retry, reused_previous, fallback, parsed, server_final_text, server_truncated}`；原文逐字、附图只记引用；两侧同格式 | 现状：请求／回复只有 sha256；旁路日志各路线不一 |
 | `scripts/eval-official/trace_writer.py::{TraceWriter.log_step,close}`、`recorder.py::EpisodeRecorder.close`、`smvla_client.py`、`pp_client.py`、`framesamp_modul_client.py`（R6） | TraceWriter 统一收集每步 action／state 完整数组，唯一收尾者按键合并、原子写 `arrays.npz`，重复键须 dtype／shape／sha 一致；各客户端与 recorder 的直接 `np.savez` 改为委托；步号到数组键映射显式记录；缺观测步独立计数不补零 | 现状：各处 `np.savez` 覆盖写、recorder 后关会盖掉新增键、rsync 合并可致索引不符 |
 | `scripts/eval-official/official_hard_runner.py::{make_context,run_identity,build_parser}`、`run_official_hard.sh::{plan_round,orig_loop}`（R2） | 原侧接共享账本（reserve／claim_retry／claim_reset／settle）；`--policy-seed` 解析、转发到服务与官方 `Args.model_seed`／预测器、写进 trace 与结果；`run_official_episode(..., keep_official=True, official_provenance=...)` 保留官方视频进 `official/`、归档先于清理；identity 补 `attempt`，end 补 `steps_attempted／steps_observed／frames_recorded` | 现状：不接账本、无 seed、删官方视频、trace 缺字段致媒体验收必拒 |
 | `scripts/eval-official/run_astra.sh`、`astra_hard_runner.py::{DATASET_STEP_PAIRING,check_pairing,TracedEnv,run_one,build_parser}` | Astra独立路线cap1800／模型seed转发、真实调用前守卫（守卫置于 `TracedEnv.step` 的计数与动作追加之前，拒第 1801 步不多落一行）、结果／trace记录 | 本版仅CPU／零外联验收；费用、两局硬守卫与test-hard0口径不变 |
@@ -231,11 +235,11 @@
 |---|---|---|---|---|---|
 | R1 | 本部分八节改名范围的 `scripts/**`、`src/robomme_hard/**`（含数据集接口 `test-hard`→`ood`、`test-hard0`→`hard-verify`、`env_metadata/test-hard/`→`env_metadata/ood/`）、`scripts/evaluation_hard.py` 示例、`tests/**`；现有子项目 lock 仅改项目名 | `src/robomme/**`、`third_party/**`、`docs/**`、规则文档、根依赖；不新增顶层入口 | 先完成改名及别名表，之后才派写入 R2／R3；顺序1 | 核心短测、命名残留检查、`CLIENT_REPLAY_EQ`、`TEST_INVENTORY` | GPU=0；独立worktree；R1完成前他人不写该集合 |
 | R2 | `official_defs.py`、改名后 `groundsg_client.py`、原侧驱动 `official_hard_runner.py`／`run_official_hard.sh`、客户端子项目两依赖文件（必要时）；测试 `tests/pipeline/evalx/groundsg/{test_groundsg_context.py,test_groundsg_orig_runner.py}`（现硬断言两个变体，须随 MemER 改） | 上游源码、运行入口、其他客户端／报告／测试／文档 | MemER变体、adapter、预测器seed及日志接口交给R3；顺序2 | `uv run --no-sync python -m pytest tests/pipeline/evalx/groundsg -q`；`MEMER_WIRING` | GPU=0、端口=无；独立worktree；R2独占这三个对象 |
-| R3 | `run_seat.sh`、`run_eval_gl.sh`、`env_client.py`、`budget_ledger.py`、`smvla_server.py`、`pp_server_wrap.py` | R2／R5／R6／R7 集合、三方源码、生成规格、测试／文档 | 共享入口、预算 token／lease／cap 注入、服务 seed、cap1800、deadline 与恢复计数持久化；只调用 R6／R7 冻结接口，不写媒体与 trace 文件；顺序3 | `uv run --no-sync python -m pytest tests/pipeline/eval -q`；`POLICY_SEEDS`、`EVAL_CAP`、`BUDGET_ENFORCEMENT` 反例 | GPU=0；独立worktree；共享运行入口／预算／身份归R3 |
-| R6 | `trace_writer.py`、`recorder.py`、`smvla_client.py`、`pp_client.py`、`framesamp_modul_client.py`（改名后） | R2／R3／R5／R7 集合、上游源码 | trace 与完整数值接口先由主会话冻结（字段名、NPZ 键、合并规则）；R2／R5 的客户端按该接口接线，不由 R6 代写；顺序4 | `uv run --no-sync python -m pytest tests/pipeline/evalx/report -q -k "trace or arrays"`；`TRACE_ARRAYS=PASS` 反例（float32／float64、共／分目录、缺观测步、篡改字节） | GPU=0；独立worktree |
-| R7 | `render_official_video.py`、`official_media_check.py`、`video_check.py`、`eval_report.py`、`model_eval_report.py`、`gate2_compare.py`；确需改 `seat_media_lib.sh` 归此 | R2／R3／R5／R6 集合；不与 R3 同写 `run_seat.sh` | 上游布局发布只发账本接受的 attempt、索引含模型／seed／dataset／side／key／accepted_attempt_id／源 sha、同名同 sha 幂等；`--expect-host` 来源模式；三个检查器对无帧 error 口径统一；顺序5 | `uv run --no-sync python -m pytest tests/pipeline/evalx/report -q -k "media or video or gate2 or report"`；`VIDEO_LAYOUT`、`OFFICIAL_MEDIA`、`GATE2_PROVENANCE` 反例（86 身份全无帧、infra a1＋accepted a2、重复发布、一侧异主机） | GPU=0；独立worktree |
+| R3 | `run_seat.sh`、`run_eval_gl.sh`、`env_client.py`、`budget_ledger.py`、`smvla_server.py`、`pp_server_wrap.py`（后两者与 GroundSG／FrameSamp 动作服务外壳的回包加 `server_final_text`／`server_truncated`） | R2／R5／R6／R7 集合、三方源码、生成规格、测试／文档 | 共享入口、预算 token／lease／cap 注入、服务 seed、cap1800、deadline 与恢复计数持久化；只调用 R6／R7 冻结接口，不写媒体与 trace 文件；顺序3 | `uv run --no-sync python -m pytest tests/pipeline/eval -q`；`POLICY_SEEDS`、`EVAL_CAP`、`BUDGET_ENFORCEMENT` 反例 | GPU=0；独立worktree；共享运行入口／预算／身份归R3 |
+| R6 | `trace_writer.py`（含 `LanguageLog` 语言账本接口）、`recorder.py`、`smvla_client.py`、`pp_client.py`、`framesamp_modul_client.py`（改名后）三个客户端的语言记录调用 | R2／R3／R5／R7 集合、上游源码 | trace 与完整数值接口先由主会话冻结（字段名、NPZ 键、合并规则）；R2／R5 的客户端按该接口接线，不由 R6 代写；顺序4 | `uv run --no-sync python -m pytest tests/pipeline/evalx/report -q -k "trace or arrays"`；`TRACE_ARRAYS=PASS` 反例（float32／float64、共／分目录、缺观测步、篡改字节） | GPU=0；独立worktree |
+| R7 | `render_official_video.py`、`official_media_check.py`、`video_check.py`、`eval_report.py`、`model_eval_report.py`、`gate2_compare.py`；确需改 `seat_media_lib.sh` 归此 | R2／R3／R5／R6 集合；不与 R3 同写 `run_seat.sh` | 上游布局发布只发账本接受的 attempt、索引含模型／seed／dataset／side／key／accepted_attempt_id／源 sha、同名同 sha 幂等；`--expect-host` 来源模式；三个检查器对无帧 error 口径统一；`gate2_compare.py` 读 `language.jsonl` 按文字逐次比并报 `prompt_diff`／`reply_diff`；`LANG_IO` 检查器；顺序5 | `uv run --no-sync python -m pytest tests/pipeline/evalx/report -q -k "media or video or gate2 or report"`；`VIDEO_LAYOUT`、`OFFICIAL_MEDIA`、`GATE2_PROVENANCE` 反例（86 身份全无帧、infra a1＋accepted a2、重复发布、一侧异主机） | GPU=0；独立worktree |
 | R5 | `scripts/eval-official/run_astra.sh`、`astra_hard_runner.py`、`tests/pipeline/evalx/astra/{test_astra_wiring.py,test_astra_stop_rules.py,test_run_astra_script.py,astra_fakes.py,contracts.delta.json}` | R2／R3／R4／R6／R7集合、受保护／三方源码、付费与GPU运行 | 按 R3／R6 冻结的字段契约只改Astra独立入口；cap 守卫放在计数与动作追加之前；顺序6 | `uv run --no-sync python -m pytest tests/pipeline/evalx/astra -q`；Astra的 `POLICY_SEEDS`／`EVAL_CAP` 和费用守卫 | GPU=0、外联=0、费用=0；Astra入口与测试唯一归R5 |
-| R4 | `tests/pipeline/eval/{test_seat_scripts.py,test_env_session.py,test_policy_clients.py,test_smvla_server_units.py,test_eval_report.py,test_official_media_check.py,test_budget_ledger.py,test_identity_contract.py,test_seat_runner_e2e.py,test_eval_wiring.py,test_gate2_inputs.py,contracts.delta.json}`、`tests/pipeline/evalx/groundsg/{test_groundsg_official_adapter.py,groundsg_fakes.py,contracts.delta.json}`、`tests/pipeline/evalx/report/{test_sgx_trace_writer.py,test_trace_contract.py,trace_contract.py,test_sgx_render_official_video.py,test_sgx_video_check.py,test_sgx_model_eval_report.py,test_sgx_gate2_compare.py,contracts.delta.json}` 及对应 fixture（可按 GroundSG／共享执行与预算／trace 与媒体三类拆三个 R4 子代理，fixture 与 `contracts.delta.json` 各只有一个写者） | 生产代码、上游源码、Astra 测试与 R2 名下两个测试；不写R1改名未完成文件 | R1完成后按冻结接口并行准备；测试必须真实触发缺 seed、少 state、篡改数组字节、坏账本、重复启动、错 attempt 发布，不只改预期字符串；全部交付后整合，顺序7 | 定向CPU测试＋核心短测；7路线×3seed功能反例及cap、预算守卫必须实际执行 | GPU=0；独立worktree；这批测试由R4唯一写入，新增文件先列确切路径 |
+| R4 | `tests/pipeline/eval/{test_seat_scripts.py,test_env_session.py,test_policy_clients.py,test_smvla_server_units.py,test_eval_report.py,test_official_media_check.py,test_budget_ledger.py,test_identity_contract.py,test_seat_runner_e2e.py,test_eval_wiring.py,test_gate2_inputs.py,contracts.delta.json}`、`tests/pipeline/evalx/groundsg/{test_groundsg_official_adapter.py,groundsg_fakes.py,contracts.delta.json}`、`tests/pipeline/evalx/report/{test_sgx_trace_writer.py,test_trace_contract.py,trace_contract.py,test_sgx_render_official_video.py,test_sgx_video_check.py,test_sgx_model_eval_report.py,test_sgx_gate2_compare.py,contracts.delta.json}` 及对应 fixture（可按 GroundSG／共享执行与预算／trace 与媒体三类拆三个 R4 子代理，fixture 与 `contracts.delta.json` 各只有一个写者） | 生产代码、上游源码、Astra 测试与 R2 名下两个测试；不写R1改名未完成文件 | R1完成后按冻结接口并行准备；测试必须真实触发缺 seed、少 state、篡改数组字节、坏账本、重复启动、错 attempt 发布、语言账本缺对（`unpaired`）与图引用哈希对不上，不只改预期字符串；全部交付后整合，顺序7 | 定向CPU测试＋核心短测；7路线×3seed功能反例及cap、预算守卫必须实际执行 | GPU=0；独立worktree；这批测试由R4唯一写入，新增文件先列确切路径 |
 | 主会话自做 | 现行文档、旧名表、资产／运行清单、报告汇总与GL编排 | 标记块、受保护代码、他人在途内容 | 共享规格/运行配置唯一负责人；runbook最终核实 | `RUN_INPUTS`、`ASSETS`、四入口与禁触检查、完整矩阵验收 | 正式运行4席，每席1GPU；`p3-`、`p3-smoke-`前缀，run_name与JobID进launch.md |
 | 只读审查代理 | 审合入前后的精确差异与证据，不写文件 | 所有写入／执行资源动作 | 每块整合前后审，异常交原职责持久代理续改 | 按该块具名判据审证据，静态审查不冒称动态通过 | GPU=0、端口=无 |
 
@@ -612,3 +616,54 @@ CPU 回放／夹具消耗真实 reset／轨迹均为 0。新预算账本同时�
 3. MemER adapter 获取：来源 HF `Yinpei/vlm_subgoal_predictor` 的 `memer/grounded_subgoal/checkpoint-1300`，先只读核 40 位 revision、文件数、字节数、SHA 与缓存缺口，再提交获取清单；落本机 `artifacts/sg-eval/ckpt/` 并同步 NFS；是否批准下载。
 4. 占位 job 到期后的恢复：保持 `expired_cap=0`（到期停、报告），或允许有限次到期接续并计入 870。
 5. 本轮预算 870 的一口气授权（数字已确认，授权未给）。
+
+### 八.11 语言交互完整统计与 `language.jsonl` 定义（2026-10-06 六个只读子代理按路线统计；用户「认可 写入计划」）
+
+**统计：每条路线的语言进出与现状**（「进」= 文字进入模型，「出」= 模型产生文字；「已落盘」只算原文）
+
+| 路线 | 进 | 出 | 现在原文落在哪 | 缺口 |
+|---|---|---|---|---|
+| FrameSamp+Modulation | 任务目标一句作 `prompt` 字段发给动作服务（`mme_client.py::run_loop`）；服务端 `PaligemmaTokenizer` 分词，无模板 | 无 | 任务目标在 trace demo 行 `texts`；新侧 events 的 `ws_send.payload.prompt`；原侧代理 `conn-*/events.jsonl` 的 `fields.prompt`；逐步 request 行只有哈希 | 每次请求的 prompt 原文不在统一记录 |
+| SimpleMemVLA | 任务目标一句（`infer.instruction`）；服务端 `build_simplememvla_messages` 套固定模板（相机说明、20 Hz、「The overall task is: …Identify the current sub-task.」） | **有**：每次决策（每 16 步）生成一条子任务文字（argmax，64 token 上限） | 任务目标 demo 行；子任务 step 行 `subgoal`（两侧）；新侧 events `decision.subtask` | 模板化完整 prompt 两侧不落盘；request 只有哈希 |
+| PonderPounce | OBSERVATION 帧 `task_description`；服务端给 S1 套 `Task: …;\nAction: `、给 S2 套 `<\|im_start\|>user\n{task}` 前缀并把 S2 子目标回灌 S2 上下文 | **有**：S2 生成子目标文字含 1000 制坐标 `at [x, y]` | 新侧 step 行 `subgoal_raw`（原文）与 `subgoal`（换算 `at <y, x>` 256 制）；原侧模型子目标只在服务端日志 `server-*.log`，trace 记的是环境标准答案 | S1／S2 内部 prompt 不落盘；原侧 trace 无模型子目标；request 只有哈希 |
+| GroundSG+Oracle | 任务目标 + 子目标（`info["grounded_subgoal_online"]`，不经语言模型）发给动作服务；服务端拼 `Task: …;\nCurrent Subgoal: …;\nAction: `（符号记忆 token 上限 128，超出静默截断） | 无 | 任务目标 demo 行；子目标 step 行 | 发给动作模型的请求只有哈希；服务端拼接文字不落盘 |
+| GroundSG+QwenVL | 子目标模型：system 固定一句 + user（任务目标、历史子目标列表、1 张当前前视帧、有演示的 9 个任务附 `step_0_video.mp4`、`objects.bbox`）；动作模型同 Oracle | **有**：回复原文（1000 制框坐标）→ `<bbox>` 化进历史 → `<x, y>` 换算交动作模型 | 官方 `ep*_QwenVL_log.jsonl` 记每次**请求**全文，**不记回复**；回复只在 `client.log` 的 `Response:`；换算后子目标在 step 行；keep_period 复用的步不写日志 | 回复无结构化落盘；日志里图片路径局末删除成悬空；复用步无记录 |
+| MemER | 子目标模型：system 长文 + user（任务目标、关键帧图、最近 8 张前视帧、演示视频），无历史子目标文字；动作模型同上 | **有**：JSON 原文（`current_subtask` + `keyframe_positions`） | 上游 `ep*_MemER_log.jsonl` 记请求与回复；本仓库未接入，无归档与清理 | 接入时归档；重问每次都记 |
+| 3-tier Astra | planner：`prompts/{task}.md` + CURRENT REQUEST + 已完成子目标 JSON + 已下发子目标 JSON + 附图说明 + 结尾固定句（模型 `gpt-6-astra`，effort medium，无 system）；monitor：固定 system（NORMAL／STOP）+ user（任务名、目标、当前子目标、10 张图）；动作模型：`prompt`=目标、`grounded_subgoal`=子目标，服务端拼 `Task: …;\nCurrent Subgoal: …;\nAction: `（48 token 截断） | **有**：planner 回子目标文字（`validate_subgoal` 校验，不合模板记 `continue_last`）；monitor 回 `true/false`（`max_tokens=8, temperature=0`） | `planner_calls/<uuid>/{prompt.txt,request.json,response.json,api_response.json,parse_result.json}`、`monitor_inputs/tNNNN/{input.json,response.json}`、`decisions.jsonl`、`identity.json` | 统一 trace 只有哈希；`prompts/*.md` 与 `index.json` 的 sha 不在来源清单；VLA 最终拼接文字不落盘 |
+
+统一 trace 现状（`trace_writer.py`）：语言原文只有 `demo.texts`（任务目标）、`step.subgoal`（含 pp `subgoal_raw`）、`history.note`；`request` 行 `{name, step, sha256, nbytes}`、`response` 行只有动作数组记录；三套规范化函数（`trace_writer.canonical_bytes`、`official_defs.canonical_bytes`、`pp_client.canonical_frame_bytes`）文字都原样进哈希后即丢；`gate2_compare` 对 request 只能报哈希不等；`trace_contract` 对 request／response 无文字契约。
+
+**`language.jsonl` 定义**（每局一份，与 `trace.jsonl` 同目录；接口 `trace_writer.py::LanguageLog`，R6 冻结）
+
+| 字段 | 含义 |
+|---|---|
+| `step` | 该次交互发生前已执行的步数（与 trace `request.step` 同口径） |
+| `model` | `subgoal_model`／`action_model`／`planner`／`monitor` |
+| `dir` | `in`（文字进模型）／`out`（模型产生文字） |
+| `role` | `in` 时 `system`／`user`；动作模型为 `fields`（结构化 `{prompt, grounded_subgoal, …}`） |
+| `text` | 原文逐字（字符串或结构化字段），`ensure_ascii=False` |
+| `images` | 附图引用列表 `[{ref: keyframe|recent|current|wrist|command_start|demo_sheet|memory_sheet, step, cam: front|wrist, sha256}]`；sha256 为原始帧哈希，须能在 trace 的 `front_sha256`／`wrist_sha256` 或 demo 段找到；不存图片本身 |
+| `demo_video` | 有演示视频时记演示段帧号范围 `demo[a:b]` |
+| `params` | 解码参数 `{temperature, max_tokens, model_id, adapter_sha}` |
+| `retry` | 重问序号 0／1／2（坑 2） |
+| `reused_previous` | QwenVL keep_period 复用上次回复的步记 `true`，不发请求 |
+| `fallback` | `out` 时：`null`／`last_valid`／`model_response_error`／`continue_last`（Astra） |
+| `parsed` | `out` 时解析结果：交给动作模型的子目标文本、关键帧序号、Astra 校验后子目标、monitor 的布尔 |
+| `server_final_text` / `server_truncated` | 动作模型 `in`：服务端外壳回包带回的「实际进模型的最终文字」与是否被 token 上限截断 |
+| `ts` | 时间戳 |
+
+**一局里各路线会有什么记录**
+
+| 路线 | 记录 |
+|---|---|
+| FrameSamp+Modulation | 每个推理步一条 `action_model in`（任务目标 + `server_final_text` + 两张当前帧引用）；无 `out` |
+| SimpleMemVLA | 每次决策一条 `action_model in`（任务目标 + 服务端模板化完整 prompt）与一条 `action_model out`（子任务原文） |
+| PonderPounce | 每个观测一条 `action_model in`（任务目标 + S1 prompt）；每次 S2 推理一对 `subgoal_model in`（S2 完整上下文含回灌历史、附图引用）／`out`（原文 `at [x, y]` 与 `parsed` 换算后）；原侧同格式 |
+| GroundSG+Oracle | 每个推理步一条 `action_model in`（任务目标 + 环境子目标 + `server_final_text`），`subgoal_source: oracle`；无 `subgoal_model` 记录 |
+| GroundSG+QwenVL | 每次提问 `subgoal_model in`（system、user 各一条，1 张当前帧引用、演示视频引用）与 `out`（回复原文 + `parsed`）；复用步一条 `reused_previous: true`；每个推理步一条 `action_model in` |
+| MemER | 同 QwenVL，user 无历史子目标、附图为关键帧 + 最近 8 张；重问每次 `in`／`out` 带 `retry`；上游 `ep*_MemER_log.jsonl` 归档进局目录作旁证 |
+| 3-tier Astra（本版只接线） | 每次 planner 调用一对（prompt.txt 全文、回复原文、`parsed` 校验后子目标）；每次 monitor 调用一对（system、user、10 张图引用、`true/false`）；每个推理步一条 `action_model in`；Astra 自己的 `planner_calls/`、`monitor_inputs/` 照旧保留，`prompts/*.md` 与 `index.json` 的 sha256 补进来源清单 |
+
+两侧都记：新侧在客户端记；本机对拍的 MemER 原侧经 `official_hard_runner.py` 记同一格式。七路线接线、CPU 验；实跑只记五模型，Oracle 与 Astra 只 CPU 夹具。存储为纯文字，每局 KB 到几 MB，不影响预算。
+
+**验收** `LANG_IO=PASS episodes=<n> missing=0 unpaired=0 image_ref_unresolved=0`：每个执行步至少一条 `action_model in`；每次 `subgoal_model`／`planner`／`monitor` 调用 `in`／`out` 成对（`reused_previous` 除外）；`retry` 次数与 MemER 日志一致；每个图引用的 sha256 能在 trace 帧哈希里找到；`server_final_text` 非空。对拍：`gate2_compare` 按 `(step, model, dir, retry)` 配对逐次比 `text`，报 `prompt_diff`／`reply_diff`，哈希不等时指出是哪段文字不同。归属：接口 R6；GroundSG 三变体与原侧调用 R2；三个服务端外壳回包 R3；Astra R5；比较器与 `LANG_IO` 检查器 R7；反例测试 R4（缺对、图引用哈希对不上、`server_final_text` 为空、重问次数不符）。
