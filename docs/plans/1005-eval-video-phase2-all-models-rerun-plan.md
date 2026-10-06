@@ -8,21 +8,22 @@
 
 ## 一、一句话方案
 
-只改我们自己的**新接口**，让六条新接口路线（GroundSG Oracle、GroundSG QwenVL、PonderPounce、Astra、SimpleMemVLA、MME）跑出来的每一局都直接带一份官方版式视频（局目录 `official/` 下）；原版接口一行不改。改完后**第一、二、三档全部在 greatlakes 上跑**：第一档生成对拍提前跑，第二档 xhard0 只跑新接口、对照上一轮原版接口结果（缺的原版局在 GL 补跑），第三档 V9 五个模型各 800 局出新成绩。
+只改我们自己的**新接口**，让六条新接口路线（GroundSG Oracle、GroundSG QwenVL、PonderPounce、Astra、SimpleMemVLA、MME）跑出来的每一局都直接带一份官方版式视频（局目录 `official/` 下）；已有的原侧驱动一行不改。改完后**第一、二、三档全部在 greatlakes A40 上跑**：第一档生成对拍提前跑；第二档对拍五个模型的「原侧」与「新侧」（定义见二节第 13 条）——GroundSG 三组沿用上一轮已有原侧结果、缺的在 GL 补跑，SimpleMemVLA 与 MME 新写原侧驱动后在 GL 跑；第三档 V9 五个模型各 800 局出新成绩。
 
 ## 二、已定口径（用户 2026-10-05～06 原话与裁决）
 
-1. **只改新接口**：「我澄清一下所有的修改都是只对新接口对于我们自己的接口。原版接口你你尽可能保存就可以」。`official_hard_runner.py`、`pp_official_runner.py`、`run_official_hard.sh`、Astra 的 `run.sh` 与 `third_party/` 全部不改；共享函数里的新行为默认关闭、只由新侧打开。
+1. **只改新接口**：「我澄清一下所有的修改都是只对新接口对于我们自己的接口。原版接口你你尽可能保存就可以」。`pp_official_runner.py`、`pair_seat.sh`、Astra 的 `run.sh` 与 `third_party/` 全部不改；`official_hard_runner.py`、`official_defs.py`、`run_official_hard.sh` 只为新写 MME／SimpleMemVLA 原侧做增量（第 5 条），已有 GroundSG、PonderPounce 原侧行为不变；共享函数里的新行为默认关闭、只由新侧打开。
 2. **所有模型都改、都做三档**：「所有的模型都要改改完了之后都要做一二3阶段。的对拍」。
-3. **第二档不重跑原版**：「不需要跑原版的接口啊你不是有Xhard0的对拍吗?还是做那个呀」——新接口只与上一轮 `sg-eval-gl-20261004-01` 的原版结果比。
-4. **上一轮原版缺的部分在 GL 补跑**（用户选「GL 补跑原版」）：PonderPounce 分片 1 共 96 局、QwenVL 上一轮未跑的 153 局；补跑用上一轮的 GL 执行副本，与已有原版结果同码。
-5. **SimpleMemVLA、MME 第二档只记录不对比**（用户选「可以，只记录」）：两者没有原版接口、上一轮也没跑过。
+3. **第二档不重跑已有的原侧**：「不需要跑原版的接口啊你不是有Xhard0的对拍吗?还是做那个呀」——GroundSG Oracle／QwenVL、PonderPounce 的新侧与上一轮 `sg-eval-gl-20261004-01` GL 上已有的原侧结果比。
+4. **上一轮原侧缺的部分在 GL 补跑**（用户选「GL 补跑原版」）：PonderPounce 分片 1 共 96 局、QwenVL 上一轮未跑的 153 局；补跑用上一轮的 GL 执行副本，与已有原侧结果同码。
+5. **SimpleMemVLA、MME 也做两侧对拍**：「所有的模型都要跑新接口老接口的对拍。都是GreatLakeA40。」「我说的原版是原版robomme 只跑hard 和修改后的xhard0对拍」。上一版（1003）不含这两个模型、仓库里没有它们的原侧驱动，本轮新写（S6、S7），原侧 2 模型 × 16 任务 × 1 档 × 12 局 = 384 局，用户已批预算增量。（此前「只记录」的裁决作废。）
 6. **三档全部在 GL**：「第一第二第三档全部在greatlace上进行」。本机只做每条新路线 1 局 smoke。
 7. **排期**（用户选「第一档提前+按模型分批」）：第一档在改代码期间就跑；第二、三档哪个模型的依赖合完就先上 GL，各记各的冻结 sha。
 8. **Astra 只做本机 smoke，其余一局不跑**：「Astra仍然是只跑smoke 其他不跑」（2026-10-06）。Astra 新侧照样改（S3），只用本机 smoke（≤2 局，付费）验证；第二档原版与新接口、第三档连通局全部取消。原侧不出官方版式视频（用户选「原侧不出」）。
 9. **GroundSG 的视频全部由官方录像器自己写出**：用户问「能否实现？」——可以，见第三节 GroundSG 一段。
 10. **上一轮 NFS 上约 11.9 GB 产物保留到本轮结束**（用户选「保留到本轮结束」），本轮要读它们当对照。
 11. **第一、二档只出结论不阻塞**，一路跑到第三档结束（沿用 1003 口径）。
+13. **第二档两侧的定义**（用户 2026-10-06 选定「原版环境 + 模型原版代码」）：两侧跑同一批 16 任务 × 1 档 × 12 局 = 192 个身份，都是原版 RoboMME hard 难度的局。**原侧** = 原版 RoboMME 环境（`src/robomme`，与官方 `1fadc0ec` 逐字节相同，hard 难度）+ 模型自己的原版评估代码（官方循环）；**新侧** = 我们修改后的 xhard0（`robomme_hard` 的 `test-hard0`）+ 我们的新接口（`env_client.py` 与各模型客户端）。第二档比的是这两个组合，环境与接口一起比。第二档对拍不含 Astra（用户选「不含 Astra」）。
 12. **禁止跨机器对比**：「不允许进行跨机的对比如果原版的上一轮的第二档没有的话那就需要重跑」。第二档的原版对照只用上一轮 **GL（A40）** 上的原版结果；上一轮本机（RTX 6000 Ada）的原版与新接口结果一律不进本轮比较；GL 上缺的原版局全部在 GL 补跑（第 4 条）。
 
 ## 三、要改什么（先讲共享部分，再分模型）
@@ -33,7 +34,8 @@
 - **重绘工具能直接读无损原始帧（S2a）**：现在 `render_episode` 写死从压缩后的 `episode.mp4` 读，而新局要在转码删原始帧之前就画。改成三种来源（mp4、新侧 `front.mkv`／`wrist.mkv`、原侧 `rgb24`），并加强核对：每路流和帧索引都算指纹、解码出的每一帧都与记录里的画面哈希比对，防止「换一局同尺寸同帧数的画面也通过」（Codex 反例）。
 - **每局收尾多一步、失败不删原始帧（S2b）**：席位脚本在转码之前先出官方版式视频；出不来就保留原始帧供补救，成绩照常记。视频相关的两个函数抽成一个只含函数的小库 `seat_media_lib.sh`，Astra 也能安全地用。
 - **单独的官方视频验收（S2b）**：新工具逐个已接受的局核对 `official/` 下恰好一份官方版式视频，按模型持久化 `kept／rendered／reused／skip／fail` 计数，判定行 `OFFICIAL_MEDIA=PASS … skip=0 fail=0`。它和成绩验收分开，原 `video_check.py` 不改。
-- **原版接口保持不变的证明**：共享函数新行为默认关；CPU 测试证明关掉时原侧写出的记录与改动前逐字节相同。原版补跑另用上一轮执行副本，根本不跑新代码。
+- **已有原侧保持不变的证明**：共享函数新行为默认关；CPU 测试证明关掉时 GroundSG、PonderPounce 原侧写出的记录与改动前逐字节相同。它们的补跑另用上一轮执行副本，根本不跑新代码。
+- **新写两个原侧驱动（S6、S7）**：MME 原侧 = 官方 `third_party/mme-vla/examples/robomme/eval.py` 的官方循环 + 原版环境，配置 `perceptual-framesamp-modul`，在 `official_hard_runner.py` 里加这个变体（与 GroundSG 原侧同一套写法，现有两个变体的行为不变）；SimpleMemVLA 原侧 = 它自己 `third_party/SimpleMemVLA/robomme_sim/eval_success.py` 的策略与执行循环 + 原版环境（`src/robomme`，不用它仓库里自带的环境副本），只跑 hard 的那些局，`group_size=1`。原侧不出官方版式视频（与 GroundSG、PonderPounce 原侧一致），只出 `episode.mp4`。
 
 ### 分模型
 
@@ -52,8 +54,13 @@
 | 档 | 内容 | 规模（乘式） | 对照 |
 |---|---|---|---|
 | 第一档 生成对拍（提前跑） | 只测生成，与模型无关 | V9 43 格 × 3 局 + xhard0 16 任务 × 3 局 = 177 局 | 噪声基线 `scripts/configs/noise-ref-20261003.json` |
-| 第二档 xhard0 新接口 | GroundSG Oracle、QwenVL、PonderPounce、SimpleMemVLA、MME | 5 模型 × 16 任务 × 1 档 × 12 局 = 960 局 | 前三个对上一轮原版结果；后两个只记录 |
-| 第二档 原版补跑 | PonderPounce 分片 1、QwenVL 未跑部分 | 96 局 + (192 − 39) = 153 局，共 249 局 | 与上一轮已有原版结果合成完整对照 |
+| 第二档 新侧（xhard0 + 新接口） | GroundSG Oracle、QwenVL、PonderPounce、SimpleMemVLA、MME | 5 模型 × 16 任务 × 1 档 × 12 局 = 960 局 | 与同模型原侧逐身份比 |
+| 第二档 原侧（原版 RoboMME hard + 原版代码） | GroundSG Oracle | 上一轮 GL 已有 192 局，不跑 | — |
+| 第二档 原侧 | GroundSG QwenVL | 上一轮 GL 已有 39 局 + 本轮补跑 (192 − 39) = 153 局 | — |
+| 第二档 原侧 | PonderPounce | 上一轮 GL 已有分片 0 共 96 局 + 本轮补跑分片 1 共 96 局 | — |
+| 第二档 原侧 | SimpleMemVLA、MME（新写驱动） | 2 模型 × 16 任务 × 1 档 × 12 局 = 384 局 | — |
+
+第二档合计：5 模型 × 2 侧 × 192 局的完整对拍，其中本轮在 GL 新跑 960（新侧）+ 249（补跑）+ 384（新原侧）= 1593 局。
 | 第三档 V9 正式评估 | 五个模型 | 5 模型 × 800 局 = 4000 局（800 的乘式见第二部分六） | 新成绩 |
 
 本机只做 smoke：五条非 Astra 新路线各 1 局，Astra 新侧 1 局（失败可再 1 局）；Astra 在 GL 上一局不跑。
@@ -63,11 +70,11 @@
 | 查什么 | 怎么查 | 过了说明什么 | 判定行 |
 |---|---|---|---|
 | 记录格式 | 每条新路线的真实 writer 写出夹具 → 读回 → `load_trace` → 官方录像器 | 重绘工具对六条路线都能出片 | `TRACE_CONTRACT=PASS routes=6` |
-| 原版不变 | 共享函数关开关时，原侧夹具输出与 `bf7dddf3` 逐字节比 | 原版接口行为未受影响 | `ORIG_SIDE_UNCHANGED=PASS` |
+| 已有原侧不变 | 共享函数关开关时，GroundSG、PonderPounce 原侧夹具输出与 `bf7dddf3` 逐字节比 | 已有原侧行为未受影响 | `ORIG_SIDE_UNCHANGED=PASS` |
 | 每局一份官方视频 | `official_media_check.py` 以已接受身份为分母 | 无缺失、无重复、无失败 | `OFFICIAL_MEDIA=PASS total=<n> kept=<a> rendered=<b> reused=<c> skip=0 fail=0` |
 | 帧数口径 | 官方视频帧数 vs `demo_frames + 1 + exec_steps − omitted` | 没有丢帧或多帧；只有执行到 `max_steps+1` 的官方超时少 1 帧，strict-cap 局不少 | 并入 `OFFICIAL_MEDIA` 的 `frame_mismatch=0` |
 | 第一档 | `noise_gate.py gen-regress check` | 生成链路没变 | `GEN_REGRESS=PASS|FAIL`（不阻塞） |
-| 第二档 | `gate2_compare.py`（新接口 vs 上一轮及补跑原版） | 只是接口差异报告，不证明成绩等价 | 每模型 `GATE2=INFO compared=<乘式>` |
+| 第二档 | `gate2_compare.py`（新侧 vs 原侧合表，逐身份核对 192 对） | 是差异报告，不证明成绩等价 | 每模型 `GATE2=INFO compared=16 任务 × 1 档 × 12 局 = 192`；缺对即 `GATE2=INCOMPLETE` |
 | 第三档 | `eval_report.py` 唯一终态 + `video_check.py` + `OFFICIAL_MEDIA` | 每模型 800 局成绩与视频齐 | `VIDEO_SAVED=PASS`、`OFFICIAL_MEDIA=PASS total=800 … skip=0 fail=0` |
 | 接线不改策略行为 | CPU 固定回包回放：同一组固定观测与服务回包，比较改前（`bf7dddf3`）、改后客户端发出的请求与执行的动作 | 录像与记录只旁路、不改请求与动作 | `CLIENT_REPLAY_EQ=PASS routes=6 mismatches=0` |
 
@@ -79,15 +86,15 @@
 |---|---|---|
 | 0 | 用户「开工」+ 一次性批预算与占位 job；提交占位 job；主检出 clean，记 `BASE` | JobID 记 `launch.md` |
 | 1a | 第一档：占位 job 排到即在 GL 起跑（不等改代码） | `GEN_REGRESS=` 行 |
-| 1b | 原版补跑：PonderPounce 96 + QwenVL 153，用上一轮执行副本 | 每路线 `EPISODE_DONE` 计数齐 |
-| 1c | 主会话写 S0 契约与共享测试助手并提交；同批派 S1、S2a、S2b、S3、S4、S5 | 各子任务定向测试 passed |
-| 2 | 依次审查合并 S2a → S2b → S1 → S4 → S5 → S3，每次合并后核心短测 + push | `PRE_MERGE_REVIEW=PASS`、`POST_MERGE_REVIEW=PASS` ×6 |
+| 1b | 原侧补跑：PonderPounce 96 + QwenVL 153，用上一轮执行副本 | 每路线 `EPISODE_DONE` 计数齐 |
+| 1c | 主会话写 S0 契约与共享测试助手并提交；同批派 S1、S2a、S2b、S3、S4、S5、S6、S7 | 各子任务定向测试 passed |
+| 2 | 依次审查合并 S2a → S2b → S1 → S6 → S7 → S4 → S5 → S3，每次合并后核心短测 + push | `PRE_MERGE_REVIEW=PASS`、`POST_MERGE_REVIEW=PASS` ×8 |
 | 3 | 每条路线依赖合完即本机 smoke 1 局 → GL 冻结执行副本 → 第二档接第三档 | smoke：`OFFICIAL_MEDIA=PASS total=1`；GL 各档判定行 |
 | 4 | 全部跑完：汇总、留档 `docs/validation/sg-eval-gl-<日期>-02/`、commit、push、按清单 `scancel` | `git status -sb` 无 `ahead` |
 
 ## 七、子代理分工与合并（简述）
 
-改代码切成七块：S0 契约由主会话先写好提交，作为所有人的共同依据；其余六块各管互不重叠的文件——S1 只动 GroundSG 新侧适配器，S2a 只动重绘工具，S2b 只动席位脚本与新验收工具，S3 只动 Astra 新侧，S4 只动 SimpleMemVLA 与 MME 客户端，S5 只动 PonderPounce 客户端与新外壳。六块在同一时刻派出、各在自己的 worktree 里写。合回顺序按依赖：先重绘工具（S2a），再席位脚本（S2b），然后 GroundSG（S1）、SimpleMemVLA/MME（S4）、PonderPounce（S5）、Astra（S3）。每次合并前：核对改动只在它的文件范围内、在它的 worktree 复跑测试、派一个只读审查者看差异；合并后：跑核心短测与项目闸门、立即 push。GroundSG 合完就可以上 GL，不等后面几块。
+改代码切成九块：S0 契约由主会话先写好提交，作为所有人的共同依据；其余八块各管互不重叠的文件——S6 只动原侧入口（MME 原侧变体与原侧启动脚本的白名单），S7 只新写 SimpleMemVLA 原侧驱动，S1 只动 GroundSG 新侧适配器，S2a 只动重绘工具，S2b 只动席位脚本与新验收工具，S3 只动 Astra 新侧，S4 只动 SimpleMemVLA 与 MME 客户端，S5 只动 PonderPounce 客户端与新外壳。八块在同一时刻派出、各在自己的 worktree 里写。合回顺序按依赖：先重绘工具（S2a），再席位脚本（S2b），然后 GroundSG（S1）、MME 原侧（S6）、SimpleMemVLA 原侧（S7）、SimpleMemVLA/MME（S4）、PonderPounce（S5）、Astra（S3）。每次合并前：核对改动只在它的文件范围内、在它的 worktree 复跑测试、派一个只读审查者看差异；合并后：跑核心短测与项目闸门、立即 push。GroundSG 合完就可以上 GL，不等后面几块。
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -95,7 +102,7 @@
 
 **红线**
 
-- R1 不改原版接口：`scripts/eval-official/{official_hard_runner.py,pp_official_runner.py,run_official_hard.sh,pair_seat.sh}`、`third_party/**`（含 PonderPounce、mme-vla、Astra-on-RoboMME）零 diff；`src/robomme/`（P2）、`scripts/` 顶层四入口（P1）零 diff。闸门：`git diff --quiet <BASE> HEAD -- <上列路径>`。
+- R1 已有原侧不改：`scripts/eval-official/{pp_official_runner.py,pair_seat.sh}`、`third_party/**`（含 PonderPounce、mme-vla、SimpleMemVLA、Astra-on-RoboMME）零 diff；`official_hard_runner.py`、`official_defs.py`、`run_official_hard.sh` 只许 S6 做「新增变体／新增策略分支」的增量改动，GroundSG 两变体与 PonderPounce 原侧的行为须由 CPU 测试证明与 `BASE` 逐字节相同（`ORIG_SIDE_UNCHANGED`）；`src/robomme/`（P2）、`scripts/` 顶层四入口（P1）零 diff。闸门：`git diff --quiet <BASE> HEAD -- <上列路径>`。
 - R2 共享代码（`mmesg_client.py`、`pp_client.py`、`trace_writer.py`、`recorder.py`、`run_seat.sh`）的新行为一律由显式参数或环境变量打开，默认值保持 `BASE` 行为；原侧入口不传这些参数。
 - R3 官方 `RolloutRecorder` 不复制、不改写；GroundSG 只调用官方实例的 `save_video`；其他路线一律经 `render_official_video.py` 以 `importlib` 加载官方类。
 - R4 `episode.mp4` 口径、`video_check.py`、`eval_video_mover.py` 不改；官方版式文件一律放局目录 `official/`。
@@ -155,6 +162,19 @@ S0 同时提交测试助手 `tests/pipeline/evalx/report/trace_contract.py::asse
 - `scripts/eval-official/pp_client.py`：新增 `pp_subgoal_to_official(text)`：`re.sub(r"at \[(\d+), (\d+)\]", …)` 把每组 `[x, y]`（0～1000）换成 `<round(y*255/1000), round(x*255/1000)>`，结果夹到 0～255；服务端由整数像素正向换算的值往返精确（误差 ≤0.1275 px），非网格值就近取整。`TracedConnection.act` 存 `last_subgoal`；新侧 `trace_step` 增加 `subgoal` 关键字（默认 `None`，R2），oracle 标签改记 `history` 行 `note=oracle_simple_subgoal:<文本>`。新侧 route、演示、收尾、终态按 C1～C3；原侧调用路径不传新参数。
 - 测试：`tests/pipeline/evalx/pp/test_pp_protocol_wire.py` 加换算（`at [612, 247]` → `at <63, 156>`；0～255 全量往返精确；多组坐标；越界夹取；`None`）、假服务端回包 `subgoal` 进轨迹、`assert_renderable`；新文件 `tests/pipeline/evalx/pp/test_pp_server_wrap.py` 用假 S1/S2 验证：子目标产生到 `ready_at_ns` 之前，回包仍是旧子目标；chunk 耗尽重复末行时子目标不变；首个子目标前为 `None`。
 
+**S6 MME 原侧变体**（`scripts/eval-official/official_hard_runner.py`、`official_defs.py`、`run_official_hard.sh`）
+- `official_defs.py`：新增变体常量 `VARIANT_FRAMESAMP = "framesamp-modul"`，`make_args` 对它取 `subgoal_type=None`、`use_oracle=use_qwenvl=False`，配置文件 `perceptual-framesamp-modul.yaml`（与 `run_seat.sh::MME_YAML_EXPECT` 同一份）；`load_groundsg` 对该变体不摘取预测器（官方循环在 `subgoal_type=None` 时不调用预测器，实施时先核）。
+- `official_hard_runner.py`：`--variant` 增加 `framesamp-modul`；trace route `mme/framesamp-modul/orig`；其余流程与 GroundSG 原侧相同（官方 `EnvRunner` + 原版 `src/robomme`，hard0 分片的 `source_episode`）。
+- `run_official_hard.sh`：`--policy` 白名单扩为 `mmesg|pp|mme|smvla`；`mme` 走 `official_hard_runner.py --variant framesamp-modul`（服务端同 `run_seat.sh` 的 mme 分支）；`smvla` 走 S7 的 `smvla_official_runner.py`（CLI 契约见下）。原有 `mmesg`、`pp` 分支逐字不动。
+- 测试：`tests/pipeline/evalx/groundsg/test_groundsg_orig_runner.py` 加 framesamp 变体用例；新增 `tests/pipeline/eval/test_official_hard_policies.py`：白名单、未知策略报错、`mmesg`／`pp` 命令行与 `BASE` 逐字节相同。
+
+**S7 SimpleMemVLA 原侧驱动**（新文件 `scripts/eval-official/smvla_official_runner.py`）
+- 驱动 `third_party/SimpleMemVLA/robomme_sim` 的原版策略与执行循环（`eval_success.py::build_policy`、`run_group` 的逐局执行逻辑，按文件路径加载、不改其源码），环境改由原版 `src/robomme` 的 `BenchmarkEnvBuilder(env_id=task, dataset="test", …)` 按 hard0 分片的 `source_episode` 建（不用它仓库里自带的 `robomme_sim/robomme` 副本；启动断言 `robomme.__file__` 在本仓库 `src/robomme/` 下）；`group_size=1`；`max_steps` 1300 与官方相同。
+- 每局目录与 GroundSG 原侧同布局（`trace.jsonl` route `smvla/orig`、`frames/*.rgb24`、`frames.json`），以便 `run_official_hard.sh` 的转码发布与 `gate2_compare.py` 直接复用。
+- CLI 契约（S6 的启动分支照此调用）：`smvla_official_runner.py --shard <json> --out <dir> --ckpt <dir> --max-steps 1300 --gpu 0 [--limit N]`，每局打印 `EPISODE_DONE side=orig policy=smvla …`。
+- 风险：`run_group` 的逐局逻辑若与批量调度耦合到无法在 `group_size=1` 下单独驱动，或换环境副本后接口不符，停下交用户，不改第三方源码。
+- 测试：新增 `tests/pipeline/evalx/smvla/test_smvla_official_runner.py`（假策略、假环境：逐局目录布局、`EPISODE_DONE` 行、`robomme.__file__` 断言、不导入 `robomme_sim/robomme`）。
+
 **主会话**：S0；新增测试文件如需登记 `tests/contract/benchmark_contracts.json` 由主会话改；`CLIENT_REPLAY_EQ` 回放脚本（一次性，`scripts/eval-official/client_replay_eq.py`，合并后跑）；`launch.md`、`result.md`、`records/`。
 
 ## 二、子代理分配表
@@ -167,10 +187,12 @@ S0 同时提交测试助手 `tests/pipeline/evalx/report/trace_contract.py::asse
 | S2a | 重绘工具重构 | `render_official_video.py`、`tests/pipeline/evalx/report/test_sgx_render_official_video.py` | R1 全部、其余 `scripts/eval-official/*` | CLI 向后兼容；新增 `--source`、`source_kind` | 1 | `pytest tests/pipeline/evalx/report -q` passed | CPU ≤5 分钟 | 无 |
 | S2b | 席位函数库与官方视频验收 | `seat_media_lib.sh`（新）、`run_seat.sh`、`run_eval_gl.sh`、`official_media_check.py`（新）、`tests/pipeline/eval/test_seat_scripts.py`、`tests/pipeline/eval/test_official_media_check.py`（新） | 同上 | 导出 `render_official_dir`、`transcode_episode_dir`；环境变量 `SGEVAL_OFFICIAL_RENDER`、`SGEVAL_PP_SERVER_WRAP`；调用 S2a 的 `--source raw` | 2 | `pytest tests/pipeline/eval/test_seat_scripts.py tests/pipeline/eval/test_official_media_check.py -q` passed | CPU | `run_seat.sh` 唯一写者 |
 | S1 | GroundSG 新侧 | `mmesg_client.py`、`tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py` | 同上 | 新参数 `keep_official`（默认 False） | 3 | `pytest tests/pipeline/evalx/groundsg -q` passed | CPU | 无 |
-| S4 | SimpleMemVLA、MME | `smvla_client.py`、`mme_client.py`、`tests/pipeline/eval/test_policy_clients.py` | 同上 | 只读 `trace_writer`、`mmesg_client.trace_location` | 4 | `pytest tests/pipeline/eval/test_policy_clients.py -q` passed | CPU | 无 |
-| S5 | PonderPounce 新侧 | `pp_client.py`、`pp_server_wrap.py`（新）、`tests/pipeline/evalx/pp/test_pp_protocol_wire.py`、`tests/pipeline/evalx/pp/test_pp_server_wrap.py`（新） | 同上 + `third_party/PonderPounce/**` | 回包键 `subgoal`；`pp_subgoal_to_official` | 5 | `pytest tests/pipeline/evalx/pp -q` passed（真服务端用例不在 worktree 跑） | CPU | 无 |
-| S3 | Astra 新侧 | `astra_hard_runner.py`、`run_astra.sh`、`tests/pipeline/evalx/astra/test_astra_wiring.py` | 同上 | 只 source `seat_media_lib.sh`（S2b 定义；派发时以接口说明为准，合并在 S2b 之后） | 6 | `pytest tests/pipeline/evalx/astra -q` passed | CPU | 无 |
-| 运行型 R1～Rn | 按六节分片在 GL 席位启动 `run_eval_gl.sh`／`run_official_hard.sh`／`run_astra.sh` | 无 | 一切代码 | 命令原文照第四节 runbook | 开工后 | 起跑判据 `SEAT_START`／`ROUTE_START` + 首局 `REC_TRANSCODE … result=ok` + 首局 `OFFICIAL_RENDER=` | GL 席位 | 账目归主会话 |
+| S4 | SimpleMemVLA、MME | `smvla_client.py`、`mme_client.py`、`tests/pipeline/eval/test_policy_clients.py` | 同上 | 只读 `trace_writer`、`mmesg_client.trace_location` | 6 | `pytest tests/pipeline/eval/test_policy_clients.py -q` passed | CPU | 无 |
+| S5 | PonderPounce 新侧 | `pp_client.py`、`pp_server_wrap.py`（新）、`tests/pipeline/evalx/pp/test_pp_protocol_wire.py`、`tests/pipeline/evalx/pp/test_pp_server_wrap.py`（新） | 同上 + `third_party/PonderPounce/**` | 回包键 `subgoal`；`pp_subgoal_to_official` | 7 | `pytest tests/pipeline/evalx/pp -q` passed（真服务端用例不在 worktree 跑） | CPU | 无 |
+| S3 | Astra 新侧 | `astra_hard_runner.py`、`run_astra.sh`、`tests/pipeline/evalx/astra/test_astra_wiring.py` | 同上 | 只 source `seat_media_lib.sh`（S2b 定义；派发时以接口说明为准，合并在 S2b 之后） | 8 | `pytest tests/pipeline/evalx/astra -q` passed | CPU | 无 |
+| S6 | MME 原侧变体与原侧白名单 | `official_hard_runner.py`、`official_defs.py`、`run_official_hard.sh`、`tests/pipeline/evalx/groundsg/test_groundsg_orig_runner.py`、`tests/pipeline/eval/test_official_hard_policies.py`（新） | 同上 | 变体名 `framesamp-modul`；`smvla` 分支按 S7 CLI 契约调用 | 4 | `pytest tests/pipeline/evalx/groundsg tests/pipeline/eval/test_official_hard_policies.py -q` passed | CPU | `run_official_hard.sh` 唯一写者 |
+| S7 | SimpleMemVLA 原侧驱动 | `smvla_official_runner.py`（新）、`tests/pipeline/evalx/smvla/test_smvla_official_runner.py`（新） | 同上 + `third_party/SimpleMemVLA/**` | CLI 契约见一节 S7 | 5 | `pytest tests/pipeline/evalx/smvla -q` passed | CPU | 无 |
+| 运行型 R1～Rn | 按六节分片在 GL 席位启动 `run_eval_gl.sh`／`run_official_hard.sh` | 无 | 一切代码 | 命令原文照第四节 runbook | 开工后 | 起跑判据 `SEAT_START`／`ROUTE_START` + 首局 `REC_TRANSCODE … result=ok` + 首局 `OFFICIAL_RENDER=` | GL 席位 | 账目归主会话 |
 
 派发前核对：`worktree.baseRef=head`；`git check-ignore -q .claude/worktrees/probe`；`git worktree list` 存档，既有 worktree 一律不动；`git status --short --ignore-submodules=dirty -- . ':!docs/subagent-stats'` 为空。
 
@@ -180,21 +202,22 @@ S0 同时提交测试助手 `tests/pipeline/evalx/report/trace_contract.py::asse
 |---|---|---|
 | 核心短测（每次合并后） | `timeout 280s uv run --no-sync python -m pytest -m 'not slow' -q` | passed、`TEST_RESOURCE=PASS`、`TEST_INVENTORY=PASS` |
 | 项目闸门 | `ls -1 scripts/*.py`；`git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py`；`uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstream` | 四入口；零 diff；`UPSTREAM_GUARD=PASS` |
-| 原版零改动 | `git diff --quiet <BASE> HEAD -- scripts/eval-official/{official_hard_runner.py,pp_official_runner.py,run_official_hard.sh,pair_seat.sh} third_party` | 退出 0 → `ORIG_FILES_UNCHANGED=PASS` |
+| 已有原侧零改动 | `git diff --quiet <BASE> HEAD -- scripts/eval-official/{pp_official_runner.py,pair_seat.sh} third_party`；S6 测试里 `mmesg`／`pp` 原侧命令行与输出对 `BASE` 逐字节比 | 退出 0 → `ORIG_FILES_UNCHANGED=PASS`；`ORIG_SIDE_UNCHANGED=PASS` |
 | 记录契约 | 各子任务测试里的 `assert_renderable` | 汇总 `TRACE_CONTRACT=PASS routes=6` |
 | 客户端回放 | `client_replay_eq.py --base <BASE> --head HEAD` | `CLIENT_REPLAY_EQ=PASS routes=6 mismatches=0` |
 | 本机 smoke | 每路线 1 局（新 run 名、新 preflight 目录） | `OFFICIAL_MEDIA=PASS total=1 skip=0 fail=0`、`VIDEO_SAVED=PASS multi_mp4=0` |
 | 第一档 | `noise_gate.py gen-regress check --set {v9,xhard0}` | `GEN_REGRESS=` 如实记录 |
-| 第二档 | `gate2_compare.py`（新接口 vs 原版合表） | 每模型 `GATE2=INFO`；SimpleMemVLA、MME 记 `GATE2=RECORD_ONLY` |
+| 第二档 | `gate2_compare.py`（新侧 vs 原侧合表，逐身份） | 5 个模型各 `GATE2=INFO compared=16 任务 × 1 档 × 12 局 = 192`；缺对 `GATE2=INCOMPLETE` |
 | 第三档 | `eval_report.py`、`video_check.py`、`official_media_check.py` | 每模型 800 唯一终态、`VIDEO_SAVED=PASS`、`OFFICIAL_MEDIA=PASS total=800 skip=0 fail=0` |
 
 ## 四、runbook（主会话）
 
 1. **占位 job**（用户 2026-10-06 授权：「我授权你最多要求10张卡你现在自行启动和kill job那还是我说的必须要4十八小时然后尽可能早占用排队」；这不是开工令）：同时请求（RUNNING + PENDING）≤10 张卡，全部单卡 `--account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=gpu:a40:1 --gpu_cmode=shared --cpus-per-task=4 --mem=64G --time=48:00:00 --wrap='sleep infinity'`，到期立即同规格续交。2026-10-06 00:52 起的 10 张：`sgev-hold-00～07` = 63188711～16、63188719、63188720，`sgev-hold-08`、`09` = 63325534、63325535（Astra 两卡 63188721 因 Astra 只跑 smoke 已取消）；清单 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/gl-hold-logs/hold-jobs-sgeval-20261004.txt`。JobID 同时记 `launch.md`，收尾按清单逐个 `scancel`。
 2. **第一档（提前）**：沿用 1003 第五节第一档做法，执行副本为 `robomme_benchmark-noise`，检出开工时的 HEAD；`--attempts n --resets 3n --retries 0`；1 个单卡席位。
-3. **原版补跑**：用上一轮 GL 执行副本 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-sgeval`（不同步、不改动，起跑前记录其 HEAD）；`run_official_hard.sh` 跑 PonderPounce 分片 1 与 QwenVL 未跑分片（QwenVL 单局墙钟 3600 s，用上一轮 `launch_seat_v2.sh` 体例）。结果写入本轮新 stage，合表时与上一轮原版结果按身份并起来。
-4. **改代码**：S0 提交 → 同一消息派 S2a、S2b、S1、S4、S5、S3（`model: "opus"`、`isolation: "worktree"`）→ 按顺序逐个第一次审查、`git merge --no-ff <TIP sha> -F <消息文件>`、第二次审查、push。
-5. **按模型分批上 GL**：某模型依赖的子任务全部合入后：本机 smoke 1 局（tmux 前缀 `ovl2-`）→ 在 NFS 新建执行副本 `robomme_benchmark-sgeval2-<批次>`（`git clone --no-hardlinks` + `git submodule update --init`，检出冻结 sha，主 `.venv` 用 `UV_LINK_MODE=copy uv sync --frozen --group eval-client`；三方服务 venv 经 `MME_PY`／`PP_PY`／`SMVLA_PY` 指向上一轮执行副本中的对应 venv，第三方代码未变）→ 各席位链「第二档分片 → 第三档分片」。批次：A = GroundSG（S2a、S2b、S1 后），B = SimpleMemVLA／MME（+S4），C = PonderPounce（+S5）。Astra（S3）合入后只做本机 smoke，不上 GL。
+3. **原版补跑**：用上一轮 GL 执行副本 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-sgeval`（不同步、不改动，起跑前记录其 HEAD）；`run_official_hard.sh` 跑 PonderPounce 分片 1 与 QwenVL 未跑分片（QwenVL 单局墙钟 3600 s，用上一轮 `launch_seat_v2.sh` 体例）。结果写入本轮新 stage，合表时与上一轮原侧结果按身份并起来。
+3b. **新原侧（SimpleMemVLA、MME）**：S6、S7 合入后，用批次 B 的新执行副本 `run_official_hard.sh --policy {mme,smvla} --dataset test-hard0 --max-steps 1300` 在 GL 跑 2 模型 × 16 任务 × 1 档 × 12 局 = 384 局；原侧环境为原版 `src/robomme`，起跑断言打印 `robomme.__file__`。
+4. **改代码**：S0 提交 → 同一消息派 S2a、S2b、S1、S6、S7、S4、S5、S3（`model: "opus"`、`isolation: "worktree"`）→ 按顺序逐个第一次审查、`git merge --no-ff <TIP sha> -F <消息文件>`、第二次审查、push。
+5. **按模型分批上 GL**：某模型依赖的子任务全部合入后：本机 smoke 1 局（tmux 前缀 `ovl2-`）→ 在 NFS 新建执行副本 `robomme_benchmark-sgeval2-<批次>`（`git clone --no-hardlinks` + `git submodule update --init`，检出冻结 sha，主 `.venv` 用 `UV_LINK_MODE=copy uv sync --frozen --group eval-client`；三方服务 venv 经 `MME_PY`／`PP_PY`／`SMVLA_PY` 指向上一轮执行副本中的对应 venv，第三方代码未变）→ 各席位链「第二档分片 → 第三档分片」。批次：A = GroundSG（S2a、S2b、S1 后），B = SimpleMemVLA／MME（+S6、S7、S4；原侧与新侧同批上 GL），C = PonderPounce（+S5）。Astra（S3）合入后只做本机 smoke，不上 GL。
 6. **本轮全新目录**：run 名 `sg-eval-gl-<开工日期>-02`；stage、账本、media、trace、日志全部新建，命令逐条写进 `launch.md`，不复用上一轮 stage（防 `resume_skip`）；未知路线即报错退出。起跑后核对每条路线首局确有新 attempt。
 7. **监听**：每份日志一个 Monitor，过滤 `EXIT_CODE=|RUN_BLOCKED|INFRA|OFFICIAL_RENDER=FAIL|OFFICIAL_MEDIA=|Traceback|CUDA|svulkan2|EXCLUSIVE|NO RECORD|reset 拒绝`；开工后按 1003 第五节挂「排到卡即唤醒」。
 8. **收尾**：各模型 `OFFICIAL_MEDIA` 汇总、成绩表、第二档差异表、视频索引；留档 `docs/validation/sg-eval-gl-<日期>-02/{launch.md,result.md,records/}`；commit、push；按清单逐个 `scancel`。
@@ -206,7 +229,8 @@ S0 同时提交测试助手 `tests/pipeline/evalx/report/trace_contract.py::asse
 | GroundSG 补存的视频与官方正常路径的差异 | 官方超时（`count > max_steps`）先 break 后 record，补存路径帧数口径不同 | 帧数口径按 `omitted` 字段区分，`official_source` 记来源 |
 | PonderPounce 外壳依赖内部方法名 | `_fire_s1`、`_dispense`、`_visible_cognition` 是锁定提交 `723df357` 的私有方法 | 锁定提交不变即稳定；`test_pp_server_wrap.py` 钉死；改不通即停交用户 |
 | SimpleMemVLA 回包子任务键名 | 未在本计划内逐字核对 `smvla_server.py` | S4 实施第一步核对，不符先改计划 |
-| 跨时间对照 | 第二档新接口与上一轮原版不是同时跑的 | 第二档只出差异报告；留档写明 |
+| 跨时间对照 | GroundSG、PonderPounce 的新侧与上一轮原侧不是同时跑的（SimpleMemVLA、MME 两侧同批） | 第二档只出差异报告；留档写明 |
+| SimpleMemVLA 原侧驱动可行性 | 它的官方循环为批量设计并自带环境副本；`group_size=1` 单独驱动与换成原版 `src/robomme` 是否干净可行未核实 | S7 第一步核实，不可行即停交用户，不改第三方源码 |
 | QwenVL 墙钟 | A40 上每步约 1.5 s，V9 1600 步单局最长约 40 分钟；800 局占卡时长大 | 单局墙钟 3600 s；48 h 到期按 1003「到期与续交」 |
 | 原始帧保留占盘 | 重绘失败的局保留 raw | `official_media_check` 列出，修复后统一清理 |
 | GL 配额 | 上一轮 9 个 job 长期 PENDING（`AssocGrpGRES`） | 第一档与原版补跑先占先跑；按模型分批减少空等 |
@@ -225,16 +249,17 @@ S0 同时提交测试助手 `tests/pipeline/evalx/report/trace_contract.py::asse
 | 本机 smoke 修复后重跑 | 5 路线 × ≤2 局 | 10 | 20 |
 | 本机 smoke（Astra 新侧，付费） | ≤2 局 | 2 | 4 |
 | GL smoke（非 Astra 新侧） | 5 路线 × 1 局 | 5 | 10 |
-| GL 第二档新接口 | 5 模型 × 16 任务 × 1 档 × 12 局 | 960 | 1920 |
-| GL 第二档原版补跑 | PonderPounce 分片 1 共 96 局 + QwenVL（16 任务 × 1 档 × 12 局 − 已有 39）= 153 局 | 249 | 498 |
+| GL 第二档新侧 | 5 模型 × 16 任务 × 1 档 × 12 局 | 960 | 1920 |
+| GL 第二档新原侧（SimpleMemVLA、MME） | 2 模型 × 16 任务 × 1 档 × 12 局 | 384 | 768 |
+| GL 第二档原侧补跑 | PonderPounce 分片 1 共 96 局 + QwenVL（16 任务 × 1 档 × 12 局 − 已有 39）= 153 局 | 249 | 498 |
 | GL 第三档 | 5 模型 × 800 局 | 4000 | 8000 |
 | 基础设施重试 | 非 Astra 5 模型 × ≤10 次（整批共享，原版补跑计入所属模型）；Astra 0 | 50 | 100 |
 | 到期续跑 | 非 Astra 5 模型 × ≤100 局 | 500 | 1000 |
-| **合计** | | **5980** | **12159** |
+| **合计** | | **6364** | **12927** |
 
 正常 fail／timeout 不重试；smoke 不进正式分母；账本持久化，重启不重新获得额度。**Astra**：本轮付费局只有本机 smoke ≤2 局（上一轮 2 局花费 0.5149 美元），金额上限 5 美元，到线即停。
 
-**审批记录（2026-10-06）**：用户「234都同意 计划我在看」——本节预算（轨迹 ≤5980、reset ≤12159）、Astra 本机 smoke ≤2 局与 5 美元上限、集群操作预授权（清理自己 job 内卡死的 `srun` 步骤、按清单精确 JobID 取消自己的 job）已批准；计划本身仍在用户审阅，开工令未给。**占位 job**：见第四节第 1 条，已获授权。
+**审批记录（2026-10-06）**：用户「234都同意 计划我在看」——本节预算（当时轨迹 ≤5980、reset ≤12159）、Astra 本机 smoke ≤2 局与 5 美元上限、集群操作预授权（清理自己 job 内卡死的 `srun` 步骤、按清单精确 JobID 取消自己的 job）已批准；计划本身仍在用户审阅，开工令未给。随后用户批准 SimpleMemVLA、MME 新原侧增量（2 模型 × 16 任务 × 1 档 × 12 局 = 384 局、reset 768 次），合计改为轨迹 ≤6364、reset ≤12927。**占位 job**：见第四节第 1 条，已获授权。
 
 ## 七、留档与 commit 纪律
 
