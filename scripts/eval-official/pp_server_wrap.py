@@ -19,9 +19,10 @@
 第三阶段（1006 计划八.11／八.12 第 5、7 条；接口冻结说明 2.2、五节「服务外壳回包审计键」）：
 
 - 每个 ACTION 回包另加 ``_sgeval_audit``：``channels`` 为 System 1 本局实际用的 prompt（``Task: …;\nAction: ``
-  原文、父类算出的 token id 与 mask、tokenizer 名、是否填满／截断），``server_final_text`` 同该原文，``pp_generation``
-  为自上次回包以来 System 2 每次 ``fire`` 的完整生成块（reasoning、子目标原文与 token、kind、gate 分数、是否提交、
-  是否回滚、上下文长度增量）。System 2 的观察挂在本局上下文实例的 ``fire``／``_restore`` 上（调用原方法、原样
+  原文、父类算出的 token id 与 mask、tokenizer 名、是否填满／截断；``text_reconstructed=true``：原文是按同一
+  task_text 重新拼出的），``server_final_text`` 同该原文，``pp_generation`` 为自上次回包以来 System 2 每次 ``fire``
+  一块的列表（reasoning、子目标原文与 token、kind、gate 分数、是否提交、是否回滚、上下文长度增量；键名对齐客户端
+  语言账本，见 ``generation_blocks``；没有 fire 为 None）。System 2 的观察挂在本局上下文实例的 ``fire``／``_restore`` 上（调用原方法、原样
   返回）；第一次 Ponder 时父类才新建上下文，外壳在父类 ``_fire_s2`` 期间把模块里的上下文类临时换成「建好即挂观察」
   的工厂，返回后立即还原。外壳只观察真实结果：不多推理、不多抽随机数、不改动作。环境变量 ``SGEVAL_AUDIT=0`` 时
   不挂观察、不加审计键（``OBS_EQ`` 对照）。
@@ -200,16 +201,41 @@ class SubgoalReportingServer(PonderPounceRoboMMEServer):
             "channel": "task", "text": text, "token_ids": _tolist(ids), "mask": mask_l,
             "tokenizer": getattr(tok, "name_or_path", None) or (type(tok).__name__ if tok is not None else None),
             # 右侧补齐到 max_token_len 且 truncation=True：mask 全为 1 表示填满（可能被截断）
-            "truncated": None if mask_l is None else bool(mask_l) and all(mask_l)}]
+            "truncated": None if mask_l is None else bool(mask_l) and all(mask_l),
+            # text 是用 build_pi0_prompt 按同一 task_text 重新拼出的（token_ids／mask 才是真实截获）
+            "text_reconstructed": True}]
         gens = getattr(ep, _GEN_ATTR, None)
         fires = list(gens) if gens else []
         if gens:
             gens.clear()
         return {"channels": channels, "server_final_text": text,
-                "pp_generation": {"s2_task_text": getattr(s, "task_text", None), "fires": fires,
-                                  "active_subgoal": getattr(ep, "active_subgoal", None),
-                                  "n_s2_fires": getattr(ep, "n_s2_fires", None),
-                                  "n_s1_fires": getattr(ep, "n_s1_fires", None)}}
+                "pp_generation": generation_blocks(fires, task_text=getattr(s, "task_text", None),
+                                                   active_subgoal=getattr(ep, "active_subgoal", None),
+                                                   n_s2_fires=getattr(ep, "n_s2_fires", None),
+                                                   n_s1_fires=getattr(ep, "n_s1_fires", None))}
+
+
+def generation_blocks(fires: list, *, task_text: Any = None, active_subgoal: Any = None, n_s2_fires: Any = None,
+                      n_s1_fires: Any = None) -> list | None:
+    """``pp_generation``：自上次回包以来每次 System 2 ``fire`` 一块（列表；没有 fire 为 ``None``，客户端不开调用）。
+
+    每块保留 ``_S2Watch`` 记下的原字段，另按客户端 ``pp_client.TracedConnection._log_generation`` 读的键补齐：
+    ``subgoal_raw``（= ``subgoal_text``，``at [x, y]`` 原文）、``reasoning``（= ``reasoning_text``）、``kind``／``committed``
+    （原字段）、``params``（fire 序号、gate 分数、输入帧数、上下文长度增量、是否回滚）。``text`` 不给（上游只保留拆开后的
+    reasoning 与子目标，不保留整块解码原文；客户端缺 ``text`` 时取 ``subgoal_raw``）；``context``／``prompt``／``images``
+    不给（S2 输入是上下文里累积的 token，上游不保留文字形式，外壳不多解码），客户端记 None。``s2_task_text`` 与
+    回包时刻的 ``active_subgoal``／``n_s2_fires``／``n_s1_fires`` 随每块附上。"""
+    if not fires:
+        return None
+    out = []
+    for f in fires:
+        b = dict(f)
+        b.update(subgoal_raw=f.get("subgoal_text"), reasoning=f.get("reasoning_text"),
+                 params={k: f.get(k) for k in ("fire_index", "gate_score", "n_input_frames", "context_len_before",
+                                               "context_len_after", "context_delta", "rolled_back")},
+                 s2_task_text=task_text, active_subgoal=active_subgoal, n_s2_fires=n_s2_fires, n_s1_fires=n_s1_fires)
+        out.append(b)
+    return out
 
 
 def split_wrapper_args(argv: list[str]) -> tuple[str | None, list[str]]:

@@ -532,8 +532,14 @@ class TracedConnection:
                     self.lang_errors += 1
                     print(f"TRACE_HOOK_ERROR route=pp/new where=language.audit {type(e).__name__}: {e}"[:600],
                           flush=True)
+            # 服务外壳标了 text_reconstructed 的通道（S1 prompt 原文是重拼的，token_ids／mask 才是真实截获）：message 行
+            # schema 冻结、没有自由字段，标志落在本调用 call_close.parsed（无标志时 parsed 仍为 None，与之前相同）
+            chans = self.last_audit.get("channels") if isinstance(self.last_audit, dict) else None
+            recon = sorted({str(c.get("channel")) for c in (chans or [])
+                            if isinstance(c, dict) and c.get("text_reconstructed")})
             self._lang("close_call", cid, status="reply", server_final_text=final_text,
-                       server_truncated=final_trunc)
+                       server_truncated=final_trunc,
+                       parsed={"text_reconstructed_channels": recon} if recon else None)
             gen = self.last_audit.get("pp_generation") if isinstance(self.last_audit, dict) else None
             for g in (gen if isinstance(gen, list) else [gen] if gen is not None else []):
                 self._log_generation(step, g)

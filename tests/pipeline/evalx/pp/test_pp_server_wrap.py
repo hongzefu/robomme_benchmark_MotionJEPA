@@ -210,7 +210,12 @@ def _child_main(mode: str) -> None:  # pragma: no cover - 在子进程里运行
         rec["audit_on_all_keyed"] = all("_sgeval_audit" in x["keys"] for x in wrap_steps)
         rec["audit_on_off_mismatch"] = sum(int(a_ != b_) for a_, b_ in zip(strip(off_steps), strip(wrap_steps))) \
             + abs(len(off_steps) - len(wrap_steps))
-        fires = [f for x in wrap_steps for f in x["audit"]["pp_generation"]["fires"]]
+        # pp_generation：每次 fire 一块的列表，没有 fire 为 None（MERGE-1 对齐客户端语言账本读的键）
+        fires = [f for x in wrap_steps for f in (x["audit"]["pp_generation"] or [])]
+        rec["audit_gen_keys_ok"] = all(f["subgoal_raw"] == f["subgoal_text"] and f["reasoning"] == f["reasoning_text"]
+                                       and f["params"]["fire_index"] == f["fire_index"] for f in fires)
+        rec["audit_text_reconstructed"] = all(c.get("text_reconstructed") is True for x in wrap_steps
+                                              for c in x["audit"]["channels"])
         rec["audit_fire_subgoals"] = [f["subgoal_text"] for f in fires]
         rec["audit_fire_index"] = [f["fire_index"] for f in fires]
         rec["audit_kinds"] = sorted({f["kind"] for f in fires})
@@ -408,4 +413,5 @@ def test_audit_switch_and_generation_blocks_observe_only():
         assert rec["audit_fire_index"] == list(range(n_s2))
         assert rec["audit_fire_subgoals"] == [subs[j % len(subs)] for j in range(n_s2)]
         assert rec["audit_kinds"] == ["stub"]
+        assert rec["audit_gen_keys_ok"] is True and rec["audit_text_reconstructed"] is True
     print(f"PP_AUDIT_OBS_EQ=PASS schedules={len(SCHEDULES)} audit_on_off_mismatch=0")
