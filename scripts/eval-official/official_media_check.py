@@ -24,11 +24,18 @@
    - 输出两行判定与逐身份 ``official-media.jsonl``（缺省写在第一个 ``--root`` 下）::
 
        OFFICIAL_MEDIA_INPUTS=PASS missing=0 extra=0 ambiguous=0 identity_mismatch=0 attempt_mismatch=0 provenance_missing=0
-       OFFICIAL_MEDIA=PASS total=<n> skip=0 fail=0 no_frame_error=<n>
+       OFFICIAL_MEDIA=PASS total=<n> skip=0 fail=0 no_frame_error=<n> videos=<n> accepted=<n> [policy_seed=<s>]
 
      ``missing``：清单身份无接受尝试或接受尝试的局目录不存在；``extra``：账本接受了、或发布根里有清单外的身份；
      ``skip``：无法定位局目录（missing／ambiguous）的身份数；``fail``：定位到但核验不过的身份数。
      两行都 PASS 退出 0，否则 1。
+
+     无帧 error 口径（1006 计划八.10 第 9 条用户裁决「保留例外、报告单列」，三个检查器统一）：
+     ``accepted = videos + no_frame_error``——``videos`` 为核验通过、有视频的身份数，``no_frame_error`` 单列，不设上限、
+     不计 ``fail``；86 个身份完整覆盖不等于 86 个视频。
+   - 1006 第三阶段：视频文件名带 ``_error_`` 而该局 trace 终态不是 error（strict-cap 命中 ``end.cap_hit`` 或
+     ``status=timeout`` 应命名 ``timeout``）计 ``terminal_name`` 失败；``--policy-seed <s>`` 时 trace header／identity
+     与 sidecar 记录的 ``policy_seed`` 必须等于它（trace 缺字段即失败，不把历史缺字段补成已证种子）。
 
 2. 单局核验（``seat_media_lib.sh::render_official_dir`` 调用）::
 
@@ -176,7 +183,7 @@ def load_sidecar(off: Path) -> tuple[str | None, dict | None]:
 
 def verify_dir(ep: Path, ff: str, *, strict_frames: bool, expected_attempt: int | None = None,
                expected_dataset: str | None = None, expected_route: str | None = None,
-               expected_identity: dict | None = None) -> dict:
+               expected_identity: dict | None = None, expected_policy_seed: int | None = None) -> dict:
     """单局核验。返回 ``{"status": pass|fail|no_frame_error, "reasons": [...], ...}``；reasons 的前缀决定计数类别：
     ``identity:``、``attempt:``、``provenance_missing``，其余只计 fail。"""
     ep = Path(ep)
@@ -219,6 +226,10 @@ def verify_dir(ep: Path, ff: str, *, strict_frames: bool, expected_attempt: int 
         reasons.append(f"identity:dataset expect={expected_dataset} trace={ident.get('dataset')}")
     if expected_route is not None and route != expected_route:
         reasons.append(f"route expect={expected_route} trace={route}")
+    trace_seed = header.get("policy_seed", ident.get("policy_seed"))
+    res["policy_seed"] = trace_seed
+    if expected_policy_seed is not None and trace_seed != expected_policy_seed:
+        reasons.append(f"policy_seed:expect={expected_policy_seed} trace={trace_seed}")
     # 官方视频
     off = ep / "official"
     mp4s = sorted(p for p in off.glob("*.mp4") if not p.name.startswith(".")) if off.is_dir() else []
@@ -234,6 +245,11 @@ def verify_dir(ep: Path, ff: str, *, strict_frames: bool, expected_attempt: int 
         res["status"] = "fail"
         return res
     video = mp4s[0]
+    # 1006：strict-cap 命中或 status=timeout 的局命名 timeout；文件名带 _error_ 的旧口径不再放行
+    named = "timeout" if (end.get("cap_hit") is True or end.get("status") == "timeout") else end.get("status")
+    res["named_terminal"] = named
+    if "_error_" in video.name and named != "error":
+        reasons.append(f"terminal_name:error_named status={end.get('status')} cap_hit={end.get('cap_hit')}")
     side_name, side = load_sidecar(off)
     res["sidecar"] = side_name
     expected = end.get("frames_recorded")
@@ -275,6 +291,9 @@ def verify_dir(ep: Path, ff: str, *, strict_frames: bool, expected_attempt: int 
         sf = sidecar_frames(side)
         if sf is not None and n >= 0 and sf != n:
             reasons.append(f"provenance_frames={sf} decoded={n}")
+        side_seed = side.get("policy_seed")
+        if side_seed is not None and trace_seed is not None and side_seed != trace_seed:
+            reasons.append(f"policy_seed:provenance={side_seed} trace={trace_seed}")
     res["status"] = "fail" if reasons else "pass"
     return res
 
@@ -315,7 +334,7 @@ def index_roots(roots: list[Path]) -> dict[tuple[str, int], list[Path]]:
 
 
 def check_all(manifests: list[Path], ledgers: list[Path], roots: list[Path], dataset: str, route: str | None,
-              ff: str) -> tuple[dict, dict, list[dict]]:
+              ff: str, policy_seed: int | None = None) -> tuple[dict, dict, list[dict]]:
     counts = dict(missing=0, extra=0, ambiguous=0, identity_mismatch=0, attempt_mismatch=0, provenance_missing=0)
     media = dict(total=0, skip=0, fail=0, no_frame_error=0, passed=0)
     out: list[dict] = []
@@ -354,7 +373,7 @@ def check_all(manifests: list[Path], ledgers: list[Path], roots: list[Path], dat
                 rec.update(status="skip", reasons=["ambiguous_dirs:" + ",".join(str(p) for p in cands)])
             else:
                 res = verify_dir(cands[0], ff, strict_frames=True, expected_attempt=acc[1], expected_dataset=dataset,
-                                 expected_route=route, expected_identity=row)
+                                 expected_route=route, expected_identity=row, expected_policy_seed=policy_seed)
                 rec.update(res, key=k)
                 rs = res["reasons"]
                 if any(r.startswith("identity:") for r in rs):
@@ -391,6 +410,8 @@ def main(argv=None) -> int:
     ap.add_argument("--route")
     ap.add_argument("--out", type=Path)
     ap.add_argument("--ffmpeg")
+    ap.add_argument("--policy-seed", type=int, default=None,
+                    help="模型种子：每局 trace 与 sidecar 的 policy_seed 必须等于它（判定行带 policy_seed=）")
     args = ap.parse_args(argv)
     defs = official_defs()
     if defs.canonical_dataset(args.dataset) != args.dataset or defs.canonical_route(args.route) != args.route:
@@ -400,7 +421,7 @@ def main(argv=None) -> int:
         print("OFFICIAL_MEDIA=FAIL reason=no_ffmpeg", flush=True)
         return 2
     if args.verify_dir is not None:
-        res = verify_dir(args.verify_dir, ff, strict_frames=False)
+        res = verify_dir(args.verify_dir, ff, strict_frames=False, expected_policy_seed=args.policy_seed)
         tag = {"pass": "PASS", "no_frame_error": "NO_FRAME"}.get(res["status"], "FAIL")
         print(f"OFFICIAL_VERIFY={tag} dir={res['dir']} frames={res.get('frames_decoded')} "
               f"expect={res.get('frames_expected')} frames_source={res.get('frames_source')} "
@@ -408,7 +429,8 @@ def main(argv=None) -> int:
         return 0 if tag in ("PASS", "NO_FRAME") else 1
     if not args.manifest or not args.ledger or not args.root or not args.dataset:
         ap.error("全量验收须给 --manifest、--ledger、--root、--dataset（各可重复）")
-    counts, media, rows = check_all(args.manifest, args.ledger, args.root, args.dataset, args.route, ff)
+    counts, media, rows = check_all(args.manifest, args.ledger, args.root, args.dataset, args.route, ff,
+                                    policy_seed=args.policy_seed)
     out = args.out or (args.root[0] / "official-media.jsonl")
     tmp = out.with_name(out.name + ".tmp")
     with open(tmp, "w", encoding="utf-8") as fh:
@@ -420,7 +442,9 @@ def main(argv=None) -> int:
     print(f"OFFICIAL_MEDIA_INPUTS={'PASS' if inputs_ok else 'FAIL'} " + " ".join(f"{k}={v}" for k, v in counts.items()),
           flush=True)
     print(f"OFFICIAL_MEDIA={'PASS' if media_ok else 'FAIL'} total={media['total']} skip={media['skip']} "
-          f"fail={media['fail']} no_frame_error={media['no_frame_error']} report={out}", flush=True)
+          f"fail={media['fail']} no_frame_error={media['no_frame_error']} videos={media['passed']} "
+          f"accepted={media['passed'] + media['no_frame_error']}"
+          + (f" policy_seed={args.policy_seed}" if args.policy_seed is not None else "") + f" report={out}", flush=True)
     return 0 if media_ok else 1
 
 

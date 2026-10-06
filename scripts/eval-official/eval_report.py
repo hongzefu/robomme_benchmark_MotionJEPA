@@ -73,6 +73,20 @@ report.json 键的分工（站点 S1-E 依赖）：``per_policy.<p>.cells／task
 ``EVAL_REPORT=PASS dataset=… policy=… count_mismatch=0 dataset_crossed=0 media_unexplained=0 exec_over_cap=0|skip``
 ``EVAL_VIDEOS=PASS dataset=… policy=… expected=… videos=… missing=0 decode_fail=0``
 ``--partial`` 时三行一律 FAIL 并追加 ``partial=1``。
+
+1006 第三阶段（seed 7、ood 1800 步；计划第二部分八.10 第 9 条、八.12 第 8 条）对带 ``--dataset`` 的口径追加：
+
+- 真实步数上限（``--cap``，ood 给 1800）：每条结果行实际的 ``max_steps``／``effective_max_steps``／``effective_cap``
+  （写了的都要等于 ``--cap``，一个都没写也算不符）以及能找到的局目录 ``trace.jsonl`` header 的 ``max_steps``／
+  ``effective_cap`` 必须等于 ``--cap``，不符计 ``cap_mismatch``（EVAL_REPORT 追加 ``cap=`` 与该字段，>0 即 FAIL）——
+  仍在 1600 截断的旧路线在 ``--cap 1800`` 下不能误过。hard-verify 不做（官方循环口径不变）。
+- 模型种子：按 ``(model, policy_seed)`` 分组报告，三行都带 ``policy_seed=<s>``。给 ``--policy-seed`` 时每条结果行的
+  ``policy_seed`` 必须等于它（缺字段也算不符，不把历史缺字段补成已证种子）；不给时取结果行里唯一的种子，出现多个计
+  ``policy_seed_mixed``。不符都计入 ``count_mismatch``。
+- 无帧 error 例外（用户裁决「保留例外、报告单列」，三个检查器统一）：非 infra 错误终局、录像目录无视频且无帧（trace 末行
+  ``no_frame`` 为真或 ``frames_recorded == 0``；找不到 trace 时以写明原因为准）的身份计 ``no_frame_error``，
+  ``accepted = videos + no_frame_error``；EVAL_COVERAGE 的 ``error_final`` 只把无帧 error 之外的错误终局判 FAIL，
+  两行都单列 ``no_frame_error``。有帧却没视频的错误终局照常计 ``missing``。
 """
 
 from __future__ import annotations
@@ -428,6 +442,56 @@ def wall_of(row: dict) -> float | None:
         return None
 
 
+CAP_FIELDS = ("max_steps", "effective_max_steps", "effective_cap")
+
+
+def read_trace_edges(d: Path | None) -> tuple[dict, dict]:
+    """局目录 ``trace.jsonl`` 的 (header, end)；读不到返回两个空字典。"""
+    if d is None:
+        return {}, {}
+    try:
+        lines = [x for x in (Path(d) / "trace.jsonl").read_text(encoding="utf-8").splitlines() if x.strip()]
+        head, end = (json.loads(lines[0]), json.loads(lines[-1])) if lines else ({}, {})
+    except (OSError, ValueError):
+        return {}, {}
+    head = head if isinstance(head, dict) and head.get("kind") == "header" else {}
+    end = end if isinstance(end, dict) and end.get("kind") == "end" else {}
+    return head, end
+
+
+def cap_problems(row: dict, cap: int, media: dict | None = None) -> list[str]:
+    """结果行实际步数上限与 ``cap`` 不符的地方：写了的 ``max_steps``／``effective_max_steps``／``effective_cap``
+    都要等于 cap、至少写一个；局目录找得到 trace 时 header 的 ``max_steps``（及 ``effective_cap``）也要等于 cap。"""
+    out = []
+    present = {f: row.get(f) for f in CAP_FIELDS if row.get(f) is not None}
+    if not present:
+        out.append("result_cap_fields_absent")
+    for f, v in present.items():
+        try:
+            ok = int(v) == int(cap)
+        except (TypeError, ValueError):
+            ok = False
+        if not ok:
+            out.append(f"result.{f}={v}")
+    path = (media or {}).get("path")
+    head, _ = read_trace_edges(Path(path)) if path else ({}, {})
+    for f in ("max_steps", "effective_cap"):
+        if head.get(f) is not None and head.get(f) != cap:
+            out.append(f"trace.header.{f}={head.get(f)}")
+    return out
+
+
+def no_frame_of(row: dict, d: Path | None) -> bool | None:
+    """该错误终局是否无帧：结果行 ``no_frame`` 或局目录 trace 末行（``no_frame`` 为真或 ``frames_recorded == 0``）；
+    两处都没有信息返回 None（由调用方按「写明原因」口径判）。"""
+    if row.get("no_frame") is True:
+        return True
+    _, end = read_trace_edges(d)
+    if not end:
+        return None
+    return end.get("no_frame") is True or end.get("frames_recorded") == 0
+
+
 #: 每个数据集结果行必备的身份字段与逐键比对清单的字段（hard-verify 无规格指纹，改核 source_episode）
 ID_REQUIRED = {None: ("tier", "seed", "spec_sha256"), "ood": ("tier", "seed", "spec_sha256"),
                "hard-verify": ("tier", "seed", "source_episode")}
@@ -439,7 +503,8 @@ DATASETS = ("ood", "hard-verify")
 
 def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: Path | None, *,
                  partial: bool, expect_total: int, cap: int | None, shard_files: str | None = None,
-                 keep_internal: bool = False, dataset: str | None = None, side: str = "new") -> dict:
+                 keep_internal: bool = False, dataset: str | None = None, side: str = "new",
+                 policy_seed: int | None = None) -> dict:
     """``dataset``（--dataset）为空时是 V8／V9 口径；给出时身份必备字段按数据集取、结果行与清单的数据集必须一致
     （串了计 count_mismatch 与 dataset_crossed），``cap`` 为 None 时不做越限判定（hard-verify）。"""
     doc, mrows, shard_of = load_manifest(manifest_path)
@@ -469,6 +534,7 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
 
     cov = Counter()
     exec_over_cap: list[dict] = []
+    cap_mismatch: list[dict] = []
     media_unexplained: list[dict] = []
     index: list[dict] = []
     per_policy: dict[str, Any] = {}
@@ -544,6 +610,28 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
             if cap is not None and es is not None and int(es) > cap:
                 exec_over_cap.append({"policy": pol, "key": key_of(r), "attempt_id": r.get("attempt_id"),
                                       "exec_steps": int(es)})
+
+        # 1006：真实步数上限（只在带 --dataset 且做越限判定时核；ood 给 --cap 1800）
+        if dataset is not None and cap is not None:
+            for r in an["rows"]:
+                bad = cap_problems(r, cap, find_media(r, pol, videos, dataset=dataset, side=side))
+                if bad:
+                    cap_mismatch.append({"policy": pol, "key": key_of(r), "attempt_id": r.get("attempt_id"),
+                                         "problems": bad})
+
+        # 1006：模型种子（按 (model, policy_seed) 分组；给了 --policy-seed 时逐行核）
+        seeds = sorted({r.get("policy_seed") for r in an["rows"]}, key=str)
+        if policy_seed is not None:
+            for r in an["rows"]:
+                if r.get("policy_seed") != policy_seed:
+                    count_mismatch.append(f"{pol} {key_of(r)} attempt_id={r.get('attempt_id')} "
+                                          f"policy_seed={r.get('policy_seed')} != --policy-seed {policy_seed}")
+            group_seed = policy_seed
+        else:
+            known = [x for x in seeds if x is not None]
+            if len(seeds) > 1:
+                count_mismatch.append(f"{pol} policy_seed_mixed {seeds}")
+            group_seed = known[0] if len(known) == 1 and len(seeds) == 1 else None
 
         # 媒体与视频索引（每次尝试一行）
         accepted_ids = {str(r.get("attempt_id")) for r in acc.values()}
@@ -658,7 +746,7 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
                          "conflicting_terminal": conflict_n, "late_ignored": len(an["late"]),
                          "error_final": sum(1 for k in mkeys if k in acc and acc[k].get("status") == "error")},
             "count_mismatch": cm_global + (len(count_mismatch) - cm_before),
-            "dataset_crossed": crossed,
+            "dataset_crossed": crossed, "policy_seed": group_seed, "policy_seeds_seen": seeds,
             "_acc": acc, "_outcome": outcome,
         }
 
@@ -673,7 +761,7 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
             p.pop("_outcome")
 
     coverage_pass = all(cov[k] == 0 for k in ("missing", "extra", "duplicate", "conflicting_terminal"))
-    report_pass = not count_mismatch and not media_unexplained and not exec_over_cap
+    report_pass = not count_mismatch and not media_unexplained and not exec_over_cap and not cap_mismatch
     return {
         "schema": "v8-eval-report/1", "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "manifest": str(manifest_path), "stage": str(stage), "videos": str(videos) if videos else None,
@@ -682,9 +770,10 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
         "coverage": {"pass": coverage_pass, **{k: cov[k] for k in
                                               ("missing", "extra", "duplicate", "conflicting_terminal", "late_ignored", "error_final")}},
         "report": {"pass": report_pass, "count_mismatch": len(count_mismatch),
-                   "media_unexplained": len(media_unexplained), "exec_over_cap": len(exec_over_cap)},
+                   "media_unexplained": len(media_unexplained), "exec_over_cap": len(exec_over_cap),
+                   "cap_mismatch": len(cap_mismatch)},
         "count_mismatch_detail": count_mismatch, "media_unexplained_detail": media_unexplained,
-        "exec_over_cap_detail": exec_over_cap, "per_policy": per_policy, "progress": progress,
+        "exec_over_cap_detail": exec_over_cap, "cap_mismatch_detail": cap_mismatch, "policy_seed": policy_seed, "per_policy": per_policy, "progress": progress,
         "_index": index,
     }
 
@@ -903,7 +992,8 @@ def verify_dataset_videos(rep: dict, manifest_path: Path, policies: list[str], v
     for pol in policies:
         dirname = parse_policy_spec(pol)[2]
         acc = rep["per_policy"][pol]["_acc"]
-        res = {"expected": len(mrows), "videos": 0, "missing": 0, "decode_fail": 0, "error_final_no_video": 0}
+        res = {"expected": len(mrows), "videos": 0, "missing": 0, "decode_fail": 0, "error_final_no_video": 0,
+               "no_frame_error": 0}
         for m in mrows:
             k = m["key"]
             row = acc.get(k)
@@ -917,7 +1007,14 @@ def verify_dataset_videos(rep: dict, manifest_path: Path, policies: list[str], v
             files = sorted(f.name for f in d.iterdir() if f.is_file()) if d.is_dir() else []
             vids = media_files({"files": files}, any_mp4=True)
             if error_final_video_class(row, bool(vids)) == "explained":
+                if no_frame_of(row, d if d.is_dir() else None) is False:
+                    # 有帧的错误终局没有视频：不是无帧例外，照常计缺失
+                    res["missing"] += 1
+                    out["problems"].append({"policy": pol, "key": k, "problem": "error_with_frames_no_video",
+                                            "dir": str(d)})
+                    continue
                 res["error_final_no_video"] += 1
+                res["no_frame_error"] += 1
                 continue
             if not vids:
                 res["missing"] += 1
@@ -931,7 +1028,8 @@ def verify_dataset_videos(rep: dict, manifest_path: Path, policies: list[str], v
                 continue
             res["videos"] += 1
         res["pass"] = (videos is not None and res["expected"] > 0 and res["missing"] == 0
-                       and res["decode_fail"] == 0 and res["videos"] + res["error_final_no_video"] == res["expected"])
+                       and res["decode_fail"] == 0 and res["videos"] + res["no_frame_error"] == res["expected"])
+        res["accepted"] = res["videos"] + res["no_frame_error"]
         out["per_policy"][pol] = res
     return out
 
@@ -944,24 +1042,30 @@ def dataset_lines(rep: dict, vid: dict) -> list[str]:
     eoc_by: Counter = Counter(x["policy"] for x in rep["exec_over_cap_detail"])
     mu_by: Counter = Counter(x["policy"] for x in rep["media_unexplained_detail"])
     out: list[str] = []
+    cm_by: Counter = Counter(x["policy"] for x in rep.get("cap_mismatch_detail") or [])
     for pol, p in rep["per_policy"].items():
         c = p["coverage"]
-        cov_pass = all(c[k] == 0 for k in ("missing", "extra", "duplicate", "conflicting_terminal", "error_final")) \
-            and not partial
+        v = vid["per_policy"][pol]
+        seed_txt = f" policy_seed={'NA' if p.get('policy_seed') is None else p['policy_seed']}"
+        # 无帧 error 是用户裁决的具名例外：只有其余错误终局判 FAIL
+        other_error = max(0, c["error_final"] - v["no_frame_error"])
+        cov_pass = all(c[k] == 0 for k in ("missing", "extra", "duplicate", "conflicting_terminal")) \
+            and other_error == 0 and not partial
         out.append(f"EVAL_COVERAGE={'PASS' if cov_pass else 'FAIL'} dataset={ds} policy={pol} expected={p['denominator']} "
                    f"missing={c['missing']} extra={c['extra']} duplicate={c['duplicate']} "
-                   f"conflicting_terminal={c['conflicting_terminal']} error_final={c['error_final']}{tail}")
-        eoc = eoc_by[pol]
-        rep_pass = p["count_mismatch"] == 0 and mu_by[pol] == 0 and eoc == 0 and not partial
+                   f"conflicting_terminal={c['conflicting_terminal']} error_final={c['error_final']} "
+                   f"no_frame_error={v['no_frame_error']}{seed_txt}{tail}")
+        eoc, cmm = eoc_by[pol], cm_by[pol]
+        rep_pass = p["count_mismatch"] == 0 and mu_by[pol] == 0 and eoc == 0 and cmm == 0 and not partial
         out.append(f"EVAL_REPORT={'PASS' if rep_pass else 'FAIL'} dataset={ds} policy={pol} "
                    f"count_mismatch={p['count_mismatch']} dataset_crossed={p['dataset_crossed']} "
-                   f"media_unexplained={mu_by[pol]} exec_over_cap={cap_txt or eoc}{tail}")
-        v = vid["per_policy"][pol]
+                   f"media_unexplained={mu_by[pol]} exec_over_cap={cap_txt or eoc}"
+                   + ("" if cap_txt else f" cap={rep['cap']} cap_mismatch={cmm}") + f"{seed_txt}{tail}")
         vpass = v["pass"] and not partial
         out.append(f"EVAL_VIDEOS={'PASS' if vpass else 'FAIL'} dataset={ds} policy={pol} expected={v['expected']} "
-                   f"videos={v['videos']} missing={v['missing']} decode_fail={v['decode_fail']}"
-                   + (f" error_final_no_video={v['error_final_no_video']}" if v["error_final_no_video"] else "")
-                   + ("" if vid["videos_root"] else " videos_root=absent") + tail)
+                   f"accepted={v['accepted']} videos={v['videos']} no_frame_error={v['no_frame_error']} "
+                   f"missing={v['missing']} decode_fail={v['decode_fail']}"
+                   + ("" if vid["videos_root"] else " videos_root=absent") + f"{seed_txt}{tail}")
     return out
 
 
@@ -1275,6 +1379,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--expect-total", type=int, default=None,
                     help=f"manifest 身份数（默认 {DEFAULT_TOTAL}；带 --reuse 时默认新评 {V9_DEFAULT_NEW}）")
     ap.add_argument("--cap", type=int, default=DEFAULT_CAP)
+    ap.add_argument("--policy-seed", type=int, default=None,
+                    help="带 --dataset：模型种子；每条结果行 policy_seed 必须等于它，判定行带 policy_seed=")
     ap.add_argument("--shard-files", default=None,
                     help="--partial 估算用：实际分片文件 glob（shard-NN.json → 席 NN），覆盖 manifest 的 shard 字段；"
                          "已观测到的身份一律以运行根里实际所在 sNN 为准")
@@ -1348,7 +1454,7 @@ def main_dataset(args) -> int:
     cap = None if args.dataset == "hard-verify" else args.cap
     rep = build_report(Path(args.manifest), Path(args.stage), policies, videos, partial=args.partial,
                        expect_total=args.expect_total, cap=cap, shard_files=args.shard_files, keep_internal=True,
-                       dataset=args.dataset, side=args.side)
+                       dataset=args.dataset, side=args.side, policy_seed=args.policy_seed)
     vid = verify_dataset_videos(rep, Path(args.manifest), policies, videos, args.dataset, args.side)
     rep["dataset_videos"] = vid
     for p in rep["per_policy"].values():
