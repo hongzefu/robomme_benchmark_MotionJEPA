@@ -65,11 +65,27 @@ S7 补充（只加不改）：
 为落地 C3、C8、C9，S0 只增不改地加了 ``NOT_OBSERVED``、``UNSET`` 两个常量，``log_step`` 的 ``terminated``／
 ``truncated`` 接受 ``NOT_OBSERVED`` 原样写出并接受附加字段 ``**extra``，以及 ``log_missing_step``；不传这些新值时
 写出字节与此前完全相同。共享函数新增的可选参数一律用 ``UNSET`` 作「未提供」哨兵，``None`` 只表示「模型等待中」。
+
+第三阶段（``docs/plans/1006-stage3-interface-freeze.md`` 第四、五节，R6）只增不改：
+
+- ``header`` 可选新增 ``policy_seed``、``effective_cap``（构造参数缺省 ``None`` 时不写，旧字节不变）；给了
+  ``policy_seed`` 时 ``end`` 行也带 ``policy_seed``。
+- ``log_step``／``log_missing_step`` 可选新增 ``source_call_id``、``chunk_index``（语言账本关联；不传时 step 行
+  仍是旧 9 键 + 旧附加键）。
+- 完整数组：构造参数 ``arrays_path``（缺省 ``<trace 同目录>/arrays.npz``）与开关 ``collect_arrays``（缺省 True）。
+  每个 attempted 步收 ``exec_action__%05d``（键号 = step−1），有状态的观测步另收 ``exec_state__%05d``；缺观测步
+  不补零，步号记进 ``end.arrays.missing_state_steps``。``close()`` 经 ``merge_write_npz`` 合并写盘（与录像器等
+  其他写者先后任意都不互相覆盖），``end`` 行写 ``arrays`` 摘要；合并冲突不抛出，记 ``arrays.error``。
+- ``merge_write_npz(path, mapping)``：``arrays.npz`` 唯一允许的写法（同键 dtype／shape／sha256 须全同，否则
+  ``ArraysConflict``；目录级排他锁 + ``path.tmp`` + ``os.replace`` 原子写）。
+- ``LanguageLog(path)``：每局 ``language.jsonl`` 语言账本（call_open／message／call_close／reuse 四种行）。
 """
 from __future__ import annotations
 
 import hashlib
 import json
+import os
+import time
 from pathlib import Path
 from typing import Any
 
@@ -134,16 +150,115 @@ def bytes_record(payload: bytes) -> dict:
     return {"sha256": hashlib.sha256(payload).hexdigest(), "nbytes": len(payload)}
 
 
+ACTION_KEY = "exec_action__%05d"  # 键号 = step − 1（C4）
+STATE_KEY = "exec_state__%05d"    # 键号 = step − 1；只有有状态的观测步才有
+
+
+class ArraysConflict(ValueError):
+    """``merge_write_npz`` 发现同键数组的 dtype／shape／sha256 与已有文件不一致。"""
+
+
+def _array_sha256(a: np.ndarray) -> str:
+    return hashlib.sha256(np.ascontiguousarray(a).tobytes()).hexdigest()
+
+
+def _lock_dir(directory: Path):
+    """目录级排他锁（``fcntl.flock`` 锁目录本身，不在局目录里留锁文件）；没有 fcntl 时返回 None（不加锁）。"""
+    try:
+        import fcntl
+    except ImportError:  # pragma: no cover 非 POSIX
+        return None
+    fd = os.open(str(directory), os.O_RDONLY)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+    except Exception:
+        os.close(fd)
+        raise
+    return fd
+
+
+def _unlock_dir(fd) -> None:
+    if fd is None:
+        return
+    try:
+        import fcntl
+
+        fcntl.flock(fd, fcntl.LOCK_UN)
+    finally:
+        os.close(fd)
+
+
+def merge_write_npz(path: str | Path, mapping: dict) -> None:
+    """``arrays.npz`` 唯一允许的写法：读已有文件 → 同键须 dtype／shape／sha256 全同（否则抛 ``ArraysConflict``，
+    不写任何字节）→ 合并 → 写 ``<path>.tmp`` 后 ``os.replace``。
+
+    同一目录的并发写者经目录级 ``flock`` 串行；``mapping`` 为空且文件不存在时不建文件；没有新键时不重写。"""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    new = {str(k): np.array(v, copy=True) for k, v in dict(mapping).items()}
+    for k, a in new.items():
+        if a.dtype.hasobject:
+            raise TypeError(f"merge_write_npz 拒绝 object 数组：{k}")
+    fd = _lock_dir(path.parent)
+    try:
+        existing: dict[str, np.ndarray] = {}
+        if path.exists():
+            with np.load(path, allow_pickle=False) as z:
+                existing = {k: z[k] for k in z.files}
+        conflicts = []
+        for k, a in new.items():
+            old = existing.get(k)
+            if old is None:
+                continue
+            if old.dtype.str != a.dtype.str or tuple(old.shape) != tuple(a.shape) or \
+                    _array_sha256(old) != _array_sha256(a):
+                conflicts.append(f"{k}: 已有 {old.dtype.str}{list(old.shape)} 新 {a.dtype.str}{list(a.shape)}")
+        if conflicts:
+            raise ArraysConflict(f"{path} 同键不一致 {len(conflicts)} 个：" + "；".join(conflicts[:5]))
+        added = [k for k in new if k not in existing]
+        if not added:
+            return
+        merged = {**existing, **{k: new[k] for k in added}}
+        tmp = path.with_name(path.name + ".tmp")
+        try:
+            with open(tmp, "wb") as fh:  # 传文件对象：np.savez 不会自作主张补 .npz 后缀
+                np.savez(fh, **merged)
+                fh.flush()
+                os.fsync(fh.fileno())
+            os.replace(tmp, path)
+        except BaseException:  # 写到一半失败：旧文件原样保留，不留半截临时文件
+            try:
+                tmp.unlink()
+            except OSError:
+                pass
+            raise
+    finally:
+        _unlock_dir(fd)
+
+
 class TraceWriter:
     """一局一个实例；按调用顺序逐行追加，``close`` 写 ``end`` 行。上下文管理器退出时未 close 则以 ``status="error"`` 收尾。"""
 
-    def __init__(self, path: str | Path, *, route: str, identity: dict, max_steps: int) -> None:
+    def __init__(self, path: str | Path, *, route: str, identity: dict, max_steps: int,
+                 policy_seed: int | None = None, effective_cap: int | None = None,
+                 arrays_path: str | Path | None = None, collect_arrays: bool = True) -> None:
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._fh = self.path.open("w", encoding="utf-8")
         self._closed = False
         self.exec_steps = 0
-        self._write({"kind": "header", "schema": SCHEMA, "route": route, "identity": identity, "max_steps": int(max_steps)})
+        self.policy_seed = None if policy_seed is None else int(policy_seed)
+        self.arrays_path = Path(arrays_path) if arrays_path is not None else self.path.parent / "arrays.npz"
+        self.collect_arrays = bool(collect_arrays)
+        self._actions: dict[int, np.ndarray] = {}
+        self._states: dict[int, np.ndarray] = {}
+        self._missing_state: set[int] = set()
+        header = {"kind": "header", "schema": SCHEMA, "route": route, "identity": identity, "max_steps": int(max_steps)}
+        if policy_seed is not None:
+            header["policy_seed"] = int(policy_seed)
+        if effective_cap is not None:
+            header["effective_cap"] = int(effective_cap)
+        self._write(header)
         self._demo_written = False
 
     def _write(self, row: dict) -> None:
@@ -178,36 +293,79 @@ class TraceWriter:
         self._write({"kind": "history", "start": int(start_step), "end": int(end_step), "note": note})
 
     def log_step(self, *, step: int, front: Any, wrist: Any, state: Any, action: Any, subgoal: str | None,
-                 terminated: bool, truncated: bool, status: str | None, **extra: Any) -> None:
+                 terminated: bool, truncated: bool, status: str | None, source_call_id: str | None = None,
+                 chunk_index: int | None = None, **extra: Any) -> None:
         """执行完第 ``step`` 步（从 1 计）后的一行；画面为执行后的观测。
 
         ``terminated``／``truncated`` 可传 ``NOT_OBSERVED``（C9）；``extra`` 原样并入该行（不传时与旧格式逐字节相同）。
+        ``source_call_id``／``chunk_index``（第三阶段）：本步动作来自语言账本里哪次调用、动作块内第几个；``None`` 不写。
+        ``collect_arrays`` 打开时另收本步动作原值（``exec_action__%05d``）与状态原值（``exec_state__%05d``，无状态不补零）。
         """
         if not self._demo_written:
             self.log_demo([], [])
         self.exec_steps = max(self.exec_steps, int(step))
-        self._write({
+        row = {
             "kind": "step", "step": int(step),
             "front_sha256": image_sha256(front), "wrist_sha256": image_sha256(wrist),
             "state": array_record(state), "action": array_record(action),
             "subgoal": subgoal, "terminated": _flag(terminated), "truncated": _flag(truncated), "status": status,
             **extra,
-        })
+        }
+        if source_call_id is not None:
+            row["source_call_id"] = source_call_id
+        if chunk_index is not None:
+            row["chunk_index"] = int(chunk_index)
+        self._write(row)
+        if self.collect_arrays:
+            k = int(step) - 1
+            if action is not None:
+                self._actions[k] = np.array(action, copy=True)
+            if state is not None:
+                self._states[k] = np.array(state, copy=True)
+                self._missing_state.discard(int(step))
+            else:
+                self._missing_state.add(int(step))
 
     def log_missing_step(self, *, step: int, action: Any, reason: str, subgoal: str | None = None,
-                         **extra: Any) -> None:
+                         source_call_id: str | None = None, chunk_index: int | None = None, **extra: Any) -> None:
         """C8：动作已交给环境但没有返回有效观测的一步；保留步号、动作与原因，画面与状态记 ``None``。"""
         self.log_step(step=step, front=None, wrist=None, state=None, action=action, subgoal=subgoal,
                       terminated=NOT_OBSERVED, truncated=NOT_OBSERVED, status=None,
+                      source_call_id=source_call_id, chunk_index=chunk_index,
                       observed=False, missing_reason=str(reason), **extra)
+
+    def _arrays_summary(self) -> dict:
+        """收尾写 ``arrays.npz`` 并返回 ``end.arrays`` 摘要；写盘失败（含 ``ArraysConflict``）记 ``error``、不抛出。"""
+        try:
+            rel = os.path.relpath(self.arrays_path, self.path.parent)
+        except ValueError:  # pragma: no cover 跨盘符
+            rel = str(self.arrays_path)
+        summary: dict[str, Any] = {"path": rel.replace(os.sep, "/"), "action_keys": len(self._actions),
+                                   "state_keys": len(self._states),
+                                   "missing_state_steps": sorted(self._missing_state)}
+        mapping = {ACTION_KEY % k: a for k, a in sorted(self._actions.items())}
+        mapping.update({STATE_KEY % k: a for k, a in sorted(self._states.items())})
+        if mapping:
+            try:
+                merge_write_npz(self.arrays_path, mapping)
+            except Exception as e:  # noqa: BLE001 收尾不因数组写盘失败丢 end 行；检查器据 error 判 FAIL
+                summary["error"] = f"{type(e).__name__}: {e}"[:600]
+        return summary
 
     def close(self, *, status: str, terminal_reason: str | None = None, **extra: Any) -> None:
         if self._closed:
             return
         if not self._demo_written:
             self.log_demo([], [])
-        self._write({"kind": "end", "status": status, "exec_steps": self.exec_steps,
-                     "terminal_reason": terminal_reason, **extra})
+        row = {"kind": "end", "status": status, "exec_steps": self.exec_steps,
+               "terminal_reason": terminal_reason, **extra}
+        if self.policy_seed is not None and "policy_seed" not in extra:
+            row["policy_seed"] = self.policy_seed
+        if self.collect_arrays:
+            if "arrays" in extra:  # 调用方旧口径的 arrays 字符串让位给冻结说明的摘要，原值另存
+                row["arrays_caller"] = extra["arrays"]
+            row["arrays"] = self._arrays_summary()
+        self._write(row)
         self._fh.close()
         self._closed = True
 
@@ -217,6 +375,155 @@ class TraceWriter:
     def __exit__(self, exc_type, exc, tb) -> None:
         if not self._closed:
             self.close(status="error", terminal_reason=f"exception:{exc_type.__name__}" if exc_type else "unclosed")
+
+
+# ── 第三阶段：语言账本 language.jsonl（冻结说明第五节）───────────────────────────
+
+LANG_MODELS = ("subgoal_model", "action_model", "planner", "monitor")
+LANG_DIRS = ("in", "out")
+LANG_ROLES = ("system", "user", "assistant", "fields")
+LANG_STATUSES = ("reply", "error", "cancelled")
+LANG_FALLBACKS = (None, "last_valid", "model_response_error", "continue_last")
+#: 服务外壳回包里的审计键（R3 写入；客户端在把动作交给环境前 pop 掉）
+AUDIT_KEY = "_sgeval_audit"
+
+
+def _jsonable(x: Any) -> Any:
+    """numpy 标量／数组、bytes、tuple、Path 转成 JSON 可写的值（文字原样，不截断）。"""
+    if isinstance(x, np.ndarray):
+        return x.tolist()
+    if isinstance(x, np.generic):
+        return x.item()
+    if isinstance(x, dict):
+        return {str(k): _jsonable(v) for k, v in x.items()}
+    if isinstance(x, (list, tuple)):
+        return [_jsonable(v) for v in x]
+    if isinstance(x, (bytes, bytearray, memoryview)):
+        b = bytes(x)
+        return {"__bytes_sha256__": hashlib.sha256(b).hexdigest(), "nbytes": len(b)}
+    if isinstance(x, Path):
+        return str(x)
+    return x
+
+
+class LanguageLog:
+    """每局一份 ``language.jsonl``：按真实模型调用记账（冻结说明第五节）。
+
+    每行 ``ensure_ascii=False``、写后立即 ``flush``；``dir="in"`` 的消息调用方须在真实发送前写入（写入即落盘）。
+    ``close()`` 给仍未关闭的调用补 ``call_close status=cancelled`` 再关文件；收尾后再写抛 ``RuntimeError``。"""
+
+    def __init__(self, path: str | Path) -> None:
+        self.path = Path(path)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._fh = self.path.open("w", encoding="utf-8")
+        self._closed = False
+        self._seq = 0
+        self._open: dict[str, int] = {}  # 未关闭的调用 → 下一条消息序号
+        self._known: set[str] = set()
+
+    @staticmethod
+    def _ts() -> float:
+        return round(time.time(), 6)
+
+    def _write(self, row: dict) -> None:
+        if self._closed:
+            raise RuntimeError(f"language 账本已收尾，拒绝追加 {row.get('kind')} 行：{self.path}")
+        self._fh.write(json.dumps(_jsonable(row), ensure_ascii=False) + "\n")
+        self._fh.flush()
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    @property
+    def open_calls(self) -> list[str]:
+        return list(self._open)
+
+    def open_call(self, model: str, step: int, *, params: dict | None = None, transport_attempt: int = 0,
+                  retry: int = 0) -> str:
+        if model not in LANG_MODELS:
+            raise ValueError(f"未知 model={model!r}，应为 {LANG_MODELS}")
+        call_id = f"c{self._seq + 1:05d}"
+        self._write({"kind": "call_open", "call_id": call_id, "model": model, "step": int(step), "params": params,
+                     "transport_attempt": int(transport_attempt), "retry": int(retry), "ts": self._ts()})
+        self._seq += 1
+        self._open[call_id] = 0
+        self._known.add(call_id)
+        return call_id
+
+    def message(self, call_id: str, *, dir: str, role: str, text: Any, images: list | None = None,  # noqa: A002
+                channel: str | None = None, token_ids: Any = None, mask: Any = None, tokenizer: Any = None,
+                truncated: Any = None, demo_video: Any = None) -> int:
+        if call_id not in self._open:
+            raise ValueError(f"调用 {call_id!r} 未打开或已关闭")
+        if dir not in LANG_DIRS:
+            raise ValueError(f"未知 dir={dir!r}")
+        if role not in LANG_ROLES:
+            raise ValueError(f"未知 role={role!r}")
+        idx = self._open[call_id]
+        self._write({"kind": "message", "call_id": call_id, "message_index": idx, "dir": dir, "role": role,
+                     "text": text, "images": images, "channel": channel, "token_ids": token_ids, "mask": mask,
+                     "tokenizer": tokenizer, "truncated": truncated, "demo_video": demo_video, "ts": self._ts()})
+        self._open[call_id] = idx + 1
+        return idx
+
+    def close_call(self, call_id: str, *, status: str, parsed: Any = None, fallback: str | None = None,
+                   server_final_text: Any = None, server_truncated: Any = None) -> None:
+        if call_id not in self._open:
+            raise ValueError(f"调用 {call_id!r} 未打开或已关闭")
+        if status not in LANG_STATUSES:
+            raise ValueError(f"未知 status={status!r}")
+        if fallback not in LANG_FALLBACKS:
+            raise ValueError(f"未知 fallback={fallback!r}")
+        self._write({"kind": "call_close", "call_id": call_id, "status": status, "parsed": parsed,
+                     "fallback": fallback, "server_final_text": server_final_text,
+                     "server_truncated": server_truncated, "ts": self._ts()})
+        del self._open[call_id]
+
+    def reuse(self, step: int, reused_call_id: str) -> None:
+        if reused_call_id not in self._known:
+            raise ValueError(f"复用的调用 {reused_call_id!r} 不存在")
+        self._write({"kind": "reuse", "step": int(step), "reused_call_id": reused_call_id, "reused_previous": True})
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        try:
+            for cid in list(self._open):
+                self.close_call(cid, status="cancelled")
+        finally:
+            self._fh.close()
+            self._closed = True
+
+    def __enter__(self) -> "LanguageLog":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+
+def read_language(path: str | Path) -> list[dict]:
+    """读回一局语言账本。"""
+    with Path(path).open(encoding="utf-8") as fh:
+        return [json.loads(line) for line in fh if line.strip()]
+
+
+def audit_channel_messages(lang: "LanguageLog", call_id: str, audit: Any) -> tuple[Any, Any]:
+    """把服务外壳审计块 ``{"channels":[…], "server_final_text", …}`` 的逐通道分词写成 ``dir=in role=fields`` 消息；
+    返回 ``(server_final_text, server_truncated)``。``audit`` 为 None 或不是 dict 时不写、返回 ``(None, None)``。"""
+    if not isinstance(audit, dict):
+        return None, None
+    truncs = []
+    for ch in audit.get("channels") or []:
+        if not isinstance(ch, dict):
+            continue
+        truncs.append(ch.get("truncated"))
+        lang.message(call_id, dir="in", role="fields", text=ch.get("text"), channel=ch.get("channel"),
+                     token_ids=ch.get("token_ids"), mask=ch.get("mask"), tokenizer=ch.get("tokenizer"),
+                     truncated=ch.get("truncated"))
+    known = [t for t in truncs if t is not None]
+    server_truncated = audit.get("server_truncated", any(bool(t) for t in known) if known else None)
+    return audit.get("server_final_text"), server_truncated
 
 
 def read_trace(path: str | Path) -> list[dict]:

@@ -52,10 +52,18 @@ PonderPounce 的噪声种子是 ``crc32(f"{seed}:{sid}:{n}")``，两侧各起自
   环境标准答案 ``info["simple_subgoal_online"]`` 改记同步号的 ``history`` 行，``note=oracle_simple_subgoal:<文本>``。
 - C1 route ``pp/new``；C2 演示段记全部 reset 帧（含初始帧），``end.demo_frames`` 为不含初始帧的演示帧数；
   C3 ``terminal_reason`` 与 ``status`` 同取 ``success``／``fail``／``timeout``／``error``（旧口径的退出原因另记
-  ``exit_reason``），reset 之前就失败的局记 ``no_frame=true``；C4 交给环境的 float64 动作原值写同目录
-  ``arrays.npz``（键 ``exec_action__%05d``；轨迹就在录像器目录时由录像器写同名键，本模块不重复写）；
+  ``exit_reason``），reset 之前就失败的局记 ``no_frame=true``；C4 交给环境的 float64 动作原值与观测步状态由
+  ``TraceWriter`` 收集，收尾经 ``trace_writer.merge_write_npz`` 写同目录 ``arrays.npz``（``exec_action__%05d``／
+  ``exec_state__%05d``；与同目录录像器的同名键同值合并，先后任意都不覆盖；第三阶段起本模块不再直接 ``np.savez``）；
   C6 identity 加 ``attempt``；C8 ``end`` 写 ``steps_attempted``／``steps_observed``／``frames_recorded``，
   环境异常步与空观测步用 ``log_missing_step`` 保留步号与动作。
+
+第三阶段语言账本（冻结说明第五节；只在第二阶段开关打开且有轨迹落点时记，轨迹同目录 ``language.jsonl``）：
+每个观测一个 ``action_model`` 调用（发送前写 ``in``：``role=fields`` 的 ``task_description`` + 当前前视／腕部帧引用；
+回包后 pop 掉 ``_sgeval_audit``，逐通道写分词消息，``close_call`` 记 ``server_final_text``）；审计块带
+``pp_generation`` 时另开 ``subgoal_model`` 调用记 S2 完整生成块（见 ``TracedConnection._log_generation``）。执行步
+``source_call_id`` 指向本步动作来自的 ``action_model`` 调用、``chunk_index=0``。审计键在动作交给环境之前一律 pop 掉，
+不改动作、RNG 与请求字节。
 
 原侧 ``pp_official_runner.py``（R1 零改动）只调用本模块的默认路径：``TRACE_SCHEMA_ROUTE_ORIG`` 仍为 ``pp-orig``、
 ``trace_reset``／``trace_step`` 不传新参数，原侧序列化输出与 ``BASE`` 逐字节相同。
@@ -100,6 +108,8 @@ TRACE_ROUTE_NEW_C1 = "pp/new"
 PHASE2_ENV = "SGEVAL_PP_SERVER_WRAP"
 #: 服务端外壳回包里子目标的键（与 pp_server_wrap.SUBGOAL_KEY 相同）
 SUBGOAL_KEY = "subgoal"
+#: 服务外壳回包审计键（冻结说明第五节；与 trace_writer.AUDIT_KEY 相同），交给环境前 pop 掉
+AUDIT_KEY = "_sgeval_audit"
 #: 环境标准答案在 history 行 note 里的前缀
 ORACLE_NOTE_PREFIX = "oracle_simple_subgoal:"
 #: 协议帧类型（与 vla_eval.protocol.messages.MessageType 的取值相同）
@@ -363,7 +373,8 @@ def trace_reset(trace, raw_obs: dict, task_description: str, *, include_initial:
     return len(fronts)
 
 
-def trace_step(trace, step_no: int, out: tuple, action8: list[float], subgoal: Any = UNSET) -> bool:
+def trace_step(trace, step_no: int, out: tuple, action8: list[float], subgoal: Any = UNSET,
+               link: dict | None = None) -> bool:
     """执行完第 ``step_no`` 步（从 1 计）的一行；``out`` 为环境 ``step`` 的五元组。返回本步是否有完整观测。
 
     ``subgoal`` 缺省（``UNSET``）：逐步 ``subgoal`` 记环境标准答案 ``info["simple_subgoal_online"]``，写出与 BASE
@@ -389,13 +400,14 @@ def trace_step(trace, step_no: int, out: tuple, action8: list[float], subgoal: A
     raw = None if subgoal is None else str(subgoal)
     official = pp_subgoal_to_official(raw)
     action = np.asarray(action8, dtype=np.float64)
+    link = {k: v for k, v in (link or {}).items() if v is not None}  # 第三阶段 source_call_id／chunk_index
     if observed:
         trace.log_step(step=step_no, front=front, wrist=wrist, state=state, action=action, subgoal=official,
                        terminated=bool(terminated), truncated=bool(truncated), status=info.get("status"),
-                       subgoal_raw=raw)
+                       subgoal_raw=raw, **link)
     else:
         trace.log_missing_step(step=step_no, action=action, reason="obs_none" if obs is None else "obs_incomplete",
-                               subgoal=official, subgoal_raw=raw, env_status=info.get("status"))
+                               subgoal=official, subgoal_raw=raw, env_status=info.get("status"), **link)
     if oracle is not None:
         trace.log_history(step_no, step_no, note=f"{ORACLE_NOTE_PREFIX}{oracle}")
     return observed
@@ -409,12 +421,20 @@ class TracedConnection:
     ``last_subgoal``：最近一次 ACTION 回包里 ``"subgoal"`` 的值（服务端外壳 ``pp_server_wrap.py`` 才有；文本或
     ``None``＝模型等待中）；回包没有这个键时为 ``UNSET``。只读记录，不影响轨迹与返回值。"""
 
-    def __init__(self, conn: Any, trace=None) -> None:
+    def __init__(self, conn: Any, trace=None, lang=None) -> None:
         self._conn = conn
         self.trace = trace if trace is not None else NullTrace()
         self.frames_sent = 0
         self.actions_received = 0
         self.last_subgoal: Any = UNSET
+        # 第三阶段语言账本（冻结说明第五节；None 时不记，原侧与第二阶段开关关时都不传）
+        self.lang = lang
+        self.lang_errors = 0
+        self.last_call_id: str | None = None  # 最近一次成功回包的 action_model 调用（执行步的 source_call_id）
+        self.last_audit: Any = None           # 最近一次回包里 pop 出的 ``_sgeval_audit``
+        self.demo_index: int | None = None    # 演示段末帧（初始画面）在 trace demo 行里的下标
+        self._failed_step: int | None = None
+        self._transport_attempt = 0
 
     def __getattr__(self, name: str) -> Any:
         return getattr(self._conn, name)
@@ -424,11 +444,76 @@ class TracedConnection:
         self.frames_sent += 1
         await self._conn.start_episode(config)
 
+    # -- 语言账本辅助：一律吞异常、计 lang_errors，不改请求、动作与控制流 --
+    def _lang(self, fn: str, *a, **k) -> Any:
+        if self.lang is None:
+            return None
+        try:
+            return getattr(self.lang, fn)(*a, **k)
+        except Exception as e:  # noqa: BLE001
+            self.lang_errors += 1
+            print(f"TRACE_HOOK_ERROR route=pp/new where=language.{fn} {type(e).__name__}: {e}"[:600], flush=True)
+            return None
+
+    def _image_refs(self, obs: dict, step: int) -> list | None:
+        imgs = obs.get("images") if isinstance(obs, dict) else None
+        if not imgs:
+            return None
+        h = load_trace_writer().image_sha256
+        phase, idx = ("demo", self.demo_index) if step == 0 else ("exec", step)
+        refs = []
+        for slot, (key, ref, cam) in enumerate((("agentview", "current", "front"), ("wrist", "wrist", "wrist"))):
+            if key in imgs:
+                refs.append({"slot": slot, "ref": ref, "phase": phase, "frame_idx": idx, "cam": cam,
+                             "raw_sha256": h(imgs[key]), "sources": None, "transform": None, "encoded_sha256": None})
+        return refs or None
+
+    def _log_generation(self, step: int, gen: Any) -> None:
+        """S2 完整生成块记成一个 ``subgoal_model`` 调用（服务端内部推理，事后记账）。
+
+        读取的键（R3 外壳写入，缺键记 None）：``context``／``prompt``（S2 输入全文，含回灌历史）、``images``（附图引用）、
+        ``text``（完整生成块原文）、``reasoning``、``subgoal_raw``（``at [x, y]`` 原文）、``kind``（``transition``／
+        ``nontransition``）、``committed``（提交或回滚）。``parsed`` 记换算后子目标与整块原样；nontransition 显式记
+        ``text_output=False``、``out`` 文字为 None。"""
+        if not isinstance(gen, dict):
+            return
+        cid = self._lang("open_call", "subgoal_model", step, params=gen.get("params"))
+        if cid is None:
+            return
+        ctx = gen.get("context", gen.get("prompt"))
+        if ctx is not None or gen.get("images"):
+            self._lang("message", cid, dir="in", role="user", text=ctx, images=gen.get("images"))
+        kind = gen.get("kind", gen.get("transition"))
+        nontransition = kind in ("nontransition", False)
+        raw = gen.get("subgoal_raw")
+        text = None if nontransition else gen.get("text", raw)
+        self._lang("message", cid, dir="out", role="assistant", text=text)
+        parsed = {"subgoal": pp_subgoal_to_official(None if raw is None else str(raw)), "subgoal_raw": raw,
+                  "reasoning": gen.get("reasoning"), "kind": kind, "committed": gen.get("committed"),
+                  "text_output": not nontransition and text is not None, "generation": gen}
+        self._lang("close_call", cid, status="reply", parsed=parsed)
+
     async def act(self, obs: dict) -> dict:
         step = self.actions_received
         self.trace.log_request(OBSERVATION, canonical_frame_bytes(OBSERVATION, obs), step=step)
         self.frames_sent += 1
-        action = await self._conn.act(obs)
+        cid = None
+        if self.lang is not None:  # 发送前落盘：每个观测一个 action_model 调用
+            self._transport_attempt = self._transport_attempt + 1 if self._failed_step == step else 0
+            cid = self._lang("open_call", "action_model", step, transport_attempt=self._transport_attempt)
+            if cid is not None:
+                fields = {"task_description": obs.get("task_description")} if isinstance(obs, dict) else None
+                self._lang("message", cid, dir="in", role="fields", text=fields, images=self._image_refs(obs, step))
+        try:
+            action = await self._conn.act(obs)
+        except BaseException:
+            if cid is not None:
+                self._lang("close_call", cid, status="error")
+            self._failed_step = step
+            raise
+        self._failed_step = None
+        # 第三阶段：服务外壳审计键在动作交给环境之前 pop 掉（只进语言账本）
+        self.last_audit = action.pop(AUDIT_KEY, None) if isinstance(action, dict) else None
         self.actions_received += 1
         if isinstance(action, dict) and SUBGOAL_KEY in action:
             sg = action[SUBGOAL_KEY]
@@ -437,6 +522,22 @@ class TracedConnection:
             self.last_subgoal = UNSET
         raw = action.get("actions", action.get("action")) if isinstance(action, dict) else None
         self.trace.log_response(raw, step=step)
+        if cid is not None:
+            final_text = final_trunc = None
+            if self.lang is not None:
+                try:
+                    final_text, final_trunc = load_trace_writer().audit_channel_messages(self.lang, cid,
+                                                                                         self.last_audit)
+                except Exception as e:  # noqa: BLE001
+                    self.lang_errors += 1
+                    print(f"TRACE_HOOK_ERROR route=pp/new where=language.audit {type(e).__name__}: {e}"[:600],
+                          flush=True)
+            self._lang("close_call", cid, status="reply", server_final_text=final_text,
+                       server_truncated=final_trunc)
+            gen = self.last_audit.get("pp_generation") if isinstance(self.last_audit, dict) else None
+            for g in (gen if isinstance(gen, list) else [gen] if gen is not None else []):
+                self._log_generation(step, g)
+        self.last_call_id = cid
         return action
 
     async def end_episode(self, result: dict) -> None:
@@ -533,22 +634,38 @@ async def _run_episode_async(session, identity: dict, conn_info: dict, recorder,
                    "builder_episode": identity.get("builder_episode"),
                    "key": identity.get("key"), "dataset": dataset, "sid": sid,
                    "episode_idx": ep_idx, "side": "new"}
+        # 开关关（旧口径）时不收集完整数组：局目录只有 trace.jsonl、end 行无 arrays 摘要，与 BASE 逐字节相同
+        tw_kw: dict[str, Any] = {"collect_arrays": phase2}
         if phase2:  # C6：加尝试号（开关关时 identity 与 BASE 逐字节相同）
             ident_t["attempt"] = attempt_of(identity, conn_info, trace_path)
+            seed = conn_info.get("policy_seed", identity.get("policy_seed"))
+            if seed is not None:  # 冻结说明四.1：identity／header 记 policy_seed；未给时不写
+                ident_t["policy_seed"] = int(seed)
+                tw_kw["policy_seed"] = int(seed)
+            if conn_info.get("effective_cap") is not None:
+                tw_kw["effective_cap"] = int(conn_info["effective_cap"])
         trace = TraceWriter(trace_path, route=TRACE_ROUTE_NEW_C1 if phase2 else TRACE_SCHEMA_ROUTE_NEW,
-                            max_steps=max_steps, identity=ident_t)
+                            max_steps=max_steps, identity=ident_t, **tw_kw)
     else:
         trace = NullTrace()
+    lang = None
+    if phase2 and trace_path is not None:  # 第三阶段语言账本：轨迹同目录 language.jsonl
+        try:
+            LanguageLog = getattr(load_trace_writer(), "LanguageLog", None)
+            lang = LanguageLog(trace_path.parent / "language.jsonl") if LanguageLog is not None else None
+        except Exception as e:  # noqa: BLE001
+            lang = None
+            print(f"TRACE_HOOK_ERROR route=pp/new where=language.init {type(e).__name__}: {e}"[:600], flush=True)
 
     result: dict[str, Any] = {"side": "new", "sid": sid, "eid": eid, "episode_idx": ep_idx, "max_steps": max_steps,
                               "reconnects": 0, "frames_sent": 0, "decisions": 0, "steps": 0, "demo_frames": None}
     packer = ObsPacker()
     conn = connection_factory(url, PP_TIMEOUT_S)
-    tconn = TracedConnection(conn, trace)
+    tconn = TracedConnection(conn, trace, lang=lang)
     status, error, infra, infra_reason, env_exc = "error", None, False, None, None
     executed = 0
     attempted = observed = 0  # C8（只在第二阶段写进 end）
-    exec_actions: list[np.ndarray] = []  # C4：交给环境的动作原值（第二阶段写 arrays.npz）
+    # C4：交给环境的动作原值由 TraceWriter 逐步收集，收尾经 merge_write_npz 写 arrays.npz（第三阶段，不再直接 np.savez）
     model_subgoal: Any = UNSET  # 第二阶段：本步回包里的模型子目标
     trace_reason = None
     t_start = time.perf_counter()
@@ -564,6 +681,7 @@ async def _run_episode_async(session, identity: dict, conn_info: dict, recorder,
             raise _EnvError(e) from e
         packer.on_reset(raw_obs, info)
         result["demo_frames"] = trace_reset(trace, raw_obs, packer.task_description, include_initial=phase2)
+        tconn.demo_index = result["demo_frames"]  # include_initial 时初始画面在 demo 行的下标 = 演示帧数
         obs = packer.make(raw_obs)
         start = episode_start_payload(task, ep_idx, sid, eid)
         await tconn.start_episode(start)
@@ -584,21 +702,22 @@ async def _run_episode_async(session, identity: dict, conn_info: dict, recorder,
                     raise SubgoalMissing(f"第二阶段开着但第 {step + 1} 个 ACTION 回包没有 {SUBGOAL_KEY!r} 键"
                                          "（服务端外壳 pp_server_wrap.py 未生效）")
                 model_subgoal = tconn.last_subgoal
+            link = {"source_call_id": tconn.last_call_id, "chunk_index": 0} \
+                if tconn.last_call_id is not None else {}
             try:
                 out = session.step(a8)
             except Exception as e:  # noqa: BLE001
                 if phase2 and type(e).__name__ != "StepCapReached":  # 已进入环境的异常步（C8：含异常步）
                     attempted += 1
-                    exec_actions.append(np.asarray(a8, dtype=np.float64))
                     trace.log_missing_step(step=attempted, action=np.asarray(a8, dtype=np.float64),
                                            reason=f"env_exception:{type(e).__name__}",
-                                           subgoal=pp_subgoal_to_official(model_subgoal), subgoal_raw=model_subgoal)
+                                           subgoal=pp_subgoal_to_official(model_subgoal), subgoal_raw=model_subgoal,
+                                           **link)
                 raise _EnvError(e) from e
             executed += 1
             if phase2:
                 attempted += 1
-                exec_actions.append(np.asarray(a8, dtype=np.float64))
-                observed += bool(trace_step(trace, executed, out, a8, subgoal=model_subgoal))
+                observed += bool(trace_step(trace, executed, out, a8, subgoal=model_subgoal, link=link))
             else:
                 trace_step(trace, executed, out, a8)
             raw_obs, _reward, terminated, truncated, last_info = out
@@ -643,12 +762,15 @@ async def _run_episode_async(session, identity: dict, conn_info: dict, recorder,
             "steps_observed": observed, "frames_recorded": 0 if no_frame else demo + 1 + observed}
         if no_frame:
             end_extra["no_frame"] = True
-        if trace_path is not None and exec_actions and not _same_dir(trace_path.parent, getattr(recorder, "out_dir", None)):
+        if lang is not None:  # 先关语言账本（悬空调用补 cancelled）
             try:
-                np.savez(trace_path.parent / "arrays.npz",
-                         **{f"exec_action__{i:05d}": a for i, a in enumerate(exec_actions)})
-            except Exception as e:  # noqa: BLE001 写不出原动作不改成绩，记进 end 由重绘／闸门判失败
-                end_extra["arrays_error"] = f"{type(e).__name__}: {e}"[:400]
+                lang.close()
+            except Exception as e:  # noqa: BLE001
+                tconn.lang_errors += 1
+                print(f"TRACE_HOOK_ERROR route=pp/new where=language.close {type(e).__name__}: {e}"[:600], flush=True)
+            end_extra["language_hook_errors"] = tconn.lang_errors
+        # arrays.npz：TraceWriter.close 经 merge_write_npz 写（同目录录像器的同名键同值合并、分目录各写各的），
+        # 写盘失败记 end.arrays.error，由 TRACE_ARRAYS 检查器判失败
         trace.close(status=status, terminal_reason=status, **end_extra)
     _rec_event(recorder, {"kind": "pp_episode_end", "sid": sid, "status": status, "steps": executed,
                           "frames_sent": tconn.frames_sent, "reconnects": result["reconnects"], "error": error})
