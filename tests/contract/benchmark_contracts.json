@@ -109,6 +109,36 @@
   ],
   "entries": [
     {
+      "id": "C13-SG-OFFICIAL-RENDER",
+      "domain": "C13",
+      "source": ["scripts/eval-official/render_official_video.py"],
+      "symbol": "load_trace / f32_from_record / feed_official_recorder / safe_filename / render_episode / main",
+      "oracle": "同一组独立彩块、状态、动作按官方 init_episode 和执行顺序直接调用锁定的 RolloutRecorder 原类；输出逐帧 np.array_equal；真实 ffmpeg 另核帧数、帧率与原输入不变",
+      "positive": "视频演示与非演示任务逐位相同；原 float64 动作从 NPZ 恢复并逐步核 trace.sha256，真实 0.8405 与 float32 0.8404 反例；合法 provenance 断点复用；显式覆盖只替换派生输出",
+      "negative": "畸形 shape/hex/hash、非有限数组、缺或错原动作、乱序/缺项/重复 end、终态冲突、帧数不符和旧 provenance 均拒绝",
+      "boundaries": "demo.frames 含初始帧；strict-cap 的 timeout/error 保留全部已有帧；仅官方超出 max_steps 的唯一 timeout 末步省略；超长 UTF-8 文件名截短加摘要并保留完整原名；画面来自有损视频，不能证明原始画面像素一致",
+      "nodeids": ["tests/pipeline/evalx/report/test_sgx_render_official_video.py"],
+      "resource": "cpu；真实 ffmpeg 端到端用例标 slow",
+      "mutants": [],
+      "status": "conditional",
+      "note": "需要锁定官方 utils.py；本轮隔离 worktree 定向验证 16 passed，含真实 ffmpeg 端到端、原类逐位对照与精度反例；日常门禁只跑非 slow 子集。"
+    },
+    {
+      "id": "C17-OFFICIAL-OVERLAY-BROWSER",
+      "domain": "C17",
+      "source": ["scripts/injection-dev/site/official_overlay_site.py", "scripts/injection-dev/site/official_overlay.html", "scripts/injection-dev/site/official_overlay_browser_check.py"],
+      "symbol": "build_site / episode_entry / 白名单 serve / Playwright main",
+      "oracle": "真实本机媒体与 trace、render.json、NPZ 指纹逐局核对；Playwright 从托管站点独立取目录并核 800 唯一身份和每任务 50 局，实际视频播放时间推进、暂停及 seek",
+      "positive": "官方与原始视频 Range 206；任务/难度/终态筛选；分页、上一局/下一局、版本切换；演示与非演示任务实际播放；390/768 像素宽度截图无横向溢出",
+      "negative": "缺局、重复身份、来源指纹不符、媒体路径越界/符号链接、页面异常、HTTP 错误或媒体播放失败均报 FAIL",
+      "boundaries": "全量目录和输出逐局验收；真实浏览器播放为代表局检查，不声称所有 800 局均逐帧浏览；站点明确本机复刻与 GL 正式成绩不同",
+      "nodeids": [],
+      "resource": "cpu；临时 Playwright Chromium 与白名单 HTTP 服务",
+      "mutants": [],
+      "status": "conditional",
+      "note": "依赖本机第三档完整媒体与重绘结果，不在日常 pytest 执行；通过 official_overlay_browser_check.py --base <本站> --shots <产物根> 真浏览器核验，报告与截图留档。"
+    },
+    {
       "id": "C03-CONSTANTS",
       "domain": "C03",
       "source": [
@@ -6590,6 +6620,18 @@
     }
   ],
   "files": {
+    "scripts/eval-official/render_official_video.py": [
+      "C13-SG-OFFICIAL-RENDER"
+    ],
+    "scripts/injection-dev/site/official_overlay_site.py": [
+      "C17-OFFICIAL-OVERLAY-BROWSER"
+    ],
+    "scripts/injection-dev/site/official_overlay.html": [
+      "C17-OFFICIAL-OVERLAY-BROWSER"
+    ],
+    "scripts/injection-dev/site/official_overlay_browser_check.py": [
+      "C17-OFFICIAL-OVERLAY-BROWSER"
+    ],
     "src/robomme/": [
       "C18-UPSTREAM-BYTES",
       "C18-WHEEL"

@@ -24,6 +24,11 @@
 - **对哪些数据**：`artifacts/sg-evaluation/sg-eval-gl-20261004-01/local-g3/media/mmesg-ground-sg-oracle/test-hard/new/` 下 16 任务 × 50 局 = 800 局（已全部跑完、转码 ok、trace 齐全）。输出到每局目录 `official/official-rerender__<官方文件名>.mp4`，原 `episode.mp4` 不动。
 - **怎么保证一致**：单测用同一组帧分别喂官方类与本工具，逐帧逐位相等；真实一局抽帧目视；全量 800 局末行 `OFFICIAL_RENDER_SUMMARY=PASS total=800 ok=800 fail=0`。纯 CPU，不占显卡、不做 reset。
 - **已知差异**：画面像素来自 h264 解码（官方从原始帧直接合成），文字区逐位一致；文件名加 `official-rerender__` 前缀表明是重绘。
+- **本轮追加交付（2026-10-05）**：用户原话「/data/hongzefu/robomme_benchmark_MotionJEPANewTask/1005-eval-video-official-overlay-plan.md实现第一阶段的转码转完之后host在一个网站上。host完网站做Playeright测试。」明确执行第一阶段，随后在本机新增独立视频浏览站点，按任务、难度和终态筛选并播放重绘视频；完成真实 Playwright 播放、跳转、筛选与截图核验。沿用已有白名单视频服务，端口起跑前探测，给用户完整域名链接。
+
+## 第一阶段子代理分工与整合（简述）
+
+重绘代理只负责离线工具与定向测试，网站代理只负责独立页面、目录构建和浏览器检查脚本；媒体核验与审查代理只读。主会话先审查并整合工具，执行真实一局冒烟，再完成全量重绘；随后构建站点、启动本机会话并执行 Playwright。每次整合核对文件边界与差异，原视频和第二阶段模型链路保持原样。
 
 ## 第二阶段：所有模型的评估链路直接产出官方版式，然后重跑第一、二、三档
 
@@ -86,7 +91,8 @@
 | 阶段 | 子任务 | 目标 | 可写文件集合 | 禁触路径 | 接口契约与依赖 | 合并顺序 | 验收命令与判定行（worktree 内，R5 环境） | 资源 | 共享文件归属 |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | S2 | 离线重绘工具与测试 | `scripts/eval-official/render_official_video.py`、`tests/pipeline/evalx/report/test_sgx_render_official_video.py` | `src/`、`third_party/`、其余 `scripts/eval-official/*` | 只读 `mmesg_client.official_episode_id`、`trace_writer.array_record` 格式；按 R2 加载官方 utils | 1 | `… pytest tests/pipeline/evalx/report/test_sgx_render_official_video.py -q` 末行 passed；stdout 含 `RENDER_PARITY=PASS frames=6 mismatch=0` | CPU ≤3 分钟 | 无 |
-| 1 | 主会话 | 真实一局 + 800 局全量重绘、留档、待做清单 | `docs/validation/sg-eval-gl-20261004-01/result.md`、`records/`、`docs/1002-pending-decisions.md` | — | 依赖 S2 合入 | 2 | `OFFICIAL_RENDER=PASS … frames=1245`；`OFFICIAL_RENDER_SUMMARY=PASS total=800 ok=800 fail=0` | CPU，tmux `ovl-rerender-g3` | — |
+| 1 | S6 | 独立视频浏览站点与 Playwright 检查 | `scripts/injection-dev/site/official_overlay_site.py`、`scripts/injection-dev/site/official_overlay.html`、`scripts/injection-dev/site/official_overlay_browser_check.py`；在 `artifacts/sg-evaluation/sg-eval-gl-20261004-01/official-overlay/` 生成本站目录与检查产物 | `src/`、`third_party/`、现有站点页面与服务器、其余评估代码 | 复用 `site_server.py` 白名单与 Range；仅展示本机第三档 Oracle 重绘视频，依赖全量重绘；主会话启动服务器与执行浏览器检查 | 3 | `OFFICIAL_SITE=PASS episodes=800`；`OFFICIAL_BROWSER=PASS`，截图与 JSON 报告落本站产物目录 | CPU，独立空闲端口优先 8083，tmux `ovl-site-g3-8083`，零 GPU/reset | 三个源码文件归 S6；运行、留档、共享目录归主会话 |
+| 1 | 主会话 | 真实一局 + 800 局全量重绘、留档、待做清单、登记新增测试契约 | 本计划；`docs/validation/sg-eval-gl-20261004-01/launch.md`、`result.md`、`records/`；`docs/1002-pending-decisions.md`；`tests/contract/benchmark_contracts.json` | `src/`、`third_party/`、其他在途文件 | 依赖 S2 合入；测试总表按 `tests/static/test_inventory.py::check_inventory` 登记新增源码与真实验证边界 | 2 | `OFFICIAL_RENDER=PASS … frames=1245`；`OFFICIAL_RENDER_SUMMARY=PASS total=800 ok=800 fail=0`；核心短测含 `TEST_INVENTORY=PASS` | CPU，tmux `ovl-rerender-g3` | 测试总表、留档与版本提交均由主会话负责 |
 | 2 | S1 | GroundSG 保留官方 mp4 | `mmesg_client.py`、`official_hard_runner.py`、`video_check.py`（仅文档串）、两份 groundsg 测试 | `src/`、`third_party/`、`run_seat.sh` | 导出 `keep_official_videos`、`OFFICIAL_VIDEO_SUBDIR` | 1 | `… pytest tests/pipeline/evalx/groundsg -q` passed | CPU | 无 |
 | 2 | S3 | Astra 录全帧 + 转码 | `astra_hard_runner.py`、`run_astra.sh`、`tests/pipeline/evalx/astra/test_astra_wiring.py` | 同上 + S1 集合 | 只读 `recorder.EpisodeRecorder` 接口 | 2 | `… pytest tests/pipeline/evalx/astra -q` passed | CPU | 无 |
 | 2 | S4 | SimpleMemVLA / MME 最小 trace | `smvla_client.py`、`mme_client.py`、`tests/pipeline/eval/test_policy_clients.py` | 同上 | 只读 `trace_writer.TraceWriter` | 3 | `… pytest tests/pipeline/eval/test_policy_clients.py -q` passed | CPU | 无 |
@@ -127,3 +133,13 @@
 ## 七、留档与 commit 纪律
 
 第一阶段：S2 `--no-ff` 合并一个项目号，收尾留档一个；第二阶段 S1～S5 各一个，三档重跑按 1003 计划留档体例。body 按第 11 条六项，含文首用户原话。不归档 mp4。
+
+## 八、第一阶段实施前核验与必要修正（2026-10-05）
+
+本轮只实施第一阶段和用户追加的视频站点、Playwright。Codex 按 `AGENTS.md` 第 26 条使用隔离 worktree 交付文件，子代理不提交；主会话审查、逐文件整合后提交，不执行 Claude 专属的模型档位和子代理合并提交机制。主检出已有 `third_party/SimpleMemVLA` 在途修改，既不提交也不清理；正式重绘从本轮提交建立干净运行 worktree，以 `--official-root` 只读加载主检出锁定的官方代码，媒体仍写本轮已批准的本机目录。
+
+预检确认 `16 任务 × 1 个 V9 正式评估集合 × 每任务 50 局 = 800 局`，与本机 manifest 和 results 身份全集一致，总帧 848318、执行步 600820，最长 2616 帧。`demo.frames` 已包含初始帧，等于 `end.demo_frames + 1`。194 局 `end.status=timeout`、`terminal_reason=error`，原结果的 `success_flag` 同样是 `error`；这些局恰执行 1600 步，与 `max_steps` 相等，保留全部已有帧，文件名沿用 `error`，网站按 `timeout` 展示。
+
+原动作在 `arrays.npz` 的 `exec_action__<五位编号>` 中保留 float64，所有 600820 步索引齐全。真实反例 `VideoPlaceButton_xhard1_17000000.a1` 第 233 步：`0.8404500172406898` 应显示 `0.8405`，转 float32 后会显示 `0.8404`。因此优先读取原动作，逐步核对 dtype、shape 和 trace 的 sha256，并把 NPZ 指纹记入来源记录；不能用 float32 近似声称原动作文字逐位一致。
+
+17 局加前缀后的完整官方文件名为 256～257 字节，超过 255 字节上限：仅超限时按 UTF-8 边界截短并追加摘要，完整原名和目标文本写入每局来源记录。官方 Task Goal 条高度随文本变化，输出尺寸允许实测的 `512×512`、`512×528`、`512×560`，不强制统一裁切。既有 `episode.mp4`、trace、NPZ 与第二阶段模型链路均不改动。
