@@ -154,7 +154,7 @@ PonderPounce 那 1 局 error：VideoPlaceOrder_xhard2_19100901，第 1541 步 `P
 
 ## 九、本机 Oracle 存量官方版式重绘与视频站点（第一阶段完成，2026-10-05）
 
-**已完成本机 `16 任务 × 每任务合计 50 局 = 800 局` 的官方版式重绘与网站托管。** 各难度实际乘式见 `launch.md` 第⑪节，不把第三阶段误称为单一难度档。网站：[http://sled-vail.eecs.umich.edu:8083/](http://sled-vail.eecs.umich.edu:8083/)。转码代码锚点 `6a23af541b4f136e754eeb06e8fd1548700c4b23`，干净 detached 运行副本；网站追加只改三个站点文件，最终提交按 `12.460` 查找。本轮没有新增 reset、轨迹生成、GPU 或集群任务，第二阶段模型链路未实施。
+**已完成本机 `16 任务 × 每任务合计 50 局 = 800 局` 的官方版式重绘与网站托管。** 各难度实际乘式见 `launch.md` 第⑪节，不把第三阶段误称为单一难度档。网站：[http://sled-vail.eecs.umich.edu:8083/](http://sled-vail.eecs.umich.edu:8083/)。转码代码锚点 `6a23af541b4f136e754eeb06e8fd1548700c4b23`，干净 detached 运行副本；网站追加只改三个站点文件，最终代码锚点 `22a90ce9c33d01b729013d6f7d21457b87d5ceef`。本轮没有新增 reset、轨迹生成、GPU 或集群任务，第二阶段模型链路未实施。
 
 ### 用户指令与界面口径
 

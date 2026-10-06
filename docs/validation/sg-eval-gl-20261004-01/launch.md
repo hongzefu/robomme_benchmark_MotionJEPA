@@ -219,3 +219,5 @@ uv run --no-project --with playwright python scripts/injection-dev/site/official
 两列均用本机 Oracle 新接口接受的终态结果；xhard0 为 `16 任务 × 1 档 xhard0 × 12 局 = 192 局`，不重跑评估。公开仅 16 行计数，完整来源及 sha256 写 `site-tasks/success-private-proof.json`。新版站点目录改为 `official-overlay/site-tasks/`，截图与报告改为 `official-overlay/checks-tasks/`；旧目录与首版报告保留。只重启本轮自己的 `ovl-site-g3-8083`，删前删后核对会话差集恰好一个；新服务从主检出读取新增版页面，源码在浏览器通过后原样提交，原重绘锚点不变。最终保留该站点会话，临时工作副本清理由主会话负责。
 
 用户最后将可见列名明确为 `Xhard`、`原版hard`，仅修改 HTML 和浏览器断言；最终检查改用 `official-overlay/checks-labels/`，原 `checks-tasks/` 保留。此时服务器逐请求读取主检出的 HTML，表头更新无需再启动进程；实际两份结果文件和成功局数不变。
+
+最终网站源码锚点 `22a90ce9c33d01b729013d6f7d21457b87d5ceef`；重绘仍固定 `6a23af541b4f136e754eeb06e8fd1548700c4b23`。两者用完整哈希还原，避免同时存在的计划提交与实施提交编号重合时选错来源。
