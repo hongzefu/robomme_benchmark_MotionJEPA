@@ -20,6 +20,8 @@
 >
 > 2026-10-06 再追加原话：「MemER 接入与 hard-verify 对拍在本机进行可以同步。其他不能在本机。」——MemER 接入的真实 smoke 与 hard-verify 原侧 vs 新侧对拍（192 + 192）在本机 sled-vail（2 × RTX 6000 Ada）做，与 GL 上的五模型 OOD 实跑并行；五模型 OOD 86 局只在 GL A40，不在本机跑。
 >
+> 2026-10-06 再追加原话：「加入一个新的要求现在的J0BS永远以站位J0B的形式实现然后每次最多只能同时quy4张卡」——GL 上一切任务永远经 48 h 占位 job（`sleep infinity` + `srun --overlap`）运行，不直接 `sbatch` 工作负载；**全局**同一时刻占住或排队的占位 job 合计最多 4 张卡（所有 job 加起来 4 张，不是每个 job 4 张）；此前「最多 10 卡」授权作废。随后原话：「全局最多4张卡不是单个J0B。」「我授权你自己来管理J0B。尽可能让我少排队」——占位 job 的提交、保活、到期前续排、`scancel` 自己的 job 由主会话自行管理，目标是席位尽量不空、用户不被排队拖住；该授权不是开工令，开工仍等用户明确说「开工」。
+>
 > 功能范围追加原话：「给出现在所有支持模型的清单，都要支持1800步，都要支持不同seed，模型seed。」「但是我们现在实跑只跑这个。我们现在实跑只跑我说的这些模型。」因此全部模型路线统一补齐1800步与可配置模型seed，但实跑范围只保留本版指定四模型。
 
 # 第一部分（给人看）
@@ -93,7 +95,8 @@
 
 | 跑什么 | 规模 | 怎么跑 |
 |---|---|---|
-| 五模型 OOD 第三档：FrameSamp+Modulation、SimpleMemVLA、PonderPounce、MemER、GroundSG+QwenVL | 每模型 43 格 × 2 局 = 86 局，共 430 局 | 1800 步、模型 seed 7；10 片进 4 个单卡占位席位（单卡够用：MemER 与 QwenVL 一样和动作服务同卡） |
+| 五模型 OOD 第三档：FrameSamp+Modulation、SimpleMemVLA、PonderPounce、MemER、GroundSG+QwenVL | 每模型 43 格 × 2 局 = 86 局，共 430 局 | 1800 步、模型 seed 7；10 片排进 4 个单卡占位席位（单卡够用：MemER 与 QwenVL 一样和动作服务同卡） |
+| GL 资源硬规则（用户 2026-10-06） | — | 永远经 48 h 占位 job 跑（`sleep infinity` + `srun --overlap`），不直接 `sbatch` 工作负载；**全局**占住 + 排队的占位 job 合计最多 4 张卡（不是每个 job 4 张）；job 由主会话自管：到期前提前续排、空席立即补片、跑完按清单 `scancel` 自己的 job，尽量让用户少排队 |
 | 本机并行：MemER hard-verify 对拍 | 原侧 192 局 + 新侧 192 局 | 本机两张卡各一席，1300 步，两侧同一批局、同一份 adapter、seed 7，两侧同机；出差异报告，不证明等价 |
 
 预算：轨迹硬上限 870 局（430 + 5 局 smoke + 384 + 2 局 smoke + 50 次重试），历史累计 2934，在 6366 内；**reset 不再设硬上限**（去掉每片 `--reset-budget` 拦截，共享账本只计量告警，预计约 2166 次）。耗时等 MemER 跑完 1 局 smoke 再估。run_name 拟 `sg-eval-gl-20261006-03`。
@@ -182,7 +185,7 @@ ls -1 scripts/*.py
 2. 先登记完整预算、新run_name、四个席位与资源处置口径；实际预算统一trajectory870／infra50／expired0，不沿旧默认重试。再核本版四模型资产与客户端依赖实际指向，`RUN_INPUTS`、`ASSETS`失败即停；`SMVLA_PY`／`PP_PY`／FrameSamp解释器及MemER客户端须实际核实。不为本版不跑模型新增下载、GPUsmoke或付费调用。
 3. 清单参考 `docs/validation/sg-eval-gl-20261006-02/records/scripts/gl-scripts_build_manifests.py.txt`，从 `_v9_cells` 各格按局号升序取前2局，连交付spec逐项校验：共86个唯一环境身份。四模型seed7复用同一manifest指纹；每模型两片、43局／片。每模型先过其seed7单局最小smoke再启动该路线正式评估；失败停止受影响路线，不额外重跑来挑成功局，不跑seed0／42的smoke。
 4. 新根 `R3=$N/sgeval-<确认日期>-03`，五组 `$R3/<模型>/seed7/` 下分别放stage／trace／media／report。全部任务明确指定 `--dataset test-hard --max-steps 1800 --strict-cap --policy-seed 7`；MemER另指定新 `--groundsg-variant ground-sg-memer --memer-adapter <已核实路径>`，实际flag以R1／R3整合后接口为准。任务配置守卫拒绝本版seed0／42运行。
-5. 10片入队，仍最多4席，不增加占位job数量；沿原顺序 SimpleMemVLA → PonderPounce → FrameSamp+Modulation，再加入 GroundSG+QwenVL（`--episode-wall 3600`、`SEAT_XLA_MEM_FRACTION=0.65`、adapter 沿上一轮 `checkpoint-1200`）与 MemER，组内按固定分片／清单顺序运行。每席一次只起一个任务，服务起前探端口，记实际端口、节点、server_epoch、服务argv与种子，健康检查和首推分别验收；srun使用 `--gpu_cmode=shared`。共享预算 `$R3/budget-ledger.jsonl` 的route含模型和模型seed7，任务独立attempt账本记录 `accepted_attempt_id`；各片 `--reset-budget 106`，共享infra上限50，每身份重试最多1次。
+5. 10片入队，仍最多4席；**GL 永远经占位 job 运行、全局占住 + 排队的占位 job 合计最多 4 张卡（不是每个 job 4 张）**（用户 2026-10-06），job 由主会话自管（用户「我授权你自己来管理J0B。尽可能让我少排队」）：现有 4 个 job（63188714／15／16／19）到期前约 2 h 先提交接替 job 排队（此时 RUNNING + PENDING 仍 ≤ 4 张：到期 job 的卡在接替 job 排到前不重复计），席位空出立即补下一片，跑完按清单逐个 `scancel` 自己的 job，不动他人 job；沿原顺序 SimpleMemVLA → PonderPounce → FrameSamp+Modulation，再加入 GroundSG+QwenVL（`--episode-wall 3600`、`SEAT_XLA_MEM_FRACTION=0.65`、adapter 沿上一轮 `checkpoint-1200`）与 MemER，组内按固定分片／清单顺序运行。每席一次只起一个任务，服务起前探端口，记实际端口、节点、server_epoch、服务argv与种子，健康检查和首推分别验收；srun使用 `--gpu_cmode=shared`。共享预算 `$R3/budget-ledger.jsonl` 的route含模型和模型seed7，任务独立attempt账本记录 `accepted_attempt_id`；各片 `--reset-budget 106`，共享infra上限50，每身份重试最多1次。
 6. 登录节点tmux会话前缀 `p3-`，smoke前缀 `p3-smoke-`；完整名、JobID与日志路径写launch.md。日志三件套与 `EXIT_CODE=` 尾行必须保留，监听完成／异常／无进展，不因tmux启动成功承诺代理会自动唤醒。
 7. 每模型seed7单独运行报告和媒体验收（已有报告参数 `--cap 1800 --expect-total 86`），另按八.7 布局发布视频并核 `VIDEO_LAYOUT`（strict-cap 局文件名必须 `timeout`），校验权威身份集合、真实1800上限、视频唯一性／完整解码与来源；官方自产视频与重绘互斥，原始帧按现行验收后清理规则保留。4组各过覆盖、视频与官方媒体闸门后才汇总344局。
 8. **MemER hard-verify 对拍（本机，与 GL 并行）**：不等 OOD 跑完；MemER 接入合入并过 `MEMER_WIRING` 后即可在本机 sled-vail 起，`CUDA_VISIBLE_DEVICES=0` 跑原侧席、`=1` 跑新侧席（或两侧串行同卡），tmux 前缀 `p3-local-`；两侧同机，`GATE2_PROVENANCE` 以同主机为准。局清单沿用上一轮第二档 `test-hard0` 的 16 任务 × 12 局 = 192（`$I/qwenvl/gate2/` 同式清单，重新生成并核指纹）；两侧各先 1 局 smoke（原侧经 `run_official_hard.sh --dataset test-hard0 --max-steps 1300 --variant ground-sg-memer --memer-adapter <路径>`，新侧经 `run_seat.sh` 同参数），再原侧 8 片 + 新侧 8 片进同样 4 席，`SEAT_XLA_MEM_FRACTION=0.65`、`--episode-wall 3600` 沿 QwenVL 口径；两侧都 `--policy-seed 7`。跑完用上一轮的对比工具（1005 计划 S6）出 `GATE2_INPUTS`／`GATE2_PROVENANCE`／`GATE2=INFO compared=192`，两侧 `OFFICIAL_MEDIA` 各过。是差异报告，不证明等价。
