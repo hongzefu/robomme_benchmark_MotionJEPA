@@ -32,6 +32,39 @@ S7 补充（只加不改）：
 - 身份建议字段：``identity`` 里放 ``task``、``source_episode``、``seed``、``tier``、``dataset``，以及 ``attempt``
   （第几次尝试）；``gate2_compare`` 先按 ``(task, source_episode, seed)`` 配对，同一身份多份轨迹时再按 ``attempt``
   对上结果行。
+
+第二阶段共享契约 C1～C11（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分〇节；S0 由主会话写入，
+各路线子任务按此落地，测试助手 ``tests/pipeline/evalx/report/trace_contract.py`` 逐条核对）：
+
+- C1 ``route``：新侧一律 ``<模型>/new``（``mmesg/<variant>/new``、``pp/new``、``astra/new``、``smvla/new``、
+  ``mme/new``），原侧 ``<模型>/orig``（``mmesg/<variant>/orig``、``pp/orig``、``smvla/orig``、``mme/orig``）。
+- C2 演示段记全部 reset 帧（含最后一帧初始画面），``demo.frames == len(demo.states)``；收尾
+  ``close(..., demo_frames=<演示帧数，不含初始帧>)``，满足 ``demo.frames == end.demo_frames + 1``。
+- C3 ``end.status`` 与 ``end.terminal_reason`` 取 ``success``／``fail``／``timeout``／``error``；strict-cap 命中一律
+  ``timeout``；``error`` 局允许无帧（``end.no_frame=true``，此时演示段可为空、``demo_frames`` 记 0），重绘器对
+  无帧局记原因不出视频。
+- C4 每步记执行后的画面、状态、动作与当步子目标；动作按实际交给环境的原 dtype／shape／bytes 记录，不为契约
+  转换；非 float32 动作的原值写同目录 ``arrays.npz``，键 ``exec_action__%05d``（按 0 起的步序号，即 ``step - 1``），
+  一旦写 ``arrays.npz`` 则每个执行步都要有键。
+- C5 ``trace.jsonl``、``arrays.npz``、原始帧放同一局目录。
+- C6 ``identity`` 含 ``task``、``tier``、``seed``、``dataset``、``source_episode`` 或 ``builder_episode``、与局目录名
+  ``<key>.a<N>`` 一致的 ``key``，以及 ``attempt``（= 账本 ``accepted_attempt_id`` 对应的尝试号 N）。
+- C7 子目标为 ``None`` 表示模型等待中（官方录像以 ``[initializing...]`` 占位），轨迹里保留原始 ``None``；没有
+  子目标功能的路线（MME）全程 ``None``。
+- C8 计数三分，写进 ``end``：``steps_attempted``（交给环境的步数，含异常步，= 结果行 ``exec_steps``）、
+  ``steps_observed``（返回有效观测的步数）、``frames_recorded``（官方实际录制帧数
+  = ``demo_frames + 1 + steps_observed - omitted_timeout_frames``）；缺观测步用 ``log_missing_step`` 保留步号、
+  动作与原因（``observed=false``），不删不补。
+- C9 两侧不可同时观察的字段写 ``NOT_OBSERVED``（如原侧的 ``terminated``／``truncated``）；比较器不把双
+  ``NOT_OBSERVED`` 算相同，按维度报 ``not_observed=<n>``。
+- C10 请求／响应／历史边界按模型定义「共同逻辑输入」：GroundSG、PonderPounce、MME 两侧同协议，比原始哈希；
+  SimpleMemVLA 原侧内嵌、新侧 websocket，只比逻辑输入（指令、状态、帧哈希序列）与完整动作块。
+- C11 ``end.observer_hook_errors=<n>``（只读观测器路线必写）；大于 0 时该局 ``TRACE_COMPLETE`` 计失败，不影响
+  任务成绩。
+
+为落地 C3、C8、C9，S0 只增不改地加了 ``NOT_OBSERVED``、``UNSET`` 两个常量，``log_step`` 的 ``terminated``／
+``truncated`` 接受 ``NOT_OBSERVED`` 原样写出并接受附加字段 ``**extra``，以及 ``log_missing_step``；不传这些新值时
+写出字节与此前完全相同。共享函数新增的可选参数一律用 ``UNSET`` 作「未提供」哨兵，``None`` 只表示「模型等待中」。
 """
 from __future__ import annotations
 
@@ -43,6 +76,31 @@ from typing import Any
 import numpy as np
 
 SCHEMA = "sgeval-trace/1"
+NOT_OBSERVED = "NOT_OBSERVED"  # C9：该侧不可观察的字段
+
+
+class _Unset:
+    """「未提供」哨兵（C7／R2）：与 ``None``（模型等待中）区分。"""
+
+    _inst = None
+
+    def __new__(cls):
+        if cls._inst is None:
+            cls._inst = super().__new__(cls)
+        return cls._inst
+
+    def __repr__(self) -> str:
+        return "UNSET"
+
+    def __bool__(self) -> bool:
+        return False
+
+
+UNSET = _Unset()
+
+
+def _flag(x: Any) -> Any:
+    return NOT_OBSERVED if isinstance(x, str) and x == NOT_OBSERVED else bool(x)
 
 
 def image_sha256(img: Any) -> str | None:
@@ -120,8 +178,11 @@ class TraceWriter:
         self._write({"kind": "history", "start": int(start_step), "end": int(end_step), "note": note})
 
     def log_step(self, *, step: int, front: Any, wrist: Any, state: Any, action: Any, subgoal: str | None,
-                 terminated: bool, truncated: bool, status: str | None) -> None:
-        """执行完第 ``step`` 步（从 1 计）后的一行；画面为执行后的观测。"""
+                 terminated: bool, truncated: bool, status: str | None, **extra: Any) -> None:
+        """执行完第 ``step`` 步（从 1 计）后的一行；画面为执行后的观测。
+
+        ``terminated``／``truncated`` 可传 ``NOT_OBSERVED``（C9）；``extra`` 原样并入该行（不传时与旧格式逐字节相同）。
+        """
         if not self._demo_written:
             self.log_demo([], [])
         self.exec_steps = max(self.exec_steps, int(step))
@@ -129,8 +190,16 @@ class TraceWriter:
             "kind": "step", "step": int(step),
             "front_sha256": image_sha256(front), "wrist_sha256": image_sha256(wrist),
             "state": array_record(state), "action": array_record(action),
-            "subgoal": subgoal, "terminated": bool(terminated), "truncated": bool(truncated), "status": status,
+            "subgoal": subgoal, "terminated": _flag(terminated), "truncated": _flag(truncated), "status": status,
+            **extra,
         })
+
+    def log_missing_step(self, *, step: int, action: Any, reason: str, subgoal: str | None = None,
+                         **extra: Any) -> None:
+        """C8：动作已交给环境但没有返回有效观测的一步；保留步号、动作与原因，画面与状态记 ``None``。"""
+        self.log_step(step=step, front=None, wrist=None, state=None, action=action, subgoal=subgoal,
+                      terminated=NOT_OBSERVED, truncated=NOT_OBSERVED, status=None,
+                      observed=False, missing_reason=str(reason), **extra)
 
     def close(self, *, status: str, terminal_reason: str | None = None, **extra: Any) -> None:
         if self._closed:
