@@ -299,3 +299,18 @@ def test_verify_dir_modes(world):
     v0.write_bytes(v0.read_bytes()[: v0.stat().st_size // 2])
     rc, out = _run("--verify-dir", world["eps"][0])
     assert rc == 1 and "OFFICIAL_VERIFY=FAIL" in out, out
+
+
+def test_sidecar_frames_accepts_groundsg_provenance_dict():
+    """GroundSG 官方原生视频的 provenance.json（S1）把 frames 写成字典：三值一致取 decoded，不一致或缺计数给失败说明。
+    （2026-10-06 批次 2 本机 smoke 实测：字典被当整数比较，原生视频被误判不合格后改走重绘。）"""
+    from tests._support.loaders import load_script
+
+    m = load_script("eval-official/official_media_check.py")
+    assert m.sidecar_frames({"frames": 392}) == 392
+    assert m.sidecar_frames({"frames_recorded": 7, "frames": 9}) == 7
+    ok = {"frames": {"basis": "x", "decoded": 392, "expected": 392, "frames_recorded": 392, "demo_frames": 66}}
+    assert m.sidecar_frames(ok) == 392
+    bad = {"frames": {"decoded": 391, "expected": 392, "frames_recorded": 392}}
+    assert isinstance(m.sidecar_frames(bad), str) and "inconsistent" in m.sidecar_frames(bad)
+    assert m.sidecar_frames({"frames": {"basis": "x"}}) == "frames_dict_without_counts"

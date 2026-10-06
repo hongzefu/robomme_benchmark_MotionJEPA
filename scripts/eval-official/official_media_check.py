@@ -126,8 +126,21 @@ def sidecar_video_sha(side: dict):
 
 
 def sidecar_frames(side: dict):
+    """sidecar 记录的帧数。重绘器 render.json 写整数；GroundSG 官方原生视频的 provenance.json（S1）把 ``frames``
+    写成字典（``decoded``／``expected``／``frames_recorded``／``basis`` 等），此时取 ``decoded``，并要求三者一致，
+    不一致返回字符串说明，由调用方计入失败原因。"""
     v = side.get("frames_recorded")
-    return v if v is not None else side.get("frames")
+    if v is not None:
+        return v
+    f = side.get("frames")
+    if isinstance(f, dict):
+        vals = {k: f.get(k) for k in ("decoded", "expected", "frames_recorded") if f.get(k) is not None}
+        if not vals:
+            return "frames_dict_without_counts"
+        if len(set(vals.values())) != 1:
+            return f"frames_dict_inconsistent:{vals}"
+        return next(iter(vals.values()))
+    return f
 
 
 def sidecar_field(side: dict, name: str):
