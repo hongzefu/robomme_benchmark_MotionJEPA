@@ -73,5 +73,36 @@
     "resource": "cpu",
     "mutants": [],
     "status": "verified"
+  },
+  {
+    "id": "C13-MERGE1-CROSS",
+    "domain": "C13",
+    "source": [
+      "scripts/eval-official/trace_writer.py",
+      "scripts/eval-official/orig_observer/step_arrays.py",
+      "scripts/eval-official/astra_hard_runner.py",
+      "scripts/eval-official/budget_ledger.py",
+      "scripts/eval-official/official_hard_runner.py",
+      "scripts/eval-official/env_client.py",
+      "scripts/eval-official/pp_server_wrap.py",
+      "scripts/eval-official/pp_client.py",
+      "scripts/eval-official/policy_server_wrap.py"
+    ],
+    "symbol": "merge_write_npz（目录锁超时 MERGE_LOCK_TIMEOUT_S）× StepArrays.save × write_exec_actions × TraceWriter.close；OrigBudget＋open_budget_ledger × AttemptLedger＋budget_caps × BudgetLedger；pp_server_wrap._S2Watch／_audit_block／generation_blocks × pp_client.TracedConnection._log_generation；policy_server_wrap.build_audit × trace_writer.audit_channel_messages",
+    "oracle": "接口冻结说明三、四、五节；两边都用真实代码（不用替身对接），期望键集合、计数与文字在用例里手写",
+    "positive": "R2／R5 数组写法与 TraceWriter.close 任意先后都得到 exec_action 与 exec_state 的并集、end.arrays 无 error；原侧与新侧同开一个真实共享账本：同 config 不拒、恰一行 config、首试／恢复／重试计数手算一致、同 token 续跑同 rid 不写新行；pp 外壳审计键进客户端语言账本后 S2 transition 块有子目标原文、换算后子目标、reasoning、kind、committed、params，nontransition 显式无文字；S1 通道 token_ids／mask 原样、text_reconstructed 记进 call_close.parsed；MME-VLA 外壳通道逐字段落行",
+    "negative": "目录锁被占超过 MERGE_LOCK_TIMEOUT_S 抛 TimeoutError、TraceWriter.close 记 end.arrays.error 且不写文件；恢复额度用满再预约被拒（reserved_for_first_tries／recovery_cap）；换一组 config 参数打开同一账本抛 BudgetConfigMismatch",
+    "boundaries": "PonderPounce 父类服务与 build_pi0_prompt 用桩（外壳自身代码真实执行）；不起网络、不起仿真、不加载模型",
+    "nodeids": [
+      "tests/pipeline/evalx/trace/test_merge1_cross_block.py::test_step_arrays_and_trace_writer_any_order_keep_states",
+      "tests/pipeline/evalx/trace/test_merge1_cross_block.py::test_astra_write_exec_actions_and_trace_writer_any_order_keep_states",
+      "tests/pipeline/evalx/trace/test_merge1_cross_block.py::test_merge_write_npz_lock_timeout_recorded_in_end_arrays",
+      "tests/pipeline/evalx/trace/test_merge1_cross_block.py::test_orig_and_new_side_share_one_real_budget_ledger",
+      "tests/pipeline/evalx/trace/test_merge1_cross_block.py::test_pp_server_wrap_generation_and_text_flag_reach_language_log",
+      "tests/pipeline/evalx/trace/test_merge1_cross_block.py::test_policy_server_wrap_channels_land_in_language_log"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
   }
 ]
