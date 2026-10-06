@@ -1,163 +1,175 @@
-> 本文按用户最新要求重排为“接口 → 逐任务改动 → 三组对拍”三部分，替代此前两部分体例；只改计划，不构成开工令。工作副本为 `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`，分支为 `newtask-v3-MotionJepa1006`。本次修订前 HEAD 为 `871c213a8b3513e5d006da332635ff441128dafd`；原源码核查锚点为 `13905997d45155ff1c98417511aedec92578042d`，生成代码起点为 `3a5951a834ea014f63724647ab0bc091eb9f109d`。ManiSkill 来源仍钉在 `07be6fbc66350ddca200abfb0a11b692f078f7fd`，依赖以本分支 `pyproject.toml、uv.lock` 为准。接口、次数和测试节点均为拟议项，尚未实施。
+> 本文按用户最新要求改为"子类继承"接口方案，替代此前"ENV 内加 xhard 变量再 if/else"的设计；只改计划，不构成开工令。本轮只定义接口，不展开每个任务具体改哪些次数，那部分待接口定稿后另议。工作副本为 `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`，分支为 `newtask-v3-MotionJepa1006`。本次修订前 HEAD 为 `70f55d958cfd8d79da212e730a1b852c34c58ed0`；原源码核查锚点为 `13905997d45155ff1c98417511aedec92578042d`，生成代码起点为 `3a5951a834ea014f63724647ab0bc091eb9f109d`。ManiSkill 来源仍钉在 `07be6fbc66350ddca200abfb0a11b692f078f7fd`，依赖以本分支 `pyproject.toml、uv.lock` 为准。文中所有新名字、新参数、新文件均为拟议项，尚未实施。
 
-# 第一部分：接口怎么改
+# 设计目标
 
-## 1. 输入不再是新 seed，而是现有 test 的 hard 样本
+用户要求（原话）："我就是要沿用 Hard 的所有配置但只是在一两个参数上进行修改"，"我只改环境生成中一两个参数比如说我 PICK 5 次变成 PICK 7 次"，"能不能用一个独立的 ENV 文件来表示它的新增部分"，"我所有的改动就仅限于这个 generate dataset 的这一个文件和这些新增的十六个文件"，"seed 我先用现有的 seed 来做"，来源为 `src/robomme/env_metadata/train` 里已经生成过原版 hard 的记录。
 
-**读取现有 test metadata 中标为 hard 的记录，用其中实际保存的 seed 和场景派生两档。** XHard1／XHard2 使用同一条原记录作为母样本，不另挑 seed、不按公式重算成功 seed、不覆盖原 HDF5。
+因此本方案的硬约束：
 
-来源为 [test metadata 目录](src/robomme/env_metadata/test)，按 `records[].difficulty == "hard"` 筛选，保留原 `task、episode、seed`。例如 PickHighlight 的 episode 3 实际 seed 是 `620301`；不能重新算成 `620300`。母组键为 `(source_split=test, task, source_episode, source_seed)`，两档与原样本归同组，继续属于测试数据；转作训练需另议划分。
+1. 原 16 个 ENV 文件（`src/robomme/robomme_env/*.py`）一个字节不改。
+2. 新档的全部差异只落在新增的子类文件里，每个任务只覆盖一两个数。
+3. 生成器 `scripts/data-generation-newSeed/generate_dataset_newseed.py` 只加一个开关和一处拼名字逻辑。
+4. seed 直接取 train metadata 中 `difficulty == "hard"` 记录的原 seed，不重算、不换 seed。
+5. 录像器允许"稍微改一点"，但只改为"按原任务名识别"，不改录制逻辑。
 
-用户已明确：“目前你就直接用现在的 test seed 去派生 task，用 test 的 hard 来派生，就不需要用新的 seed 来派生了。”因此旧版“选择新 seed 区间、与 test seed 零重合”的要求作废；现在检查的是来源对应正确、同一目标档内无重复、母组不跨数据划分。根 README 仍有旧的新 seed 描述，本轮仅改本计划，以这条最新决定为准。
+# 第一部分：现在的脚本怎么传参，新参数接在哪
 
-## 2. 原 difficulty 仍传 hard，只加一个 xhard 变量
+## 1. 现有调用链，分五环
 
-**仍从原来的生成器进入 ENV，`difficulty="hard"` 始终不变。** 只额外增加一个可选变量 `xhard`，把它从 `_args → generate_dataset_newseed → EpisodeJob → _worker → gym.make` 传下去。变量名 `xhard` 是本方案拟定名称。
+`generate_dataset_newseed.py` 从命令行到写出 HDF5 的路径如下，括号内是稳定锚点：
 
-| 调用 | 传给 ENV 的参数 | 含义 |
+| 环 | 代码位置 | 现在做什么 |
 |---|---|---|
-| 不传新变量 | `difficulty="hard"`，省略 `xhard` | 原 hard。 |
-| 显式传同值 | `difficulty="hard", xhard="hard"` | 仍为原 hard，专供同值对拍。 |
-| 传入新值 | `difficulty="hard", xhard="xhard1"` 或 `"xhard2"` | 在 hard 场景中增加次数。 |
+| ① 命令行 | `_args` → `main` → `generate_dataset_newseed` | 读 `--env、--episodes、--episode-start、--difficulty（三档比例）、--layout、--max-attempts、--workers、--gpus` 等。 |
+| ② 排任务单 | `generate_dataset_newseed` 内构造 `EpisodeJob` 列表 | 每个 episode 一张卡片，字段 `task、episode、attempt、seed、difficulty、output_root、repo_root`。seed 由 `layout.seed(task, episode, attempt)` 公式算出，difficulty 由 `difficulty_for(episode, cycle)` 按比例轮排。 |
+| ③ 发给工人 | `_run_jobs` 进程池 | 每个 worker 进程拿一张卡片执行 `_worker(job)`。 |
+| ④ 造环境并录制 | `_worker` | `kwargs = {obs_mode, control_mode, render_mode, reward_mode, seed=job.seed, difficulty=job.difficulty}`；`base_env = gym.make(job.task, **kwargs)`；`record_env = RobommeRecordWrapper(base_env, dataset=output_root, env_id=job.task, episode=job.episode, seed=job.seed, save_video=True)`；`record_env.reset()`；按 `job.task in STICK_TASKS` 选 planner；`_execute_tasks` 逐个 subgoal 求解并录制。 |
+| ⑤ 失败换 seed | `_run_jobs` 内调用 `EpisodeJob.bump(new_seed)` | 场景生成失败、planner 耗尽等五类可重试异常时换 seed 重来，直到 `--max-attempts`。 |
 
-CLI 仅增加拟议 `--xhard hard|xhard1|xhard2`，默认不传；旧 CLI 的 `--difficulty` 仍是三档比例，不能写成 `--difficulty hard`。读取 test hard 记录后，job 的原 `difficulty` 字段就是 `hard`，与原来一样传给 ENV。第一节的来源读取通过生成器内的母样本清单接入；来源文件与选择范围在启动配置中明确，不另造一条 ENV 调用链。具体来源 CLI 在实施前定稿，本文不把尚不存在的命令写成可直接运行。
+`gym.make(job.task)` 这一句的含义：到 ManiSkill 注册表里按名字 `"PickHighlight"` 找到用 `@register_env("PickHighlight")` 登记的 class，然后 `PickHighlight(seed=..., difficulty="hard", ...)` 实例化。新档就是让这一句找到另一个 class。
 
-**撤销上一版 `--target-difficulty`、扩展难度解析器和改写 `self.difficulty` 的设计。** [difficulty.py](src/robomme/robomme_env/utils/difficulty.py)::`normalize_robomme_difficulty` 原样保留，只接收 easy／medium／hard；`configs` 也不需要增加新的 difficulty 键。没有新变量时，原三档入口、比例、seed 公式和调度均保持原样；本轮派生任务则从实际 test hard 记录取 seed，禁止重新算 seed。
+## 2. 新参数：只加一个 `--xhard`，并改卡片来源
 
-`EpisodeJob` 除保留 `task、episode、seed、difficulty` 外，携带 `xhard` 和来源身份；恢复模式按原样本核实，不按新循环序号推断。未支持的任务、非法 `xhard` 或非 hard 与非空 `xhard` 的组合，在生成前明确报错，不能默默忽略或回退。ENV 自身也须拒绝非法组合；未改 ENV 不额外传新关键字。原 test 派生分支不调用 `EpisodeJob.bump` 换 seed，失败如实保留。
+拟议 CLI：
 
-## 3. 在 hard 分支内用 if／else 选择次数
+| 参数 | 取值 | 含义 |
+|---|---|---|
+| `--xhard` | 不传 / `xhard1` / `xhard2` | 不传时脚本与现在完全相同；传入时进入"派生档"分支。 |
+| `--source-split` | 默认 `train` | 只在 `--xhard` 传入时生效，指定从 `src/robomme/env_metadata/<split>/` 读母样本。 |
 
-ENV 的 `__init__` 消费额外关键字，`self.difficulty` 仍按原来的逻辑解析，值一直是 `hard`。以下为 PickHighlight 的机制示意，不是已实现代码：
+`--xhard` 与 `--difficulty（比例）、--layout、--episodes、--episode-start、--max-attempts` 互斥：传了 `--xhard` 就不允许再传这几项，传了即报错，避免两套 seed 来源混用。
 
-```python
-self.xhard = kwargs.pop("xhard", None)
-# difficulty 沿用原解析；先校验 xhard 合法且只能用于 hard。
-# 场景和随机抽样照旧执行，之后才在次数消费点选择。
-if self.difficulty == "hard":
-    if self.xhard in (None, "hard"):
-        pickup = self.configs["hard"]["pickup"]  # 原来的 3 个
-    else:
-        pickup = {"xhard1": 4, "xhard2": 5}[self.xhard]
-else:
-    pickup = self.configs[self.difficulty]["pickup"]
-```
+`EpisodeJob` 增加一个可选字段 `xhard: str | None = None`，默认 `None`，旧路径不受影响。
 
-**六个方块、位置、颜色和目标排列照旧生成，只在决定取几个目标时走新的 else。** 若排列为 A、B、C、D、E、F，原 hard 取前三个，新值分别取前四／五个。选择出的次数要供任务列表、高亮、指令和成功检查共同使用，不能只在一个位置覆盖；不修改共享 `config_hard` 字典。
+## 3. 派生档分支下五环各自怎么变
 
-其他任务也使用这个结构：原 hard 场景分支不改，只在获准的次数或循环长度消费点读取 `xhard`。有随机次数的任务保留原 hard 抽样及其顺序，再在新值分支决定扩展次数，避免挤占后续场景随机数；新增抽样须与场景随机流隔离。特别是 VideoRepick，先消费原 hard 次数抽样，再用独立且固定派生规则的次数流决定新次数；不能直接替换共用生成器的抽样范围。A／B 不增加随机调用，C 在母布局形成前不改变场景随机流。StopCube 等先消费原抽样再覆盖，BinFill 必须先固定原库存。
+| 环 | 不传 `--xhard`（原路径，零改动） | 传 `--xhard xhard1`（新路径） |
+|---|---|---|
+| ① 命令行 | 同现在 | 多解析 `--xhard、--source-split`，做互斥校验。 |
+| ② 排任务单 | 公式算 seed、比例轮 difficulty | 读 `src/robomme/env_metadata/train/record_dataset_<task>_metadata.json`，筛 `records[].difficulty == "hard"`，每条记录造一张卡片：`task、episode、seed` 原样抄，`difficulty="hard"` 固定，`xhard="xhard1"`。不再调用 `layout.seed`，也跳过"seed 越界下一代布局"护栏（该护栏只对公式 seed 有意义）。 |
+| ③ 发给工人 | 同现在 | 同现在。 |
+| ④ 造环境 | `gym.make(job.task, **kwargs)` | `env_name = job.task if job.xhard is None else f"{job.task}{XHARD_SUFFIX[job.xhard]}"`，例如 `"PickHighlightXHard1"`；`gym.make(env_name, **kwargs)`，**kwargs 一个不改**，`difficulty` 仍是 `"hard"`，seed 仍是原 seed。`RobommeRecordWrapper(..., env_id=job.task, ...)` **仍传原任务名**（原因见第三部分）。planner 选择仍按 `job.task in STICK_TASKS`，不受新名字影响。 |
+| ⑤ 失败换 seed | `bump` 换 seed 重试 | **不换 seed**。新档的意义是"同一 seed 的更难版本"，失败就按原 seed 记失败，`attempt` 固定 0，`--max-attempts` 在该分支不可用。 |
+
+调用关系一句话：
 
 ```text
-原调用：test hard 的 seed → difficulty=hard → 原次数 → 原 planner／录像器
-新调用：同一 seed → difficulty=hard + xhard → hard 内的次数分支 → 原 planner／录像器
+--xhard xhard1
+  → 读 train json 的 hard 记录，每条一张卡片（原 seed、原 episode、difficulty=hard）
+  → worker 拿卡片：gym.make("PickHighlightXHard1", seed=原seed, difficulty="hard")
+  → 注册表找到子类，子类只换了 configs["hard"] 里的一两个数，其余全是父类代码
+  → RobommeRecordWrapper(env_id="PickHighlight") 照常录制、写 HDF5
 ```
 
-RGB 仍为每路 `uint8[256,256,3]`，动作仍为 `[8]`、dtype 按实物核对；增加次数会增加完整帧数，不截断、不加速。本轮不改模型、训练参数、planner 或录像器。
+## 4. 输出与身份
 
-**由于 `self.difficulty` 保持 hard，HDF5 的 `setup/difficulty` 也保持 hard。** 派生身份另由外部 `sample_manifest.jsonl` 的 `xhard` 和独立输出目录区分，下游不能只靠 HDF5 的 difficulty 判断两档。清单还记录来源指纹、母样本身份、布局原值/指纹、实际次数、成功/失败、重试/reset 计数及新 HDF5 路径、字节数、SHA256；原 metadata 不改。成功取已有最终求值快照，不额外调用可能改变状态的 `evaluate`；无终态证据时记 `TASK_SUCCESS=NOT_OBSERVED`。基础设施故障仅在获批预算内同 seed 有限重试，各档及分片用独立目录。
+- 输出目录由 `--output-dir` 指定，派生档必须用独立目录，不与原 hard 混放。因 `env_id` 传原名，HDF5 文件名仍是 `PickHighlight_ep3_seed620301.h5`，与原 hard 同名，靠目录区分。
+- 生成器现有的 `_write_metadata` 照常在输出目录写 `record_dataset_<task>_metadata.json`；`parameters` 里增记 `xhard、source_split、source_metadata_path` 及母样本记录数，供追溯。
+- HDF5 内 `setup/difficulty` 仍为 `hard`，派生身份只在目录与生成器摘要里体现。
 
-# 第二部分：每个任务改什么
+# 第二部分：每个 ENV 的继承怎么做
 
-**以下数字是候选，均未经过新档仿真验证。所有拟扩展任务都保持 difficulty=hard，仅新增 xhard 次数分支。** 所有文件均在 `src/robomme/robomme_env/` 下；各行涉及的受保护文件和锚点须逐项批准后才能改。
+## 1. 为什么子类就够了
 
-| 任务／文件 | 具体机制与修改锚点 | 原 hard → XHard1／XHard2 |
+16 个任务里 13 个把三档参数写在类顶部的 `configs` 字典，代码里统一用 `self.configs[self.difficulty][...]` 读取。核查结果：
+
+| 任务 | 次数所在键 | 读取方式 |
 |---|---|---|
-| `PickHighlight.py` | `__init__、_load_scene、step、evaluate`：新增 xhard 消费及次数分支，保留 6 块和原排列，目标切片、高亮、任务完成读取新次数。 | 拾取 3 → **4／5 个**。 |
-| `PickXtimes.py` | `configs、__init__、_load_scene、evaluate`：只增次数范围，保持 3 色场景；次数与场景随机流分开，任务数仍按 `2n+1`。 | 4～5 → **6～7／8～9 次**。 |
-| `SwingXtimes.py` | `configs、__init__、_initialize_episode、step`：只增目标计数，保持圆盘、布局与计数边沿；原 `max_swings=2n`、任务数 `2n+3` 不变。 | n=3 → **4～5／6～7**。 |
-| `RouteStick.py` | `configs、__init__、_load_scene`：加长路线，保留障碍与 `backtrack=True`；不改旧的默认难度选择。 | 长度 4～7 → **8～10／11～13**。 |
-| `PatternLock.py` | `configs、__init__、_load_scene、_initialize_episode、evaluate`：5×5 网格不变，增加不重复节点数；新档搜索 1000 次仍不达长度即报失败，不沿用不合格末次路径。 | 节点 4～8 → **9～12／13～16**。 |
-| `VideoRepick.py` | `__init__、_load_scene、_initialize_episode`：将重抓次数配置化；现有 hard 布局判断保持原样，保留 15 块聚集场景及 `swap=0`。 | 重复 1～3 → **4～5／6～7 次**。 |
-| `StopCube.py` | `__init__、_initialize_episode、step、evaluate`：增加停止序号并延长运动段；原速度、rotation、起终点不变，完整保留原 interval、速度、stop_time、rotation 抽样后再覆盖停止序号。 | 第 2～5 次经过 → **第 6／8 次**。 |
-| `VideoUnmaskSwap.py` | `configs、__init__、_load_scene、_refresh_swap_schedule、step`：增加交换 pair 和调度窗口，每段仍 50 步、最终仍抓 2 个；不改最近邻和原索引行为。 | 交换 2～3 → **4／5 次**。 |
-| `ButtonUnmaskSwap.py` | 与视频版相同，另外保留原左右按钮流程、隐藏物和抓取顺序。 | 交换 2～3 → **4／5 次**。 |
-| `BinFill.py` | 暂缓；若另获批准，在 `_load_scene、_initialize_episode` 先按原 hard 固定每色库存，再定新投入量，必须满足 `target_i <= inventory_i`。 | **暂不定次数**，不增物体、不换 seed 挑库存。 |
-| `VideoUnmask.py` | 暂不改：原来抓 2 个，只有 3 个隐藏物；现有固定分支不能仅靠参数生成两个更长档。 | **保留三档**。 |
-| `ButtonUnmask.py` | 暂不改：同样只有 3 个隐藏物，`pick>1` 只追加第二次动作。 | **保留三档**。 |
-| `VideoPlaceButton.py` | 暂不改：固定放置与前后布尔分支，没有现成的任意次数循环。 | **保留三档**。 |
-| `VideoPlaceOrder.py` | 暂不改：4 个台、不重访，原 hard 已可能访问全部 4 个；不引入重访。 | **保留三档**。 |
-| `MoveCube.py` | 按此前决定，不新增动作规则。 | **保留三档**。 |
-| `InsertPeg.py` | 按此前决定，不加入反复拔插。 | **保留三档**。 |
+| PickHighlight | `pickup` | `configs[difficulty]["pickup"]`，`randperm` 后切片取前 n 个 |
+| PickXtimes、SwingXtimes | `number_min / number_max` | `randint(min, max+1)` |
+| PatternLock、RouteStick | `length` | 范围 |
+| VideoRepick | `swap_min / swap_max` | `randint` |
+| VideoUnmaskSwap、ButtonUnmaskSwap | `swap_min / swap_max、pick_min / pick_max` | `randint` |
+| BinFill | 整段 config | 每色库存与目标 |
+| VideoUnmask、ButtonUnmask、VideoPlaceButton、VideoPlaceOrder | `pick / targets / swap` 等 | 固定分支 |
+| StopCube、InsertPeg、MoveCube | 无 `configs` | StopCube 的停止序号写死在 `_initialize_episode` 里的 `randint(2, 6)` |
 
-两项尚需定清的机制：
+`configs` 是类属性，Python 子类重新定义同名属性即可整体替换，父类的 `_load_scene、_initialize_episode、step、evaluate` 全部原样继承。
 
-- **Swap 第 4／5 次由谁发起**：候选为循环复用原三个发起者的顺序 `A→B→C→A→B`，不是重新随机挑选；尚待确认。
-- **路线是否延续原路径**：RouteStick、PatternLock 当前方案保证同布局上生成更长合法路线，尚不保证以原 hard 路线为前缀；PickHighlight 则明确使用同一目标排列的更长前缀。
+## 2. 子类文件的样子
 
-所有拟扩展 ENV 都要枚举次数消费点，确保任务列表、指令、循环边界和成功条件使用同一实际次数；原 `difficulty/configs` 布局分支保持不变。语言若不能表达新增次数，暂停该任务并另列改动，不顺手改 `task_goal.py、subgoal_language.py、vqa_options.py`。
+拟议新增目录 `src/robomme/robomme_env/xhard/`，每个任务一个文件，例如 `PickHighlightXHard.py`：
 
-# 第三部分：三种调用怎样对拍
+```python
+# 拟议代码，尚未实施。只覆盖 hard 档的一两个键，其余全部继承父类。
+from mani_skill.utils.registration import register_env
+from ..PickHighlight import PickHighlight
 
-## 1. 三组都传 difficulty=hard，只改变额外变量
 
-**“不传、传同样的、传新的”全部指新增变量 xhard，绝不是省略 difficulty。** 三组使用同一条 test hard 记录、同一环境和依赖；旧代码在原源码锚点的隔离工作副本中跑一次 hard 基线，新代码使用实施后的 clean HEAD。硬件、依赖、恢复模式、相机和 reset 顺序须一致，不覆盖用户工作区。
+@register_env("PickHighlightXHard1")
+class PickHighlightXHard1(PickHighlight):
+    robomme_base_id = "PickHighlight"  # 供录像器按原任务名识别
+    configs = {**PickHighlight.configs, "hard": {**PickHighlight.config_hard, "pickup": 4}}
 
-| 组别 | 新代码怎么调用 | 与谁比较 | 必须证明什么 |
-|---|---|---|---|
-| A：不传 | `difficulty="hard"`，不传 `xhard`。 | 旧代码同 seed 的 hard。 | 新增可选变量没有影响原 hard 的布局、次数、指令和完整轨迹。 |
-| B：传同样的 | `difficulty="hard", xhard="hard"`。 | 旧 hard 基线及 A。 | 显式原值与不传完全一致。 |
-| C：传新的 | `difficulty="hard", xhard="xhard1"`／`"xhard2"`，分别执行。 | A／B 的原 hard，以及各任务约定的新次数。 | 母场景一致；只增加获准次数，完整记录并独立报告成功。 |
 
-C 有意增加动作，不要求整条轨迹等于 hard；允许变化的是 `xhard`、实际次数、对应指令/任务列表，以及执行变化后的帧、状态、动作和终态。`difficulty`、布局初态、速度和记录接口不变。生成器也要验证额外变量确实传到 ENV、未传时保持原 kwargs，不能只测手工构造 ENV。
-
-旧 CLI 原三档调度和 ENV 完全省略 `difficulty` 的默认行为仍做兼容性补充检查，但不作为这三组的定义，也不能用 easy 轨迹冒充 hard 对照。
-
-## 2. 具体比较哪些东西
-
-| 层次 | 检查与判据 | 具名输出 |
-|---|---|---|
-| 来源 | 原 test metadata 实际记录、hard 标签、seed、episode 与母组一一对应；原件指纹不变；同档无重复，同母组不跨 split。 | `SOURCE_TEST_HARD=PASS mismatches=0`、`ORIGINAL_REUSE=PASS changed=0`、`SPLIT_ISOLATION=PASS shared_groups=0`。 |
-| 默认与接口 | A 与旧 hard 一致；B 与 A 及旧 hard 一致；生成器正确传递或省略 xhard；非法标签、未支持任务和冲突参数均拒绝。 | `DEFAULT_COMPAT=PASS mismatches=0`、`SAME_VALUE=PASS mismatches=0`、`DIFFICULTY_API=PASS invalid_accepted=0`。 |
-| 母布局 | 旧 hard 与 A／B／C 的执行前布局互比；逐项比较物体数、身份、颜色、位姿、相机、机器人初态和速度，浮点按原 dtype 的原始值比较。 | `NATIVE_LAYOUT=PASS mismatches=0`、`HARD_LAYOUT_BRANCHES=PASS unclassified=0`。 |
-| A／B 完整轨迹 | 比较 HDF5 全部 group/dataset/attribute、dtype、shape、逐帧 RGB、状态、动作、subgoal、demo/exec 和终态；只排除预先列明的运行路径/时间/provenance 字段并保留差异清单。 | `LEGACY_TRACE=PASS content_mismatches=0`；容器 SHA256 另记，不用哈希不同直接代替内容比较。 |
-| C 新任务 | 目标数、指令、计划、真实完成事件一致；两档分别验收，成功字段与进程退出码分开报告。 | `COUNT_ONLY=PASS expected=... actual=...`；`TASK_SUCCESS=0\|1` 或 `NOT_OBSERVED`。 |
-| C 完整记录与上限 | 连续 timestep、两路 RGB、动作/状态/终态齐全；不提高 2000 步守卫，随机范围逐档实跑上端次数。 | `H5_CONTRACT=PASS missing=0 gaps=0`、`STEPS_HEADROOM=PASS resolved_count=max elapsed_steps=... limit=2000 margin=...`。 |
-| 冻结与预算 | 源码对比和运行时审查证明未覆盖录像器；所有构造、reset、轨迹尝试和基础设施重试计数。 | `RECORD_WRAPPER_FREEZE=PASS changed=0`、`BUDGET=PASS resets=... trajectories=... infra_retries=...`。 |
-
-A／B 默认先按内容逐位相等验收；出现浮点差异就保留 FAIL、定位环境或执行差异，不自行放宽容差。报告区分字节级、结构、数值容差和行为一致，不能用一次成功回放替代内容对拍。C 组成功也不证明训练链路等价，本轮不启动训练。
-
-## 3. 执行阶段、预算与验证入口
-
-| 阶段 | 做什么 | 通过条件 |
-|---|---|---|
-| P0：定口径 | 确認现有 test hard 对应的实物和恢复设置、候选次数、Swap 规则、逐项源码批准、资源和预算。 | 来源清楚、环境明确；必须再有对应阶段的明确“开工”。 |
-| P1：接口与首例 | 生成器透传 xhard、test hard 来源、PickHighlight 的 hard 内部分支及轻量测试。 | `DEFAULT_COMPAT、DIFFICULTY_API` 通过，录像器冻结。 |
-| P2：首例对拍 | 1 任务 × 1 母样本 × 1 worker，先旧 hard 基线和 A，再 B，再 C 的两个新档；一项失败即停，不直接放大。 | 上表各项逐项报告；没有自动重试。 |
-| P3：逐任务推广 | 按第二部分获批范围接入，每任务重复 A／B／C；额外验证随机次数上端。 | 各任务、各档单独结论，不用首例代替全体。 |
-| P4：正式派生 | 另定实际母样本数、run_name、输出路径和总预算。 | 全部前置检查、clean HEAD、Beta 锚点、留档和正式开工齐备。 |
-
-**三组对拍按 5 次录制预算**：旧 hard 基线 1 次＋A 1 次＋B 1 次＋C 两档各 1 次。reset 数按构造与显式调用实测累计，不能把录制次数当作 reset 次数。9 个任务的基本矩阵为 45 次录制，另加旧三档补充回归及随机范围上端用例；实跑前列完整预算并批准，不分批绕过门槛。
-
-拟新增测试文件：`tests/lightweight/test_xhard_count_config.py` 检查来源/解析/默认/错误路径；`tests/dataset/test_xhard_count_generation.py` 承担三组真实录制和内容对拍。以下为实施后才可运行的拟议命令，测试节点目前不存在：
-
-```bash
-# 在本工作副本执行；依赖须预装，数据身份与预算须已批准。
-UV_CACHE_DIR="$PWD/artifacts/cache/uv" uv run --frozen --no-sync python -m pytest tests/lightweight/test_xhard_count_config.py -q
-# 此节点只做一个母样本的三组对拍；默认行为和上端用例另行计数。
-UV_CACHE_DIR="$PWD/artifacts/cache/uv" uv run --frozen --no-sync python -m pytest tests/dataset/test_xhard_count_generation.py::test_pickhighlight_three_way -q -s
-git diff --quiet 13905997d45155ff1c98417511aedec92578042d -- src/robomme/env_record_wrapper/RecordWrapper.py
+@register_env("PickHighlightXHard2")
+class PickHighlightXHard2(PickHighlight):
+    robomme_base_id = "PickHighlight"
+    configs = {**PickHighlight.configs, "hard": {**PickHighlight.config_hard, "pickup": 5}}
 ```
 
-验证证据落 `artifacts/validation/<获批唯一验证名>/`：`source_manifest.json、api_and_defaults.json、layout_comparison.json、trace_comparison.json、counts_and_success.json、budget.json`；各录制分组独立目录。每项保存完整命令、退出码、输出路径、具名判定和审查摘要。基线录制由预算明确授权，生产阶段不重复录制 hard 原件；每个新档最终轨迹只录一次，encoder／VLA 从同一份原始 HDF5 派生输入。
+要点：
 
-## 4. 实施分工与剩余边界
+- `{**父类.config_hard, "pickup": 4}` 表示复制原 hard 的全部键，只改一个；`{**父类.configs, "hard": ...}` 表示 easy、medium 原样保留。这就是"沿用 Hard 全部配置、只改一两个参数"的字面实现。
+- 传入 `difficulty="hard"` 后，父类 `__init__` 里的 `normalize_robomme_difficulty` 原样解析出 `self.difficulty = "hard"`，随后所有 `self.configs["hard"]` 读到的都是子类的新数。
+- `robomme_base_id` 是拟议的类属性，告诉录像器"我本质上是 PickHighlight"，用途见第三部分。
+- 新档的具体数字（4／5 还是别的）属于"每个任务改什么"，本轮不定；文件结构先按上面定型。
+- StopCube 这类没有 `configs` 的任务，子类需要重写 `_initialize_episode` 把写死的 `randint(2, 6)` 换成新范围，其余照旧继承；改法也在同一个新文件里，仍不碰原文件。
+- 子类不注册 `max_episode_steps` 等额外参数，与父类 `@register_env` 保持同样的签名。
 
-主会话负责获批受保护源码，生成器、测试、文档各有唯一子代理负责人；按“ENV 分支与参数契约 → 生成器 → 测试 → 审查”整合，整合前查范围和契约、整合后核对证据。下表仅规定未来分工，不授权当前写代码或实跑。
+## 3. 随机流提示（接口定稿后再议）
 
-| 负责人 | 可写集合 | 禁触与依赖 | 验收／资源 |
-|---|---|---|---|
-| 主会话 | 第二部分逐项获批的 ENV 文件/锚点 | difficulty.py、未获批源码、原数据、planner、录像器不动；ENV 接口唯一负责人 | 本副本轻量测试及冻结检查；本阶段不默认占 GPU。 |
-| 生成器代理 | `scripts/data-generation-newSeed/generate_dataset_newseed.py` | 不写 src、seed_layout、原 metadata；依赖 ENV 接口 | 来源/同值/错误路径检查；不自行启动长任务。 |
-| 测试代理 | 上述两个拟新增测试文件 | 不改生产源码、原测试或他人输出；依赖前两项 | 本副本三组测试；获批后仅 1 张空闲卡、1 worker，验证目录唯一负责人。 |
-| 文档代理 | `scripts/data-generation-newSeed/README.md` | 不写根规则、源码和其他方案；接口定稿后更新 | 链接与 `git diff --check`；无 GPU/端口/tmux。 |
-| 审查代理 | 无，只读 | 不执行项目代码、不暂存、不提交、不推送 | 整合前后按来源、兼容性、布局、次数与证据逐项审查；无运行资源。 |
+PickHighlight 是先 `randperm` 全部方块再切片，改 `pickup` 不动随机流，母布局完全相同、新档是严格前缀。`randint(min, max)` 类任务改范围后抽到的次数变了，生成器调用次数不变，但下游若依赖该次数则场景会微变。是否要求"母布局逐项相等"是每任务的决策，不属于本轮接口定义。
 
-未分配的共享文件由主会话裁决，不并发改同一文件。子代理不暂存/提交/push。长于 5 分钟的验证或构建必须另定 run_name，使用 detached tmux、`PYTHONUNBUFFERED=1、set -o pipefail、tee、EXIT_CODE=`；会话全名、命令和日志路径先记入 `docs/dataset-build-doc/<run_name>/launch.md`，结果与不可由 Git 还原的证据写 `result.md、records/`，更新索引。正式构建先打 Beta，provenance 要求期间冻结 HEAD；不归档脚本、配置拷贝或大 HDF5。不派表外长任务，只清理本轮清单里的精确会话。
+# 第三部分：除生成器和新增文件外，还要改什么
 
-仍待验证：实际原 HDF5 指纹与恢复配置、当前依赖及 editable 来源、新档成功率/步数、容量与路径搜索、消费端长轨迹上限。PatternLock 搜索失败、BinFill 库存不足、语言超容量、轨迹超 2000 步都如实失败；评估入口的 1300 步限制不在本轮修改范围。环境已见 Aspen、2 张 RTX A6000，但项目缺正式 A/B 判据表及 greatlakes 规约，实跑前先确认，不提交集群作业。
+## 1. 必改：让新子类被注册
 
-本轮只修改本计划，不改 README、规则、源码或依赖。文档交付检查三部分标题、16 任务、链接、围栏、三组比较对象与已废弃口径，运行 `git diff --check`。提交前逐项核对范围，只暂存本文件，中文编号接续 Git 日志；当前分支无 upstream，不自行建立或推送。
+`@register_env` 只有在模块被 import 时才执行。现有 `src/robomme/robomme_env/__init__.py` 用 `from .PickHighlight import *` 等逐个导入 16 个任务。需要在末尾加一行 `from .xhard import *`（并在 `xhard/__init__.py` 里导入各子类文件），否则 `gym.make("PickHighlightXHard1")` 找不到名字。这是一行改动。
 
-用户本轮结构要求原话：“分几个阶段说，第一部分先说你改动的这个接口是怎么做的。第二部分说你每一个任务打算改哪些东西。第三个你说对拍是怎么做，就是说不传入，传入同样的和传入新的，这三个都对拍。”
+## 2. 必改：录像器按原任务名识别（三处取名改成一个小函数）
 
-最新接口纠正原话：“不是，你还是相当于从 Generate Data Set New Seed 走 hard 同样的接口，但是传入一个新的变量 X hard 1 和 X hard 2。然后在 difficulty 是 hard 的情况下，你要做一个 else 判断，用 else 来做新的，做新的这个更多的这个生成。”本条覆盖此前把 XHard 加入 difficulty 的设计。
+`src/robomme/env_record_wrapper/RecordWrapper.py` 有两类按任务名分支的逻辑：
+
+- 传入的 `self.env_id`：用于 HDF5 文件名、视频名，以及 `task_goal.get_language_goal(self.env, self.env_id)`。`get_language_goal` 内部是 `if env == "BinFill": ... elif env == "PickHighlight": ...` 这样按字符串分支；`get_vqa_options(..., env_id)` 同样用 `OPTION_BUILDERS.get(env_id, _options_default)` 查表。**名字对不上就会退到默认分支，语言目标和 VQA 选项直接出错。** 这就是生成器必须传 `env_id=job.task`（原名）的原因。
+- 自取的 `self.unwrapped.spec.id`：录像器有三处写的是 `getattr(getattr(self.unwrapped, "spec", None), "id", None) or self.env_id`，即优先用环境注册名。新子类的注册名是 `"PatternLockXHard1"`，会导致 `_STICK_IDS = ("PatternLock", "RouteStick")` 判断失效、VQA 选项查表落空。
+
+拟议最小改法：在 `RobommeRecordWrapper` 里加一个小方法
+
+```python
+# 拟议代码，尚未实施。
+def _task_id(self) -> str:
+    base = getattr(self.unwrapped, "robomme_base_id", None)
+    spec_id = getattr(getattr(self.unwrapped, "spec", None), "id", None)
+    return base or spec_id or self.env_id
+```
+
+把那三处 `getattr(getattr(self.unwrapped, "spec", None), "id", None) or self.env_id` 替换为 `self._task_id()`。原 16 个任务没有 `robomme_base_id`，走 `spec_id`，行为与现在完全一致；新子类走 `robomme_base_id`，被识别为原任务。改动是三处同一表达式换成一个调用，不触碰录制、写 HDF5 或 reset 逻辑。
+
+## 3. 不改的文件
+
+| 文件 | 原因 |
+|---|---|
+| `src/robomme/robomme_env/<16 个原任务>.py` | 子类覆盖即可。 |
+| `src/robomme/robomme_env/utils/difficulty.py` | `difficulty` 仍只有 easy／medium／hard。 |
+| `task_goal.py、subgoal_language.py、vqa_options.py` | 按原任务名工作；若某任务的语言模板写死了次数，属于"每个任务改什么"的范围，另议。 |
+| `scripts/data-generation-newSeed/seed_layout.py` | 派生档不用公式 seed。 |
+| `src/robomme/env_metadata/train/*.json` | 只读，不追加、不改写。 |
+| planner、`_execute_tasks`、HDF5 结构 | 不动。 |
+
+## 4. 改动清单汇总
+
+| 文件 | 改动量 | 性质 |
+|---|---|---|
+| `scripts/data-generation-newSeed/generate_dataset_newseed.py` | `--xhard、--source-split` 与互斥校验；`EpisodeJob.xhard`；读 train hard 记录造卡片；`gym.make` 拼名字；该分支不 `bump`；摘要增记来源 | 唯一的生成器改动 |
+| `src/robomme/robomme_env/xhard/` 下新增文件 | 每任务一个文件、每档一个子类，只覆盖 `configs["hard"]` 的一两个键（StopCube 重写一个方法） | 新增 |
+| `src/robomme/robomme_env/__init__.py` | 加一行导入 | 一行 |
+| `src/robomme/env_record_wrapper/RecordWrapper.py` | 新增 `_task_id()`，三处取名改为调用它 | 小改，不动录制逻辑 |
+| `tests/lightweight/test_xhard_interface.py`（拟议） | 校验：不传 `--xhard` 时卡片与 `gym.make` 名字与现在一致；传入时卡片来自 train hard 记录且 seed 原样；互斥参数报错；子类 `configs` 除目标键外与父类相等；`_task_id()` 对原任务返回 `spec.id`、对子类返回 `robomme_base_id` | 新增 |
+
+# 后续待定（本轮不展开）
+
+- 每个任务覆盖哪些键、改成什么数：另起章节，逐任务批准后再写。
+- 随机流是否要求母布局逐项相等：按任务决定。
+- 对拍矩阵（不传／同 seed 原 hard／新档）：接口实施并通过轻量测试后再定预算。
+- 新 seed 的派生：用户明确"以后再说"，本方案不涉及。
