@@ -129,7 +129,7 @@
       "source": ["scripts/injection-dev/site/official_overlay_site.py", "scripts/injection-dev/site/official_overlay.html", "scripts/injection-dev/site/official_overlay_browser_check.py"],
       "symbol": "build_site / episode_entry / 白名单 serve / Playwright main",
       "oracle": "真实本机媒体与 trace、render.json、NPZ 指纹逐局核对；Playwright 从托管站点独立取目录并核 800 唯一身份和每任务 50 局，实际视频播放时间推进、暂停及 seek",
-      "positive": "官方与原始视频 Range 206；16 个英文 Task 独立栏目，各自 50 局；顶部仅 16 行 V9/xhard0 百分比与成功/总表，32 格由浏览器独立读取权威结果重算；难度/终态筛选不改变成功率表；分页、上一局/下一局、版本切换；演示与非演示任务实际播放；390/768 像素宽度截图无横向溢出",
+      "positive": "官方与原始视频 Range 206；16 个英文 Task 独立栏目，各自 50 局；顶部 16 个 Task 行及表尾 1 个总体行，Xhard/原版hard 各给百分比与成功/总，34 格由浏览器独立读取权威结果重算；总体按总成功/总局数计算，难度/终态筛选不改变成功率表；分页、上一局/下一局、版本切换；演示与非演示任务实际播放；390/768 像素宽度截图无横向溢出",
       "negative": "缺局、重复身份、来源指纹不符、媒体路径越界/符号链接、页面异常、HTTP 错误或媒体播放失败均报 FAIL",
       "boundaries": "全量目录和输出逐局验收；真实浏览器播放为代表局检查，不声称所有 800 局均逐帧浏览；站点明确本机复刻与 GL 正式成绩不同",
       "nodeids": [],

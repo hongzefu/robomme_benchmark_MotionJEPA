@@ -154,7 +154,7 @@ PonderPounce 那 1 局 error：VideoPlaceOrder_xhard2_19100901，第 1541 步 `P
 
 ## 九、本机 Oracle 存量官方版式重绘与视频站点（第一阶段完成，2026-10-05）
 
-**已完成本机 `16 任务 × 每任务合计 50 局 = 800 局` 的官方版式重绘与网站托管。** 各难度实际乘式见 `launch.md` 第⑪节，不把第三阶段误称为单一难度档。网站：[http://sled-vail.eecs.umich.edu:8083/](http://sled-vail.eecs.umich.edu:8083/)。转码代码锚点 `6a23af541b4f136e754eeb06e8fd1548700c4b23`，干净 detached 运行副本；网站追加只改三个站点文件，最终代码锚点 `22a90ce9c33d01b729013d6f7d21457b87d5ceef`。本轮没有新增 reset、轨迹生成、GPU 或集群任务，第二阶段模型链路未实施。
+**已完成本机 `16 任务 × 每任务合计 50 局 = 800 局` 的官方版式重绘与网站托管。** 各难度实际乘式见 `launch.md` 第⑪节，不把第三阶段误称为单一难度档。网站：[http://sled-vail.eecs.umich.edu:8083/](http://sled-vail.eecs.umich.edu:8083/)。转码代码锚点 `6a23af541b4f136e754eeb06e8fd1548700c4b23`，干净 detached 运行副本；网站分Task与命名版锚点 `22a90ce9c33d01b729013d6f7d21457b87d5ceef`，后续总体追加见本节末。本轮没有新增 reset、轨迹生成、GPU 或集群任务，第二阶段模型链路未实施。
 
 ### 用户指令与界面口径
 
@@ -166,7 +166,7 @@ PonderPounce 那 1 局 error：VideoPlaceOrder_xhard2_19100901，第 1541 步 `P
 
 6. 「V9／xhard0 这里改名为X哈尔德和原版哈尔德。」随后纠正为「V9／xhard0 这里改名为Xhard和原版hard」。仅改可见名称，真实来源与统计不变。
 
-顶部表格为固定 16 行、三列 `Task / Xhard / 原版hard`，每格同时显示一位小数百分比与成功局数／总局数，没有任务内分档及总成功率行。下方 16 个英文 Task 各有独立栏目，当前栏目只分页展示本 Task 的 50 局；支持官方版式／原始画面切换、筛选、上下局、进度拖动。成功率表不随当前视频筛选变化。
+顶部表格保留 16 个 Task 行、三列 `Task / Xhard / 原版hard`，按用户最新追加另有表尾总体行；每格同时显示一位小数百分比与成功局数／总局数，没有任务内分档。下方 16 个英文 Task 各有独立栏目，当前栏目只分页展示本 Task 的 50 局；支持官方版式／原始画面切换、筛选、上下局、进度拖动。成功率表不随当前视频筛选变化。
 
 ### 实测重绘结果与范围
 
@@ -202,3 +202,9 @@ PonderPounce 那 1 局 error：VideoPlaceOrder_xhard2_19100901，第 1541 步 `P
 站点保留 tmux `ovl-site-g3-8083`，当前目录 `official-overlay/site-tasks/`，日志 `official-overlay/logs/site-tasks.log`；既有其他会话未处理。完整重绘日志、首次和最终浏览器报告、四张最终截图及来源指纹均在本轮产物根；Git 中归档为 `records/rerender-summary.jsonl`、`records/official-overlay/{render-summary,independent-verify,browser-initial,browser,success-sources}.json` 和四张 PNG。重绘 mp4 不进 Git。
 
 复核命令：从转码锚点按 `launch.md` 的重绘 CLI 再跑，会检查来源、完整输出和原动作后复用；按最终网站源码及两份已钉住指纹的结果文件构建新目录并运行 Playwright，可以还原当前表格与交互验收。后续第二阶段改造、重跑预算和 Turbo 重绘仍按未定清单另行处理。
+
+### 总体成功率追加（2026-10-05）
+
+用户原话：「你这里还需要一个总合的成功率啊。」表尾新增唯一总体行，直接累加各 Task 成功数和总数后计算：Xhard `51.8%（414/800）`，原版hard `72.4%（139/192）`，不平均已四舍五入的百分比。旧分Task与命名版锚点 `22a90ce9` 保留；本次总体版仅增 HTML 的 `drawRates` 汇总及浏览器独立断言，没有改动媒体或源结果。
+
+复现命令仍为 `official_overlay_browser_check.py` 和相同两份权威输入，只把 `--shots` 改为 `artifacts/sg-evaluation/sg-eval-gl-20261004-01/official-overlay/checks-overall`。`OFFICIAL_BROWSER=PASS episodes=800 checks=13 page_errors=0 http_errors=0`，退出 0；34 格全部核验，总体在筛选及窄屏后不变，390/768 像素无横向溢出。`OVERALL_CODE_REVIEW=PASS`，宽屏截图经目视确认。报告及截图为 `records/official-overlay/browser-overall.json`、`overall-wide.png`，完整四张截图仍在产物根。

@@ -85,8 +85,21 @@ def check_rates(page, catalog: dict, v9: dict, xhard0: dict) -> dict:
             require(td.evaluate("node=>node.childNodes[0].textContent") == f"{100 * expected['success'] / expected['total']:.1f}%",
                     "页面百分比或一位小数不符")
             require(td.locator(".fraction").inner_text() == f"{expected['success']} / {expected['total']}", "页面成功分数不符")
-    return {"rows": 16, "columns": 3, "v9_success": sum(row["success"] for row in v9.values()),
-            "xhard0_success": sum(row["success"] for row in xhard0.values())}
+    overall = page.locator("#success-rates tfoot tr")
+    require(overall.count() == 1 and overall.locator("th").inner_text() == "总体", "成功率表缺少唯一总体行")
+    totals = {}
+    for column, authority in (("v9", v9), ("xhard0", xhard0)):
+        success = sum(row["success"] for row in authority.values())
+        total = sum(row["total"] for row in authority.values())
+        td = overall.locator(f'td[data-rate="{column}"]')
+        require(td.get_attribute("data-success") == str(success) and td.get_attribute("data-total") == str(total),
+                "总体成功率分子分母与权威结果不符")
+        percent = f"{100 * success / total:.1f}%"
+        require(td.evaluate("node=>node.childNodes[0].textContent") == percent, "总体成功率百分比不符")
+        require(td.locator(".fraction").inner_text() == f"{success} / {total}", "总体成功率分数不符")
+        totals[column] = {"success": success, "total": total, "percent": percent}
+    return {"rows": 16, "overall_rows": 1, "columns": 3, "overall": totals,
+            "v9_success": totals["v9"]["success"], "xhard0_success": totals["xhard0"]["success"]}
 
 
 def check_range(request, base: str, media_id: str) -> dict:
