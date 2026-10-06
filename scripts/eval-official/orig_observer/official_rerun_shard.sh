@@ -9,7 +9,7 @@
 # - 观测记录与原版 mp4：先写 NODE_TMP=/tmp/orig-<run>-s<i>-<作业号>，每个策略跑完 rsync -a 到
 #   $ORIG_STAGE_ROOT/<run>/stage/<policy>/s<i>/，核对（文件清单 + 大小 + 全部 trace.jsonl 的 sha256）后删节点副本。
 # - SMVLA 照抄原版 gl_run_official_xhard0.sh 的内层循环：最多 3 次、每次 --resume、退出码 0 或 2 即停；第 2、3 次带 ORIG_RESUME=1。
-# - 起跑前、结束后都用 $NFS/v75eval/e0-sha.txt（只读）核对本片 E0 文件与清单的 sha256 未变（R7）。
+# - 起跑前、结束后都用 E0 sha 清单（缺省 $NFS/v75eval/e0-sha.txt，可由 ORIG_E0_SHA 指定；只读）核对本片 E0 文件与清单的 sha256 未变（R7）。
 # - V75_ENCODE_CPUS = 本进程 CPU 亲和集合的最后一核（MME 代理记账用）。
 # 输出：OFFICIAL_SHARD_DONE run= shard= smvla_rows= mme_rows= smvla_rc= mme_rc= staged=yes|no，最后 EXIT_CODE=。
 set -uo pipefail
@@ -38,7 +38,7 @@ EP_ROOT="$ORIG_STAGE_ROOT/$RUN"
 STAGE_ROOT="$ORIG_STAGE_ROOT/$RUN/stage"
 NODE_TMP="/tmp/orig-$RUN-s$SHARD-${SLURM_JOB_ID:-local}"
 SMVLA_OUT="$EP_ROOT/smvla/s$SHARD"; MME_SAVE="$EP_ROOT/mme/s$SHARD"
-E0_SHA="$NFS/v75eval/e0-sha.txt"
+E0_SHA="${ORIG_E0_SHA:-$NFS/v75eval/e0-sha.txt}"  # 原文件随 10-03 清理删除时由主会话以 artifacts/v7.5eval/input-manifest.json 重建并经此变量指定
 V75_ENCODE_CPUS="$(python3 -c 'import os; print(max(os.sched_getaffinity(0)))')"
 export V75_ENCODE_CPUS
 
