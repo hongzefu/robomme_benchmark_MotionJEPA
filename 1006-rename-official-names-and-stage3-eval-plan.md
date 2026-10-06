@@ -12,67 +12,98 @@
 
 # 第一部分（给人看）
 
-## 一、要做什么与全部运行一览
+本轮产出只有这份计划，实施保持暂停，恢复要再等用户明确说「开工」。下面分三段：一、改名怎么改；二、现在有哪些模型、每个还缺什么（MemER 单独展开）；三、这一版到底跑什么。
 
-**三句话**：先把仓库里自造的「MME」系列名字改成官方名（只改名、不改行为）；再给全部七条模型路线补两项功能——执行上限 1800 步、可配置的模型随机种子 `policy_seed`——并新接入官方 MemER；最后在 GL A40 上只跑四个模型的第三档 V9 `test-hard`，模型种子固定 7，每格 2 局。本轮产出只有这份计划，实施保持暂停，恢复要再等用户明确说「开工」。
+## 一、改名怎么改
+
+**要改的原因**：仓库里 `mme`／`mmevla` 指的其实是官方的 FrameSamp+Modulation，`mmesg` 指的是官方的 GroundSG，都是自造名；用户裁决「照官方」。
+
+| 仓库旧名 | 官方展示名 | 新的代码／参数 ID | Python 标识符 |
+|---|---|---|---|
+| `mme`、`mmevla` | FrameSamp+Modulation | `perceptual-framesamp-modul` | `framesamp_modul` |
+| `mmesg` | GroundSG+Oracle、GroundSG+QwenVL | `groundsg`，变体 `oracle`／`qwenvl` | `groundsg` |
+| （无） | MemER | 本仓库新增路线标识 `ground-sg-memer` | 复用 `groundsg` 装配 |
+
+**改什么、不改什么**：
+
+| 类别 | 做法 |
+|---|---|
+| 改：活代码与测试 | 约 91 个文件、900 处。文件名（`mme_client.py`→拟 `framesamp_modul_client.py`、`mmesg_client.py`→`groundsg_client.py`、`orig_observer/mme_*`、`run_orig_mme.sh`、`orig-mme-client-env/`、`test_mme_transport.py`）、CLI 参数（`--mme-variant`→`--groundsg-variant`、`--mme-ckpt`、`--mmesg-ckpt`、`--episode-wall-mme`）、环境变量（`MME_PY`、`MME_CKPT`、`MMESG_CKPT`、`MME_VARIANT`）、策略标签 `mme`／`mmesg`、测试名与契约条目 |
+| 改：现行文档 | `AGENTS.md`、`CLAUDE.md` 的项目段（标记块不动）、`readme.md`、`scripts/README.md`、`tests/README.md` |
+| 不改：历史留档 | `docs/validation/`、`docs/plans/` 约 3200 处不动（里面有 NFS 真实路径与 SHA256SUMS）；指向磁盘真实目录的字符串（`sg-eval/ckpt/mme/…`、`mmevla-testhard*`）原样保留，旁注「历史目录名」；另写 `docs/validation/legacy-names.md` 旧名对照 |
+| 不改：官方名 | MME-VLA 家族名、`third_party/mme-vla`、`.gitmodules`、上游类 `MMEVLAWebsocketClientPolicy`、上游配置 `mme_vla_suite` |
+| 兼容旧数据 | 读历史逐局行、预算账本、v7.5eval 留档的工具读入时把旧标签映射成新名，写出只写新名，CLI 只接受新名；别名表只在 `official_defs.py` 放一份 |
+
+**保证只改名、不改行为**：改名单独成一步，先合入、过回放闸门 `CLIENT_REPLAY_EQ=PASS`（三条旧路线固定请求／回包逐字节相同）与残留检查 `OFFICIAL_NAMES=PASS`，之后才动第二段的功能。
+
+## 二、模型清单：现在有什么、每个还缺什么
+
+| 官方展示名 | 本仓库入口 | 缺 1800 步 | 缺可配置模型 seed（现在钉死的值） | 其他缺口 |
+|---|---|---|---|---|
+| FrameSamp+Modulation | `mme_client.py`（改名后 `framesamp_modul_client.py`） | 缺，席位脚本钉 `test-hard ↔ 1600` | 缺，服务固定 `--seed=7` | — |
+| SimpleMemVLA | `smvla_client.py`／`smvla_server.py` | 缺，同上 | 缺，每局 reseed 固定 0 | trace header 记的是理论动作上界 1840，验收要看 `episode_max_steps` |
+| PonderPounce | `pp_client.py`／`pp_server_wrap.py` | 缺，同上 | 缺，服务启动固定 0 | 自身循环到 1800 退出时未必 `cap_hit=true`，合法记 timeout |
+| GroundSG+Oracle | `mmesg_client.py`（改名后 `groundsg_client.py`） | 缺，同上 | 缺，服务固定 `--seed=7`；官方 `Args.model_seed` 默认 42 没显式设 | — |
+| GroundSG+QwenVL | 同上 | 缺，同上 | 缺，同上，另要在 QwenVL 预测器构造前设种子 | — |
+| MemER | **未接入** | 缺 | 缺 | 见下面展开 |
+| Astra | 独立 `run_astra.sh`／`astra_hard_runner.py`，不走共享席位 | 缺，入口自己钉 1600 | 缺，服务固定 42 | 云端 API 无 seed 接口，不伪造；费用与两局守卫不动 |
+
+**共同要补的两件事**：
+- **1800 步**：席位脚本 `run_seat.sh::step_cap_pairing` 配对改 `test-hard ↔ 1800`、`strict_cap=1`，沿 `SeatRunner → EnvSession.step_cap → 客户端循环 → 结果／trace／报告` 全程传；第 1801 次 `step` 在进真实环境前被拒，第 1800 步成功仍记 success；Astra 在它自己的入口同改；`test-hard0 ↔ 1300` 与生成规格 `EXEC_CAP=1600` 不动。判据 `EVAL_CAP=PASS models=7 max_steps=1800 rejected_step=1801`。
+- **模型 seed**：新增 `--policy-seed <int>`，从任务配置传到服务、客户端、子目标预测器，在模型构造前设该路线真正用的随机状态；结果行、trace、媒体 provenance 都记 `policy_seed`；每个 `(模型, policy_seed)` 独立输出目录与账本 route。七路线各在 CPU 夹具上验 0／7／42；判据 `POLICY_SEEDS=PASS models=7 seeds=0,7,42`。本版真实运行只传 7。
+
+### MemER 要改什么（展开）
+
+**官方是怎么跑 MemER 的**（锁定提交 `ecf086c3` 的 `examples/robomme/`）：`scripts/eval.sh` 的 `MODEL_TYPE == MemER` 分支只加两个参数 `--args.use-memer --args.subgoal-type=grounded_subgoal`，动作服务照旧加载 GroundSG 的权重 `symbolic-grounded-subgoal/79999`——所以 MemER 不是新的动作模型，是 GroundSG 换了一个子目标预测器。这个预测器 `subgoal_predictor.py::MemERSubgoalPredictor` 包着 `subgoal_prediction/qwenvl/api_memer.py::Qwen3VLModelMemER`：基座 `Qwen/Qwen3-VL-4B-Instruct` 加一个 LoRA adapter（官方默认路径 `runs/ckpts/vlm_subgoal_predictor/memer/grounded_subgoal/checkpoint-1300`，`flash_attention_2`），每局开始把演示视频帧存进局目录、每一步把当前帧存成 png、每次问子目标时把「历史关键帧 + 最近执行帧」一起送进模型，模型回 JSON（`current_subtask` + `keyframe_positions`），它据此更新关键帧记忆（`merge_key_frame_paths` 合并近邻帧）；每次请求与回复追加写到局目录旁的 `ep<N>_MemER_log.jsonl`；局末 `rmtree` 局目录。
+
+**我们这边现在的状态**：GroundSG 装配 `scripts/eval-official/official_defs.py` 只认两个变体（`VARIANTS = (oracle, qwenvl)`），`PREDICTOR_NAMES` 只摘 Oracle／QwenVL 两个类，`load_groundsg` 只在 QwenVL 变体时才摘 `qwenvl/api.py`，`make_args` 只会置 `use_oracle`／`use_qwenvl`，`assert_one_predictor` 明确把 `use_memer=True` 当错误抛出，`build_predictor` 只给 QwenVL 导入 swift。客户端 `mmesg_client.py::make_policy_context` 先检查变体必须在 `VARIANTS` 里，adapter 只认 `qwenvl_groundSG_adapter_path` 一个键；席位脚本 `run_seat.sh` 的变体配对只放行 `ground-sg-oracle`／`ground-sg-qwenvl`，adapter 只有 `--qwenvl-groundsg-adapter` 一个参数。也就是说现在任何一层都进不去 MemER。
+
+**要改的五处**：
+
+| 处 | 文件与锚点 | 改什么 |
+|---|---|---|
+| 1 装配 | `official_defs.py::{VARIANTS,PREDICTOR_NAMES,load_groundsg,make_args,assert_one_predictor,build_predictor}` | 加第三个变体 `ground-sg-memer`；`PREDICTOR_NAMES` 加 `MemERSubgoalPredictor`；`load_groundsg` 在该变体下摘 `qwenvl/api_memer.py::Qwen3VLModelMemER` 原文（它和 `api.py` 一样在导入时设 `IMAGE_MAX_TOKEN_NUM` 等三个环境变量，摘取时要一并落实）；`make_args` 置 `use_memer=True`、`subgoal_type="grounded_subgoal"`、`memer_adapter_path`，并显式传 `model_seed`；互斥断言改成「oracle／qwenvl／memer 恰一个为真」；`build_predictor` 对 memer 也设离线运行约束并导入 swift。摘的是官方原文，键帧、历史子目标、请求格式与解析一行不改 |
+| 2 客户端 | `mmesg_client.py`（改名后 `groundsg_client.py`）`::{make_policy_context,qwen_begin,qwen_end,run_episode}` | 变体检查放行 memer；adapter 多认一个 `memer_adapter_path` 键；`qwen_begin`／`qwen_end` 现在只管 QwenVL 的 `qwen-tmp` 局目录，要让 MemER 的局目录与旁边的 `ep*_MemER_log.jsonl` 一样被指到 `<trace_dir>` 下的临时目录、局末归档到该局 trace 目录、异常退出也清理；结果行 `policy_variant` 记 memer |
+| 3 席位脚本 | `run_seat.sh::{variant_pairing,build_server_cmd,start_client}`、`run_eval_gl.sh` 参数转发 | 变体配对放行 `ground-sg-memer`，新增 `--memer-adapter <dir>`（给了变体不给 adapter、或 adapter 目录不存在即 `RUN_BLOCKED`）；动作服务命令与 GroundSG 相同（同一份 `symbolic-grounded-subgoal/79999`，同一个 `--policy-seed`） |
+| 4 资产 | 资产清单与 `ASSETS` 前置核验 | adapter `checkpoint-1300` 按文件名在本机 `artifacts/` 与 NFS 下初查没有找到（只找到源码，没有权重），实施前要先定来源、落点、文件数、字节数与 SHA256，纳入起跑前核验；不得拿 QwenVL 的 `checkpoint-1200` 顶替；大下载先问落点 |
+| 5 依赖与验证 | `scripts/eval-official/client-env/{pyproject.toml,uv.lock}`（仅确有缺口时）；`tests/pipeline/evalx/groundsg/` | 现有客户端锁已含 ms-swift／transformers／peft，优先复用；CPU 夹具用假 `PtEngine` 验三预测器互斥、adapter 误配、键帧合并、日志序列化、空键帧与首个坏 JSON、异常清理；然后 GL 上 1 局真实 smoke（真 adapter + `flash_attention_2` 加载尚未验过） |
+
+判据：`MEMER_WIRING=PASS predictor=MemERSubgoalPredictor`、`ASSETS=PASS`、`MEMER_SMOKE=PASS`。已知上游隐患：`merge_key_frame_paths` 在空列表上可能访问首项、首个坏 JSON 的回退可能访问空 subgoals——CPU 先复现，真阻塞时列出上游文件与候选修法交用户裁决，不私改锁定来源。
+
+## 三、这一版跑什么
 
 ```
- 开工 ─┬─ 第 1 步 改名（R1）                     回放闸门：改名前后三条旧路线请求／回包逐字节相同
-       ├─ 第 2 步 功能（R2 MemER ｜ R3 共享入口的 seed+1800 ｜ R5 Astra 入口 ｜ R4 CPU 测试）
-       │           七路线 CPU 夹具：seed 0／7／42 贯通、第 1801 步被拒
-       ├─ 第 3 步 冻结执行提交、核 MemER 资产、四模型各 1 局 smoke（seed 7）
-       ├─ 第 4 步 GL A40：4 模型 × 2 片 = 8 片进 4 个占位席位，每片 43 局
-       └─ 第 5 步 四组各自验收 → 344 局汇总 → 留档、commit、push
- 步骤之间串行。本版不跑 seed 0／42，不跑 GroundSG+Oracle／QwenVL 与 Astra。
+ 开工 ─┬─ 1 改名（R1）→ CLIENT_REPLAY_EQ、OFFICIAL_NAMES
+       ├─ 2 功能（R2 MemER ｜ R3 共享入口 seed+1800 ｜ R5 Astra 入口 ｜ R4 CPU 测试）→ 七路线 CPU 夹具
+       ├─ 3 冻结执行提交、核 MemER 资产、四模型各 1 局 smoke（seed 7）
+       ├─ 4 GL A40：4 模型 × 2 片 = 8 片进 4 个占位席位，每片 43 局
+       └─ 5 四组各自验收 → 344 局汇总 → 留档、commit、push
+ 本版不跑 seed 0／42；GroundSG+Oracle／QwenVL 与 Astra 只补功能、只 CPU 验证，不实跑。
 ```
 
 | 项 | 本版口径 |
 |---|---|
+| 跑哪四个 | FrameSamp+Modulation、SimpleMemVLA、PonderPounce、MemER |
 | 数据与档位 | V9 `test-hard` 第三档，43 格 = 14 任务 × 2 档（xhard1/2）+ 7 任务 × 1 档（xhard3）+ 6 任务 × 1 档（xhard4）+ 2 任务 × 1 档（xhard5） |
-| 每模型局数 | 1 模型种子 × 43 格 × 2 局 = 86 局（环境每格仍取前两局，环境 seed／spec 不动） |
-| 四模型合计 | 4 模型 × 86 = 344 局；8 片 × 43 局；4 个占位 job |
-| 运行参数 | `--max-steps 1800 --strict-cap --policy-seed 7`；生成规格 `EXEC_CAP=1600` 不动，不重生成数据，不启动第二档 |
+| 每模型局数 | 1 模型种子（7）× 43 格 × 2 局 = 86 局（环境每格仍取前两局，环境 seed／spec 不动） |
+| 合计 | 4 模型 × 86 = 344 局；8 片 × 43 局；4 个占位 job（63188714／15／16／19，可用性以恢复时为准） |
+| 运行参数 | `--max-steps 1800 --strict-cap --policy-seed 7`；MemER 另加 `--groundsg-variant ground-sg-memer --memer-adapter <已核实路径>` |
 | run_name | 拟 `sg-eval-gl-20261006-03`，执行副本拟 `robomme_benchmark-sgeval3`，起跑前确认未用 |
 
-**已定口径（用户原话，2026-10-06）**：命名「照官方」，改活代码与现行文档，历史留档不改；「还需要实现MemER和seed0/7/42，1800步的调整」；「seed只作为实现的功能」「这版还是跑自己的七，还是每一个难度跑两个」；「给出现在所有支持模型的清单，都要支持1800步，都要支持不同seed，模型seed」「我们现在实跑只跑我说的这些模型」。
+**用户原话（2026-10-06）**：「还需要实现MemER和seed0/7/42，1800步的调整」；「seed只作为实现的功能」「这版还是跑自己的七，还是每一个难度跑两个」；「给出现在所有支持模型的清单，都要支持1800步，都要支持不同seed，模型seed」「我们现在实跑只跑我说的这些模型」。
 
-## 二、模型清单：七条路线各是什么、本版跑不跑
-
-| 官方展示名 | 仓库旧名 → 新 ID | 现状（本仓库入口） | 本版要补 | 本版实跑 |
-|---|---|---|---|---|
-| FrameSamp+Modulation | `mme` → `perceptual-framesamp-modul` | `mme_client.py`，服务固定 `--seed=7` | 1800 步、`policy_seed` | 是，seed 7，86 局 |
-| SimpleMemVLA | 不改 | `smvla_client.py`／`smvla_server.py`，每局 reseed 固定 0 | 同上 | 是，seed 7，86 局 |
-| PonderPounce | 不改 | `pp_client.py`／`pp_server_wrap.py`，服务固定种子 0 | 同上 | 是，seed 7，86 局 |
-| MemER | 新增，内部变体 `ground-sg-memer` | 未接入；`official_defs.py` 现在显式拒绝 `use_memer` | 摘官方 MemER 类真接线、adapter 资产核实、每局日志与清理 | 是，seed 7，86 局；先过接入闸门 |
-| GroundSG+Oracle | `mmesg` → `groundsg`（变体 `oracle`） | `mmesg_client.py`，服务固定 `--seed=7` | 1800 步、`policy_seed`（服务与客户端一致） | 否，只 CPU 验证 |
-| GroundSG+QwenVL | 同上（变体 `qwenvl`） | 同上 | 同上，另核 QwenVL 预测器 seed | 否，只 CPU 验证 |
-| Astra | 不改 | 独立 `run_astra.sh`／`astra_hard_runner.py`，固定 seed 42，cap 配对 1600 | 同上，在它自己的入口改 | 否，零外联 CPU 验证 |
-
-两句说明：旧名 `mme`／`mmevla` 指的其实是官方的 FrameSamp+Modulation，`mmesg` 指的是 GroundSG，所以要改；MME-VLA 家族名、`third_party/mme-vla`、上游类名与配置键是官方的，不动。MemER 展示名以官方文档的 `MemER` 节为准，不写成「GroundSG+MemER」。「现状」只说明入口已存在，不表示 1800 步或可配置 seed 已实现。
-
-## 三、我们这一侧要改什么（四件事）
-
-| 件 | 为什么非改不可 | 改什么 | 判据 |
-|---|---|---|---|
-| ① 改名 | 活代码里约 91 个文件、900 处用自造名，用户要求照官方 | 文件名、CLI 参数、环境变量、策略标签、测试名与契约；读历史结果的工具把旧标签映射成新名，别名表只放 `official_defs.py` 一份；`docs/validation/`、`docs/plans/` 与指向真实磁盘目录的字符串不改，另写旧名对照表 | `OFFICIAL_NAMES=PASS`、三条旧路线 `CLIENT_REPLAY_EQ=PASS`（证明只改名、行为零变化） |
-| ② MemER 接入 | 当前 GroundSG 装配只认 Oracle／QwenVL，显式拒绝 `use_memer` | 摘锁定上游的 `MemERSubgoalPredictor`／`Qwen3VLModelMemER` 原文接进 `official_defs.py`；客户端补每局临时目录、`ep*_MemER_log.jsonl` 归档与清理；adapter `checkpoint-1300` 不是已核实资产，起跑前要定路径与 SHA256，不能拿 QwenVL 的 `checkpoint-1200` 顶替 | `MEMER_WIRING=PASS`、`ASSETS=PASS`、`MEMER_SMOKE=PASS` |
-| ③ 模型种子 | 各路线把种子写死（FrameSamp／GroundSG 7，SimpleMemVLA／PonderPounce 0，Astra 42），用户要可配置 | 新增 `--policy-seed`，从任务配置传到服务、客户端、子目标预测器，在模型构造前设随机状态；结果行、trace、媒体 provenance 都记 `policy_seed`；每个 `(模型, policy_seed)` 独立输出目录 | 功能 `POLICY_SEEDS=PASS models=7 seeds=0,7,42`；运行 `RUN_POLICY_SEED=PASS seed=7 combinations=4` |
-| ④ 1800 步 | 席位脚本把 `test-hard` 钉在 1600，Astra 入口也钉 1600 | 配对改 `test-hard ↔ 1800`，沿 `SeatRunner → EnvSession.step_cap → 客户端循环` 全程传；第 1801 次 `step` 在进真实环境前被拒；Astra 入口同改；`test-hard0 ↔ 1300` 不动 | `EVAL_CAP=PASS models=7 max_steps=1800 rejected_step=1801` |
-
-顺序固定：① 先合入并过回放闸门，②③④ 才动——后三项是有意改行为，不能借改名回放宣称全链等价。`src/robomme/`、录像器、三方源码与 gitlink 一律不改。
-
-## 四、预算与耗时
+**预算**：
 
 | 项目 | 轨迹上限 | reset 口径 |
 |---|---|---|
 | 正式首试 | 4 模型 × 1 种子 × 43 格 × 2 局 = 344 | 每片硬额度 2 × 43 + 20 = 106，8 片共 848 |
 | 最小 smoke | 4 模型 × 1 局 = 4 | 每局 3，共 12 |
-| 基础设施重试 | 全阶段共享 ≤ 50，每身份 ≤ 1 次；到期重试 0 | 消耗上面的既有额度，不另加 |
-| **合计** | **344 + 4 + 50 = 398** | **848 + 12 = 860** |
+| 基础设施重试 | 全阶段共享 ≤ 50，每身份 ≤ 1 次；到期重试 0 | 消耗上面的既有额度 |
+| **合计** | **344 + 4 + 50 = 398**（历史累计 2064 + 398 = 2462，在 6366 内） | **860** |
 
-账本按历史累计：轨迹上限 2064 + 398 = 2462，在原总授权 6366 内。CPU 回放与夹具不消耗真实 reset。耗时：改名约 2～2.5 小时；三个老模型按旧第二档单局耗时 × 1.5 × 1.125 粗估共约 459 席位分钟，MemER 无实测，等它 1 局 smoke 后再估整体；原「5～6 小时」结论作废。四个占位 job（63188714／15／16／19）是否仍可用以恢复时为准，本轮不查资源、不提交、不释放。
+**耗时**：改名约 2～2.5 小时；三个老模型按旧第二档单局耗时 × 1.5 × 1.125 粗估共约 459 席位分钟；MemER 无实测，等它 1 局 smoke 后再估整体，原「5～6 小时」结论作废。
 
-## 五、验收
+**验收**：
 
 | 查什么 | 判定行 |
 |---|---|
@@ -83,9 +114,9 @@
 | 每组结果与视频 | 每组 `EVAL_COVERAGE=PASS expected=86 missing=0`、`EVAL_VIDEOS=PASS videos=86`、`OFFICIAL_MEDIA=PASS total=86 fail=0` |
 | 完整矩阵与预算 | `RUN_POLICY_SEED=PASS seed=7 combinations=4`、`STAGE3_MATRIX=PASS policy_seed=7 combinations=4 unique_terminal=344`、`BUDGET_ENFORCEMENT=PASS` |
 
-成绩只报 seed 7 的逐格／任务／档位与总成功率，每格 n=2，不产出多种子均值。与旧 1600 步成绩的差异注明条件已变，不宣称等价。
+成绩只报 seed 7 的逐格／任务／档位与总成功率，每格 n=2；与旧 1600 步成绩的差异注明条件已变，不宣称等价。
 
-## 六、步骤
+**步骤**：
 
 | 阶段 | 内容 | 判据 |
 |---|---|---|
@@ -94,13 +125,11 @@
 | 2 | R2 接 MemER，R3／R5 让七路线支持种子与 1800，R4 补 CPU 测试 | `MEMER_WIRING`、`POLICY_SEEDS`、`EVAL_CAP`、`DELIVERY_UNCHANGED` |
 | 3 | 核资产、冻结执行副本、生成清单与四个 seed 7 任务组、每模型 1 局 smoke | `RUN_INPUTS`、`ASSETS`、`MEMER_SMOKE`、`RUN_POLICY_SEED` |
 | 4 | GL A40 跑 8 片 | 退出码、进度、预算 |
-| 5 | 四组验收、汇总、留档、commit、push；资源按最新指令处置 | 第五节全部判定行 |
+| 5 | 四组验收、汇总、留档、commit、push；资源按最新指令处置 | 上表全部判定行 |
 
-## 七、子代理分工与合并（简述）
+**子代理分工与合并（简述）**：R1 改名先单独做完、审两次、合入；之后同一时刻派 R2（MemER 装配：`official_defs.py` 与 GroundSG 客户端）、R3（共享入口：席位脚本、`env_client.py`、各服务端、报告与预算）、R5（Astra 两入口及其测试），R4 并行准备与 R5 不重叠的 CPU 测试。各管互不重叠的文件、各在自己的 worktree 写；合回顺序 R1 → R2 → R3 → R5 → R4，每合一个审禁触路径与定向测试，全部过后冻结执行提交。主会话自做现行文档、资产清单与 GL 编排。
 
-R1 改名先单独做完、审两次、合入；之后同一时刻派 R2（MemER 装配：`official_defs.py` 与 GroundSG 客户端）、R3（共享入口：席位脚本、`env_client.py`、各服务端、报告与预算）、R5（Astra 两入口及其测试），R4 并行准备与 R5 不重叠的 CPU 测试。各管互不重叠的文件、各在自己的 worktree 写；合回顺序 R1 → R2 → R3 → R5 → R4，每合一个审禁触路径与定向测试，全部过后冻结执行提交。主会话自做现行文档、资产清单与 GL 编排。
-
-改名范围明细、MemER 装配、种子与 cap 的逐层传递、链路图、耗时推导与预算细则见第二部分八节。
+改名范围明细、种子与 cap 的逐层传递、链路图、各档任务名单、耗时推导与预算细则见第二部分八节。
 
 # 第二部分（技术细节，供 agent 追踪）
 
