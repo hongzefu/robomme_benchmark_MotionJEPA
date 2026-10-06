@@ -6,26 +6,28 @@
 
 ## 1. 入口：`evaluation_hard.py`
 
-`scripts/` 顶层四个入口里，`dataset_replay.py`、`evaluation.py`、`run_example.py` 与官方逐字节相同，用法见仓库根 `readme.md`。新增的只有 `evaluation_hard.py`：跑 V9 五档（xhard1～xhard5）的评估入口，与 `evaluation.py` 只差 3 处，其余逐字相同（核查：`diff scripts/evaluation.py scripts/evaluation_hard.py`）。
+`scripts/` 顶层四个入口里，`dataset_replay.py`、`evaluation.py`、`run_example.py` 与官方逐字节相同，用法见仓库根 `readme.md`。新增的只有 `evaluation_hard.py`：跑新值档的评估入口，两个数据集接口二选一——`hard-verify`（官方 hard 子集每任务 12 局，第二阶段，1300 步）与 `ood`（V9 五档 xhard1～xhard5，第三阶段，1600 步；2026-10-06 前分别叫 `test-hard0` 与 `test-hard`，对照见 [`docs/validation/legacy-names.md`](../docs/validation/legacy-names.md)）。它与 `evaluation.py` 只差 3 处单行替换加 1 段选数据集的插入，其余逐字相同（核查：`diff scripts/evaluation.py scripts/evaluation_hard.py`；静态测试 `test_evaluation_hard_diff_is_three_single_line_hunks_and_dataset_block` 用 AST 钉住配对表与默认 `ood`）。
 
 ```diff
 - from robomme.env_record_wrapper import BenchmarkEnvBuilder
 + from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
++ DATASET_MAX_STEPS = {"hard-verify": 1300, "ood": 1600}
++ DATASET = "ood"
 -         dataset="test",
-+         dataset="test-hard",
++         dataset=DATASET,
 -         max_steps=1300,  # we set 1300 in MME-VLA experiments.
-+         max_steps=1600,  # V9: fixed 1600 for every episode (no per-tier lookup).
++         max_steps=DATASET_MAX_STEPS[DATASET],  # 按数据集固定（不按档查表）
 ```
 
 三处差别用人话说：
 
-1. **换包**。新值档的环境代码放在 `robomme_hard` 包里，与官方 `robomme` 并列、互不干扰。它的 builder 是官方 builder 的子类，用法一样，只是多认一个数据集名 `test-hard`。
-2. **换数据集**。官方 `test` 每任务 50 局。`test-hard` 每任务也是 50 局，按 xhard1 到 xhard5 依次排列（每格局数见第 3 节），16 任务合计 800 局。`resolve_episode` 和官方一样返回两个值，第二个值在 `test-hard` 下就是档位名（`xhard1`～`xhard5`）。
-3. **步数上限是一个数**。构造 builder 时写死 `max_steps=1600`，每局 `make_env_for_episode(episode)` 与官方一样不传，五档一律 1600、不按档查表。实测第 1601 次 `env.step()` 返回 `truncated=True`（官方 1300 同理对应第 1301 次）。
+1. **换包**。新值档的环境代码放在 `robomme_hard` 包里，与官方 `robomme` 并列、互不干扰。它的 builder 是官方 builder 的子类，用法一样，只是多认两个数据集名 `hard-verify` 与 `ood`。
+2. **换数据集**。官方 `test` 每任务 50 局。`ood` 每任务也是 50 局，按 xhard1 到 xhard5 依次排列（每格局数见第 3 节），16 任务合计 800 局。`resolve_episode` 和官方一样返回两个值，第二个值在 `ood` 下就是档位名（`xhard1`～`xhard5`）。
+3. **步数上限是一个数**。构造 builder 时按数据集给一个数（`ood` 1600、`hard-verify` 1300），每局 `make_env_for_episode(episode)` 与官方一样不传，`ood` 五档一律 1600、不按档查表。实测第 1601 次 `env.step()` 返回 `truncated=True`（官方 1300 同理对应第 1301 次）。
 
 ### 每一局的场景从哪里来
 
-每局的场景不是评估时随机抽的，而是生成数据时就冻结好、随包发布的。五份文件 `src/robomme_hard/env_metadata/test-hard/xhard1～5/specs.jsonl` 每行记一局：seed、档位、以及场景里每个随机取值点当时抽到的值（放了哪些块、什么颜色、放在哪、演示序列是什么）。
+每局的场景不是评估时随机抽的，而是生成数据时就冻结好、随包发布的。五份文件 `src/robomme_hard/env_metadata/ood/xhard1～5/specs.jsonl` 每行记一局：seed、档位、以及场景里每个随机取值点当时抽到的值（放了哪些块、什么颜色、放在哪、演示序列是什么）。
 
 构造 builder 时，它读这五份文件，挑出本任务的正式局，按「xhard1 → xhard5、档内按候选号」排好，这就是 episode 号的顺序。`make_env_for_episode(i)` 做的事与官方相同（`gym.make` 再套 wrapper），只是在 `gym.make` 里多传两个参数：这局所属档位的取值配置（`sampling_config`），和这局冻结的场景规格（`native_episode_spec`）。
 
@@ -38,7 +40,7 @@
 | 区域 | 相对官方 |
 |---|---|
 | `src/robomme/**` | 零差异（102 文件）。受 P2 保护，改动须用户逐个批准 |
-| `src/robomme_hard/**` | 全部新增：16 个环境类与改过的 utils／wrapper 为复制，依赖闭包干净的官方模块为借用 shim，`hard_builder.py` 子类化官方 builder 并新增 `dataset="test-hard"`，`hard_specs.py`／`utils/episode_spec.py` 等新增。逐文件表见 [`src/robomme_hard/README.md`](../src/robomme_hard/README.md) |
+| `src/robomme_hard/**` | 全部新增：16 个环境类与改过的 utils／wrapper 为复制，依赖闭包干净的官方模块为借用 shim，`hard_builder.py` 子类化官方 builder 并新增 `dataset="ood"` 与 `dataset="hard-verify"`，`hard_specs.py`／`utils/episode_spec.py` 等新增。逐文件表见 [`src/robomme_hard/README.md`](../src/robomme_hard/README.md) |
 | `scripts/` | 官方三入口零差异；新增 `evaluation_hard.py`、`injection-dev/`、`parity/`、`eval-official/`、`configs/` |
 | `tests/` | 新增分层测试（`tests/static/`、`tests/contract/` 等，1003 维护计划重写；旧 `tests/lightweight/`、`tests/dataset/` 已删除），改 `conftest.py`；说明见 `tests/README.md` |
 | `pyproject.toml` | 加依赖 `pebble`；wheel 加 `src/robomme_hard`；加 pytest marker |
@@ -55,7 +57,7 @@ uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstrea
 
 ## 3. 五档配置对比与局数
 
-**配置对比**（一句话版；代码真源为各环境的 `native_blocks` 与包内 header 的 `sampling_config`，源 `docs/plans/1001-newtask-v8-xhard-gradient-plan.md` 第一部分表 1）。列格式 官方 hard（参考列，不在 `test-hard` 里）→ xhard1 → … → xhard5；`[a,b]` 为整数均匀区间；「不交付」= 数值在代码里但不生成；「无」= 该任务没有这个档。
+**配置对比**（一句话版；代码真源为各环境的 `native_blocks` 与包内 header 的 `sampling_config`，源 `docs/plans/1001-newtask-v8-xhard-gradient-plan.md` 第一部分表 1）。列格式 官方 hard（参考列，不在 `ood` 里，单独的 `hard-verify` 接口）→ xhard1 → … → xhard5；`[a,b]` 为整数均匀区间；「不交付」= 数值在代码里但不生成；「无」= 该任务没有这个档。
 
 | 环境 | 梯度维度 | 官方 hard（参考） | xhard1 | xhard2 | xhard3 | xhard4 | xhard5 |
 |---|---|---|---|---|---|---|---|
@@ -87,7 +89,7 @@ uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstrea
 | MoveCube、InsertPeg | — | — | — | 50 | — | 各 50 |
 | **合计** | 272 | 272 | 92 | 144 | 20 | **800** |
 
-步数上限 1600 只约束执行段，演示段不计入；生成时已过滤执行步超过 1600 的候选，交付集实测最大 1469 步（`V9_STEP_CAP=PASS max=1469 cap=1600 over=0`）。逐局长度看 V9 站点 `http://sled-vail.eecs.umich.edu:8082/` 的各档总表。官方 hard 的 12 局（代码里叫 xhard0）默认不在 `test-hard` 里；需要对照时设环境变量 `ROBOMME_HARD_XHARD0_IN_TEST_HARD=1`，builder 会把它们前置为每任务的前 12 局（62 局／任务），源码与清单均保留。
+步数上限 1600 只约束执行段，演示段不计入；生成时已过滤执行步超过 1600 的候选，交付集实测最大 1469 步（`V9_STEP_CAP=PASS max=1469 cap=1600 over=0`）。逐局长度看 V9 站点 `http://sled-vail.eecs.umich.edu:8082/` 的各档总表。官方 hard 的 12 局（代码里叫 xhard0）默认不在 `ood` 里（单独走 `hard-verify` 接口）；需要并进 `ood` 对照时设环境变量 `ROBOMME_HARD_XHARD0_IN_TEST_HARD=1`（变量名沿用旧称），builder 会把它们前置为每任务的前 12 局（62 局／任务），源码与清单均保留。
 
 # 第二部分　开发者文档
 
@@ -103,7 +105,7 @@ uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstrea
 
 规格 `schema="hard-specs/4"`：每行分「签」（`task tier candidate episode seed attempt spec spec_sha256 layout_parent`，由 `identity_sha256` 覆盖，不可改）与「结果」（`selected tried initial_selected rollout`，可回写；`rollout` 带 `exec_steps`）；`delivery_sha256` 锁正式交付集合；header 另签 `exec_cap`（＝1600）与逐任务 `delivery_per_cell`。新值档不开 fail recover。真正起环境的是 `parity/train_split_runner.py` → `train_split_worker.run_one`（`gym.make(..., sampling_config=, native_episode_spec=)`），环境包由 `ROBOMME_ENV_PACKAGE` 决定（默认 `robomme_hard`）。回写只改 `selected`／`tried`／`rollout`，回写前整份 sha 必须与读入时相同；基础设施失败每身份最多重跑 1 次，任务失败不重试。预算红线（P3）：单 worker reset 总尝试 > 10 或多 worker 合计 > 50 须事先一次性授权，`--dry-run` 打印的数就是要报的数。
 
-V9 实跑命令、席位、tmux 清单与实耗见 `docs/validation/newtask-v9/launch.md`，结论见同目录 `result.md`。包内 `env_metadata/test-hard/xhard{1..5}/specs.jsonl` 由封存规格根 `artifacts/newtask-v9/specs-root/` 逐字节换入（12.333）。
+V9 实跑命令、席位、tmux 清单与实耗见 `docs/validation/newtask-v9/launch.md`，结论见同目录 `result.md`。包内 `env_metadata/ood/xhard{1..5}/specs.jsonl` 由封存规格根 `artifacts/newtask-v9/specs-root/` 逐字节换入（12.333）。
 
 **静态闸门**（纯 CPU）：
 

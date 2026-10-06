@@ -371,7 +371,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 ## 项目专属规则
 
 - **P1. `scripts/` 顶层只允许存在清单内的入口文件，新增任何顶层文件必须先与用户沟通并获准。**（2026-09-22 用户原话「只保留这五个入口 以后新增要和用户沟通」；2026-09-27 拆包阶段 0b 按 `0926-robomme-hard-split-plan.md` D-1 裁决删去 `generate_dataset_newseed.py`，拆包阶段 2（12.207，0927 计划 E-7）落 `evaluation_hard.py`；12.214 按用户 2026-09-28 指令把 `seed_layout.py` 移到 `scripts/injection-dev/`，现为四入口。）
-    - **四个入口**：`dataset_replay.py`、`evaluation.py`、`run_example.py`、`evaluation_hard.py`（test-hard 评估示例，与 `evaluation.py` 只差 import、`dataset="test-hard"`、取 tier、按档 `max_steps` 四处）。`dataset_replay.py`、`evaluation.py`、`run_example.py` 与上游逐字节相同，不得改动。
+    - **四个入口**：`dataset_replay.py`、`evaluation.py`、`run_example.py`、`evaluation_hard.py`（新值档评估示例，`hard-verify`（原 `test-hard0`，1300 步）与 `ood`（原 `test-hard`，1600 步）二选一，默认 `ood`；与 `evaluation.py` 只差 import、`dataset=DATASET`、`max_steps=DATASET_MAX_STEPS[DATASET]` 三处单行替换加一段选数据集的插入，2026-10-06 改名见 `docs/validation/legacy-names.md`）。`dataset_replay.py`、`evaluation.py`、`run_example.py` 与上游逐字节相同，不得改动。
     - **其余一律收进子目录**：与官方比的对拍设施进 `scripts/parity/`（`train_split_*.py`、`comparator_fixtures.py`、vendor 的 `official/`、`upstream_guard.py`、`hard_parity.py`、`hard_pull.py`、`hard_regression.py`）；新值档生产链路与只读出图进 `scripts/injection-dev/`（含 `site/`，另含 seed 公式与 16 任务规范序 `seed_layout.py`）；冻结配置进 `scripts/configs/`（12.214 起只留对拍容差 `hard-parity-tolerances.json` 与 `newtask-v6/v6-02/` 四份采样设计）。原 `scripts/injection/`、`scripts/eval/`、`v4_specs`／`v4_rollout`／`v5_generation` 与 V3 容差对拍已于拆包阶段 0b／2 删除（git 历史可取回）。
     - **本条约束的是"新增顶层文件"这个动作**，不是禁止写新脚本：新脚本默认落到已有子目录；确实不属于任何现有子目录时，先向用户说明用途与建议位置，获准后再建新子目录。临时脚本一律写到 scratchpad 或 `artifacts/`，不得落在 `scripts/` 顶层。
     - 核查方式：`ls -1 scripts/*.py` 应恰好列出上述四个文件。
