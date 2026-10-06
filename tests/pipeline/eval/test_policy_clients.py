@@ -6,12 +6,17 @@
 """
 from __future__ import annotations
 
+import collections
+import hashlib
 import json
+import threading
 
 import numpy as np
 import pytest
 
 import eval_fakes as F
+from tests._support.loaders import load_script
+from tests.pipeline.evalx.report import trace_contract as tc
 
 
 # ---------------------------------------------------------------- MME：逐行照抄旧官方的循环语义
@@ -300,3 +305,340 @@ def test_run_args_accept_all_four_policies():
                                                      "1300", *_LEDGER, *extra])
         assert ec.check_run_args(args, need_identities=True) is None, pol
         assert args.strict_cap is False
+
+
+# ---------------------------------------------------------------- S4：两条新侧路线的逐步轨迹（契约 C1～C11）
+#
+# 期望一律由假环境的计划手算（步数、帧数、终态）；契约判据交 S0 的 trace_contract 助手。
+# 环境会话用真实 env_client.EnvSession（假 builder），步数口径（异常步计步、strict-cap 不进环境）与生产相同。
+
+IDENT = {"task": "T", "tier": "xhard0", "seed": 1, "source_episode": 2, "builder_episode": 2, "key": "T_xhard0_1"}
+
+
+class _B:
+    def __init__(self, plan):
+        self.plan = plan
+        self.env = None
+
+    def make_env_for_episode(self, ep, max_steps=None):
+        self.env = F.FakeEnv("T", ep, self.plan)
+        return self.env
+
+
+def _env_session(plan, *, cap=None, recorder=None):
+    b = _B(plan)
+    return F.env_client().EnvSession("T", 2, recorder=recorder, builder=b, step_cap=cap), b
+
+
+def _conn(tmp_path, attempt=1, **kw):
+    tag = f"{IDENT['key']}.a{attempt}"
+    return dict({"trace_dir": str(tmp_path / tag), "episode_tag": tag, "dataset": "test-hard0"}, **kw), tmp_path / tag
+
+
+def _rows(ep):
+    return [json.loads(x) for x in (ep / "trace.jsonl").read_text(encoding="utf-8").splitlines() if x.strip()]
+
+
+def _kind(rows, k):
+    return [r for r in rows if r["kind"] == k]
+
+
+def _tw():
+    return load_script("eval-official/trace_writer.py")
+
+
+def _norm(x):
+    """把消息载荷里的数组换成 (dtype, shape, bytes)，便于逐项比较两次运行。"""
+    if isinstance(x, np.ndarray):
+        return ("nd", x.dtype.str, x.shape, x.tobytes())
+    if isinstance(x, dict):
+        return {k: _norm(v) for k, v in x.items()}
+    if isinstance(x, (list, tuple)):
+        return [_norm(v) for v in x]
+    return x
+
+
+def _strip(res):
+    return {k: v for k, v in res.items() if k not in ("timing", "trace_path")}
+
+
+def _smvla_traced(tmp_path, plan, *, cap=None, traced=True, recorder=None, **kw):
+    sm = F.smvla_client()
+    server = F.FakePolicyServer()
+    sess, b = _env_session(plan, cap=cap, recorder=recorder)
+    conn_info, ep = _conn(tmp_path) if traced else ({}, None)
+    res = sm.run_episode(sess, dict(IDENT), conn_info, recorder, conn=F.FakeSmvlaConn(server), **kw)
+    return res, sess, b, server, ep
+
+
+def test_smvla_trace_success_is_renderable_with_subgoal_and_logical_requests(tmp_path):
+    """success_at=20、执行段 16：决策 2 次，20 步全有观测；动作 float64 → 轨迹目录写 arrays.npz。"""
+    res, sess, b, server, ep = _smvla_traced(tmp_path, F.Plan(success_at=20))
+    assert res["status"] == "success" and sess.steps == 20 and res["trace_path"] == str(ep / "trace.jsonl")
+    tc.assert_renderable(ep)
+    tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": res["status"]})
+    rows = _rows(ep)
+    header, end, demo = rows[0], rows[-1], _kind(rows, "demo")[0]
+    assert header["route"] == "smvla/new"
+    assert {k: header["identity"][k] for k in IDENT} == IDENT
+    assert header["identity"]["attempt"] == 1 and header["identity"]["dataset"] == "test-hard0"
+    assert header["max_steps"] == res["hard_bound"] * 16  # 客户端循环的真实步数上界
+    steps = _kind(rows, "step")
+    assert len(steps) == sess.steps == 20  # 步数行 = 执行步数
+    assert all(st["subgoal"] == "s" for st in steps)  # 子目标取回包 subtask，非空
+    assert demo["frames"] == F.N_RESET_FRAMES and end["demo_frames"] == F.N_RESET_FRAMES - 1
+    assert (end["steps_attempted"], end["steps_observed"], end["frames_recorded"]) == (20, 20, F.N_RESET_FRAMES + 20)
+    assert end["arrays"] == "trace" and end["observer_hook_errors"] == 0 and end["request_encoding"] == "logical"
+    # 动作按实际交给环境的原 dtype 记录，arrays.npz 原值与环境收到的逐字节相同
+    with np.load(ep / "arrays.npz") as arr:
+        assert sorted(arr.files) == [f"exec_action__{i:05d}" for i in range(20)]
+        for i, a in enumerate(b.env.actions):
+            assert arr[f"exec_action__{i:05d}"].dtype == np.float64
+            assert arr[f"exec_action__{i:05d}"].tobytes() == a.tobytes()
+    # C10：请求行 = 逻辑输入（指令、状态、帧哈希序列）；响应行 = 完整动作块
+    tw = _tw()
+    reqs, reps = _kind(rows, "request"), _kind(rows, "response")
+    assert [r["name"] for r in reqs] == ["infer", "infer"] and [r["step"] for r in reqs] == [0, 16]
+    vals = F.reset_values(2)
+    v = vals[-1]
+    state0 = np.array([v / 10.0] * 7 + [v / 100.0], dtype=np.float32)
+    frames0 = [[tw.image_sha256(F.frame(x)), tw.image_sha256(F.frame(x + 1))] for x in vals]
+    expect0 = tw.bytes_record(tw.canonical_bytes({"instruction": "goal-T-2", "state": state0, "frames": frames0}))
+    assert (reqs[0]["sha256"], reqs[0]["nbytes"]) == (expect0["sha256"], expect0["nbytes"])
+    infer_actions = [p["actions"] for k, p in server.log if k == "infer"]
+    assert [r["actions"]["sha256"] for r in reps] == [tw.array_record(a)["sha256"] for a in infer_actions]
+
+
+def test_smvla_trace_does_not_change_requests_or_actions(tmp_path):
+    """有无轨迹两次运行：发给服务的消息、交给环境的动作、结果字段逐项相同。"""
+    a = _smvla_traced(tmp_path, F.Plan(success_at=40), traced=True)
+    b = _smvla_traced(tmp_path, F.Plan(success_at=40), traced=False)
+    assert _norm(a[3].log) == _norm(b[3].log)
+    assert [x.tobytes() for x in a[2].env.actions] == [x.tobytes() for x in b[2].env.actions]
+    assert _strip(a[0]) == _strip(b[0]) and "trace_path" not in b[0]
+
+
+def test_smvla_hard_bound_timeout_is_renderable_without_omitted_frame(tmp_path):
+    """max_steps=32、执行段 16：决策上限 4 次、64 步 timeout；每步都录，omitted=0。"""
+    res, sess, _, _, ep = _smvla_traced(tmp_path, F.Plan(), max_steps=32, execute_horizon=16)
+    assert res["status"] == "timeout" and sess.steps == 64
+    tc.assert_renderable(ep)
+    tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "timeout"})
+    end = _rows(ep)[-1]
+    assert end["omitted_timeout_frames"] == 0 and end["frames_recorded"] == F.N_RESET_FRAMES + 64
+    assert end["episode_max_steps"] == 32 and end["step_bound"] == 64
+
+
+def test_smvla_strict_cap_trace_closes_as_timeout(tmp_path):
+    """strict-cap 20：第 21 步不进环境（客户端记 step_exc error、env_client 按 cap_hit 改记 timeout）；轨迹 20 步、timeout。"""
+    res, sess, b, _, ep = _smvla_traced(tmp_path, F.Plan(), cap=20, max_steps=20, execute_horizon=16)
+    assert sess.cap_hit is True and sess.steps == 20 and b.env.n == 20
+    assert res["status"] == "error" and res["error"].startswith("step_exc: ")  # 客户端行为不变
+    tc.assert_renderable(ep)
+    tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "timeout"})
+    end = _rows(ep)[-1]
+    assert (end["status"], end["terminal_reason"], end["cap_hit"]) == ("timeout", "timeout", True)
+    assert len(_kind(_rows(ep), "step")) == 20 and end["omitted_timeout_frames"] == 0
+
+
+def test_smvla_step_exception_is_missing_step_with_consistent_counts(tmp_path):
+    """第 5 步环境抛异常：环境侧计 5 步，轨迹 5 行（末行缺观测、保留动作与原因），三分计数 5／4／demo+1+4。"""
+    res, sess, b, _, ep = _smvla_traced(tmp_path, F.Plan(raise_at=5, raise_exc=lambda: RuntimeError("IK 失败")))
+    assert res["status"] == "error" and sess.steps == 5
+    assert tc.contract_problems(ep) == []  # error 局的重绘放行由 S2a 负责，这里只核契约
+    tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "error"})
+    steps = _kind(_rows(ep), "step")
+    assert [st.get("observed", True) for st in steps] == [True] * 4 + [False]
+    assert "IK 失败" in steps[-1]["missing_reason"] and steps[-1]["subgoal"] == "s"
+    assert steps[-1]["terminated"] == steps[-1]["truncated"] == "NOT_OBSERVED"
+    with np.load(ep / "arrays.npz") as arr:
+        assert arr["exec_action__00004"].tobytes() == b.env.actions[4].tobytes()
+    end = _rows(ep)[-1]
+    assert (end["steps_attempted"], end["steps_observed"], end["frames_recorded"]) == (5, 4, F.N_RESET_FRAMES + 4)
+
+
+def test_smvla_reset_failure_is_no_frame_error(tmp_path):
+    class _BadReset(_Session):
+        def reset(self):
+            raise RuntimeError("reset 爆了")
+
+        def close(self):
+            pass
+
+    sm = F.smvla_client()
+    conn_info, ep = _conn(tmp_path)
+    res = sm.run_episode(_BadReset(F.Plan()), dict(IDENT), conn_info, None,
+                         conn=F.FakeSmvlaConn(F.FakePolicyServer()), reset_retries=0)
+    assert res["status"] == "error"
+    assert tc.contract_problems(ep) == []
+    end = _rows(ep)[-1]
+    assert (end["no_frame"], end["status"], end["demo_frames"], end["frames_recorded"]) == (True, "error", 0, 0)
+    assert end["steps_attempted"] == 0
+    tc.assert_counts_consistent(ep, {"exec_steps": 0, "status": "error"})
+
+
+def _bare_recorder(out_dir):
+    """真实 recorder.EpisodeRecorder 的 add_array／_write_arrays（不起 ffmpeg 写线程），其余录制调用置空。"""
+    R = load_script("eval-official/recorder.py")
+    rec = object.__new__(R.EpisodeRecorder)
+    out_dir.mkdir(parents=True)
+    rec.out_dir = out_dir
+    rec._lock = threading.RLock()
+    rec._arrays = []
+    rec._array_counts = collections.defaultdict(int)
+    rec._writer_error = None
+    rec._writer = None
+    rec._closed = False
+    rec.set_phase = lambda phase: None
+    rec.add_frames = lambda stream, frames, tag="": list(range(len(frames)))
+    rec.add_event = lambda ev: None
+    return rec
+
+
+def test_smvla_recorder_arrays_keys_match_trace_contract(tmp_path):
+    """生产形态：EnvSession 与客户端共用录像器、轨迹落在录像目录（无 trace_dir）。轨迹不另写 arrays.npz，
+    录像器写出的 exec_action__%05d 与契约键名一致，合起来可渲染。"""
+    ep = tmp_path / f"{IDENT['key']}.a2"
+    rec = _bare_recorder(ep)
+    sm = F.smvla_client()
+    sess, _ = _env_session(F.Plan(success_at=18), recorder=rec)
+    res = sm.run_episode(sess, dict(IDENT), {"episode_tag": ep.name, "dataset": "test-hard0"}, rec,
+                         conn=F.FakeSmvlaConn(F.FakePolicyServer()))
+    assert res["status"] == "success"
+    assert res["trace_path"] == str(ep / "trace.jsonl")  # trace_location 退回 recorder.out_dir
+    assert not (ep / "arrays.npz").exists()
+    assert _rows(ep)[-1]["arrays"] == "recorder" and _rows(ep)[0]["identity"]["attempt"] == 2
+    rec._write_arrays()  # 录像器收尾写 arrays.npz
+    tc.assert_renderable(ep)
+    tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "success"})
+
+
+def _mme_traced(tmp_path, monkeypatch, plan, *, cap=None, max_steps=1300, traced=True, client_wrap=None):
+    mc = F.mme_client()
+    server = F.FakePolicyServer()
+
+    def factory(host, port, recorder, timing):
+        c = F.FakeMMEClient(server)
+        return client_wrap(c) if client_wrap else c
+
+    monkeypatch.setattr(mc, "make_recording_client", factory)
+    sess, b = _env_session(plan, cap=cap)
+    if traced:
+        conn_info, ep = _conn(tmp_path, port=1, max_steps=max_steps)
+    else:
+        conn_info, ep = {"port": 1, "max_steps": max_steps}, None
+    res = mc.run_episode(sess, dict(IDENT), conn_info, None)
+    return res, sess, b, server, ep
+
+
+def test_mme_trace_success_is_renderable_with_null_subgoals(tmp_path, monkeypatch):
+    res, sess, b, server, ep = _mme_traced(tmp_path, monkeypatch, F.Plan(success_at=20))
+    assert res["status"] == "success" and sess.steps == 20
+    tc.assert_renderable(ep)
+    tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "success"})
+    rows = _rows(ep)
+    assert rows[0]["route"] == "mme/new" and rows[0]["identity"]["key"] == IDENT["key"]
+    steps = _kind(rows, "step")
+    assert len(steps) == 20 and all(st["subgoal"] is None for st in steps)  # MME 无子目标功能（C7）
+    assert [r["name"] for r in _kind(rows, "request")] == ["reset", "add_buffer", "infer", "add_buffer", "infer"]
+    assert [(h["start"], h["end"]) for h in _kind(rows, "history")] == [(0, 0), (0, 16)]
+    tw = _tw()
+    infer_actions = [p["actions"] for k, p in server.log if k == "infer"]
+    assert [r["actions"]["sha256"] for r in _kind(rows, "response")] == \
+        [tw.array_record(a)["sha256"] for a in infer_actions]
+    end = rows[-1]
+    assert end["arrays"] == "none" and not (ep / "arrays.npz").exists()  # 动作本就是 float32
+    assert end["request_encoding"] == "canonical" and end["observer_hook_errors"] == 0  # 替身客户端没有原始字节钩子
+    assert (end["steps_attempted"], end["steps_observed"], end["frames_recorded"]) == (20, 20, F.N_RESET_FRAMES + 20)
+
+
+def test_mme_trace_does_not_change_messages_or_actions(tmp_path, monkeypatch):
+    a = _mme_traced(tmp_path, monkeypatch, F.Plan(success_at=40))
+    b = _mme_traced(tmp_path, monkeypatch, F.Plan(success_at=40), traced=False)
+    assert _norm(a[3].log) == _norm(b[3].log)
+    assert [x.tobytes() for x in a[2].env.actions] == [x.tobytes() for x in b[2].env.actions]
+    assert _strip(a[0]) == _strip(b[0]) and "trace_path" not in b[0]
+
+
+def test_mme_natural_timeout_omits_last_frame(tmp_path, monkeypatch):
+    """不带 strict-cap、max_steps=5：第 6 步照常执行并记录，官方录像不录最后一步（omitted=1）。"""
+    res, sess, _, _, ep = _mme_traced(tmp_path, monkeypatch, F.Plan(), max_steps=5)
+    assert res["status"] == "timeout" and sess.steps == 6
+    tc.assert_renderable(ep)
+    tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "timeout"})
+    end = _rows(ep)[-1]
+    assert (end["omitted_timeout_frames"], end["frames_recorded"]) == (1, F.N_RESET_FRAMES + 6 - 1)
+
+
+def test_mme_strict_cap_trace_closes_as_timeout(tmp_path, monkeypatch):
+    """strict-cap 5：第 6 步不进环境、不记步；轨迹 5 步、timeout、omitted=0。"""
+    res, sess, b, _, ep = _mme_traced(tmp_path, monkeypatch, F.Plan(), cap=5, max_steps=5)
+    assert sess.cap_hit is True and sess.steps == 5 and b.env.n == 5
+    tc.assert_renderable(ep)
+    tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "timeout"})
+    end = _rows(ep)[-1]
+    assert (end["status"], end["cap_hit"], end["omitted_timeout_frames"]) == ("timeout", True, 0)
+    assert len(_kind(_rows(ep), "step")) == 5
+
+
+def test_mme_env_exception_is_missing_step_with_consistent_counts(tmp_path, monkeypatch):
+    """第 3 步抛异常：EnvRunnerShim 返回 (None,)*3 的这一步记缺观测步；三分计数 3／2／demo+1+2。"""
+    res, sess, b, _, ep = _mme_traced(tmp_path, monkeypatch, F.Plan(raise_at=3, raise_exc=lambda: RuntimeError("IK")))
+    assert res["status"] == "error" and sess.steps == 3 and res["steps"] == 3
+    assert tc.contract_problems(ep) == []
+    tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "error"})
+    steps = _kind(_rows(ep), "step")
+    assert [st.get("observed", True) for st in steps] == [True, True, False]
+    assert "IK" in steps[-1]["missing_reason"] and steps[-1]["subgoal"] is None
+    assert steps[-1]["action"]["sha256"] == hashlib.sha256(b.env.actions[2].tobytes()).hexdigest()
+    end = _rows(ep)[-1]
+    assert (end["steps_attempted"], end["steps_observed"], end["frames_recorded"]) == (3, 2, F.N_RESET_FRAMES + 2)
+
+
+def test_mme_non_float32_actions_write_arrays_npz(tmp_path, monkeypatch):
+    """服务回 float64 动作块：逐步原值进 arrays.npz（键 exec_action__%05d），可渲染。"""
+
+    class _F64:
+        def __init__(self, inner):
+            self._inner = inner
+            self._ws = inner._ws
+
+        def reset(self):
+            return self._inner.reset()
+
+        def add_buffer(self, buf):
+            return self._inner.add_buffer(buf)
+
+        def infer(self, element):
+            out = self._inner.infer(element)
+            return {"actions": np.asarray(out["actions"], dtype=np.float64)}
+
+    res, sess, b, _, ep = _mme_traced(tmp_path, monkeypatch, F.Plan(success_at=7), client_wrap=_F64)
+    assert res["status"] == "success"
+    tc.assert_renderable(ep)
+    assert _rows(ep)[-1]["arrays"] == "trace"
+    with np.load(ep / "arrays.npz") as arr:
+        assert sorted(arr.files) == [f"exec_action__{i:05d}" for i in range(7)]
+        assert all(arr[f"exec_action__{i:05d}"].tobytes() == b.env.actions[i].tobytes() for i in range(7))
+
+
+def test_mme_real_recording_client_logs_raw_msgpack_hashes(tmp_path):
+    """真实 RecordingClient（回环假 server）：请求行记实际发出的 msgpack 字节 sha256。"""
+    pytest.importorskip("openpi_client", reason="未验证：openpi_client 未安装")
+    pytest.importorskip("websockets", reason="未验证：websockets 未安装")
+    from openpi_client import msgpack_numpy
+    from test_mme_transport import _FakeServer
+
+    mc = F.mme_client()
+    sess, _ = _env_session(F.Plan(success_at=20))
+    with _FakeServer() as srv:
+        conn_info, ep = _conn(tmp_path, port=srv.port, host="127.0.0.1", max_steps=1300)
+        res = mc.run_episode(sess, dict(IDENT), conn_info, None)
+    assert res["status"] == "success"
+    tc.assert_renderable(ep)
+    rows = _rows(ep)
+    reqs = _kind(rows, "request")
+    assert [r["name"] for r in reqs] == ["reset", "add_buffer", "infer", "add_buffer", "infer"]
+    raw_reset = msgpack_numpy.Packer().pack({"reset": True})
+    assert reqs[0]["sha256"] == hashlib.sha256(raw_reset).hexdigest() and reqs[0]["nbytes"] == len(raw_reset)
+    assert rows[-1]["request_encoding"] == "msgpack"

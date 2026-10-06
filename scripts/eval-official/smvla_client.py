@@ -17,13 +17,35 @@ reset/step 打包语义；环境由 ``env_client.EnvSession`` 在本进程建，
 
 纯函数层（encode_frames / encode_states / instruction_from_info / step_chunk / hard_bound）与
 IO 层（WSPolicyConn）分开，单测用假 session / 假连接直接驱动。
+
+第二阶段 S4（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分一节「S4」，契约 C1～C11 见
+``trace_writer.py`` 模块文档串）：每局另写 ``trace.jsonl``（route ``smvla/new``），落点沿用
+``mmesg_client.trace_location`` 的约定（``trace_path`` → ``<trace_dir>/trace.jsonl`` → ``<recorder.out_dir>/trace.jsonl``，
+都没有则不写）。``PolicyTrace`` 是 SimpleMemVLA／MME 两条新侧路线共用的记录器（``mme_client`` 按文件路径复用）：
+
+- 演示段按 C2 记全部 reset 帧（含初始帧），收尾 ``demo_frames = 帧数 - 1``；
+- 每个交给环境的步一行：有观测记 ``log_step``（一步多帧取最后一帧），没有有效观测（step 抛异常且环境侧已计步、
+  ``obs is None``、``status == "error"``）记 ``log_missing_step``；``steps_attempted`` 以环境会话的 ``steps``
+  增量为准，与结果行 ``exec_steps`` 同口径（C8）；
+- 子目标：SimpleMemVLA 取决策回包 ``subtask``（``smvla_server.py`` ``infer`` 回包键），MME 全程 ``None``（C7）；
+- 请求／响应（C10）：SimpleMemVLA 记逻辑输入（指令、状态、上次推理以来 observe 的帧哈希序列）与完整动作块
+  ``actions_full``；MME 记原始 msgpack 帧字节的 sha256 与 ``infer`` 回包动作块；
+- strict-cap（``StepCapReached`` 或会话 ``cap_hit``）一律按 ``timeout`` 收尾（C3）；
+- 非 float32 动作的原值：录像器会写 ``arrays.npz``（``exec_action__%05d``，与 ``recorder._write_arrays`` 的
+  ``f"{name}__{k:05d}"`` 同名）时不再另写，否则在轨迹目录写 ``arrays.npz``（C4）；
+- 记录器内任何异常只计 ``observer_hook_errors`` 并打印 ``TRACE_HOOK_ERROR``，不改变发给服务的请求、交给环境的
+  动作与控制流（后续 ``CLIENT_REPLAY_EQ`` 回放比对）。
 """
 
 from __future__ import annotations
 
 import hashlib
+import importlib.util
+import re
+import sys
 import time
 import traceback
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -179,10 +201,14 @@ def reset_session(session, task_name: str, retries: int = RESET_RETRIES) -> dict
     return {"ok": False, "reason": f"reset_failed: {last_err}"}
 
 
-def step_chunk(session, action_chunk, on_exec=None) -> dict:
+def step_chunk(session, action_chunk, on_exec=None, on_obs=None) -> dict:
     """照抄 SimEnvService.step + RoboMMESimEnv.step_one（逐行执行、遇 done/error/obs None 即停）。
 
     on_exec(act8) 在每行交给环境前回调（记录实际执行动作）。
+    on_obs(step, front, wrist, state, terminated, truncated, *, status, error) 在每行 ``session.step`` 返回后回调
+    （S4 逐步记录）：``step`` 为本块内第几步（从 1 计，即当时的 consumed）；一步返回多帧时取最后一帧的前视、腕部
+    画面与 8 维状态；``status == "error"`` 或 ``obs is None`` 时画面与状态传 ``None``（缺观测步）。``session.step``
+    抛异常时不回调（由调用方按环境侧计步处理）。回调只读，不改变本函数的返回值与控制流。
     """
     action_chunk = np.asarray(action_chunk, dtype=np.float64)
     frames, states, consumed = [], [], 0
@@ -204,9 +230,16 @@ def step_chunk(session, action_chunk, on_exec=None) -> dict:
         consumed += 1
         if status == "error" or obs is None:
             error = str(info.get("error_message", "env step error"))
+            if on_obs is not None:
+                on_obs(consumed, None, None, None, term, trunc, status=status, error=error)
             break
-        frames.extend(encode_frames(obs))
-        states.extend(encode_states(obs))
+        fr = encode_frames(obs)
+        st = encode_states(obs)
+        frames.extend(fr)
+        states.extend(st)
+        if on_obs is not None:
+            on_obs(consumed, fr[-1][CAM_FRONT] if fr else None, fr[-1][CAM_WRIST] if fr else None,
+                   st[-1] if st else None, term, trunc, status=status, error=None)
         if done:
             break
     return {
@@ -266,6 +299,236 @@ def episode_key(identity: dict) -> str:
     return f"{identity['task']}/{identity['source_episode']}/{identity['seed']}"
 
 
+# ---- S4：两条新侧路线（smvla／mme）共用的逐局轨迹记录器 ----
+
+TRACE_TERMINALS = ("success", "fail", "timeout", "error")
+#: arrays.npz 的执行动作键（C4）；与 recorder._write_arrays 的 f"{name}__{k:05d}"（name="exec_action"）逐字同名
+ACTION_KEY = "exec_action__%05d"
+_TAG_ATTEMPT = re.compile(r"\.a(\d+)$")
+
+
+def load_sibling(name: str):
+    """按文件路径加载本目录下的模块（别名与 env_client／mmesg_client 的 load_sibling 相同，已加载则复用）。"""
+    if name in sys.modules:
+        return sys.modules[name]
+    spec = importlib.util.spec_from_file_location(name, Path(__file__).resolve().parent / f"{name}.py")
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def episode_attempt(tag: str | None) -> int:
+    """局目录名 ``<key>.a<N>`` 的尝试号 N；无后缀记 1（与 mmesg_client 的 ``f"{key}.a1"`` 缺省一致）。"""
+    m = _TAG_ATTEMPT.search(str(tag or ""))
+    return int(m.group(1)) if m else 1
+
+
+def recorder_writes_arrays(recorder: Any) -> bool:
+    """录像器会在 ``out_dir`` 写 ``arrays.npz``（含 ``exec_action__%05d``）：真实 ``recorder.EpisodeRecorder`` 即如此。"""
+    return recorder is not None and getattr(recorder, "out_dir", None) is not None and \
+        callable(getattr(recorder, "add_array", None))
+
+
+class PolicyTrace:
+    """一局新侧轨迹（route ``smvla/new``／``mme/new``）。``enabled`` 为假时（无落点）所有方法都是空操作。
+
+    所有记录方法吞掉自身异常、计 ``hook_errors``（收尾写 ``end.observer_hook_errors``，C11），绝不改变调用方的
+    请求、动作与控制流；动作一律先复制再记录。
+    """
+
+    def __init__(self, route: str, identity: dict, conn_info: dict, recorder: Any, *, max_steps: int,
+                 recorder_has_actions: bool, omit_overflow_frame: bool):
+        self.route = route
+        self.w = None
+        self.path: Path | None = None
+        self.hook_errors = 0
+        self.steps = 0          # steps_attempted
+        self.observed = 0       # steps_observed
+        self.demo_frames: int | None = None
+        self.actions: list[np.ndarray | None] = []
+        self.cap_hit = False
+        self.max_steps = int(max_steps)
+        self.recorder_has_actions = bool(recorder_has_actions)
+        self.omit_overflow_frame = bool(omit_overflow_frame)
+        self.encodings: set[str] = set()
+        self.pending_frames: list[list[str | None]] = []
+        self._tw = None
+        try:
+            path = load_sibling("mmesg_client").trace_location(conn_info or {}, recorder)
+            if path is None:
+                return
+            self._tw = load_sibling("trace_writer")
+            tag = (conn_info or {}).get("episode_tag") or f"{identity.get('key')}.a1"
+            ident = {k: identity.get(k) for k in ("task", "tier", "seed", "source_episode", "builder_episode", "key")}
+            ident.update(dataset=(conn_info or {}).get("dataset"), attempt=episode_attempt(tag))
+            self.w = self._tw.TraceWriter(path, route=route, identity=ident, max_steps=self.max_steps)
+            self.path = Path(path)
+        except Exception as e:  # noqa: BLE001 记录器建不起来：只告警，不影响本局
+            self.w = None
+            self._err("init", e)
+
+    @property
+    def enabled(self) -> bool:
+        return self.w is not None
+
+    def _err(self, where: str, e: BaseException) -> None:
+        self.hook_errors += 1
+        print(f"TRACE_HOOK_ERROR route={self.route} where={where} {type(e).__name__}: {e}"[:600], flush=True)
+
+    @staticmethod
+    def _copy(a: Any) -> np.ndarray | None:
+        return None if a is None else np.array(a, copy=True)
+
+    # -- 演示、请求、响应、历史 --
+    def demo(self, fronts, wrists, states, goal) -> None:
+        if not self.enabled:
+            return
+        try:
+            self.demo_frames = len(fronts) - 1
+            self.w.log_demo(list(fronts), list(wrists), list(states), [goal])
+        except Exception as e:  # noqa: BLE001
+            self._err("demo", e)
+
+    def note_frames(self, frames) -> None:
+        """SimpleMemVLA：记下已 observe 的帧（前视、腕部画面哈希），并入下一次 infer 的逻辑输入（C10）。"""
+        if not self.enabled:
+            return
+        try:
+            h = self._tw.image_sha256
+            self.pending_frames.extend([[h(fr[CAM_FRONT]), h(fr[CAM_WRIST])] for fr in frames])
+        except Exception as e:  # noqa: BLE001
+            self._err("note_frames", e)
+
+    def logical_request(self, name: str, instruction: str, state: Any) -> None:
+        """SimpleMemVLA 的逻辑输入行：指令、状态、上次推理以来的帧哈希序列（C10，不比通信字节）。"""
+        if not self.enabled:
+            return
+        try:
+            obj = {"instruction": instruction, "state": np.array(state, copy=True), "frames": self.pending_frames}
+            self.encodings.add("logical")
+            self.w.log_request(name, self._tw.canonical_bytes(obj), step=self.steps)
+            self.pending_frames = []
+        except Exception as e:  # noqa: BLE001
+            self._err("request", e)
+
+    def raw_request(self, name: str, obj: Any, raw: bytes | None) -> None:
+        """MME：原始 msgpack 帧字节的 sha256（拿不到原始字节时退回 ``canonical_bytes``，收尾标 ``request_encoding``）。"""
+        if not self.enabled:
+            return
+        try:
+            if raw is not None:
+                payload, enc = bytes(raw), "msgpack"
+            else:
+                payload, enc = self._tw.canonical_bytes(obj), "canonical"
+            self.encodings.add(enc)
+            self.w.log_request(name, payload, step=self.steps)
+        except Exception as e:  # noqa: BLE001
+            self._err("request", e)
+
+    def response(self, actions: Any) -> None:
+        if not self.enabled:
+            return
+        try:
+            self.w.log_response(self._copy(actions), step=self.steps)
+        except Exception as e:  # noqa: BLE001
+            self._err("response", e)
+
+    def history(self, start: int, end: int, note: str) -> None:
+        if not self.enabled:
+            return
+        try:
+            self.w.log_history(start, end, note=note)
+        except Exception as e:  # noqa: BLE001
+            self._err("history", e)
+
+    # -- 执行步 --
+    def step(self, action, front, wrist, state, *, subgoal, terminated, truncated, status) -> None:
+        """有效观测步（C4）：执行后的画面、状态、实际交给环境的动作与当步子目标。"""
+        if not self.enabled:
+            return
+        try:
+            a = self._copy(action)
+            self.steps += 1
+            self.observed += 1
+            self.actions.append(a)
+            self.w.log_step(step=self.steps, front=front, wrist=wrist, state=state, action=a, subgoal=subgoal,
+                            terminated=bool(terminated), truncated=bool(truncated), status=status)
+        except Exception as e:  # noqa: BLE001
+            self._err("step", e)
+
+    def missing(self, action, reason: str, subgoal=None) -> None:
+        """缺观测步（C8）：保留步号、动作与原因。"""
+        if not self.enabled:
+            return
+        try:
+            a = self._copy(action)
+            self.steps += 1
+            self.actions.append(a)
+            self.w.log_missing_step(step=self.steps, action=a, reason=str(reason)[:300], subgoal=subgoal)
+        except Exception as e:  # noqa: BLE001
+            self._err("missing_step", e)
+
+    def step_exception(self, action, exc: BaseException, before: int | None, after: int | None, *,
+                       logged: int = 0, subgoal=None) -> None:
+        """``session.step`` 抛异常后：按环境会话 ``steps`` 的增量补记缺观测步（与结果行 ``exec_steps`` 同口径）。
+
+        ``StepCapReached``（strict-cap）不进环境、不计步，只标 ``cap_hit``；拿不到会话计步时其余异常按 1 步计。"""
+        if not self.enabled:
+            return
+        try:
+            name = type(exc).__name__
+            if name == "StepCapReached":
+                self.cap_hit = True
+            if before is not None and after is not None:
+                extra = int(after) - int(before) - int(logged)
+            else:
+                extra = 0 if name == "StepCapReached" else 1
+            for _ in range(max(0, extra)):
+                self.missing(action, f"step_exception: {name}: {exc}", subgoal)
+        except Exception as e:  # noqa: BLE001
+            self._err("step_exception", e)
+
+    # -- 收尾 --
+    def _write_arrays(self) -> str:
+        if not self.actions or all(a is None or a.dtype == np.dtype("<f4") for a in self.actions):
+            return "none"
+        if self.recorder_has_actions:
+            return "recorder"
+        payload = {ACTION_KEY % i: a for i, a in enumerate(self.actions) if a is not None}
+        np.savez(self.path.parent / "arrays.npz", **payload)
+        return "trace"
+
+    def close(self, status: str | None, *, cap_hit: bool = False, **extra: Any) -> None:
+        """按 C2、C3、C8 收尾：strict-cap 记 ``timeout``；无演示帧的 error 局记 ``no_frame``。"""
+        if not self.enabled:
+            return
+        try:
+            self.cap_hit = self.cap_hit or bool(cap_hit)
+            st = status if status in TRACE_TERMINALS else "error"
+            if self.cap_hit:
+                st = "timeout"
+            no_frame = self.demo_frames is None
+            demo = 0 if no_frame else int(self.demo_frames)
+            # 官方循环超过 max_steps 时先 break、最后一步不录（只对 MME 这类「第 max_steps+1 步判超时」的路线）
+            omitted = int(self.omit_overflow_frame and st == "timeout" and not self.cap_hit and
+                          self.steps == self.max_steps + 1)
+            frames = 0 if no_frame else demo + 1 + self.observed - omitted
+            try:
+                arrays = self._write_arrays()
+            except Exception as e:  # noqa: BLE001
+                self._err("arrays", e)
+                arrays = "error"
+            enc = sorted(self.encodings)
+            self.w.close(status=st, terminal_reason=st, side="new", demo_frames=demo, no_frame=no_frame,
+                         steps_attempted=self.steps, steps_observed=self.observed, frames_recorded=frames,
+                         omitted_timeout_frames=omitted, cap_hit=self.cap_hit, arrays=arrays,
+                         request_encoding=enc[0] if len(enc) == 1 else ("mixed" if enc else None),
+                         observer_hook_errors=self.hook_errors, **extra)
+        except Exception as e:  # noqa: BLE001
+            self._err("close", e)
+
+
 def run_episode(session, identity: dict, conn_info: dict, recorder=None, *, conn=None,
                 max_steps: int = MAX_STEPS, execute_horizon: int = EXECUTE_HORIZON,
                 reset_retries: int = RESET_RETRIES, record_frames: bool | None = None) -> dict:
@@ -292,6 +555,11 @@ def run_episode(session, identity: dict, conn_info: dict, recorder=None, *, conn
     proto = out["protocol"]
     frame_idx = {"front": 0, "wrist": 0}
     own_conn = conn is None
+    # S4：逐局轨迹（无落点时 enabled=False，以下记录调用全是空操作，客户端行为与 BASE 相同）。
+    # 轨迹 max_steps 记客户端循环的真实步数上界 hard_bound×execute_horizon（1300 步时 84×16=1344）：决策用尽的
+    # timeout 局正常执行到该上界、每步都录，不存在「第 max_steps+1 步不录」；--max-steps 另记 end.episode_max_steps。
+    trace = PolicyTrace("smvla/new", identity, conn_info or {}, recorder, max_steps=hb * int(execute_horizon),
+                        recorder_has_actions=recorder_writes_arrays(recorder), omit_overflow_frame=False)
 
     def record_frames_(frames, tag):
         if not record_frames or not frames:
@@ -335,6 +603,7 @@ def run_episode(session, identity: dict, conn_info: dict, recorder=None, *, conn
             raise ProtocolError(f"observe 回包帧指纹与发出不符（发 {len(frames)} 帧，回 {reply.get('n')}）")
         proto["frames_sent"] += len(frames)
         timing["observe_ms"].append(round(float(reply.get("observe_time_ms", 0.0)), 3))
+        trace.note_frames(frames)
 
     status = None
     error = None
@@ -357,6 +626,9 @@ def run_episode(session, identity: dict, conn_info: dict, recorder=None, *, conn
         else:
             rec.add_event({"kind": "reset_ok", "attempts": r["attempts"], "n_frames": len(r["frames"]),
                            "instruction": r["instruction"]})
+            if trace.enabled:  # C2：全部 reset 帧（演示 + 初始帧）与对应 8 维状态
+                trace.demo([fr[CAM_FRONT] for fr in r["frames"]], [fr[CAM_WRIST] for fr in r["frames"]],
+                           r["states"], r["instruction"])
             if own_conn:
                 t0 = time.monotonic()
                 conn = WSPolicyConn(conn_info["host"], conn_info["port"])
@@ -378,6 +650,7 @@ def run_episode(session, identity: dict, conn_info: dict, recorder=None, *, conn
                 if success:  # 旧：act = [g for g in active if not success[g]]; if not act: break
                     break
                 rec.add_array("state", cur_state, step=steps)
+                trace.logical_request("infer", instruction, cur_state)
                 reply = call("infer", {"infer": {"instruction": instruction, "state": cur_state}},
                              {"decision": decisions - 1, "step": steps, "state_sha": array_sha(cur_state)})
                 if reply.get("recv_state_sha") != array_sha(cur_state) or \
@@ -394,18 +667,38 @@ def run_episode(session, identity: dict, conn_info: dict, recorder=None, *, conn
                                "subtask": reply.get("subtask"), "infer_ms": round(float(reply["infer_ms"]), 3),
                                "model_action_sha": array_sha(actions_full)})
 
-                exec_step = [steps]
+                trace.response(actions_full)
+                subtask = reply.get("subtask")  # 当前子目标（C4、C7）：本次决策回包的子任务文本
+                subgoal = subtask if subtask is None or isinstance(subtask, str) else str(subtask)
 
-                def on_exec(act8, _s=exec_step):
+                exec_step = [steps]
+                last_act = [None]  # S4：本块最近一行交给环境的动作（异常步补记用）
+                obs_seen = [0]
+
+                def on_exec(act8, _s=exec_step, _last=last_act):
                     if not env_records:
                         rec.add_array("exec_action", act8, step=_s[0])
                     _s[0] += 1
+                    _last[0] = act8
 
+                def on_obs(_i, front, wrist, state, terminated, truncated, *, status=None, error=None,
+                           _last=last_act, _seen=obs_seen, _sg=subgoal):
+                    _seen[0] += 1
+                    if front is None:
+                        why = f"env_status_error: {error}" if status == "error" else "obs_none"
+                        trace.missing(_last[0], why, _sg)
+                    else:
+                        trace.step(_last[0], front, wrist, state, subgoal=_sg, terminated=terminated,
+                                   truncated=truncated, status=status)
+
+                sess_before = getattr(session, "steps", None) if trace.enabled else None
                 t0 = time.monotonic()
                 try:
-                    res = step_chunk(session, chunk, on_exec=on_exec)
+                    res = step_chunk(session, chunk, on_exec=on_exec, on_obs=on_obs if trace.enabled else None)
                 except Exception as e:  # 旧：InProcSimPool.step 捕获为 {"error": f"step_exc: {e}"}
                     res = {"error": f"step_exc: {e}"}
+                    trace.step_exception(last_act[0], e, sess_before, getattr(session, "steps", None),
+                                         logged=obs_seen[0], subgoal=subgoal)
                 timing["step_env_s"] += time.monotonic() - t0
                 if "error" in res:
                     status, error, ended = "error", str(res.get("error")), True
@@ -451,4 +744,9 @@ def run_episode(session, identity: dict, conn_info: dict, recorder=None, *, conn
     out.update(status=status, task_success=status == "success", steps=steps, error=error)
     rec.add_event({"kind": "episode_end", "status": status, "steps": steps, "error": error,
                    "decisions": out["decisions"]})
+    if trace.enabled:  # C2、C3、C8：strict-cap 以会话 cap_hit 为准记 timeout（与 env_client._classify 同口径）
+        trace.close(status, cap_hit=bool(getattr(session, "cap_hit", False)), decisions=out["decisions"],
+                    episode_max_steps=int(max_steps), step_bound=hb * int(execute_horizon),
+                    session_steps=getattr(session, "steps", None))
+        out["trace_path"] = str(trace.path)
     return out
