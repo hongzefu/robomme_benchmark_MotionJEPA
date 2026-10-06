@@ -162,19 +162,36 @@ def _array_sha256(a: np.ndarray) -> str:
     return hashlib.sha256(np.ascontiguousarray(a).tobytes()).hexdigest()
 
 
-def _lock_dir(directory: Path):
-    """目录级排他锁（``fcntl.flock`` 锁目录本身，不在局目录里留锁文件）；没有 fcntl 时返回 None（不加锁）。"""
+#: ``merge_write_npz`` 等目录锁的上限（秒）；超时抛 ``TimeoutError``（``TraceWriter.close`` 记进 ``end.arrays.error``）
+MERGE_LOCK_TIMEOUT_S = 600.0
+_MERGE_LOCK_POLL_S = 0.05
+
+
+def _lock_dir(directory: Path, timeout_s: float | None = None):
+    """目录级排他锁（``fcntl.flock`` 锁目录本身，不在局目录里留锁文件）；没有 fcntl 时返回 None（不加锁）。
+
+    **只用于本地盘**：正式运行的逐局产物在节点本地写（不写 NFS），``flock`` 在 NFS 上的语义不可靠，不要把局目录
+    放到网络盘上再依赖这把锁。非阻塞轮询，等满 ``timeout_s``（缺省 ``MERGE_LOCK_TIMEOUT_S``）仍拿不到即抛
+    ``TimeoutError``，不无限挂住收尾。"""
     try:
         import fcntl
     except ImportError:  # pragma: no cover 非 POSIX
         return None
+    timeout_s = MERGE_LOCK_TIMEOUT_S if timeout_s is None else float(timeout_s)
+    deadline = time.monotonic() + timeout_s
     fd = os.open(str(directory), os.O_RDONLY)
     try:
-        fcntl.flock(fd, fcntl.LOCK_EX)
-    except Exception:
+        while True:
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                return fd
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    raise TimeoutError(f"merge_write_npz 等目录锁超时 {timeout_s:g}s：{directory}") from None
+                time.sleep(_MERGE_LOCK_POLL_S)
+    except BaseException:
         os.close(fd)
         raise
-    return fd
 
 
 def _unlock_dir(fd) -> None:
@@ -192,7 +209,8 @@ def merge_write_npz(path: str | Path, mapping: dict) -> None:
     """``arrays.npz`` 唯一允许的写法：读已有文件 → 同键须 dtype／shape／sha256 全同（否则抛 ``ArraysConflict``，
     不写任何字节）→ 合并 → 写 ``<path>.tmp`` 后 ``os.replace``。
 
-    同一目录的并发写者经目录级 ``flock`` 串行；``mapping`` 为空且文件不存在时不建文件；没有新键时不重写。"""
+    同一目录的并发写者经目录级 ``flock`` 串行（只用于本地盘；等锁超过 ``MERGE_LOCK_TIMEOUT_S`` 抛 ``TimeoutError``）；
+    ``mapping`` 为空且文件不存在时不建文件；没有新键时不重写。"""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     new = {str(k): np.array(v, copy=True) for k, v in dict(mapping).items()}
