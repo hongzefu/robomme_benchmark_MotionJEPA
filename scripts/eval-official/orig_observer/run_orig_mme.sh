@@ -10,11 +10,15 @@
 #      third_party/robomme_benchmark = 856bc3a189d4172f3f47dbee4424d585f8d78db3；不符即 RUN_BLOCKED。
 #   4. 解释器：客户端 ORIG_MME_CLIENT_PY（缺省本轮执行副本的 client-env venv），服务端 MME_PY（缺省
 #      <本仓库>/third_party/mme-vla/.venv/bin/python，与 run_seat.sh 同一条 serve_policy.py 命令）；server 代码相对官方
-#      ecf086c 零 diff 守卫照旧。
+#      ecf086c 零 diff 守卫照旧。注意：原版启动器用 ``uv run --frozen --no-sync``，本脚本直接用 MME_PY 解释器，
+#      **不经 uv 校验 venv 与 uv.lock 是否一致**（只靠上述零 diff 守卫核 uv.lock 文件本身未改）；起跑行打印
+#      server_uv_frozen=no 与 uv.lock 的 sha256 供留档。
 #   5. 输出：SAVE_ROOT／REC_ROOT 必须是新目录且落在本轮 stage 根 ORIG_STAGE_ROOT（必给）或 NODE_TMP 下；历史目录
 #      （v7-eval、v7-eval-stage、v75eval、sgeval-20261004、eval-out、artifacts/v7.5eval、原版工作树）一律拒绝（R7）；
 #      ORIG_RESUME=1 只许续用标记 .orig-created 中清单 sha256 与分片都一致的目录。
-#   6. 预算（R6）：每遍评估起跑前按本片未完成局数逐局调 S8 budget_ledger.py reserve --resets 2，失败即 RUN_BLOCKED。
+#   6. 预算（R6）：每遍评估起跑前对本片未完成的每局经 orig_budget.py 调 S8 budget_ledger.py（先 release 上一遍未结 rid，
+#      再 reserve --resets 2 --route mme/orig --key <key>），失败即 RUN_BLOCKED；每遍结束对有终态的局 commit。rid 记在
+#      SAVE_ROOT/budget-rids.json；账本路径 BUDGET_LEDGER_ARGS="--ledger <路径>"（顶层参数）或 SGEVAL_BUDGET_LEDGER。
 #   7. 看门狗循环里另查 server／代理进程：死亡即打印 SERVER_DIED／PROXY_DIED、杀 eval、退出码 5／6。
 #   8. 代理收尾（审计第 13 条）：kill -TERM 后等进程确实退出（≤PROXY_STOP_TIMEOUT=900 s，超时 kill -9 并记
 #      proxy_force_killed），PID 在确认退出前不清空；代理写 proxy-<pid>.done（日志封口）后才跑 transparency_check.py
@@ -126,7 +130,7 @@ print('ORIG_ROBOMME', robomme.__file__)" "$OFFICIAL_SRC" ) || { echo "RUN_BLOCKE
 # 包装器自检：钩子装得上、原版 robomme 仍优先（写进 REC_ROOT/preflight，不占逐局目录）
 ( cd examples/robomme && "${CLIENT_ENV[@]}" REC_ROOT="$REC_ROOT/preflight" "$CLIENT_PY" "$OBS_DIR/mme_client_wrap.py" --orig-preflight ) \
   || { echo "错误: 观测器包装自检失败"; echo "EXIT_CODE=1"; exit 1; }
-echo "=== MMEVLA_ORIG_XHARD0_OBSERVED host=$(hostname) job=${SLURM_JOB_ID:-none} HEAD=$(git -C "$REPO" rev-parse HEAD) server_repo=$SERVER_REPO@$(git -C "$SERVER_REPO" rev-parse --short HEAD) server_py=$MME_PY client_py=$CLIENT_PY submodule=$(git -C "$REPO/$ORIG_SUBMODULE" rev-parse HEAD) observer=$OBS_DIR shard=$SHARD shard_n=$SHARD_N port=$PORT proxy_port=$PROXY_PORT ckpt=$CKPT save_root=$SAVE_ROOT rec_root=$REC_ROOT start=$(date -Is) ==="
+echo "=== MMEVLA_ORIG_XHARD0_OBSERVED host=$(hostname) job=${SLURM_JOB_ID:-none} HEAD=$(git -C "$REPO" rev-parse HEAD) server_repo=$SERVER_REPO@$(git -C "$SERVER_REPO" rev-parse --short HEAD) server_py=$MME_PY server_uv_frozen=no server_uv_lock_sha256=$(sha256sum "$SERVER_REPO/uv.lock" 2>/dev/null | cut -c1-64) client_py=$CLIENT_PY submodule=$(git -C "$REPO/$ORIG_SUBMODULE" rev-parse HEAD) observer=$OBS_DIR shard=$SHARD shard_n=$SHARD_N port=$PORT proxy_port=$PROXY_PORT ckpt=$CKPT save_root=$SAVE_ROOT rec_root=$REC_ROOT start=$(date -Is) ==="
 nvidia-smi --query-gpu=name,driver_version,compute_mode --format=csv,noheader
 # 端口占用守卫（server 与代理两个端口）
 for p in "$PORT" "$PROXY_PORT"; do
@@ -178,7 +182,8 @@ for pass in 1 2 3; do
   pending=$(orig_pending_count "$MANIFEST" "$SHARD" "$EPISODE_LOG" "${ONLY_TASKS:-}") || pending=""
   [[ "$pending" =~ ^[0-9]+$ ]] || { echo "RUN_BLOCKED reason=pending_count_failed"; RC=1; break; }
   [[ "$pending" = 0 ]] && { echo "EVAL_PASS $pass 本片已无未完成局"; break; }
-  orig_budget_reserve "$pending" 2 || { RC=1; break; }
+  orig_budget_prepare --manifest "$MANIFEST" --shard "$SHARD" --episode-log "$EPISODE_LOG" --state "$SAVE_ROOT/budget-rids.json" \
+    --resets 2 --route mme/orig ${ONLY_TASKS:+--only-tasks "$ONLY_TASKS"} || { RC=1; break; }
   echo "EVAL_PASS $pass errors_so_far=$errors pending=$pending $(date -Is)"
   ( cd examples/robomme && "${CLIENT_ENV[@]}" \
       "$CLIENT_PY" "$OBS_DIR/mme_client_wrap.py" eval.py --args.host=127.0.0.1 --args.port="$PROXY_PORT" \
@@ -203,6 +208,9 @@ for pass in 1 2 3; do
     fi
   done
   wait "$EVAL_PID"; RC=$?; EVAL_PID=""
+  # 预算结算：有终态的局 commit（不改 RC）
+  orig_budget_settle --manifest "$MANIFEST" --shard "$SHARD" --episode-log "$EPISODE_LOG" --state "$SAVE_ROOT/budget-rids.json" \
+    ${ONLY_TASKS:+--only-tasks "$ONLY_TASKS"}
   if [[ "$died" = server ]]; then RC=5; break; fi
   if [[ "$died" = proxy ]]; then RC=6; break; fi
   [[ "$stalled" = 1 ]] && { RC=124; continue; }

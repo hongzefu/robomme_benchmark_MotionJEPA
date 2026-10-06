@@ -9,10 +9,12 @@
 #     打印 ``ORIG_SELFTEST_GUARD=PASS`` 退出，绝不进入评估），生产调用不认这个变量。
 # - orig_pending_count <清单> <分片号> <逐局日志> [only_tasks]
 #     本片尚无终态（success／fail／timeout）行的身份数（与原版续评跳过规则一致），打印一个整数。
-# - orig_budget_reserve <局数> <每局 reset 数>
-#     逐局调 S8 ``budget_ledger.py reserve --resets <n>``（命令取 BUDGET_LEDGER_CMD，缺省
-#     ``${BUDGET_PY:-python3} <eval-official>/budget_ledger.py``，附加参数 BUDGET_LEDGER_ARGS）；任一次失败打印
-#     ``RUN_BLOCKED reason=budget`` 并返回 1；账本脚本不存在打印 ``RUN_BLOCKED reason=budget_ledger_missing``。
+# - orig_budget_prepare --manifest M --shard I --episode-log L --state S --resets N --route R [--only-tasks a,b]
+#     每遍评估起跑前：本片未完成身份先 release 上一遍未结的 rid，再逐局 ``budget_ledger.py [顶层参数] reserve
+#     --resets N --route R --key K``（orig_budget.py；顶层参数 BUDGET_LEDGER_ARGS 在子命令之前，缺省由账本读
+#     SGEVAL_BUDGET_LEDGER）；失败打印 ``RUN_BLOCKED reason=budget`` 并返回 5。
+# - orig_budget_settle --manifest M --shard I --episode-log L --state S [--only-tasks a,b]
+#     每遍评估结束后：已有终态行的身份 commit 其 rid。
 # - orig_stop_proxy
 #     ``kill -TERM $PROXY_PID`` 后等到进程确实退出（上限 PROXY_STOP_TIMEOUT，缺省 900 s），超时 ``kill -9`` 并置
 #     PROXY_FORCE_KILLED=1、打印 ``proxy_force_killed pid=``；确认退出前不清空 PROXY_PID（退出后记 PROXY_STOPPED_PID）。
@@ -75,31 +77,12 @@ print(n)
 PY
 }
 
-orig_budget_reserve() {
-  local n="$1" resets="$2" i out
-  local eval_dir
-  eval_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-  local -a cmd
-  if [[ -n "${BUDGET_LEDGER_CMD:-}" ]]; then
-    read -r -a cmd <<< "$BUDGET_LEDGER_CMD"
-  else
-    if [[ ! -f "$eval_dir/budget_ledger.py" ]]; then
-      echo "RUN_BLOCKED reason=budget_ledger_missing path=$eval_dir/budget_ledger.py"
-      return 1
-    fi
-    cmd=("${BUDGET_PY:-python3}" "$eval_dir/budget_ledger.py")
-  fi
-  local -a extra=()
-  [[ -n "${BUDGET_LEDGER_ARGS:-}" ]] && read -r -a extra <<< "$BUDGET_LEDGER_ARGS"
-  for ((i = 1; i <= n; i++)); do
-    if ! out=$("${cmd[@]}" reserve --resets "$resets" "${extra[@]}" 2>&1); then
-      printf '%s\n' "$out" | tail -5 | sed 's/^/BUDGET_LEDGER /'
-      echo "RUN_BLOCKED reason=budget reserved=$((i - 1))/$n resets_per_episode=$resets"
-      return 1
-    fi
-  done
-  echo "BUDGET_RESERVED episodes=$n resets_per_episode=$resets total_resets=$((n * resets))"
-  return 0
+orig_budget_prepare() {
+  python3 "$(dirname "${BASH_SOURCE[0]}")/orig_budget.py" prepare "$@"
+}
+
+orig_budget_settle() {
+  python3 "$(dirname "${BASH_SOURCE[0]}")/orig_budget.py" settle "$@"
 }
 
 orig_stop_proxy() {

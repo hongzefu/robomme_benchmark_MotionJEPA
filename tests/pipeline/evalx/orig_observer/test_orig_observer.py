@@ -237,6 +237,35 @@ def test_smvla_exec_rows_matches_service_conversion():
     assert sa.smvla_exec_rows(chunk, 0) == []
 
 
+def _s4_logical_request_bytes(instruction, state, frames) -> bytes:
+    """新侧 S4 ``smvla_client`` 的构造式（7858efa5 ``EpisodeTrace.note_frames``／``logical_request`` 逐行照抄为期望）：
+    ``pending_frames.extend([[h(fr[CAM_FRONT]), h(fr[CAM_WRIST])] for fr in frames])``，
+    ``obj = {"instruction": instruction, "state": np.array(state, copy=True), "frames": pending_frames}``，
+    ``canonical_bytes(obj)``；``state`` 为 ``np.asarray(states[-1], dtype=np.float32)``。"""
+    tw = load_script("eval-official/trace_writer.py")
+    h = tw.image_sha256
+    pending = []
+    pending.extend([[h(fr["front"]), h(fr["wrist"])] for fr in frames])
+    obj = {"instruction": instruction, "state": np.array(state, copy=True), "frames": pending}
+    return tw.canonical_bytes(obj)
+
+
+def test_smvla_request_matches_new_side_construction(tmp_path):
+    """C10：同一组帧、状态、指令下，原侧 request 的 sha256 与新侧（S4）构造逐字节相同。"""
+    wrap = _wrap("smvla_wrap")
+    svc = FakeSimService(success_at=20, frames_per_step=2)
+    run_smvla(wrap, tmp_path, svc)
+    rows = _rows(tmp_path / f"{KEY}.a1")
+    reqs = [r for r in rows if r["kind"] == "request"]
+    ref = FakeSimService(success_at=20, frames_per_step=2)
+    r0 = ref.reset({"episode": SRC})
+    exp0 = _s4_logical_request_bytes(r0["instruction"], np.asarray(r0["states"][-1], dtype=np.float32), r0["frames"])
+    p1 = ref.step({"action_chunk": _actions(20, 0.1)[:16]})
+    exp1 = _s4_logical_request_bytes(r0["instruction"], np.asarray(p1["states"][-1], dtype=np.float32), p1["frames"])
+    assert reqs[0]["sha256"] == hashlib.sha256(exp0).hexdigest() and reqs[0]["nbytes"] == len(exp0)
+    assert reqs[1]["sha256"] == hashlib.sha256(exp1).hexdigest() and reqs[1]["nbytes"] == len(exp1)
+
+
 def test_smvla_error_then_success_resume_and_adapter(tmp_path):
     wrap = _wrap("smvla_wrap")
     ret, details, _, _ = run_smvla(wrap, tmp_path, FakeSimService(error_at=5))
@@ -383,7 +412,8 @@ def make_mme_classes(*, error_at=None, success_at=None, max_steps=1300, demo=2):
             count, flag = 0, "unknown"
             while True:
                 if not plan:
-                    client.add_buffer({"n": count})
+                    client.add_buffer({"n": count, "images": [pre["images"][-1]] * (count % 3 + 1),
+                                       "exec_start_idx": count})
                     plan.extend(client.infer({"state": pre["states"][-1]})["actions"])
                 action = plan.popleft()
                 obs, stop, flag = env_runner.step(action)
@@ -429,8 +459,17 @@ def test_mme_success_trace_requests_transport(tmp_path):
     assert all(s["terminated"] == "NOT_OBSERVED" for s in steps) and steps[-1]["status"] == "success"
     reqs = [r for r in rows if r["kind"] == "request"]
     assert [r["name"] for r in reqs][:3] == ["reset", "add_buffer", "infer"]
+    assert reqs[0]["sha256"] == hashlib.sha256(b"reset-payload").hexdigest()
+    assert reqs[1]["sha256"] == hashlib.sha256(b"buffer-0").hexdigest()
     assert reqs[2]["sha256"] == hashlib.sha256(b"infer-1").hexdigest() and reqs[2]["nbytes"] == len(b"infer-1")
     assert [r["step"] for r in reqs if r["name"] == "infer"] == [0, 16]
+    # 与新侧 mme_client.TracedClient 同口径：request → history（add_buffer）→ response（infer），边界前移
+    kinds = [r["kind"] for r in rows if r["kind"] in ("request", "history", "response")]
+    assert kinds[:5] == ["request", "request", "history", "request", "response"]
+    hist = [r for r in rows if r["kind"] == "history"]
+    assert [(h["start"], h["end"], h["note"]) for h in hist] == [
+        (0, 0, "add_buffer frames=1 exec_start_idx=0"), (0, 16, "add_buffer frames=2 exec_start_idx=16")]
+    assert rows[-1]["request_encoding"] == "msgpack"
     with np.load(ep / "arrays.npz") as z:
         assert z["exec_action__00000"].dtype == np.float32 and len(z.files) == 20
         assert z["exec_action__00000"].tobytes() == runner.received[0].tobytes()
@@ -764,35 +803,85 @@ def test_launcher_blocks_on_commit_mismatch_or_dirty(tmp_path, launcher, repo_va
         assert "RUN_BLOCKED reason=orig_submodule_mismatch" in r.stdout
 
 
+LEDGER_SHA = "345606ec"  # S8 合入 budget_ledger.py 的提交（仓库里没有该文件时从这里取，真实 CLI 语义）
+
+
+def _real_ledger(tmp_path: Path) -> Path:
+    p = REPO / "scripts" / "eval-official" / "budget_ledger.py"
+    if p.is_file():
+        return p
+    out = subprocess.run(["git", "-C", str(REPO), "show", f"{LEDGER_SHA}:scripts/eval-official/budget_ledger.py"],
+                         capture_output=True, text=True, check=True).stdout
+    q = tmp_path / "budget_ledger.py"
+    q.write_text(out, encoding="utf-8")
+    return q
+
+
+def _ledger_rows(path: Path) -> list[dict]:
+    return [json.loads(x) for x in path.read_text().splitlines() if x.strip()]
+
+
 @pytest.mark.slow
-def test_budget_reserve_and_pending_count(tmp_path):
-    calls = tmp_path / "calls.txt"
-    stub = tmp_path / "ledger_stub.py"
-    stub.write_text(textwrap.dedent(f"""
-        import sys
-        with open({str(calls)!r}, "a") as fh:
-            fh.write(" ".join(sys.argv[1:]) + "\\n")
-        n = sum(1 for _ in open({str(calls)!r}))
-        sys.exit(0 if n <= 3 else 1)
-    """))
+def test_budget_prepare_settle_with_real_ledger(tmp_path):
+    led = _real_ledger(tmp_path)
+    book = tmp_path / "ledger.jsonl"
     man = tmp_path / "m.jsonl"
     man.write_text("".join(json.dumps({"task": "T", "source_episode": i, "seed": i, "shard": i % 2}) + "\n"
                            for i in range(6)))
     eplog = tmp_path / "e.jsonl"
     eplog.write_text(json.dumps({"task": "T", "source_episode": 0, "status": "success"}) + "\n"
                      + json.dumps({"task": "T", "source_episode": 2, "status": "error"}) + "\n")
-    env = {"BUDGET_LEDGER_CMD": f"{sys.executable} {stub}", "BUDGET_LEDGER_ARGS": "--ledger L"}
-    r = _bash(f"source {OBS}/orig_observer_lib.sh; orig_pending_count {man} 0 {eplog}; "
-              f"orig_budget_reserve 2 6 && echo OK1; orig_budget_reserve 2 6 || echo BLOCKED", env)
-    lines = r.stdout.splitlines()
-    assert lines[0] == "2"  # shard 0 = {0,2,4}，0 已终态，2 仅 error → 待跑 2、4
-    assert "BUDGET_RESERVED episodes=2 resets_per_episode=6 total_resets=12" in r.stdout and "OK1" in r.stdout
-    assert "RUN_BLOCKED reason=budget reserved=1/2 resets_per_episode=6" in r.stdout and "BLOCKED" in r.stdout
-    assert calls.read_text().splitlines()[0] == "reserve --resets 6 --ledger L"
-    # 账本脚本缺失（S8 未合入时）同样阻断
-    r = _bash(f"source {OBS}/orig_observer_lib.sh; BUDGET_PY=/bin/false; orig_budget_reserve 1 2 || echo BLOCKED",
-              {"BUDGET_LEDGER_CMD": ""})
-    assert "RUN_BLOCKED" in r.stdout and "BLOCKED" in r.stdout
+    state = tmp_path / "rids.json"
+    common = f"--manifest {man} --shard 0 --episode-log {eplog} --state {state}"
+    env = {"BUDGET_LEDGER_CMD": f"{sys.executable} {led}", "BUDGET_LEDGER_ARGS": f"--ledger {book}",
+           "SGEVAL_BUDGET_LEDGER": ""}
+    lib = f"source {OBS}/orig_observer_lib.sh"
+    r = _bash(f"{lib}; orig_pending_count {man} 0 {eplog}; "
+              f"orig_budget_prepare {common} --resets 6 --route smvla/orig && echo OK1", env)
+    assert r.stdout.splitlines()[0] == "2", r.stdout + r.stderr  # shard 0 = {0,2,4}：0 已终态 → 待跑 2、4
+    assert "BUDGET_PREPARE episodes=2 reserved=2 released=0 resets_per_episode=6" in r.stdout and "OK1" in r.stdout
+    rows = _ledger_rows(book)
+    assert [(x["kind"], x["key"], x["resets"], x["route"]) for x in rows] == [
+        ("reserve", "T_xhard0_2", 6, "smvla/orig"), ("reserve", "T_xhard0_4", 6, "smvla/orig")]
+    st = json.loads(state.read_text())
+    assert st["T_xhard0_2"]["rid"] == rows[0]["rid"] and st["T_xhard0_2"]["state"] == "reserved"
+    # 本遍结束：身份 2 有终态 → commit；身份 4 仍未完成
+    with eplog.open("a") as fh:
+        fh.write(json.dumps({"task": "T", "source_episode": 2, "status": "fail"}) + "\n")
+    r = _bash(f"{lib}; orig_budget_settle {common}", env)
+    assert "BUDGET_SETTLE committed=1 open=1" in r.stdout, r.stdout + r.stderr
+    # 下一遍：身份 4 先 release 旧 rid 再 reserve 新 rid（不把同一局重复计为两条轨迹）
+    r = _bash(f"{lib}; orig_budget_prepare {common} --resets 6 --route smvla/orig", env)
+    assert "BUDGET_PREPARE episodes=1 reserved=1 released=1" in r.stdout, r.stdout + r.stderr
+    rows = _ledger_rows(book)
+    kinds = [(x["kind"], x.get("rid")) for x in rows]
+    old4 = st["T_xhard0_4"]["rid"]
+    assert kinds[2] == ("commit", st["T_xhard0_2"]["rid"]) and kinds[3] == ("release", old4) and kinds[4][0] == "reserve"
+    rep = subprocess.run([sys.executable, str(led), "--ledger", str(book), "report"], capture_output=True, text=True)
+    assert "trajectories=2/" in rep.stdout.splitlines()[-1], rep.stdout  # 2（已结）+ 4（新 rid）；旧 rid 已退回
+    # --ledger 是顶层参数：放在子命令之前（放在后面账本 CLI 会拒收）
+    bad = subprocess.run([sys.executable, str(led), "reserve", "--resets", "1", "--ledger", str(book)],
+                         capture_output=True, text=True)
+    assert bad.returncode != 0
+    # 额度不足：真实账本退出码 5 → RUN_BLOCKED reason=budget
+    eplog.write_text("")
+    env_cap = dict(env, BUDGET_LEDGER_ARGS=f"--ledger {book} --trajectory-cap 3")
+    r = _bash(f"{lib}; orig_budget_prepare {common} --resets 2 --route mme/orig; echo RC=$?", env_cap)
+    assert "RUN_BLOCKED reason=budget reserved=" in r.stdout and "RC=5" in r.stdout, r.stdout + r.stderr
+    # 生产路径：不给 --ledger，账本取环境变量 SGEVAL_BUDGET_LEDGER
+    book2 = tmp_path / "ledger2.jsonl"
+    env2 = {"BUDGET_LEDGER_CMD": f"{sys.executable} {led}", "BUDGET_LEDGER_ARGS": "", "SGEVAL_BUDGET_LEDGER": str(book2)}
+    r = _bash(f"{lib}; orig_budget_prepare {common.replace(str(state), str(tmp_path / 'r2.json'))} "
+              f"--resets 2 --route mme/orig", env2)
+    assert "reserved=3" in r.stdout and len(_ledger_rows(book2)) == 3, r.stdout + r.stderr
+    # 缺省命令：仓库里有 budget_ledger.py 就用它，没有则 RUN_BLOCKED reason=budget_ledger_missing
+    r = _bash(f"{lib}; orig_budget_prepare {common.replace(str(state), str(tmp_path / 'r3.json'))} "
+              f"--resets 2 --route mme/orig; echo RC=$?",
+              {"BUDGET_LEDGER_CMD": "", "BUDGET_LEDGER_ARGS": "", "SGEVAL_BUDGET_LEDGER": str(tmp_path / "l3.jsonl")})
+    if (REPO / "scripts" / "eval-official" / "budget_ledger.py").is_file():
+        assert "BUDGET_PREPARE episodes=3 reserved=3" in r.stdout, r.stdout + r.stderr
+    else:
+        assert "RUN_BLOCKED reason=budget_ledger_missing" in r.stdout and "RC=5" in r.stdout
 
 
 def test_restored_files_present_and_renamed():

@@ -15,8 +15,9 @@
   ``NOT_OBSERVED``；``terminated``／``truncated`` 原侧不可见写 ``NOT_OBSERVED``（C9）；环境报错那一步无观测，
   记 ``observed=false`` 与原因（C8）；池返回 ``error``（线程异常）时实际执行行数不可知，不记步，只在 ``end`` 记
   ``pool_errors``（与原版逐局日志 ``steps`` 不计该块一致）。
-- ``BatchedEvalPolicy.generate_batch``：调用前记 ``request``（名 ``infer``，载荷为逻辑输入的规范化字节：指令、
-  最近一次观测状态、自上次决策以来全部帧的前视／腕部画面哈希序列，C10），调用后记完整动作块 ``response`` 与子任务
+- ``BatchedEvalPolicy.generate_batch``：调用前记 ``request``（名 ``infer``，载荷为逻辑输入
+  ``canonical_bytes({"instruction","state"(float32),"frames":[[前视 sha, 腕部 sha], …]})``，与新侧 ``smvla_client``
+  ``logical_request`` 逐字节同构，见 ``logical_input``，C10），调用后记完整动作块 ``response`` 与子任务
   文本（作为之后各步的 ``subgoal``）。GPU 张量一律不碰。
 - 局边界：包 ``run_group``（``evaluate_manifest`` 的逐行循环每行调一次，``specs`` 给出 task 与 episode）；终态取
   ``details[0]["status"]``（与 ``evaluate_manifest`` 写逐局日志的口径相同：缺失或非四终态记 ``error``，``run_group``
@@ -52,7 +53,7 @@ _state: dict = {"ep": None, "root": None}
 
 
 def _fresh_episode_state(ep) -> None:
-    _state.update(ep=ep, instruction=None, last_state=None, pend_front=[], pend_wrist=[], decisions=0,
+    _state.update(ep=ep, instruction=None, last_state=None, pending_frames=[], decisions=0,
                   pool_errors=[])
 
 
@@ -74,9 +75,8 @@ def _record_reset(ep, r) -> None:
     states = [np.asarray(s) for s in r["states"]]
     ep.on_reset(fronts, wrists, states, r["instruction"])
     _state["instruction"] = r["instruction"]
-    _state["last_state"] = np.array(states[-1], copy=True)
-    _state["pend_front"] = [tw.image_sha256(f) for f in fronts]
-    _state["pend_wrist"] = [tw.image_sha256(w) for w in wrists]
+    _state["last_state"] = np.asarray(r["states"][-1], dtype=np.float32).copy()
+    _state["pending_frames"] = [[tw.image_sha256(f), tw.image_sha256(w)] for f, w in zip(fronts, wrists)]
 
 
 def _record_step(ep, chunk, r) -> None:
@@ -104,10 +104,10 @@ def _record_step(ep, chunk, r) -> None:
             ep.on_missing_step(rows[j], reason="observer_frame_count_mismatch")
         else:
             ep.on_missing_step(rows[j], reason=f"env_step_error: {err}"[:500])
-    _state["pend_front"].extend(tw.image_sha256(np.asarray(f["front"])) for f in frames)
-    _state["pend_wrist"].extend(tw.image_sha256(np.asarray(f["wrist"])) for f in frames)
+    _state["pending_frames"].extend([tw.image_sha256(np.asarray(f["front"])), tw.image_sha256(np.asarray(f["wrist"]))]
+                                    for f in frames)
     if states:
-        _state["last_state"] = np.array(np.asarray(states[-1]), copy=True)
+        _state["last_state"] = np.asarray(states[-1], dtype=np.float32).copy()
 
 
 def _patch_pool(mod) -> None:
@@ -150,6 +150,14 @@ def _patch_pool(mod) -> None:
 
 # ------------------------------------------------------------------ 策略钩子
 
+def logical_input(instruction, state, pending_frames) -> dict:
+    """C10 逻辑输入，与新侧 ``smvla_client`` 的 ``logical_request`` 逐字节同构：
+    ``{"instruction": 指令, "state": float32 状态副本, "frames": [[前视 sha, 腕部 sha], …]}``，``frames`` 为自上次决策以来
+    策略缓冲 observe 的全部帧（首次决策含 reset 返回的全部演示帧 + 初始帧），哈希为 ``trace_writer.image_sha256``；
+    ``state`` 与原版 ``run_group`` 的 ``cur_state = np.asarray(states[-1], dtype=np.float32)`` 同值。"""
+    return {"instruction": instruction, "state": np.array(state, copy=True), "frames": pending_frames}
+
+
 def _patch_policy(mod) -> None:
     cls = mod.BatchedEvalPolicy
     orig = cls.generate_batch
@@ -158,10 +166,9 @@ def _patch_policy(mod) -> None:
         ep = _state["ep"]
         try:
             if ep is not None:
-                logical = {"instruction": _state["instruction"], "state": _state["last_state"],
-                           "front_sha256": list(_state["pend_front"]), "wrist_sha256": list(_state["pend_wrist"])}
-                ep.on_request("infer", tw.canonical_bytes(logical))
-                _state["pend_front"], _state["pend_wrist"] = [], []
+                ep.on_request("infer", tw.canonical_bytes(logical_input(
+                    _state["instruction"], _state["last_state"], _state["pending_frames"])))
+                _state["pending_frames"] = []
         except Exception:  # noqa: BLE001
             _ep_error(ep, "generate_batch.pre")
         out = orig(self, processed_list, state_norm_list)

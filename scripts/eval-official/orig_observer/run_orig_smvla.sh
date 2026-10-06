@@ -10,8 +10,10 @@
 #   3. OUTDIR／REC_ROOT 必须是新目录且落在本轮 stage 根 ORIG_STAGE_ROOT（必给）或 NODE_TMP 下，历史目录一律拒绝（R7）；
 #      ORIG_RESUME=1 只许续用标记 .orig-created 中清单 sha256 与分片都一致的目录（REC_ROOT 续用时局目录号接着编）；
 #      VIDEO_DIR=none 关闭录像（同历史）。
-#   4. 预算（R6、R11）：起跑前按本片未完成局数逐局调 S8 budget_ledger.py reserve --resets 6（原版 SimEnvService 内部
-#      reset 重试不关：build+reset 各 1 次 × 最多 3 次尝试），任一失败即 RUN_BLOCKED reason=budget。
+#   4. 预算（R6、R11）：起跑前对本片未完成的每局经 orig_budget.py 调 S8 budget_ledger.py（先 release 上一遍未结 rid，
+#      再 reserve --resets 6 --route smvla/orig --key <key>；原版 SimEnvService 内部 reset 重试不关：build+reset 各 1 次
+#      × 最多 3 次尝试），任一失败即 RUN_BLOCKED reason=budget；跑完对有终态的局 commit。rid 记在 OUTDIR/budget-rids.json。
+#      账本路径：BUDGET_LEDGER_ARGS="--ledger <路径>"（顶层参数，放在子命令之前）或环境变量 SGEVAL_BUDGET_LEDGER。
 #   5. 始终带 --resume（与历史一致：原版 gl_run_official_xhard0.sh 每遍都传 --resume）；3 遍重试由编排器负责。
 #   6. 收尾由 observer_status.py 写 observer-status.json 与末行 OBSERVER_COMPLETE=…（无代理：conns=0 mismatch=0
 #      report=ok），并写 orig-attempts.json；EXIT_CODE= 保持原语义（= 原版进程退出码）。
@@ -96,7 +98,8 @@ unset __EGL_VENDOR_LIBRARY_DIRS SAPIEN_DISABLE_RAY_TRACING ROBOMME_GPU_RASTER XL
 REC_ROOT="$REC_ROOT/preflight" "$PYBIN" "$OBS_DIR/smvla_wrap.py" --orig-preflight \
   || { echo "错误: 观测器包装自检失败"; echo "EXIT_CODE=1"; exit 1; }
 PENDING=$(orig_pending_count "$MANIFEST" "$i" "$EPISODE_LOG") || { echo "RUN_BLOCKED reason=pending_count_failed"; echo "EXIT_CODE=1"; exit 1; }
-orig_budget_reserve "$PENDING" 6 || { echo "EXIT_CODE=1"; exit 1; }
+orig_budget_prepare --manifest "$MANIFEST" --shard "$i" --episode-log "$EPISODE_LOG" --state "$OUTDIR/budget-rids.json" \
+  --resets 6 --route smvla/orig || { echo "EXIT_CODE=1"; exit 1; }
 echo "XHARD0_PREFLIGHT host=$(hostname) repo=$REPO head=$(git -C "$REPO" rev-parse HEAD) shard=$SHARD pending=$PENDING manifest=$MANIFEST ckpt=$CHECKPOINT ckpt_config_sha256=$(sha256sum "$CHECKPOINT/config.json" | cut -c1-64) log=$EPISODE_LOG video_dir=${VIDEO_DIR:-<关闭>} observer=$OBS_DIR rec_root=$REC_ROOT py=$PYBIN"
 nvidia-smi --query-gpu=index,name,compute_mode --format=csv,noheader || true
 set +e
@@ -116,6 +119,8 @@ set +e
   ${VIDEO_DIR:+--video_dir "$VIDEO_DIR"} \
   --resume "$@"
 RC=$?
+# 预算结算：已有终态行的局 commit 其 rid（未完成局的 rid 留到下一遍起跑前 release）；不改 RC
+orig_budget_settle --manifest "$MANIFEST" --shard "$i" --episode-log "$EPISODE_LOG" --state "$OUTDIR/budget-rids.json"
 # 观测器完整性判定：只打印 OBSERVER_COMPLETE 与写 observer-status.json／orig-attempts.json，不改 RC
 python3 "$OBS_DIR/observer_status.py" --rec-root "$REC_ROOT" --policy smvla --episode-log "$EPISODE_LOG" \
   --out "$REC_ROOT/observer-status.json"

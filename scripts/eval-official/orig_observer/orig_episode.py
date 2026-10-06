@@ -50,6 +50,8 @@ class OrigEpisode:
         self.observed = 0
         self.demo_frames: int | None = None
         self.subgoal: str | None = None
+        self.history_from = 0
+        self.encodings: set[str] = set()
         self.closed = False
 
     # ── 钩子异常：本局计数 + 全局计数 ────────────────────────────────────────
@@ -75,6 +77,11 @@ class OrigEpisode:
 
     def on_response(self, actions: Any) -> None:
         self.trace.log_response(actions, step=self.steps)
+
+    def on_history(self, note: str) -> None:
+        """历史缓冲边界（上次边界到当前步的闭区间），之后边界前移到当前步。"""
+        self.trace.log_history(self.history_from, self.steps, note=note)
+        self.history_from = self.steps
 
     # ── 执行步（C4、C8、C9）──────────────────────────────────────────────────
     def on_step(self, action: Any, front: Any, wrist: Any, state: Any, status: Any, **extra: Any) -> None:

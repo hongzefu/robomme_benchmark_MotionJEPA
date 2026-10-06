@@ -13,9 +13,10 @@
   ``stop``、``status``；原版吞掉环境异常返回 ``(None, None, None)`` 的一步记 ``observed=false`` 与原因（C8）；
   ``terminated``／``truncated`` 原版不向调用方返回，写 ``NOT_OBSERVED``（C9）；MME 无子目标功能，``subgoal`` 全程
   ``None``（C7）。
-- ``MMEVLAWebsocketClientPolicy.reset／add_buffer／infer``：标记当前请求名；``websockets.sync.client.ClientConnection.send``
-  在标记期间发出的那条消息按原始字节记 ``request``（名即方法名，sha256／字节数取发出的原始载荷，C10「同协议比原始
-  哈希」）；``infer`` 返回的完整动作块记 ``response``。
+- ``MMEVLAWebsocketClientPolicy.reset／add_buffer／infer``：标记当前请求名，``ClientConnection.send`` 在标记期间
+  发出的原始字节暂存；往返成功后按新侧 ``mme_client.TracedClient`` 同口径记 ``request``（名即方法名，载荷为原始
+  msgpack 字节，C10「同协议比原始哈希」）、``add_buffer`` 的历史边界行、``infer`` 的完整动作块 ``response``；调用
+  抛异常时不记该请求（与新侧相同）。
 - ``ClientConnection.send/recv``：另把每条发出／收到消息的帧类型、长度、sha256 写 ``REC_ROOT/client-transport-<pid>.jsonl``
   （``episode`` 字段为局目录名），供 transparency_check.py 与代理日志逐条对账、并核对清单身份都有连接。
 - 局边界：``EpisodeEvaluator.eval_each_episode``（在 eval.py 调 ``tyro.cli`` 时从 ``__main__`` 取类挂上）；终态与
@@ -120,6 +121,25 @@ def _patch_env_runner(mod) -> None:
 
 # ------------------------------------------------------------------ 策略客户端钩子（请求名与动作块）
 
+def record_call(ep, name: str, obj, out, raw: bytes | None) -> None:
+    """与新侧 ``mme_client.TracedClient._record`` 同口径（C10）：往返成功后才记；``request`` 载荷为实际发出的原始
+    msgpack 字节（拿不到时退回 ``canonical_bytes``，并在 ``end`` 记 ``request_encoding``）；``add_buffer`` 另记历史边界
+    ``history(<上次边界>, <当前步>, note="add_buffer frames=<n> exec_start_idx=<…>")``；``infer`` 记完整动作块。"""
+    if raw is not None:
+        payload = raw
+        ep.encodings.add("msgpack")
+    else:
+        obj_ = {"reset": True} if name == "reset" else obj
+        payload = OE.tw.canonical_bytes(obj_)
+        ep.encodings.add("canonical")
+    ep.on_request(name, payload)
+    if name == "add_buffer":
+        n = len(obj["images"]) if isinstance(obj, dict) and "images" in obj else 0
+        ep.on_history(f"add_buffer frames={n} exec_start_idx={obj.get('exec_start_idx') if isinstance(obj, dict) else None}")
+    elif name == "infer":
+        ep.on_response(np.asarray(out["actions"]))
+
+
 def _patch_policy_client(mod) -> None:
     cls = getattr(mod, "MMEVLAWebsocketClientPolicy", None)
     if cls is None:
@@ -128,19 +148,19 @@ def _patch_policy_client(mod) -> None:
 
     def wrap(name, orig):
         def method(self, *args, **kwargs):
-            prev = _state["req"]
-            _state["req"] = name
+            prev, prev_raw = _state["req"], _state.get("req_raw")
+            _state["req"], _state["req_raw"] = name, None
             try:
                 out = orig(self, *args, **kwargs)
+                raw = _state["req_raw"]
             finally:
-                _state["req"] = prev
-            if name == "infer":
-                ep = _state["ep"]
-                try:
-                    if ep is not None:
-                        ep.on_response(np.asarray(out["actions"]))
-                except Exception:  # noqa: BLE001
-                    _ep_error(ep, "policy.infer.post")
+                _state["req"], _state["req_raw"] = prev, prev_raw
+            ep = _state["ep"]
+            try:
+                if ep is not None:
+                    record_call(ep, name, args[0] if args else kwargs.get("buffer", kwargs.get("obs")), out, raw)
+            except Exception:  # noqa: BLE001
+                _ep_error(ep, f"policy.{name}.post")
             return out
 
         method.__name__ = getattr(orig, "__name__", name)
@@ -175,8 +195,8 @@ def _note_msg(ws, direction: str, msg) -> None:
         ftype, n, sha = C.payload_sha(msg)
         _log().write({"pid": os.getpid(), "conn": cid, "dir": direction, "idx": idx, "type": ftype, "len": n,
                       "sha256": sha, "t": time.time(), "episode": _state["ep_name"]})
-        if direction == "send" and ep is not None and _state["req"] is not None:
-            ep.on_request(_state["req"], C.payload_bytes(msg))
+        if direction == "send" and _state["req"] is not None and _state.get("req_raw") is None:
+            _state["req_raw"] = C.payload_bytes(msg)  # 本次请求实际发出的原始字节，往返成功后由 record_call 记
     except Exception:  # noqa: BLE001
         _ep_error(ep, f"ws.{direction}")
 
@@ -240,7 +260,9 @@ def _patch_evaluator(main_mod, seeds: dict) -> None:
                 try:
                     status = episode_status(ret, exc)
                     omitted = int(status == "timeout" and ep.steps == max_steps + 1)
+                    enc = sorted(ep.encodings)
                     info = ep.close(status, omitted_timeout_frames=omitted,
+                                    request_encoding=enc[0] if len(enc) == 1 else ("mixed" if enc else None),
                                     success_flag=ret if isinstance(ret, str) else None, exception=exc,
                                     steps_official=getattr(self, "last_steps", None))
                     print(f"OBSERVER_EPISODE route={ROUTE} episode={info.get('episode')} status={info.get('status')} "
