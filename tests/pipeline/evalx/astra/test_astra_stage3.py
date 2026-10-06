@@ -140,7 +140,11 @@ def test_strict_cap_overrun_finishes_as_timeout(tmp_path, monkeypatch):
     assert end["steps_attempted"] == end["exec_steps"] == 1800
     assert sum(1 for r in rows if r["kind"] == "step") == 1800
     with np.load(a_dir / "arrays.npz") as arr:
-        assert sorted(arr.files)[-1] == "exec_action__01799" and len(arr.files) == 1800
+        acts = sorted(k for k in arr.files if k.startswith("exec_action__"))
+        assert acts[-1] == "exec_action__01799" and len(acts) == 1800  # 第 1801 步被拒，不进数组
+        assert sorted(k for k in arr.files if k.startswith("exec_state__"))[-1] == "exec_state__01799"
+        assert len(arr.files) == 2 * 1800
+    assert end["arrays"]["action_keys"] == end["arrays"]["state_keys"] == 1800 and "error" not in end["arrays"]
     tc.assert_renderable(a_dir)
     tc.assert_counts_consistent(a_dir, {"exec_steps": result["exec_steps"], "status": result["status"]})
     saved = json.loads((a_dir.parent / "result.json").read_text())

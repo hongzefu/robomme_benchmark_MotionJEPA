@@ -18,6 +18,7 @@ site-packages），用它的 ``SyncEpisodeRunner`` + ``RoboMMEBenchmark``（环�
 from __future__ import annotations
 
 import asyncio
+import functools
 import hashlib
 import json
 import os
@@ -344,7 +345,10 @@ def test_phase2_model_subgoal_goes_into_trace_and_is_renderable(tmp_path):
     assert "no_frame" not in end
     # C4：arrays.npz 与 trace 动作逐字节一致，且就是交给环境的值
     with np.load(ep / "arrays.npz") as arr:
-        assert sorted(arr.files) == [f"exec_action__{i:05d}" for i in range(6)]
+        # 原动作键每步一键；冻结说明四.3 起 TraceWriter 另收观测步状态 exec_state__*（6 步都有观测）
+        assert sorted(k for k in arr.files if k.startswith("exec_action__")) == [f"exec_action__{i:05d}" for i in range(6)]
+        assert sorted(k for k in arr.files if k.startswith("exec_state__")) == [f"exec_state__{i:05d}" for i in range(6)]
+        assert len(arr.files) == 12
         for s in steps:
             a = arr[f"exec_action__{s['step'] - 1:05d}"]
             assert a.dtype == np.float64 and a.shape == (8,)
@@ -587,6 +591,12 @@ def test_new_side_switch_off_identical_to_base(tmp_path, monkeypatch, env_kwargs
     monkeypatch.setattr(sys, "path", list(sys.path))
     monkeypatch.delenv("SGEVAL_PP_SERVER_WRAP", raising=False)
     base = _load_base_pp(tmp_path)
+    # BASE 的 pp_client 经 load_trace_writer() 取的是**当前** trace_writer，而当前 TraceWriter 缺省收集完整数组
+    # （冻结说明四.3，BASE 时代的 TraceWriter 没有这一功能）：BASE 侧换成 collect_arrays=False 的同一个类，
+    # 还原 BASE 时代的写盘行为，原断言（局目录只有 trace.jsonl、trace 逐字节相同）照旧成立。
+    real_tw = base.load_trace_writer()
+    monkeypatch.setattr(base, "load_trace_writer", lambda: types.SimpleNamespace(
+        TraceWriter=functools.partial(real_tw.TraceWriter, collect_arrays=False)))
     cur = _load_pp_from(REPO / "scripts" / "eval-official" / "pp_client.py")
     out = {}
     for name, mod in (("base", base), ("cur", cur)):

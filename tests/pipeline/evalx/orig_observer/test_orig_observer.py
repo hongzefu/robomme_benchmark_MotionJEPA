@@ -204,7 +204,10 @@ def test_smvla_success_partial_chunk_float64_and_readers(tmp_path):
     assert steps[0]["subgoal"] == "subtask-1" and steps[16]["subgoal"] == "subtask-2"
     # arrays.npz：float64、等于环境实际收到的行（float32 → float64 精确换算，不经 float32 往返）
     with np.load(ep / "arrays.npz") as z:
-        assert sorted(z.files) == [f"exec_action__{i:05d}" for i in range(20)]
+        # 原动作键（step_arrays，float64 原值）每步一键；冻结说明四.3 起 TraceWriter 另收观测步状态 exec_state__*
+        assert sorted(k for k in z.files if k.startswith("exec_action__")) == [f"exec_action__{i:05d}" for i in range(20)]
+        assert sorted(k for k in z.files if k.startswith("exec_state__")) == [f"exec_state__{i:05d}" for i in range(20)]
+        assert len(z.files) == 40
         for i in range(20):
             a = z[f"exec_action__{i:05d}"]
             assert a.dtype == np.float64 and a.shape == (8,)
@@ -471,7 +474,9 @@ def test_framesamp_modul_success_trace_requests_transport(tmp_path):
         (0, 0, "add_buffer frames=1 exec_start_idx=0"), (0, 16, "add_buffer frames=2 exec_start_idx=16")]
     assert rows[-1]["request_encoding"] == "msgpack"
     with np.load(ep / "arrays.npz") as z:
-        assert z["exec_action__00000"].dtype == np.float32 and len(z.files) == 20
+        assert z["exec_action__00000"].dtype == np.float32
+        assert len([k for k in z.files if k.startswith("exec_action__")]) == 20  # 旧有动作键数不变
+        assert len([k for k in z.files if k.startswith("exec_state__")]) == 20 and len(z.files) == 40  # 冻结说明四.3
         assert z["exec_action__00000"].tobytes() == runner.received[0].tobytes()
     tlog = list(tmp_path.glob("client-transport-*.jsonl"))
     recs = [json.loads(x) for x in tlog[0].read_text().splitlines()]
@@ -818,7 +823,10 @@ def _real_ledger(tmp_path: Path) -> Path:
 
 
 def _ledger_rows(path: Path) -> list[dict]:
-    return [json.loads(x) for x in path.read_text().splitlines() if x.strip()]
+    """账本的业务行；第三阶段账本首次打开先写一行 ``kind=config``（冻结说明三.1），这里核对它在首行后剔除。"""
+    rows = [json.loads(x) for x in path.read_text().splitlines() if x.strip()]
+    assert rows and rows[0]["kind"] == "config" and all(r["kind"] != "config" for r in rows[1:]), rows[:2]
+    return rows[1:]
 
 
 @pytest.mark.slow

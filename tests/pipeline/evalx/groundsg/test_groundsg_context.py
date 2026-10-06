@@ -160,9 +160,9 @@ def test_policy_context_built_once_per_seat(tmp_path, clean_env):
 
     def make(seat_info):
         calls["make"] += 1
-        # policy_seed 由 R3 的 SeatRunner.seat_info 提供（接口冻结说明 2.5）；本基点的 seat_info 还没有，这里补上
+        # policy_seed 由 R3 的 SeatRunner.seat_info 提供（接口冻结说明 2.5）：来自 run 的 --policy-seed，不在这里补
         info = dict(seat_info)
-        info.setdefault("policy_seed", F.POLICY_SEED)
+        assert info["policy_seed"] == F.POLICY_SEED
         return mc.make_policy_context(info, client_factory=lambda h, p, ep: F.FakeClient(server),
                                       qwen_extra=swift.names)
 
@@ -179,7 +179,8 @@ def test_policy_context_built_once_per_seat(tmp_path, clean_env):
         "run", "--policy", "groundsg", "--identities", "unused.json", "--dataset", "hard-verify", "--max-steps", "1300",
         "--groundsg-variant", F.QWENVL, "--qwenvl-groundsg-adapter", F.ADAPTER, "--trace-root", str(tmp_path / "trace"),
         "--cond", "N", "--seat", "00", "--port", "18120", "--out", str(tmp_path / "out"), "--first-extra-s", "0",
-        "--ledger", str(tmp_path / "ledger.jsonl"), "--reset-budget", "10", "--infra-retry-budget", "0"])
+        "--ledger", str(tmp_path / "ledger.jsonl"), "--reset-budget", "10", "--infra-retry-budget", "0",
+        "--policy-seed", str(F.POLICY_SEED)])
     runner = ec.SeatRunner(args, policy_mod=mod,
                            builder_factory=lambda task, dataset, ms: _HybridBuilder(task, dataset, ms, world))
     rows = []

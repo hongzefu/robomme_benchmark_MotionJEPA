@@ -176,8 +176,16 @@ def test_astra_wiring_xhard0(tmp_path, monkeypatch):
             assert (a_dir / f"{stream}.mkv").is_file() and not (a_dir / "media" / f"{stream}.mkv").exists()
             assert _jsonl_rows(a_dir / f"frames-{stream}.jsonl") == end["frames_recorded"]
         with np.load(a_dir / "arrays.npz") as arr:
-            assert sorted(arr.files) == [f"exec_action__{i:05d}" for i in range(40)]
+            # 原动作键（write_exec_actions）照旧每步一键；冻结说明四.3 起 TraceWriter 另收观测步状态 exec_state__*
+            assert sorted(k for k in arr.files if k.startswith("exec_action__")) == \
+                [f"exec_action__{i:05d}" for i in range(40)]
+            assert sorted(k for k in arr.files if k.startswith("exec_state__")) == \
+                [f"exec_state__{i:05d}" for i in range(40)]
+            assert len(arr.files) == 80
             assert arr["exec_action__00000"].dtype == np.float32 and arr["exec_action__00000"].shape == (8,)
+        assert end["arrays"]["path"] == "arrays.npz" and "error" not in end["arrays"]
+        assert end["arrays"]["action_keys"] == 40 and end["arrays"]["state_keys"] == 40
+        assert end["arrays"]["missing_state_steps"] == []
         meta = json.loads((a_dir / "media" / "meta.json").read_text())
         assert meta["never_degrade"] is True and meta["level"] == 0 and meta["key"] == key
         assert meta["builder_episode"] == 0 and meta["attempt"] == 1 and meta["dataset"] == "hard-verify"
@@ -288,7 +296,14 @@ def test_missing_observation_step_counts(tmp_path, monkeypatch, mode):
     assert last["missing_reason"] == ("env_step_exception:RuntimeError" if mode == "raise" else "obs_none")
     assert _jsonl_rows(a_dir / "frames-front.jsonl") == end["frames_recorded"]
     with np.load(a_dir / "arrays.npz") as arr:
-        assert sorted(arr.files) == [f"exec_action__{i:05d}" for i in range(5)]
+        # 动作每个 attempted 步都有键；第 5 步无观测：不补零状态，记入 end.arrays.missing_state_steps（冻结说明四.3）
+        assert sorted(k for k in arr.files if k.startswith("exec_action__")) == \
+            [f"exec_action__{i:05d}" for i in range(5)]
+        assert sorted(k for k in arr.files if k.startswith("exec_state__")) == \
+            [f"exec_state__{i:05d}" for i in range(4)]
+        assert len(arr.files) == 9
+    assert end["arrays"]["action_keys"] == 5 and end["arrays"]["state_keys"] == 4
+    assert end["arrays"]["missing_state_steps"] == [5] and "error" not in end["arrays"]
 
 
 def test_env_build_failure_is_no_frame_error(tmp_path, monkeypatch):

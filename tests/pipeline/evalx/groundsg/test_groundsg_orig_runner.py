@@ -94,7 +94,16 @@ def test_raw_frames_format_and_missing_steps(tmp_path):
         assert r["video_frames"] == {"front": n, "wrist": n}
         for s in ("front", "wrist"):
             assert (fdir / f"{s}.rgb24").stat().st_size == n * F.H * F.W * 3
-        assert sorted(p.name for p in fdir.parent.iterdir()) == ["frames", "official", "trace.jsonl"]
+        # 第三阶段（冻结说明四.3／五）：局目录另有 TraceWriter 收集的 arrays.npz 与语言账本 language.jsonl
+        assert sorted(p.name for p in fdir.parent.iterdir()) == \
+            ["arrays.npz", "frames", "language.jsonl", "official", "trace.jsonl"]
+        end = [json.loads(x) for x in (fdir.parent / "trace.jsonl").read_text().splitlines()][-1]
+        with np.load(fdir.parent / "arrays.npz") as arr:
+            assert sorted(k for k in arr.files if k.startswith("exec_action__")) == \
+                [f"exec_action__{i:05d}" for i in range(exec_steps)]
+            assert sorted(k for k in arr.files if k.startswith("exec_state__")) == \
+                [f"exec_state__{i - 1:05d}" for i in range(1, exec_steps + 1) if i not in missing]
+        assert end["arrays"]["missing_state_steps"] == missing and "error" not in end["arrays"]
     # 首帧字节 = 假环境 reset 第一帧（手算）
     raw = np.frombuffer((Path(r_ok["frames_dir"]) / "front.rgb24").read_bytes(), np.uint8).reshape(-1, F.H, F.W, 3)
     assert raw[0].tobytes() == F.frame((7 * 7) % 150).tobytes()
