@@ -14,6 +14,8 @@
 >
 > 2026-10-06 再追加原话：「每个模型 保存的 rollout video 按照 task suite / task name / model seed 存放，命名 <ep_num>_<task_goal>_<success/fail/timout> .mp4, 我记得我好像是这样的，你 check下」「参考https://robomme.github.io/官方的实现方法 用subagent调研」「先不做打包上传的问题」。两个只读子代理查实：官方没有规定视频目录或文件名，用户记的布局在任何来源都不存在，最接近的是上游 mme-vla `eval.py`；用户随后选定「照上游 mme-vla」布局（第一部分二第 ③ 件、第二部分八.7）。HF 打包上传本轮不做。
 >
+> 2026-10-06 再追加原话：「总结一下现在现在这个所有的这些模型都跑过对开吗应该是只有MER没跑过就是第二阶段的对拍拟仓库的预算上限和reset上限到底有哪些我现在应该不再需要reset上限了。依旧你要加入一个机制防止卡死或者说生成失败之后从重复生成。」——核实：上一轮第二档五模型（GroundSG Oracle／QwenVL、PonderPounce、SimpleMemVLA、FrameSamp+Modulation）各 192 局对拍已完成，只差 MemER；本版去掉每片 `--reset-budget` 硬拦截，reset 只计量；保留轨迹硬上限、每身份 2 次、共享重试 50 次与席位脚本的卡死检测（第一部分三、第二部分八.9）。
+>
 > 功能范围追加原话：「给出现在所有支持模型的清单，都要支持1800步，都要支持不同seed，模型seed。」「但是我们现在实跑只跑这个。我们现在实跑只跑我说的这些模型。」因此全部模型路线统一补齐1800步与可配置模型seed，但实跑范围只保留本版指定四模型。
 
 # 第一部分（给人看）
@@ -87,7 +89,9 @@
 | 四模型 V9 第三档：FrameSamp+Modulation、SimpleMemVLA、PonderPounce、MemER | 每模型 43 格 × 2 局 = 86 局，共 344 局 | 1800 步、模型 seed 7；8 片进 4 个单卡占位席位（单卡够用：MemER 与 QwenVL 一样和动作服务同卡） |
 | 最后：MemER hard0 对拍 | 原侧 192 局 + 新侧 192 局 | 1300 步，两侧同一批局、同一份 adapter、seed 7；出差异报告，不证明等价 |
 
-预算：轨迹上限 784 局（344 + 4 局 smoke + 384 + 2 局 smoke + 50 次重试），reset 硬额度 1954；历史累计 2848，在 6366 内。耗时等 MemER 跑完 1 局 smoke 再估。run_name 拟 `sg-eval-gl-20261006-03`。
+预算：轨迹硬上限 784 局（344 + 4 局 smoke + 384 + 2 局 smoke + 50 次重试），历史累计 2848，在 6366 内；**reset 不再设硬上限**（去掉每片 `--reset-budget` 拦截，共享账本只计量告警，预计约 1954 次）。耗时等 MemER 跑完 1 局 smoke 再估。run_name 拟 `sg-eval-gl-20261006-03`。
+
+防卡死、防重复生成（现有机制，本版保留）：每局墙钟 + `progress.json` 超时不更新即 `NO_PROGRESS` 重起服务一次、第二次停这一片；客户端最多重启 8 次、服务 2 次；每个身份最多 2 次尝试，只有基础设施错误才重试，正常 fail／timeout 一律接受不重跑，续跑时已接受的身份跳过，重试名额从共享账本原子领取。
 
 验收：
 
@@ -95,7 +99,7 @@
 |---|---|
 | 改名只改名 | `OFFICIAL_NAMES=PASS`、`CLIENT_REPLAY_EQ=PASS` |
 | 七路线功能（CPU） | `POLICY_SEEDS=PASS models=7`、`EVAL_CAP=PASS max_steps=1800`、`MEMER_WIRING=PASS` |
-| 四模型 V9 | 每组 `EVAL_COVERAGE=PASS expected=86`、`OFFICIAL_MEDIA=PASS`、`VIDEO_LAYOUT=PASS`；总 `STAGE3_MATRIX=PASS unique_terminal=344`、`BUDGET_ENFORCEMENT=PASS` |
+| 四模型 V9 | 每组 `EVAL_COVERAGE=PASS expected=86`、`OFFICIAL_MEDIA=PASS`、`VIDEO_LAYOUT=PASS`；总 `STAGE3_MATRIX=PASS unique_terminal=344`、`BUDGET_ENFORCEMENT=PASS trajectories=<n>/784`（reset 只报计量） |
 | MemER 对拍 | `GATE2=INFO compared=192` |
 
 步骤：0 等用户说「开工」→ 1 改名 → 2 功能 → 3 冻结提交、核 MemER 资产、每模型 1 局 smoke → 4 GL 跑 8 片 → 5 验收汇总 → 6 MemER 对拍 → 7 留档、commit、push。
@@ -110,7 +114,7 @@
 
 1. 仅规划，保持暂停。seed0／7／42只实现功能，本版只跑seed7、每格两局；MemER `test-hard0` 原侧 vs 新侧对拍（192 + 192）排在四模型 V9 之后最后跑，同样待运行授权；旧审批不能自动扩展到新增MemER路线或额外真实运行。
 2. `src/robomme/**`、录像器、三方源码和 gitlink 不改、不覆盖；`third_party/SimpleMemVLA` 在途内容不纳入本轮。
-3. 不改生成 `EXEC_CAP=1600`、交付 spec／manifest；不增加 reset 对拍或 rollout 采样。实际模型评估按第一部分第三节与本部分八节的完整预算累计。
+3. 不改生成 `EXEC_CAP=1600`、交付 spec／manifest；不增加 reset 对拍或 rollout 采样。实际模型评估按第一部分第三节与本部分八节的完整预算累计；reset 自 2026-10-06 起只计量不拦截（用户「我现在应该不再需要reset上限了」），P3 授权仍按乘式报 reset 预计数。
 4. 所有 Python／测试通过 uv，显式设置 `UV_CACHE_DIR`；NFS 配置 `UV_LINK_MODE=copy`，计算节点 `uv run --frozen --no-sync`，不现场装包。新增正式依赖只落独立客户端子项目及其 lock。
 5. MemER 缺资产先报告来源与缺口；大下载须另获落点／规模授权。真实加载失败不降级成 QwenVL 或其他预测器。
 
@@ -127,7 +131,7 @@
 | `scripts/eval-official/env_client.py::SeatRunner`、`trace_writer.py`、`eval_report.py`、`model_eval_report.py`、`official_media_check.py` | 传 `policy_seed`／adapter，结果与trace/provenance对齐；报告核实际1800；逐组验收和总汇总 | 环境身份 key 保留，通过独立根隔离模型种子；不把历史缺字段补成已证种子 |
 | `scripts/eval-official/run_seat.sh::{finish_episode_dir,publish_dir}`、`render_official_video.py::render_episode`、`official_media_check.py`、`video_check.py`（新增发布与布局核验） | 局目录收尾后把官方版式视频按上游 `eval.py` 布局发布到 `<run 根>/<模型 ID>/seed<policy_seed>/[变体/]videos/<task>_ep<N>_<终态>_<task_goal>_<tier>.mp4`，终态三态、strict-cap 一律 `timeout`；出索引 tsv；核验 `VIDEO_LAYOUT` | 局目录与 `official/` 原位不动；旧 `error` 命名不再出现；GroundSG 原生视频改名发布、重绘视频去 `official-rerender__` 前缀 |
 | `scripts/eval-official/run_astra.sh`、`astra_hard_runner.py::{DATASET_STEP_PAIRING,check_pairing,TracedEnv,run_one,build_parser}` | Astra独立路线cap1800／模型seed转发、真实调用前守卫、结果／trace记录 | 本版仅CPU／零外联验收；费用、两局硬守卫与test-hard0口径不变 |
-| `scripts/eval-official/budget_ledger.py` 与 `env_client.py`／任务编排的预算构造 | 本轮cap784、infra50、expired0在每个消费者一致读取 | 历史默认不改；本轮实际守卫与报告同口径 |
+| `scripts/eval-official/budget_ledger.py` 与 `env_client.py`／任务编排的预算构造；`env_client.py::{EnvSession.build,EnvSession.reset,AttemptLedger.start}` 与 `run_eval_gl.sh` 的 `--reset-budget` 必填校验 | 本轮cap784、infra50、expired0在每个消费者一致读取；**去掉每片 reset 硬拦截**：`--reset-budget` 改为可选，不给则只计量不抛 `ResetBudgetExhausted`（退出码 5 路径不再触发），共享账本 `reset_soft_cap` 维持只告警 | 历史默认不改；本轮实际守卫与报告同口径 |
 | `scripts/eval-official/client-env/{pyproject.toml,uv.lock}`（仅确有依赖缺口时） | 真实 MemER 所需依赖声明与锁 | 优先复用现锁，根环境不动，不临时 pip 补正式依赖 |
 | `tests/pipeline/eval/`、`tests/pipeline/evalx/{groundsg,astra,report}/` 的下表明确测试及契约登记 | 七路线接线、MemER装配／异常、seed反查、cap边界、恢复／媒体串组反例 | 纯CPU，不加载权重、不开外网、不做真实reset |
 | `AGENTS.md`／`CLAUDE.md` 项目段、`readme.md`、`scripts/README.md`、`tests/README.md`、`docs/validation/legacy-names.md` | 主会话更新现行术语与对照 | 标记块及历史档案不改；本轮当前只写用户指定计划 |
@@ -406,3 +410,23 @@ CPU 回放／夹具消耗真实 reset／轨迹均为 0。新预算账本同时�
 **子代理分工与合并（简述）**：R1 改名先单独做完、审两次、合入；之后同一时刻派 R2（MemER 装配：`official_defs.py`、GroundSG 新侧客户端与原侧驱动 `official_hard_runner.py`／`run_official_hard.sh`）、R3（共享入口：席位脚本、`env_client.py`、各服务端、报告与预算）、R5（Astra 两入口及其测试），R4 并行准备与 R5 不重叠的 CPU 测试。各管互不重叠的文件、各在自己的 worktree 写；合回顺序 R1 → R2 → R3 → R5 → R4，每合一个审禁触路径与定向测试，全部过后冻结执行提交。主会话自做现行文档、资产清单与 GL 编排。
 
 改名范围明细、种子与 cap 的逐层传递、链路图、各档任务名单、耗时推导与预算细则见第二部分八节。
+
+### 八.9 预算上限清单与防卡死／防重复生成机制（2026-10-06 核实；用户「不再需要reset上限」）
+
+**代码里现有的上限**（`scripts/eval-official/budget_ledger.py`、`env_client.py`）：
+
+| 上限 | 位置 | 性质 | 本版处置 |
+|---|---|---|---|
+| `trajectory_cap` | 共享账本 `BudgetLedger.__init__`／`claim`，领不到抛 `BudgetExhausted` | 硬 | 保留，784 |
+| `reset_soft_cap` | 共享账本，超过只打 `BUDGET_WARN …（软上限，只告警不拦）` | 软 | 保留为计量，预计约 1954 |
+| 每片 `--reset-budget` | `env_client.py::EnvSession.build/reset` 每次真实调用前领一次，耗尽抛 `ResetBudgetExhausted` → 退出码 5，`run_seat.sh` 不重启 | 硬 | **去掉**：参数改可选，缺省只计量（R3） |
+| `shared_infra_cap` | 共享账本 `claim_retry`，跨原侧／新侧、跨席位原子领取 | 硬 | 保留，50 |
+| `V8_MAX_ATTEMPTS = 2` | `env_client.py`，每身份最多两次尝试（infra 与 expired 都占名额） | 硬 | 保留 |
+| `expired_cap` | 共享账本，Slurm 到期中断的重试 | 硬 | 0 |
+| `astra_cap` | 共享账本 | 硬 2 | 本版不用 |
+
+**上一轮第二档对拍覆盖**（`docs/validation/sg-eval-gl-20261006-02/result.md` ③ 节）：GroundSG Oracle（188/192 终态相同）、GroundSG QwenVL（177/192）、PonderPounce（192/192）、SimpleMemVLA（192/192）、FrameSamp+Modulation 即旧名 MME（174/192）五模型各 192 局均已出 `GATE2=INFO`；Astra 只有 ≤2 局 smoke；MemER 未跑过，本版第 6 步补。
+
+**防卡死（`run_seat.sh`，现有，本版保留）**：服务就绪超时 `READY_TIMEOUT=1200` 秒并 `kill -0` 查存活；客户端首局另放宽 `FIRST_EXTRA=600` 秒；单局墙钟 `wall_of`（smvla 900、mme 1200、mmesg／pp 1800 秒，`--episode-wall*` 可覆盖，QwenVL／MemER 用 3600）；`idle_s` 取 `progress.json`（无则 `client.log`）mtime，超过「墙钟 + 600 + 600」秒（不小于 `NOPROG_S=1200`）不更新即打印 `NO_PROGRESS`，杀掉并 `restart_server` 一次，第二次 `INFRA_EXHAUSTED … no_progress_twice` 退出码 4 停这一片；`MAX_CLIENT_RESTARTS=8`、`MAX_SERVER_RESTARTS=2` 超过同样 `INFRA_EXHAUSTED`。退出码 4 的片由主会话按共享重试额度决定是否重起，不自动无限重起。
+
+**防重复生成（`env_client.py`，现有，本版保留）**：权威终态 = 每身份第一条 `accept` 行的 `accepted_attempt_id`；success／fail／timeout 与非 infra 的 error 都 accept、永不重跑；只有 infra 错误才重试，且每身份总尝试 ≤2、重试名额经共享账本 `claim_retry` 原子领取（并发只有一方成功）；续跑 `pending_identities` 打印 `resume_skip= accepted= attempts_full= todo=`，已接受或已用满 2 次的身份跳过；每片输出独立目录、发布用 sha256 核对后 `mv -T`，重复发布落 `.dupN` 不覆盖；最终 `EVAL_COVERAGE expected=86 missing=0` 与 `STAGE3_MATRIX unique_terminal=344` 断言完整性。去掉 reset 硬上限后，重复生成的边界由「轨迹硬上限 784 + 每身份 2 次 + 共享重试 50」三道承担，任一耗尽即停受影响范围并报告。
