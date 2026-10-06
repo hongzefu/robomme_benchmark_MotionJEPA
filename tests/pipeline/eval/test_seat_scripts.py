@@ -830,10 +830,12 @@ def test_pp_server_wrap_missing_blocks(rig, gl_repo):
 
 
 def _official_cmd(rig, repo, stage, seat, *extra, budget=1):
+    # 第三阶段：run_official_hard.sh 对 pp 原侧同样要求 --policy-seed 与五个预算参数（不转发给 pp 驱动，见 F）
     return ["bash", str(repo / "scripts" / "eval-official" / "run_official_hard.sh"), "--run-name", "R", "--seat", seat,
             "--repo", str(repo), "--stage", str(stage), "--shard", str(rig["shard0"]), "--policy", "pp",
             "--pp-ckpt", str(rig["pp_ckpt"]), "--dataset", "hard-verify", "--max-steps", "1300",
             "--infra-retry-budget", str(budget), "--sync-interval", "1", "--local-root", str(rig["tmp"] / "local"),
+            "--policy-seed", "7", "--budget-ledger", str(rig["tmp"] / "budget" / "budget-ledger.jsonl"), *BUDGET_CAPS,
             *extra]
 
 
@@ -874,29 +876,17 @@ def test_official_retry_budget_zero_leaves_missing(rig, gl_repo):
     assert len(_events(rig, "runner", "start")) == 1
 
 
-def test_pair_seat_runs_orig_then_new_on_released_gpu(rig, gl_repo):  # 名称沿用（契约登记）；断言见文档串
-    """已知缺口（交主会话）：pair_seat.sh 不在 R3 可写集合，尚未把 --policy-seed 与五个预算参数转发给新侧
-    run_eval_gl.sh。第三阶段新侧按冻结口径拒跑（RUN_BLOCKED reason=policy_seed、不起客户端），原侧照常跑完；
-    pair_seat.sh 补转发后本用例应改回「先原侧后新侧都 rc=0」的原断言。"""
+def test_pair_seat_runs_orig_then_new_on_released_gpu(rig, gl_repo):
+    """先原侧后新侧，两侧都 rc=0；第三阶段起 --policy-seed 与五个预算参数经 pair_seat.sh 原样转发给两侧（MERGE-1
+    补转发后换回原断言，另核新侧客户端 argv 里的种子与账本参数）。"""
     seat = f"{rig['idx']:02d}"
     stage = rig["tmp"] / "stage"
+    ledger = rig["tmp"] / "budget" / "budget-ledger.jsonl"
     cmd = ["bash", str(gl_repo / "scripts" / "eval-official" / "pair_seat.sh"), "--run-name", "R", "--seat", seat,
            "--repo", str(gl_repo), "--stage", str(stage), "--shard", str(rig["shard0"]), "--policy", "pp",
            "--pp-ckpt", str(rig["pp_ckpt"]), "--reset-budget", "10", "--infra-retry-budget", "2",
-           "--orig-infra-retry-budget", "1", "--sync-interval", "1", "--local-root", str(rig["tmp"] / "local")]
-    rc, out = _run(cmd, rig["env"], timeout=120)
-    assert rc == 3, out
-    assert "RUN_BLOCKED reason=policy_seed" in out and "new_rc=3" in out
-    assert len(_events(rig, "runner", "start")) == 1 and _events(rig, "client", "start") == []
-
-
-def _pair_seat_full_run_reference(rig, gl_repo):  # pragma: no cover - pair_seat.sh 补转发后换回为用例正文
-    seat = f"{rig['idx']:02d}"
-    stage = rig["tmp"] / "stage"
-    cmd = ["bash", str(gl_repo / "scripts" / "eval-official" / "pair_seat.sh"), "--run-name", "R", "--seat", seat,
-           "--repo", str(gl_repo), "--stage", str(stage), "--shard", str(rig["shard0"]), "--policy", "pp",
-           "--pp-ckpt", str(rig["pp_ckpt"]), "--reset-budget", "10", "--infra-retry-budget", "2",
-           "--orig-infra-retry-budget", "1", "--sync-interval", "1", "--local-root", str(rig["tmp"] / "local")]
+           "--orig-infra-retry-budget", "1", "--sync-interval", "1", "--local-root", str(rig["tmp"] / "local"),
+           "--policy-seed", "7", "--budget-ledger", str(ledger), *BUDGET_CAPS]
     rc, out = _run(cmd, rig["env"], timeout=120)
     assert rc == 0, out
     assert f"PAIR_SEAT_DONE seat={seat} policy=pp orig_rc=0 new_rc=0 rc=0 outcome=pass" in out
@@ -910,6 +900,12 @@ def _pair_seat_full_run_reference(rig, gl_repo):  # pragma: no cover - pair_seat
     orig_term = next(t for t in terms if t["pid"] == servers[0]["pid"])
     assert orig_term["t"] < servers[1]["t"]
     assert (client[0]["dataset"], client[0]["max_steps"], client[0]["strict_cap"]) == ("hard-verify", "1300", False)
+    # 种子与预算参数：两侧服务都带 --args.seed 7，新侧客户端拿到种子与五个预算参数
+    assert all(srv["argv"][srv["argv"].index("--args.seed") + 1] == "7" for srv in servers)
+    argv = client[0]["argv"]
+    opt = lambda k: argv[argv.index(k) + 1] if k in argv else None  # noqa: E731
+    assert opt("--policy-seed") == "7" and opt("--budget-ledger") == str(ledger)
+    assert [opt(k) for k in BUDGET_CAPS[::2]] == list(BUDGET_CAPS[1::2])
     for side in ("orig", "new"):
         pub = stage / "media" / "pp" / "hard-verify" / side
         assert sorted(p.name for p in pub.iterdir() if not p.name.startswith(".")) == \
