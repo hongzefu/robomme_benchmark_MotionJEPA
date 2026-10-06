@@ -66,6 +66,9 @@ TAMPERS = ("action", "request", "order")
 H = W = 256  # 与真实环境同尺寸（官方录像器在小图上拼字条会尺寸不一致）
 DEMO = 3
 CHUNK = 20
+#: groundsg 席位信息的模型种子（第三阶段 make_policy_context 必填，接口冻结说明 2.2／2.5；本轮真实运行只传 7）。
+#: 两侧都给：改名前／第二阶段的 make_policy_context 不读该键，行为不受影响
+POLICY_SEED = 7
 
 
 # ── 公共：规范化与哈希 ────────────────────────────────────────────────────────
@@ -274,7 +277,7 @@ def run_route(root: Path, route: str, scen: dict, tamper: str | None, tmp: Path,
         mod = _load(root, iface["gsg_module"])
         vkey = iface["variant_key"]
         ctx = mod.make_policy_context({vkey: "ground-sg-oracle", "port": 1, "max_steps": scen["max_steps"],
-                                       "out": str(tmp)})
+                                       "out": str(tmp), "policy_seed": POLICY_SEED})
         conn_info.update({"policy_context": ctx, vkey: "ground-sg-oracle"})
         res = mod.run_episode(sess, ident, conn_info, rec)
     elif route == "smvla":
