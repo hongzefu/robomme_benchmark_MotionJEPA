@@ -39,15 +39,73 @@ header 的 ``identity`` 三元组找，同一身份多份时按 ``identity.attem
         --orig-results <原侧结果 jsonl>... --new-results <新侧结果 jsonl>... \
         --orig-traces <原侧轨迹根> --new-traces <新侧轨迹根> [--groundsg] [--mode astra] \
         [--expect-total 192] [--site local] [--out-json gate2.json] [--out-md gate2.md]
+
+第二阶段扩展（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分一节 S6；**只在传了任一新参数时启用**，
+不传新参数时上面的默认格式输出与此前逐字节相同）：
+
+- 输入绑定：``--manifest <冻结清单>``（jsonl 每行一个身份，或 JSON 列表／``{"identities": [...]}``）、
+  ``--new-ledger <AttemptLedger jsonl>...``（新侧每身份只取账本 ``accept`` 行 ``accepted_attempt_id`` 对应的结果行）、
+  ``--orig-attempts <orig-attempts.json>``（原侧每身份只取 S7 适配器给出的唯一 attempt；``--new-attempts`` 同格式，供
+  「新侧」位置放的是原侧重跑时用）。轨迹经 ``TraceIndex.lookup_bound`` 核 header ``identity`` 三元组与 ``attempt``
+  等于结果行（header 无 ``attempt`` 时取局目录名 ``.a<N>``）。输出::
+
+      GATE2_INPUTS=PASS|FAIL expected=<n> missing=<n> extra=<n> unaccepted=<n> ambiguous=<n> trace_binding_mismatch=<n>
+
+  ``missing``：清单身份在任一侧没有被接受的结果行；``extra``：被接受的身份不在清单；``unaccepted``：账本侧为
+  最终结果行（非 canary／infra／late）不是账本接受的那一次（含该键无 accept），attempt 映射侧为映射里没有该身份的
+  最终行（映射里有该身份时，非权威 attempt 的行是适配器已裁定的旧尝试，不计；结果行无 ``attempt`` 视作 1）；
+  ``ambiguous``：同侧同身份多于一条被接受的行、账本或映射给出多个 attempt、清单身份重复。
+- 节点来源（R8）：被比较的结果行读 ``node``（缺则读 ``host``）；短主机名形如 ``glNNNN`` 为 GL，其余计
+  ``local_rows``，都没有计 ``unknown_rows``；``--orig-format v75`` 时原侧（E0 历史文件）不核来源。输出
+  ``GATE2_PROVENANCE=PASS|FAIL local_rows=<n> unknown_rows=<n>``。``GATE2_INPUTS`` 或 ``GATE2_PROVENANCE`` 任一
+  FAIL，判定行为 ``GATE2=INVALID reason=inputs|cross_machine``。
+- 补集合核对：``--orig-supplement <本轮补跑结果 jsonl>...`` 与 ``--manifest`` 同给时，旧原侧（``--orig-results``）的
+  最终身份集合与补跑身份集合按身份比：补跑必须恰等于「清单 − 旧原侧」，不凭条数；输出
+  ``GATE2_SUPPLEMENT=PASS|FAIL old=<n> supplement=<n> expected=<n> missing=<n> extra=<n> overlap=<n>``，FAIL 时
+  ``GATE2=INVALID reason=supplement``。比较时原侧 = 旧原侧 + 补跑。
+- 跨格式投影（C9、C10）：每对轨迹按维度 ``action``（执行动作）、``obs``（画面）、``state``（状态）、
+  ``logic``（逻辑输入：请求／动作块／历史边界）、``text``（展示文本：演示文本与逐步子目标）、``stop``（终止标志与
+  步数）逐项计 ``same/diff/not_observed``，不在首个差异处停止。任一侧为 ``NOT_OBSERVED`` 或两侧都为 ``None``
+  （都没观测到）计 ``not_observed``，不算相同。动作按值比：有 ``arrays.npz`` 原值时按原值比（两侧都有则按 float64
+  比数值；一侧有原值则转成另一侧 dtype 须无损往返且字节哈希相等），都没有原值时 dtype 相同比字节哈希、dtype 不同且
+  元素数 ≤8 比 ``f32hex``，否则计 ``not_observed``。请求只比两侧都出现过的请求名（只一侧有的请求名计
+  ``not_observed``）；动作块、历史边界只一侧记录时同样计 ``not_observed``。
+- 统计：``s2f``（原侧成功→新侧非成功）、``f2s``、``sr_orig``、``sr_new``（成功率，0～1）、``sr_diff_pp``（新−原，
+  百分点）、终态 3×3 矩阵（success／fail／timeout，其余终态计 ``other_terminal``）、McNemar 精确二项检验 p 值
+  （双侧，自写，不加依赖）。
+- ``--orig-format v75``：原侧读 v7.5eval 的 E0 逐局文件（``episodes*.jsonl``，``steps`` 视作执行步数），读前按
+  ``--v75-input-manifest``（默认主检出 ``artifacts/v7.5eval/input-manifest.json``）核每个文件的 sha256，文件不在
+  清单或 sha 不符即报错（退出码 2）；E0 无轨迹，只比终态与统计，另出
+  ``ORIG_RERUN_VS_E0=INFO policy=<p> compared=<n> flips=<n> s2f=<n> f2s=<n>``。``--noise-runs <O1> <O2>``（文件或目录）
+  输出 E0／O1／O2 三对两方向翻转 ``GATE2_NOISE=INFO policy=<p> pair=<a>-<b> compared=<n> s2f=<n> f2s=<n> flips=<n> …``，
+  只作描述性历史观测。
+- ``--groundsg`` 在扩展模式下不再只判首局：192 局照常全比，表里加诊断列 ``server_epoch_first``（新侧该局是否某次
+  服务启动后的第一局）与 ``server_epoch_first_orig``，判定行附 ``server_epoch_first=<新侧首局数>``。
+
+扩展模式判定行::
+
+    GATE2=INFO|INCOMPLETE|INVALID policy=<p> compared=<n> same_terminal=<n> s2f=<n> f2s=<n> sr_orig=<x> sr_new=<y>
+          sr_diff_pp=<d> mcnemar_p=<p> not_observed=<n> identical_trace=<n> missing=<n> duplicate=<n>
+          missing_trace=<n> bad_trace=<n> matrix=ss:..,sf:..,…,tt:.. other_terminal=<n> [server_epoch_first=<n>]
+          [expect_total=<n>] [reason=…] [site=…]
+
+另有一行 ``GATE2_PROJ policy=<p> action=<same>/<diff>/<not_observed> obs=… state=… logic=… text=… stop=…
+episodes_diff=action:<n>,obs:<n>,…``。
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import math
+import re
 import sys
 from collections import Counter, defaultdict
+from fractions import Fraction
 from pathlib import Path
 from typing import Any
+
+import numpy as np
 
 import trace_writer as tw  # 同目录模块（脚本目录在 sys.path 头部；测试经 load_script 加载时同样）
 
@@ -139,6 +197,33 @@ class TraceIndex:
             return hit[0]
         hit = [p for p, _ in cands if p.parent.name.endswith(f".a{att}")]
         return hit[0] if len(hit) == 1 else None
+
+    def lookup_bound(self, row: dict) -> tuple[Path | None, str | None]:
+        """扩展模式（审计第 14 条）：先按 ``lookup`` 找轨迹，再核 header 的 identity 三元组与 attempt 等于结果行。
+
+        返回 ``(路径, 不符原因)``；找不到轨迹为 ``(None, None)``（按缺轨迹计，不算绑定不符）。header 无 ``attempt``
+        时取局目录名 ``.a<N>``；两处都没有记 ``attempt_unknown``。"""
+        p = self.lookup(row)
+        if p is None:
+            return None, None
+        try:
+            with p.open(encoding="utf-8") as fh:
+                head = json.loads(fh.readline())
+        except Exception:  # noqa: BLE001
+            return p, "header_unreadable"
+        ident = head.get("identity") or {}
+        if ident_of(ident) != ident_of(row):
+            return p, "identity"
+        att_h = ident.get("attempt")
+        if att_h is None:
+            m = re.search(r"\.a(\d+)$", p.parent.name)
+            att_h = int(m.group(1)) if m else None
+        if att_h is None:
+            return p, "attempt_unknown"
+        att_r = row.get("attempt")
+        if att_r is None or int(att_r) != int(att_h):
+            return p, "attempt"
+        return p, None
 
 
 # ── 轨迹逐项比较 ─────────────────────────────────────────────────────────────
@@ -352,6 +437,646 @@ def to_markdown(res: dict, policy: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+# ── 第二阶段扩展：输入绑定、节点来源、补集合 ─────────────────────────────────
+
+GL_NODE_RE = re.compile(r"^gl\d{4}$")
+TERMINALS = ("success", "fail", "timeout")
+PROJ_DIMS = ("action", "obs", "state", "logic", "text", "stop")
+DEFAULT_V75_MANIFEST = Path(__file__).resolve().parents[2] / "artifacts" / "v7.5eval" / "input-manifest.json"
+
+
+class InputShaMismatch(RuntimeError):
+    """``--orig-format v75`` 读前 sha256 核对失败（文件不在清单或哈希不符）。"""
+
+
+def _load_json_or_jsonl(path: str | Path) -> Any:
+    text = Path(path).read_text(encoding="utf-8")
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        return [json.loads(x) for x in text.splitlines() if x.strip()]
+
+
+def read_manifest(path: str | Path) -> list[tuple]:
+    """冻结清单 → 身份三元组列表（保留重复，供 ambiguous 计数）。"""
+    data = _load_json_or_jsonl(path)
+    if isinstance(data, dict):
+        data = data.get("identities") or data.get("rows") or data.get("episodes") or []
+    if isinstance(data, dict):
+        data = [data]
+    return [ident_of(r) for r in data]
+
+
+def node_of(row: dict) -> str | None:
+    n = row.get("node") or row.get("host")
+    return str(n) if n else None
+
+
+def is_gl_node(name: str) -> bool:
+    return bool(GL_NODE_RE.match(name.strip().lower().split(".")[0]))
+
+
+def _key_of(row: dict) -> str | None:
+    """结果行的账本键：有 ``key`` 用它，否则 ``<task>_<tier>_<seed>``（tier 可在 identity 里）；无法确定返回 None。"""
+    if row.get("key"):
+        return str(row["key"])
+    ident = row.get("identity") if isinstance(row.get("identity"), dict) else {}
+    tier = row.get("tier", ident.get("tier"))
+    task, _, seed = ident_of(row)
+    if task is None or tier is None or seed is None:
+        return None
+    return f"{task}_{tier}_{int(seed)}"
+
+
+def read_ledgers(paths: list[str | Path]) -> dict[str, set[tuple]]:
+    """读一份或多份 ``AttemptLedger``：键 → {(accepted_attempt_id, attempt_no)}。
+
+    同一账本只认每键第一条 ``accept``（与 ``AttemptLedger._apply`` 一致）；多份账本对同一键给出不同接受即多于一个元素。"""
+    out: dict[str, set[tuple]] = defaultdict(set)
+    for p in paths:
+        first: dict[str, tuple] = {}
+        for r in read_rows([p]):
+            if r.get("kind") == "accept" and r.get("key") is not None:
+                first.setdefault(str(r["key"]), (r.get("accepted_attempt_id"), r.get("attempt_no")))
+        for k, v in first.items():
+            out[k].add(v)
+    return dict(out)
+
+
+def read_attempt_map(path: str | Path) -> dict[tuple, set[int]]:
+    """``orig-attempts.json``（S7 ``orig_results_adapter.py`` 产出）→ {身份: {attempt}}。
+
+    兼容格式：条目列表，或 ``{"attempts"|"entries"|"identities": [...]}``，或 ``{"<task>|<source_episode>[|<seed>]": attempt}``；
+    条目字段 ``task``、``source_episode``、可选 ``seed``、``attempt``；``orphan`` 为真或 ``status``／``kind`` 为 ``orphan`` 的
+    条目不进比较。身份键为 ``(task, source_episode, seed|None)``。"""
+    data = _load_json_or_jsonl(path)
+    entries: list[dict] = []
+    if isinstance(data, dict):
+        lst = data.get("attempts") or data.get("entries") or data.get("identities")
+        if isinstance(lst, list):
+            entries = lst
+        else:
+            for k, v in data.items():
+                parts = str(k).split("|")
+                e = {"task": parts[0], "source_episode": int(parts[1]) if len(parts) > 1 else None,
+                     "seed": int(parts[2]) if len(parts) > 2 and parts[2] not in ("", "None") else None}
+                e.update(v if isinstance(v, dict) else {"attempt": v})
+                entries.append(e)
+    elif isinstance(data, list):
+        entries = data
+    out: dict[tuple, set[int]] = defaultdict(set)
+    for e in entries:
+        if e.get("orphan") or e.get("status") == "orphan" or e.get("kind") == "orphan" or e.get("attempt") is None:
+            continue
+        t, se, seed = ident_of(e)
+        out[(t, se, seed)].add(int(e["attempt"]))
+    return dict(out)
+
+
+def _map_attempts(amap: dict[tuple, set[int]], ident: tuple) -> set[int] | None:
+    if ident in amap:
+        return amap[ident]
+    return amap.get((ident[0], ident[1], None))
+
+
+def bind_side(rows: list[dict], *, ledger: dict[str, set[tuple]] | None = None,
+              attempts: dict[tuple, set[int]] | None = None) -> dict:
+    """一侧每身份选出唯一被接受的结果行。
+
+    返回 ``{"finals": {身份: 行}, "unaccepted": n, "ambiguous": [身份...], "dup": [身份...]}``；没有账本与映射时
+    退回默认的 ``final_rows``（同身份多条最终行记 ``dup`` 与 ``ambiguous``）。"""
+    if ledger is None and attempts is None:
+        finals, count = final_rows(rows)
+        dup = sorted((k for k, v in count.items() if v > 1), key=str)
+        return {"finals": finals, "unaccepted": 0, "ambiguous": dup, "dup": dup}
+    accepted: dict[tuple, list[dict]] = defaultdict(list)
+    amb: set[tuple] = set()
+    unaccepted = 0
+    for r in rows:
+        if r.get("canary"):
+            continue
+        k = ident_of(r)
+        ok = False
+        if ledger is not None:
+            key = _key_of(r)
+            acc = ledger.get(key) if key is not None else None
+            if acc:
+                if len(acc) > 1:
+                    amb.add(k)
+                ids = {a for a, _ in acc}
+                if r.get("attempt_id") is not None:
+                    ok = r["attempt_id"] in ids
+                else:
+                    ok = r.get("attempt") is not None and int(r["attempt"]) in {int(n) for _, n in acc if n is not None}
+        else:
+            want = _map_attempts(attempts, k)
+            if want:
+                if len(want) > 1:
+                    amb.add(k)
+                # 结果行无 attempt 时按单次运行约定视作第 1 次（官方入口默认 --attempt 1）
+                ok = int(r.get("attempt") if r.get("attempt") is not None else 1) in want
+            elif is_final(r):
+                unaccepted += 1  # 映射里没有该身份：最终行无从绑定
+            if ok:
+                accepted[k].append(r)
+            # 映射里有该身份但不是权威 attempt 的行：适配器已按「最后一条终态行」裁定，属预期，不计未接受
+            continue
+        if ok:
+            accepted[k].append(r)
+        elif is_final(r):
+            unaccepted += 1
+    finals = {}
+    for k, lst in accepted.items():
+        if len(lst) > 1:
+            amb.add(k)
+        finals[k] = lst[0]
+    return {"finals": finals, "unaccepted": unaccepted, "ambiguous": sorted(amb, key=str), "dup": []}
+
+
+def supplement_check(old_rows: list[dict], supp_rows: list[dict], manifest: list[tuple]) -> dict:
+    """补集合核对：补跑身份集合必须恰等于「清单 − 旧原侧最终身份」。"""
+    old = set(final_rows(old_rows)[0])
+    supp = set(final_rows(supp_rows)[0])
+    man = set(manifest)
+    expected = man - old
+    res = {"old": len(old), "supplement": len(supp), "expected": len(expected),
+           "missing": len(expected - supp), "extra": len(supp - expected), "overlap": len(old & supp),
+           "missing_ids": [list(x) for x in sorted(expected - supp, key=str)],
+           "extra_ids": [list(x) for x in sorted(supp - expected, key=str)]}
+    res["verdict"] = "PASS" if res["missing"] == 0 and res["extra"] == 0 and res["overlap"] == 0 else "FAIL"
+    return res
+
+
+# ── v7.5eval（E0／O1／O2）读取 ────────────────────────────────────────────────
+
+
+def _sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def verify_v75_inputs(paths: list[str | Path], manifest_path: str | Path) -> list[dict]:
+    """按 ``input-manifest.json`` 的 ``files`` 核每个文件的 sha256；不在清单或不符即抛 ``InputShaMismatch``。"""
+    man = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    by_path = {str(Path(f["path"]).resolve()): f for f in man.get("files", [])}
+    checked = []
+    for p in paths:
+        rp = Path(p).resolve()
+        ent = by_path.get(str(rp))
+        if ent is None:
+            raise InputShaMismatch(f"path={rp} reason=not_in_manifest manifest={manifest_path}")
+        actual = _sha256_file(rp)
+        if actual != ent.get("sha256"):
+            raise InputShaMismatch(f"path={rp} reason=sha256 expected={ent.get('sha256')} actual={actual}")
+        checked.append({"path": str(rp), "sha256": actual})
+    return checked
+
+
+def expand_run(path: str | Path) -> list[Path]:
+    """``--noise-runs`` 的一项：文件原样；目录递归找 ``episodes*.jsonl``，没有再找 ``*.jsonl``（排序后返回）。"""
+    p = Path(path)
+    if p.is_file():
+        return [p]
+    found = sorted(p.rglob("episodes*.jsonl")) or sorted(p.rglob("*.jsonl"))
+    if not found:
+        raise FileNotFoundError(f"{p} 下没有 jsonl")
+    return found
+
+
+def _v75_normalize(rows: list[dict]) -> list[dict]:
+    for r in rows:
+        r.setdefault("exec_steps", r.get("steps"))
+    return rows
+
+
+# ── 跨格式投影（C9、C10）─────────────────────────────────────────────────────
+
+
+def _not_obs(x: Any) -> bool:
+    return isinstance(x, str) and x == tw.NOT_OBSERVED
+
+
+class _Tally:
+    def __init__(self):
+        self.d = {k: {"same": 0, "diff": 0, "not_observed": 0, "first_diff_step": None} for k in PROJ_DIMS}
+
+    def add(self, dim: str, verdict: str, step: int | None = None, n: int = 1) -> None:
+        if n <= 0:
+            return
+        self.d[dim][verdict] += n
+        if verdict == "diff" and self.d[dim]["first_diff_step"] is None:
+            self.d[dim]["first_diff_step"] = step
+
+
+def _load_arrays(trace_path: Path | None) -> dict:
+    if trace_path is None:
+        return {}
+    p = Path(trace_path).parent / "arrays.npz"
+    if not p.exists():
+        return {}
+    try:
+        with np.load(p, allow_pickle=False) as z:
+            return {k: np.array(z[k]) for k in z.files}
+    except Exception:  # noqa: BLE001 读不了按无原值处理
+        return {}
+
+
+def _rec_size(rec: dict) -> int:
+    return int(math.prod(rec.get("shape") or [1])) if rec.get("shape") is not None else 1
+
+
+def _value_vs_record(v: np.ndarray, rec: dict) -> bool:
+    """一侧有原值、另一侧只有记录：原值转成记录的 dtype 须无损往返，且连续字节 sha256 等于记录。"""
+    try:
+        dt = np.dtype(rec["dtype"])
+        conv = np.ascontiguousarray(np.asarray(v).astype(dt))
+        if not np.array_equal(conv.astype(np.asarray(v).dtype), np.asarray(v)):
+            return False
+        return conv.size == _rec_size(rec) and hashlib.sha256(conv.tobytes()).hexdigest() == rec.get("sha256")
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def _cmp_array(ra: Any, rb: Any, va: np.ndarray | None = None, vb: np.ndarray | None = None) -> str:
+    """数组记录按值比较 → ``same``／``diff``／``not_observed``（规则见模块说明）。"""
+    if _not_obs(ra) or _not_obs(rb):
+        return "not_observed"
+    if ra is None and rb is None and va is None and vb is None:
+        return "not_observed"
+    if va is not None and vb is not None:
+        a, b = np.asarray(va), np.asarray(vb)
+        if a.size != b.size:
+            return "diff"
+        try:
+            return "same" if np.array_equal(a.astype(np.float64).ravel(), b.astype(np.float64).ravel()) else "diff"
+        except (TypeError, ValueError):
+            return "same" if a.tobytes() == b.tobytes() else "diff"
+    if ra is None or rb is None:
+        return "diff"
+    if not isinstance(ra, dict) or not isinstance(rb, dict):
+        return "same" if ra == rb else "diff"
+    if va is not None:
+        return "same" if _value_vs_record(va, rb) else "diff"
+    if vb is not None:
+        return "same" if _value_vs_record(vb, ra) else "diff"
+    if _rec_size(ra) != _rec_size(rb):
+        return "diff"
+    if ra.get("dtype") == rb.get("dtype"):
+        return "same" if ra.get("sha256") == rb.get("sha256") else "diff"
+    if _rec_size(ra) <= 8 and ra.get("f32hex") is not None and rb.get("f32hex") is not None:
+        return "same" if ra["f32hex"] == rb["f32hex"] else "diff"
+    return "not_observed"
+
+
+def _cmp_scalar(a: Any, b: Any, *, none_is_unobserved: bool = True) -> str:
+    if _not_obs(a) or _not_obs(b):
+        return "not_observed"
+    if none_is_unobserved and a is None and b is None:
+        return "not_observed"
+    return "same" if a == b else "diff"
+
+
+def _group(rows: list[dict], kind: str, keyf, valf) -> dict:
+    out: dict = defaultdict(list)
+    for r in rows:
+        if r.get("kind") == kind:
+            out[keyf(r)].append(valf(r))
+    return out
+
+
+def project_traces(a: list[dict], b: list[dict], arrays_a: dict | None = None, arrays_b: dict | None = None) -> dict:
+    """两份轨迹按维度逐项比较，不在首个差异处停止；返回 ``{维度: {same, diff, not_observed, first_diff_step}}``。"""
+    arrays_a, arrays_b = arrays_a or {}, arrays_b or {}
+    t = _Tally()
+    da = next((r for r in a if r.get("kind") == "demo"), {}) or {}
+    db = next((r for r in b if r.get("kind") == "demo"), {}) or {}
+    # 演示段：画面逐帧（front、wrist 各一项）、状态逐帧、文本整体一项；帧数不同计一项画面差异
+    if da.get("frames") != db.get("frames"):
+        t.add("obs", "diff", 0)
+    for cam in ("front_sha256", "wrist_sha256"):
+        la, lb = da.get(cam) or [], db.get(cam) or []
+        for i in range(min(len(la), len(lb))):
+            t.add("obs", _cmp_scalar(la[i], lb[i]), 0)
+    sa_, sb_ = da.get("states") or [], db.get("states") or []
+    for i in range(min(len(sa_), len(sb_))):
+        t.add("state", _cmp_array(sa_[i], sb_[i]), 0)
+    if len(sa_) != len(sb_):
+        t.add("state", "diff", 0)
+    if da or db:
+        t.add("text", _cmp_scalar(da.get("texts") or [], db.get("texts") or [], none_is_unobserved=False), 0)
+
+    # 逻辑输入：请求只比两侧都出现过的请求名；动作块、历史边界只一侧有记录时计 not_observed
+    names_a = {r.get("name") for r in a if r.get("kind") == "request"}
+    names_b = {r.get("name") for r in b if r.get("kind") == "request"}
+    common = names_a & names_b
+    t.add("logic", "not_observed", None, sum(1 for r in a + b if r.get("kind") == "request" and r.get("name") not in common))
+    req_a = _group([r for r in a if r.get("name") in common], "request", lambda r: (int(r["step"]), r.get("name")),
+                   lambda r: (r.get("sha256"), r.get("nbytes")))
+    req_b = _group([r for r in b if r.get("name") in common], "request", lambda r: (int(r["step"]), r.get("name")),
+                   lambda r: (r.get("sha256"), r.get("nbytes")))
+    for k in sorted(set(req_a) | set(req_b), key=str):
+        t.add("logic", "same" if req_a.get(k, []) == req_b.get(k, []) else "diff", k[0])
+    for kind, keyf, valf in (("response", lambda r: int(r["step"]), lambda r: r.get("actions")),
+                             ("history", lambda r: int(r.get("end", r.get("start", 0))),
+                              lambda r: (r.get("start"), r.get("end")))):
+        ga, gb = _group(a, kind, keyf, valf), _group(b, kind, keyf, valf)
+        if not ga or not gb:
+            t.add("logic", "not_observed", None, sum(len(v) for v in ga.values()) + sum(len(v) for v in gb.values()))
+            continue
+        for k in sorted(set(ga) | set(gb)):
+            xa, xb = ga.get(k, []), gb.get(k, [])
+            if len(xa) != len(xb):
+                t.add("logic", "diff", k)
+            elif kind == "response":
+                vs = [_cmp_array(p, q) for p, q in zip(xa, xb)]
+                t.add("logic", "diff" if "diff" in vs else ("not_observed" if "not_observed" in vs else "same"), k)
+            else:
+                t.add("logic", "same" if xa == xb else "diff", k)
+
+    # 逐步：按步号对齐，公共步逐项比；多出的步计一项 stop 差异
+    steps_a = {int(r["step"]): r for r in a if r.get("kind") == "step"}
+    steps_b = {int(r["step"]): r for r in b if r.get("kind") == "step"}
+    for s in sorted(set(steps_a) & set(steps_b)):
+        ra, rb = steps_a[s], steps_b[s]
+        key = f"exec_action__{s - 1:05d}"
+        t.add("action", _cmp_array(ra.get("action"), rb.get("action"), arrays_a.get(key), arrays_b.get(key)), s)
+        for cam in ("front_sha256", "wrist_sha256"):
+            t.add("obs", _cmp_scalar(ra.get(cam), rb.get(cam)), s)
+        t.add("state", _cmp_array(ra.get("state"), rb.get("state")), s)
+        t.add("text", _cmp_scalar(ra.get("subgoal"), rb.get("subgoal"), none_is_unobserved=False), s)
+        for f in ("terminated", "truncated", "status"):
+            t.add("stop", _cmp_scalar(ra.get(f), rb.get(f)), s)
+    if set(steps_a) != set(steps_b):
+        extra = sorted(set(steps_a) ^ set(steps_b))
+        t.add("stop", "diff", extra[0])
+    ea = next((r for r in reversed(a) if r.get("kind") == "end"), {}) or {}
+    eb = next((r for r in reversed(b) if r.get("kind") == "end"), {}) or {}
+    t.add("stop", _cmp_scalar(ea.get("status"), eb.get("status")), None)
+    return t.d
+
+
+# ── 统计 ─────────────────────────────────────────────────────────────────────
+
+
+def mcnemar_exact(b: int, c: int) -> float:
+    """McNemar 精确检验（双侧）：不一致对 n=b+c 下 min(b,c) 的二项尾概率乘 2，上限 1。"""
+    n = b + c
+    if n == 0:
+        return 1.0
+    k = min(b, c)
+    tail = sum(math.comb(n, i) for i in range(k + 1))
+    return float(min(Fraction(1), Fraction(2 * tail, 2 ** n)))
+
+
+def terminal_stats(pairs: list[tuple[Any, Any]]) -> dict:
+    """``pairs``：(原侧终态, 新侧终态) 列表。"""
+    n = len(pairs)
+    s2f = sum(1 for o, w in pairs if o == "success" and w != "success")
+    f2s = sum(1 for o, w in pairs if o != "success" and w == "success")
+    so = sum(1 for o, _ in pairs if o == "success")
+    sn = sum(1 for _, w in pairs if w == "success")
+    matrix = {o: {w: 0 for w in TERMINALS} for o in TERMINALS}
+    other = 0
+    for o, w in pairs:
+        if o in TERMINALS and w in TERMINALS:
+            matrix[o][w] += 1
+        else:
+            other += 1
+    sr_o = so / n if n else 0.0
+    sr_n = sn / n if n else 0.0
+    return {"compared": n, "s2f": s2f, "f2s": f2s, "flips": s2f + f2s, "sr_orig": sr_o, "sr_new": sr_n,
+            "sr_diff_pp": (sr_n - sr_o) * 100.0, "matrix": matrix, "other_terminal": other,
+            "mcnemar_p": mcnemar_exact(s2f, f2s)}
+
+
+def _matrix_str(m: dict) -> str:
+    return ",".join(f"{o[0]}{w[0]}:{m[o][w]}" for o in TERMINALS for w in TERMINALS)
+
+
+def _pair_flips(rows_a: list[dict], rows_b: list[dict]) -> dict:
+    fa, fb = final_rows(rows_a)[0], final_rows(rows_b)[0]
+    both = sorted(set(fa) & set(fb), key=str)
+    st = terminal_stats([(fa[k].get("status"), fb[k].get("status")) for k in both])
+    st["missing"] = len(set(fa) ^ set(fb))
+    return st
+
+
+# ── 扩展模式主流程 ───────────────────────────────────────────────────────────
+
+
+def compare_ext(orig_rows: list[dict], new_rows: list[dict], orig_traces: str | Path | None,
+                new_traces: str | Path | None, *, mode: str = "full", groundsg: bool = False,
+                expect_total: int | None = None, manifest: list[tuple] | None = None,
+                new_ledger: dict | None = None, new_attempts: dict | None = None, orig_attempts: dict | None = None,
+                orig_supplement: list[dict] | None = None, orig_format: str = "default",
+                noise_runs: list[list[dict]] | None = None) -> dict:
+    """第二阶段扩展比较（见模块说明）；返回 ``{"summary", "table", "inputs", "provenance", "supplement", "noise"}``。"""
+    v75 = orig_format == "v75"
+    old_orig = list(orig_rows)
+    if orig_supplement:
+        orig_rows = list(orig_rows) + list(orig_supplement)
+    ob = bind_side(orig_rows, attempts=orig_attempts)
+    nb = bind_side(new_rows, ledger=new_ledger, attempts=new_attempts)
+    of, nf = ob["finals"], nb["finals"]
+    dup = sorted(set(ob["dup"]) | set(nb["dup"]), key=str)
+    only_o = sorted(set(of) - set(nf), key=str)
+    only_n = sorted(set(nf) - set(of), key=str)
+    both = sorted(set(of) & set(nf), key=str)
+    oi = TraceIndex(None if v75 else orig_traces)
+    ni = TraceIndex(new_traces)
+    use_traces = mode != "astra" and not v75
+
+    table: list[dict] = []
+    proj_tot = {d: {"same": 0, "diff": 0, "not_observed": 0} for d in PROJ_DIMS}
+    ep_diff = Counter()
+    binding_mismatch = missing_trace = bad_trace = identical = same_term = same_sub = 0
+    local_rows = unknown_rows = 0
+    for k in both:
+        ro, rn = of[k], nf[k]
+        row = {"task": k[0], "source_episode": k[1], "seed": k[2],
+               "orig_status": ro.get("status"), "new_status": rn.get("status"),
+               "orig_exec_steps": ro.get("exec_steps", ro.get("steps")),
+               "new_exec_steps": rn.get("exec_steps", rn.get("steps")),
+               "orig_node": None if v75 else node_of(ro), "new_node": node_of(rn)}
+        row["same_terminal"] = ro.get("status") == rn.get("status")
+        same_term += row["same_terminal"]
+        for side_row in ([rn] if v75 else [ro, rn]):
+            nd = node_of(side_row)
+            if nd is None:
+                unknown_rows += 1
+            elif not is_gl_node(nd):
+                local_rows += 1
+        po = pn = None
+        bo = bn = None
+        if not v75:
+            po, bo = oi.lookup_bound(ro)
+        pn, bn = ni.lookup_bound(rn)
+        row.update(orig_trace=str(po) if po else None, new_trace=str(pn) if pn else None)
+        for side, b_ in (("orig", bo), ("new", bn)):
+            if b_ is not None:
+                binding_mismatch += 1
+                row[f"{side}_trace_binding"] = b_
+        to = tw.read_trace(po) if po and bo is None else None
+        tn = tw.read_trace(pn) if pn and bn is None else None
+        if mode == "astra":
+            so, sn = _subtasks(ro, to), _subtasks(rn, tn)
+            row.update(orig_subtasks=so, new_subtasks=sn, same_subtasks=(so is not None and so == sn))
+            same_sub += row["same_subtasks"]
+        elif use_traces:
+            if to is None or tn is None:
+                missing_trace += 1
+                row.update(identical_trace=False, diverge_step=None, diverge_kind="missing_trace")
+            else:
+                probs = tw.validate_trace(to) + tw.validate_trace(tn)
+                if probs:
+                    bad_trace += 1
+                    row["trace_problems"] = probs
+                c = compare_traces(to, tn)
+                row.update(identical_trace=c["identical"] and not probs, diverge_step=c["diverge_step"],
+                           diverge_kind=c["diverge_kind"], diverge_field=c["field"])
+                identical += row["identical_trace"]
+                pj = project_traces(to, tn, _load_arrays(po), _load_arrays(pn))
+                row["projection"] = pj
+                for d in PROJ_DIMS:
+                    for v in ("same", "diff", "not_observed"):
+                        proj_tot[d][v] += pj[d][v]
+                    if pj[d]["diff"]:
+                        ep_diff[d] += 1
+        table.append(row)
+
+    stats = terminal_stats([(of[k].get("status"), nf[k].get("status")) for k in both])
+    missing = len(only_o) + len(only_n)
+    summary: dict[str, Any] = {"mode": mode, "extended": True, "orig_format": orig_format, "compared": len(both),
+                               "same_terminal": same_term, "missing": missing,
+                               "missing_orig": [list(x) for x in only_n], "missing_new": [list(x) for x in only_o],
+                               "duplicate": len(dup), "duplicates": [list(x) for x in dup],
+                               "identical_trace": identical, "missing_trace": missing_trace, "bad_trace": bad_trace,
+                               "projection": proj_tot, "episodes_diff": {d: ep_diff.get(d, 0) for d in PROJ_DIMS},
+                               "not_observed": sum(proj_tot[d]["not_observed"] for d in PROJ_DIMS), **stats}
+    if mode == "astra":
+        summary["same_subtasks"] = same_sub
+    if groundsg:
+        firsts_n, epochs_n = epoch_firsts(new_rows)
+        firsts_o, _ = epoch_firsts(orig_rows)
+        for r in table:
+            kk = (r["task"], r["source_episode"], r["seed"])
+            r["server_epoch_first"] = kk in firsts_n
+            r["server_epoch_first_orig"] = kk in firsts_o
+        summary.update(server_epoch_first=sum(1 for r in table if r["server_epoch_first"]), server_epochs=epochs_n)
+
+    inputs = None
+    if manifest is not None:
+        man_set = set(manifest)
+        accepted_both = set(of) & set(nf)
+        inputs = {"expected": len(man_set), "missing": len(man_set - accepted_both),
+                  "extra": len((set(of) | set(nf)) - man_set), "unaccepted": ob["unaccepted"] + nb["unaccepted"],
+                  "ambiguous": len(set(ob["ambiguous"]) | set(nb["ambiguous"])) + (len(manifest) - len(man_set)),
+                  "trace_binding_mismatch": binding_mismatch}
+        inputs["verdict"] = "PASS" if all(inputs[x] == 0 for x in ("missing", "extra", "unaccepted", "ambiguous",
+                                                                    "trace_binding_mismatch")) else "FAIL"
+    provenance = {"local_rows": local_rows, "unknown_rows": unknown_rows,
+                  "verdict": "PASS" if local_rows == 0 and unknown_rows == 0 else "FAIL"}
+    supplement = None
+    if orig_supplement is not None and manifest is not None:
+        supplement = supplement_check(old_orig, orig_supplement, manifest)
+    noise = []
+    if noise_runs:
+        runs = [("E0", orig_rows)] + [(f"O{i + 1}", r) for i, r in enumerate(noise_runs)]
+        for i in range(len(runs)):
+            for j in range(i + 1, len(runs)):
+                st = _pair_flips(runs[i][1], runs[j][1])
+                st["pair"] = f"{runs[i][0]}-{runs[j][0]}"
+                noise.append(st)
+
+    reasons = []
+    if inputs is not None and inputs["verdict"] == "FAIL":
+        reasons.append("inputs")
+    if provenance["verdict"] == "FAIL":
+        reasons.append("cross_machine")
+    if supplement is not None and supplement["verdict"] == "FAIL":
+        reasons.append("supplement")
+    incomplete = missing > 0 or len(dup) > 0 or (expect_total is not None and len(both) != expect_total)
+    if use_traces:
+        incomplete = incomplete or missing_trace > 0 or bad_trace > 0
+    summary["verdict"] = "INVALID" if reasons else ("INCOMPLETE" if incomplete else "INFO")
+    summary["reason"] = ",".join(reasons) or None
+    summary["expect_total"] = expect_total
+    summary["unaccepted"] = ob["unaccepted"] + nb["unaccepted"]
+    return {"summary": summary, "table": table, "inputs": inputs, "provenance": provenance,
+            "supplement": supplement, "noise": noise}
+
+
+def _f4(x: float) -> str:
+    return f"{x:.4f}"
+
+
+def ext_lines(res: dict, policy: str, site: str | None = None) -> list[str]:
+    """扩展模式输出行（顺序：输入、来源、补集合、投影、v75、噪声、GATE2）。"""
+    s = res["summary"]
+    out = []
+    i = res.get("inputs")
+    if i is not None:
+        out.append(f"GATE2_INPUTS={i['verdict']} expected={i['expected']} missing={i['missing']} extra={i['extra']} "
+                   f"unaccepted={i['unaccepted']} ambiguous={i['ambiguous']} "
+                   f"trace_binding_mismatch={i['trace_binding_mismatch']}")
+    p = res["provenance"]
+    out.append(f"GATE2_PROVENANCE={p['verdict']} local_rows={p['local_rows']} unknown_rows={p['unknown_rows']}")
+    sp = res.get("supplement")
+    if sp is not None:
+        out.append(f"GATE2_SUPPLEMENT={sp['verdict']} old={sp['old']} supplement={sp['supplement']} "
+                   f"expected={sp['expected']} missing={sp['missing']} extra={sp['extra']} overlap={sp['overlap']}")
+    pj = s["projection"]
+    out.append(f"GATE2_PROJ policy={policy} " + " ".join(
+        f"{d}={pj[d]['same']}/{pj[d]['diff']}/{pj[d]['not_observed']}" for d in PROJ_DIMS)
+        + " episodes_diff=" + ",".join(f"{d}:{s['episodes_diff'][d]}" for d in PROJ_DIMS))
+    if s["orig_format"] == "v75":
+        out.append(f"ORIG_RERUN_VS_E0=INFO policy={policy} compared={s['compared']} flips={s['flips']} "
+                   f"s2f={s['s2f']} f2s={s['f2s']}")
+    for n in res.get("noise") or []:
+        out.append(f"GATE2_NOISE=INFO policy={policy} pair={n['pair']} compared={n['compared']} s2f={n['s2f']} "
+                   f"f2s={n['f2s']} flips={n['flips']} sr_a={_f4(n['sr_orig'])} sr_b={_f4(n['sr_new'])} "
+                   f"missing={n['missing']} note=descriptive_history")
+    parts = [f"GATE2={s['verdict']}", f"policy={policy}", f"compared={s['compared']}",
+             f"same_terminal={s['same_terminal']}", f"s2f={s['s2f']}", f"f2s={s['f2s']}",
+             f"sr_orig={_f4(s['sr_orig'])}", f"sr_new={_f4(s['sr_new'])}", f"sr_diff_pp={s['sr_diff_pp']:.2f}",
+             f"mcnemar_p={s['mcnemar_p']:.4g}", f"not_observed={s['not_observed']}",
+             f"identical_trace={s['identical_trace']}", f"missing={s['missing']}", f"duplicate={s['duplicate']}",
+             f"missing_trace={s['missing_trace']}", f"bad_trace={s['bad_trace']}",
+             f"matrix={_matrix_str(s['matrix'])}", f"other_terminal={s['other_terminal']}"]
+    if s["mode"] == "astra":
+        parts.append(f"mode=astra same_subtasks={s['same_subtasks']}")
+    if "server_epoch_first" in s:
+        parts.append(f"server_epoch_first={s['server_epoch_first']}")
+    if s.get("expect_total") is not None:
+        parts.append(f"expect_total={s['expect_total']}")
+    if s.get("reason"):
+        parts.append(f"reason={s['reason']}")
+    if site:
+        parts.append(f"site={site}")
+    out.append(" ".join(parts))
+    return out
+
+
+def to_markdown_ext(res: dict, policy: str) -> str:
+    s = res["summary"]
+    lines = [f"# 第二档差异表（扩展）：{policy}", "",
+             f"- 判定：`{s['verdict']}`{'（' + s['reason'] + '）' if s.get('reason') else ''}；配对 {s['compared']} 个身份，"
+             f"同终态 {s['same_terminal']}；s2f {s['s2f']}、f2s {s['f2s']}；成功率 原 {_f4(s['sr_orig'])} → 新 "
+             f"{_f4(s['sr_new'])}（{s['sr_diff_pp']:.2f} pp）；McNemar p = {s['mcnemar_p']:.4g}。",
+             "- 投影各维度为「相同/不同/不可观察」项数；`not_observed` 不算相同（C9）。", "",
+             "| 任务 | 原 episode | seed | 原侧终态 | 新侧终态 | 同终态 | " + " | ".join(PROJ_DIMS) + " |",
+             "|---|---|---|---|---|---|" + "---|" * len(PROJ_DIMS)]
+    for r in res["table"]:
+        pj = r.get("projection")
+        cells = [f"{pj[d]['same']}/{pj[d]['diff']}/{pj[d]['not_observed']}" if pj else "—" for d in PROJ_DIMS]
+        lines.append(f"| {r['task']} | {r['source_episode']} | {r['seed']} | {r['orig_status']} | {r['new_status']} | "
+                     f"{int(r['same_terminal'])} | " + " | ".join(cells) + " |")
+    return "\n".join(lines) + "\n"
+
+
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description="第二档：原侧对新侧逐身份差异表")
     ap.add_argument("--policy", required=True, help="报告用的模型标签，如 mmesg-oracle、pp、astra")
@@ -365,11 +1090,71 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--site", default=None, help="如 local：判定行附 site=local")
     ap.add_argument("--out-json", default=None)
     ap.add_argument("--out-md", default=None)
+    g = ap.add_argument_group("第二阶段扩展（传任一项即启用扩展模式，见模块说明）")
+    g.add_argument("--manifest", default=None, help="冻结身份清单（jsonl 或 JSON 列表）")
+    g.add_argument("--new-ledger", nargs="+", default=None, help="新侧 AttemptLedger jsonl（可多份）")
+    g.add_argument("--new-attempts", default=None, help="新侧 attempt 映射（与 --orig-attempts 同格式；新侧位置放原侧重跑时用）")
+    g.add_argument("--orig-attempts", default=None, help="原侧 attempt 映射 orig-attempts.json（S7 适配器产出）")
+    g.add_argument("--orig-supplement", nargs="+", default=None, help="本轮原侧补跑结果 jsonl（补集合核对，需 --manifest）")
+    g.add_argument("--orig-format", choices=["default", "v75"], default=None, help="v75：原侧读 E0 逐局文件")
+    g.add_argument("--v75-input-manifest", default=None, help=f"E0 sha256 清单，默认 {DEFAULT_V75_MANIFEST}")
+    g.add_argument("--noise-runs", nargs="+", default=None, help="O1 O2（文件或目录）：输出三对两方向翻转（需 --orig-format v75）")
     return ap
+
+
+def _extended(args) -> bool:
+    return any(getattr(args, a) is not None for a in ("manifest", "new_ledger", "new_attempts", "orig_attempts",
+                                                       "orig_supplement", "orig_format", "v75_input_manifest",
+                                                       "noise_runs"))
+
+
+def main_ext(args) -> int:
+    v75 = args.orig_format == "v75"
+    if args.noise_runs and not v75:
+        print("GATE2=ERROR reason=noise_runs_need_orig_format_v75", flush=True)
+        return 2
+    sha_checked: list[dict] = []
+    if v75:
+        man = args.v75_input_manifest or DEFAULT_V75_MANIFEST
+        try:
+            sha_checked = verify_v75_inputs(args.orig_results, man)
+        except (InputShaMismatch, FileNotFoundError) as e:
+            print(f"GATE2_INPUT_SHA=FAIL {e}", flush=True)
+            print(f"GATE2=ERROR policy={args.policy} reason=input_sha", flush=True)
+            return 2
+        print(f"GATE2_INPUT_SHA=PASS files={len(sha_checked)}", flush=True)
+    orig_rows = read_rows(args.orig_results)
+    if v75:
+        _v75_normalize(orig_rows)
+    noise = None
+    if args.noise_runs:
+        noise = [_v75_normalize(read_rows(expand_run(p))) for p in args.noise_runs]
+    res = compare_ext(
+        orig_rows, read_rows(args.new_results), args.orig_traces, args.new_traces, mode=args.mode,
+        groundsg=args.groundsg, expect_total=args.expect_total,
+        manifest=read_manifest(args.manifest) if args.manifest else None,
+        new_ledger=read_ledgers(args.new_ledger) if args.new_ledger else None,
+        new_attempts=read_attempt_map(args.new_attempts) if args.new_attempts else None,
+        orig_attempts=read_attempt_map(args.orig_attempts) if args.orig_attempts else None,
+        orig_supplement=read_rows(args.orig_supplement) if args.orig_supplement else None,
+        orig_format="v75" if v75 else "default", noise_runs=noise)
+    lines = ext_lines(res, args.policy, args.site)
+    res["summary"].update(policy=args.policy, site=args.site, line=lines[-1], lines=lines, input_sha=sha_checked)
+    if args.out_json:
+        Path(args.out_json).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.out_json).write_text(json.dumps(res, ensure_ascii=False, indent=1, default=str) + "\n", encoding="utf-8")
+    if args.out_md:
+        Path(args.out_md).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.out_md).write_text(to_markdown_ext(res, args.policy), encoding="utf-8")
+    for ln in lines:
+        print(ln, flush=True)
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if _extended(args):
+        return main_ext(args)
     res = compare(read_rows(args.orig_results), read_rows(args.new_results), args.orig_traces, args.new_traces,
                   mode=args.mode, groundsg=args.groundsg, expect_total=args.expect_total)
     res["summary"].update(policy=args.policy, site=args.site)
