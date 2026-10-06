@@ -481,12 +481,12 @@ sys.exit(0 if ok else 1)
 '''
 STUB_RENDERER_NO_SOURCE = STUB_RENDERER.replace(
     'ap.add_argument("--source", choices=["auto", "mp4", "raw"], default="auto")  # @@SOURCE@@', "")
-MEDIA_FILES = ("seat_media_lib.sh", "official_media_check.py")
+MEDIA_FILES = ("seat_media_lib.sh", "official_media_check.py", "official_defs.py")  # official_defs：验收工具读历史名的别名表
 KEY0 = "PickXtimes_xhard0_510300"
 
 
 def _media_repo(repo: Path, renderer: str = STUB_RENDERER) -> Path:
-    """执行副本最小形态的脚本目录：四个真实席位脚本、真实媒体函数库与验收工具、桩重绘器。"""
+    """执行副本最小形态的脚本目录：四个真实席位脚本、真实媒体函数库与验收工具（含其依赖的别名表 official_defs.py）、桩重绘器。"""
     eo = repo / "scripts" / "eval-official"
     eo.mkdir(parents=True, exist_ok=True)
     for name in SCRIPTS + MEDIA_FILES:

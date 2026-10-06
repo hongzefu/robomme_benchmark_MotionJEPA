@@ -16,7 +16,8 @@
 新增的记录与媒体字段（轨迹文件、录像事件、返回字典里的其他键）列为允许差异，不参与判定。
 
 每个检出在独立子进程里运行（``--_worker``），模块一律从该检出的 ``scripts/eval-official`` 按路径加载、``src`` 置于
-``sys.path`` 最前，避免两个检出互相串味；子进程先核对 ``robomme_hard.__file__`` 落在该检出的 ``src`` 下。
+``sys.path`` 最前，避免两个检出互相串味；子进程先核对 ``robomme_hard.__file__`` 落在该检出的 ``src`` 下。子进程不写
+字节码缓存（``PYTHONDONTWRITEBYTECODE=1``），被比较的检出目录保持只读。
 
 **两侧接口**：每个检出按文件是否存在判定接口——官方名接口（``framesamp_modul_client``／``groundsg_client``、配置键
 ``groundsg_variant``、数据集 ``hard-verify``）或改名前接口（模块名、配置键、数据集名取自 ``official_defs.py`` 的
@@ -370,6 +371,7 @@ class PPConn:
 
 
 def worker(args) -> int:
+    sys.dont_write_bytecode = True  # 被比较的检出只读：不在其中留 __pycache__
     root = Path(args.root).resolve()
     sys.path.insert(0, str(root / "src"))
     tp = Path(args.third_party).resolve()
@@ -408,6 +410,7 @@ def _run_side(root: Path, route: str, third_party: Path, tamper: str | None, py:
     if tamper:
         cmd += ["--tamper", tamper]
     env = {k: v for k, v in os.environ.items() if k not in ("PYTHONPATH",)}
+    env["PYTHONDONTWRITEBYTECODE"] = "1"  # 被比较的检出只读：不在其中留 __pycache__
     p = subprocess.run(cmd, env=env, capture_output=True, text=True, timeout=600)
     try:
         data = json.loads(Path(out).read_text(encoding="utf-8"))

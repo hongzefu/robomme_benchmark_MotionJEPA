@@ -654,7 +654,8 @@
       "tests/pipeline/eval/test_client_replay_eq.py::test_compare_same_crash_on_both_sides_fails",
       "tests/pipeline/eval/test_client_replay_eq.py::test_compare_zero_events_fails",
       "tests/pipeline/eval/test_client_replay_eq.py::test_compare_missing_scenario_fails",
-      "tests/pipeline/eval/test_client_replay_eq.py::test_side_interface_official_and_legacy"
+      "tests/pipeline/eval/test_client_replay_eq.py::test_side_interface_official_and_legacy",
+      "tests/pipeline/eval/test_client_replay_eq.py::test_workers_do_not_write_bytecode_into_checkouts"
     ],
     "resource": "cpu",
     "mutants": [],

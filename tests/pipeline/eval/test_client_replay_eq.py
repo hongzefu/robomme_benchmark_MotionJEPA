@@ -133,3 +133,18 @@ def test_side_interface_official_and_legacy(cre, tmp_path):
     assert defs.LEGACY_DATASET_ALIASES[iface["dataset"]] == defs.DATASET_HARD_VERIFY
     with pytest.raises(ValueError):
         cre.side_interface(tmp_path / "empty")
+
+
+def test_workers_do_not_write_bytecode_into_checkouts(cre, monkeypatch, tmp_path):
+    """被比较的检出只读：子进程环境带 PYTHONDONTWRITEBYTECODE=1、去掉 PYTHONPATH。"""
+    seen = {}
+
+    def fake_run(cmd, env=None, **kw):
+        seen["env"] = env
+        return subprocess.CompletedProcess(cmd, 1, "", "boom")
+
+    monkeypatch.setattr(cre.subprocess, "run", fake_run)
+    monkeypatch.setenv("PYTHONPATH", "/somewhere")
+    out = cre._run_side(tmp_path, "smvla", tmp_path, None, sys.executable)
+    assert "worker_failed" in out
+    assert seen["env"]["PYTHONDONTWRITEBYTECODE"] == "1" and "PYTHONPATH" not in seen["env"]
