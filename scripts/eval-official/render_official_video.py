@@ -20,6 +20,9 @@ float64 动作从 arrays.npz 恢复，禁止用有舍入损失的 f32hex 替代�
 - trace 按共享契约 C3（放行 ``status=error``；``end.no_frame=true`` 的无帧 error 局返回 ``no_frame``、
   ``render.json`` 记原因、不出视频）、C4（动作按原 dtype 核对 ``arrays.npz``）、C8（帧数由观测步推导并与
   ``end.frames_recorded`` 对账；``observed=false`` 的缺观测步不补帧）读取。
+- 1006 第三阶段：文件名与 ``render.json`` 的 ``terminal_reason`` 用「命名终态」——strict-cap 命中（``end.cap_hit``）或
+  ``end.status=timeout`` 一律 ``timeout``（旧口径 ``terminal_reason=error`` 的超时局不再出现 ``error`` 命名），trace 原值另记
+  ``trace_terminal_reason``；``render.json`` 记 ``policy_seed``（trace header／identity，旧轨迹为 null）与 ``cap_hit``。
 - 每路流与索引文件的 sha256 以局目录相对路径进 ``render.json`` 与复用上下文；raw 流在转码后被删时，
   索引仍一致即可复用（目录搬到 NFS 后仍可核），流文件若仍在则必须逐字节一致。
 """
@@ -111,6 +114,17 @@ class TraceData:
     # raw 来源逐帧核验用：演示段（含初始帧）的 front／wrist 画面哈希
     demo_front_sha256: list = field(default_factory=list)
     demo_wrist_sha256: list = field(default_factory=list)
+    # 1006 第三阶段：模型种子（trace header／identity 的 policy_seed，旧轨迹没有为 None）与 strict-cap 命中
+    policy_seed: int | None = None
+    cap_hit: bool = False
+
+    @property
+    def named_terminal(self) -> str:
+        """文件名用的终态：strict-cap 命中（``end.cap_hit``）或 ``status=timeout`` 一律 ``timeout``
+        （旧口径 ``terminal_reason=error``／``status=timeout`` 的超时局本版不再命名 ``error``）。"""
+        if self.cap_hit or self.end_status == "timeout":
+            return "timeout"
+        return self.terminal_reason
 
     @property
     def observed_steps(self) -> list[dict]:
@@ -164,10 +178,19 @@ def load_trace(path: Path, arrays_path: Path | None = None) -> TraceData:
         raise ValueError("route 必须明确 new 或 orig")
     terminal = end["terminal_reason"]
     end_status = end.get("status")
+    policy_seed = header.get("policy_seed", identity.get("policy_seed"))
+    if policy_seed is not None and (type(policy_seed) is not int or policy_seed < 0):
+        raise ValueError(f"policy_seed 必须为非负整数：{policy_seed!r}")
+    if (identity.get("policy_seed") is not None and header.get("policy_seed") is not None
+            and identity["policy_seed"] != header["policy_seed"]):
+        raise ValueError("trace header.policy_seed 与 identity.policy_seed 不符")
+    cap_hit = end.get("cap_hit") is True
     # C3：四种终态；成功字段与终态字段一致，唯一例外是旧口径的 error/timeout
     if (end_status not in TERMINALS or terminal not in TERMINALS or
             (terminal != end_status and (terminal, end_status) != ("error", "timeout"))):
         raise ValueError("不支持非正常终态或终态冲突")
+    if cap_hit and end_status not in ("timeout", "error"):
+        raise ValueError(f"end.cap_hit=true 但 status={end_status}（strict-cap 命中只能是 timeout）")
     max_steps = header["max_steps"]
     if type(max_steps) is not int or max_steps < 1:
         raise ValueError("max_steps 必须为正整数")
@@ -184,7 +207,8 @@ def load_trace(path: Path, arrays_path: Path | None = None) -> TraceData:
         reason = end.get("no_frame_reason") or end.get("error") or "no_frame"
         steps = [{**st, "observed": False} for st in raw_steps]
         return TraceData(identity, route, goal, int(end.get("demo_frames") or 0), [], None, steps, terminal,
-                         end_status, max_steps, 0, no_frame=True, no_frame_reason=str(reason))
+                         end_status, max_steps, 0, no_frame=True, no_frame_reason=str(reason),
+                         policy_seed=policy_seed, cap_hit=cap_hit)
     frames, demo_frames = demo["frames"], end["demo_frames"]
     if type(frames) is not int or type(demo_frames) is not int or demo_frames < 0 or frames != demo_frames + 1:
         raise ValueError("demo.frames 必须等于 end.demo_frames + 1")
@@ -242,7 +266,8 @@ def load_trace(path: Path, arrays_path: Path | None = None) -> TraceData:
     _check_counts(end, attempted=len(steps), observed=observed_n, frames=frames + observed_n - omitted, omitted=omitted)
     subgoal = "[initializing...]" if any(st["subgoal"] is not None for st in steps) or "ground-sg" in route else None
     return TraceData(identity, route, texts[0], demo_frames, init, subgoal, steps, terminal, end_status, max_steps,
-                     omitted, demo_front_sha256=list(demo["front_sha256"]), demo_wrist_sha256=list(demo["wrist_sha256"]))
+                     omitted, demo_front_sha256=list(demo["front_sha256"]), demo_wrist_sha256=list(demo["wrist_sha256"]),
+                     policy_seed=policy_seed, cap_hit=cap_hit)
 
 
 def feed_official_recorder(rec, front, wrist, trace: TraceData, task: str, video_demo_tasks=None,
@@ -720,7 +745,7 @@ def render_episode(ep_dir: Path, *, official_root: Path = REPO, ffmpeg: str = "/
         full_name = safe_name = None
         output = out_dir / ".no-frame-placeholder.mp4"  # 只用于「不应存在视频」的判定
     else:
-        full_name = (f"{prefix}{trace.identity['task']}_ep{episode_id}_{trace.terminal_reason}_{trace.task_goal}_"
+        full_name = (f"{prefix}{trace.identity['task']}_ep{episode_id}_{trace.named_terminal}_{trace.task_goal}_"
                      f"{trace.identity['tier']}.mp4")
         safe_name = safe_filename(full_name)
         output = out_dir / safe_name
@@ -734,7 +759,8 @@ def render_episode(ep_dir: Path, *, official_root: Path = REPO, ffmpeg: str = "/
     import imageio
     observed_n = len(trace.observed_steps)
     base = {"schema": SCHEMA, "identity": trace.identity, "episode_id": episode_id, "episode_tag": episode_tag,
-            "route": trace.route, "task_goal": trace.task_goal, "terminal_reason": trace.terminal_reason,
+            "route": trace.route, "task_goal": trace.task_goal, "terminal_reason": trace.named_terminal,
+            "trace_terminal_reason": trace.terminal_reason, "cap_hit": trace.cap_hit, "policy_seed": trace.policy_seed,
             "status": trace.end_status, "no_frame": trace.no_frame,
             "source_frames": trace.source_frames, "frames": trace.output_frames, "demo_frames": trace.demo_frames,
             "exec_steps": len(trace.steps), "steps_attempted": len(trace.steps), "steps_observed": observed_n,

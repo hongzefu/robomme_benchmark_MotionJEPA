@@ -88,3 +88,38 @@ def test_gate2_merge_budget_from_ledger_and_cli(tmp_path, capsys):
     rc = M().main(["--sets", str(cfg), "--max-attempts", "7", "--max-resets", "100"])
     assert rc == 1
     assert capsys.readouterr().out.strip().splitlines()[-1] == "EVAL_BUDGET=FAIL attempts=8<=7 resets=16<=100 source=results"
+
+
+def test_stage3_matrix_by_policy_seed(tmp_path, capsys):
+    """第三阶段矩阵：多个组合按 policy_seed 汇总；每条最终行的 policy_seed 必须等于组合种子（缺字段也算不符）。"""
+    ok = F.write_jsonl(tmp_path / "a.jsonl", [_v9("A", "xhard1", s, st, policy_seed=7)
+                                              for s, st in ((1, "success"), (2, "fail"), (3, "timeout"))])
+    memer = F.write_jsonl(tmp_path / "b.jsonl", [_x0("A", 3, 11, "success", policy_seed=7),
+                                                 _x0("B", 3, 12, "error", policy_seed=7)])
+    sets = [{"policy": "smvla", "dataset": "ood", "side": "new", "results": [str(ok)], "expect_total": 3},
+            {"policy": "groundsg", "variant": "ground-sg-memer", "dataset": "hard-verify", "side": "new",
+             "results": [str(memer)], "expect_total": 2}]
+    cfg = tmp_path / "sets.json"
+    cfg.write_text(json.dumps({"sets": sets}), encoding="utf-8")
+    rc = M().main(["--sets", str(cfg), "--policy-seed", "7"])
+    lines = capsys.readouterr().out.strip().splitlines()
+    print(lines[-1])
+    assert rc == 0 and lines[-1] == ("STAGE3_MATRIX=PASS policy_seed=7 combinations=2 unique_terminal=5 incomplete=0 "
+                                     "seed_mismatch=0 duplicate_combination=0")
+    # 一条行缺 policy_seed、一条是别的种子：seed_mismatch=2、FAIL、退出 1
+    bad = F.write_jsonl(tmp_path / "a.jsonl", [_v9("A", "xhard1", 1, "success", policy_seed=7),
+                                               _v9("A", "xhard1", 2, "fail"),
+                                               _v9("A", "xhard1", 3, "timeout", policy_seed=42)])
+    assert bad.exists()
+    rc = M().main(["--sets", str(cfg), "--policy-seed", "7"])
+    line = capsys.readouterr().out.strip().splitlines()[-1]
+    print(line)
+    assert rc == 1 and line.startswith("STAGE3_MATRIX=FAIL policy_seed=7 combinations=2 ") and "seed_mismatch=2" in line
+    # 集合自带种子：两个种子各出一行；同一种子下组合标签重复计 duplicate_combination
+    sets2 = [dict(sets[1], policy_seed=7), dict(sets[1], policy_seed=7), dict(sets[1], policy_seed=42)]
+    rep = M().build_report(sets2)
+    by = {m["policy_seed"]: m for m in rep["stage3"]}
+    assert by[7]["duplicate_combination"] == 1 and by[7]["verdict"] == "FAIL"
+    assert by[42]["seed_mismatch"] == 2 and by[42]["verdict"] == "FAIL"
+    # 不给种子信息：不出矩阵行（旧用法输出不变）
+    assert "stage3" not in M().build_report([sets[0]])
