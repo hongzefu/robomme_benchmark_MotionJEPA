@@ -12,6 +12,8 @@
 >
 > 2026-10-06 再追加原话：「astra这个改名叫 3-tier Astra 也放入」——Astra 展示名改为 3-tier Astra；代码／参数／路径 ID `astra` 不动（见第一部分一）。
 >
+> 2026-10-06 再追加原话：「每个模型 保存的 rollout video 按照 task suite / task name / model seed 存放，命名 <ep_num>_<task_goal>_<success/fail/timout> .mp4, 我记得我好像是这样的，你 check下」「参考https://robomme.github.io/官方的实现方法 用subagent调研」「先不做打包上传的问题」。两个只读子代理查实：官方没有规定视频目录或文件名，用户记的布局在任何来源都不存在，最接近的是上游 mme-vla `eval.py`；用户随后选定「照上游 mme-vla」布局（第一部分二第 ③ 件、第二部分八.7）。HF 打包上传本轮不做。
+>
 > 功能范围追加原话：「给出现在所有支持模型的清单，都要支持1800步，都要支持不同seed，模型seed。」「但是我们现在实跑只跑这个。我们现在实跑只跑我说的这些模型。」因此全部模型路线统一补齐1800步与可配置模型seed，但实跑范围只保留本版指定四模型。
 
 # 第一部分（给人看）
@@ -53,9 +55,10 @@
 | MemER | **未接入** | 缺 | 缺 | 见下面展开 |
 | 3-tier Astra（代码 ID `astra`） | 独立 `run_astra.sh`／`astra_hard_runner.py`，不走共享席位 | 缺，入口自己钉 1600 | 缺，服务固定 42 | 云端 API 无 seed 接口，不伪造；费用与两局守卫不动 |
 
-**共同要补的两件事**：
+**共同要补的三件事**：
 - **1800 步**：席位脚本 `run_seat.sh::step_cap_pairing` 配对改 `test-hard ↔ 1800`、`strict_cap=1`，沿 `SeatRunner → EnvSession.step_cap → 客户端循环 → 结果／trace／报告` 全程传；第 1801 次 `step` 在进真实环境前被拒，第 1800 步成功仍记 success；Astra 在它自己的入口同改；`test-hard0 ↔ 1300` 与生成规格 `EXEC_CAP=1600` 不动。判据 `EVAL_CAP=PASS models=7 max_steps=1800 rejected_step=1801`。
 - **模型 seed**：新增 `--policy-seed <int>`，从任务配置传到服务、客户端、子目标预测器，在模型构造前设该路线真正用的随机状态；结果行、trace、媒体 provenance 都记 `policy_seed`；每个 `(模型, policy_seed)` 独立输出目录与账本 route。七路线各在 CPU 夹具上验 0／7／42；判据 `POLICY_SEEDS=PASS models=7 seeds=0,7,42`。本版真实运行只传 7。
+- **视频布局（用户 2026-10-06 选定「照上游 mme-vla」）**：现状是 `<模型标签>/<dataset>/new/<task>_<tier>_<环境seed>.a<attempt>/official/official-rerender__<task>_ep<源局>a<尝试>_<终态>_<task_goal>_<tier>.mp4`，没有模型 seed 层。改为每个运行根下按上游 `eval.py` 的层级发布一份：`<run 根>/<模型 ID>/seed<policy_seed>/[oracle｜qwenvl｜memer/]videos/<task>_ep<N>_<success｜fail｜timeout>_<task_goal>_<tier>.mp4`——GroundSG 三个变体多一层子目标目录（与官方同）；`ep<N>` 用局号（V9 用 builder 局号，hard0 用官方源局号），只发布账本接受的那一次 attempt，不带 `a<尝试>`；终态只允许三态，strict-cap 命中必须命名 `timeout`（旧口径超时局文件名带 `error`，本版不允许）；末尾用 tier（`xhard0`～`xhard5`）替官方的 difficulty；文件名超 255 字节沿用截断加哈希、完整名写 `render.json`。局目录里的 trace、arrays、`episode.mp4` 位置不动，只多一步「发布到上游布局」并出索引。MemER hard0 对拍的原侧由官方代码自己写出 `<save_dir>/symbolic-grounded-subgoal/ckpt79999/seed7/memer/videos/`，不改。判据 `VIDEO_LAYOUT=PASS model=<m> seed=7 videos=<n> error_named=0`。
 
 ### MemER 要改什么（展开）
 
@@ -124,7 +127,7 @@
 | MemER 真接入与资产 | `MEMER_WIRING=PASS predictor=MemERSubgoalPredictor`、`ASSETS=PASS`、`MEMER_SMOKE=PASS` |
 | 七路线种子与 cap（CPU） | `POLICY_SEEDS=PASS models=7 seeds=0,7,42 cases=21 cpu_only=1`、`EVAL_CAP=PASS models=7 dataset=test-hard max_steps=1800 rejected_step=1801` |
 | 规格与上游未动 | `DELIVERY_UNCHANGED=PASS`、`UPSTREAM_GUARD=PASS` |
-| 每组结果与视频 | 每组 `EVAL_COVERAGE=PASS expected=86 missing=0`、`EVAL_VIDEOS=PASS videos=86`、`OFFICIAL_MEDIA=PASS total=86 fail=0` |
+| 每组结果与视频 | 每组 `EVAL_COVERAGE=PASS expected=86 missing=0`、`EVAL_VIDEOS=PASS videos=86`、`OFFICIAL_MEDIA=PASS total=86 fail=0`、`VIDEO_LAYOUT=PASS model=<m> seed=7 videos=86 error_named=0`（上游 mme-vla 布局，三态命名） |
 | 完整矩阵与预算 | `RUN_POLICY_SEED=PASS seed=7 combinations=4`、`STAGE3_MATRIX=PASS policy_seed=7 combinations=4 unique_terminal=344`、`BUDGET_ENFORCEMENT=PASS` |
 | MemER hard0 对拍（最后） | 两侧各 `EVAL_COVERAGE=PASS expected=192 missing=0`、`OFFICIAL_MEDIA=PASS total=192 fail=0`；`GATE2_INPUTS=PASS expected=192 missing=0 extra=0`、`GATE2_PROVENANCE=PASS local_rows=0`、`GATE2=INFO compared=192 …`（两侧成功率、终态相同数、翻转数、McNemar p、逐步一致数） |
 
@@ -168,6 +171,7 @@
 | `scripts/eval-official/run_seat.sh::{step_cap_pairing,variant_pairing,build_server_cmd,start_client}`、`run_eval_gl.sh` 参数转发 | 拟新增 `--policy-seed` 与 `--memer-adapter`；MemER变体配对、服务／客户端seed、test-hard cap=1800 | test-hard0仍1300；支持0／7／42，本版任务只传7；错配直接拒跑 |
 | `scripts/eval-official/smvla_server.py::{reseed,SMVLAPolicyHost,cmd_serve,main}`、`pp_server_wrap.py` 与PP启动参数 | 将固定种子变成显式传入并保留各路线官方生命周期 | SimpleMemVLA每局reseed；PP按原SID随机流；FrameSamp `MME_VLA_Policy.reset` 每局重设同一seed的PRNG |
 | `scripts/eval-official/env_client.py::SeatRunner`、`trace_writer.py`、`eval_report.py`、`model_eval_report.py`、`official_media_check.py` | 传 `policy_seed`／adapter，结果与trace/provenance对齐；报告核实际1800；逐组验收和总汇总 | 环境身份 key 保留，通过独立根隔离模型种子；不把历史缺字段补成已证种子 |
+| `scripts/eval-official/run_seat.sh::{finish_episode_dir,publish_dir}`、`render_official_video.py::render_episode`、`official_media_check.py`、`video_check.py`（新增发布与布局核验） | 局目录收尾后把官方版式视频按上游 `eval.py` 布局发布到 `<run 根>/<模型 ID>/seed<policy_seed>/[变体/]videos/<task>_ep<N>_<终态>_<task_goal>_<tier>.mp4`，终态三态、strict-cap 一律 `timeout`；出索引 tsv；核验 `VIDEO_LAYOUT` | 局目录与 `official/` 原位不动；旧 `error` 命名不再出现；GroundSG 原生视频改名发布、重绘视频去 `official-rerender__` 前缀 |
 | `scripts/eval-official/run_astra.sh`、`astra_hard_runner.py::{DATASET_STEP_PAIRING,check_pairing,TracedEnv,run_one,build_parser}` | Astra独立路线cap1800／模型seed转发、真实调用前守卫、结果／trace记录 | 本版仅CPU／零外联验收；费用、两局硬守卫与test-hard0口径不变 |
 | `scripts/eval-official/budget_ledger.py` 与 `env_client.py`／任务编排的预算构造 | 本轮cap784、infra50、expired0在每个消费者一致读取 | 历史默认不改；本轮实际守卫与报告同口径 |
 | `scripts/eval-official/client-env/{pyproject.toml,uv.lock}`（仅确有依赖缺口时） | 真实 MemER 所需依赖声明与锁 | 优先复用现锁，根环境不动，不临时 pip 补正式依赖 |
@@ -184,7 +188,7 @@
 |---|---|---|---|---|---|
 | R1 | 本部分八节改名范围的 `scripts/**`、`src/robomme_hard/**`、`tests/**`；现有子项目 lock 仅改项目名 | `src/robomme/**`、`third_party/**`、`docs/**`、规则文档、根依赖；不新增顶层入口 | 先完成改名及别名表，之后才派写入 R2／R3；顺序1 | 核心短测、命名残留检查、`CLIENT_REPLAY_EQ`、`TEST_INVENTORY` | GPU=0；独立worktree；R1完成前他人不写该集合 |
 | R2 | `official_defs.py`、改名后 `groundsg_client.py`、原侧驱动 `official_hard_runner.py`／`run_official_hard.sh`、客户端子项目两依赖文件（必要时） | 上游源码、运行入口、其他客户端／报告／测试／文档 | MemER变体、adapter、预测器seed及日志接口交给R3；顺序2 | `uv run --no-sync python -m pytest tests/pipeline/evalx/groundsg -q`；`MEMER_WIRING` | GPU=0、端口=无；独立worktree；R2独占这三个对象 |
-| R3 | `run_seat.sh`、`run_eval_gl.sh`、`env_client.py`、`smvla_server.py`、`pp_server_wrap.py`、`trace_writer.py`、`eval_report.py`、`model_eval_report.py`、`official_media_check.py`、`budget_ledger.py` | R2／R5集合、三方源码、生成规格、测试／文档 | 按R2接口转seed／adapter，cap1800／逐组输出／预算配置；顺序3 | `uv run --no-sync python -m pytest tests/pipeline/eval tests/pipeline/evalx/report -q`；`POLICY_SEEDS`、`EVAL_CAP` | GPU=0；独立worktree；共享运行入口／trace／身份归R3 |
+| R3 | `run_seat.sh`、`run_eval_gl.sh`、`env_client.py`、`smvla_server.py`、`pp_server_wrap.py`、`trace_writer.py`、`eval_report.py`、`model_eval_report.py`、`official_media_check.py`、`render_official_video.py`、`video_check.py`、`budget_ledger.py` | R2／R5集合、三方源码、生成规格、测试／文档 | 按R2接口转seed／adapter，cap1800／逐组输出／预算配置；顺序3 | `uv run --no-sync python -m pytest tests/pipeline/eval tests/pipeline/evalx/report -q`；`POLICY_SEEDS`、`EVAL_CAP` | GPU=0；独立worktree；共享运行入口／trace／身份归R3 |
 | R5 | `scripts/eval-official/run_astra.sh`、`astra_hard_runner.py`、`tests/pipeline/evalx/astra/{test_astra_wiring.py,test_astra_stop_rules.py,test_run_astra_script.py,astra_fakes.py,contracts.delta.json}` | R2／R3／R4集合、受保护／三方源码、付费与GPU运行 | 复用R3的字段契约，只改Astra独立入口；顺序4 | `uv run --no-sync python -m pytest tests/pipeline/evalx/astra -q`；Astra的 `POLICY_SEEDS`／`EVAL_CAP` 和费用守卫 | GPU=0、外联=0、费用=0；Astra入口与测试唯一归R5 |
 | R4 | `tests/pipeline/eval/test_seat_scripts.py`、`test_env_session.py`、`test_policy_clients.py`、`test_smvla_server_units.py`、`test_eval_report.py`、`test_official_media_check.py`、`test_budget_ledger.py`、`test_identity_contract.py`、`test_seat_runner_e2e.py`、`test_eval_wiring.py`、`tests/pipeline/evalx/groundsg/{test_groundsg_official_adapter.py,groundsg_fakes.py,contracts.delta.json}`、`tests/pipeline/eval/contracts.delta.json`、`tests/pipeline/evalx/report/contracts.delta.json` | 生产代码、上游源码、Astra／其他测试；不写R1改名未完成文件 | R1完成后按R2／R3／R5契约并行准备；全部交付后整合，顺序5 | 定向CPU测试＋核心短测；7路线×3seed功能反例及cap、预算守卫必须实际执行 | GPU=0；独立worktree；这批测试由R4唯一写入，新增文件先列确切路径 |
 | 主会话自做 | 现行文档、旧名表、资产／运行清单、报告汇总与GL编排 | 标记块、受保护代码、他人在途内容 | 共享规格/运行配置唯一负责人；runbook最终核实 | `RUN_INPUTS`、`ASSETS`、四入口与禁触检查、完整矩阵验收 | 正式运行4席，每席1GPU；`p3-`、`p3-smoke-`前缀，run_name与JobID进launch.md |
@@ -215,7 +219,7 @@ ls -1 scripts/*.py
 4. 新根 `R3=$N/sgeval-<确认日期>-03`，四组 `$R3/<模型>/seed7/` 下分别放stage／trace／media／report。全部任务明确指定 `--dataset test-hard --max-steps 1800 --strict-cap --policy-seed 7`；MemER另指定新 `--groundsg-variant ground-sg-memer --memer-adapter <已核实路径>`，实际flag以R1／R3整合后接口为准。任务配置守卫拒绝本版seed0／42运行。
 5. 8片入队，仍最多4席，不增加占位job数量；沿原顺序 SimpleMemVLA → PonderPounce → FrameSamp+Modulation，再加入MemER，组内按固定分片／清单顺序运行。每席一次只起一个任务，服务起前探端口，记实际端口、节点、server_epoch、服务argv与种子，健康检查和首推分别验收；srun使用 `--gpu_cmode=shared`。共享预算 `$R3/budget-ledger.jsonl` 的route含模型和模型seed7，任务独立attempt账本记录 `accepted_attempt_id`；各片 `--reset-budget 106`，共享infra上限50，每身份重试最多1次。
 6. 登录节点tmux会话前缀 `p3-`，smoke前缀 `p3-smoke-`；完整名、JobID与日志路径写launch.md。日志三件套与 `EXIT_CODE=` 尾行必须保留，监听完成／异常／无进展，不因tmux启动成功承诺代理会自动唤醒。
-7. 每模型seed7单独运行报告和媒体验收（已有报告参数 `--cap 1800 --expect-total 86`），校验权威身份集合、真实1800上限、视频唯一性／完整解码与来源；官方自产视频与重绘互斥，原始帧按现行验收后清理规则保留。4组各过覆盖、视频与官方媒体闸门后才汇总344局。
+7. 每模型seed7单独运行报告和媒体验收（已有报告参数 `--cap 1800 --expect-total 86`），另按八.7 布局发布视频并核 `VIDEO_LAYOUT`（strict-cap 局文件名必须 `timeout`），校验权威身份集合、真实1800上限、视频唯一性／完整解码与来源；官方自产视频与重绘互斥，原始帧按现行验收后清理规则保留。4组各过覆盖、视频与官方媒体闸门后才汇总344局。
 8. **最后跑 MemER hard0 对拍**：四模型 V9 全部验收通过后才起。局清单沿用上一轮第二档 `test-hard0` 的 16 任务 × 12 局 = 192（`$I/qwenvl/gate2/` 同式清单，重新生成并核指纹）；两侧各先 1 局 smoke（原侧经 `run_official_hard.sh --dataset test-hard0 --max-steps 1300 --variant ground-sg-memer --memer-adapter <路径>`，新侧经 `run_seat.sh` 同参数），再原侧 8 片 + 新侧 8 片进同样 4 席，`SEAT_XLA_MEM_FRACTION=0.65`、`--episode-wall 3600` 沿 QwenVL 口径；两侧都 `--policy-seed 7`。跑完用上一轮的对比工具（1005 计划 S6）出 `GATE2_INPUTS`／`GATE2_PROVENANCE`／`GATE2=INFO compared=192`，两侧 `OFFICIAL_MEDIA` 各过。是差异报告，不证明等价。
 9. 留档结果与预算后提交、推送。原计划自动scancel改为按恢复时最新资源指令处理：此前用户要求保留四个最新job，未经新释放指令不自动取消它们；只停止本轮明确记录的任务步骤／tmux会话，禁止全局清理。
 
@@ -360,3 +364,19 @@ CPU 回放／夹具消耗真实 reset／轨迹均为 0。新预算账本同时�
 ### 八.6 成绩报告口径
 
 成绩只报告本版seed7的逐格／任务／档位与总成功率，每个任务难度格 `n=2`；没有三种子运行，不产出三种子均值／标准差或冒称已验证多种子成绩。与旧1600步成绩的差异注明条件已变，不宣称等价或无回归。
+
+### 八.7 视频目录与命名（2026-10-06 两个只读子代理查实；用户选定「照上游 mme-vla」）
+
+用户记忆的「task suite / task name / model seed 三层 + `<ep_num>_<task_goal>_<success/fail/timeout>.mp4`」在任何来源都不成立。各来源实际规则：
+
+| 来源 | 目录层级 | 文件名 | 终态字面量 |
+|---|---|---|---|
+| 官方网站 robomme.github.io、README、`doc/submission/model_example.md`、challenge 提交说明 | 未规定；提交只是向 `doc/submission/<model>.md` 提 PR 附成绩表（列名 Suite / Task / Seed 7 / Seed 42 / Seed 0 / Avg），不含视频 | 未规定 | 未规定 |
+| 上游 mme-vla `examples/robomme/eval.py` + `utils.py::RolloutRecorder` | `<save_dir>/<policy_name>/ckpt<model_ckpt_id>/seed<model_seed>/[gemini｜qwenvl｜memer｜oracle]/videos/`（子目标层只在 `subgoal_type in SUBGOAL_TYPES` 时存在） | `{env_id}_ep{episode_id}_{success_flag}_{task_goal}_{difficulty}.mp4` | `success`／`fail`／`timeout`（`epstate.count > max_steps`）；`unknown` 不存盘 |
+| 官方 `scripts/evaluation.py`（与上游逐字节相同） | `runs/saved_videos/` 平铺 | `{task}_ep_{episode}_{outcome}_{task_goal}.mp4` | `info.get("status","unknown")` |
+| `src/robomme` `RobommeRecordWrapper`（冻结） | `<output_root>/videos/` | `{env_id}_ep{episode}_seed{seed}[_FailRecover*]_{difficulty}_{goal}.mp4`，失败前缀 `FAILED_` | 成功无标记、失败 `FAILED_`、无 timeout |
+| SimpleMemVLA `robomme_sim/eval_success.py` | `<video_dir>/<task>/` | `{task}__ep{episode}__{succ｜fail}.mp4` | `succ`／`fail` |
+| PonderPounce | 自身无录像代码，由 vla_eval 框架按 yaml 录到 `<out>/shard_<gpu>_<sim>/` | 本仓库内未找到 | 未找到 |
+| 我们新侧现状（`run_eval_gl.sh::pub_root`、`run_seat.sh::publish_dir`、`render_official_video.py::render_episode`、`env_client.py::v8_key`） | `<media-root>/<模型标签>/<dataset>/new/<task>_<tier>_<环境seed>.a<attempt>/official/`（无模型 seed 层；路径里的 seed 是环境构造 seed） | `official-rerender__<task>_ep<源局或builder局>a<attempt>_<terminal_reason>_<task_goal>_<tier>.mp4`；GroundSG QwenVL 保留官方原生名（尾部 `hard`）；超 255 字节截断加哈希，完整名在 `official/render.json` | `success`／`fail`／`timeout`／`error`；旧口径 strict-cap 超时局 `status=timeout` 但 `terminal_reason=error`，文件名带 `error` |
+
+本计划采用的布局（第一部分二第 ③ 件）：`<run 根>/<模型 ID>/seed<policy_seed>/[oracle｜qwenvl｜memer/]videos/<task>_ep<N>_<success｜fail｜timeout>_<task_goal>_<tier>.mp4`，与上游 `eval.py` 的差别只有三处并写明：没有 `ckpt<id>` 层（本仓库权重由 `RUN_INPUTS` 记录）、`ep<N>` 后不带 attempt（只发布账本接受的那一次）、末尾用 tier 替 difficulty。本机现存视频产物：上一轮 5 × 192 在 NFS `$R2/gate2-new-*/media/`；本机 `artifacts/sg-evaluation/` 下只有各路线 1 局冒烟与 1004 的本机 800 局。HF 打包上传按用户 2026-10-06「先不做打包上传的问题」不纳入本计划（仓库现无按模型打包评估视频上传 HF 的脚本；已有 bucket 流程与 greatlakes 纯 CPU 校验 job 的要点留待以后另立计划）。
