@@ -10,9 +10,21 @@ results.epochs.jsonl）；``run_eval_gl.sh`` 的就地转码（帧数核对、�
 不覆盖、中断收尾只写一次；``run_official_hard.sh`` 的分轮重试（先重启服务再重发、重试额度、synthetic 之外的正常路径）
 与原侧转码发布；``pair_seat.sh`` 先原侧后新侧、前一侧服务退出后才起后一侧。轮询间隔用
 ``SEAT_POLL_S``／``SEAT_READY_POLL_S`` 缩短。
+
+第二阶段 S2b（1005 计划第二部分一节）：``seat_media_lib.sh`` 的完整收尾链用真实小型无损帧夹具（FFV1 + 帧索引 +
+契约 trace）跑 ``source run_seat.sh`` 后的 ``finish_episode_dir``——重绘在并入轨迹之后、转码之前（调用顺序）、
+``official/*.mp4`` 出现且顶层 ``episode.mp4`` 恰一个、重绘失败时原始帧逐文件指纹不变随目录发布并写
+``official-render.failed``、重入后恢复；``render_official_dir`` 已有官方视频完整核验通过才 ``KEPT``、不通过移开重绘、
+重绘器不支持 ``--source`` 时干净失败；``run_eval_gl.sh`` 的解释器环境变量经 ``source run_seat.sh`` 与参数解析后
+原样保留（``RUN_INPUT_PY``／``RUN_INPUTS=`` 行与实际起服务所用解释器）、重绘器不支持 ``--source`` 时
+``RUN_BLOCKED reason=run_inputs``、默认开启的官方重绘失败不影响发布与 ``SEAT_REC_SYNC``；``SGEVAL_PP_SERVER_WRAP=1``
+时 pp 服务以绝对路径起 ``pp_server_wrap.py``、外壳缺失 ``RUN_BLOCKED``。重绘器在这些用例里换成桩
+（``STUB_RENDERER``，按 S2a 约定的 ``--source raw`` CLI 读原始帧出视频与 ``render.json``）；真实重绘器的逐帧正确性由
+S2a 的 ``test_sgx_render_official_video.py`` 负责。
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
@@ -76,6 +88,7 @@ case "$1" in
   -|-c) exec "{sys.executable}" "$@";;
   -m) if [[ "$2" == ponderpounce.eval.robomme_server ]]; then shift 2; exec "{sys.executable}" "{ENGINE}" server "$@"; fi
       exec "{sys.executable}" "$@";;
+  *pp_server_wrap.py) echo "$1" >> "{tmp_path}/pp-wrap-argv0.txt"; shift; exec "{sys.executable}" "{ENGINE}" server "$@";;
   *smvla_server.py|*serve_policy.py) shift; exec "{sys.executable}" "{ENGINE}" server "$@";;
   *env_client.py) shift; exec "{sys.executable}" "{ENGINE}" client "$@";;
   *pp_official_runner.py|*official_hard_runner.py) shift; exec "{sys.executable}" "{ENGINE}" runner "$@";;
@@ -425,14 +438,215 @@ def test_pp_route_health_ready_and_epochs(rig):
 # ---------------------------------------------------------------- run_eval_gl.sh／run_official_hard.sh／pair_seat.sh
 
 
+STUB_RENDERER = r'''#!/usr/bin/env python3
+"""测试桩：按 S2a 约定的 CLI（<局目录> --source raw --jobs 1 --ffmpeg F --out-subdir official）读原始帧出视频。
+
+只为驱动席位收尾链：帧数取 frames-front.jsonl 行数，出一个同帧数的灰色 mp4 与 render.json（identity／route／
+frames／output_fingerprint）；FAKE_RENDER_FAIL=1、原始帧已不在或无 trace 时失败；每次调用记一行 FAKE_RENDER_LOG。"""
+import argparse, hashlib, json, os, subprocess, sys, time
+from pathlib import Path
+ap = argparse.ArgumentParser()
+ap.add_argument("episodes", nargs="*", type=Path)
+ap.add_argument("--source", choices=["auto", "mp4", "raw"], default="auto")  # @@SOURCE@@
+ap.add_argument("--jobs", type=int, default=1)
+ap.add_argument("--ffmpeg", default="ffmpeg")
+ap.add_argument("--out-subdir", default="official")
+a = ap.parse_args()
+ok = True
+for d in a.episodes:
+    ev = {"dir": d.name, "source": getattr(a, "source", None), "jobs": a.jobs, "trace": (d / "trace.jsonl").is_file(),
+          "episode_mp4": (d / "episode.mp4").exists(), "raw": (d / "front.mkv").exists(), "t": time.time()}
+    if os.environ.get("FAKE_RENDER_LOG"):
+        with open(os.environ["FAKE_RENDER_LOG"], "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(ev) + "\n")
+    if os.environ.get("FAKE_RENDER_FAIL") == "1" or not ev["raw"] or not ev["trace"]:
+        print(f"OFFICIAL_RENDER=FAIL dir={d.name} reason=stub_fail")
+        ok = False
+        continue
+    rows = [json.loads(x) for x in (d / "trace.jsonl").read_text().splitlines() if x.strip()]
+    n = sum(1 for x in (d / "frames-front.jsonl").read_text().splitlines() if x.strip())
+    out = d / a.out_subdir
+    out.mkdir(exist_ok=True)
+    ident = rows[0].get("identity") or {}
+    tmp = out / ".render-tmp.mp4"
+    subprocess.run([a.ffmpeg, "-hide_banner", "-loglevel", "error", "-y", "-f", "lavfi", "-i", "color=c=gray:s=32x16:r=30",
+                    "-frames:v", str(n), "-c:v", "libx264", "-pix_fmt", "yuv420p", "-f", "mp4", str(tmp)], check=True)
+    v = out / f"official-rerender__{ident.get('key', d.name)}.mp4"
+    os.replace(tmp, v)
+    sha = hashlib.sha256(v.read_bytes()).hexdigest()
+    (out / "render.json").write_text(json.dumps({"identity": ident, "route": rows[0].get("route"), "frames": n,
+                                                 "output_fingerprint": {"sha256": sha}}))
+    print(f"OFFICIAL_RENDER=PASS dir={d.name} frames={n} source_kind=raw-new")
+sys.exit(0 if ok else 1)
+'''
+STUB_RENDERER_NO_SOURCE = STUB_RENDERER.replace(
+    'ap.add_argument("--source", choices=["auto", "mp4", "raw"], default="auto")  # @@SOURCE@@', "")
+MEDIA_FILES = ("seat_media_lib.sh", "official_media_check.py")
+KEY0 = "PickXtimes_xhard0_510300"
+
+
+def _media_repo(repo: Path, renderer: str = STUB_RENDERER) -> Path:
+    """执行副本最小形态的脚本目录：四个真实席位脚本、真实媒体函数库与验收工具、桩重绘器。"""
+    eo = repo / "scripts" / "eval-official"
+    eo.mkdir(parents=True, exist_ok=True)
+    for name in SCRIPTS + MEDIA_FILES:
+        shutil.copy2(EO / name, eo / name)
+    (eo / "render_official_video.py").write_text(renderer, encoding="utf-8")
+    return repo
+
+
+def _px(v: int) -> bytes:
+    return bytes([v % 256, (v * 7) % 256, (v * 13) % 256]) * (16 * 16)
+
+
+def _raw_episode(d: Path) -> None:
+    """录像器真实格式：front/wrist.mkv（FFV1 16×16，3 帧编码）+ frames-<stream>.jsonl 4 行（含一帧重复）+ summary.json。"""
+    d.mkdir(parents=True, exist_ok=True)
+    for i, stream in enumerate(("front", "wrist")):
+        raw = b"".join(_px(v) for v in (10 + i, 50 + i, 90 + i))
+        subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24",
+                        "-s", "16x16", "-r", "30", "-i", "-", "-c:v", "ffv1", str(d / f"{stream}.mkv")], input=raw, check=True)
+        (d / f"frames-{stream}.jsonl").write_text(
+            "".join(json.dumps({"idx": idx, "enc": enc, "sha256": f"{stream}-{enc}"}) + "\n"
+                    for idx, enc in enumerate((0, 1, 1, 2))), encoding="utf-8")
+    (d / "summary.json").write_text('{"RECORDER_VERIFY": "PASS"}', encoding="utf-8")
+
+
+def _trace_dir(td: Path, key: str = KEY0, attempt: int = 1) -> None:
+    """契约 trace（C6 身份、C8 frames_recorded = 演示 1 + 初始 1 + 观测 2 = 4）。"""
+    td.mkdir(parents=True, exist_ok=True)
+    ident = {"task": "PickXtimes", "tier": "xhard0", "seed": 510300, "source_episode": 0, "builder_episode": 0,
+             "dataset": "test-hard0", "key": key, "attempt": attempt}
+    rows = [{"kind": "header", "schema": "sgeval-trace/1", "route": "pp/new", "identity": ident, "max_steps": 1300},
+            {"kind": "end", "status": "success", "terminal_reason": "success", "exec_steps": 2, "demo_frames": 1,
+             "steps_attempted": 2, "steps_observed": 2, "frames_recorded": 4}]
+    (td / "trace.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+
+
+def _raw_fingerprint(d: Path) -> dict[str, str]:
+    return {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in sorted(d.iterdir()) if p.name.endswith(".mkv") or p.name.startswith("frames-")}
+
+
+def _finish(repo: Path, src: Path, tsrc: Path | str, root: Path, name: str, **env_extra) -> tuple[int, str]:
+    """``source run_seat.sh`` 后调真实 ``finish_episode_dir``（并入轨迹 → 官方重绘 → 转码 → 原子发布）。"""
+    env = dict(os.environ, TOOL_PY=sys.executable, SGEVAL_OFFICIAL_RENDER="1", **env_extra)
+    script = 'source "$1/scripts/eval-official/run_seat.sh"; finish_episode_dir "$2" "$3" "$4" "$5"; echo "FINISH_RC=$?"'
+    p = subprocess.run(["bash", "-c", script, "_", str(repo), str(src), str(tsrc), str(root), name], env=env,
+                       capture_output=True, text=True, timeout=120)
+    return p.returncode, p.stdout + p.stderr
+
+
+def _render_log(p: Path) -> list[dict]:
+    return F.read_jsonl(p) if p.exists() else []
+
+
+def test_finish_chain_renders_official_after_trace_merge_before_transcode(tmp_path):
+    repo = _media_repo(tmp_path / "repo")
+    src, tsrc, root = tmp_path / "rec" / f"{KEY0}.a1", tmp_path / "trace" / f"{KEY0}.a1", tmp_path / "pub"
+    _raw_episode(src)
+    _trace_dir(tsrc)
+    log = tmp_path / "render.jsonl"
+    rc, out = _finish(repo, src, tsrc, root, src.name, FAKE_RENDER_LOG=str(log))
+    assert rc == 0 and "FINISH_RC=0" in out, out
+    (ev,) = _render_log(log)
+    # 调用顺序：轨迹已并入、原始帧仍在、尚未转码；按约定 CLI 调用
+    assert ev["trace"] and ev["raw"] and not ev["episode_mp4"] and ev["source"] == "raw" and ev["jobs"] == 1
+    lines = out.splitlines()
+    i_render = next(i for i, x in enumerate(lines) if x.startswith("OFFICIAL_RENDER=PASS"))
+    i_verify = next(i for i, x in enumerate(lines) if x.startswith("OFFICIAL_VERIFY=PASS"))
+    i_tc = next(i for i, x in enumerate(lines) if x.startswith("REC_TRANSCODE ") and "result=ok" in x)
+    assert i_render < i_verify < i_tc
+    d = root / src.name
+    assert sorted(p.name for p in d.glob("*.mp4")) == ["episode.mp4"]
+    (off,) = list((d / "official").glob("*.mp4"))
+    assert _mp4_frames(off) == 4 and _mp4_frames(d / "episode.mp4") == 4
+    assert not list(d.glob("*.mkv")) and not (d / "official-render.failed").exists()
+    assert not src.exists() and not tsrc.exists()
+    # 发布后的目录过全量验收（冻结清单 + 账本 + 发布根）
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps([{"task": "PickXtimes", "tier": "xhard0", "seed": 510300, "key": KEY0}]))
+    ledger = tmp_path / "pp.ledger.jsonl"
+    ledger.write_text(json.dumps({"kind": "accept", "key": KEY0, "attempt_id": "x", "attempt_no": 1,
+                                  "accepted_attempt_id": "x", "status": "success"}) + "\n")
+    p = subprocess.run([sys.executable, str(EO / "official_media_check.py"), "--manifest", str(manifest), "--ledger",
+                        str(ledger), "--root", str(root), "--dataset", "test-hard0", "--route", "pp/new"],
+                       capture_output=True, text=True)
+    assert p.returncode == 0, p.stdout + p.stderr
+    assert "OFFICIAL_MEDIA=PASS total=1 skip=0 fail=0 no_frame_error=0" in p.stdout
+
+
+def test_finish_chain_render_failure_keeps_raw_then_reentry_recovers(tmp_path):
+    repo = _media_repo(tmp_path / "repo")
+    src, tsrc, root = tmp_path / "rec" / f"{KEY0}.a1", tmp_path / "trace" / f"{KEY0}.a1", tmp_path / "pub"
+    _raw_episode(src)
+    _trace_dir(tsrc)
+    before = _raw_fingerprint(src)
+    rc, out = _finish(repo, src, tsrc, root, src.name, FAKE_RENDER_FAIL="1")
+    assert rc == 0 and "FINISH_RC=0" in out, out  # 重绘失败照常发布
+    assert "OFFICIAL_RENDER=FAIL" in out and f"OFFICIAL_RENDER_KEEP_RAW dir={src.name}" in out
+    d = root / src.name
+    assert _raw_fingerprint(d) == before  # 原始帧逐文件指纹不变、随目录发布
+    assert (d / "official-render.failed").is_file() and "OFFICIAL_RENDER=FAIL" in (d / "official-render.failed").read_text()
+    assert sorted(p.name for p in d.glob("*.mp4")) == ["episode.mp4"] and _mp4_frames(d / "episode.mp4") == 4
+    tc = json.loads((d / "transcode.json").read_text())
+    assert tc["result"] == "ok" and tc["raw_kept"] is True
+    assert not (d / "official").exists() or not list((d / "official").glob("*.mp4"))
+    # 重入：把发布出的目录拿回节点再走一遍收尾（重绘器恢复正常）
+    src2 = tmp_path / "rec2" / src.name
+    shutil.copytree(d, src2)
+    rc, out = _finish(repo, src2, "", tmp_path / "pub2", src.name)
+    assert rc == 0 and "FINISH_RC=0" in out, out
+    d2 = tmp_path / "pub2" / src.name
+    assert len(list((d2 / "official").glob("*.mp4"))) == 1
+    assert sorted(p.name for p in d2.glob("*.mp4")) == ["episode.mp4"] and _mp4_frames(d2 / "episode.mp4") == 4
+    assert not (d2 / "official-render.failed").exists() and not list(d2.glob("*.mkv"))
+    assert "raw_kept" not in json.loads((d2 / "transcode.json").read_text())
+
+
+def test_render_official_dir_kept_only_after_full_verify(tmp_path):
+    repo = _media_repo(tmp_path / "repo")
+    d = tmp_path / "ep" / f"{KEY0}.a1"
+    _raw_episode(d)
+    _trace_dir(d)
+    log = tmp_path / "render.jsonl"
+    env = dict(os.environ, TOOL_PY=sys.executable, FAKE_RENDER_LOG=str(log))
+    lib = repo / "scripts" / "eval-official" / "seat_media_lib.sh"
+    call = ["bash", "-c", 'source "$1"; render_official_dir "$2"; echo "RC=$?"', "_", str(lib), str(d)]
+    out = subprocess.run(call, env=env, capture_output=True, text=True).stdout
+    assert "RC=0" in out and len(_render_log(log)) == 1, out
+    # 已有官方视频且核验通过：KEPT，不再调用重绘器
+    out = subprocess.run(call, env=env, capture_output=True, text=True).stdout
+    assert "OFFICIAL_RENDER=KEPT" in out and "RC=0" in out and len(_render_log(log)) == 1, out
+    # 截断官方视频：不得 KEPT；旧目录移到隐藏留证目录，重绘后恰一个可解码视频
+    (v,) = list((d / "official").glob("*.mp4"))
+    v.write_bytes(v.read_bytes()[: v.stat().st_size // 2])
+    out = subprocess.run(call, env=env, capture_output=True, text=True).stdout
+    assert "OFFICIAL_RENDER=KEPT" not in out and "OFFICIAL_RENDER_REJECTED" in out and "RC=0" in out, out
+    assert len(_render_log(log)) == 2
+    (v2,) = list((d / "official").glob("*.mp4"))
+    assert _mp4_frames(v2) == 4
+    assert len(list(d.glob(".official-rejected-*"))) == 1
+
+
+def test_render_official_dir_without_source_flag_fails_cleanly(tmp_path):
+    repo = _media_repo(tmp_path / "repo", renderer=STUB_RENDERER_NO_SOURCE)
+    d = tmp_path / "ep" / f"{KEY0}.a1"
+    _raw_episode(d)
+    _trace_dir(d)
+    lib = repo / "scripts" / "eval-official" / "seat_media_lib.sh"
+    p = subprocess.run(["bash", "-c", 'source "$1"; render_official_dir "$2"; echo "RC=$?"', "_", str(lib), str(d)],
+                       env=dict(os.environ, TOOL_PY=sys.executable), capture_output=True, text=True)
+    assert "reason=renderer_no_source_raw" in p.stdout and "RC=0" not in p.stdout, p.stdout
+    assert not (d / "official").exists()
+
+
 @pytest.fixture
 def gl_repo(rig):
     """执行副本最小形态：四个真实脚本、假解释器、空的 PonderPounce 子模块目录、原侧驱动占位文件。"""
     repo = rig["tmp"] / "repo"
-    (repo / "scripts" / "eval-official").mkdir(parents=True)
-    for name in SCRIPTS:
-        shutil.copy2(EO / name, repo / "scripts" / "eval-official" / name)
-    for name in ("pp_official_runner.py", "official_hard_runner.py"):
+    _media_repo(repo)
+    for name in ("pp_official_runner.py", "official_hard_runner.py", "pp_server_wrap.py"):
         (repo / "scripts" / "eval-official" / name).write_text("# 占位：由假解释器分派到假引擎\n", encoding="utf-8")
     (repo / "third_party" / "PonderPounce").mkdir(parents=True)
     for rel in (".venv/bin/python", "artifacts/v8-two/venvs/smvla-env/bin/python"):
@@ -456,8 +670,10 @@ def _gl_cmd(rig, repo, stage, seat, *extra, dataset="test-hard", max_steps=1600,
 def test_gl_transcodes_publishes_by_output_key_and_rerun_does_not_overwrite(rig, gl_repo):
     seat = f"{rig['idx']:02d}"
     stage = rig["tmp"] / "stage"
+    rig["env"]["SGEVAL_OFFICIAL_RENDER"] = "0"  # 显式关掉官方重绘：转码与发布行为与 BASE 相同
     rc, out = _run(_gl_cmd(rig, gl_repo, stage, seat), rig["env"])
     assert rc == 0, out
+    assert "OFFICIAL_RENDER" not in out
     assert f"V8_SEAT_DONE seat={seat} outcome=pass rc=0" in out
     sync = F.verdict(out.splitlines(), "SEAT_REC_SYNC")
     assert sync[""] == "PASS" and sync["n"] == "2" and sync["left"] == "0"
@@ -516,6 +732,79 @@ def test_gl_rejects_no_record(rig, gl_repo):
     cmd = _gl_cmd(rig, gl_repo, rig["tmp"] / "stage", "01") + ["--no-record"]
     rc, out = _run(cmd, rig["env"])
     assert rc == 2 and "V8_SEAT_DONE seat=01 outcome=fail rc=2 reason=bad_args" in out
+
+
+def _wrapper_py(rig, name: str) -> Path:
+    """记下自己被调用、再转交假解释器的包装：证明起进程时用的确实是调用方给的解释器。"""
+    p = rig["tmp"] / "bin" / name
+    p.write_text(f'#!/usr/bin/env bash\necho "$*" >> "{rig["tmp"]}/{name}.calls"\nexec "{rig["fakepy"]}" "$@"\n',
+                 encoding="utf-8")
+    p.chmod(p.stat().st_mode | stat.S_IXUSR)
+    return p
+
+
+def test_gl_interpreter_overrides_survive_source_and_render_failure_still_publishes(rig, gl_repo):
+    """BENCH_PY／SMVLA_PY／MME_PY 由调用方给出：经 source run_seat.sh 与参数解析后原样保留（RUN_INPUT_PY、RUN_INPUTS=
+    行与实际起服务的解释器）。官方重绘默认开启；假引擎的轨迹只有 header，重绘后核验不过 → 每局保留原始帧、写
+    official-render.failed、照常转码发布，SEAT_REC_SYNC 仍 PASS。"""
+    seat = f"{rig['idx']:02d}"
+    stage = rig["tmp"] / "stage"
+    bench, smvla = _wrapper_py(rig, "bench-py"), _wrapper_py(rig, "smvla-py")
+    rig["env"].update(BENCH_PY=str(bench), SMVLA_PY=str(smvla), MME_PY="/nonexistent/custom-mme-python")
+    rc, out = _run(_gl_cmd(rig, gl_repo, stage, seat), rig["env"], timeout=150)
+    assert rc == 0, out
+    ri = F.verdict(out.splitlines(), "RUN_INPUTS")
+    assert ri[""] == "PASS" and ri["bench_py"] == str(bench) and ri["smvla_py"] == str(smvla), out
+    assert ri["mme_py"] == "/nonexistent/custom-mme-python" and ri["official_render"] == "1"
+    assert ri["renderer"] == "source_raw" and ri["robomme_hard"].endswith("robomme_hard/__init__.py")
+    assert f"RUN_INPUT_PY role=smvla py={smvla} needed=1" in out
+    assert "RUN_INPUT_PY role=mme py=/nonexistent/custom-mme-python needed=0 editable=missing" in out
+    assert "smvla_server.py" in (rig["tmp"] / "smvla-py.calls").read_text()  # 服务确由覆盖的解释器起
+    assert "robomme_hard" in (rig["tmp"] / "bench-py.calls").read_text()
+    assert out.count(f"OFFICIAL_RENDER_KEEP_RAW dir=") == 2
+    assert f"OFFICIAL_RENDER_TALLY ok=0 fail=2 seat={seat}" in out
+    sync = F.verdict(out.splitlines(), "SEAT_REC_SYNC")
+    assert sync[""] == "PASS" and sync["transcoded"] == "2", out
+    pub = stage / "media" / "smvla" / "test-hard" / "new"
+    for ident in rig["idents"]:
+        d = pub / f"{ident['key']}.a1"
+        assert (d / "official-render.failed").is_file() and sorted(p.name for p in d.glob("*.mkv")) == ["front.mkv", "wrist.mkv"]
+        assert sorted(p.name for p in d.glob("*.mp4")) == ["episode.mp4"]
+
+
+def test_gl_run_inputs_blocks_when_renderer_lacks_source(rig, gl_repo):
+    (gl_repo / "scripts" / "eval-official" / "render_official_video.py").write_text(STUB_RENDERER_NO_SOURCE, encoding="utf-8")
+    rc, out = _run(_gl_cmd(rig, gl_repo, rig["tmp"] / "stage", "01"), rig["env"])
+    assert rc == 3, out
+    ri = F.verdict(out.splitlines(), "RUN_INPUTS")
+    assert ri[""] == "FAIL" and "renderer_no_source_raw" in ri["reason"], out
+    assert "RUN_BLOCKED reason=run_inputs" in out and "V8_SEAT_DONE seat=01 outcome=fail rc=3" in out
+    assert _events(rig) == []
+
+
+def test_pp_server_wrap_starts_by_absolute_path(rig, gl_repo):
+    """SGEVAL_PP_SERVER_WRAP=1：pp 服务以绝对路径起 pp_server_wrap.py（cwd 在第三方目录），参数与原服务相同。"""
+    rig["env"]["SGEVAL_PP_SERVER_WRAP"] = "1"
+    cmd = _seat_cmd(rig, "--pp-ckpt", str(rig["pp_ckpt"]), policies="pp", dataset="test-hard0")
+    cmd[1] = str(gl_repo / "scripts" / "eval-official" / "run_seat.sh")
+    rc, out = _run(cmd, rig["env"])
+    assert rc == 0, out
+    assert "server_wrap=1" in out
+    argv0 = (rig["tmp"] / "pp-wrap-argv0.txt").read_text().split()
+    assert argv0 == [str(gl_repo / "scripts" / "eval-official" / "pp_server_wrap.py")]
+    (s,) = _events(rig, "server", "start")
+    argv = s["argv"]
+    assert argv[argv.index("--args.seed") + 1] == "0" and argv[argv.index("--args.checkpoint_path") + 1] == str(rig["pp_ckpt"])
+
+
+def test_pp_server_wrap_missing_blocks(rig, gl_repo):
+    rig["env"]["SGEVAL_PP_SERVER_WRAP"] = "1"
+    (gl_repo / "scripts" / "eval-official" / "pp_server_wrap.py").unlink()
+    cmd = _seat_cmd(rig, "--pp-ckpt", str(rig["pp_ckpt"]), policies="pp", dataset="test-hard0")
+    cmd[1] = str(gl_repo / "scripts" / "eval-official" / "run_seat.sh")
+    rc, out = _run(cmd, rig["env"])
+    assert rc == 3 and "RUN_BLOCKED reason=pp_server_wrap_missing" in out, out
+    assert _events(rig) == []
 
 
 def _official_cmd(rig, repo, stage, seat, *extra, budget=1):
