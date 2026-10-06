@@ -8,20 +8,35 @@
 # 用法：
 #   run_seat.sh --seat 甲 --seat-idx 1 --gpu 0 --cond N --out <dir> --identities <shard-NN.json>
 #               --dataset {ood,hard-verify} --max-steps N [--strict-cap]
-#               --ledger-dir <dir> --reset-budget N --infra-retry-budget N
-#               [--policies smvla,perceptual-framesamp-modul,groundsg,pp] [--groundsg-variant {ground-sg-oracle,ground-sg-qwenvl}]
-#               [--qwenvl-groundsg-adapter <dir>] [--framesamp-modul-ckpt <run>/79999] [--groundsg-ckpt <run>/79999]
+#               --ledger-dir <dir> [--reset-budget N] --infra-retry-budget N --policy-seed N
+#               --budget-ledger <path> --trajectory-cap N --shared-infra-cap N --expired-cap N --planned-first-tries N
+#               [--policies smvla,perceptual-framesamp-modul,groundsg,pp]
+#               [--groundsg-variant {ground-sg-oracle,ground-sg-qwenvl,ground-sg-memer}]
+#               [--qwenvl-groundsg-adapter <dir>] [--memer-adapter <dir>]
+#               [--context-deadline-s S] [--first-infer-deadline-s S] [--media-deadline-s S]
+#               [--framesamp-modul-ckpt <run>/79999] [--groundsg-ckpt <run>/79999]
 #               [--pp-ckpt <dir>] [--smvla-ckpt <dir>] [--rec-root <dir>] [--trace-root <dir>]
 #               [--openpi-data-home <dir> --tokenizer-sha256 <hex>]（跑 perceptual-framesamp-modul／groundsg 时这两项必填）
 #               [--cpus 0-3] [--order forward|reverse|shuffle] [--compile-cache on|off] [--det on|off]
 #               [--relay on|off] [--limit N] [--never-degrade] [--noprog-s S]
 #               [--episode-wall S] [--episode-wall-smvla S] [--episode-wall-framesamp-modul S]
-#   --v8 已删除（env_client.py 不再接受；账本三项对两个数据集都必填）。
+#   --v8 已删除（env_client.py 不再接受）。
 #
-# 数据集与步数（计划第五节「通用」）：起跑打印并核对 --dataset 与 --max-steps 的配对——hard-verify ↔ 1300 且不带
-#   --strict-cap，ood ↔ 1600 且必须带 --strict-cap；不符打印 RUN_BLOCKED reason=step_cap_pairing、退出 3。
-#   这是启动参数的一致性检查，不是按档查表。groundsg 必须给 --groundsg-variant；ground-sg-qwenvl 必须给已存在的
-#   --qwenvl-groundsg-adapter；变体或 adapter 配错（含给了变体却不跑 groundsg）打印 RUN_BLOCKED reason=variant_pairing。
+# 数据集与步数（1006 计划第三阶段；接口冻结说明 2.1）：起跑打印并核对 --dataset 与 --max-steps 的配对——hard-verify ↔
+#   1300 且不带 --strict-cap，ood ↔ 1800 且必须带 --strict-cap（第 1801 次 step 在进入环境前被拒）；不符打印
+#   RUN_BLOCKED reason=step_cap_pairing、退出 3。这是启动参数的一致性检查，不是按档查表。groundsg 必须给
+#   --groundsg-variant；ground-sg-qwenvl 必须且只能给已存在的 --qwenvl-groundsg-adapter，ground-sg-memer 必须且只能给
+#   已存在的 --memer-adapter，oracle 两者都不许给；变体或 adapter 配错（含给了变体却不跑 groundsg）打印
+#   RUN_BLOCKED reason=variant_pairing。
+# 模型种子（接口冻结说明 2.2）：--policy-seed 必填（非负整数，缺失 RUN_BLOCKED reason=policy_seed、退出 3），转发给
+#   客户端（seat_info、结果行）与服务：perceptual-framesamp-modul／groundsg（含 MemER，动作服务命令相同）改走外壳
+#   scripts/eval-official/policy_server_wrap.py --seed=<n>（包锁定三方 serve_policy.py，不改三方源码），smvla
+#   smvla_server.py serve --policy-seed <n>，pp --args.seed <n>；服务写 <out>/<label>/server-metadata-<端口>.json
+#   （含 policy_seed、argv），客户端经 --server-metadata 反查结果行 server_seed。作为库被 source 时种子取全局
+#   POLICY_SEED（缺省继承同名环境变量），为空则 build_server_cmd 打印 RUN_BLOCKED reason=policy_seed、返回 3。
+# 预算（接口冻结说明 2.4）：--budget-ledger --trajectory-cap --shared-infra-cap --expired-cap --planned-first-tries 必填、
+#   原样转发给 env_client.py，缺任一 RUN_BLOCKED reason=budget_args、退出 3（不回落 budget_ledger.py 常量默认值）；
+#   --reset-budget 改为可选，不给时客户端只计量、不因 reset 额度停机。
 # 策略与目录：策略号 smvla=0、perceptual-framesamp-modul=1、groundsg=2、pp=3；输出与账本目录名（label）为策略名，groundsg 为
 #   groundsg-<variant>：结果 <out>/<label>/results.jsonl，账本 <ledger-dir>/<label>.ledger.jsonl，录像
 #   <rec-root>/<label>/<key>.a<attempt>/，轨迹 <trace-root>/<label>/<key>.a<attempt>/。
@@ -41,8 +56,11 @@
 # 超时：server 就绪 1200 s（等待中 kill -0 查 server 存活）；客户端第一局另放宽 600 s（首次推理编译）；
 #       单局墙钟 smvla 900 s、perceptual-framesamp-modul 1200 s、groundsg／pp 1800 s（--episode-wall 统一覆盖，--episode-wall-smvla／-framesamp-modul
 #       优先）→ 基础设施超时（客户端退出 75，本脚本重起客户端）；
-#       progress.json 超过「单局墙钟 + 600 + 600」秒（不小于 --noprog-s，缺省 1200）不更新 → 打印 NO_PROGRESS，
-#       杀掉 server 与客户端重起一次；server 中途死亡 → 重起（最多 2 次）。
+#       无进展：读 progress.json 的 phase／identity／step（env_client.py 只在这些量变化时更新，不做定时心跳）；
+#       这组值超过「单局墙钟 + 600 + 600」秒（不小于 --noprog-s，缺省 1200）不变 → 打印 NO_PROGRESS，杀掉 server
+#       与客户端重起一次（不再看 client.log 的 mtime：日志刷新不算进展）；server 中途死亡 → 重起（最多 2 次）。
+#       客户端／服务／无进展三项重启计数持久化到 <ledger-dir>/<label>.recovery.json（client_restarts、server_restarts、
+#       noprog_restarts），续跑沿用、不清零。
 # 客户端退出码：0 完成；3 阻塞、5 reset 额度耗尽、6 RUN_INCOMPLETE（账本读回仍有身份无权威终态——不是服务故障）
 #       一律不重启 server 与客户端、照实收尾；75 等其余非 0 重起客户端（最多 8 次）。
 # server_epoch（gate2_compare.py 的服务启动边界）：每次 server 就绪（含重起）在 <out>/<label>/server-epochs.tsv 追加
@@ -87,7 +105,14 @@ SEAT="" ; SEAT_IDX="" ; GPU="" ; COND="" ; OUT="" ; IDENTS="" ; POLICIES="smvla,
 ORDER="forward" ; COMPILE_CACHE="off" ; DET="off" ; RELAY="off" ; LIMIT="0"
 NEVER_DEGRADE="" ; WALL_SMVLA="" ; WALL_FRAMESAMP_MODUL="" ; WALL_ALL=""
 LEDGER_DIR="" ; RESET_BUDGET="" ; INFRA_RETRY_BUDGET="" ; REC_ROOT="" ; TRACE_ROOT="" ; OPENPI_HOME="" ; TOKENIZER_SHA=""
-DATASET="" ; MAX_STEPS="" ; STRICT_CAP=0 ; GROUNDSG_VARIANT="" ; QWENVL_ADAPTER=""
+DATASET="" ; MAX_STEPS="" ; STRICT_CAP=0 ; GROUNDSG_VARIANT="" ; QWENVL_ADAPTER="" ; MEMER_ADAPTER=""
+# 第三阶段：模型种子（作为库被 source 时继承同名环境变量，供原侧驱动复用 build_server_cmd）、预算参数、执行期限
+POLICY_SEED="${POLICY_SEED:-}"
+BUDGET_LEDGER="" ; TRAJECTORY_CAP="" ; SHARED_INFRA_CAP="" ; EXPIRED_CAP="" ; PLANNED_FIRST_TRIES=""
+CONTEXT_DEADLINE="" ; FIRST_INFER_DEADLINE="" ; MEDIA_DEADLINE=""
+SERVER_PORT_CUR=""  # 当前服务端口（客户端据此找服务元数据）
+PROG_SIG="" ; PROG_SINCE=0 ; PROG_FLOOR=0 ; IDLE=0  # 无进展检测状态（progress_idle）
+CLIENT_RESTARTS=0 ; SERVER_RESTARTS=0 ; NOPROG_RESTARTS=0  # 持久化到 <ledger-dir>/<label>.recovery.json
 TOKENIZER_REL="big_vision/paligemma_tokenizer.model"
 FRAMESAMP_MODUL_CKPT="${FRAMESAMP_MODUL_CKPT:-/data/hongzefu/robomme_policy_learning_MotionJEPA/v1-store/models/official-mme-vla/perceptual-framesamp-modul/79999}"
 GROUNDSG_CKPT="${GROUNDSG_CKPT:-/data/hongzefu/robomme_policy_learning-vqa-test/runs/ckpts/mme_vla_suite/symbolic-grounded-subgoal/79999}"
@@ -193,7 +218,7 @@ step_cap_pairing() {  # 全局 DATASET／MAX_STEPS／STRICT_CAP 的配对核对�
   local want_steps want_strict
   case "$DATASET" in
     hard-verify) want_steps=1300; want_strict=0;;
-    ood) want_steps=1600; want_strict=1;;
+    ood) want_steps=1800; want_strict=1;;
     *) echo "RUN_BLOCKED reason=step_cap_pairing dataset=${DATASET:-unset} max_steps=${MAX_STEPS:-unset} strict_cap=$STRICT_CAP detail=unknown_dataset"
        return 3;;
   esac
@@ -204,24 +229,54 @@ step_cap_pairing() {  # 全局 DATASET／MAX_STEPS／STRICT_CAP 的配对核对�
   echo "STEP_CAP_PAIRING=PASS dataset=$DATASET max_steps=$MAX_STEPS strict_cap=$STRICT_CAP"
 }
 
-variant_pairing() {  # $1 = 逗号分隔策略；groundsg 变体与 QwenVL adapter 的配对核对，不符返回 3
-  local pols=",$1," why=""
+variant_pairing() {  # $1 = 逗号分隔策略；groundsg 变体与 QwenVL／MemER adapter 的配对核对，不符返回 3
+  local pols=",$1," why="" memer="${MEMER_ADAPTER:-}"
   if [[ "$pols" == *",groundsg,"* ]]; then
     case "$GROUNDSG_VARIANT" in
-      ground-sg-oracle) [[ -z "$QWENVL_ADAPTER" ]] || why="adapter_without_qwenvl";;
+      ground-sg-oracle)
+        if [[ -n "$QWENVL_ADAPTER" ]]; then why="adapter_without_qwenvl"
+        elif [[ -n "$memer" ]]; then why="memer_adapter_without_memer"; fi;;
       ground-sg-qwenvl)
         if [[ -z "$QWENVL_ADAPTER" ]]; then why="qwenvl_needs_adapter"
+        elif [[ -n "$memer" ]]; then why="memer_adapter_without_memer"
         elif [[ ! -d "$QWENVL_ADAPTER" ]]; then why="adapter_missing path=$QWENVL_ADAPTER"; fi;;
+      ground-sg-memer)
+        if [[ -z "$memer" ]]; then why="memer_needs_adapter"
+        elif [[ -n "$QWENVL_ADAPTER" ]]; then why="adapter_without_qwenvl"
+        elif [[ ! -d "$memer" ]]; then why="memer_adapter_missing path=$memer"; fi;;
       "") why="groundsg_needs_variant";;
       *) why="unknown_variant variant=$GROUNDSG_VARIANT";;
     esac
-  elif [[ -n "$GROUNDSG_VARIANT$QWENVL_ADAPTER" ]]; then
+  elif [[ -n "$GROUNDSG_VARIANT$QWENVL_ADAPTER$memer" ]]; then
     why="variant_without_groundsg"
   fi
   if [[ -n "$why" ]]; then
     echo "RUN_BLOCKED reason=variant_pairing policies=$1 variant=${GROUNDSG_VARIANT:-none} detail=$why"; return 3
   fi
-  echo "VARIANT_PAIRING=PASS policies=$1 variant=${GROUNDSG_VARIANT:-none} adapter=${QWENVL_ADAPTER:-none}"
+  echo "VARIANT_PAIRING=PASS policies=$1 variant=${GROUNDSG_VARIANT:-none} adapter=${QWENVL_ADAPTER:-none} memer_adapter=${memer:-none}"
+}
+
+policy_seed_check() {  # --policy-seed 必填且为非负整数；不符打印 RUN_BLOCKED reason=policy_seed、返回 3
+  if [[ ! "${POLICY_SEED:-}" =~ ^[0-9]+$ ]]; then
+    echo "RUN_BLOCKED reason=policy_seed detail=--policy-seed 必填且为非负整数（现为 '${POLICY_SEED:-}'，不回落任何旧默认值）"
+    return 3
+  fi
+  echo "POLICY_SEED_CHECK=PASS policy_seed=$POLICY_SEED"
+}
+
+budget_args_check() {  # 五个预算参数必填（非负整数＋账本路径）；缺任一打印 RUN_BLOCKED reason=budget_args、返回 3
+  local miss=() pair name
+  [[ -n "$BUDGET_LEDGER" ]] || miss+=(--budget-ledger)
+  for pair in "TRAJECTORY_CAP:--trajectory-cap" "SHARED_INFRA_CAP:--shared-infra-cap" "EXPIRED_CAP:--expired-cap" \
+              "PLANNED_FIRST_TRIES:--planned-first-tries"; do
+    name="${pair%%:*}"
+    [[ "${!name}" =~ ^[0-9]+$ ]] || miss+=("${pair#*:}")
+  done
+  if (( ${#miss[@]} )); then
+    echo "RUN_BLOCKED reason=budget_args detail=必须给 ${miss[*]}（非负整数；不回落 budget_ledger.py 常量默认值）"
+    return 3
+  fi
+  echo "BUDGET_ARGS=PASS budget_ledger=$BUDGET_LEDGER trajectory_cap=$TRAJECTORY_CAP shared_infra_cap=$SHARED_INFRA_CAP expired_cap=$EXPIRED_CAP planned_first_tries=$PLANNED_FIRST_TRIES reset_budget=${RESET_BUDGET:-meter_only}"
 }
 
 dataset_crossed() {  # $1 = results.jsonl；已有别的数据集的结果行即返回 0（打印 RUN_BLOCKED）
@@ -272,6 +327,7 @@ preflight_mme_vla() {  # $1 = perceptual-framesamp-modul|groundsg
   [[ -f "$sub/src/mme_vla_suite/models/config/robomme/$hc" ]] || { echo "RUN_BLOCKED reason=yaml_missing $hc"; return 1; }
   [[ -d "$ck/params" && -d "$ck/assets" ]] || { echo "RUN_BLOCKED reason=ckpt_layout $ck"; return 1; }
   [[ -x "$MME_VLA_PY" ]] || { echo "RUN_BLOCKED reason=mme_vla_venv_missing $MME_VLA_PY"; return 1; }
+  [[ -f "$(policy_server_wrap_path)" ]] || { echo "RUN_BLOCKED reason=policy_server_wrap_missing path=$(policy_server_wrap_path)"; return 1; }
   echo "MME_VLA_PREFLIGHT=PASS policy=$pol commit=$head history_config=$hc ckpt=$ck py=$MME_VLA_PY"
 }
 
@@ -283,11 +339,19 @@ preflight_pp() {
   if [[ "${SGEVAL_PP_SERVER_WRAP:-0}" == "1" && ! -f "$(pp_server_wrap_path)" ]]; then
     echo "RUN_BLOCKED reason=pp_server_wrap_missing path=$(pp_server_wrap_path)"; return 1
   fi
-  echo "PP_PREFLIGHT=PASS ckpt=$PP_CKPT py=$PP_PY seed=0 hf_home=${HF_HOME:-unset} hf_hub_offline=${HF_HUB_OFFLINE:-1} server_wrap=${SGEVAL_PP_SERVER_WRAP:-0}"
+  echo "PP_PREFLIGHT=PASS ckpt=$PP_CKPT py=$PP_PY seed=${POLICY_SEED:-unset} hf_home=${HF_HOME:-unset} hf_hub_offline=${HF_HUB_OFFLINE:-1} server_wrap=${SGEVAL_PP_SERVER_WRAP:-0}"
 }
 
 pp_server_wrap_path() {  # pp 服务外壳的绝对路径（服务 cwd 在第三方目录，必须用绝对路径起）
   echo "$REPO/scripts/eval-official/pp_server_wrap.py"
+}
+
+policy_server_wrap_path() {  # MME-VLA 动作服务外壳（perceptual-framesamp-modul／groundsg 共用）的绝对路径
+  echo "$REPO/scripts/eval-official/policy_server_wrap.py"
+}
+
+server_metadata_path() {  # $1 = 策略；$2 = 端口 → 服务元数据路径（SRV_META_DIR 可覆盖目录；缺省 <out>/<label>）
+  echo "${SRV_META_DIR:-${OUT:-$PWD}/$(pol_label "$1")}/server-metadata-$2.json"
 }
 
 tokenizer_gate() {  # perceptual-framesamp-modul／groundsg server 启动前核 OPENPI_DATA_HOME 下 tokenizer 的 sha256（不现场下载顶替）
@@ -366,9 +430,14 @@ PY
 
 # ---------------------------------------------------------------- server
 
-build_server_cmd() {  # $1 = 策略；$2 = 端口 → 设 SRV_DIR、SRV_ENV、SRV_ARGV（不启动）
-  local pol="$1" port="$2"
+build_server_cmd() {  # $1 = 策略；$2 = 端口 → 设 SRV_DIR、SRV_ENV、SRV_ARGV（不启动）；POLICY_SEED 为空返回 3
+  local pol="$1" port="$2" meta
   SRV_ENV=() ; SRV_ARGV=()
+  if [[ ! "${POLICY_SEED:-}" =~ ^[0-9]+$ ]]; then
+    echo "RUN_BLOCKED reason=policy_seed detail=build_server_cmd 需要 POLICY_SEED（现为 '${POLICY_SEED:-}'）"
+    return 3
+  fi
+  meta="$(server_metadata_path "$pol" "$port")"
   case "$pol" in
     perceptual-framesamp-modul|groundsg)
       SRV_DIR="$REPO/third_party/mme-vla"
@@ -380,18 +449,19 @@ build_server_cmd() {  # $1 = 策略；$2 = 端口 → 设 SRV_DIR、SRV_ENV、SR
       [[ "$DET" == "on" ]] && SRV_ENV+=(XLA_FLAGS="--xla_gpu_deterministic_ops=true --xla_gpu_autotune_level=0")
       # tokenizer 缓存根固定（server 在 env 清理后启动，须显式写进 server 环境）
       SRV_ENV+=(OPENPI_DATA_HOME="$OPENPI_HOME" PYTHONUNBUFFERED=1)
-      SRV_ARGV=("$MME_VLA_PY" scripts/serve_policy.py --seed=7 --port="$port"
-                policy:checkpoint --policy.config=mme_vla_suite --policy.dir="$(ckpt_of "$pol")");;
+      # 外壳包锁定三方 scripts/serve_policy.py（cwd 仍在 third_party/mme-vla），--sgeval-* 由外壳自用、其余原样交给 tyro
+      SRV_ARGV=("$MME_VLA_PY" "$(policy_server_wrap_path)" --sgeval-metadata-out="$meta" --seed="$POLICY_SEED"
+                --port="$port" policy:checkpoint --policy.config=mme_vla_suite --policy.dir="$(ckpt_of "$pol")");;
     pp)
       SRV_DIR="$REPO/third_party/PonderPounce"
       SRV_ENV=(PYTHONUNBUFFERED=1 HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-1}" TRANSFORMERS_OFFLINE="${TRANSFORMERS_OFFLINE:-1}")
       [[ -n "${HF_HOME:-}" ]] && SRV_ENV+=(HF_HOME="$HF_HOME")
-      if [[ "${SGEVAL_PP_SERVER_WRAP:-0}" == "1" ]]; then  # 外壳子类化原服务（回包加 subgoal），参数不变
-        SRV_ARGV=("$PP_PY" "$(pp_server_wrap_path)")
+      if [[ "${SGEVAL_PP_SERVER_WRAP:-0}" == "1" ]]; then  # 外壳子类化原服务（回包加 subgoal 与审计键、写服务元数据）
+        SRV_ARGV=("$PP_PY" "$(pp_server_wrap_path)" --sgeval-metadata-out="$meta")
       else
         SRV_ARGV=("$PP_PY" -m ponderpounce.eval.robomme_server)
       fi
-      SRV_ARGV+=(--args.checkpoint_path "$PP_CKPT" --args.seed 0 --args.device cuda:0 --port "$port");;
+      SRV_ARGV+=(--args.checkpoint_path "$PP_CKPT" --args.seed "$POLICY_SEED" --args.device cuda:0 --port "$port");;
     *)
       SRV_DIR="$REPO"
       # 确定性模式：--det + CUBLAS_WORKSPACE_CONFIG=:4096:8
@@ -400,8 +470,9 @@ build_server_cmd() {  # $1 = 策略；$2 = 端口 → 设 SRV_DIR、SRV_ENV、SR
       SRV_ENV+=(PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false PYTHONUTF8=1
                 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True MPLBACKEND=Agg)
       SRV_ARGV=("$SMVLA_PY" scripts/eval-official/smvla_server.py serve --port "$port" --ckpt "$SMVLA_CKPT"
-                --warmup "${detarg[@]}" --metadata_out "$OUT/$(pol_label "$pol")/server-metadata-$port.json");;
+                --warmup "${detarg[@]}" --policy-seed "$POLICY_SEED" --metadata_out "$meta");;
   esac
+  return 0
 }
 
 server_ready() {  # $1 = 策略；$2 = 端口。pp 看 /health 200，其余看端口在听
@@ -410,7 +481,8 @@ server_ready() {  # $1 = 策略；$2 = 端口。pp 看 /health 200，其余看�
 
 start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志；$4 = 结果目录（server_epoch 记在这里，缺省 <out>/<label>）
   local pol="$1" port="$2" slog="$3" rdir="${4:-$OUT/$(pol_label "$1")}"
-  build_server_cmd "$pol" "$port"
+  build_server_cmd "$pol" "$port" || return 3
+  SERVER_PORT_CUR="$port"
   ( cd "$SRV_DIR" && exec setsid env "${CLEAN_ENV[@]}" "${NOPROXY_ENV[@]}" "${SRV_ENV[@]}" CUDA_VISIBLE_DEVICES="$GPU" \
       "${TASKSET[@]}" "${SRV_ARGV[@]}" ) >"$slog" 2>&1 &
   SERVER_PID=$!
@@ -432,7 +504,7 @@ start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志；$4 = 结果目录�
   if [[ "$pol" == "perceptual-framesamp-modul" || "$pol" == "groundsg" ]]; then
     local expect; expect="$(yaml_expect_of "$pol")"
     if grep -q "history_config='$expect'" "$slog"; then
-      echo "SERVER_CONFIG=PASS policy=$pol history_config=$expect seed=7"
+      echo "SERVER_CONFIG=PASS policy=$pol history_config=$expect seed=$POLICY_SEED wrap=policy_server_wrap"
     else
       echo "RUN_BLOCKED reason=server_config（日志里没有 history_config='$expect'）"; stop_server; return 3
     fi
@@ -444,7 +516,7 @@ start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志；$4 = 结果目录�
       echo "RELAY_READY port=$((port + 1)) pid=$RELAY_PID"
     fi
   elif [[ "$pol" == "pp" ]]; then
-    echo "SERVER_CONFIG=INFO policy=pp health=200 seed=0 ckpt=$PP_CKPT server_wrap=${SGEVAL_PP_SERVER_WRAP:-0}"
+    echo "SERVER_CONFIG=INFO policy=pp health=200 seed=$POLICY_SEED ckpt=$PP_CKPT server_wrap=${SGEVAL_PP_SERVER_WRAP:-0}"
   fi
   mkdir -p "$rdir"
   note_epoch "$rdir/results.jsonl" "$rdir/server-epochs.tsv" "$port"
@@ -467,7 +539,45 @@ noprog_limit() {  # 无进展阈值：$1 = 策略；$2 = 1（缺省）含首局�
   echo "$n"
 }
 
-idle_s() {  # 参数：若干文件；取其中最新 mtime 距今的秒数；都不存在返回 0（视为刚开始）
+progress_sig() {  # $1 = progress.json → 打印「phase|identity|attempt_no|step|episodes_done<TAB>t」；读不到打印空
+  [[ -f "$1" ]] || return 0
+  "$(tool_py)" - "$1" <<'PY' 2>/dev/null
+import json, sys
+try:
+    d = json.load(open(sys.argv[1], encoding="utf-8"))
+except Exception:
+    print("unreadable\t0")
+    raise SystemExit(0)
+sig = "|".join(str(d.get(k)) for k in ("phase", "identity", "attempt_no", "step", "episodes_done"))
+t = d.get("t")
+print(f"{sig}\t{int(t) if isinstance(t, (int, float)) else 0}")
+PY
+}
+
+progress_idle() {  # $1 = progress.json；设全局 IDLE = 具名进展（phase／identity／step）最后一次变化距今的秒数
+  # 只有签名变化才算进展：客户端只在阶段、身份、步数变化时写 progress.json；同一签名被重写（刷新 t）不重新计时。
+  # 起点不早于 PROG_FLOOR（客户端每次（重）起时设为当时）。
+  local line sig t now
+  now=$(ts)
+  line="$(progress_sig "$1")"
+  sig="${line%%$'\t'*}"; t="${line##*$'\t'}"
+  [[ "$t" =~ ^[0-9]+$ ]] || t=0
+  if [[ -n "$sig" && "$sig" != "$PROG_SIG" ]]; then
+    PROG_SIG="$sig"
+    PROG_SINCE=$(( t > 0 ? t : now ))
+  fi
+  (( PROG_SINCE < PROG_FLOOR )) && PROG_SINCE=$PROG_FLOOR
+  (( PROG_SINCE == 0 )) && PROG_SINCE=$now
+  IDLE=$(( now - PROG_SINCE ))
+  (( IDLE < 0 )) && IDLE=0
+  return 0
+}
+
+idle_s() {  # 参数：若干文件。唯一参数是 progress.json 时按具名进展计（progress_idle）；否则取最新 mtime 距今的秒数，
+  # 都不存在返回 0（视为刚开始；原侧驱动看 results.jsonl 等文件 mtime，沿用此口径）
+  if [[ $# -eq 1 && "$(basename "$1")" == progress.json ]]; then
+    progress_idle "$1"; echo "$IDLE"; return
+  fi
   local f m last=0
   for f in "$@"; do
     m=$(stat -c %Y "$f" 2>/dev/null || echo 0)
@@ -475,6 +585,28 @@ idle_s() {  # 参数：若干文件；取其中最新 mtime 距今的秒数；�
   done
   (( last == 0 )) && { echo 0; return; }
   echo $(( $(ts) - last ))
+}
+
+recovery_path() { echo "$LEDGER_DIR/$1.recovery.json"; }  # $1 = label
+
+recovery_load() {  # $1 = label；读回三项重启计数（文件不存在为 0），续跑沿用、不清零
+  local f txt k v
+  f="$(recovery_path "$1")"
+  CLIENT_RESTARTS=0 ; SERVER_RESTARTS=0 ; NOPROG_RESTARTS=0
+  if [[ -f "$f" ]]; then
+    txt="$(cat "$f")"
+    for k in client_restarts server_restarts noprog_restarts; do
+      v=0; [[ "$txt" =~ \"$k\":\ *([0-9]+) ]] && v="${BASH_REMATCH[1]}"
+      case "$k" in client_restarts) CLIENT_RESTARTS=$v;; server_restarts) SERVER_RESTARTS=$v;; *) NOPROG_RESTARTS=$v;; esac
+    done
+  fi
+  echo "RECOVERY_STATE label=$1 client_restarts=$CLIENT_RESTARTS server_restarts=$SERVER_RESTARTS noprog_restarts=$NOPROG_RESTARTS file=$f"
+}
+
+recovery_save() {  # $1 = label；原子写三项重启计数
+  local f; f="$(recovery_path "$1")"
+  printf '{"client_restarts": %d, "server_restarts": %d, "noprog_restarts": %d}\n' \
+    "$CLIENT_RESTARTS" "$SERVER_RESTARTS" "$NOPROG_RESTARTS" > "$f.tmp" && mv -f -- "$f.tmp" "$f"
 }
 
 restart_server() {  # 起 server 失败时保留 RUN_BLOCKED 的 3，其余记基础设施 4
@@ -608,12 +740,20 @@ build_client_cmd() {  # $1 = 策略；$2 = 客户端连接端口；$3 = 单局�
             --identities "$IDENTS" --order "$ORDER" --dataset "$DATASET" --max-steps "$MAX_STEPS"
             --cond "$COND" --seat "$SEAT" --port "$cport" --out "$OUT/$label"
             --episode-wall-s "$wall" --first-extra-s "$extra" --limit "$LIMIT"
-            --ledger "$LEDGER_DIR/$label.ledger.jsonl" --reset-budget "$RESET_BUDGET"
-            --infra-retry-budget "$INFRA_RETRY_BUDGET")
+            --ledger "$LEDGER_DIR/$label.ledger.jsonl" --infra-retry-budget "$INFRA_RETRY_BUDGET"
+            --policy-seed "$POLICY_SEED"
+            --budget-ledger "$BUDGET_LEDGER" --trajectory-cap "$TRAJECTORY_CAP" --shared-infra-cap "$SHARED_INFRA_CAP"
+            --expired-cap "$EXPIRED_CAP" --planned-first-tries "$PLANNED_FIRST_TRIES")
+  [[ -n "$RESET_BUDGET" ]] && CLI_ARGV+=(--reset-budget "$RESET_BUDGET")
+  [[ -n "$SERVER_PORT_CUR" ]] && CLI_ARGV+=(--server-metadata "$(server_metadata_path "$pol" "$SERVER_PORT_CUR")")
+  [[ -n "$CONTEXT_DEADLINE" ]] && CLI_ARGV+=(--context-deadline-s "$CONTEXT_DEADLINE")
+  [[ -n "$FIRST_INFER_DEADLINE" ]] && CLI_ARGV+=(--first-infer-deadline-s "$FIRST_INFER_DEADLINE")
+  [[ -n "$MEDIA_DEADLINE" ]] && CLI_ARGV+=(--media-deadline-s "$MEDIA_DEADLINE")
   (( STRICT_CAP == 1 )) && CLI_ARGV+=(--strict-cap)
   if [[ "$pol" == "groundsg" ]]; then
     CLI_ARGV+=(--groundsg-variant "$GROUNDSG_VARIANT")
     [[ -n "$QWENVL_ADAPTER" ]] && CLI_ARGV+=(--qwenvl-groundsg-adapter "$QWENVL_ADAPTER")
+    [[ -n "$MEMER_ADAPTER" ]] && CLI_ARGV+=(--memer-adapter "$MEMER_ADAPTER")
   fi
   [[ -n "$NEVER_DEGRADE" ]] && CLI_ARGV+=(--never-degrade)
   [[ -n "$REC_ROOT" ]] && CLI_ARGV+=(--rec-root "$REC_ROOT/$label")
@@ -628,6 +768,7 @@ start_client() {  # $1 = 策略；$2 = 客户端连接端口
   # 首次推理放宽只给 server 新（重）起后的第一个客户端；客户端单独重起（server 已热）不放宽
   (( FRESH_SERVER == 1 )) && extra="$FIRST_EXTRA"
   FRESH_SERVER=0
+  PROG_SIG="" ; PROG_FLOOR=$(ts)  # 新客户端：无进展计时从此刻起算
   build_client_cmd "$pol" "$cport" "$wall" "$extra"
   ( cd "$REPO" && exec setsid env "${NOPROXY_ENV[@]}" "${CLI_ENV[@]}" GLIBC_TUNABLES=glibc.rtld.optional_static_tls=16384 \
       PYTHONUNBUFFERED=1 CUDA_VISIBLE_DEVICES="$GPU" V75_DATA_ROOT="${V75_DATA_ROOT:-/data}" "${TASKSET[@]}" \
@@ -670,11 +811,11 @@ run_policy() {  # $1 = 策略；$2 = 策略号
 }
 
 policy_loop() {  # $1 策略 $2 server 端口 $3 客户端端口；返回 0 完成 / 3 阻塞 / 4 基础设施用尽 / 5 额度耗尽 / 6 账本未齐
-  local pol="$1" port="$2" cport="$3" rc slog dir idle
-  dir="$OUT/$(pol_label "$pol")"
+  local pol="$1" port="$2" cport="$3" rc slog dir idle label
+  label="$(pol_label "$pol")"; dir="$OUT/$label"
   # 无进展阈值须大于「单局墙钟 + 首次放宽 + 启动余量」，单局卡死先由客户端墙钟计时器以 75 退出并回收
   local noprog; noprog="$(noprog_limit "$pol" 1)"
-  local client_restarts=0 server_restarts=0 noprog_restarts=0
+  recovery_load "$label"  # 重启计数按运行组持久化：续跑沿用，不清零
   start_client "$pol" "$cport"
   while true; do
     if ! kill -0 "$CLIENT_PID" 2>/dev/null; then
@@ -686,32 +827,31 @@ policy_loop() {  # $1 策略 $2 server 端口 $3 客户端端口；返回 0 完�
       if (( rc == 5 )); then echo "RESET_BUDGET_EXHAUSTED policy=$pol seat=$SEAT（客户端退出 5，不重启）"; return 5; fi
       # 账本读回仍有身份无权威终态（客户端退出 6）：不是基础设施故障，不重启 server 与客户端
       if (( rc == 6 )); then echo "RUN_INCOMPLETE_SEAT policy=$pol seat=$SEAT（客户端退出 6，不重启服务与客户端）"; return 6; fi
-      client_restarts=$((client_restarts + 1))
-      if (( client_restarts > MAX_CLIENT_RESTARTS )); then echo "INFRA_EXHAUSTED policy=$pol client_restarts=$client_restarts"; return 4; fi
+      CLIENT_RESTARTS=$((CLIENT_RESTARTS + 1)); recovery_save "$label"
+      if (( CLIENT_RESTARTS > MAX_CLIENT_RESTARTS )); then echo "INFRA_EXHAUSTED policy=$pol client_restarts=$CLIENT_RESTARTS"; return 4; fi
       start_client "$pol" "$cport"
       continue
     fi
     if [[ -n "$SERVER_PID" ]] && ! server_alive; then
       echo "SERVER_DIED policy=$pol pid=$SERVER_PID"; SERVER_PID=""
       kill_group "$CLIENT_PID"; CLIENT_PID=""
-      server_restarts=$((server_restarts + 1))
-      if (( server_restarts > MAX_SERVER_RESTARTS )); then echo "INFRA_EXHAUSTED policy=$pol server_restarts=$server_restarts"; return 4; fi
+      SERVER_RESTARTS=$((SERVER_RESTARTS + 1)); recovery_save "$label"
+      if (( SERVER_RESTARTS > MAX_SERVER_RESTARTS )); then echo "INFRA_EXHAUSTED policy=$pol server_restarts=$SERVER_RESTARTS"; return 4; fi
       stop_server
       slog="$dir/server-$port-$(ts).log"
       restart_server "$pol" "$port" "$slog" "$dir" || return $?
       start_client "$pol" "$cport"
       continue
     fi
-    if [[ -f "$dir/progress.json" ]]; then idle="$(idle_s "$dir/progress.json")"; else idle="$(idle_s "$dir/client.log")"; fi
+    progress_idle "$dir/progress.json"; idle=$IDLE  # 具名进展（phase／identity／step），不看 client.log
     if (( idle > noprog )); then
-      echo "NO_PROGRESS policy=$pol idle_s=$idle limit_s=$noprog restarts=$noprog_restarts"
+      echo "NO_PROGRESS policy=$pol idle_s=$idle limit_s=$noprog restarts=$NOPROG_RESTARTS sig=${PROG_SIG:-none}"
       kill_group "$CLIENT_PID"; CLIENT_PID=""
-      if (( noprog_restarts >= 1 )); then echo "INFRA_EXHAUSTED policy=$pol no_progress_twice"; return 4; fi
-      noprog_restarts=$((noprog_restarts + 1))
+      if (( NOPROG_RESTARTS >= 1 )); then echo "INFRA_EXHAUSTED policy=$pol no_progress_twice"; return 4; fi
+      NOPROG_RESTARTS=$((NOPROG_RESTARTS + 1)); recovery_save "$label"
       stop_server
       slog="$dir/server-$port-$(ts).log"
       restart_server "$pol" "$port" "$slog" "$dir" || return $?
-      touch "$dir/progress.json"
       start_client "$pol" "$cport"
       continue
     fi
@@ -723,6 +863,7 @@ policy_loop() {  # $1 策略 $2 server 端口 $3 客户端端口；返回 0 完�
 # ---------------------------------------------------------------- 入口
 
 parse_seat_args() {
+  POLICY_SEED=""  # 直接执行时种子只认 --policy-seed，不继承环境变量
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --seat) SEAT="$2"; shift 2;;
@@ -759,6 +900,16 @@ parse_seat_args() {
       --strict-cap) STRICT_CAP=1; shift;;
       --groundsg-variant) GROUNDSG_VARIANT="$2"; shift 2;;
       --qwenvl-groundsg-adapter) QWENVL_ADAPTER="$2"; shift 2;;
+      --memer-adapter) MEMER_ADAPTER="$2"; shift 2;;
+      --policy-seed) POLICY_SEED="$2"; shift 2;;
+      --budget-ledger) BUDGET_LEDGER="$2"; shift 2;;
+      --trajectory-cap) TRAJECTORY_CAP="$2"; shift 2;;
+      --shared-infra-cap) SHARED_INFRA_CAP="$2"; shift 2;;
+      --expired-cap) EXPIRED_CAP="$2"; shift 2;;
+      --planned-first-tries) PLANNED_FIRST_TRIES="$2"; shift 2;;
+      --context-deadline-s) CONTEXT_DEADLINE="$2"; shift 2;;
+      --first-infer-deadline-s) FIRST_INFER_DEADLINE="$2"; shift 2;;
+      --media-deadline-s) MEDIA_DEADLINE="$2"; shift 2;;
       *) echo "未知参数 $1" >&2; exit 2;;
     esac
   done
@@ -774,13 +925,18 @@ parse_seat_args() {
   done
   [[ -z "$MAX_STEPS" || "$MAX_STEPS" =~ ^[0-9]+$ ]] || { echo "--max-steps 须为非负整数" >&2; exit 2; }
   [[ -n "$LEDGER_DIR" ]] || { echo "必须给 --ledger-dir（env_client.py 两个数据集都要求账本）" >&2; exit 2; }
-  [[ "$RESET_BUDGET" =~ ^[0-9]+$ ]] || { echo "必须给 --reset-budget <非负整数>" >&2; exit 2; }
+  [[ -z "$RESET_BUDGET" || "$RESET_BUDGET" =~ ^[0-9]+$ ]] || { echo "--reset-budget 须为非负整数（可不给：只计量）" >&2; exit 2; }
+  local _d
+  for _d in "$CONTEXT_DEADLINE" "$FIRST_INFER_DEADLINE" "$MEDIA_DEADLINE"; do
+    [[ -z "$_d" || "$_d" =~ ^[0-9]+$ ]] || { echo "--*-deadline-s 须为非负整数秒" >&2; exit 2; }
+  done
   [[ "$INFRA_RETRY_BUDGET" =~ ^[0-9]+$ ]] || { echo "必须给 --infra-retry-budget <非负整数>" >&2; exit 2; }
   mkdir -p "$OUT"
   OUT="$(cd "$OUT" && pwd)"  # 转绝对路径（server 子进程会 cd 进子模块）
   LEDGER_DIR="$(mkdir -p "$LEDGER_DIR" && cd "$LEDGER_DIR" && pwd)"
   [[ -n "$REC_ROOT" ]] && REC_ROOT="$(mkdir -p "$REC_ROOT" && cd "$REC_ROOT" && pwd)"
   [[ -n "$TRACE_ROOT" ]] && TRACE_ROOT="$(mkdir -p "$TRACE_ROOT" && cd "$TRACE_ROOT" && pwd)"
+  [[ -n "$BUDGET_LEDGER" ]] && BUDGET_LEDGER="$(mkdir -p "$(dirname "$BUDGET_LEDGER")" && cd "$(dirname "$BUDGET_LEDGER")" && pwd)/$(basename "$BUDGET_LEDGER")"
   [[ -n "$OPENPI_HOME" && -d "$OPENPI_HOME" ]] && OPENPI_HOME="$(cd "$OPENPI_HOME" && pwd)"
   IDENTS="$(cd "$(dirname "$IDENTS")" && pwd)/$(basename "$IDENTS")"
   [[ -n "$CPUS" ]] && TASKSET=(taskset -c "$CPUS")
@@ -792,10 +948,13 @@ main() {
   trap 'exit 143' TERM INT
   echo "SEAT_START seat=$SEAT idx=$SEAT_IDX gpu=$GPU cpus=${CPUS:-all} cond=$COND policies=$POLICIES host=$(hostname) \
 git=$(git -C "$REPO" rev-parse HEAD 2>/dev/null) compile_cache=$COMPILE_CACHE det=$DET relay=$RELAY \
-dataset=${DATASET:-unset} max_steps=${MAX_STEPS:-unset} strict_cap=$STRICT_CAP variant=${GROUNDSG_VARIANT:-none}"
+dataset=${DATASET:-unset} max_steps=${MAX_STEPS:-unset} strict_cap=$STRICT_CAP variant=${GROUNDSG_VARIANT:-none} \
+policy_seed=${POLICY_SEED:-unset}"
   step_cap_pairing || return 3
   variant_pairing "$POLICIES" || return 3
-  echo "SEAT_CONFIG ledger_dir=$LEDGER_DIR reset_budget=$RESET_BUDGET infra_retry_budget=$INFRA_RETRY_BUDGET \
+  policy_seed_check || return 3
+  budget_args_check || return 3
+  echo "SEAT_CONFIG ledger_dir=$LEDGER_DIR reset_budget=${RESET_BUDGET:-meter_only} infra_retry_budget=$INFRA_RETRY_BUDGET \
 rec_root=${REC_ROOT:-<out>/<label>/rec} trace_root=${TRACE_ROOT:-none} wall_smvla=$(wall_of smvla) wall_framesamp_modul=$(wall_of perceptual-framesamp-modul) \
 wall_groundsg=$(wall_of groundsg) wall_pp=$(wall_of pp) never_degrade=${NEVER_DEGRADE:+1} no_proxy=127.0.0.1,localhost \
 client_py_ext=$SGEVAL_CLIENT_PY"

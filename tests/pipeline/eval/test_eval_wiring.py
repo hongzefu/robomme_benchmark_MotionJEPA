@@ -4,11 +4,14 @@
 调用其中的命令构造函数（``build_client_cmd``／``build_server_cmd``／``build_runner_cmd``）与核对函数
 （``step_cap_pairing``／``variant_pairing``），逐路线核对：
 
-- 新侧 8 条路线（smvla、perceptual-framesamp-modul 走 ood；groundsg 两个变体与 pp 各走 hard-verify 与 ood）：客户端 argv 的
+- 新侧 10 条路线（smvla、perceptual-framesamp-modul 走 ood；groundsg 三个变体与 pp 各走 hard-verify 与 ood）：客户端 argv 的
   ``--policy``、``--dataset``、``--max-steps``、``--strict-cap``（只在 ood）、``--groundsg-variant``（只在 groundsg）、
-  ``--qwenvl-groundsg-adapter``（只在 QwenVL 变体）、``--trace-root``／``--rec-root``／``--out``／``--ledger`` 落在
-  ``<label>``（groundsg 为 ``groundsg-<variant>``）下、解释器（groundsg／pp 用客户端扩展环境）；服务 argv（perceptual-framesamp-modul／groundsg 的
-  ``--policy.dir`` 与 history_config 期望、pp 的 ``-m ponderpounce.eval.robomme_server --args.seed 0``）；端口策略号。
+  ``--qwenvl-groundsg-adapter``（只在 QwenVL 变体）、``--memer-adapter``（只在 MemER 变体）、``--policy-seed`` 与五个预算
+  参数原样透传、``--trace-root``／``--rec-root``／``--out``／``--ledger`` 落在
+  ``<label>``（groundsg 为 ``groundsg-<variant>``）下、解释器（groundsg／pp 用客户端扩展环境）；服务 argv（perceptual-framesamp-modul／groundsg
+  走外壳 ``policy_server_wrap.py --seed=<种子>``、``--policy.dir`` 与 history_config 期望，pp 的
+  ``-m ponderpounce.eval.robomme_server --args.seed <种子>``，smvla 的 ``--policy-seed <种子>``，均带服务元数据路径）；端口策略号。
+  第三阶段起 ood 的启动约定为 ``--max-steps 1800 --strict-cap``（接口冻结说明 2.1）。
 - 原侧 3 条路线（groundsg 两个变体、pp，hard-verify）：驱动脚本、``--max-steps 1300``、``--attempt``／``--only``、
   ``--variant``、adapter 只在 QwenVL 变体。
 - 配对核对拦得住错配：数据集与步数（含缺失、未知数据集、strict-cap 配错）、groundsg 变体与 adapter（含给了变体却不跑
@@ -39,9 +42,11 @@ NEW_ROUTES = [  # (策略, 变体, 数据集)
     ("smvla", "", "ood"), ("perceptual-framesamp-modul", "", "ood"),
     ("groundsg", "ground-sg-oracle", "hard-verify"), ("groundsg", "ground-sg-qwenvl", "hard-verify"), ("pp", "", "hard-verify"),
     ("groundsg", "ground-sg-oracle", "ood"), ("groundsg", "ground-sg-qwenvl", "ood"), ("pp", "", "ood"),
+    ("groundsg", "ground-sg-memer", "hard-verify"), ("groundsg", "ground-sg-memer", "ood"),
 ]
 ORIG_ROUTES = [("groundsg", "ground-sg-oracle"), ("groundsg", "ground-sg-qwenvl"), ("pp", "")]
-CAP = {"ood": ("1600", "1"), "hard-verify": ("1300", "0")}  # 手写的启动约定
+CAP = {"ood": ("1800", "1"), "hard-verify": ("1300", "0")}  # 手写的启动约定（第三阶段 ood↔1800）
+SEED = "42"  # 非旧默认值（7／0）的种子：服务与客户端都必须照传
 POL_IDX = {"smvla": 0, "perceptual-framesamp-modul": 1, "groundsg": 2, "pp": 3}
 
 LIB_NEW = r'''
@@ -52,6 +57,8 @@ REC_ROOT=/r; TRACE_ROOT=/t; NEVER_DEGRADE=--never-degrade; LIMIT=0
 FRAMESAMP_MODUL_CKPT=/ck/perceptual-framesamp-modul; GROUNDSG_CKPT=/ck/sg; PP_CKPT=/ck/pp; SGEVAL_CLIENT_PY=/py/client; BENCH_PY=/py/bench
 MME_VLA_PY=/py/perceptual-framesamp-modul; PP_PY=/py/pp; SMVLA_PY=/py/smvla; OPENPI_HOME=/openpi
 DATASET="$W_DATASET"; MAX_STEPS="$W_MAX"; STRICT_CAP="$W_STRICT"; GROUNDSG_VARIANT="$W_VARIANT"; QWENVL_ADAPTER="$W_ADAPTER"
+MEMER_ADAPTER="${W_MEMER:-}"; POLICY_SEED="$W_SEED"; BUDGET_LEDGER=/b/budget.jsonl; TRAJECTORY_CAP=870; SHARED_INFRA_CAP=50
+EXPIRED_CAP=50; PLANNED_FIRST_TRIES=821
 step_cap_pairing; echo "PAIRING_RC=$?"
 variant_pairing "$W_POLS"; echo "VARIANT_RC=$?"
 if [[ -n "${W_BUILD:-}" ]]; then
@@ -80,8 +87,9 @@ for a in "${RUN_ENV[@]}"; do printf 'RUNENV %s\n' "$a"; done
 
 
 def _bash(script: str, **env) -> dict:
-    e = dict(os.environ, EO=str(EO), W_POLS="smvla", W_DATASET="ood", W_MAX="1600", W_STRICT="1",
-             W_VARIANT="", W_ADAPTER="")
+    e = dict(os.environ, EO=str(EO), W_POLS="smvla", W_DATASET="ood", W_MAX="1800", W_STRICT="1",
+             W_VARIANT="", W_ADAPTER="", W_MEMER="", W_SEED=SEED)
+    e.pop("POLICY_SEED", None)
     e.update({k: str(v) for k, v in env.items()})
     p = subprocess.run(["bash", "-c", script], capture_output=True, text=True, env=e, timeout=60)
     out: dict = {"raw": p.stdout + p.stderr, "rc": p.returncode}
@@ -103,8 +111,9 @@ def _check_new_route(pol, variant, dataset, adapter_dir) -> tuple[int, int, list
     """返回 (数据集类不符数, 变体类不符数, 说明)。"""
     max_steps, strict = CAP[dataset]
     adapter = str(adapter_dir) if variant == "ground-sg-qwenvl" else ""
+    memer = str(adapter_dir) if variant == "ground-sg-memer" else ""
     r = _bash(LIB_NEW, W_POLS=pol, W_DATASET=dataset, W_MAX=max_steps, W_STRICT=strict, W_VARIANT=variant,
-              W_ADAPTER=adapter, W_BUILD=1)
+              W_ADAPTER=adapter, W_MEMER=memer, W_BUILD=1)
     ds_bad, var_bad, why = 0, 0, []
     cli, srv = r.get("CLI", []), r.get("SRV", [])
     label = f"groundsg-{variant}" if pol == "groundsg" else pol
@@ -123,6 +132,13 @@ def _check_new_route(pol, variant, dataset, adapter_dir) -> tuple[int, int, list
         var_bad += 1; why.append("groundsg-variant")
     if (_opt(cli, "--qwenvl-groundsg-adapter") or "") != adapter:
         var_bad += 1; why.append("adapter")
+    if (_opt(cli, "--memer-adapter") or "") != memer:
+        var_bad += 1; why.append("memer-adapter")
+    # 第三阶段：种子与五个预算参数原样透传；不给 --reset-budget 之外的旧默认
+    want_budget = {"--policy-seed": SEED, "--budget-ledger": "/b/budget.jsonl", "--trajectory-cap": "870",
+                   "--shared-infra-cap": "50", "--expired-cap": "50", "--planned-first-tries": "821"}
+    if any(_opt(cli, k) != v for k, v in want_budget.items()):
+        ds_bad += 1; why.append(f"种子／预算参数 {cli}")
     if r["LABEL"] != label or _opt(cli, "--out") != f"/o/{label}" or _opt(cli, "--trace-root") != f"/t/{label}" \
             or _opt(cli, "--rec-root") != f"/r/{label}" or _opt(cli, "--ledger") != f"/l/{label}.ledger.jsonl":
         var_bad += 1; why.append(f"label 目录 {cli}")
@@ -136,16 +152,19 @@ def _check_new_route(pol, variant, dataset, adapter_dir) -> tuple[int, int, list
     if pol in ("perceptual-framesamp-modul", "groundsg"):
         want_dir = "/ck/sg" if pol == "groundsg" else "/ck/perceptual-framesamp-modul"
         want_yaml = "symbolic-grounded-subgoal.yaml" if pol == "groundsg" else "perceptual-framesamp-modul.yaml"
-        if srv[:2] != ["/py/perceptual-framesamp-modul", "scripts/serve_policy.py"] or f"--policy.dir={want_dir}" not in srv \
-                or "--seed=7" not in srv or "--port=18123" not in srv or r["YAML"] != want_yaml:
+        if srv[:2] != ["/py/perceptual-framesamp-modul", str(EO / "policy_server_wrap.py")] \
+                or f"--policy.dir={want_dir}" not in srv or f"--seed={SEED}" not in srv or "--port=18123" not in srv \
+                or f"--sgeval-metadata-out=/o/{label}/server-metadata-18123.json" not in srv or r["YAML"] != want_yaml \
+                or any(a.startswith("--seed=") and a != f"--seed={SEED}" for a in srv):
             var_bad += 1; why.append(f"perceptual-framesamp-modul 服务 {srv}")
     elif pol == "pp":
-        if srv[:3] != ["/py/pp", "-m", "ponderpounce.eval.robomme_server"] or _opt(srv, "--args.seed") != "0" \
+        if srv[:3] != ["/py/pp", "-m", "ponderpounce.eval.robomme_server"] or _opt(srv, "--args.seed") != SEED \
                 or _opt(srv, "--args.checkpoint_path") != "/ck/pp" or _opt(srv, "--args.device") != "cuda:0" \
                 or _opt(srv, "--port") != "18123" or not r["SRVDIR"].endswith("/third_party/PonderPounce"):
             var_bad += 1; why.append(f"pp 服务 {srv}")
     else:
-        if srv[:2] != ["/py/smvla", "scripts/eval-official/smvla_server.py"]:
+        if srv[:2] != ["/py/smvla", "scripts/eval-official/smvla_server.py"] or _opt(srv, "--policy-seed") != SEED \
+                or _opt(srv, "--metadata_out") != "/o/smvla/server-metadata-18123.json":
             var_bad += 1; why.append(f"smvla 服务 {srv}")
     return ds_bad, var_bad, why
 
@@ -169,15 +188,20 @@ def _check_orig_route(pol, variant, adapter_dir) -> tuple[int, list[str]]:
     return bad, why
 
 
-BAD_CAPS = [("hard-verify", "1600", "0"), ("hard-verify", "1300", "1"), ("ood", "1300", "1"),
-            ("ood", "1600", "0"), ("", "1600", "1"), ("ood", "", "1"), ("bogus", "1600", "1")]
+BAD_CAPS = [("hard-verify", "1800", "0"), ("hard-verify", "1300", "1"), ("ood", "1300", "1"),
+            ("ood", "1800", "0"), ("ood", "1600", "1"), ("", "1800", "1"), ("ood", "", "1"), ("bogus", "1800", "1")]
 
 
-def _bad_variants(adapter_dir) -> list[tuple[str, str, str]]:
+def _bad_variants(adapter_dir) -> list[tuple[str, str, str, str]]:
+    """(策略, 变体, QwenVL adapter, MemER adapter)。"""
     a = str(adapter_dir)
-    return [("groundsg", "", ""), ("groundsg", "ground-sg-qwenvl", ""), ("groundsg", "ground-sg-qwenvl", "/nonexistent/adapter"),
-            ("groundsg", "ground-sg-oracle", a), ("groundsg", "bogus", ""), ("pp", "ground-sg-oracle", ""),
-            ("smvla,perceptual-framesamp-modul", "", a)]
+    return [("groundsg", "", "", ""), ("groundsg", "ground-sg-qwenvl", "", ""),
+            ("groundsg", "ground-sg-qwenvl", "/nonexistent/adapter", ""),
+            ("groundsg", "ground-sg-oracle", a, ""), ("groundsg", "bogus", "", ""), ("pp", "ground-sg-oracle", "", ""),
+            ("smvla,perceptual-framesamp-modul", "", a, ""),
+            ("groundsg", "ground-sg-memer", "", ""), ("groundsg", "ground-sg-memer", "", "/nonexistent/memer"),
+            ("groundsg", "ground-sg-memer", a, a), ("groundsg", "ground-sg-qwenvl", a, a),
+            ("groundsg", "ground-sg-oracle", "", a), ("pp", "", "", a)]
 
 
 GUARD_USES = {
@@ -235,13 +259,13 @@ def test_eval_wiring(tmp_path):
         if r.get("PAIRING_RC") != "3" or "RUN_BLOCKED reason=step_cap_pairing" not in r["raw"]:
             ds_mismatch += 1
             problems.append(f"配对未拦住 {dataset}/{max_steps}/{strict}")
-    for pols, variant, adp in _bad_variants(adapter):
-        r = _bash(LIB_NEW, W_POLS=pols, W_VARIANT=variant, W_ADAPTER=adp)
+    for pols, variant, adp, memer in _bad_variants(adapter):
+        r = _bash(LIB_NEW, W_POLS=pols, W_VARIANT=variant, W_ADAPTER=adp, W_MEMER=memer)
         if r.get("VARIANT_RC") != "3" or "RUN_BLOCKED reason=variant_pairing" not in r["raw"]:
             var_mismatch += 1
-            problems.append(f"变体未拦住 {pols}/{variant}/{adp}")
+            problems.append(f"变体未拦住 {pols}/{variant}/{adp}/{memer}")
     problems += _guard_problems()
     assert problems == [], "\n".join(problems)
-    assert routes == len(NEW_ROUTES) + len(ORIG_ROUTES) == 11
+    assert routes == len(NEW_ROUTES) + len(ORIG_ROUTES) == 13
     assert ds_mismatch == 0 and var_mismatch == 0
     print(f"EVAL_WIRING=PASS routes={routes} dataset_mismatch={ds_mismatch} variant_mismatch={var_mismatch}")

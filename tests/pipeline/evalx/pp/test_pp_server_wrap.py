@@ -10,7 +10,9 @@
   ``noise_rng`` 抽噪声。
 
 逐步比较两者的动作（dtype／shape／字节）、随机数发生器状态、``cursor``、chunk 内容、触发计数与节拍；除外壳新增
-的 ``subgoal`` 键外必须一致，打印 ``PP_SERVER_ACTION_EQ=PASS``。外壳回传的子目标与测试按节拍算式独立推出的期望
+的 ``subgoal`` 与 ``_sgeval_audit`` 键外必须一致，打印 ``PP_SERVER_ACTION_EQ=PASS``。第三阶段另核：``SGEVAL_AUDIT=0``
+时回包没有审计键、其余与开启时逐项相同；开启时审计键里的 System 2 生成块逐次对上桩的真实 ``fire`` 结果（不多一次、
+不少一次），打印 ``PP_AUDIT_OBS_EQ=PASS``。外壳回传的子目标与测试按节拍算式独立推出的期望
 逐步比对（首个子目标可见前为 ``None``、``ready_at_ns`` 之前仍回旧子目标、chunk 用尽后不变）。
 
 父类依赖 vla-eval、torch、transformers，主检出 ``.venv`` 没有 vla-eval，故等价部分在子进程里用主检出 client-env
@@ -164,6 +166,7 @@ def _child_main(mode: str) -> None:  # pragma: no cover - 在子进程里运行
             a = ctx.sent[-1]
             steps.append({
                 "keys": sorted(a), "actions": arr_rec(a["actions"]), "subgoal": a.get("subgoal", "<absent>"),
+                "audit": a.get("_sgeval_audit", "<absent>"),
                 "tick": ep.tick, "n_s1": ep.n_s1_fires, "n_s2": ep.n_s2_fires, "s1_started": ep.s1_started,
                 "s1_next": ep.s1_next_fire_ns, "s2_next": ep.s2_next_fire_ns, "n_cogs": len(ep.cognitions),
                 "cursor": None if ep.chunk is None else ep.chunk.cursor,
@@ -176,9 +179,9 @@ def _child_main(mode: str) -> None:  # pragma: no cover - 在子进程里运行
     def compare(a_steps, b_steps):
         bad = 0
         for x, y in zip(a_steps, b_steps):
-            xs = {k: v for k, v in x.items() if k not in ("subgoal", "keys")}
-            ys = {k: v for k, v in y.items() if k not in ("subgoal", "keys")}
-            keys_ok = sorted(set(y["keys"]) - {"subgoal"}) == x["keys"] and "subgoal" in y["keys"]
+            xs = {k: v for k, v in x.items() if k not in ("subgoal", "keys", "audit")}
+            ys = {k: v for k, v in y.items() if k not in ("subgoal", "keys", "audit")}
+            keys_ok = sorted(set(y["keys"]) - {"subgoal", "_sgeval_audit"}) == x["keys"] and "subgoal" in y["keys"]
             bad += int(xs != ys or not keys_ok)
         return bad + abs(len(a_steps) - len(b_steps))
 
@@ -192,6 +195,25 @@ def _child_main(mode: str) -> None:  # pragma: no cover - 在子进程里运行
                "subgoals": [s["subgoal"] for s in wrap_steps], "cursor": [s["cursor"] for s in wrap_steps],
                "n_s1": [s["n_s1"] for s in wrap_steps], "n_s2": [s["n_s2"] for s in wrap_steps],
                "s1_started": [s["s1_started"] for s in wrap_steps], "rng_final": wrap_steps[-1]["rng"]}
+        # 观察开关对照：SGEVAL_AUDIT=0 时外壳不加审计键，其余（动作、随机数、游标、计数、子目标）与开启时逐项相同
+        prev = os.environ.get("SGEVAL_AUDIT")
+        os.environ["SGEVAL_AUDIT"] = "0"
+        try:
+            off_steps, _ = asyncio.run(run(wrap.SubgoalReportingServer, sch))
+        finally:
+            if prev is None:
+                os.environ.pop("SGEVAL_AUDIT", None)
+            else:
+                os.environ["SGEVAL_AUDIT"] = prev
+        strip = lambda st: [{k: v for k, v in x.items() if k not in ("audit", "keys")} for x in st]  # noqa: E731
+        rec["audit_off_has_key"] = any("_sgeval_audit" in x["keys"] for x in off_steps)
+        rec["audit_on_all_keyed"] = all("_sgeval_audit" in x["keys"] for x in wrap_steps)
+        rec["audit_on_off_mismatch"] = sum(int(a_ != b_) for a_, b_ in zip(strip(off_steps), strip(wrap_steps))) \
+            + abs(len(off_steps) - len(wrap_steps))
+        fires = [f for x in wrap_steps for f in x["audit"]["pp_generation"]["fires"]]
+        rec["audit_fire_subgoals"] = [f["subgoal_text"] for f in fires]
+        rec["audit_fire_index"] = [f["fire_index"] for f in fires]
+        rec["audit_kinds"] = sorted({f["kind"] for f in fires})
         if mode == "mutant":  # 比较器自检：多抽一次随机数的「坏外壳」必须被查出
             class RngMutant(wrap.SubgoalReportingServer):
                 def _fire_s1(self, ep, obs, now):
@@ -370,3 +392,20 @@ def test_entrypoint_accepts_same_args_as_original_server():
 
 if __name__ == "__main__" and len(sys.argv) >= 3 and sys.argv[1] == "--child":
     _child_main(sys.argv[2])
+
+
+def test_audit_switch_and_generation_blocks_observe_only():
+    """第三阶段（接口冻结说明五节）：SGEVAL_AUDIT=0 时没有审计键、其余逐项与开启时相同；开启时每次回包都带审计键，
+    且审计里的 System 2 生成块与桩的真实 fire 一一对应（第 j 次 fire 的子目标 = 脚本第 j % L 条，序号连续、总数等于
+    父类 Ponder 计数）——外壳不多推理、不少记。"""
+    res = _child("eq")
+    for sch in SCHEDULES:
+        rec = next(r for r in res["schedules"] if r["name"] == sch["name"])
+        assert rec["audit_off_has_key"] is False and rec["audit_on_all_keyed"] is True
+        assert rec["audit_on_off_mismatch"] == 0, sch["name"]
+        n_s2 = rec["n_s2"][-1]
+        subs = sch["subgoals"]
+        assert rec["audit_fire_index"] == list(range(n_s2))
+        assert rec["audit_fire_subgoals"] == [subs[j % len(subs)] for j in range(n_s2)]
+        assert rec["audit_kinds"] == ["stub"]
+    print(f"PP_AUDIT_OBS_EQ=PASS schedules={len(SCHEDULES)} audit_on_off_mismatch=0")

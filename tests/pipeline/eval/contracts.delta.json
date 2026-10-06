@@ -544,7 +544,7 @@
     ],
     "symbol": "run_official_hard.sh（plan_round、orig_loop、build_runner_cmd、sync_orig、official_finalize）；pair_seat.sh（run_side、wait_side_released、pair_done）",
     "oracle": "最小 repo + 假引擎：pp 服务回 HTTP 200，原侧驱动替身按 pp_official_runner.py 的布局写 frames/{front,wrist}.rgb24（3 帧 16×16）、frames.json、trace.jsonl 与结果行，FAKE_RUNNER_INFRA_ONCE 让第 1 次尝试的最后一个身份记 infra；事件日志带时间戳",
-    "positive": "原侧分轮：第 1 轮 --attempt 1 全部身份，infra 身份在重启服务（旧服务 TERM 早于重发）后以 --attempt 2 --only <该身份> 重跑；results.epochs.jsonl 的 server_epoch 依次为 1、1、2；三局都转码为 3 帧 episode.mp4、删 *.rgb24、保留 frames.json 与 trace.jsonl，发布到 media/pp/hard-verify/orig/<key>.a<n>/；OFFICIAL_SEAT_DONE outcome=pass rc=0；pair_seat.sh 先原侧后新侧，两次 SIDE_RELEASED，原侧服务 TERM 早于新侧服务启动，新侧客户端 hard-verify／1300 不带 strict-cap，两侧输出键齐全，PAIR_SEAT_DONE rc=0",
+    "positive": "原侧分轮：第 1 轮 --attempt 1 全部身份，infra 身份在重启服务（旧服务 TERM 早于重发）后以 --attempt 2 --only <该身份> 重跑；results.epochs.jsonl 的 server_epoch 依次为 1、1、2；三局都转码为 3 帧 episode.mp4、删 *.rgb24、保留 frames.json 与 trace.jsonl，发布到 media/pp/hard-verify/orig/<key>.a<n>/；OFFICIAL_SEAT_DONE outcome=pass rc=0；pair_seat.sh 先原侧后新侧，两次 SIDE_RELEASED，原侧服务 TERM 早于新侧服务启动，新侧客户端 hard-verify／1300 不带 strict-cap，两侧输出键齐全，PAIR_SEAT_DONE rc=0（第三阶段 R3：pair_seat.sh 尚未转发 --policy-seed 与预算参数，现用例钉住「原侧跑完、新侧 RUN_BLOCKED reason=policy_seed、new_rc=3」的已知缺口，交主会话补转发后改回）",
     "negative": "--infra-retry-budget 0：infra 身份不重跑，RUN_INCOMPLETE side=orig missing=1、rc=6",
     "boundaries": "驱动只跑一次（第 2 轮只含需重试的身份）；守卫函数全部来自 run_seat.sh（见 C16-04）",
     "nodeids": [
@@ -723,6 +723,29 @@
       "tests/pipeline/eval/test_legacy_names.py::test_eval_report_reads_legacy_stage_dirs_and_rejects_legacy_cli",
       "tests/pipeline/eval/test_legacy_names.py::test_orig_tools_canonicalize_policy",
       "tests/pipeline/eval/test_legacy_names.py::test_official_media_check_rejects_legacy_cli"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C13-R3-STAGE3",
+    "domain": "C13",
+    "source": [
+      "scripts/eval-official/env_client.py",
+      "scripts/eval-official/budget_ledger.py",
+      "scripts/eval-official/run_seat.sh",
+      "scripts/eval-official/run_eval_gl.sh",
+      "scripts/eval-official/smvla_server.py",
+      "scripts/eval-official/policy_server_wrap.py"
+    ],
+    "symbol": "EnvSession.step（strict cap）/ SeatRunner.run_one / run_identities / entry_blockers / BudgetLedger.reserve,claim_retry,lease,_load,_append / run_seat.sh::step_cap_pairing,variant_pairing,policy_seed_check,budget_args_check,build_server_cmd,build_client_cmd,progress_idle,recovery_load / policy_server_wrap.run,AuditedPolicy,install_tokenizer_spy / SMVLAPolicyHost.infer,new_episode",
+    "oracle": "手写期望：ood 1800 strict 边界、0／7／42 三个种子逐路线的服务与客户端 argv、870／50／50／821 下的预约与领取序列、三处期限的结果行与账本行、审计开关两侧回包字节",
+    "positive": "EVAL_CAP=PASS（第 1800 次进环境、第 1801 次不进、hard-verify 不 strict、effective_cap 落结果行与 progress）；POLICY_SEEDS=PASS（四类服务命令、客户端、seat_info、结果行 policy_seed／server_seed、路线 seed<n>）；BUDGET_ENFORCEMENT=PASS；DEADLINES=PASS（infra_reason=deadline_<phase>、退出 75、重试成功）；OBS_EQ=PASS（审计开关两侧除审计键外逐字节相同、RNG 与推理次数相同）",
+    "negative": "坏行即拒、config 不一致拒、同 token 不重复扣、第 50 次恢复因首试保留被拒、lease 被占与缺预算参数 RUN_BLOCKED、缺 --policy-seed RUN_BLOCKED、MemER 变体与 adapter 错配 RUN_BLOCKED reason=variant_pairing、多推理一次的坏外壳被查出、同签名重写 progress 不算进展",
+    "boundaries": "纯 CPU：假环境、假模型、假 sentencepiece；不加载权重、不起真实服务；PonderPounce 外壳的审计对照在 tests/pipeline/evalx/pp/test_pp_server_wrap.py（PP_AUDIT_OBS_EQ）",
+    "nodeids": [
+      "tests/pipeline/eval/test_stage3_entry_budget.py"
     ],
     "resource": "cpu",
     "mutants": [],

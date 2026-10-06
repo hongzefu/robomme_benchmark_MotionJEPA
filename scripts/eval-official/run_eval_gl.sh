@@ -14,8 +14,13 @@
 #      原始帧照常发布，见 run_seat.sh::finish_episode_dir）与 SGEVAL_PP_SERVER_WRAP=1（pp 服务走
 #      pp_server_wrap.py）；两者调用方显式设了别的值时照用。VK_ICD_FILENAMES 按候选 ICD 文件逐个探测；
 #      --cpus 取本进程 sched_getaffinity；--gpu 缺省 0（GL 占位 job 内只见本席一张卡；本机多卡并行时显式给物理卡号）；端口按 run_seat.sh 既有规则（seat-idx = 席号 NN）。
-#   2. 起跑打印并核对 --dataset 与 --max-steps 的配对（hard-verify↔1300 且不带 --strict-cap，ood↔1600 且必须带
-#      --strict-cap），不符 RUN_BLOCKED reason=step_cap_pairing；groundsg 的变体配对同 run_seat.sh。
+#   2. 起跑打印并核对 --dataset 与 --max-steps 的配对（hard-verify↔1300 且不带 --strict-cap，ood↔1800 且必须带
+#      --strict-cap），不符 RUN_BLOCKED reason=step_cap_pairing；groundsg 的变体配对（含 ground-sg-memer↔--memer-adapter）
+#      同 run_seat.sh。第三阶段（接口冻结说明 2.2／2.4）：--policy-seed 必填（缺失 RUN_BLOCKED reason=policy_seed）；
+#      --budget-ledger --trajectory-cap --shared-infra-cap --expired-cap --planned-first-tries 必填（缺任一
+#      RUN_BLOCKED reason=budget_args，不回落 budget_ledger.py 常量默认值），连同种子原样转发给 run_seat.sh →
+#      env_client.py run；--reset-budget 改为可选（不给只计量）。三项执行期限 --context-deadline-s
+#      --first-infer-deadline-s --media-deadline-s 可选、原样转发。
 #   3. 按策略顺序（同卡绝不同时驻留）各调一次 run_seat.sh：持久状态（results.jsonl、<label>.ledger.jsonl、
 #      results.epochs.jsonl、server-epochs.tsv、progress.json、client.log、seat 日志）直接写 NFS <stage>/sNN/<label>/
 #      （label 为策略名，groundsg 为 groundsg-<variant>；不同数据集请用不同 --stage，run_seat.sh 见到别的数据集的结果行
@@ -43,7 +48,9 @@
 #     --shard <shard-NN.json> --dataset {ood,hard-verify} --max-steps N [--strict-cap] \
 #     --policies smvla,perceptual-framesamp-modul,groundsg,pp [--groundsg-variant V] [--qwenvl-groundsg-adapter D] \
 #     [--framesamp-modul-ckpt D] [--groundsg-ckpt D] [--smvla-ckpt D] [--pp-ckpt D] [--openpi-data-home D --tokenizer-sha256 H] \
-#     --reset-budget N --infra-retry-budget N [--cond C] [--media-root D] [--limit N] \
+#     --policy-seed N --budget-ledger P --trajectory-cap N --shared-infra-cap N --expired-cap N --planned-first-tries N \
+#     [--memer-adapter D] [--reset-budget N] --infra-retry-budget N [--cond C] [--media-root D] [--limit N] \
+#     [--context-deadline-s S] [--first-infer-deadline-s S] [--media-deadline-s S] \
 #     [--episode-wall S] [--episode-wall-smvla S] [--episode-wall-framesamp-modul S] [--sync-interval S] [--local-root DIR] [--gpu N]
 # 退出码：0 全部策略 rc=0 且录像同步 PASS；中断 130/143（HUP 129）；其余失败取首个非零策略 rc（录像同步 FAIL 且策略全 0
 #   时为 7）；参数错误 2；执行环境缺失（解释器、shard 等）与配对核对不过 3。
@@ -62,7 +69,9 @@ source "$HERE/run_seat.sh"
 RUN_NAME="" ; SEAT="" ; REPO="" ; STAGE="" ; SHARD="" ; POLICIES="smvla,perceptual-framesamp-modul"
 FRAMESAMP_MODUL_CKPT="" ; GROUNDSG_CKPT="" ; SMVLA_CKPT="" ; PP_CKPT="" ; OPENPI_HOME="" ; TOKENIZER_SHA="" ; RESET_BUDGET="" ; INFRA_RETRY_BUDGET=""
 GPU="0" ; LIMIT="0" ; WALL_SMVLA="" ; WALL_FRAMESAMP_MODUL="" ; WALL_ALL="" ; SYNC_INTERVAL=120 ; LOCAL_ROOT="" ; COND="V8" ; MEDIA_ROOT=""
-DATASET="" ; MAX_STEPS="" ; STRICT_CAP=0 ; GROUNDSG_VARIANT="" ; QWENVL_ADAPTER=""
+DATASET="" ; MAX_STEPS="" ; STRICT_CAP=0 ; GROUNDSG_VARIANT="" ; QWENVL_ADAPTER="" ; MEMER_ADAPTER=""
+POLICY_SEED="" ; BUDGET_LEDGER="" ; TRAJECTORY_CAP="" ; SHARED_INFRA_CAP="" ; EXPIRED_CAP="" ; PLANNED_FIRST_TRIES=""
+CONTEXT_DEADLINE="" ; FIRST_INFER_DEADLINE="" ; MEDIA_DEADLINE=""
 
 usage() { sed -n '2,/^# 不嵌入任何 JobID/p' "${BASH_SOURCE[0]}" >&2; }
 die2() {  # 参数错误：也写收尾两行，便于外层 Monitor 统一判定
@@ -86,6 +95,16 @@ while [[ $# -gt 0 ]]; do
     --strict-cap) STRICT_CAP=1; shift;;
     --groundsg-variant) GROUNDSG_VARIANT="$2"; shift 2;;
     --qwenvl-groundsg-adapter) QWENVL_ADAPTER="$2"; shift 2;;
+    --memer-adapter) MEMER_ADAPTER="$2"; shift 2;;
+    --policy-seed) POLICY_SEED="$2"; shift 2;;
+    --budget-ledger) BUDGET_LEDGER="$2"; shift 2;;
+    --trajectory-cap) TRAJECTORY_CAP="$2"; shift 2;;
+    --shared-infra-cap) SHARED_INFRA_CAP="$2"; shift 2;;
+    --expired-cap) EXPIRED_CAP="$2"; shift 2;;
+    --planned-first-tries) PLANNED_FIRST_TRIES="$2"; shift 2;;
+    --context-deadline-s) CONTEXT_DEADLINE="$2"; shift 2;;
+    --first-infer-deadline-s) FIRST_INFER_DEADLINE="$2"; shift 2;;
+    --media-deadline-s) MEDIA_DEADLINE="$2"; shift 2;;
     --framesamp-modul-ckpt) FRAMESAMP_MODUL_CKPT="$2"; shift 2;;
     --groundsg-ckpt) GROUNDSG_CKPT="$2"; shift 2;;
     --smvla-ckpt) SMVLA_CKPT="$2"; shift 2;;
@@ -113,8 +132,11 @@ done
 [[ "$RUN_NAME" =~ ^[A-Za-z0-9._-]+$ ]] || die2 "--run-name 只许字母数字 . _ -"
 [[ "$COND" =~ ^[A-Za-z0-9._-]+$ ]] || die2 "--cond 只许字母数字 . _ -"
 [[ "$SEAT" =~ ^[0-9]{2}$ ]] || die2 "--seat 须为两位席号 NN（如 03）"
-[[ "$RESET_BUDGET" =~ ^[0-9]+$ && "$INFRA_RETRY_BUDGET" =~ ^[0-9]+$ ]] \
-  || die2 "--reset-budget 与 --infra-retry-budget 必填且为非负整数"
+[[ "$INFRA_RETRY_BUDGET" =~ ^[0-9]+$ ]] || die2 "--infra-retry-budget 必填且为非负整数"
+[[ -z "$RESET_BUDGET" || "$RESET_BUDGET" =~ ^[0-9]+$ ]] || die2 "--reset-budget 须为非负整数（可不给：只计量）"
+for _d in "$CONTEXT_DEADLINE" "$FIRST_INFER_DEADLINE" "$MEDIA_DEADLINE"; do
+  [[ -z "$_d" || "$_d" =~ ^[0-9]+$ ]] || die2 "--*-deadline-s 须为非负整数秒"
+done
 [[ "$LIMIT" =~ ^[0-9]+$ && "$SYNC_INTERVAL" =~ ^[0-9]+$ ]] || die2 "--limit／--sync-interval 须为非负整数"
 IFS=',' read -r -a POLS <<< "$POLICIES"
 for pol in "${POLS[@]}"; do
@@ -142,6 +164,8 @@ export MME_VLA_PY="${_ENV_MME_VLA_PY:-$REPO/third_party/mme-vla/.venv/bin/python
 export SMVLA_PY="${_ENV_SMVLA_PY:-$REPO/artifacts/v8-two/venvs/smvla-env/bin/python}"
 export SGEVAL_CLIENT_PY="${_ENV_SGEVAL_CLIENT_PY:-$REPO/artifacts/sg-evaluation/venvs/client-env/bin/python}"
 export PP_PY="${_ENV_PP_PY:-$REPO/third_party/PonderPounce/.venv/bin/python}"
+# 预算账本转绝对路径（run_seat.sh 会在别的目录下起客户端）
+[[ -n "$BUDGET_LEDGER" ]] && BUDGET_LEDGER="$(mkdir -p "$(dirname "$BUDGET_LEDGER")" && cd "$(dirname "$BUDGET_LEDGER")" && pwd)/$(basename "$BUDGET_LEDGER")"
 # 第二阶段开关（run_seat.sh 文档串）：官方重绘、pp 服务外壳；调用方显式给了别的值时照用
 export SGEVAL_OFFICIAL_RENDER="${SGEVAL_OFFICIAL_RENDER:-1}"
 export SGEVAL_PP_SERVER_WRAP="${SGEVAL_PP_SERVER_WRAP:-1}"
@@ -210,8 +234,8 @@ run_inputs_check() {  # 打印五个解释器与 editable 指向、robomme_hard 
   for pol in "${POLS[@]}"; do
     case "$pol" in
       smvla) need+=" smvla ";;
-      perceptual-framesamp-modul) need+=" mme-vla ";;
-      groundsg) need+=" mme-vla client ";;
+      perceptual-framesamp-modul) need+=" mme-vla policy-wrap ";;
+      groundsg) need+=" mme-vla policy-wrap client ";;
       pp) need+=" client pp ";;
     esac
   done
@@ -231,6 +255,9 @@ run_inputs_check() {  # 打印五个解释器与 editable 指向、robomme_hard 
     elif ! "$BENCH_PY" "$renderer" --help 2>/dev/null | grep -q -- '--source'; then why+=("renderer_no_source_raw"); renderer="no_source_raw"
     else renderer="source_raw"; fi
     [[ -f "$REPO/scripts/eval-official/official_media_check.py" ]] || why+=("media_check_missing")
+  fi
+  if [[ "$need" == *" policy-wrap "* && ! -f "$REPO/scripts/eval-official/policy_server_wrap.py" ]]; then
+    why+=("policy_server_wrap_missing")
   fi
   if [[ "$SGEVAL_PP_SERVER_WRAP" == "1" && "$need" == *" pp "* ]]; then
     wrap="$REPO/scripts/eval-official/pp_server_wrap.py"
@@ -328,7 +355,7 @@ reap_orphans() {  # $1 = TERM 后宽限秒数；$2 = KILL 后等进程组退出�
     kill -0 "$pid" 2>/dev/null || continue
     cmd="$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null)"
     case "$cmd" in
-      *env_client.py*|*smvla_server.py*|*serve_policy.py*|*framesamp_modul_client.py*|*ponderpounce.eval.robomme_server*|*pp_server_wrap.py*)
+      *env_client.py*|*smvla_server.py*|*serve_policy.py*|*policy_server_wrap.py*|*framesamp_modul_client.py*|*ponderpounce.eval.robomme_server*|*pp_server_wrap.py*)
         echo "REAP_ORPHAN role=$role pgid=$pid"
         kill -TERM -- "-$pid" 2>/dev/null || kill -TERM "$pid" 2>/dev/null
         for i in $(seq 1 $((grace * 2))); do kill -0 -- "-$pid" 2>/dev/null || break; sleep 0.5; done
@@ -410,12 +437,15 @@ exec > >(trap '' TERM INT HUP PIPE; exec tee -p -a "$SEAT_LOG") 2>&1
 CPUS="$("$BENCH_PY" -c 'import os;print(",".join(map(str,sorted(os.sched_getaffinity(0)))))' 2>/dev/null)"
 echo "V8_SEAT_START run_name=$RUN_NAME seat=$SEAT idx=$SEAT_IDX host=$(hostname) cpus=${CPUS:-?} repo=$REPO \
 stage=$SEAT_STAGE media=$MEDIA_ROOT local=$LOCAL_ROOT shard=$SHARD policies=$POLICIES labels=${LABELS[*]} \
-dataset=$DATASET max_steps=$MAX_STEPS strict_cap=$STRICT_CAP cond=$COND reset_budget=$RESET_BUDGET \
+dataset=$DATASET max_steps=$MAX_STEPS strict_cap=$STRICT_CAP cond=$COND reset_budget=${RESET_BUDGET:-meter_only} \
+policy_seed=${POLICY_SEED:-unset} budget_ledger=${BUDGET_LEDGER:-unset} caps=${TRAJECTORY_CAP:-?}/${SHARED_INFRA_CAP:-?}/${EXPIRED_CAP:-?}/${PLANNED_FIRST_TRIES:-?} \
 infra_retry_budget=$INFRA_RETRY_BUDGET limit=$LIMIT sync_interval=$SYNC_INTERVAL vk_icd=${VK_ICD_FILENAMES:-unset} \
 no_proxy=$NO_PROXY client_py_ext=$SGEVAL_CLIENT_PY pp_py=$PP_PY hf_home=${HF_HOME:-unset} $(ts_iso)"
 
 step_cap_pairing || finalize fail 3
 variant_pairing "$POLICIES" || finalize fail 3
+policy_seed_check || finalize fail 3
+budget_args_check || finalize fail 3
 blocked=""
 [[ -x "$BENCH_PY" ]] || blocked="bench_py_missing $BENCH_PY"
 [[ -z "$blocked" && -n "$CPUS" ]] || blocked="${blocked:-cpus_unknown}"
@@ -447,8 +477,14 @@ for i in "${!POLS[@]}"; do
   args=(--seat "$SEAT" --seat-idx "$SEAT_IDX" --gpu "$GPU" --cpus "$CPUS" --cond "$COND" --out "$SEAT_STAGE"
         --policies "$pol" --identities "$SHARD" --limit "$LIMIT" --never-degrade
         --dataset "$DATASET" --max-steps "$MAX_STEPS"
-        --ledger-dir "$SEAT_STAGE/$lab" --reset-budget "$RESET_BUDGET" --infra-retry-budget "$INFRA_RETRY_BUDGET"
+        --ledger-dir "$SEAT_STAGE/$lab" --infra-retry-budget "$INFRA_RETRY_BUDGET"
+        --policy-seed "$POLICY_SEED" --budget-ledger "$BUDGET_LEDGER" --trajectory-cap "$TRAJECTORY_CAP"
+        --shared-infra-cap "$SHARED_INFRA_CAP" --expired-cap "$EXPIRED_CAP" --planned-first-tries "$PLANNED_FIRST_TRIES"
         --rec-root "$REC_LOCAL" --trace-root "$TRACE_LOCAL")
+  [[ -n "$RESET_BUDGET" ]] && args+=(--reset-budget "$RESET_BUDGET")
+  [[ -n "$CONTEXT_DEADLINE" ]] && args+=(--context-deadline-s "$CONTEXT_DEADLINE")
+  [[ -n "$FIRST_INFER_DEADLINE" ]] && args+=(--first-infer-deadline-s "$FIRST_INFER_DEADLINE")
+  [[ -n "$MEDIA_DEADLINE" ]] && args+=(--media-deadline-s "$MEDIA_DEADLINE")
   (( STRICT_CAP == 1 )) && args+=(--strict-cap)
   [[ -n "$WALL_ALL" ]] && args+=(--episode-wall "$WALL_ALL")
   [[ -n "$WALL_SMVLA" ]] && args+=(--episode-wall-smvla "$WALL_SMVLA")
@@ -457,7 +493,8 @@ for i in "${!POLS[@]}"; do
     perceptual-framesamp-modul) args+=(--framesamp-modul-ckpt "$FRAMESAMP_MODUL_CKPT" --openpi-data-home "$OPENPI_HOME" --tokenizer-sha256 "$TOKENIZER_SHA");;
     groundsg) args+=(--groundsg-ckpt "$GROUNDSG_CKPT" --openpi-data-home "$OPENPI_HOME" --tokenizer-sha256 "$TOKENIZER_SHA"
                   --groundsg-variant "$GROUNDSG_VARIANT")
-           [[ -n "$QWENVL_ADAPTER" ]] && args+=(--qwenvl-groundsg-adapter "$QWENVL_ADAPTER");;
+           [[ -n "$QWENVL_ADAPTER" ]] && args+=(--qwenvl-groundsg-adapter "$QWENVL_ADAPTER")
+           [[ -n "$MEMER_ADAPTER" ]] && args+=(--memer-adapter "$MEMER_ADAPTER");;
     pp) args+=(--pp-ckpt "$PP_CKPT");;
     *) args+=(--smvla-ckpt "$SMVLA_CKPT");;
   esac
