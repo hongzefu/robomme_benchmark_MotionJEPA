@@ -670,5 +670,23 @@
     "resource": "cpu；ffmpeg 收尾链用例标 slow",
     "mutants": [],
     "status": "verified"
+  },
+  {
+    "id": "C13-BUDGET-LEDGER",
+    "domain": "C13",
+    "source": [
+      "scripts/eval-official/budget_ledger.py"
+    ],
+    "symbol": "budget_ledger.reserve / commit / release / claim_retry / report_lines / main；env_client.AttemptLedger 共享模式、classify_interrupt、SeatRunner._reserve、EnvSession(budget_claim)",
+    "oracle": "手写账本与并发夹具；上限取计划六节（轨迹 6366 硬、reset 141430 软、Astra 2 硬、共享 infra 50、到期 500）",
+    "positive": "并发争抢最后一个额度仅一方成功；前两次 reset 失败第三次成功记满 6；到期与故障分账；重启换节点不刷新；report 末行 BUDGET_ENFORCEMENT=PASS",
+    "negative": "余额不足在进入 attempt 前拒绝（RUN_BLOCKED reason=budget）；Astra 第 3 局拒绝；半行判 FAIL；默认不开共享模式时 AttemptLedger 与 SeatRunner 账本与 BASE 逐字节相同",
+    "boundaries": "reset 软上限只告警；不覆盖真实 Slurm 到期信号，只按清单或 SLURM_JOB_END_TIME 判",
+    "nodeids": [
+      "tests/pipeline/eval/test_budget_ledger.py"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
   }
 ]
