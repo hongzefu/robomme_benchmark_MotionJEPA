@@ -13,7 +13,8 @@
 
 输出目录与原侧相同：``<根>/group_<0|1>/<RUN>/{results,planner_calls}``；``results/<task>/ep<NNN>/`` 下是
 Astra 自己写的 ``identity.json``、``decisions.jsonl``、``actions.npy``、``result.json``、``rollout.mp4``、
-``monitor_inputs/``，本驱动只在同一目录多写一份 ``trace.jsonl``。``group_*`` 这一层必须保留：
+``monitor_inputs/``；本驱动在其下另建 ``<key>.a1/``（轨迹、原动作、无损录像，见文末「第二阶段」）并给
+``result.json`` 追加映射字段。``group_*`` 这一层必须保留：
 ``main()`` 每局前查 ``<output>/../../STOP.json``，``ResponsesClient._send`` 每次发送前查路径上名为
 ``group_0``／``group_1`` 的目录里的 ``STOP.json``——费用守卫 ``astra_cost_guard.py`` 就往那里写。
 
@@ -27,6 +28,26 @@ Astra 自己写的 ``identity.json``、``decisions.jsonl``、``actions.npy``、`
 - ``summarize``：汇总 ``results`` 为 ``summary.json``（Astra 自带的 ``summarize.py`` 只认 test／val）。
 
 密钥只从环境变量 ``OPENAI_API_KEY`` 读，交给 ``ResponsesClient``；本文件不读密钥文件、不打印密钥。
+
+第二阶段（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分一节 S3；共享契约见 ``trace_writer.py`` 文档串）：
+
+- 轨迹按 C1～C8：``route="astra/new"``；identity 补 ``builder_episode``（本地局号）、``key``（``<task>_<tier>_<seed>``，
+  与 ``env_client.v8_key`` 同式）、``attempt=1``；演示段记全部 reset 帧（含初始帧），收尾写 ``demo_frames``、
+  ``steps_attempted``／``steps_observed``／``frames_recorded``；结束原因只取 success／fail／timeout／error
+  （不再写 ``env_terminated``／``loop_exit``／``exception``）。
+- 目录：Astra 自己的 ``<RUN>/results/<task>/ep<NNN>/`` 照旧，其下新建 ``<key>.a1/``：``trace.jsonl``、
+  ``arrays.npz``（每个执行步的原动作 ``exec_action__%05d``）、``media/``（``recorder.EpisodeRecorder`` 的目录，
+  首次 reset 时新建且必须为空，不用 ``overwrite``）、收尾时由 ``run_astra.sh`` 生成的 ``official/``。录制器收尾
+  核对通过（``RECORDER_VERIFY=PASS``）后，把两路无损流 ``{front,wrist}.mkv`` 与 ``frames-{front,wrist}.jsonl``
+  从 ``media/`` 移到 ``<key>.a1/``，使轨迹、原动作、原始帧同在一个目录（C5），重绘与转码直接对 ``<key>.a1/`` 做；
+  ``media/`` 留录制器的 ``meta.json``、``events.jsonl``、``summary.json`` 与它自己的 ``arrays.npz``。
+  ``result.json`` 追加 ``key``、``attempt``、``episode_dir``、``media_dir``、``exec_steps``（= steps_attempted）等映射。
+- 费用硬上限：``run`` 必须给 ``--guard-state``（``astra_cost_guard.py --state`` 的文件）；规划客户端用本文件的
+  ``GuardedResponsesClient``（子类化第三方 ``ResponsesClient``，第三方文件零改动），每次真正发送前同步读守卫状态、
+  原子预留单次最坏费用，守卫失联（心跳超过 10 秒）、STOP、预留失败任一即拒发；等待间隔结束后再检一次。
+  局数硬上限 2：局清单超过 2 局起跑前拒绝，且每局开跑前在守卫预留文件里跨 RUN 登记。
+- 子命令 ``media-inputs``：为 ``run_astra.sh`` 收尾时调用的 ``official_media_check.py`` 写本局的身份清单行与
+  账本行（Astra 没有 ``env_client`` 账本，``accepted_attempt_id`` 由 key 与尝试号确定）。
 """
 from __future__ import annotations
 
@@ -56,6 +77,18 @@ GROUP_DIR_NAMES = ("group_0", "group_1")
 #: 启动时打印 sha256 的 Astra 源文件（留档用）
 ASTRA_SOURCE_FILES = ("runner.py", "core.py", "api_client.py", "input_contract.py", "release_utils.py",
                       "train_entry.py", "weights.json")
+#: C1 新侧路线名
+ROUTE = "astra/new"
+#: Astra 每局只跑一次，尝试号恒为 1（C6）
+ATTEMPT = 1
+#: C3 终态
+TERMINALS = ("success", "fail", "timeout", "error")
+#: 录制器收尾通过后从 media/ 移到局目录的原始帧文件（C5）
+RAW_MEDIA_FILES = ("front.mkv", "wrist.mkv", "frames-front.jsonl", "frames-wrist.jsonl")
+#: 守卫心跳超时（秒）：超过即视为守卫失联、拒发（与 astra_cost_guard.HEARTBEAT_TIMEOUT_S 相同，由测试核对）
+GUARD_HEARTBEAT_TIMEOUT_S = 10.0
+#: 第三方 ResponsesClient 两次发送之间的固定间隔（秒；上游 _send 里的 20）
+SEND_INTERVAL_S = 20
 
 
 class AstraStop(RuntimeError):
@@ -223,12 +256,26 @@ def _canonical(obj: Any) -> bytes:
 
 
 class TraceContext:
-    """一局的共享状态：当前步号与当前子目标（VLA 请求里的 ``grounded_subgoal``）。"""
+    """一局的共享状态：当前步号与子目标（VLA 请求里的 ``grounded_subgoal``）、C8 三分计数、原动作、录制器。
 
-    def __init__(self, writer) -> None:
+    ``open_recorder``：无参可调用，首次 reset 时由 ``TracedEnv`` 调用一次建录制器（``run_one`` 注入）；
+    为 ``None`` 时不录（只供只测轨迹的单元测试）。"""
+
+    def __init__(self, writer, open_recorder: Callable | None = None) -> None:
         self.writer = writer
         self.t = 0
         self.subgoal: str | None = None
+        self.attempted = 0  # C8 交给环境的步数（含异常步）
+        self.observed = 0  # C8 返回有效观测的步数
+        self.demo_frames: int | None = None  # 演示帧数（不含初始帧）；None = 还没 reset
+        self.actions: list = []  # 每个执行步实际交给环境的动作（原 dtype／shape／bytes）
+        self.recorder = None
+        self._open_recorder = open_recorder
+
+    def ensure_recorder(self):
+        if self.recorder is None and self._open_recorder is not None:
+            self.recorder = self._open_recorder()
+        return self.recorder
 
 
 def _pack_state(obs, i: int = -1):
@@ -237,31 +284,75 @@ def _pack_state(obs, i: int = -1):
                            np.asarray(obs["gripper_state_list"][i])[:1]]).astype(np.float32)
 
 
+def _goal_text(goal) -> str | None:
+    """与 Astra ``runner.episode`` 取任务目标同式：列表取第一个。"""
+    if isinstance(goal, list):
+        return goal[0] if goal else None
+    return goal
+
+
 class TracedEnv:
-    """包住 builder 给的环境：reset 记演示段，step 记执行后的画面哈希、状态、动作与终止标志。"""
+    """包住 builder 给的环境：reset 记演示段（C2），step 记执行后的画面、状态、动作与终止标志（C4、C8）。
+
+    录制器只用 ``add_frames``／``add_array``：演示段全部帧（含初始帧）与每个有效观测步的最后一帧各进一次，
+    故两路流的帧数 = ``frames_recorded`` = 演示帧数 + 1 + 有效观测步数。"""
 
     def __init__(self, inner, ctx: TraceContext) -> None:
         self._inner = inner
         self._ctx = ctx
 
     def reset(self, *a, **k):
+        import numpy as np  # noqa: PLC0415
         obs, info = self._inner.reset(*a, **k)
-        fronts = list(obs.get("front_rgb_list", []))[:-1]
-        wrists = list(obs.get("wrist_rgb_list", []))[:-1]
-        n = min(len(obs.get("joint_state_list", [])), len(obs.get("gripper_state_list", []))) - 1
-        states = [_pack_state(obs, i) for i in range(max(n, 0))]
-        goal = info.get("task_goal")
-        texts = list(goal) if isinstance(goal, list) else ([goal] if goal is not None else [])
-        self._ctx.writer.log_demo(fronts, wrists, states, texts)
+        ctx = self._ctx
+        rec = ctx.ensure_recorder()
+        fronts = [np.asarray(x, dtype=np.uint8) for x in obs.get("front_rgb_list", [])]
+        wrists = [np.asarray(x, dtype=np.uint8) for x in obs.get("wrist_rgb_list", [])]
+        n = min(len(obs.get("joint_state_list", [])), len(obs.get("gripper_state_list", [])))
+        states = [_pack_state(obs, i) for i in range(n)]
+        if rec is not None and fronts:
+            rec.add_frames("front", np.stack(fronts), tag="reset")
+            rec.add_frames("wrist", np.stack(wrists), tag="reset")
+            for key in ("joint_state_list", "gripper_state_list"):
+                if obs.get(key) is not None and len(obs[key]):
+                    rec.add_array(f"reset_{key[:-5]}", np.stack([np.asarray(x) for x in obs[key]]))
+        goal = _goal_text(info.get("task_goal"))
+        ctx.writer.log_demo(fronts, wrists, states, [goal] if goal is not None else [])
+        ctx.demo_frames = max(len(fronts) - 1, 0)
         return obs, info
 
     def step(self, action):
-        obs, reward, terminated, truncated, info = self._inner.step(action)
-        self._ctx.t += 1
-        self._ctx.writer.log_step(step=self._ctx.t, front=obs["front_rgb_list"][-1], wrist=obs["wrist_rgb_list"][-1],
-                                  state=_pack_state(obs), action=action, subgoal=self._ctx.subgoal,
-                                  terminated=terminated, truncated=truncated, status=info.get("status"))
-        return obs, reward, terminated, truncated, info
+        import numpy as np  # noqa: PLC0415
+        ctx = self._ctx
+        rec = ctx.ensure_recorder()
+        ctx.attempted += 1
+        ctx.t = n = ctx.attempted
+        a = np.array(action, copy=True)
+        ctx.actions.append(a)
+        if rec is not None:
+            rec.add_array("exec_action", a, step=n - 1)
+        try:
+            out = self._inner.step(action)
+        except BaseException as exc:
+            ctx.writer.log_missing_step(step=n, action=a, reason=f"env_step_exception:{type(exc).__name__}",
+                                        subgoal=ctx.subgoal)
+            raise
+        obs, reward, terminated, truncated, info = out
+        status = info.get("status") if isinstance(info, dict) else None
+        if obs is None or not obs.get("front_rgb_list") or not obs.get("wrist_rgb_list"):
+            ctx.writer.log_missing_step(step=n, action=a, reason="obs_none", subgoal=ctx.subgoal)
+            return out
+        front = np.asarray(obs["front_rgb_list"][-1], dtype=np.uint8)
+        wrist = np.asarray(obs["wrist_rgb_list"][-1], dtype=np.uint8)
+        if rec is not None:
+            rec.add_frames("front", front, tag=f"step{n}")
+            rec.add_frames("wrist", wrist, tag=f"step{n}")
+            rec.add_array("joint_state", np.asarray(obs["joint_state_list"][-1]), step=n - 1)
+            rec.add_array("gripper_state", np.asarray(obs["gripper_state_list"][-1]), step=n - 1)
+        ctx.observed += 1
+        ctx.writer.log_step(step=n, front=front, wrist=wrist, state=_pack_state(obs), action=a, subgoal=ctx.subgoal,
+                            terminated=terminated, truncated=truncated, status=status)
+        return out
 
     def close(self):
         return self._inner.close()
@@ -361,13 +452,66 @@ class TracedMonitor:
 
 # ── 运行（复刻 main() 六项） ───────────────────────────────────────────────
 
-def _terminal_reason(result: dict, max_steps: int) -> str:
-    status = result.get("status")
-    if status == "error":
-        return "exception"
-    if status == "timeout" and int(result.get("steps", 0)) >= int(max_steps):
-        return "loop_exit"
-    return "env_terminated"
+def terminal_of(result: dict | None) -> str:
+    """C3：Astra 结果的 ``status`` 已是 success／fail／timeout／error（``runner.episode`` 把其他环境状态归为 error）；
+    循环走满 ``max_steps`` 与环境报 timeout 都是 ``timeout``；其余（含驱动异常、无结果）一律 ``error``。"""
+    status = (result or {}).get("status")
+    return status if status in TERMINALS else "error"
+
+
+def episode_key(task: str, identity: dict) -> str:
+    """C6 局目录 key：``<task>_<tier>_<seed>``（与 ``env_client.v8_key`` 同式）。"""
+    return f"{task}_{identity['tier']}_{int(identity['seed'])}"
+
+
+def recorder_meta(args, task: str, ep: int, identity: dict, key: str, media_dir: Path) -> dict:
+    """录制器 meta：字段取 ``env_client.SeatRunner.base_record`` + ``run_one`` 同款，``never_degrade=True``（始终无损）。"""
+    import uuid  # noqa: PLC0415
+    ident_full = {"tier": identity.get("tier"), "seed": int(identity["seed"]), "candidate": identity.get("candidate"),
+                  "spec_sha256": identity.get("spec_sha256"), "builder_episode": int(ep),
+                  "source_episode": identity.get("source_episode")}
+    return {"v8": True, "key": key, "task": task, "tier": identity.get("tier"), "seed": int(identity["seed"]),
+            "candidate": identity.get("candidate"), "spec_sha256": identity.get("spec_sha256"),
+            "source_episode": identity.get("source_episode"), "identity": ident_full, "builder_episode": int(ep),
+            "dataset": args.dataset, "policy": "astra", "policy_variant": "astra", "route": ROUTE,
+            "strict_cap": False, "cond": None, "seat": None, "host": socket.gethostname(), "attempt": ATTEMPT,
+            "attempt_no": ATTEMPT, "canary": False, "gpu_name": None, "gpu_uuid": None, "git_commit": None,
+            "git_dirty": None, "max_steps": int(args.max_steps), "effective_max_steps": int(args.max_steps),
+            "rec_dir": str(media_dir), "attempt_id": uuid.uuid4().hex, "resolved_identity": dict(identity),
+            "env": None, "never_degrade": True, "baseline": False}
+
+
+def default_recorder_factory(media_dir: Path, meta: dict):
+    import recorder as recorder_mod  # noqa: PLC0415  本目录的 recorder.py（bootstrap 已把 HERE 放进 sys.path）
+    return recorder_mod.EpisodeRecorder(media_dir, meta)
+
+
+def _open_media(factory: Callable, media_dir: Path, meta: dict):
+    """``media/`` 必须是新建的空目录（不覆盖任何已有证据，不传 ``overwrite=True``）。"""
+    media_dir.mkdir(parents=False, exist_ok=False)
+    return factory(media_dir, meta)
+
+
+def stage_raw_media(media_dir: Path, ep_dir: Path) -> list[str]:
+    """录制器核对通过后把原始帧移到局目录（C5）；目标已存在即拒绝（不覆盖）。返回移动的文件名。"""
+    moved = []
+    for name in RAW_MEDIA_FILES:
+        src, dst = media_dir / name, ep_dir / name
+        if not src.is_file():
+            continue
+        if dst.exists():
+            raise FileExistsError(f"局目录已有 {dst}，拒绝覆盖")
+        os.replace(src, dst)
+        moved.append(name)
+    return moved
+
+
+def write_exec_actions(path: Path, actions: list) -> None:
+    """C4：每个执行步的原动作写 ``exec_action__%05d``（0 起步序号）；一旦写就每步都有键。"""
+    import numpy as np  # noqa: PLC0415
+    if not actions:
+        return
+    np.savez(path, **{f"exec_action__{i:05d}": a for i, a in enumerate(actions)})
 
 
 def stop_file(output: Path) -> Path:
@@ -397,7 +541,8 @@ def run_cases(args, deps: SimpleNamespace) -> dict:
     ⑥ 全部局正常走完写 ``PILOT_FINISHED.json``。
 
     ``deps``：``astra``（bootstrap 结果）、``builder_cls``、``make_client()``、``make_monitor(base, adapter)``、
-    ``make_responder()``；测试注入替身，正式运行用 ``default_deps``。
+    ``make_responder()``；可选 ``recorder_factory(media_dir, meta)``（缺省用真实 ``recorder.EpisodeRecorder``）与
+    ``episode_gate``（``CostGate``：局数硬上限，正式运行由 ``default_deps`` 给）。测试注入替身，正式运行用 ``default_deps``。
     """
     astra = deps.astra
     output, spool = Path(args.output), Path(args.spool)
@@ -406,6 +551,9 @@ def run_cases(args, deps: SimpleNamespace) -> dict:
     cases = validate_cases(document, astra.core.TASKS)
     args.dataset = document["dataset"]
     check_pairing(args.dataset, args.max_steps)
+    gate = getattr(deps, "episode_gate", None)
+    if gate is not None:
+        check_episode_cap(cases)
     astra.release_utils.validate_checkpoints(args.vla_checkpoint, args.monitor_adapter)  # ①
     responder = deps.make_responder()
     for directory in (output, spool):  # ②
@@ -436,7 +584,10 @@ def run_cases(args, deps: SimpleNamespace) -> dict:
                 continue
             if rp.parent.exists():
                 raise RuntimeError("Incomplete prior episode; use a new output directory to preserve its evidence")
-            result = run_one(args, task, ep, identities[(task, ep)], builders[task], monitor, planner, client, astra)
+            if gate is not None:  # 局数硬上限（R6）：跨 RUN 登记，第 3 局在建环境与任何请求之前拒绝
+                gate.register_episode(f"{args.dataset}:{task}:{ep}")
+            result = run_one(args, task, ep, identities[(task, ep)], builders[task], monitor, planner, client, astra,
+                             recorder_factory=getattr(deps, "recorder_factory", None))
             results.append(result)
             failed = result["status"] == "error" and not astra.core.is_planner_failure(result)
             errors = errors + 1 if failed else 0  # ④
@@ -453,27 +604,340 @@ def run_cases(args, deps: SimpleNamespace) -> dict:
     return {"results": results, "finished": finished}
 
 
-def run_one(args, task, ep, identity, builder, monitor, planner, client, astra) -> dict:
-    """一局：建 trace，经委托包装调 Astra 的 ``runner.episode``，按结果收尾 trace。"""
+def run_one(args, task, ep, identity, builder, monitor, planner, client, astra, *,
+            recorder_factory: Callable | None = None) -> dict:
+    """一局：建 ``<key>.a1/`` 与 trace，经委托包装调 Astra 的 ``runner.episode``；``finally`` 里统一收尾：
+    录制器 ``close(summary)`` → 原始帧移入局目录 → 写 ``arrays.npz`` → trace ``close``（C2、C3、C8）→
+    ``result.json`` 追加映射。驱动异常（``runner.episode`` 自己不接的 ``BaseException``）照样收尾后再抛。"""
     import trace_writer as tw  # noqa: PLC0415
     ep_dir = Path(args.output) / task / f"ep{ep:03d}"
-    trace_path = (Path(args.trace_root) / task / f"ep{ep:03d}" / "trace.jsonl") if args.trace_root else ep_dir / "trace.jsonl"
-    trace_identity = {"task": task, "dataset": args.dataset, **identity}
-    writer = tw.TraceWriter(trace_path, route="astra-new", identity=trace_identity, max_steps=args.max_steps)
-    ctx = TraceContext(writer)
+    key = episode_key(task, identity)
+    tag = f"{key}.a{ATTEMPT}"
+    a_dir = ep_dir / tag
+    media_dir = a_dir / "media"
+    a_dir.mkdir(parents=True, exist_ok=False)
+    trace_dir = Path(args.trace_root) / task / f"ep{ep:03d}" / tag if getattr(args, "trace_root", None) else a_dir
+    trace_identity = {"task": task, "dataset": args.dataset, **identity, "builder_episode": int(ep), "key": key,
+                      "attempt": ATTEMPT}
+    writer = tw.TraceWriter(trace_dir / "trace.jsonl", route=ROUTE, identity=trace_identity, max_steps=args.max_steps)
+    meta = recorder_meta(args, task, ep, identity, key, media_dir)
+    factory = recorder_factory or default_recorder_factory
+    ctx = TraceContext(writer, open_recorder=lambda: _open_media(factory, media_dir, meta))
+    result: dict | None = None
+    driver_error: BaseException | None = None
     try:
         result = astra.runner.episode(args, task, ep, TracedBuilder(builder, ctx), TracedMonitor(monitor, ctx),
                                       TracedPlanner(planner, ctx), TracedClient(client, ctx))
-    except BaseException:
-        writer.close(status="error", terminal_reason="driver_exception")
+        return result
+    except BaseException as exc:
+        driver_error = exc
         raise
-    writer.close(status=result.get("status"), terminal_reason=_terminal_reason(result, args.max_steps),
-                 planner_calls=result.get("planner_calls"), monitor_calls=result.get("monitor_calls"),
-                 review_calls=result.get("review_calls"), error=result.get("error"))
-    return result
+    finally:
+        _finish_one(args, ep_dir, a_dir, trace_dir, media_dir, key, ctx, writer, result, driver_error)
 
 
-def default_deps(astra: SimpleNamespace, port: int) -> SimpleNamespace:
+def _finish_one(args, ep_dir: Path, a_dir: Path, trace_dir: Path, media_dir: Path, key: str, ctx: TraceContext,
+                writer, result: dict | None, driver_error: BaseException | None) -> None:
+    terminal = terminal_of(result) if driver_error is None else "error"
+    has_demo = ctx.demo_frames is not None
+    no_frame = not has_demo
+    demo_frames = ctx.demo_frames if has_demo else 0
+    frames_recorded = demo_frames + 1 + ctx.observed if has_demo else 0
+    summary = {"status": terminal, "steps": (result or {}).get("steps"), "exec_steps": ctx.attempted,
+               "steps_observed": ctx.observed, "frames_recorded": frames_recorded, "route": ROUTE, "key": key}
+    rec_verify, rec_error, staged = None, None, []
+    if ctx.recorder is not None:
+        try:
+            rsum = ctx.recorder.close(summary)
+            rec_verify = (rsum or {}).get("RECORDER_VERIFY")
+            if rec_verify == "PASS":
+                staged = stage_raw_media(media_dir, a_dir)
+        except Exception as exc:  # noqa: BLE001 录制收尾失败只记原因，原始块留在 media/，成绩照常收尾
+            rec_verify, rec_error = "ERROR", f"{type(exc).__name__}: {exc}"[:800]
+    write_exec_actions(trace_dir / "arrays.npz", ctx.actions)
+    extra = {}
+    if result is not None:
+        extra = {k: result.get(k) for k in ("planner_calls", "monitor_calls", "review_calls", "error")}
+    if driver_error is not None:
+        extra["driver_exception"] = f"{type(driver_error).__name__}: {driver_error}"[:800]
+    if no_frame and terminal != "error":  # 理论上不会发生：没 reset 却正常结束；按 error 记，避免假终态
+        terminal = "error"
+    writer.close(status=terminal, terminal_reason=terminal, demo_frames=demo_frames, steps_attempted=ctx.attempted,
+                 steps_observed=ctx.observed, frames_recorded=frames_recorded, omitted_timeout_frames=0,
+                 no_frame=no_frame, recorder_verify=rec_verify, recorder_error=rec_error, raw_media_staged=staged,
+                 **extra)
+    if result is not None:
+        rel = lambda p: os.path.relpath(p, ep_dir)  # noqa: E731
+        result.update(route=ROUTE, key=key, attempt=ATTEMPT, episode_dir=a_dir.name, media_dir=rel(media_dir),
+                      trace=rel(trace_dir / "trace.jsonl"), exec_steps=ctx.attempted, steps_observed=ctx.observed,
+                      frames_recorded=frames_recorded, demo_frames=demo_frames, terminal_reason=terminal,
+                      recorder_verify=rec_verify)
+        if (ep_dir / "result.json").is_file():
+            from core import atomic_json  # noqa: PLC0415  Astra 的原子写（与它写 result.json 同一函数）
+            atomic_json(ep_dir / "result.json", result)
+
+
+# ── 费用硬上限：守卫状态同步预留 + 子类化 ResponsesClient ─────────────────────
+
+_GUARD_MOD = None
+
+
+def guard_module():
+    """按路径加载同目录 ``astra_cost_guard.py``（预留协议、锁、文件名的唯一来源）。"""
+    global _GUARD_MOD
+    if _GUARD_MOD is None:
+        import importlib.util  # noqa: PLC0415
+        spec = importlib.util.spec_from_file_location("astra_cost_guard_for_runner", HERE / "astra_cost_guard.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _GUARD_MOD = mod
+    return _GUARD_MOD
+
+
+class GuardRefused(RuntimeError):
+    """发送前拒发（守卫失联、守卫已停、预留失败、局数到顶）。消息以 ``Planner API`` 开头：经 Planner 包成
+    ``Planner bridge failed`` 后同样触发 ``run_cases`` 第⑤项单次即停。"""
+
+
+def _image_tokens_upper(width: int, height: int) -> int:
+    """单张 ``detail=high`` 图片输入 token 的保守上界：取两种公开计价口径的较大者。
+
+    ① 512 切块：先缩到 2048×2048 内、再把短边缩到 768，``85 + 170 × 块数``；
+    ② 32 像素小块：小块数（上限 1536）× 2.5（各型号乘数的最大值取整上浮）。"""
+    import math  # noqa: PLC0415
+    w, h = max(int(width), 1), max(int(height), 1)
+    scale = min(1.0, 2048 / max(w, h))
+    w1, h1 = w * scale, h * scale
+    scale2 = min(1.0, 768 / min(w1, h1))
+    w2, h2 = w1 * scale2, h1 * scale2
+    tiles = math.ceil(w2 / 512) * math.ceil(h2 / 512)
+    patches = min(math.ceil(w / 32) * math.ceil(h / 32), 1536)
+    return max(85 + 170 * tiles, math.ceil(patches * 2.5))
+
+
+def _image_size(data_url: str) -> tuple[int, int]:
+    """从 ``data:<mime>;base64,<...>`` 解出图片尺寸；解不出按 2048×2048（最坏）计。"""
+    import base64  # noqa: PLC0415
+    import io  # noqa: PLC0415
+    try:
+        raw = base64.b64decode(data_url.split(",", 1)[1], validate=False)
+        from PIL import Image  # noqa: PLC0415
+        with Image.open(io.BytesIO(raw)) as im:
+            return im.size
+    except Exception:  # noqa: BLE001
+        return 2048, 2048
+
+
+def estimate_request(payload: dict) -> dict:
+    """按本次实际请求估输入 token 上界：文本按 UTF-8 字节数（每 token 至少 1 字节），图片按 ``_image_tokens_upper``，
+    另加 64 的格式开销；输出按请求自带的 ``max_output_tokens``。"""
+    text_bytes, images = 0, []
+    for item in payload.get("input") or []:
+        for part in item.get("content") or []:
+            if part.get("type") == "input_text":
+                text_bytes += len(str(part.get("text", "")).encode("utf-8"))
+            elif part.get("type") == "input_image":
+                images.append(_image_tokens_upper(*_image_size(str(part.get("image_url", "")))))
+    return {"input_tokens": text_bytes + sum(images) + 64, "text_bytes": text_bytes, "images": len(images),
+            "image_tokens": sum(images), "max_output_tokens": int(payload.get("max_output_tokens") or 0)}
+
+
+class CostGate:
+    """runner 一侧的守卫协议：发送前同步读守卫状态、原子预留单次最坏费用；登记局数。
+
+    状态文件由 ``astra_cost_guard.py --state`` 每轮写；预留文件与锁由守卫模块定名。任何读不到、过期（心跳超过
+    ``GUARD_HEARTBEAT_TIMEOUT_S``）、守卫已退出或已停的情况都拒发——宁停不发。"""
+
+    def __init__(self, state_path: str | Path, *, clock: Callable[[], float] = time.time,
+                 heartbeat_timeout: float = GUARD_HEARTBEAT_TIMEOUT_S) -> None:
+        self.state_path = Path(state_path)
+        self.clock = clock
+        self.heartbeat_timeout = float(heartbeat_timeout)
+        self.guard = guard_module()
+
+    def read_state(self) -> dict:
+        try:
+            state = json.loads(self.state_path.read_text())
+        except (OSError, ValueError) as exc:
+            raise GuardRefused(f"Planner API cost guard unavailable: state unreadable ({type(exc).__name__})") from None
+        if state.get("schema") != self.guard.STATE_SCHEMA:
+            raise GuardRefused(f"Planner API cost guard unavailable: schema {state.get('schema')!r}")
+        age = self.clock() - float(state.get("heartbeat") or 0)
+        if state.get("exited"):
+            raise GuardRefused("Planner API cost guard unavailable: guard exited")
+        if not -1.0 <= age <= self.heartbeat_timeout:
+            raise GuardRefused(f"Planner API cost guard unavailable: heartbeat age {age:.1f}s > {self.heartbeat_timeout:g}s")
+        if state.get("stop"):
+            raise GuardRefused(f"Planner API cost guard stopped: {state.get('reason')}")
+        return state
+
+    def cap(self, state: dict) -> float:
+        """生效上限 = min(守卫的 --cap, 本轮硬上限)；守卫状态被改大也不放宽。"""
+        return min(float(state.get("cap") or 0.0), float(self.guard.HARD_CAP_USD))
+
+    def worst_usd(self, state: dict, estimate: dict) -> float:
+        prices = state["prices"]
+        out_tokens = max(int(estimate["max_output_tokens"]), int(state.get("max_output_tokens") or 0))
+        usd = (estimate["input_tokens"] * float(prices["input"]) + out_tokens * float(prices["output"])) / 1e6
+        if prices.get("reasoning_billed_separately"):
+            usd += out_tokens * float(prices["output"]) / 1e6
+        return usd
+
+    def reserve(self, rid: str, payload: dict) -> dict:
+        """锁内：读状态 → 已计 + 未结预留 + 本次最坏 > 上限即拒；否则记预留（同一 rid 重试不重复计，取较大者）。"""
+        estimate = estimate_request(payload)
+        g = self.guard
+        with g.locked(self.state_path):
+            state = self.read_state()
+            doc = g.load_reservations(self.state_path)
+            worst = self.worst_usd(state, estimate)
+            existing = doc["reservations"].get(rid)
+            others = g.outstanding_reservations(
+                {"reservations": {k: v for k, v in doc["reservations"].items() if k != rid}}, state.get("counted") or [])
+            committed = float(state.get("committed_usd") or 0.0)
+            amount = max(worst, float(existing["usd"])) if existing and existing.get("state") != "released" else worst
+            cap = self.cap(state)
+            if committed + others + amount > cap:
+                raise GuardRefused(f"Planner API cost reservation refused: committed={committed:.4f} "
+                                   f"reserved={others:.4f} worst={amount:.4f} cap={cap:g}")
+            doc["reservations"][rid] = {"usd": amount, "state": "reserved", "time": self.clock(), **estimate}
+            g.save_reservations(self.state_path, doc)
+        return {"usd": amount, **estimate}
+
+    def mark(self, rid: str, state_name: str) -> None:
+        g = self.guard
+        with g.locked(self.state_path):
+            doc = g.load_reservations(self.state_path)
+            if rid in doc["reservations"]:
+                doc["reservations"][rid]["state"] = state_name
+                doc["reservations"][rid][f"{state_name}_at"] = self.clock()
+                g.save_reservations(self.state_path, doc)
+
+    def register_episode(self, episode_id: str) -> int:
+        """局数硬上限：同一预留文件里跨 RUN 登记；已登记的同一局不重复计；第 3 局拒绝。"""
+        g = self.guard
+        with g.locked(self.state_path):
+            self.read_state()
+            doc = g.load_reservations(self.state_path)
+            if episode_id not in doc["episodes"]:
+                if len(doc["episodes"]) >= g.ASTRA_MAX_EPISODES:
+                    print(f"ASTRA_STOP reason=episode_cap episode={episode_id} used={len(doc['episodes'])}", flush=True)
+                    raise AstraStop("episode_cap", f"Astra episode cap {g.ASTRA_MAX_EPISODES} reached")
+                doc["episodes"].append(episode_id)
+                g.save_reservations(self.state_path, doc)
+            return len(doc["episodes"])
+
+
+def check_episode_cap(cases: list) -> None:
+    limit = guard_module().ASTRA_MAX_EPISODES
+    if len(cases) > limit:
+        raise ValueError(f"RUN_BLOCKED reason=astra_episode_cap cases={len(cases)} cap={limit}（R6）")
+
+
+_GUARDED_CLASSES: dict = {}
+
+
+def guarded_client_class(api_client):
+    """返回第三方 ``api_client.ResponsesClient`` 的子类（按基类缓存）；第三方文件零改动。
+
+    覆写 ``_send``：每一次真正 ``urlopen`` 之前依次 ① 查 ``group_*/STOP.json``；② 同步读守卫状态并原子预留
+    本次最坏费用（同一请求的 429 重试复用同一份预留）；③ 等待第三方的 20 秒发送间隔；④ 等待后再查一次
+    STOP 与守卫状态。任一不通过即写 ``guard_refused.json``、释放预留并抛错（第三方 ``__call__`` 把它记成
+    ``status=error`` 的 ``response.json``）。其余（HTTP 错误记录、429 有界退避、脱敏）与第三方 ``_send`` 逐项同式。"""
+    base = api_client.ResponsesClient
+    if base in _GUARDED_CLASSES:
+        return _GUARDED_CLASSES[base]
+
+    class GuardedResponsesClient(base):
+        def __init__(self, key, gate: CostGate, *, sleep: Callable[[float], None] = time.sleep,
+                     monotonic: Callable[[], float] = time.monotonic) -> None:
+            super().__init__(key)
+            self.gate = gate
+            self._sleep = sleep
+            self._monotonic = monotonic
+
+        @staticmethod
+        def _stop_requested(out: Path) -> bool:
+            return any(p.name in GROUP_DIR_NAMES and (p / "STOP.json").exists() for p in out.parents)
+
+        def _refuse(self, out: Path, rid: str, message: str):
+            api_client.atomic_json(out / guard_module().REFUSED_MARKER, {"time": time.time(), "reason": message})
+            try:
+                self.gate.mark(rid, "released")
+            except Exception:  # noqa: BLE001 守卫已失联时释放也可能失败；拒发本身不受影响
+                pass
+            print(f"ASTRA_GUARD_REFUSED request={rid} reason={json.dumps(message, ensure_ascii=False)}", flush=True)
+            raise RuntimeError(message)
+
+        def _gate_before_send(self, request, out: Path, rid: str) -> None:
+            if self._stop_requested(out):
+                self._refuse(out, rid, "Host requested stop; no new API request")
+            try:
+                self.gate.reserve(rid, json.loads(request.data))
+            except GuardRefused as exc:
+                self._refuse(out, rid, str(exc))
+            self._sleep(max(0, self.next_request_at - self._monotonic()))
+            if self._stop_requested(out):  # 等待间隔里 STOP 可能已到
+                self._refuse(out, rid, "Host requested stop; no new API request")
+            try:
+                self.gate.read_state()
+            except GuardRefused as exc:
+                self._refuse(out, rid, str(exc))
+
+        def _send(self, request, out):
+            import random  # noqa: PLC0415
+            import urllib.error  # noqa: PLC0415
+            import urllib.request  # noqa: PLC0415
+            from email.utils import parsedate_to_datetime  # noqa: PLC0415
+            out = Path(out)
+            rid = out.name
+            for attempt in range(9):
+                self._gate_before_send(request, out, rid)
+                self.next_request_at = self._monotonic() + SEND_INTERVAL_S
+                self.gate.mark(rid, "sent")
+                try:
+                    with urllib.request.urlopen(request, timeout=180) as response:
+                        return json.loads(response.read()), response.headers.get("x-request-id")
+                except urllib.error.HTTPError as error:
+                    body = error.read().decode("utf-8", errors="replace")
+                    try:
+                        detail = json.loads(body).get("error", {})
+                    except ValueError:
+                        detail = {}
+                    code = detail.get("code") if isinstance(detail, dict) else None
+                    kind = detail.get("type") if isinstance(detail, dict) else None
+                    headers = {k: v for k, v in error.headers.items()
+                               if k.lower() == "retry-after" or k.lower() == "x-request-id"
+                               or k.lower().startswith("x-ratelimit-")}
+                    api_client.atomic_json(out / f"http_error_{attempt:02d}.json",
+                                           json.loads(self.scrub(json.dumps({"status": error.code, "body": body,
+                                                                             "headers": headers, "time": time.time()}))))
+                    retryable = error.code == 429 and (code in ("rate_limit_exceeded", "slow_down")
+                                                       or kind == "rate_limit_error")
+                    if not retryable or attempt == 8:
+                        raise RuntimeError(self.scrub(f"HTTP {error.code}: {body}")) from None
+                    delay = min(120, 10 * 2 ** attempt)
+                    retry_after = error.headers.get("Retry-After")
+                    if retry_after:
+                        try:
+                            delay = max(delay, float(retry_after))
+                        except ValueError:
+                            try:
+                                delay = max(delay, parsedate_to_datetime(retry_after).timestamp() - time.time())
+                            except (TypeError, ValueError, OverflowError):
+                                pass
+                    self._sleep(delay + random.uniform(0, 3))
+
+    _GUARDED_CLASSES[base] = GuardedResponsesClient
+    return GuardedResponsesClient
+
+
+def default_deps(astra: SimpleNamespace, port: int, guard_state: str | Path | None = None) -> SimpleNamespace:
+    """正式运行的依赖。``guard_state`` 必给：规划客户端换成 ``GuardedResponsesClient``，并启用局数硬上限。"""
+    if guard_state is None:
+        raise ValueError("RUN_BLOCKED reason=cost_guard 正式运行必须给 --guard-state（先起 astra_cost_guard.py --cap 5）")
+    gate = CostGate(guard_state)
+
     def make_client():
         from openpi_client.websocket_client_policy import MMEVLAWebsocketClientPolicy  # noqa: PLC0415
         import openpi_client  # noqa: PLC0415
@@ -481,12 +945,13 @@ def default_deps(astra: SimpleNamespace, port: int) -> SimpleNamespace:
         return MMEVLAWebsocketClientPolicy("127.0.0.1", port)
 
     def make_responder():
-        # 与 main() 的 ResponsesClient(os.environ.get('OPENAI_API_KEY','')) 相同；不支持 --key-file（R5）
-        return astra.api_client.ResponsesClient(os.environ.get("OPENAI_API_KEY", ""))
+        # 与 main() 的 ResponsesClient(os.environ.get('OPENAI_API_KEY','')) 同一密钥来源；不支持 --key-file（R5）
+        return guarded_client_class(astra.api_client)(os.environ.get("OPENAI_API_KEY", ""), gate)
 
     return SimpleNamespace(astra=astra, builder_cls=default_builder_cls(), make_client=make_client,
                            make_monitor=lambda base, adapter: astra.runner.Monitor(base, adapter),
-                           make_responder=make_responder)
+                           make_responder=make_responder, recorder_factory=default_recorder_factory,
+                           episode_gate=gate)
 
 
 # ── 汇总 ──────────────────────────────────────────────────────────────────
@@ -533,6 +998,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     c = sub.add_parser("check", help="起跑前核对（不加载模型、不联网）")
     common(c)
+    c.add_argument("--guard-state", default=None, help="给出时核对费用守卫心跳新鲜、上限不超过 5 美元")
 
     r = sub.add_parser("run", help="正式运行")
     common(r)
@@ -540,13 +1006,50 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--monitor-base", default=None, help="默认 Astra runner.BASE")
     r.add_argument("--output", required=True)
     r.add_argument("--spool", required=True)
-    r.add_argument("--trace-root", default=None, help="默认写在 results/<task>/ep<NNN>/trace.jsonl")
+    r.add_argument("--trace-root", default=None,
+                   help="默认写在 results/<task>/ep<NNN>/<key>.a1/trace.jsonl（给出时为 <根>/<task>/ep<NNN>/<key>.a1/）")
+    r.add_argument("--guard-state", required=True, help="astra_cost_guard.py --state 的状态文件（发送前同步预留）")
 
     s = sub.add_parser("summarize")
     s.add_argument("--cases", required=True)
     s.add_argument("--results", required=True)
     s.add_argument("--output", required=True)
+
+    m = sub.add_parser("media-inputs", help="为 official_media_check.py 写本局身份清单行与账本行")
+    m.add_argument("--episode-dir", required=True, help="<RUN>/results/<task>/ep<NNN>/<key>.a<N>")
+    m.add_argument("--manifest", required=True)
+    m.add_argument("--ledger", required=True)
     return parser
+
+
+def media_inputs(episode_dir: Path) -> tuple[dict, list[dict]]:
+    """从 trace header 取身份：清单行（身份字段，``official_media_check.py`` 取 ``key``）与账本行。
+
+    账本按 ``env_client.AttemptLedger`` 口径写两行：``attempt_start``（``attempt_id``、``attempt_no``）与 ``accept``
+    （``accepted_attempt_id == attempt_id``、``attempt_no`` = 目录名 ``.a<N>``）；Astra 没有 env_client 账本，
+    ``attempt_id`` 由 key 与尝试号确定。"""
+    import re  # noqa: PLC0415
+    episode_dir = Path(episode_dir).resolve()
+    header = json.loads((episode_dir / "trace.jsonl").read_text(encoding="utf-8").splitlines()[0])
+    ident = header["identity"]
+    m = re.fullmatch(r"(?P<key>.+)\.a(?P<n>[1-9]\d*)", episode_dir.name)
+    if not m or m["key"] != ident.get("key") or int(m["n"]) != int(ident.get("attempt", -1)):
+        raise ValueError(f"局目录名 {episode_dir.name} 与 trace identity key／attempt 不符")
+    fields = ("task", "tier", "seed", "candidate", "spec_sha256", "builder_episode", "source_episode", "dataset", "key")
+    manifest = {k: ident.get(k) for k in fields}
+    manifest["route"] = header["route"]
+    n = int(m["n"])
+    attempt_id = f"astra-{ident['key']}-a{n}"
+    common = {"key": ident["key"], "task": ident["task"], "tier": ident.get("tier"), "dataset": ident["dataset"],
+              "route": header["route"], "attempt_id": attempt_id, "attempt_no": n, "episode_dir": str(episode_dir)}
+    ledger = [{"kind": "attempt_start", **common, "builder_episode": ident.get("builder_episode"), "retry": False},
+              {"kind": "accept", **common, "accepted_attempt_id": attempt_id, "status": end_status(episode_dir)}]
+    return manifest, ledger
+
+
+def end_status(episode_dir: Path) -> str | None:
+    lines = [ln for ln in (Path(episode_dir) / "trace.jsonl").read_text(encoding="utf-8").splitlines() if ln.strip()]
+    return json.loads(lines[-1]).get("status") if lines else None
 
 
 def _print_sources(astra: SimpleNamespace) -> None:
@@ -561,6 +1064,12 @@ def cmd_check(args) -> int:
     document = json.loads(Path(args.cases).read_text())
     cases = validate_cases(document, astra.core.TASKS)
     check_pairing(document["dataset"], args.max_steps)
+    check_episode_cap(cases)
+    if args.guard_state:
+        gate = CostGate(args.guard_state)
+        state = gate.read_state()
+        print(f"ASTRA_GUARD=PASS cap={gate.cap(state):g} committed={float(state.get('committed_usd') or 0):.4f} "
+              f"heartbeat_age={time.time() - float(state['heartbeat']):.1f}s", flush=True)
     astra.release_utils.validate_checkpoints(args.vla_checkpoint, args.monitor_adapter)
     builder_cls = default_builder_cls()
     for task in dict.fromkeys(c["task"] for c in cases):
@@ -584,6 +1093,16 @@ def main(argv: list[str] | None = None, deps_factory: Callable | None = None) ->
         return 0
     if args.cmd == "check":
         return cmd_check(args)
+    if args.cmd == "media-inputs":
+        manifest, ledger = media_inputs(Path(args.episode_dir))
+        for path, rows in ((args.manifest, [manifest]), (args.ledger, ledger)):
+            Path(path).parent.mkdir(parents=True, exist_ok=True)
+            Path(path).write_text("".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows))
+        acc = ledger[-1]
+        # 末行只给 run_astra.sh 取 dataset 用：dataset=<值> 恒在行尾
+        print(f"ASTRA_MEDIA_INPUTS key={acc['key']} attempt_no={acc['attempt_no']} dir={acc['episode_dir']} "
+              f"dataset={acc['dataset']}", flush=True)
+        return 0
     astra = bootstrap(astra_root(args.astra_root))
     if args.cmd == "prepare":
         out = Path(args.output)
@@ -599,7 +1118,7 @@ def main(argv: list[str] | None = None, deps_factory: Callable | None = None) ->
     assert_env_sources()
     if args.monitor_base is None:
         args.monitor_base = astra.runner.BASE
-    deps = (deps_factory or default_deps)(astra, args.port)
+    deps = deps_factory(astra, args.port) if deps_factory else default_deps(astra, args.port, args.guard_state)
     run_cases(args, deps)
     return 0
 
