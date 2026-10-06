@@ -31,8 +31,14 @@ IO 层（WSPolicyConn）分开，单测用假 session / 假连接直接驱动。
 - 请求／响应（C10）：SimpleMemVLA 记逻辑输入（指令、状态、上次推理以来 observe 的帧哈希序列）与完整动作块
   ``actions_full``；FrameSamp+Modulation 记原始 msgpack 帧字节的 sha256 与 ``infer`` 回包动作块；
 - strict-cap（``StepCapReached`` 或会话 ``cap_hit``）一律按 ``timeout`` 收尾（C3）；
-- 非 float32 动作的原值：录像器会写 ``arrays.npz``（``exec_action__%05d``，与 ``recorder._write_arrays`` 的
-  ``f"{name}__{k:05d}"`` 同名）时不再另写，否则在轨迹目录写 ``arrays.npz``（C4）；
+- 完整数值（第三阶段，冻结说明第四节）：每步动作／状态原值由 ``TraceWriter`` 收集，收尾经
+  ``trace_writer.merge_write_npz`` 写轨迹目录 ``arrays.npz``（``exec_action__%05d``／``exec_state__%05d``）；与录像器
+  同目录时与其 ``exec_action__%05d`` 同键同值合并，先后任意都不覆盖；本模块不再直接 ``np.savez``；
+- 语言账本（第三阶段，冻结说明第五节）：轨迹同目录 ``language.jsonl``。SimpleMemVLA 每次决策一个
+  ``action_model`` 调用：发送前写 ``in``（``role=fields``，任务目标），回包后写服务外壳审计块的逐通道分词与
+  ``out``（``role=assistant``，子任务原文），``close_call`` 记 ``server_final_text``（服务端模板化 prompt，缺审计块记
+  None）；执行步 ``source_call_id``／``chunk_index`` 指向该调用。回包里的 ``_sgeval_audit`` 一律先 pop 掉，不进
+  动作、不改请求字节；
 - 记录器内任何异常只计 ``observer_hook_errors`` 并打印 ``TRACE_HOOK_ERROR``，不改变发给服务的请求、交给环境的
   动作与控制流（后续 ``CLIENT_REPLAY_EQ`` 回放比对）。
 """
@@ -304,6 +310,8 @@ def episode_key(identity: dict) -> str:
 TRACE_TERMINALS = ("success", "fail", "timeout", "error")
 #: arrays.npz 的执行动作键（C4）；与 recorder._write_arrays 的 f"{name}__{k:05d}"（name="exec_action"）逐字同名
 ACTION_KEY = "exec_action__%05d"
+#: 服务外壳回包审计键（冻结说明第五节；与 trace_writer.AUDIT_KEY 相同）
+AUDIT_KEY = "_sgeval_audit"
 _TAG_ATTEMPT = re.compile(r"\.a(\d+)$")
 
 
@@ -354,19 +362,39 @@ class PolicyTrace:
         self.encodings: set[str] = set()
         self.pending_frames: list[list[str | None]] = []
         self._tw = None
+        self.lang = None        # 第三阶段语言账本（trace 同目录 language.jsonl）
+        self.src_call: str | None = None  # 当前动作块来自哪次调用（log_step 的 source_call_id）
+        self.chunk_pos = 0      # 当前动作块内下一步的序号（log_step 的 chunk_index）
         try:
-            path = load_sibling("groundsg_client").trace_location(conn_info or {}, recorder)
+            ci = conn_info or {}
+            path = load_sibling("groundsg_client").trace_location(ci, recorder)
             if path is None:
                 return
             self._tw = load_sibling("trace_writer")
-            tag = (conn_info or {}).get("episode_tag") or f"{identity.get('key')}.a1"
+            tag = ci.get("episode_tag") or f"{identity.get('key')}.a1"
             ident = {k: identity.get(k) for k in ("task", "tier", "seed", "source_episode", "builder_episode", "key")}
-            ident.update(dataset=(conn_info or {}).get("dataset"), attempt=episode_attempt(tag))
-            self.w = self._tw.TraceWriter(path, route=route, identity=ident, max_steps=self.max_steps)
+            ident.update(dataset=ci.get("dataset"), attempt=episode_attempt(tag))
+            seed = ci.get("policy_seed", identity.get("policy_seed"))
+            cap = ci.get("effective_cap")
+            kw: dict[str, Any] = {}
+            if seed is not None:  # 冻结说明四.1：identity／header 记 policy_seed；未给时不写，旧字节不变
+                ident["policy_seed"] = int(seed)
+                kw["policy_seed"] = int(seed)
+            if cap is not None:
+                kw["effective_cap"] = int(cap)
+            self.w = self._tw.TraceWriter(path, route=route, identity=ident, max_steps=self.max_steps, **kw)
             self.path = Path(path)
         except Exception as e:  # noqa: BLE001 记录器建不起来：只告警，不影响本局
             self.w = None
             self._err("init", e)
+            return
+        try:
+            LanguageLog = getattr(self._tw, "LanguageLog", None)
+            if LanguageLog is not None:
+                self.lang = LanguageLog(self.path.parent / "language.jsonl")
+        except Exception as e:  # noqa: BLE001
+            self.lang = None
+            self._err("language.init", e)
 
     @property
     def enabled(self) -> bool:
@@ -442,6 +470,71 @@ class PolicyTrace:
         except Exception as e:  # noqa: BLE001
             self._err("history", e)
 
+    # -- 第三阶段语言账本（冻结说明第五节）：全部吞异常、计 hook_errors，不改请求、动作与控制流 --
+    def lang_open(self, model: str, *, step: int | None = None, **kw: Any) -> str | None:
+        """开一次模型调用；``step`` 缺省取已交给环境的步数。账本不可用时返回 None（其余 lang_* 对 None 是空操作）。"""
+        if self.lang is None:
+            return None
+        try:
+            return self.lang.open_call(model, self.steps if step is None else int(step), **kw)
+        except Exception as e:  # noqa: BLE001
+            self._err("language.open", e)
+            return None
+
+    def lang_msg(self, call_id: str | None, **kw: Any) -> None:
+        if self.lang is None or call_id is None:
+            return
+        try:
+            self.lang.message(call_id, **kw)
+        except Exception as e:  # noqa: BLE001
+            self._err("language.message", e)
+
+    def lang_audit(self, call_id: str | None, audit: Any) -> tuple[Any, Any]:
+        """服务外壳审计块的逐通道分词写成 ``in`` 消息，返回 ``(server_final_text, server_truncated)``；缺审计块记 None。"""
+        if self.lang is None or call_id is None:
+            return None, None
+        try:
+            return self._tw.audit_channel_messages(self.lang, call_id, audit)
+        except Exception as e:  # noqa: BLE001
+            self._err("language.audit", e)
+            return None, None
+
+    def lang_close(self, call_id: str | None, **kw: Any) -> None:
+        if self.lang is None or call_id is None:
+            return
+        try:
+            self.lang.close_call(call_id, **kw)
+        except Exception as e:  # noqa: BLE001
+            self._err("language.close", e)
+
+    def image_ref(self, slot: int, ref: str, cam: str, img: Any) -> dict | None:
+        """附图引用：当前帧在 trace 里的位置（演示段末帧或第 N 步执行后）与原始帧 sha256（与 trace 同一算法）。"""
+        if not self.enabled:
+            return None
+        try:
+            if self.steps == 0:
+                phase, idx = "demo", (self.demo_frames if self.demo_frames is not None else None)
+            else:
+                phase, idx = "exec", self.steps
+            return {"slot": int(slot), "ref": ref, "phase": phase, "frame_idx": idx, "cam": cam,
+                    "raw_sha256": self._tw.image_sha256(img), "sources": None, "transform": None,
+                    "encoded_sha256": None}
+        except Exception as e:  # noqa: BLE001
+            self._err("language.image_ref", e)
+            return None
+
+    def begin_chunk(self, call_id: str | None) -> None:
+        """之后执行的步都来自 ``call_id`` 这次调用，块内序号从 0 重新计。"""
+        self.src_call = call_id
+        self.chunk_pos = 0
+
+    def _link(self) -> dict:
+        if self.src_call is None:
+            return {}
+        out = {"source_call_id": self.src_call, "chunk_index": self.chunk_pos}
+        self.chunk_pos += 1
+        return out
+
     # -- 执行步 --
     def step(self, action, front, wrist, state, *, subgoal, terminated, truncated, status) -> None:
         """有效观测步（C4）：执行后的画面、状态、实际交给环境的动作与当步子目标。"""
@@ -453,7 +546,7 @@ class PolicyTrace:
             self.observed += 1
             self.actions.append(a)
             self.w.log_step(step=self.steps, front=front, wrist=wrist, state=state, action=a, subgoal=subgoal,
-                            terminated=bool(terminated), truncated=bool(truncated), status=status)
+                            terminated=bool(terminated), truncated=bool(truncated), status=status, **self._link())
         except Exception as e:  # noqa: BLE001
             self._err("step", e)
 
@@ -465,7 +558,8 @@ class PolicyTrace:
             a = self._copy(action)
             self.steps += 1
             self.actions.append(a)
-            self.w.log_missing_step(step=self.steps, action=a, reason=str(reason)[:300], subgoal=subgoal)
+            self.w.log_missing_step(step=self.steps, action=a, reason=str(reason)[:300], subgoal=subgoal,
+                                    **self._link())
         except Exception as e:  # noqa: BLE001
             self._err("missing_step", e)
 
@@ -490,14 +584,8 @@ class PolicyTrace:
             self._err("step_exception", e)
 
     # -- 收尾 --
-    def _write_arrays(self) -> str:
-        if not self.actions or all(a is None or a.dtype == np.dtype("<f4") for a in self.actions):
-            return "none"
-        if self.recorder_has_actions:
-            return "recorder"
-        payload = {ACTION_KEY % i: a for i, a in enumerate(self.actions) if a is not None}
-        np.savez(self.path.parent / "arrays.npz", **payload)
-        return "trace"
+    # 第三阶段：arrays.npz 不再由本类直接 np.savez；TraceWriter 逐步收集 exec_action／exec_state，close 时经
+    # trace_writer.merge_write_npz 合并写盘（与同目录录像器先后任意都不覆盖；分目录时各写各的），end.arrays 为摘要。
 
     def close(self, status: str | None, *, cap_hit: bool = False, **extra: Any) -> None:
         """按 C2、C3、C8 收尾：strict-cap 记 ``timeout``；无演示帧的 error 局记 ``no_frame``。"""
@@ -514,15 +602,15 @@ class PolicyTrace:
             omitted = int(self.omit_overflow_frame and st == "timeout" and not self.cap_hit and
                           self.steps == self.max_steps + 1)
             frames = 0 if no_frame else demo + 1 + self.observed - omitted
-            try:
-                arrays = self._write_arrays()
-            except Exception as e:  # noqa: BLE001
-                self._err("arrays", e)
-                arrays = "error"
+            if self.lang is not None:  # 先关语言账本（悬空调用补 cancelled），其异常也计进本局 hook_errors
+                try:
+                    self.lang.close()
+                except Exception as e:  # noqa: BLE001
+                    self._err("language.close", e)
             enc = sorted(self.encodings)
             self.w.close(status=st, terminal_reason=st, side="new", demo_frames=demo, no_frame=no_frame,
                          steps_attempted=self.steps, steps_observed=self.observed, frames_recorded=frames,
-                         omitted_timeout_frames=omitted, cap_hit=self.cap_hit, arrays=arrays,
+                         omitted_timeout_frames=omitted, cap_hit=self.cap_hit,
                          request_encoding=enc[0] if len(enc) == 1 else ("mixed" if enc else None),
                          observer_hook_errors=self.hook_errors, **extra)
         except Exception as e:  # noqa: BLE001
@@ -569,6 +657,8 @@ def run_episode(session, identity: dict, conn_info: dict, recorder=None, *, conn
             idx[cam] = rec.add_frames(cam, np.stack([fr[cam] for fr in frames]), tag=tag)
         return {k: [v[0], v[-1]] if v else [] for k, v in idx.items()}
 
+    last_audit: list[Any] = [None]  # 最近一次回包里 pop 出的服务外壳审计块
+
     def call(kind: str, msg: dict, extra: dict | None = None) -> dict:
         t0 = time.monotonic()
         reply, raw, rep_raw = conn.call(msg)
@@ -583,6 +673,8 @@ def run_episode(session, identity: dict, conn_info: dict, recorder=None, *, conn
             timing["rtt_ms"].append(round(rtt, 3))
         if not isinstance(reply, dict):
             raise ProtocolError(f"{kind} 回包不是 dict：{type(reply)}")
+        # 第三阶段：服务外壳审计键先 pop 掉（只进语言账本，不进动作与后续校验）
+        last_audit[0] = reply.pop(AUDIT_KEY, None)
         if "error" in reply:
             raise ServerError(f"server 报错（{kind}）：{reply['error']}")
         if reply.get("req_sha") != sha256_bytes(raw):
@@ -651,12 +743,24 @@ def run_episode(session, identity: dict, conn_info: dict, recorder=None, *, conn
                     break
                 rec.add_array("state", cur_state, step=steps)
                 trace.logical_request("infer", instruction, cur_state)
-                reply = call("infer", {"infer": {"instruction": instruction, "state": cur_state}},
-                             {"decision": decisions - 1, "step": steps, "state_sha": array_sha(cur_state)})
-                if reply.get("recv_state_sha") != array_sha(cur_state) or \
-                        reply.get("recv_instruction_sha") != sha256_bytes(instruction.encode("utf-8")):
-                    proto["sha_mismatch"] += 1
-                    raise ProtocolError("infer 回包的状态/指令指纹与发出不符")
+                # 第三阶段语言账本：每次决策一个 action_model 调用，in 消息在发送前落盘
+                cid = trace.lang_open("action_model", params={"decision": decisions - 1})
+                trace.lang_msg(cid, dir="in", role="fields", text={"instruction": instruction})
+                try:
+                    reply = call("infer", {"infer": {"instruction": instruction, "state": cur_state}},
+                                 {"decision": decisions - 1, "step": steps, "state_sha": array_sha(cur_state)})
+                    if reply.get("recv_state_sha") != array_sha(cur_state) or \
+                            reply.get("recv_instruction_sha") != sha256_bytes(instruction.encode("utf-8")):
+                        proto["sha_mismatch"] += 1
+                        raise ProtocolError("infer 回包的状态/指令指纹与发出不符")
+                except BaseException:
+                    trace.lang_close(cid, status="error")
+                    raise
+                final_text, final_trunc = trace.lang_audit(cid, last_audit[0])
+                trace.lang_msg(cid, dir="out", role="assistant", text=reply.get("subtask"))
+                trace.lang_close(cid, status="reply", parsed=reply.get("subtask"), server_final_text=final_text,
+                                 server_truncated=final_trunc)
+                trace.begin_chunk(cid)
                 timing["infer_ms"].append(round(float(reply["infer_ms"]), 3))
                 actions_full = np.asarray(reply["actions_full"])
                 rec.add_array("model_action", actions_full, step=steps)

@@ -388,10 +388,15 @@ def test_smvla_trace_success_is_renderable_with_subgoal_and_logical_requests(tmp
     assert all(st["subgoal"] == "s" for st in steps)  # 子目标取回包 subtask，非空
     assert demo["frames"] == F.N_RESET_FRAMES and end["demo_frames"] == F.N_RESET_FRAMES - 1
     assert (end["steps_attempted"], end["steps_observed"], end["frames_recorded"]) == (20, 20, F.N_RESET_FRAMES + 20)
-    assert end["arrays"] == "trace" and end["observer_hook_errors"] == 0 and end["request_encoding"] == "logical"
+    # 第三阶段（冻结说明四.3）：end.arrays 为摘要，另收观测步状态 exec_state__%05d
+    assert end["arrays"] == {"path": "arrays.npz", "action_keys": 20, "state_keys": 20, "missing_state_steps": []}
+    assert end["observer_hook_errors"] == 0 and end["request_encoding"] == "logical"
     # 动作按实际交给环境的原 dtype 记录，arrays.npz 原值与环境收到的逐字节相同
     with np.load(ep / "arrays.npz") as arr:
-        assert sorted(arr.files) == [f"exec_action__{i:05d}" for i in range(20)]
+        assert sorted(k for k in arr.files if k.startswith("exec_action__")) == \
+            [f"exec_action__{i:05d}" for i in range(20)]
+        assert sorted(k for k in arr.files if k.startswith("exec_state__")) == \
+            [f"exec_state__{i:05d}" for i in range(20)]
         for i, a in enumerate(b.env.actions):
             assert arr[f"exec_action__{i:05d}"].dtype == np.float64
             assert arr[f"exec_action__{i:05d}"].tobytes() == a.tobytes()
@@ -506,9 +511,14 @@ def test_smvla_recorder_arrays_keys_match_trace_contract(tmp_path):
                          conn=F.FakeSmvlaConn(F.FakePolicyServer()))
     assert res["status"] == "success"
     assert res["trace_path"] == str(ep / "trace.jsonl")  # trace_location 退回 recorder.out_dir
-    assert not (ep / "arrays.npz").exists()
-    assert _rows(ep)[-1]["arrays"] == "recorder" and _rows(ep)[0]["identity"]["attempt"] == 2
-    rec._write_arrays()  # 录像器收尾写 arrays.npz
+    # 第三阶段：轨迹先经 merge_write_npz 写同目录 arrays.npz，录像器收尾再合并同名键，先后不覆盖
+    assert (ep / "arrays.npz").exists()
+    assert _rows(ep)[-1]["arrays"]["action_keys"] == sess.steps and _rows(ep)[0]["identity"]["attempt"] == 2
+    rec._write_arrays()  # 录像器收尾写 arrays.npz（与轨迹的 exec_action 同键同值，不冲突）
+    with np.load(ep / "arrays.npz") as arr:
+        files = set(arr.files)
+    assert {f"exec_action__{i:05d}" for i in range(sess.steps)} <= files
+    assert {f"exec_state__{i:05d}" for i in range(sess.steps)} <= files and "model_action__00000" in files
     tc.assert_renderable(ep)
     tc.assert_counts_consistent(ep, {"exec_steps": sess.steps, "status": "success"})
 
@@ -547,7 +557,8 @@ def test_framesamp_modul_trace_success_is_renderable_with_null_subgoals(tmp_path
     assert [r["actions"]["sha256"] for r in _kind(rows, "response")] == \
         [tw.array_record(a)["sha256"] for a in infer_actions]
     end = rows[-1]
-    assert end["arrays"] == "none" and not (ep / "arrays.npz").exists()  # 动作本就是 float32
+    # 第三阶段：float32 动作也逐步收进 arrays.npz（完整数值），end.arrays 为摘要
+    assert end["arrays"] == {"path": "arrays.npz", "action_keys": 20, "state_keys": 20, "missing_state_steps": []}
     assert end["request_encoding"] == "canonical" and end["observer_hook_errors"] == 0  # 替身客户端没有原始字节钩子
     assert (end["steps_attempted"], end["steps_observed"], end["frames_recorded"]) == (20, 20, F.N_RESET_FRAMES + 20)
 
@@ -616,9 +627,10 @@ def test_framesamp_modul_non_float32_actions_write_arrays_npz(tmp_path, monkeypa
     res, sess, b, _, ep = _framesamp_modul_traced(tmp_path, monkeypatch, F.Plan(success_at=7), client_wrap=_F64)
     assert res["status"] == "success"
     tc.assert_renderable(ep)
-    assert _rows(ep)[-1]["arrays"] == "trace"
+    assert _rows(ep)[-1]["arrays"]["action_keys"] == 7  # 第三阶段：end.arrays 为摘要
     with np.load(ep / "arrays.npz") as arr:
-        assert sorted(arr.files) == [f"exec_action__{i:05d}" for i in range(7)]
+        assert sorted(k for k in arr.files if k.startswith("exec_action__")) == \
+            [f"exec_action__{i:05d}" for i in range(7)]
         assert all(arr[f"exec_action__{i:05d}"].tobytes() == b.env.actions[i].tobytes() for i in range(7))
 
 

@@ -41,6 +41,8 @@ import numpy as np  # noqa: E402
 
 MAX_STEPS = 1300
 OBS_HORIZON = 16
+#: 服务外壳回包审计键（冻结说明第五节；与 trace_writer.AUDIT_KEY 相同）
+AUDIT_KEY = "_sgeval_audit"
 NORMAL = ("success", "fail", "timeout")
 INFRA_MARKERS = ("RecorderError", "svulkan2", "EXCLUSIVE", "Vulkan", "vk::", "out of memory", "RESOURCE_EXHAUSTED",
                  "CUDA_ERROR", "ConnectionClosed", "ConnectionRefused", "InvalidStatus", "Connection reset")
@@ -314,6 +316,7 @@ def make_recording_client(host: str, port: int, recorder, timing: dict):
             self._seq = 0
             # S4：可选的原始字节观察钩子 raw_hook(obj, sent_bytes, recv_bytes)，每次往返成功后调用（只读，异常吞掉）
             self._raw_hook = None
+            self._last_audit = None  # 第三阶段：最近一次回包里 pop 出的服务外壳审计块
             super().__init__(host, port)
 
         def _wait_for_server(self):
@@ -348,6 +351,8 @@ def make_recording_client(host: str, port: int, recorder, timing: dict):
                 self._event({"kind": "ws_recv", "seq": self._seq, "msg": "error_text", "sha": sha(response)})
                 raise RuntimeError(f"Error in inference server:\n{response}")
             out = msgpack_numpy.unpackb(response)
+            # 第三阶段：服务外壳审计键在回包交给官方循环（进而交给环境）之前 pop 掉，另存给语言账本
+            self._last_audit = out.pop(AUDIT_KEY, None) if isinstance(out, dict) else None
             t3 = time.perf_counter()
             dig = payload_digest(obj)
             rdig = response_digest(out)
@@ -464,9 +469,38 @@ class TracedClient:
         self._record("add_buffer", buffer, out)
         return out
 
+    def _image_refs(self, obs: Any) -> list | None:
+        """当前前视、腕部两张帧的引用（``raw_sha256`` 与 trace 同算法，可在 demo 末帧或上一步 step 行里找到）。"""
+        if not isinstance(obs, dict):
+            return None
+        tr = self._trace
+        refs = [tr.image_ref(0, "current", "front", obs.get("observation/image")),
+                tr.image_ref(1, "wrist", "wrist", obs.get("observation/wrist_image"))]
+        return [r for r in refs if r is not None] or None
+
     def infer(self, obs):
+        """第三阶段语言账本：每个推理步一个 ``action_model`` 调用。发送前写 ``in``（``role=fields``：结构化字段原文 +
+        两张当前帧引用）；回包后 pop 掉 ``_sgeval_audit``（真实客户端已在 ``_roundtrip`` 里 pop 并存进
+        ``_last_audit``），逐通道写分词消息，``close_call`` 记 ``server_final_text``；之后执行的步关联到本调用。"""
         self._raw = None
-        out = self._inner.infer(obs)
+        tr = self._trace
+        cid = tr.lang_open("action_model")
+        fields = {k: v for k, v in obs.items() if isinstance(v, (str, int, float, bool)) or v is None} \
+            if isinstance(obs, dict) else None
+        tr.lang_msg(cid, dir="in", role="fields", text=fields, images=self._image_refs(obs))
+        if hasattr(self._inner, "_last_audit"):
+            self._inner._last_audit = None
+        try:
+            out = self._inner.infer(obs)
+        except BaseException:
+            tr.lang_close(cid, status="error")
+            raise
+        audit = out.pop(AUDIT_KEY, None) if isinstance(out, dict) else None
+        if audit is None:
+            audit = getattr(self._inner, "_last_audit", None)
+        final_text, final_trunc = tr.lang_audit(cid, audit)
+        tr.lang_close(cid, status="reply", server_final_text=final_text, server_truncated=final_trunc)
+        tr.begin_chunk(cid)
         self._record("infer", obs, out)
         return out
 
