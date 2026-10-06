@@ -1,0 +1,457 @@
+"""客户端回放等价核对 ``CLIENT_REPLAY_EQ``（1005-eval-video-phase2-all-models-rerun-plan.md 第二部分一节「主会话」、三节闸门）。
+
+目的：证明第二阶段给新侧客户端加的记录与媒体接线不改变策略行为。固定观测（确定性假环境）与固定服务回包（按调用
+序号确定、与请求内容无关）下，分别用 ``--base`` 与 ``--candidate`` 两个检出里的客户端各跑同一组局，比较：
+
+- ``request``：发给模型服务的每条消息。mme、mmesg 在 websocket 字节层截获（``websockets.sync.client.connect`` 换成
+  进程内假连接，比的是 msgpack 打包后的原始字节 sha256）；smvla 注入假连接，比消息对象的规范化字节；pp 注入假
+  vla-eval 连接，比协议帧载荷的规范化字节（EPISODE_END 的墙钟 ``elapsed_sec`` 剔除）。
+- ``action``：交给环境 ``step`` 的每个动作的 dtype／shape／原始字节。
+- ``control``：环境与服务调用的先后顺序与次数（reset、step、各消息类型）。
+- ``terminal``：返回字典的 ``status``、``task_success``、``steps``。
+
+新增的记录与媒体字段（轨迹文件、录像事件、返回字典里的其他键）列为允许差异，不参与判定。
+
+每个检出在独立子进程里运行（``--_worker``），模块一律从该检出的 ``scripts/eval-official`` 按路径加载、``src`` 置于
+``sys.path`` 最前，避免两个检出互相串味；子进程先打印 ``robomme_hard.__file__`` 供核对。
+
+路线：``mmesg``（GroundSG oracle 变体；qwenvl 与 oracle 只差子目标预测器，客户端代码同一份）、``smvla``、``mme``、
+``pp``。每条路线三个场景：第 37 步成功（跨多次决策）、第 5 步环境异常、步数上限 40 触发超时。Astra 不在本工具覆盖
+范围（批次 5 只跑 2 局付费 smoke，由 S3 的零外联夹具测试覆盖）。
+
+用法：
+  uv run --no-sync python scripts/eval-official/client_replay_eq.py --base <检出目录> --candidate <检出目录> \
+      --routes mmesg,smvla,mme,pp [--third-party <含 mme-vla 的 third_party 目录>] [--self-test]
+判定行（每路线一行）：
+  CLIENT_REPLAY_EQ=PASS|FAIL base=<sha> candidate=<sha> route=<r> request_diff=<n> action_diff=<n> control_diff=<n>
+  terminal_diff=<n>
+``--self-test`` 另以「故意改动」的候选（在子进程内对动作、请求、调用顺序各做一处篡改）跑一遍，必须得到 FAIL，输出
+``CLIENT_REPLAY_SELFTEST=PASS|FAIL``。
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib.util
+import json
+import os
+import pickle
+import subprocess
+import sys
+import tempfile
+import zlib
+from pathlib import Path
+from typing import Any
+
+ROUTES = ("mmesg", "smvla", "mme", "pp")
+SCENARIOS = ({"name": "success", "done_at": 37, "raise_at": None, "max_steps": 200},
+             {"name": "env_error", "done_at": None, "raise_at": 5, "max_steps": 200},
+             {"name": "timeout", "done_at": None, "raise_at": None, "max_steps": 40})
+TAMPERS = ("action", "request", "order")
+H = W = 256  # 与真实环境同尺寸（官方录像器在小图上拼字条会尺寸不一致）
+DEMO = 3
+CHUNK = 20
+
+
+# ── 公共：规范化与哈希 ────────────────────────────────────────────────────────
+
+
+def _sha(b: bytes) -> str:
+    return hashlib.sha256(b).hexdigest()
+
+
+def _canon(obj: Any) -> Any:
+    import numpy as np
+
+    if isinstance(obj, (np.ndarray, np.generic)):
+        a = np.ascontiguousarray(np.asarray(obj))
+        return {"__array__": [a.dtype.str, list(a.shape), _sha(a.tobytes())]}
+    if isinstance(obj, (bytes, bytearray, memoryview)):
+        return {"__bytes__": _sha(bytes(obj))}
+    if isinstance(obj, dict):
+        return {str(k): _canon(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_canon(v) for v in obj]
+    if isinstance(obj, float):
+        return {"__float__": float.hex(obj)}
+    if obj is None or isinstance(obj, (bool, int, str)):
+        return obj
+    return {"__repr__": type(obj).__name__}
+
+
+def canon_sha(obj: Any) -> str:
+    return _sha(json.dumps(_canon(obj), sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode())
+
+
+# ── 子进程：假环境、假服务、驱动 ──────────────────────────────────────────────
+
+
+class Log:
+    def __init__(self, tamper: str | None):
+        self.events: list[list[Any]] = []
+        self.tamper = tamper
+        self.n_step = 0
+
+    def add(self, *ev: Any) -> None:
+        self.events.append(list(ev))
+
+
+class FakeSession:
+    """EnvSession 替身：``reset() -> (obs, info)``，``step(a) -> (obs, r, terminated, truncated, info)``。"""
+
+    def __init__(self, log: Log, scen: dict, task: str = "PickXtimes", ep: int = 3):
+        self.log, self.scen, self.task = log, scen, task
+        self.seed = zlib.crc32(f"{task}:{ep}".encode())
+        self.t = 0
+        self.steps = 0
+        self.recorder = None
+        self.timing = {"demo_frames": DEMO}
+        self.env = None
+
+    def _frame(self, k, cam):
+        import numpy as np
+        return np.random.default_rng([self.seed, k, cam]).integers(0, 256, size=(H, W, 3), dtype=np.uint8)
+
+    def _obs(self, ks):
+        import numpy as np
+        return {"front_rgb_list": [self._frame(k, 0) for k in ks],
+                "wrist_rgb_list": [self._frame(k, 1) for k in ks],
+                "joint_state_list": [np.random.default_rng([self.seed, k, 7]).normal(size=7) for k in ks],
+                "gripper_state_list": [np.random.default_rng([self.seed, k, 9]).uniform(size=2) for k in ks],
+                "eef_state_list": [np.zeros(6) for _ in ks]}
+
+    def reset(self):
+        self.log.add("env", "reset")
+        self.t = 0
+        info = {"task_goal": ["pick up the cube 3 times"], "status": "ongoing",
+                "simple_subgoal_online": "sg0", "grounded_subgoal_online": "gsg0"}
+        return self._obs(range(DEMO + 1)), info
+
+    def step(self, action):
+        import numpy as np
+        a = np.ascontiguousarray(np.asarray(action))
+        if self.log.tamper == "action" and self.t == 2:
+            a = a.copy(); a.reshape(-1)[0] += 1  # 自检用的故意改动
+        self.log.add("env", "step", a.dtype.str, list(a.shape), _sha(a.tobytes()))
+        self.t += 1
+        self.steps += 1
+        if self.scen["raise_at"] == self.t:
+            raise RuntimeError("假环境第 %d 步异常" % self.t)
+        done = self.scen["done_at"] is not None and self.t >= self.scen["done_at"]
+        info = {"status": "success" if done else "ongoing", "simple_subgoal_online": f"sg{self.t}",
+                "grounded_subgoal_online": f"gsg{self.t}"}
+        return self._obs([DEMO + self.t]), 0.0, done, False, info
+
+
+class NullRecorder:
+    """录像器替身：记录类调用一律吞掉（记录与媒体字段属于允许差异）。"""
+
+    def __init__(self, out_dir: Path):
+        self.out_dir = out_dir
+
+    def __getattr__(self, name):
+        return lambda *a, **k: None
+
+
+def _actions(n: int):
+    import numpy as np
+    return (np.random.default_rng([n, 11]).uniform(-1, 1, size=(CHUNK, 8))).astype(np.float32)
+
+
+class FakeWS:
+    """``websockets.sync.client.connect`` 的返回值替身：按 msgpack 解包请求类型回确定性回包。"""
+
+    def __init__(self, log: Log, counters: dict):
+        from openpi_client import msgpack_numpy
+        self.mp = msgpack_numpy
+        self.log, self.c = log, counters
+        self._pending = [self.mp.packb({"fake_server": True})]
+
+    def send(self, data):
+        obj = self.mp.unpackb(data)
+        kind = "reset" if isinstance(obj, dict) and "reset" in obj else (
+            "add_buffer" if isinstance(obj, dict) and "images" in obj else "infer")
+        payload = bytes(data)
+        if self.log.tamper == "request" and kind == "infer" and self.c["infer"] == 0:
+            payload = payload + b"x"
+        self.log.add("srv", kind, _sha(payload))
+        if kind == "reset":
+            rep = {"reset_finished": True}
+        elif kind == "add_buffer":
+            rep = {"add_buffer_finished": True}
+        else:
+            rep = {"actions": _actions(self.c["infer"])}
+            self.c["infer"] += 1
+        self._pending.append(self.mp.packb(rep))
+
+    def recv(self, *a, **k):
+        return self._pending.pop(0)
+
+    def close(self, *a, **k):
+        pass
+
+
+def _load(root: Path, name: str):
+    p = root / "scripts" / "eval-official" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(f"replay_{name}", p)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _identity(scen):
+    return {"task": "PickXtimes", "tier": "xhard0", "seed": 1234, "source_episode": 3, "builder_episode": 0,
+            "key": "PickXtimes_xhard0_1234", "dataset": "test-hard0", "attempt": 1}
+
+
+def _patch_ws(log, counters):
+    import websockets.sync.client as wsc
+    wsc.connect = lambda *a, **k: FakeWS(log, counters)
+
+
+def run_route(root: Path, route: str, scen: dict, tamper: str | None, tmp: Path) -> dict:
+    log = Log(tamper)
+    sess = FakeSession(log, scen)
+    ident = _identity(scen)
+    ep_dir = tmp / f"{ident['key']}.a1"
+    ep_dir.mkdir(parents=True, exist_ok=True)
+    rec = NullRecorder(ep_dir)
+    conn_info = {"host": "127.0.0.1", "port": 1, "max_steps": scen["max_steps"], "dataset": "test-hard0",
+                 "trace_dir": str(ep_dir), "episode_tag": f"{ident['key']}.a1"}
+    counters = {"infer": 0}
+    if route == "mme":
+        _patch_ws(log, counters)
+        mod = _load(root, "mme_client")
+        res = mod.run_episode(sess, ident, conn_info, rec)
+    elif route == "mmesg":
+        _patch_ws(log, counters)
+        mod = _load(root, "mmesg_client")
+        ctx = mod.make_policy_context({"mme_variant": "ground-sg-oracle", "port": 1, "max_steps": scen["max_steps"],
+                                       "out": str(tmp)})
+        conn_info.update(policy_context=ctx, mme_variant="ground-sg-oracle")
+        res = mod.run_episode(sess, ident, conn_info, rec)
+    elif route == "smvla":
+        srv = _load(root, "smvla_server")
+        mod = _load(root, "smvla_client")
+        res = mod.run_episode(sess, ident, conn_info, rec, conn=SmvlaConn(log, srv, counters),
+                              max_steps=scen["max_steps"])
+    elif route == "pp":
+        mod = _load(root, "pp_client")
+        res = mod.run_episode(sess, ident, conn_info, rec, connection_factory=lambda url, t: PPConn(log, counters))
+    else:
+        raise ValueError(route)
+    if tamper == "order":
+        ev = log.events
+        i = next((k for k in range(len(ev) - 1) if ev[k][0] != ev[k + 1][0]), None)
+        if i is not None:
+            ev[i], ev[i + 1] = ev[i + 1], ev[i]
+    return {"events": log.events, "terminal": {k: res.get(k) for k in ("status", "task_success", "steps")}}
+
+
+class SmvlaConn:
+    """smvla 协议假连接（接口同 ``smvla_client.WSPolicyConn``）；回包指纹用该检出 ``smvla_server`` 的函数。"""
+
+    def __init__(self, log: Log, srv, counters: dict):
+        self.log, self.srv, self.c = log, srv, counters
+        self.metadata = {"policy": "smvla", "fake": True}
+        self.n = 0
+
+    def call(self, msg: dict):
+        import numpy as np
+        raw = pickle.dumps((self.n, msg), protocol=4)
+        self.n += 1
+        kind = next(iter(msg))
+        h = canon_sha(msg)
+        if self.log.tamper == "request" and kind == "infer" and self.c["infer"] == 0:
+            h = _sha(h.encode())
+        self.log.add("srv", kind, h)
+        if kind == "reset":
+            rep = {"reset_finished": True, "rng": {"fake": True}}
+        elif kind == "observe":
+            frs = msg["observe"]["frames"]
+            rep = {"observe_finished": True, "n": len(frs),
+                   "frame_sha": [{k: self.srv.frame_sha(v) for k, v in sorted(f.items())} for f in frs]}
+        else:
+            p = msg["infer"]
+            full = _actions(self.c["infer"])
+            self.c["infer"] += 1
+            rep = {"actions": full[:self.srv.EXECUTE_HORIZON], "actions_full": full, "subtask": f"sub{self.c['infer']}",
+                   "infer_ms": 1.0, "recv_state_sha": self.srv.array_sha(np.asarray(p["state"])),
+                   "recv_instruction_sha": self.srv.sha256_bytes(str(p["instruction"]).encode("utf-8"))}
+        rep["req_sha"] = self.srv.sha256_bytes(raw)
+        return rep, raw, b"r" + raw
+
+    def close(self):
+        pass
+
+
+class PPConn:
+    """vla-eval ``Connection`` 的用到部分；动作块按调用序号确定。"""
+
+    def __init__(self, log: Log, counters: dict):
+        self.log, self.c = log, counters
+
+    def _frame(self, t, p):
+        if t == "episode_end" and isinstance(p, dict):
+            p = {k: v for k, v in p.items() if k != "elapsed_sec"}
+        h = canon_sha(p)
+        if self.log.tamper == "request" and t == "observation" and self.c["infer"] == 0:
+            h = _sha(h.encode())
+        self.log.add("srv", t, h)
+
+    async def connect(self, *, benchmark=None):
+        self._frame("hello", {"benchmark": benchmark})
+
+    async def reconnect(self):
+        self._frame("hello", {"benchmark": "<reconnect>"})
+
+    async def start_episode(self, config):
+        self._frame("episode_start", config)
+
+    async def act(self, obs):
+        import numpy as np
+        self._frame("observation", obs)
+        n = self.c["infer"]
+        self.c["infer"] += 1
+        return {"actions": (np.arange(10, dtype=np.float32).reshape(1, 10) * np.float32(0.001)
+                            + np.float32(n) * np.float32(0.01))}
+
+    async def end_episode(self, result):
+        self._frame("episode_end", result)
+
+    async def close(self):
+        pass
+
+
+def worker(args) -> int:
+    root = Path(args.root).resolve()
+    sys.path.insert(0, str(root / "src"))
+    tp = Path(args.third_party).resolve()
+    os.environ["SGEVAL_THIRD_PARTY"] = str(tp)
+    sys.path.insert(1, str(tp / "mme-vla" / "packages" / "openpi-client" / "src"))
+    import robomme_hard
+    out = {"root": str(root), "robomme_hard": robomme_hard.__file__, "runs": {}}
+    if not str(Path(robomme_hard.__file__).resolve()).startswith(str(root / "src")):
+        out["import_error"] = f"robomme_hard 来自 {robomme_hard.__file__}，不在 {root}/src"
+    with tempfile.TemporaryDirectory(prefix="replay-") as td:
+        for scen in SCENARIOS:
+            try:
+                out["runs"][scen["name"]] = run_route(root, args.route, scen, args.tamper, Path(td) / scen["name"])
+            except Exception as e:  # 驱动本身崩溃也是一种可比较的结果
+                out["runs"][scen["name"]] = {"crash": f"{type(e).__name__}: {e}"[:400]}
+    Path(args.out).write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
+    return 0
+
+
+# ── 主进程：两侧各跑、比较 ────────────────────────────────────────────────────
+
+
+def _run_side(root: Path, route: str, third_party: Path, tamper: str | None, py: str) -> dict:
+    with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as fh:
+        out = fh.name
+    cmd = [py, str(Path(__file__).resolve()), "--_worker", "--root", str(root), "--route", route,
+           "--third-party", str(third_party), "--out", out]
+    if tamper:
+        cmd += ["--tamper", tamper]
+    env = {k: v for k, v in os.environ.items() if k not in ("PYTHONPATH",)}
+    p = subprocess.run(cmd, env=env, capture_output=True, text=True, timeout=600)
+    try:
+        data = json.loads(Path(out).read_text(encoding="utf-8"))
+    except Exception:
+        data = {"worker_failed": f"rc={p.returncode} {p.stderr[-800:]}"}
+    finally:
+        Path(out).unlink(missing_ok=True)
+    return data
+
+
+def compare(a: dict, b: dict) -> dict:
+    d = {"request_diff": 0, "action_diff": 0, "control_diff": 0, "terminal_diff": 0, "notes": []}
+    for side in (a, b):
+        if "worker_failed" in side or "import_error" in side:
+            d["control_diff"] += 1
+            d["notes"].append(side.get("worker_failed") or side.get("import_error"))
+    if d["notes"]:
+        return d
+    for name in sorted(set(a["runs"]) | set(b["runs"])):
+        ra, rb = a["runs"].get(name, {}), b["runs"].get(name, {})
+        if "crash" in ra or "crash" in rb:
+            if ra.get("crash") != rb.get("crash"):
+                d["control_diff"] += 1
+                d["notes"].append(f"{name}: 崩溃不一致 base={ra.get('crash')} cand={rb.get('crash')}")
+            continue
+        ea, eb = ra["events"], rb["events"]
+        if [e[:2] for e in ea] != [e[:2] for e in eb]:
+            d["control_diff"] += 1
+            d["notes"].append(f"{name}: 调用序列不同（{len(ea)} vs {len(eb)} 个事件）")
+        for x, y in zip(ea, eb):
+            if x[:2] != y[:2]:
+                continue
+            if x[0] == "env" and x[1] == "step" and x[2:] != y[2:]:
+                d["action_diff"] += 1
+            elif x[0] == "srv" and x[2:] != y[2:]:
+                d["request_diff"] += 1
+        if ra["terminal"] != rb["terminal"]:
+            d["terminal_diff"] += 1
+            d["notes"].append(f"{name}: 终态 {ra['terminal']} vs {rb['terminal']}")
+    return d
+
+
+def _git_sha(root: Path) -> str:
+    try:
+        return subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True,
+                              check=True).stdout.strip()[:12]
+    except Exception:
+        return "unknown"
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
+    ap.add_argument("--base")
+    ap.add_argument("--candidate")
+    ap.add_argument("--routes", default=",".join(ROUTES))
+    ap.add_argument("--third-party", default=str(Path(__file__).resolve().parents[2] / "third_party"))
+    ap.add_argument("--python", default=sys.executable)
+    ap.add_argument("--self-test", action="store_true")
+    ap.add_argument("--_worker", action="store_true")
+    ap.add_argument("--root")
+    ap.add_argument("--route")
+    ap.add_argument("--tamper", choices=TAMPERS)
+    ap.add_argument("--out")
+    args = ap.parse_args(argv)
+    if args._worker:
+        return worker(args)
+    base, cand = Path(args.base).resolve(), Path(args.candidate).resolve()
+    tp = Path(args.third_party).resolve()
+    routes = [r for r in args.routes.split(",") if r]
+    bad = [r for r in routes if r not in ROUTES]
+    if bad:
+        print(f"未知路线 {bad}；可选 {ROUTES}")
+        return 2
+    bs, cs = _git_sha(base), _git_sha(cand)
+    all_ok = True
+    for r in routes:
+        a = _run_side(base, r, tp, None, args.python)
+        b = _run_side(cand, r, tp, None, args.python)
+        d = compare(a, b)
+        ok = not any(d[k] for k in ("request_diff", "action_diff", "control_diff", "terminal_diff"))
+        all_ok &= ok
+        for n in d["notes"][:5]:
+            print(f"CLIENT_REPLAY_NOTE route={r} {n}")
+        print(f"CLIENT_REPLAY_EQ={'PASS' if ok else 'FAIL'} base={bs} candidate={cs} route={r} "
+              f"request_diff={d['request_diff']} action_diff={d['action_diff']} control_diff={d['control_diff']} "
+              f"terminal_diff={d['terminal_diff']}", flush=True)
+        if args.self_test:
+            caught = {}
+            for t in TAMPERS:
+                dt = compare(a, _run_side(cand, r, tp, t, args.python))
+                caught[t] = any(dt[k] for k in ("request_diff", "action_diff", "control_diff", "terminal_diff"))
+            st = all(caught.values())
+            all_ok &= st
+            print(f"CLIENT_REPLAY_SELFTEST={'PASS' if st else 'FAIL'} route={r} "
+                  + " ".join(f"{t}={'caught' if v else 'missed'}" for t, v in caught.items()), flush=True)
+    return 0 if all_ok else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
