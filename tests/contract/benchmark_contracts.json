@@ -6712,6 +6712,24 @@
       "resource": "cpu；部分启动器用例标 slow",
       "mutants": [],
       "status": "verified"
+    },
+    {
+      "id": "C13-PP-SERVER-WRAP",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/pp_server_wrap.py"
+      ],
+      "symbol": "SubgoalReportingServer._fire_s1 / _dispense / latest_visible_subgoal / 入口 run_server",
+      "oracle": "锁定父类真实方法 + CPU 桩，原类与外壳两套节拍各 200 步逐步比较；子目标按节拍算式独立推出",
+      "positive": "动作、RNG 状态、cursor、chunk、触发计数除新增 subgoal 外一致（PP_SERVER_ACTION_EQ=PASS）；ready 之前回旧子目标、chunk 用尽不变、首个子目标前 None",
+      "negative": "多抽一次随机数、多推一次 cursor 的坏外壳被查出；父类文件 sha256 与 gitlink 723df357 钉死",
+      "boundaries": "父类依赖 vla-eval，测试用主检出 client-env 解释器子进程跑 CPU；不覆盖真实 GPU 推理数值",
+      "nodeids": [
+        "tests/pipeline/evalx/pp/test_pp_server_wrap.py"
+      ],
+      "resource": "cpu（client-env 子进程）",
+      "mutants": [],
+      "status": "verified"
     }
   ],
   "files": {
@@ -7591,6 +7609,9 @@
     ],
     "scripts/eval-official/orig_observer/transparency_check.py": [
       "C13-ORIG-OBSERVER"
+    ],
+    "scripts/eval-official/pp_server_wrap.py": [
+      "C13-PP-SERVER-WRAP"
     ]
   },
   "exempt": {
