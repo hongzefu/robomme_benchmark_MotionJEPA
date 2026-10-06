@@ -13,10 +13,10 @@
 - 费用硬上限（零外联夹具）：首次大输入、输入增长、usage 缺失、STOP 在等待中到达、守卫崩溃、429 重试复检；
   被拒请求一律不触发实际发送；局数硬上限 2。
 
-S2b（``seat_media_lib.sh``、``official_media_check.py``）与 S2a（重绘工具 ``--source raw``）在本子任务派发时尚未合入：
-启动器收尾用例用临时目录里的桩库模拟两个收尾函数与验收脚本——桩 ``render_official_dir`` 先把无损流拼成临时
-``episode.mp4``，再调用**真实**重绘工具 ``render_official_video.py``（官方 ``RolloutRecorder`` 原类）出官方视频；
-桩 ``transcode_episode_dir`` 把无损流转成 ``episode.mp4``，``--keep-raw`` 时保留原始帧。合入后桩可换成真实库。
+启动器收尾用例：仓库里有真实 S2b 脚本（``seat_media_lib.sh``、``official_media_check.py``，真实库再调 S2a 重绘器
+``--source raw``）时优先用真实脚本，否则退回本文件的桩，并断言／打印 ``ASTRA_MEDIA_MODE=real|stub``。桩与 S2b 真实
+签名一致（``transcode_episode_dir [--keep-raw] <局目录>`` 位置敏感、验收四个必需参数含 ``--dataset``、无帧局 NO_FRAME）；
+桩 ``render_official_dir`` 先把无损流拼成临时 ``episode.mp4``，再调用真实重绘工具（官方 ``RolloutRecorder`` 原类）。
 """
 from __future__ import annotations
 
@@ -338,8 +338,13 @@ def test_key_mapping_dir_trace_and_official_episode_id(tmp_path, monkeypatch):
     assert render._episode_id(trace, a_dir) == "3a1"
     key = trace.identity["key"]
     assert a_dir.name == f"{key}.a1" and manifest["key"] == key and manifest["builder_episode"] == 0
-    assert ledger["attempt"] == ledger["attempt_no"] == 1 and ledger["episode_dir"] == str(a_dir.resolve())
-    assert manifest["route"] == ledger["route"] == "astra/new"
+    # 账本按 AttemptLedger 口径：attempt_start + accept，accepted_attempt_id == attempt_id，attempt_no = 目录名 .a1
+    start, accept = ledger
+    assert start["kind"] == "attempt_start" and accept["kind"] == "accept"
+    assert accept["accepted_attempt_id"] == accept["attempt_id"] == start["attempt_id"]
+    assert accept["attempt_no"] == start["attempt_no"] == 1 and accept["key"] == key
+    assert accept["episode_dir"] == str(a_dir.resolve()) and accept["dataset"] == "test-hard0"
+    assert manifest["route"] == accept["route"] == "astra/new" and manifest["dataset"] == "test-hard0"
     # 目录名与 key 不符：重绘工具与验收输入都拒绝
     wrong = a_dir.with_name(f"VideoUnmask_xhard0_999999.a1")
     os.rename(a_dir, wrong)
@@ -771,19 +776,44 @@ def test_default_deps_requires_guard_state():
 
 
 # ── 启动器：source 不变量与收尾链（bash） ────────────────────────────────
+#
+# 收尾用例优先用仓库里的真实 S2b 脚本（scripts/eval-official/seat_media_lib.sh、official_media_check.py；合入工作
+# 分支后存在，真实 render_official_dir 再调 S2a 重绘器 --source raw）；不存在时退回下面的桩。桩与真实脚本语义一致：
+# - render_official_dir <局目录>：恰 1 个位置参数且为目录，否则打印 OFFICIAL_RENDER=FAIL stage=input 返回 2；
+#   无帧 error 局（end.no_frame）打印 OFFICIAL_RENDER=NO_FRAME 返回 0；成功返回 0，失败返回 2。
+# - transcode_episode_dir [--keep-raw] <局目录>：--keep-raw 只认第一个位置参数；其后恰 1 个目录参数，否则返回 2；
+#   无原始帧返回 0（result=none）；--keep-raw 时转码成功也不删原始帧（raw_kept=true）。
+# - official_media_check.py 全量模式：--manifest、--ledger、--root、--dataset 缺一即退出 2（同 argparse.error）；
+#   账本按 AttemptLedger 口径取第一条 accept 行（accepted_attempt_id、attempt_no，attempt_id 须相同）；
+#   dataset、route 与 trace 不符即 FAIL；无帧 error 局计 no_frame_error 不计 fail。
 
-BENIGN_LIB = """
-render_official_dir() { "$(tool_py)" "$STUB_HELPER" render "$1"; }
-transcode_episode_dir() { "$(tool_py)" "$STUB_HELPER" transcode "$@"; }
+REAL_LIB = REPO / "scripts" / "eval-official" / "seat_media_lib.sh"
+REAL_CHECK = REPO / "scripts" / "eval-official" / "official_media_check.py"
+
+STUB_LIB = """
+render_official_dir() {
+  if [[ $# != 1 || ! -d "$1" ]]; then echo "OFFICIAL_RENDER=FAIL dir=${1:-} stage=input reason=no_dir"; return 2; fi
+  "$(tool_py)" "$STUB_HELPER" render "$1" || return 2
+}
+transcode_episode_dir() {
+  local keep=0
+  if [[ "${1:-}" == "--keep-raw" ]]; then keep=1; shift; fi
+  if [[ $# != 1 || ! -d "$1" ]]; then echo "REC_TRANSCODE dir=${1:-} result=fail detail=bad_args"; return 2; fi
+  "$(tool_py)" "$STUB_HELPER" transcode "$1" "$keep"
+}
 """
 
 STUB_HELPER = r'''
-"""桩：模拟 S2b 的 render_official_dir／transcode_episode_dir 与 official_media_check.py（本子任务派发时未合入）。"""
-import json, os, subprocess, sys
+"""桩：模拟 S2b 的 render_official_dir／transcode_episode_dir 与 official_media_check.py（语义见测试文件注释）。"""
+import argparse, json, os, subprocess, sys
 from pathlib import Path
 import numpy as np
 sys.path.insert(0, os.environ["STUB_SCRIPTS"])
 import recorder  # noqa: E402
+
+
+def end_row(d: Path) -> dict:
+    return json.loads([ln for ln in (d / "trace.jsonl").read_text().splitlines() if ln.strip()][-1])
 
 
 def mkmp4(d: Path, out: Path) -> int:
@@ -800,49 +830,92 @@ def mkmp4(d: Path, out: Path) -> int:
 cmd = sys.argv[1]
 if cmd == "render":
     d = Path(sys.argv[2])
+    end = end_row(d)
+    if end.get("status") == "error" and end.get("no_frame") is True:
+        print(f"OFFICIAL_RENDER=NO_FRAME dir={d.name} source_kind=none")
+        sys.exit(0)
     if os.environ.get("STUB_RENDER_FAIL"):
-        print(f"OFFICIAL_RENDER=FAIL dir={d.name} reason=stub")
-        sys.exit(1)
+        print(f"OFFICIAL_RENDER=FAIL dir={d.name} stage=render reason=stub")
+        sys.exit(2)
     tmp = d / "episode.mp4"
     assert not tmp.exists()
     mkmp4(d, tmp)
     rc = subprocess.run([sys.executable, os.environ["STUB_RENDER_TOOL"], str(d), "--official-root",
                          os.environ["STUB_OFFICIAL_ROOT"], "--jobs", "1", "--threads", "1"]).returncode
     tmp.unlink()
-    sys.exit(rc)
+    sys.exit(0 if rc == 0 else 2)
 elif cmd == "transcode":
-    d, keep = Path(sys.argv[2]), "--keep-raw" in sys.argv[3:]
+    d, keep = Path(sys.argv[2]), sys.argv[3] == "1"
+    if not (d / "front.mkv").is_file():
+        print(f"REC_TRANSCODE dir={d.name} result=none")
+        sys.exit(0)
     n = mkmp4(d, d / "episode.mp4")
     if not keep:
         for name in ("front.mkv", "wrist.mkv"):
             (d / name).unlink()
-    print(f"REC_TRANSCODE dir={d.name} kind=new frames={n} result=ok keep_raw={int(keep)}")
+    print(f"REC_TRANSCODE dir={d.name} kind=new frames={n} result=ok raw_kept={str(keep).lower()}")
 elif cmd == "check":
-    args = dict(zip(sys.argv[2::2], sys.argv[3::2]))
-    row = json.loads(Path(args["--manifest"]).read_text())
-    led = json.loads(Path(args["--ledger"]).read_text())
-    d = Path(args["--root"]) / f"{row['key']}.a{led['attempt']}"
-    mp4 = sorted((d / "official").glob("*.mp4")) if (d / "official").is_dir() else []
-    ok = len(mp4) == 1
-    Path(args["--out"]).write_text(json.dumps({"key": row["key"], "official": [p.name for p in mp4]}) + "\n")
-    print(f"OFFICIAL_MEDIA={'PASS' if ok else 'FAIL'} total=1 skip=0 fail={0 if ok else 1} no_frame_error=0")
-    sys.exit(0 if ok else 1)
+    ap = argparse.ArgumentParser()
+    for a in ("--manifest", "--ledger", "--root"):
+        ap.add_argument(a, action="append", default=[])
+    ap.add_argument("--dataset")
+    ap.add_argument("--route")
+    ap.add_argument("--out")
+    args = ap.parse_args(sys.argv[2:])
+    if not args.manifest or not args.ledger or not args.root or not args.dataset:
+        ap.error("全量验收须给 --manifest、--ledger、--root、--dataset（各可重复）")
+    row = json.loads(Path(args.manifest[0]).read_text().splitlines()[0])
+    accepts = [r for r in map(json.loads, Path(args.ledger[0]).read_text().splitlines()) if r.get("kind") == "accept"
+               and r.get("key") == row["key"]]
+    reasons = []
+    if not accepts or accepts[0].get("attempt_id") != accepts[0].get("accepted_attempt_id"):
+        reasons.append("no_accepted_attempt")
+        n = None
+    else:
+        n = accepts[0]["attempt_no"]
+    d = Path(args.root[0]) / f"{row['key']}.a{n}"
+    rows = [json.loads(ln) for ln in (d / "trace.jsonl").read_text().splitlines() if ln.strip()] if d.is_dir() else []
+    if not rows:
+        reasons.append("dir_missing")
+    else:
+        ident, end = rows[0]["identity"], rows[-1]
+        if ident.get("dataset") != args.dataset:
+            reasons.append("identity:dataset")
+        if args.route and rows[0]["route"] != args.route:
+            reasons.append("route")
+        mp4 = sorted((d / "official").glob("*.mp4")) if (d / "official").is_dir() else []
+        no_frame = end.get("status") == "error" and end.get("no_frame") is True
+        if not no_frame and len(mp4) != 1:
+            reasons.append(f"official_count={len(mp4)}")
+    status = "fail" if reasons else ("no_frame_error" if rows and no_frame else "pass")
+    Path(args.out).write_text(json.dumps({"key": row["key"], "status": status, "reasons": reasons}) + "\n")
+    print(f"OFFICIAL_MEDIA={'FAIL' if reasons else 'PASS'} total=1 skip=0 fail={int(bool(reasons))} "
+          f"no_frame_error={int(status == 'no_frame_error')}")
+    sys.exit(1 if reasons else 0)
 '''
 
 
-def _write_stubs(tmp_path: Path, lib_text: str = BENIGN_LIB) -> dict:
+def _media_mode() -> str:
+    return "real" if REAL_LIB.is_file() and REAL_CHECK.is_file() else "stub"
+
+
+def _write_stubs(tmp_path: Path, lib_text: str | None = None, *, prefer_real: bool = False) -> dict:
+    """环境：``prefer_real`` 且仓库里有真实 S2b 脚本时用真实脚本（``env['MEDIA_MODE']='real'``），否则用桩。
+    ``lib_text`` 给出时总是用这段文本当函数库（source 副作用用例）。"""
     stub_dir = tmp_path / "stubs"
     stub_dir.mkdir(exist_ok=True)
-    (stub_dir / "seat_media_lib.sh").write_text(lib_text)
     (stub_dir / "helper.py").write_text(STUB_HELPER)
     check = stub_dir / "official_media_check.py"
     check.write_text(f"import runpy, sys\nsys.argv = [sys.argv[0], 'check'] + sys.argv[1:]\n"
                      f"runpy.run_path({str(stub_dir / 'helper.py')!r}, run_name='__main__')\n")
+    mode = _media_mode() if prefer_real and lib_text is None else "stub"
+    lib = stub_dir / "seat_media_lib.sh"
+    lib.write_text(lib_text if lib_text is not None else STUB_LIB)
     env = {k: v for k, v in os.environ.items() if k not in ("OPENAI_API_KEY", "STUB_RENDER_FAIL")}
-    env.update(SIM_PYTHON=sys.executable, SEAT_MEDIA_LIB=str(stub_dir / "seat_media_lib.sh"),
-               OFFICIAL_MEDIA_CHECK=str(check), STUB_HELPER=str(stub_dir / "helper.py"),
+    env.update(SIM_PYTHON=sys.executable, SEAT_MEDIA_LIB=str(REAL_LIB if mode == "real" else lib),
+               OFFICIAL_MEDIA_CHECK=str(REAL_CHECK if mode == "real" else check), STUB_HELPER=str(stub_dir / "helper.py"),
                STUB_SCRIPTS=str(REPO / "scripts" / "eval-official"), STUB_RENDER_TOOL=str(RENDER),
-               STUB_OFFICIAL_ROOT=str(third_party().parent.parent), MAX_STEPS="1300")
+               STUB_OFFICIAL_ROOT=str(third_party().parent.parent), MAX_STEPS="1300", MEDIA_MODE=mode)
     return env
 
 
@@ -853,7 +926,7 @@ def _finish(run: Path, env: dict) -> subprocess.CompletedProcess:
 
 def test_launcher_static_order_and_explicit_interpreters():
     """主流程：守卫状态必给、解释器显式设、source 在起服务与设 trap 之前；check／run 都带 --guard-state；
-    收尾三步顺序为 render → transcode → 验收。"""
+    收尾三步顺序为 render → transcode → 验收，调用形状与 S2b 真实签名一致。"""
     text = SCRIPT.read_text()
     assert 'BENCH_PY="${BENCH_PY:-$SIM_PYTHON}"' in text and 'TOOL_PY="${TOOL_PY:-$BENCH_PY}"' in text
     assert "export BENCH_PY TOOL_PY" in text
@@ -867,8 +940,27 @@ def test_launcher_static_order_and_explicit_interpreters():
     assert i_guard < i_source < i_check < i_vla < i_trap < i_finish
     assert main.count('--guard-state "$ASTRA_GUARD_STATE"') == 2
     fe = text[text.index("finish_episode() {"):text.index("finish_run() {")]
-    assert fe.index("render_official_dir") < fe.index('transcode_episode_dir "$d"') < fe.index("astra_media_check")
-    assert 'transcode_episode_dir "$d" --keep-raw' in fe and "official-render.failed" in fe
+    assert fe.index('render_official_dir "$d"') < fe.index('transcode_episode_dir "$d"') < fe.index("astra_media_check")
+    assert 'transcode_episode_dir --keep-raw "$d"' in fe and '"$d" --keep-raw' not in text
+    assert "official-render.failed" in fe
+    mc = text[text.index("astra_media_check() {"):text.index("finish_episode() {")]
+    for flag in ("--manifest", "--ledger", "--root", '--dataset "$dataset"', "--route astra/new", "--out"):
+        assert flag in mc, flag
+
+
+def test_real_media_scripts_interface_if_present():
+    """仓库里已有真实 S2b 脚本时（合入后），核对本启动器依赖的接口仍在：函数名与 --keep-raw 首参、
+    official_media_check.py 的四个必需参数。没有时打印未验证说明（桩用例覆盖同一语义）。"""
+    if _media_mode() == "stub":
+        print("ASTRA_MEDIA_MODE=stub（S2b 真实脚本不在本检出，接口由桩用例覆盖）")
+        return
+    lib = REAL_LIB.read_text()
+    assert "render_official_dir()" in lib and "transcode_episode_dir()" in lib
+    assert 'if [[ "${1:-}" == "--keep-raw" ]]; then keep=1; shift; fi' in lib
+    proc = subprocess.run([sys.executable, str(REAL_CHECK), "--manifest", "x", "--ledger", "y", "--root", "z"],
+                          capture_output=True, text=True)
+    assert proc.returncode == 2 and "--dataset" in proc.stderr
+    print("ASTRA_MEDIA_MODE=real")
 
 
 @pytest.mark.slow
@@ -882,7 +974,7 @@ def test_source_media_lib_side_effects_blocked(tmp_path, lib, what):
     """source 席位函数库后 MAX_STEPS、trap、shell 选项必须不变、两个函数必须在；否则 RUN_BLOCKED 退出 3。"""
     run = tmp_path / "group_0" / "run"
     (run / "results").mkdir(parents=True)
-    text = lib if what.startswith("function") else BENIGN_LIB + lib
+    text = lib if what.startswith("function") else STUB_LIB + lib
     proc = _finish(run, _write_stubs(tmp_path, text))
     assert proc.returncode == 3, proc.stderr
     assert "RUN_BLOCKED" in proc.stderr and what in proc.stderr
@@ -890,23 +982,41 @@ def test_source_media_lib_side_effects_blocked(tmp_path, lib, what):
 
 @pytest.mark.slow
 def test_source_media_lib_benign_keeps_max_steps_and_trap(tmp_path):
+    """桩库与（若在）真实库各 source 一次：MAX_STEPS 与 trap 不变；库文件缺失即 RUN_BLOCKED。"""
     run = tmp_path / "group_0" / "run"
     (run / "results").mkdir(parents=True)
-    proc = _finish(run, _write_stubs(tmp_path))
-    assert proc.returncode == 0, proc.stderr
-    assert "ASTRA_MEDIA_LIB=OK" in proc.stdout and "max_steps=1300 traps_unchanged=1" in proc.stdout
-    assert "ASTRA_FINISH_SUMMARY" in proc.stdout and "total=0 fail=0" in proc.stdout
+    libs = [_write_stubs(tmp_path)] + ([_write_stubs(tmp_path, prefer_real=True)] if _media_mode() == "real" else [])
+    for env in libs:
+        proc = _finish(run, env)
+        assert proc.returncode == 0, proc.stderr
+        assert "ASTRA_MEDIA_LIB=OK" in proc.stdout and "max_steps=1300 traps_unchanged=1" in proc.stdout
+        assert "ASTRA_FINISH_SUMMARY" in proc.stdout and "total=0 fail=0" in proc.stdout
     env = _write_stubs(tmp_path)
     env["SEAT_MEDIA_LIB"] = str(tmp_path / "absent.sh")
     proc = _finish(run, env)
     assert proc.returncode == 3 and "missing_dependency missing=S2b" in proc.stderr
 
 
-def _cpu_run(tmp_path: Path, monkeypatch, task: str = "VideoUnmask", steps: int = 20) -> tuple[Path, Path, int]:
+@pytest.mark.slow
+def test_stub_semantics_match_real_signatures(tmp_path):
+    """桩的位置敏感性与参数校验：--keep-raw 放在目录之后、验收缺 --dataset，都与真实脚本一样失败。"""
+    env = _write_stubs(tmp_path)
+    d = tmp_path / "X_xhard0_1.a1"
+    d.mkdir()
+    script = f'tool_py() {{ echo "$TOOL_PY"; }}; source "$SEAT_MEDIA_LIB"; transcode_episode_dir "{d}" --keep-raw'
+    proc = subprocess.run(["bash", "-c", script], capture_output=True, text=True, env={**env, "TOOL_PY": sys.executable})
+    assert proc.returncode == 2 and "bad_args" in proc.stdout
+    proc = subprocess.run([sys.executable, env["OFFICIAL_MEDIA_CHECK"], "--manifest", "m", "--ledger", "l", "--root",
+                           str(tmp_path)], capture_output=True, text=True, env=env)
+    assert proc.returncode == 2 and "--dataset" in proc.stderr
+
+
+def _cpu_run(tmp_path: Path, monkeypatch, task: str = "VideoUnmask", steps: int = 20, env_plan=None
+             ) -> tuple[Path, Path, int]:
     NetCounter().install(monkeypatch)
     with astra_session() as (mod, astra):
         monkeypatch.setattr(astra.runner.imageio, "get_writer", lambda *a, **k: _NullWriter())
-        cls = recording_builder_cls(lambda b, ep: FakeEnv(terminal_step=steps))
+        cls = recording_builder_cls(env_plan or (lambda b, ep: FakeEnv(terminal_step=steps)))
         doc = mod.prepare_cases(cls, "test-hard0", [task], source_episodes=[3])
         args = make_args(tmp_path, write_cases(tmp_path / "cases.json", doc), max_steps=1300)
         mod.run_cases(args, make_deps(astra, cls, monitor=FakeMonitor(), vla=FakeVLA(),
@@ -924,35 +1034,61 @@ def _count_frames(mp4: Path) -> int:
 
 @pytest.mark.slow
 def test_launcher_finish_makes_official_and_plain_video(tmp_path, monkeypatch):
-    """CPU 夹具：真实 runner 出局目录 → 真实启动器 ``--finish`` 收尾 → 一份官方视频（真实重绘工具 + 官方原类）
-    与一份普通视频 ``episode.mp4``，原始帧转码后删除，验收（桩）通过。"""
+    """CPU 夹具：真实 runner 出局目录 → 真实启动器 ``--finish`` 收尾 → 一份官方视频（官方原类重绘）与一份普通视频
+    ``episode.mp4``，原始帧转码后删除，官方视频验收通过。仓库有真实 S2b 脚本时用真实脚本，否则用桩（断言用的哪种）。"""
     run, a_dir, frames = _cpu_run(tmp_path, monkeypatch)
-    proc = _finish(run, _write_stubs(tmp_path))
+    env = _write_stubs(tmp_path, prefer_real=True)
+    assert env["MEDIA_MODE"] == _media_mode()
+    assert env["SEAT_MEDIA_LIB"] == str(REAL_LIB if env["MEDIA_MODE"] == "real" else tmp_path / "stubs" / "seat_media_lib.sh")
+    print(f"ASTRA_MEDIA_MODE={env['MEDIA_MODE']}")
+    proc = _finish(run, env)
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "OFFICIAL_RENDER=PASS" in proc.stdout and "OFFICIAL_MEDIA=PASS" in proc.stdout
     assert f"ASTRA_FINISH dir={a_dir} render_rc=0 transcode_rc=0 media_check_rc=0" in proc.stdout
     assert "ASTRA_FINISH_SUMMARY" in proc.stdout and "total=1 fail=0" in proc.stdout
     official = sorted((a_dir / "official").glob("*.mp4"))
-    assert len(official) == 1 and official[0].name.startswith("official-rerender__VideoUnmask_ep3a1_success_")
-    render = json.loads((a_dir / "official" / "render.json").read_text())
-    assert render["frames"] == frames and render["route"] == "astra/new"
+    assert len(official) == 1 and "VideoUnmask_ep3a1_success_" in official[0].name
     assert _count_frames(official[0]) == frames
     assert (a_dir / "episode.mp4").is_file() and _count_frames(a_dir / "episode.mp4") == frames
     assert not (a_dir / "front.mkv").exists() and not (a_dir / "official-render.failed").exists()
     key = a_dir.name.rsplit(".a", 1)[0]
-    assert (run / "official-media" / f"{key}.ledger.jsonl").is_file()
+    ledger = [json.loads(x) for x in (run / "official-media" / f"{key}.ledger.jsonl").read_text().splitlines()]
+    assert [r["kind"] for r in ledger] == ["attempt_start", "accept"]
 
 
 @pytest.mark.slow
 def test_launcher_render_failure_keeps_raw_frames(tmp_path, monkeypatch):
-    """重绘失败：写 official-render.failed，转码带 --keep-raw（原始帧保留、普通视频照出），本局计失败、退出 5。"""
+    """重绘失败：写 official-render.failed，转码以 ``--keep-raw <局目录>`` 调用（原始帧保留、普通视频照出），
+    本局计失败、退出 5。转码用真实库（若在）或桩，重绘函数被覆写为必失败。"""
     run, a_dir, frames = _cpu_run(tmp_path, monkeypatch, task="BinFill", steps=8)
-    env = _write_stubs(tmp_path)
-    env["STUB_RENDER_FAIL"] = "1"
+    env = _write_stubs(tmp_path, prefer_real=True)
+    base_lib = env["SEAT_MEDIA_LIB"]
+    failing = tmp_path / "stubs" / "failing_render_lib.sh"
+    failing.write_text(f'source "{base_lib}"\n'
+                       'render_official_dir() { echo "OFFICIAL_RENDER=FAIL dir=$(basename "$1") stage=render '
+                       'reason=forced"; return 2; }\n')
+    env["SEAT_MEDIA_LIB"] = str(failing)
     before = {n: (a_dir / n).read_bytes() for n in ("front.mkv", "wrist.mkv")}
     proc = _finish(run, env)
     assert proc.returncode == 5, proc.stdout + proc.stderr
-    assert (a_dir / "official-render.failed").is_file() and "keep_raw=1" in proc.stdout
+    assert (a_dir / "official-render.failed").is_file() and "render_rc=2" in proc.stdout
+    assert "raw_kept=true" in proc.stdout or json.loads((a_dir / "transcode.json").read_text()).get("raw_kept") is True
     assert {n: (a_dir / n).read_bytes() for n in before} == before, "原始帧必须原样保留"
     assert (a_dir / "episode.mp4").is_file() and _count_frames(a_dir / "episode.mp4") == frames
     assert "ASTRA_FINISH_SUMMARY" in proc.stdout and "total=1 fail=1" in proc.stdout
+
+
+@pytest.mark.slow
+def test_launcher_finish_no_frame_episode(tmp_path, monkeypatch):
+    """环境没建起来的无帧 error 局：重绘返回 NO_FRAME（0）、转码无媒体（0）、验收计 no_frame_error 不计 fail。"""
+
+    def boom(builder, ep):
+        raise RuntimeError("fake simulator start failure")
+
+    run, a_dir, frames = _cpu_run(tmp_path, monkeypatch, task="BinFill", env_plan=boom)
+    assert frames == 0
+    env = _write_stubs(tmp_path, prefer_real=True)
+    proc = _finish(run, env)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "NO_FRAME" in proc.stdout and "no_frame_error=1" in proc.stdout
+    assert "total=1 fail=0" in proc.stdout and not list((a_dir / "official").glob("*.mp4") if (a_dir / "official").is_dir() else [])

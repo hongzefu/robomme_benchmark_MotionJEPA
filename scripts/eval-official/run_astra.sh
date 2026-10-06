@@ -13,7 +13,8 @@
 # - source seat_media_lib.sh（S2b；路径可由 SEAT_MEDIA_LIB 覆盖）：source 前后 MAX_STEPS、trap、shell 选项必须不变，
 #   且须提供 render_official_dir 与 transcode_episode_dir，否则 RUN_BLOCKED（退出码 3）。
 # - 每局收尾显式三步：render_official_dir <局目录> → transcode_episode_dir <局目录>（重绘失败则加 --keep-raw、
-#   写 official-render.failed，原始帧保留）→ official_media_check.py（路径可由 OFFICIAL_MEDIA_CHECK 覆盖）。
+#   写 official-render.failed，原始帧保留；调用形如 transcode_episode_dir --keep-raw <局目录>）→
+#   official_media_check.py --manifest --ledger --root --dataset --route astra/new（路径可由 OFFICIAL_MEDIA_CHECK 覆盖）。
 #   局目录 = <RUN>/results/<task>/ep<NNN>/<key>.a1（轨迹、arrays.npz、原始帧同目录）。
 #   runner 退出后（无论成败）逐局收尾；中断后可用 --finish 对已有 RUN 重入收尾。
 #
@@ -67,20 +68,30 @@ source_media_lib() {
   echo "ASTRA_MEDIA_LIB=OK lib=$lib max_steps=${MAX_STEPS-<unset>} traps_unchanged=1"
 }
 
-# 本局官方视频验收：runner 写本局身份清单行与账本行，再调 official_media_check.py（S2b）。
+# 本局官方视频验收（全量模式，单局清单）：runner 从 trace 写本局身份清单行与 AttemptLedger 口径的账本行
+# （attempt_start + accept，accepted_attempt_id == attempt_id），再调 official_media_check.py（S2b）：
+#   --manifest --ledger --root <ep 目录（其下恰有 <key>.a<N>）> --dataset <trace 里的数据集> --route astra/new --out
 astra_media_check() {  # $1 = 局目录 <key>.a<N>；$2 = RUN
-  local d="$1" run="$2" name key out check
+  local d="$1" run="$2" name key out check line dataset
   check="${OFFICIAL_MEDIA_CHECK:-$REPO/scripts/eval-official/official_media_check.py}"
   name="$(basename -- "$d")"; key="${name%.a*}"
   out="$run/official-media"
   mkdir -p -- "$out"
-  "$(tool_py)" "$RUNNER" media-inputs --episode-dir "$d" \
-    --manifest "$out/$key.manifest.jsonl" --ledger "$out/$key.ledger.jsonl" || return $?
+  line="$("$(tool_py)" "$RUNNER" media-inputs --episode-dir "$d" \
+    --manifest "$out/$key.manifest.jsonl" --ledger "$out/$key.ledger.jsonl")" || return $?
+  echo "$line"
+  dataset="${line##* dataset=}"
+  if [[ "$dataset" != test-hard && "$dataset" != test-hard0 ]]; then
+    echo "OFFICIAL_MEDIA=FAIL dir=$name reason=bad_dataset dataset=$dataset"
+    return 2
+  fi
   "$(tool_py)" "$check" --manifest "$out/$key.manifest.jsonl" --ledger "$out/$key.ledger.jsonl" \
-    --root "$(dirname -- "$d")" --out "$out/$key.official-media.jsonl"
+    --root "$(dirname -- "$d")" --dataset "$dataset" --route astra/new --out "$out/$key.official-media.jsonl"
 }
 
 # 一局收尾（显式三步）：重绘官方视频 → 转码普通视频（重绘失败则保留原始帧）→ 官方视频验收。
+# 函数签名按 S2b seat_media_lib.sh：render_official_dir <局目录>（0 = KEPT／重绘通过／无帧 error 局 NO_FRAME，
+# 非 0 = 失败）；transcode_episode_dir [--keep-raw] <局目录>（--keep-raw 只认第一个位置参数）。
 finish_episode() {  # $1 = 局目录 <key>.a<N>；$2 = RUN
   local d="$1" run="$2" rrc=0 trc=0 mrc=0
   if [[ ! -f "$d/trace.jsonl" ]]; then
@@ -93,7 +104,7 @@ finish_episode() {  # $1 = 局目录 <key>.a<N>；$2 = RUN
     transcode_episode_dir "$d" || trc=$?
   else
     echo "rc=$rrc time=$(date +%s)" > "$d/official-render.failed"
-    transcode_episode_dir "$d" --keep-raw || trc=$?
+    transcode_episode_dir --keep-raw "$d" || trc=$?
   fi
   astra_media_check "$d" "$run" || mrc=$?
   echo "ASTRA_FINISH dir=$d render_rc=$rrc transcode_rc=$trc media_check_rc=$mrc"

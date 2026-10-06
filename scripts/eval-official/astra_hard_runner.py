@@ -1022,8 +1022,12 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def media_inputs(episode_dir: Path) -> tuple[dict, dict]:
-    """从 trace header 取身份：清单行（身份字段）与账本行（``accepted_attempt_id`` 对应尝试号 = 目录名 ``.a<N>``）。"""
+def media_inputs(episode_dir: Path) -> tuple[dict, list[dict]]:
+    """从 trace header 取身份：清单行（身份字段，``official_media_check.py`` 取 ``key``）与账本行。
+
+    账本按 ``env_client.AttemptLedger`` 口径写两行：``attempt_start``（``attempt_id``、``attempt_no``）与 ``accept``
+    （``accepted_attempt_id == attempt_id``、``attempt_no`` = 目录名 ``.a<N>``）；Astra 没有 env_client 账本，
+    ``attempt_id`` 由 key 与尝试号确定。"""
     import re  # noqa: PLC0415
     episode_dir = Path(episode_dir).resolve()
     header = json.loads((episode_dir / "trace.jsonl").read_text(encoding="utf-8").splitlines()[0])
@@ -1034,10 +1038,18 @@ def media_inputs(episode_dir: Path) -> tuple[dict, dict]:
     fields = ("task", "tier", "seed", "candidate", "spec_sha256", "builder_episode", "source_episode", "dataset", "key")
     manifest = {k: ident.get(k) for k in fields}
     manifest["route"] = header["route"]
-    ledger = {"key": ident["key"], "task": ident["task"], "dataset": ident["dataset"], "route": header["route"],
-              "accepted_attempt_id": f"astra-{ident['key']}-a{int(m['n'])}", "attempt_no": int(m["n"]),
-              "attempt": int(m["n"]), "episode_dir": str(episode_dir)}
+    n = int(m["n"])
+    attempt_id = f"astra-{ident['key']}-a{n}"
+    common = {"key": ident["key"], "task": ident["task"], "tier": ident.get("tier"), "dataset": ident["dataset"],
+              "route": header["route"], "attempt_id": attempt_id, "attempt_no": n, "episode_dir": str(episode_dir)}
+    ledger = [{"kind": "attempt_start", **common, "builder_episode": ident.get("builder_episode"), "retry": False},
+              {"kind": "accept", **common, "accepted_attempt_id": attempt_id, "status": end_status(episode_dir)}]
     return manifest, ledger
+
+
+def end_status(episode_dir: Path) -> str | None:
+    lines = [ln for ln in (Path(episode_dir) / "trace.jsonl").read_text(encoding="utf-8").splitlines() if ln.strip()]
+    return json.loads(lines[-1]).get("status") if lines else None
 
 
 def _print_sources(astra: SimpleNamespace) -> None:
@@ -1083,10 +1095,13 @@ def main(argv: list[str] | None = None, deps_factory: Callable | None = None) ->
         return cmd_check(args)
     if args.cmd == "media-inputs":
         manifest, ledger = media_inputs(Path(args.episode_dir))
-        for path, row in ((args.manifest, manifest), (args.ledger, ledger)):
+        for path, rows in ((args.manifest, [manifest]), (args.ledger, ledger)):
             Path(path).parent.mkdir(parents=True, exist_ok=True)
-            Path(path).write_text(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
-        print(f"ASTRA_MEDIA_INPUTS key={ledger['key']} attempt={ledger['attempt']} dir={ledger['episode_dir']}", flush=True)
+            Path(path).write_text("".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows))
+        acc = ledger[-1]
+        # 末行只给 run_astra.sh 取 dataset 用：dataset=<值> 恒在行尾
+        print(f"ASTRA_MEDIA_INPUTS key={acc['key']} attempt_no={acc['attempt_no']} dir={acc['episode_dir']} "
+              f"dataset={acc['dataset']}", flush=True)
         return 0
     astra = bootstrap(astra_root(args.astra_root))
     if args.cmd == "prepare":
