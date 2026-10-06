@@ -632,5 +632,23 @@
       "S2-D4"
     ],
     "status": "verified"
+  },
+  {
+    "id": "C13-SG-CLIENT-REPLAY",
+    "domain": "C13",
+    "source": [
+      "scripts/eval-official/client_replay_eq.py"
+    ],
+    "symbol": "run_route / compare / FakeSession / FakeWS / SmvlaConn / PPConn / main（--base --candidate --routes --self-test）",
+    "oracle": "同一检出两侧逐事件相等；故意改动（第 3 步动作首元素 +1、首个推理请求字节、交换第一对相邻环境／服务事件）由子进程内篡改注入，期望差异由篡改位置手写",
+    "positive": "同一检出 smvla、mme 两路线 CLIENT_REPLAY_EQ=PASS request_diff=0 action_diff=0 control_diff=0 terminal_diff=0",
+    "negative": "三类故意改动均被判差异（CLIENT_REPLAY_SELFTEST=PASS action=caught request=caught order=caught）",
+    "boundaries": "假环境 256×256 确定性画面、服务回包按调用序号确定；只证明固定观测与固定回包下客户端请求、动作、控制流、终态不变，不证明真实服务数值；Astra 不覆盖；mmesg、pp 路线由主会话每批起跑前对真实检出跑",
+    "nodeids": [
+      "tests/pipeline/eval/test_client_replay_eq.py::test_same_checkout_passes_and_tampers_are_caught"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
   }
 ]

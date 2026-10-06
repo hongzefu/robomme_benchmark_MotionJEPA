@@ -111,13 +111,17 @@
     {
       "id": "C13-SG-OFFICIAL-RENDER",
       "domain": "C13",
-      "source": ["scripts/eval-official/render_official_video.py"],
+      "source": [
+        "scripts/eval-official/render_official_video.py"
+      ],
       "symbol": "load_trace / f32_from_record / feed_official_recorder / safe_filename / render_episode / main",
       "oracle": "同一组独立彩块、状态、动作按官方 init_episode 和执行顺序直接调用锁定的 RolloutRecorder 原类；输出逐帧 np.array_equal；真实 ffmpeg 另核帧数、帧率与原输入不变",
       "positive": "视频演示与非演示任务逐位相同；原 float64 动作从 NPZ 恢复并逐步核 trace.sha256，真实 0.8405 与 float32 0.8404 反例；合法 provenance 断点复用；显式覆盖只替换派生输出",
       "negative": "畸形 shape/hex/hash、非有限数组、缺或错原动作、乱序/缺项/重复 end、终态冲突、帧数不符和旧 provenance 均拒绝",
       "boundaries": "demo.frames 含初始帧；strict-cap 的 timeout/error 保留全部已有帧；仅官方超出 max_steps 的唯一 timeout 末步省略；超长 UTF-8 文件名截短加摘要并保留完整原名；画面来自有损视频，不能证明原始画面像素一致",
-      "nodeids": ["tests/pipeline/evalx/report/test_sgx_render_official_video.py"],
+      "nodeids": [
+        "tests/pipeline/evalx/report/test_sgx_render_official_video.py"
+      ],
       "resource": "cpu；真实 ffmpeg 端到端用例标 slow",
       "mutants": [],
       "status": "conditional",
@@ -126,7 +130,11 @@
     {
       "id": "C17-OFFICIAL-OVERLAY-BROWSER",
       "domain": "C17",
-      "source": ["scripts/injection-dev/site/official_overlay_site.py", "scripts/injection-dev/site/official_overlay.html", "scripts/injection-dev/site/official_overlay_browser_check.py"],
+      "source": [
+        "scripts/injection-dev/site/official_overlay_site.py",
+        "scripts/injection-dev/site/official_overlay.html",
+        "scripts/injection-dev/site/official_overlay_browser_check.py"
+      ],
       "symbol": "build_site / episode_entry / 白名单 serve / Playwright main",
       "oracle": "真实本机媒体与 trace、render.json、NPZ 指纹逐局核对；Playwright 从托管站点独立取目录并核 800 唯一身份和每任务 50 局，实际视频播放时间推进、暂停及 seek",
       "positive": "官方与原始视频 Range 206；16 个英文 Task 独立栏目，各自 50 局；顶部 16 个 Task 行及表尾 1 个总体行，Xhard/原版hard 各给百分比与成功/总，34 格由浏览器独立读取权威结果重算；总体按总成功/总局数计算，难度/终态筛选不改变成功率表；分页、上一局/下一局、版本切换；演示与非演示任务实际播放；390/768 像素宽度截图无横向溢出",
@@ -6617,6 +6625,24 @@
       "merged_from": [
         "tests/pipeline/eval/contracts.delta.json"
       ]
+    },
+    {
+      "id": "C13-SG-CLIENT-REPLAY",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/client_replay_eq.py"
+      ],
+      "symbol": "run_route / compare / FakeSession / FakeWS / SmvlaConn / PPConn / main（--base --candidate --routes --self-test）",
+      "oracle": "同一检出两侧逐事件相等；故意改动（第 3 步动作首元素 +1、首个推理请求字节、交换第一对相邻环境／服务事件）由子进程内篡改注入，期望差异由篡改位置手写",
+      "positive": "同一检出 smvla、mme 两路线 CLIENT_REPLAY_EQ=PASS request_diff=0 action_diff=0 control_diff=0 terminal_diff=0",
+      "negative": "三类故意改动均被判差异（CLIENT_REPLAY_SELFTEST=PASS action=caught request=caught order=caught）",
+      "boundaries": "假环境 256×256 确定性画面、服务回包按调用序号确定；只证明固定观测与固定回包下客户端请求、动作、控制流、终态不变，不证明真实服务数值；Astra 不覆盖；mmesg、pp 路线由主会话每批起跑前对真实检出跑",
+      "nodeids": [
+        "tests/pipeline/eval/test_client_replay_eq.py::test_same_checkout_passes_and_tampers_are_caught"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified"
     }
   ],
   "files": {
@@ -7442,6 +7468,9 @@
     "scripts/eval-official/pair_seat.sh": [
       "C16-03",
       "C16-04"
+    ],
+    "scripts/eval-official/client_replay_eq.py": [
+      "C13-SG-CLIENT-REPLAY"
     ]
   },
   "exempt": {
