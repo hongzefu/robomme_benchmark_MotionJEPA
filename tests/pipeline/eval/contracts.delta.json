@@ -650,5 +650,25 @@
     "resource": "cpu",
     "mutants": [],
     "status": "verified"
+  },
+  {
+    "id": "C13-SEAT-OFFICIAL-MEDIA",
+    "domain": "C13",
+    "source": [
+      "scripts/eval-official/seat_media_lib.sh",
+      "scripts/eval-official/official_media_check.py"
+    ],
+    "symbol": "seat_media_lib.sh::render_official_dir / _seat_media_transcode（--keep-raw）；official_media_check.py::main（清单模式、--verify-dir 单局模式）",
+    "oracle": "真实小型无损帧夹具（FFV1 + 帧索引 + 契约 trace）走完整收尾链；账本、清单、provenance 手写，期望计数手算",
+    "positive": "重绘插在 trace 合并之后、转码之前；official/*.mp4 出现且 episode.mp4 仍恰一个；已有官方视频完整解码核帧数与 provenance 才 KEPT；OFFICIAL_MEDIA_INPUTS=PASS、OFFICIAL_MEDIA=PASS，无帧 error 局计 no_frame_error",
+    "negative": "重绘失败保留原帧指纹、写 official-render.failed、照常发布、重入恢复；缺失、重复、失败、帧数不符、调换两局视频、普通录像冒充、错 attempt、等数量替换身份均 FAIL",
+    "boundaries": "共享库内部开关缺省 0，只有新侧入口 run_eval_gl.sh 显式开启；不覆盖真实 GPU 渲染",
+    "nodeids": [
+      "tests/pipeline/eval/test_official_media_check.py",
+      "tests/pipeline/eval/test_seat_scripts.py"
+    ],
+    "resource": "cpu；ffmpeg 收尾链用例标 slow",
+    "mutants": [],
+    "status": "verified"
   }
 ]
