@@ -80,75 +80,29 @@
 
 ## 三、这一版跑什么
 
-两件事，按顺序：先四个模型的 V9 第三档；最后再跑 MemER 的 `test-hard0` 原侧 vs 新侧对拍。
+先跑四个模型的 V9 第三档，最后跑 MemER 的 `test-hard0` 原侧 vs 新侧对拍。不跑 seed 0／42；GroundSG+Oracle／QwenVL 与 3-tier Astra 只改代码、不实跑。
 
-```
- 开工 ─┬─ 1 改名（R1）→ CLIENT_REPLAY_EQ、OFFICIAL_NAMES
-       ├─ 2 功能（R2 MemER ｜ R3 共享入口 seed+1800 ｜ R5 Astra 入口 ｜ R4 CPU 测试）→ 七路线 CPU 夹具
-       ├─ 3 冻结执行提交、核 MemER 资产、四模型各 1 局 smoke（seed 7）
-       ├─ 4 GL A40：4 模型 × 2 片 = 8 片进 4 个占位席位，每片 43 局
-       ├─ 5 四组各自验收 → 344 局汇总
-       ├─ 6 最后：MemER test-hard0 对拍，原侧 192 局 + 新侧 192 局（GL A40，同一批局清单）→ 差异报告
-       └─ 7 留档、commit、push
- 本版不跑 seed 0／42；GroundSG+Oracle／QwenVL 与 Astra 只补功能、只 CPU 验证，不实跑。
-```
-
-| 项 | 本版口径 |
-|---|---|
-| 跑哪四个 | FrameSamp+Modulation、SimpleMemVLA、PonderPounce、MemER |
-| 数据与档位 | V9 `test-hard` 第三档，43 格 = 14 任务 × 2 档（xhard1/2）+ 7 任务 × 1 档（xhard3）+ 6 任务 × 1 档（xhard4）+ 2 任务 × 1 档（xhard5） |
-| 每模型局数 | 1 模型种子（7）× 43 格 × 2 局 = 86 局（环境每格仍取前两局，环境 seed／spec 不动） |
-| 合计 | 4 模型 × 86 = 344 局；8 片 × 43 局；4 个占位 job（63188714／15／16／19，可用性以恢复时为准） |
-| 最后再跑：MemER hard0 对拍 | `test-hard0`，1300 步，两侧同一批 16 任务 × 1 档 × 12 局 = 192 局（沿用上一轮第二档的局清单）；原侧 = 官方 `eval.py` 的 MemER 分支经我们的 `official_hard_runner.py` 驱动（与 GroundSG 原侧同一套驱动），新侧 = 我们的 `groundsg_client.py` 走 `ground-sg-memer`；两侧动作服务都 `--policy-seed 7`、同一份 adapter；两侧各 8 片 × 24 局；产出差异报告 `GATE2=INFO`，不证明等价 |
-| 占位 job 单卡 | 每席 1 张 A40，与上一轮相同。MemER 与 GroundSG+QwenVL 一样「动作服务 + 4B 预测器同卡」：服务取 `SEAT_XLA_MEM_FRACTION=0.65`，Qwen3-VL-4B + LoRA 用剩余显存（上一轮 QwenVL 实跑通过）；MemER 每次请求多带关键帧，激活显存略大，1 局 smoke 时核实。单卡不影响可行性，只影响吞吐（8 片排 4 席）|
-| 运行参数 | `--max-steps 1800 --strict-cap --policy-seed 7`；MemER 另加 `--groundsg-variant ground-sg-memer --memer-adapter <已核实路径>` |
-| run_name | 拟 `sg-eval-gl-20261006-03`，执行副本拟 `robomme_benchmark-sgeval3`，起跑前确认未用 |
-
-**用户原话（2026-10-06）**：「还需要实现MemER和seed0/7/42，1800步的调整」；「seed只作为实现的功能」「这版还是跑自己的七，还是每一个难度跑两个」；「给出现在所有支持模型的清单，都要支持1800步，都要支持不同seed，模型seed」「我们现在实跑只跑我说的这些模型」。
-
-**预算**：
-
-| 项目 | 轨迹上限 | reset 口径 |
+| 跑什么 | 规模 | 怎么跑 |
 |---|---|---|
-| 正式首试 | 4 模型 × 1 种子 × 43 格 × 2 局 = 344 | 每片硬额度 2 × 43 + 20 = 106，8 片共 848 |
-| 最小 smoke | 4 模型 × 1 局 = 4 | 每局 3，共 12 |
-| MemER hard0 对拍（最后） | 2 侧 × 16 任务 × 1 档 × 12 局 = 384 | 两侧各 8 片，每片硬额度 2 × 24 + 20 = 68，16 片共 1088 |
-| 对拍前两侧各 1 局 smoke | 2 | 每局 3，共 6 |
-| 基础设施重试 | 全阶段共享 ≤ 50，每身份 ≤ 1 次；到期重试 0 | 消耗上面的既有额度 |
-| **合计** | **344 + 4 + 384 + 2 + 50 = 784**（历史累计 2064 + 784 = 2848，在 6366 内） | **860 + 1088 + 6 = 1954** |
+| 四模型 V9 第三档：FrameSamp+Modulation、SimpleMemVLA、PonderPounce、MemER | 每模型 43 格 × 2 局 = 86 局，共 344 局 | 1800 步、模型 seed 7；8 片进 4 个单卡占位席位（单卡够用：MemER 与 QwenVL 一样和动作服务同卡） |
+| 最后：MemER hard0 对拍 | 原侧 192 局 + 新侧 192 局 | 1300 步，两侧同一批局、同一份 adapter、seed 7；出差异报告，不证明等价 |
 
-**耗时**：改名约 2～2.5 小时；三个老模型按旧第二档单局耗时 × 1.5 × 1.125 粗估共约 459 席位分钟；MemER 无实测，等它 1 局 smoke 后再估整体，原「5～6 小时」结论作废。
+预算：轨迹上限 784 局（344 + 4 局 smoke + 384 + 2 局 smoke + 50 次重试），reset 硬额度 1954；历史累计 2848，在 6366 内。耗时等 MemER 跑完 1 局 smoke 再估。run_name 拟 `sg-eval-gl-20261006-03`。
 
-**验收**：
+验收：
 
-| 查什么 | 判定行 |
+| 阶段 | 判定行 |
 |---|---|
-| 改名只改名 | `OFFICIAL_NAMES=PASS`、`CLIENT_REPLAY_EQ=PASS`（三条旧路线） |
-| MemER 真接入与资产 | `MEMER_WIRING=PASS predictor=MemERSubgoalPredictor`、`ASSETS=PASS`、`MEMER_SMOKE=PASS` |
-| 七路线种子与 cap（CPU） | `POLICY_SEEDS=PASS models=7 seeds=0,7,42 cases=21 cpu_only=1`、`EVAL_CAP=PASS models=7 dataset=test-hard max_steps=1800 rejected_step=1801` |
-| 规格与上游未动 | `DELIVERY_UNCHANGED=PASS`、`UPSTREAM_GUARD=PASS` |
-| 每组结果与视频 | 每组 `EVAL_COVERAGE=PASS expected=86 missing=0`、`EVAL_VIDEOS=PASS videos=86`、`OFFICIAL_MEDIA=PASS total=86 fail=0`、`VIDEO_LAYOUT=PASS model=<m> seed=7 videos=86 error_named=0`（上游 mme-vla 布局，三态命名） |
-| 完整矩阵与预算 | `RUN_POLICY_SEED=PASS seed=7 combinations=4`、`STAGE3_MATRIX=PASS policy_seed=7 combinations=4 unique_terminal=344`、`BUDGET_ENFORCEMENT=PASS` |
-| MemER hard0 对拍（最后） | 两侧各 `EVAL_COVERAGE=PASS expected=192 missing=0`、`OFFICIAL_MEDIA=PASS total=192 fail=0`；`GATE2_INPUTS=PASS expected=192 missing=0 extra=0`、`GATE2_PROVENANCE=PASS local_rows=0`、`GATE2=INFO compared=192 …`（两侧成功率、终态相同数、翻转数、McNemar p、逐步一致数） |
+| 改名只改名 | `OFFICIAL_NAMES=PASS`、`CLIENT_REPLAY_EQ=PASS` |
+| 七路线功能（CPU） | `POLICY_SEEDS=PASS models=7`、`EVAL_CAP=PASS max_steps=1800`、`MEMER_WIRING=PASS` |
+| 四模型 V9 | 每组 `EVAL_COVERAGE=PASS expected=86`、`OFFICIAL_MEDIA=PASS`、`VIDEO_LAYOUT=PASS`；总 `STAGE3_MATRIX=PASS unique_terminal=344`、`BUDGET_ENFORCEMENT=PASS` |
+| MemER 对拍 | `GATE2=INFO compared=192` |
 
-成绩只报 seed 7 的逐格／任务／档位与总成功率，每格 n=2；与旧 1600 步成绩的差异注明条件已变，不宣称等价。
+步骤：0 等用户说「开工」→ 1 改名 → 2 功能 → 3 冻结提交、核 MemER 资产、每模型 1 局 smoke → 4 GL 跑 8 片 → 5 验收汇总 → 6 MemER 对拍 → 7 留档、commit、push。
 
-**步骤**：
+子代理：R1 改名先做完、审两次、合入；再同时派 R2（MemER）、R3（共享入口）、R5（Astra）、R4（CPU 测试），各在自己的 worktree 写互不重叠的文件，按 R1 → R2 → R3 → R5 → R4 合回，每合一个审一次。
 
-| 阶段 | 内容 | 判据 |
-|---|---|---|
-| 0 | 等用户再次说「开工」；核对预算、MemER 资产边界、新 run_name | 授权记录与 BASE 明确 |
-| 1 | R1 改名；主会话改现行文档与旧名对照表 | `OFFICIAL_NAMES`、`CLIENT_REPLAY_EQ`、核心短测 |
-| 2 | R2 接 MemER，R3／R5 让七路线支持种子与 1800，R4 补 CPU 测试 | `MEMER_WIRING`、`POLICY_SEEDS`、`EVAL_CAP`、`DELIVERY_UNCHANGED` |
-| 3 | 核资产、冻结执行副本、生成清单与四个 seed 7 任务组、每模型 1 局 smoke | `RUN_INPUTS`、`ASSETS`、`MEMER_SMOKE`、`RUN_POLICY_SEED` |
-| 4 | GL A40 跑 8 片 | 退出码、进度、预算 |
-| 5 | 四组验收、汇总 | `EVAL_COVERAGE`、`EVAL_VIDEOS`、`OFFICIAL_MEDIA`、`STAGE3_MATRIX` |
-| 6 | 最后：MemER hard0 对拍——两侧各 1 局 smoke 后，原侧 8 片 + 新侧 8 片进 4 席，跑对比工具 | `GATE2_INPUTS`、`GATE2_PROVENANCE`、`GATE2=INFO compared=192` |
-| 7 | 留档、commit、push；资源按最新指令处置 | `BUDGET_ENFORCEMENT`、`result.md` 落盘 |
-
-**子代理分工与合并（简述）**：R1 改名先单独做完、审两次、合入；之后同一时刻派 R2（MemER 装配：`official_defs.py`、GroundSG 新侧客户端与原侧驱动 `official_hard_runner.py`／`run_official_hard.sh`）、R3（共享入口：席位脚本、`env_client.py`、各服务端、报告与预算）、R5（Astra 两入口及其测试），R4 并行准备与 R5 不重叠的 CPU 测试。各管互不重叠的文件、各在自己的 worktree 写；合回顺序 R1 → R2 → R3 → R5 → R4，每合一个审禁触路径与定向测试，全部过后冻结执行提交。主会话自做现行文档、资产清单与 GL 编排。
-
-改名范围明细、种子与 cap 的逐层传递、链路图、各档任务名单、耗时推导与预算细则见第二部分八节。
+用户原话、口径表、单卡布局、预算细则、完整判定行、完整步骤表与子代理分工见第二部分八.8。
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -380,3 +334,75 @@ CPU 回放／夹具消耗真实 reset／轨迹均为 0。新预算账本同时�
 | 我们新侧现状（`run_eval_gl.sh::pub_root`、`run_seat.sh::publish_dir`、`render_official_video.py::render_episode`、`env_client.py::v8_key`） | `<media-root>/<模型标签>/<dataset>/new/<task>_<tier>_<环境seed>.a<attempt>/official/`（无模型 seed 层；路径里的 seed 是环境构造 seed） | `official-rerender__<task>_ep<源局或builder局>a<attempt>_<terminal_reason>_<task_goal>_<tier>.mp4`；GroundSG QwenVL 保留官方原生名（尾部 `hard`）；超 255 字节截断加哈希，完整名在 `official/render.json` | `success`／`fail`／`timeout`／`error`；旧口径 strict-cap 超时局 `status=timeout` 但 `terminal_reason=error`，文件名带 `error` |
 
 本计划采用的布局（第一部分二第 ③ 件）：`<run 根>/<模型 ID>/seed<policy_seed>/[oracle｜qwenvl｜memer/]videos/<task>_ep<N>_<success｜fail｜timeout>_<task_goal>_<tier>.mp4`，与上游 `eval.py` 的差别只有三处并写明：没有 `ckpt<id>` 层（本仓库权重由 `RUN_INPUTS` 记录）、`ep<N>` 后不带 attempt（只发布账本接受的那一次）、末尾用 tier 替 difficulty。本机现存视频产物：上一轮 5 × 192 在 NFS `$R2/gate2-new-*/media/`；本机 `artifacts/sg-evaluation/` 下只有各路线 1 局冒烟与 1004 的本机 800 局。HF 打包上传按用户 2026-10-06「先不做打包上传的问题」不纳入本计划（仓库现无按模型打包评估视频上传 HF 的脚本；已有 bucket 流程与 greatlakes 纯 CPU 校验 job 的要点留待以后另立计划）。
+
+### 八.8 本版运行口径全文（2026-10-06 从第一部分三移入；第一部分只留一屏）
+
+两件事，按顺序：先四个模型的 V9 第三档；最后再跑 MemER 的 `test-hard0` 原侧 vs 新侧对拍。
+
+```
+ 开工 ─┬─ 1 改名（R1）→ CLIENT_REPLAY_EQ、OFFICIAL_NAMES
+       ├─ 2 功能（R2 MemER ｜ R3 共享入口 seed+1800 ｜ R5 Astra 入口 ｜ R4 CPU 测试）→ 七路线 CPU 夹具
+       ├─ 3 冻结执行提交、核 MemER 资产、四模型各 1 局 smoke（seed 7）
+       ├─ 4 GL A40：4 模型 × 2 片 = 8 片进 4 个占位席位，每片 43 局
+       ├─ 5 四组各自验收 → 344 局汇总
+       ├─ 6 最后：MemER test-hard0 对拍，原侧 192 局 + 新侧 192 局（GL A40，同一批局清单）→ 差异报告
+       └─ 7 留档、commit、push
+ 本版不跑 seed 0／42；GroundSG+Oracle／QwenVL 与 Astra 只补功能、只 CPU 验证，不实跑。
+```
+
+| 项 | 本版口径 |
+|---|---|
+| 跑哪四个 | FrameSamp+Modulation、SimpleMemVLA、PonderPounce、MemER |
+| 数据与档位 | V9 `test-hard` 第三档，43 格 = 14 任务 × 2 档（xhard1/2）+ 7 任务 × 1 档（xhard3）+ 6 任务 × 1 档（xhard4）+ 2 任务 × 1 档（xhard5） |
+| 每模型局数 | 1 模型种子（7）× 43 格 × 2 局 = 86 局（环境每格仍取前两局，环境 seed／spec 不动） |
+| 合计 | 4 模型 × 86 = 344 局；8 片 × 43 局；4 个占位 job（63188714／15／16／19，可用性以恢复时为准） |
+| 最后再跑：MemER hard0 对拍 | `test-hard0`，1300 步，两侧同一批 16 任务 × 1 档 × 12 局 = 192 局（沿用上一轮第二档的局清单）；原侧 = 官方 `eval.py` 的 MemER 分支经我们的 `official_hard_runner.py` 驱动（与 GroundSG 原侧同一套驱动），新侧 = 我们的 `groundsg_client.py` 走 `ground-sg-memer`；两侧动作服务都 `--policy-seed 7`、同一份 adapter；两侧各 8 片 × 24 局；产出差异报告 `GATE2=INFO`，不证明等价 |
+| 占位 job 单卡 | 每席 1 张 A40，与上一轮相同。MemER 与 GroundSG+QwenVL 一样「动作服务 + 4B 预测器同卡」：服务取 `SEAT_XLA_MEM_FRACTION=0.65`，Qwen3-VL-4B + LoRA 用剩余显存（上一轮 QwenVL 实跑通过）；MemER 每次请求多带关键帧，激活显存略大，1 局 smoke 时核实。单卡不影响可行性，只影响吞吐（8 片排 4 席）|
+| 运行参数 | `--max-steps 1800 --strict-cap --policy-seed 7`；MemER 另加 `--groundsg-variant ground-sg-memer --memer-adapter <已核实路径>` |
+| run_name | 拟 `sg-eval-gl-20261006-03`，执行副本拟 `robomme_benchmark-sgeval3`，起跑前确认未用 |
+
+**用户原话（2026-10-06）**：「还需要实现MemER和seed0/7/42，1800步的调整」；「seed只作为实现的功能」「这版还是跑自己的七，还是每一个难度跑两个」；「给出现在所有支持模型的清单，都要支持1800步，都要支持不同seed，模型seed」「我们现在实跑只跑我说的这些模型」。
+
+**预算**：
+
+| 项目 | 轨迹上限 | reset 口径 |
+|---|---|---|
+| 正式首试 | 4 模型 × 1 种子 × 43 格 × 2 局 = 344 | 每片硬额度 2 × 43 + 20 = 106，8 片共 848 |
+| 最小 smoke | 4 模型 × 1 局 = 4 | 每局 3，共 12 |
+| MemER hard0 对拍（最后） | 2 侧 × 16 任务 × 1 档 × 12 局 = 384 | 两侧各 8 片，每片硬额度 2 × 24 + 20 = 68，16 片共 1088 |
+| 对拍前两侧各 1 局 smoke | 2 | 每局 3，共 6 |
+| 基础设施重试 | 全阶段共享 ≤ 50，每身份 ≤ 1 次；到期重试 0 | 消耗上面的既有额度 |
+| **合计** | **344 + 4 + 384 + 2 + 50 = 784**（历史累计 2064 + 784 = 2848，在 6366 内） | **860 + 1088 + 6 = 1954** |
+
+**耗时**：改名约 2～2.5 小时；三个老模型按旧第二档单局耗时 × 1.5 × 1.125 粗估共约 459 席位分钟；MemER 无实测，等它 1 局 smoke 后再估整体，原「5～6 小时」结论作废。
+
+**验收**：
+
+| 查什么 | 判定行 |
+|---|---|
+| 改名只改名 | `OFFICIAL_NAMES=PASS`、`CLIENT_REPLAY_EQ=PASS`（三条旧路线） |
+| MemER 真接入与资产 | `MEMER_WIRING=PASS predictor=MemERSubgoalPredictor`、`ASSETS=PASS`、`MEMER_SMOKE=PASS` |
+| 七路线种子与 cap（CPU） | `POLICY_SEEDS=PASS models=7 seeds=0,7,42 cases=21 cpu_only=1`、`EVAL_CAP=PASS models=7 dataset=test-hard max_steps=1800 rejected_step=1801` |
+| 规格与上游未动 | `DELIVERY_UNCHANGED=PASS`、`UPSTREAM_GUARD=PASS` |
+| 每组结果与视频 | 每组 `EVAL_COVERAGE=PASS expected=86 missing=0`、`EVAL_VIDEOS=PASS videos=86`、`OFFICIAL_MEDIA=PASS total=86 fail=0`、`VIDEO_LAYOUT=PASS model=<m> seed=7 videos=86 error_named=0`（上游 mme-vla 布局，三态命名） |
+| 完整矩阵与预算 | `RUN_POLICY_SEED=PASS seed=7 combinations=4`、`STAGE3_MATRIX=PASS policy_seed=7 combinations=4 unique_terminal=344`、`BUDGET_ENFORCEMENT=PASS` |
+| MemER hard0 对拍（最后） | 两侧各 `EVAL_COVERAGE=PASS expected=192 missing=0`、`OFFICIAL_MEDIA=PASS total=192 fail=0`；`GATE2_INPUTS=PASS expected=192 missing=0 extra=0`、`GATE2_PROVENANCE=PASS local_rows=0`、`GATE2=INFO compared=192 …`（两侧成功率、终态相同数、翻转数、McNemar p、逐步一致数） |
+
+成绩只报 seed 7 的逐格／任务／档位与总成功率，每格 n=2；与旧 1600 步成绩的差异注明条件已变，不宣称等价。
+
+**步骤**：
+
+| 阶段 | 内容 | 判据 |
+|---|---|---|
+| 0 | 等用户再次说「开工」；核对预算、MemER 资产边界、新 run_name | 授权记录与 BASE 明确 |
+| 1 | R1 改名；主会话改现行文档与旧名对照表 | `OFFICIAL_NAMES`、`CLIENT_REPLAY_EQ`、核心短测 |
+| 2 | R2 接 MemER，R3／R5 让七路线支持种子与 1800，R4 补 CPU 测试 | `MEMER_WIRING`、`POLICY_SEEDS`、`EVAL_CAP`、`DELIVERY_UNCHANGED` |
+| 3 | 核资产、冻结执行副本、生成清单与四个 seed 7 任务组、每模型 1 局 smoke | `RUN_INPUTS`、`ASSETS`、`MEMER_SMOKE`、`RUN_POLICY_SEED` |
+| 4 | GL A40 跑 8 片 | 退出码、进度、预算 |
+| 5 | 四组验收、汇总 | `EVAL_COVERAGE`、`EVAL_VIDEOS`、`OFFICIAL_MEDIA`、`STAGE3_MATRIX` |
+| 6 | 最后：MemER hard0 对拍——两侧各 1 局 smoke 后，原侧 8 片 + 新侧 8 片进 4 席，跑对比工具 | `GATE2_INPUTS`、`GATE2_PROVENANCE`、`GATE2=INFO compared=192` |
+| 7 | 留档、commit、push；资源按最新指令处置 | `BUDGET_ENFORCEMENT`、`result.md` 落盘 |
+
+**子代理分工与合并（简述）**：R1 改名先单独做完、审两次、合入；之后同一时刻派 R2（MemER 装配：`official_defs.py`、GroundSG 新侧客户端与原侧驱动 `official_hard_runner.py`／`run_official_hard.sh`）、R3（共享入口：席位脚本、`env_client.py`、各服务端、报告与预算）、R5（Astra 两入口及其测试），R4 并行准备与 R5 不重叠的 CPU 测试。各管互不重叠的文件、各在自己的 worktree 写；合回顺序 R1 → R2 → R3 → R5 → R4，每合一个审禁触路径与定向测试，全部过后冻结执行提交。主会话自做现行文档、资产清单与 GL 编排。
+
+改名范围明细、种子与 cap 的逐层传递、链路图、各档任务名单、耗时推导与预算细则见第二部分八节。
