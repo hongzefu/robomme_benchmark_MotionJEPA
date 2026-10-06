@@ -335,7 +335,7 @@ S0 同时提交测试助手 `tests/pipeline/evalx/report/trace_contract.py::asse
 
 #### 2.3 SimpleMemVLA
 
-**上游原版入口**：`third_party/SimpleMemVLA/robomme_sim/eval_success.py`（子模块锁定 `c564c17`）。它是**单进程内嵌**：没有服务进程，`InProcSimPool` 在线程池里并行 reset／step 多个环境，`BatchedEvalPolicy.generate_batch` 一次 batched 前向同时返回动作与子任务文本，取前 16 步执行；`--group_size` 默认 2（两局一组），每任务 `min(50, 局数)` 局；种子只在 `evaluate_tasks` 开头设一次；输出只有 stdout 与 `results.json`（每任务成功率），**没有逐局日志、没有逐步日志**；视频只在给 `--video_dir` 时每任务各留 1 条成功、1 条失败。环境是它自带的 `robomme_sim/robomme`（与本仓库 `src/robomme` 逐字节相同，只少我们这边一个杂散文件 `vqa_options copy.py`），`--dataset_split test`。
+**上游原版入口**：`third_party/SimpleMemVLA/robomme_sim/eval_success.py`（子模块锁定 `c564c17`）。它是**单进程内嵌**：没有服务进程，`InProcSimPool` 在线程池里并行 reset／step 多个环境，`BatchedEvalPolicy.generate_batch` 一次 batched 前向同时返回动作与子任务文本，取前 16 步执行；`--group_size` 默认 2（两局一组），每任务 `min(50, 局数)` 局；种子只在 `evaluate_tasks` 开头设一次；输出只有 stdout 与 `results.json`（每任务成功率），**没有逐局日志、没有逐步日志**；视频只在给 `--video_dir` 时每任务各留 1 条成功、1 条失败。环境是它自带的 `robomme_sim/robomme`（与本仓库 `src/robomme` 逐字节相同，只少官方自带的一个杂散文件 `vqa_options copy.py`——该文件是官方仓库原有的，不是我们多出来的），`--dataset_split test`。
 
 **原侧 = SimpleMemVLA 分支 `official-xhard0-0929` 提交 `4e0c04f`**（基于 `c564c17`，只多一个提交，+324／−1，3 个文件）。这就是 2026-09-29 产出官方历史成绩 E0 的代码。改动：
 
@@ -430,3 +430,15 @@ S0 同时提交测试助手 `tests/pipeline/evalx/report/trace_contract.py::asse
 #### 3.5 GroundSG 补存视频的原理
 
 官方 `eval_each_episode` 的录像器是 `self.init_episode(...)` 返回的局部对象，正常结束才 `save_video`。新侧适配器在本局开始前给 evaluator 实例包一层 `init_episode` 抓住它；遇到 `StepCapReached`、其他异常或 `unknown` 时，按官方文件名格式调用它自己的 `save_video`。`init_episode` 返回前就失败的局一帧未录，无视频，记原因。官方超时是先 break 后不 record，所以超时局的第 1301 步不进视频，记 `omitted_timeout_frames`。
+
+#### 官方 repo `main` 比对（2026-10-06，四个只读子代理各在暂存目录克隆官方仓库后比对，未写入任何用户仓库）
+
+用户要求「展开说四个模型原侧和官方的repo的main有什么区别注意是和官方的repo的main不是和我们fork的main」。结论：**四个官方仓库的 `main` 当日都没有越过我们钉的版本**，三个模型仓库的 `main` HEAD 就是我们钉的提交，环境仓库 `main` 之后只多文档提交。原侧与官方 `main` 的全部差别都是我们加的驱动、清单模式与观测，不是版本漂移。
+
+| 官方仓库（上游，非 fork） | 官方 `main` HEAD（日期） | 我们钉的提交 | `main` 与钉死提交的差异 | 原侧相对官方 `main` 的全部差别 |
+|---|---|---|---|---|
+| `RoboMME/robomme_policy_learning`（GroundSG、MME 共用） | `ecf086c3`（2026-04-08） | GroundSG 原侧取 `ecf086c` 原文；MME 原侧分支 `927c56d`（父提交即 `ecf086c`） | `git diff --stat ecf086c main` 为空 | GroundSG：零代码差异，差别全在我们的驱动 `official_hard_runner.py`（只跑 192 局清单、`unknown` 不 abort、服务不可达 300 s 探测、`results.jsonl` + 重试调度、只读观测、叠字 mp4 局末删）。MME：`927c56d` 只增不删 4 文件 +299 行（`eval.py` +81 行清单模式，由 `--args.episode_manifest` 门控，不给即官方循环；`xhard0_manifest.py`、其测试、`gl_eval_official_xhard0.sh`），门控后与官方不同的只有逐局 `episodes.jsonl`、视频在终态后写、续评；脚本层 `XLA_PYTHON_CLIENT_MEM_FRACTION=0.75` |
+| `OpenBMB/SimpleMemVLA` | `c564c17`（2026-09-24，整条历史 3 个提交） | 原侧分支 `4e0c04f`（父提交即 `c564c17`） | `git diff --stat c564c17 main` 为空 | `4e0c04f` 3 文件 +324／−1：`eval_success.py` 清单模式（组大小恒 1 vs 官方默认 2；每局重设种子 vs 官方只设一次；每局必录像 vs 官方每任务抽 1 成功 + 1 失败；逐局终态 jsonl；`run_group` 签名加两个默认 None 参数，−1 行即旧签名）、两个启动脚本；不给清单走官方路线。`robomme_sim/robomme`、`batched_policy.py`、`inproc_pool.py`、`robomme_env.py` 零差异 |
+| `worv-ai/ponderpounce` | `723df357`（2026-09-29，3 个提交） | 子模块 gitlink `723df357` | 为空；vla-eval 官方 `uv.lock`、我们 client-env 锁与实装三处都是 0.7.0 | 代码零差异。差别全在运行方式：渲染本机 GPU vs 官方 docker 镜像 CPU lavapipe（最实质，像素不会逐位一致）；只跑 192 局清单 vs 每任务 50 局；固定 sid 的空操作 recorder；`EnvProxy`／`TracedConnection` 只读观测；我们的重试与重启服务；单连接串行 vs 官方多模拟器 `--shard-id` 分片 |
+| `RoboMME/robomme_benchmark`（环境，四模型共用） | `016ac1c`（2026-10-03） | `src/robomme` = `1fadc0ec`；MME 子模块 `856bc3a` | `1fadc0ec..main` 4 个提交，只改 `doc/Wechat.jpg` 与新增 `doc/submission/ponderpounce.md`；`856bc3a..main` 约 80 个提交全是 README／doc／二维码、`challenge_interface/` 评测封装、`pyproject.toml` server 组加 flask | `src/robomme` 目录树 sha 在 `856bc3a`、`1fadc0ec`、`main` 三点相同（`4845da3b`），`diff -rq` 对本仓库 `src/robomme` 为空；`env_record_wrapper`、`robomme_env`、`env_metadata/test/*`、wrapper 链官方从未改过，hard 12 局起法与物理不受影响 |
+
