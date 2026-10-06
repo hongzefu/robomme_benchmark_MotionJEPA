@@ -8,6 +8,10 @@
 
 计划写的顺序是 R1 → R2 → R3 → R6 → R7 → R5 → R4。本文件把 **R6（trace／语言账本接口的提供方）提到 R2 之前**：R2／R3／R5 都要调用 R6 新增的 `LanguageLog` 与数组合并写函数，先合提供方，后合调用方，每次合并后的核心短测才不会因为「调用了尚不存在的接口」而失败。实际顺序：**R6 → R2 → R3 → R7 → R5 → R4**。R4 在前五块全部合入后再派（测试针对真实代码写，不针对设想写）。
 
+**测试归属的调整（相对计划第二部分二节 R4 行）**：派发时把各功能块直接相关的既有测试与登记文件划给该块的写入者，计划原列给 R4 的部分文件因此改归——`tests/pipeline/evalx/groundsg/**` 与 `tests/pipeline/evalx/orig_observer/**` 归 R2；`tests/pipeline/evalx/astra/**` 归 R5；`tests/pipeline/eval/` 中除下列文件外及其 `contracts.delta.json`、`tests/pipeline/evalx/pp/**` 归 R3；`tests/pipeline/eval/{test_policy_clients,test_framesamp_modul_transport,test_eval_recorder}.py`、`tests/pipeline/evalx/report/{test_sgx_trace_writer,test_trace_contract,trace_contract}.py` 与新目录 `tests/pipeline/evalx/trace/` 归 R6；`tests/pipeline/evalx/report/` 其余文件与其 `contracts.delta.json`、`tests/pipeline/eval/{test_eval_report,test_official_media_check,test_gate2_inputs,test_gate2_v75,test_eval_video_mover}.py` 归 R7。各集合互不重叠，同一时刻每个文件只有一个写者；R4 在全部合入后补跨块反例与 slow 用例。
+
+**整合方式的调整**：R6 将 `TraceWriter` 缺省改为收集完整数组（本节第四条），使 R2／R3／R5 名下断言旧文件清单的既有测试在单块合入后必然失败（R6 实测 13 个），各块又是同一基点上按同一份冻结接口并行写成，单独合任何一块都过不了合并后核心短测。因此在每块各自通过合并前审查后，由一个整合子代理（worktree、opus）在当前工作分支 HEAD 上按上述顺序依次 `git merge` 五个分支、以 `sub/MERGE-1:` 提交补齐跨块问题（受影响的既有测试、总表 `tests/contract/benchmark_contracts.json` 登记、接口细节对齐），主会话对整合分支整体再做一次合并前审查后 `--no-ff` 合入。
+
 ## 二、CLI 与参数传递
 
 ### 2.1 数据集与步数配对（R3：`run_seat.sh::step_cap_pairing`、`run_official_hard.sh`；R5：`astra_hard_runner.py::DATASET_STEP_PAIRING`）
@@ -61,7 +65,7 @@
 2. **step 行**可选新增 `source_call_id`、`chunk_index`（语言账本关联，见第五节）；不传时 step 行键集合仍为旧 9 键（`test_default_log_step_bytes_unchanged` 不得破坏）。
 3. **完整数组**：`TraceWriter` 构造新增 `arrays_path=None`（缺省 `<trace 同目录>/arrays.npz`）。`log_step`／`log_missing_step` 收集 `exec_action__%05d`（键号 = step−1，每个 attempted 步都有）；观测步另收 `exec_state__%05d`（缺观测步不补零，记入 end 行 `arrays.missing_state_steps`）。`close()` 调 `merge_write_npz(path, mapping)` 写盘，end 行新增 `arrays = {"path":"arrays.npz","action_keys":n,"state_keys":m,"missing_state_steps":[…]}`。
 4. **`trace_writer.merge_write_npz(path, mapping) -> None`**（新增，唯一允许的 `arrays.npz` 写法）：读已有文件 → 同键须 dtype／shape／sha256 全同，否则抛 `ArraysConflict` → 合并 → 写 `path.tmp` 后 `os.replace`。`recorder.py::EpisodeRecorder._write_arrays`、`smvla_client.py`、`pp_client.py`、`astra_hard_runner.py::write_exec_actions`、`orig_observer/step_arrays.py` 的直接 `np.savez` 一律改成调它（R6 改前三个；Astra 由 R5 改；`step_arrays.py` 由 R2 改）。于是关闭先后不再互相覆盖。
-5. 判定行（R7 检查器）：`TRACE_ARRAYS=PASS episodes=<n> attempted_steps_missing=0 observed_state_missing=0`。
+5. 判定行（检查器 `trace_arrays_check.py`，派发时归 R6）：`TRACE_ARRAYS=PASS episodes=<n> attempted_steps_missing=0 observed_state_missing=0`。`merge_write_npz` 的目录锁只用于本地盘（正式运行的逐局产物在节点本地写，不写 NFS）。
 
 ## 五、语言账本 `language.jsonl`（接口 R6；接线：R2 GroundSG 三变体与原侧，R6 FrameSamp／SimpleMemVLA／PonderPounce 客户端，R3 三个服务外壳回包，R5 Astra，R7 比较器与检查器）
 
@@ -75,6 +79,7 @@
 | `reuse(step, reused_call_id)` | `{"kind":"reuse","step","reused_call_id","reused_previous":true}`（QwenVL keep_period 复用步） |
 | `close()` | 对仍未关闭的调用补 `call_close status=cancelled`，再关文件 |
 
+- **「发送前落盘」的唯一例外**（2026-10-06 R6 审查后补）：带 `channel` 的分词通道消息（`task`／`symbolic`）内容来自服务回包的 `_sgeval_audit`，只能在回包后写；它仍记 `dir=in`（描述的是进模型的文字），同一调用中客户端自己构造的 `fields`／`user` 输入消息照旧必须在发送前写。
 - `model ∈ {subgoal_model, action_model, planner, monitor}`；`role`：`system`／`user`／`assistant`（回复）／`fields`（动作模型结构化输入）。
 - `images` 元素：`{"slot","ref","phase","frame_idx","cam","raw_sha256","sources","transform","encoded_sha256"}`，`ref ∈ {keyframe, recent, current, wrist, command_start, demo_sheet, memory_sheet}`，`phase ∈ {demo, exec}`，`cam ∈ {front, wrist}`；不存图片本身。
 - 执行步关联：调用方在 `TraceWriter.log_step(..., source_call_id=, chunk_index=)` 记录动作来源调用。
