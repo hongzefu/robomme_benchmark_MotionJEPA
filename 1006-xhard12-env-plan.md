@@ -2,216 +2,73 @@
 
 # 第一部分（给人看）
 
-## 一、结论与已定口径
+## 一、到底要做什么
 
-**可以直接在 ENV 内部实现，最简单的架构是“原生难度配置＋原任务循环”，再给现有生成器增加一个显式单档入口。** 不需要把场景导出后回注，也不需要在生成器外面用子类或运行时补丁改 ENV。新档表示为两个难度字符串 `xhard1`、`xhard2`，而不是一个难度字符串 `xhard12`。
+**沿用 hard 的场景，让机器人多做几次动作，生成更长的任务。** 你的原话是：“澄清一下，就是用Hard的布局，但是把任务做得长一些。”
 
-但“能在 ENV 内部做”不等于“所有任务只增加两个字典”。最适合先打通的是 `PickHighlight`：原 hard 为 `spawn=6, pickup=3`，候选新档为 `spawn=6, pickup=4/5`，现有任务循环已经读取目标数。这个样例只需修改 **三个现有生产文件**：`utils/difficulty.py`、`PickHighlight.py`、`generate_dataset_newseed.py`，再增加定向验证。其余任务按第三节分组推进。
+例如先做 `PickHighlight`：
 
-本轮用户原话：
-
-> 参考这个我现在 README 的实现方式，告诉我最简单的实现 XHR 的零 XHR 一的方式是什么。能不能直接在 ENV 内部改，就是加入新的配置xhard12
->
-> 给出方案落实在根目录，写方案的规则参考现在的 Agent Markdown，Cloud Markdown。
-
-随后用户澄清原话：
-
-> 澄清一下，就是用Hard的布局，但是把任务做得长一些。
-
-本文暂将“XHR”“xhard12”按当前 README 的 `XHard1／XHard2` 理解，将“Agent Markdown、Cloud Markdown”对应到 `AGENTS.md、CLAUDE.md`。如果用户实际要求 `xhard0／xhard1` 或一个单独的 `xhard12`，应先修改本方案的命名口径，再实施。
-
-已经确定、不能由本方案擅自更改的口径如下。
-
-1. 原三档完整复用，README 保留的用户原话是：“已有原版三档数据继续复用，只新生成 XHard1/2”。原 HDF5、metadata 不被覆盖。依据见第二节和第四节。
-2. 只增加已有动作次数，保持物体、颜色规则、区域、相机、机器人初态、速度与成功语义。新档不能借用 NewTask 发布分支的同名配置，因为那里还改变过布局等因素。依据见第二、三节。
-3. `MoveCube、InsertPeg` 不增加新档，README 保留的用户原话是：“严格只改已有次数参数，这两项保留原版三档”。其他容量不足任务也不能自动扩展语义。依据见第三节。
-4. 每个最终新档轨迹只录制一次，encoder 和 VLA 从同一份完整原始 HDF5 派生输入。生产生成不先录制 hard 完整轨迹；验证用的 hard 对照单独计入预算。依据见第四、五节。
-5. 新档母场景固定使用 hard，用户已明确：“就是用Hard的布局，但是把任务做得长一些”。建议生产中两档使用不同新 seed，减少共享母布局与失败重跑的耦合；是否共享同一母布局仍待确认，不能把母档的确认延伸成 seed 配对的确认。依据见第二、四节。
-6. 首轮建议只打通 `PickHighlight`，再扩展其余可以严格成立的任务；次数表不是批准表。依据见第三、六节。
-
-## 二、ENV 内最小机制：目标档与母场景分开
-
-### 2.1 原生配置保存次数，默认三档行为保留
-
-当前 [utils/difficulty.py](src/robomme/robomme_env/utils/difficulty.py)::`normalize_robomme_difficulty` 只允许 `easy/medium/hard`。因此，即使 ENV 已有 `configs['xhard1']`，`gym.make(..., difficulty='xhard1')` 仍会先报错。
-
-拟为解析器增加一个默认关闭的 `allowed_difficulties` 参数：未传入时仍只接收原三档；获准 ENV 显式传自己的 `configs.keys()`，才接受已经实现的新档。未改的 `MoveCube、InsertPeg` 等继续走默认三档限制，避免全局放行后在场景构造中才出现 `KeyError`。同时，生成器在建进程池前检查任务支持名单；第一阶段名单只含 `PickHighlight`，不能把 `--env all` 静默过滤成一部分任务。
-
-以 [PickHighlight.py](src/robomme/robomme_env/PickHighlight.py)::`config_hard、configs、__init__、_load_scene` 为例，拟议结构如下；不是当前已有代码：
-
-```python
-# 候选次数，批准后才加入 ENV。
-config_xhard1 = {**config_hard, "pickup": 4}
-config_xhard2 = {**config_hard, "pickup": 5}
-# configs 中分别加入 xhard1、xhard2；不修改 config_hard。
-
-self.difficulty = normalize_robomme_difficulty(
-    kwargs.pop("difficulty", None),
-    allowed_difficulties=self.configs.keys(),
-)
-# difficulty 未显式提供时，仍执行原来的三档选择代码。
-self.layout_difficulty = (
-    "hard" if self.difficulty in {"xhard1", "xhard2"}
-    else self.difficulty
-)
-scene_config = self.configs[self.layout_difficulty]
-count_config = self.configs[self.difficulty]
-```
-
-物体生成读取 `scene_config['spawn']`，目标切片、任务循环与高亮读取 `count_config['pickup']`。不能把 easy、medium 的 `layout_difficulty` 也无条件写成 hard。配置必须用新字典，不原地修改 `config_hard`，否则同 worker 后续运行旧档也可能被污染。
-
-对 `PickXtimes、SwingXtimes、RouteStick`，当前场景字段与次数字段已经基本分开，复制 hard 配置并只改次数即可；不为统一形式重写所有原版采样代码。`layout_difficulty` 用于表达和记录母档；只有确实需要区分场景读取的地方才改消费点。
-
-每个获准 ENV 实施前都必须列出全部 `difficulty/configs` 消费锚点，逐个分类为“母布局／次数目标／任务与语言成功条件”。凡 `== 'hard'`、`!= 'hard'` 或按难度查表的布局分支，新档都按 hard 口径走；不能只在构造函数新增一个母档属性而遗漏后续分支。分类清单与代码对照留在验收报告，判定 `HARD_LAYOUT_BRANCHES=PASS tasks=N consumers=M unclassified=0`，有未分类项即停。
-
-### 2.2 为什么 PickHighlight 可以保住母场景
-
-[PickHighlight.py](src/robomme/robomme_env/PickHighlight.py)::`_load_scene` 先播种 `self.generator`，生成按钮与全部 6 个方块，再执行目标排列和 `pickup` 切片。新档不改变 `spawn=6`，因此改变切片长度不会影响此前的物体、颜色、位姿抽样：
-
-```text
-同一个新 seed + hard 场景字段
-    → 按钮与 6 个方块全部生成
-    → 同一目标排列 P
-hard   取 P[:3]
-xhard1 取 P[:4]
-xhard2 取 P[:5]
-```
-
-⚠ 同 seed 只是对照条件，布局保证还要检查实际字段；不能用 seed 相等替代物体、颜色、位姿、相机和机器人状态核对。这里只保证次数改变之前的母场景，不要求后续“额外拾取已经发生”的画面或物体状态仍与 hard 相同。
-
-静态容量收益明确：仍只生成 6 块，物体数增量为 0；目标数从 3 到 4／5，分别增加 1／2 个目标。当前没有新档吞吐或耗时实测，不能据此填写性能提升。
-
-### 2.3 生成器只补一个入口，不重新设计三档比例
-
-现有 [generate_dataset_newseed.py](scripts/data-generation-newSeed/generate_dataset_newseed.py)::`_args、generate_dataset_newseed` 中的 `--difficulty` 是三位比例，例如 `211`；[seed_layout.py](scripts/data-generation-newSeed/seed_layout.py)::`DIFFICULTY_ORDER、parse_difficulty_ratio` 也只处理原三档。
-
-最小建议是新增 **拟议** `--target-difficulty xhard1|xhard2`，与显式 `--difficulty` 互斥：
-
-```text
-未提供 target-difficulty：原来的 ratio、默认值、seed 公式与调度保持原样。
-提供 target-difficulty：本次所有 job 使用这一目标档，母档 hard。
-同时显式提供 ratio 与 target-difficulty：在建池、建 ENV 前报错。
-```
-
-不把 `--difficulty` 改成五位比例，也不把 `xhard12` 塞进 seed 公式。`EpisodeJob.difficulty` 继续传到 `gym.make`，ENV 的 `self.difficulty` 保持目标档；原录像器在 `close` 中从该属性写 `setup/difficulty`，因此能记录真正的 `xhard1/xhard2`。
-
-母档、目标次数、场景指纹和文件指纹由生成器写入外部样本清单，不修改录像器或往原 metadata 回写。最小清单字段见第二部分第三节。
-
-## 三、16 任务的实际边界与候选次数
-
-以下来自锚点源码的静态核查。**所有新档数值均待批准，尚未仿真验证。** 首例用固定次数减少抽样解释，其余表中范围沿用现有字段的闭区间口径。总体可分为：5 个主要改配置的任务、4 个需要局部逻辑改动的任务、1 个库存受限任务、6 个本方案建议保留三档的任务。
-
-| 任务及稳定锚点 | 原 hard 有效次数／容量 | xhard1／xhard2 候选 | 最小实现与边界 |
-|---|---|---|---|
-| `PickHighlight.config_hard、_load_scene、step、evaluate` | `spawn=6, pickup=3` | `pickup=4 / 5` | 配置型首例；不加物体，目标取原排列更长前缀。 |
-| `PickXtimes.__init__、_load_scene、evaluate` | `number_min=4, number_max=5, color=3` | `6～7 / 8～9` | 次数生成器与场景生成器独立播种；保留 `color=3`，现有任务数 `2n+1`。 |
-| `SwingXtimes.__init__、_initialize_episode、step` | `number_min=number_max=3, color=3` | `4～5 / 6～7` | 保留 3 色场景；任务数 `2n+3`，`max_swings=2n`；检查计数边沿。 |
-| `RouteStick.configs、_load_scene` | `length=[4,7], backtrack=True` | `8～10 / 11～13` | 保留 hard 回退规则；布局在路径抽样之前生成。必须显式传难度，不能依赖其无提示时回到 easy 的旧行为。 |
-| `PatternLock._load_scene、_initialize_episode、evaluate` | `grid=5, length=[4,8]` | `length=[9,12] / [13,16]` | 网格容量 25 个不重复节点；节点数 L 对应 L−1 条移动边。新档在 1000 次搜索未命中后报长度失败，不能沿用最后一条不合格路径。 |
-| `VideoRepick.__init__、_load_scene、_initialize_episode` | `num_repeats=1～3`；hard 固定 15 块聚集布局，`swap=0` | `num_repeats=4～5 / 6～7` | 将硬编码 `randint(1,4)` 配置化；场景判断改读母档 hard，防止 `xhard*` 误入非 hard 的 3 块布局。 |
-| `StopCube._initialize_episode、step、evaluate` | `stop_time=2～5`，运动仅 `range(5)`，速度档 `[60,80,120]` | 固定第 `6 / 8` 次经过 | 当前没有 `configs`；增加停止次数字段，新档延长运动段。保留速度与原随机调用顺序，包括结果被覆盖为 30 的 `interval` 抽样。 |
-| `VideoUnmaskSwap._load_scene、_refresh_swap_schedule、step` | `bin=4, swap=2～3, pick=2` | 固定 `swap=4 / 5`，仍 `pick=2` | 需扩展超过 3 次的 pair 与调度；每段仍 50 步，最近邻伙伴规则不变。第 4／5 个发起者的选择规则须另行确认。 |
-| `ButtonUnmaskSwap._load_scene、_refresh_swap_schedule、step` | 同上，另有原左右按钮流程 | 同上 | 与视频版同构；保留按钮顺序、布局与目标抓取数。 |
-| `BinFill._load_scene、_initialize_episode、evaluate` | 10～12 块，3 色，投入总数 3～5；每色库存受旧目标影响 | 暂不定稿 | 必须先按 hard 完成库存与物体生成，再从冻结库存决定投入量；不保证所有母场景能支持两个新档。 |
-| `VideoUnmask._load_scene` | hard `bin=15, pick=2`，实际仅 3 个隐藏物 | 暂不新增 | `pick>1` 只追加第二次动作；改为 3 需要任务和语言逻辑，4 已超容量。 |
-| `ButtonUnmask._load_scene` | 同上 | 暂不新增 | 同样不能只改 `pick`；未使用的 `num_repeats` 不是可直接启用的次数接口。 |
-| `VideoPlaceButton._load_scene` | 固定主放置与前后布尔分支，无任意次数字段 | 暂不新增 | 不能通过增加对象或重写前后语义凑两档。 |
-| `VideoPlaceOrder._load_scene` | 4 个台，不重访，hard 已随机访问 2～4 个 | 暂不新增 | 同一原场景没有两个高于 hard 上限的访问档；不能引入重访规则。 |
-| `MoveCube.evaluate` | 没有已有动作次数字段 | 不新增 | 按已定口径保留三档。 |
-| `InsertPeg._initialize_episode` | 固定演示与执行各一次插入 | 不新增 | 按已定口径保留三档。 |
-
-表中的 ENV 均位于 `src/robomme/robomme_env/`。配置型组也要通过实际次数与成功验收；`PatternLock` 不能只检查配置范围就声称实际路径达标。
-
-两处需要特别说明的反例：
-
-* **BinFill 不能只复制 hard 再提高 `put_in_numbers`。** `_load_scene` 先抽 `target_numbers`，再以 `spawn_numbers[i]=max(target_numbers[i],1)` 分配库存，最后按库存生成物体。因此目标变化会反过来改变颜色库存与布局。后续若实施，必须满足逐色 `target_i <= frozen_inventory_i`；不足即记容量失败，不能增物体、降目标或换 seed 挑成功。
-* **Swap 增加次数还要定义第 4／5 次谁发起。** 最少代码的候选是循环复用原 `swap_indices` 三项：`0,1,2,0,1`，但这是待确认的扩展规则，不能称为原版已有行为。额外随机抽发起者则需要新增随机流和来源记录，也不能自行选。原 pair 局部索引与 bin 索引的现有实现差异本轮保留，不顺手修正。
-
-## 四、改动前后链路与原始数据身份
-
-改动前：
-
-```text
---difficulty 211 + seed_layout（字符串与整数，无训练参数）
-    → EpisodeJob(difficulty=easy/medium/hard, seed)
-    → gym.make → 三档解析 → ENV 场景与 task_list
-    → 原 planner → 原 RobommeRecordWrapper → close
-    → 原始 HDF5，T 帧
-       RGB：front/wrist 各 uint8[256,256,3]，各 196608 字节/帧
-       joint_action：[8]，dtype 由实际动作决定，8×itemsize 字节/帧
-       demo/exec、subgoal、is_completed：原记录接口
-```
-
-改动后：
-
-```text
---target-difficulty xhard1/xhard2 + 获批的新 seed 区间
-    → 起跑前：任务支持、身份/seed 查重、预算
-    → EpisodeJob(difficulty=目标档, seed) + 母档 hard
-    → gym.make → ENV 原 hard 母场景（对象/颜色/位置/相机/速度不改）
-    → ENV 目标次数 → 原任务循环、原 planner（此处有意增加动作与帧数）
-    → 原 RobommeRecordWrapper → close（记录代码不改）
-    → 新原始 HDF5，T' 帧 + 外部 sample_manifest.jsonl
-       RGB 尺寸/dtype/每帧字节量不改；joint_action shape/dtype 契约不改
-       setup/difficulty=目标档；指令与次数、终态随实际任务核对
-```
-
-生成链路可训练参数为 0。增加次数会改变轨迹和 T，不能宣称新旧 HDF5 字节级一致；应逐位核对的是同环境同 seed 的母场景字段和旧档配置，成功行为另核对。
-
-后续消费接口仅作为 README 的接口背景，不在本方案实施范围：33 帧 front RGB 为 `33×196608=6488064` 字节；冻结 Wan VAE 的 FP32 `[9,16,32,32]` latent 为 `589824` 字节，encoder 的 768 维 FP32 token 为 `3072` 字节。新旧消费端 shape、dtype、模型参数和超参本轮均不改；encoder 与 VLA 的窗口协议仍不同。VLA 的合法 motion 网格容量 160 等限制另行检查，不能在生成方案中静默截断。
-
-新 seed 最简策略复用已有 `--layout`、`--episode-start`，不改 `seed_layout.py`：在选定布局中划出新档专属 episode 区间。具体布局、区间、每格局数尚未定，不能预填一个起始数字就认为绝对隔离。起跑前对每个 `(task, seed)` 与实际原版 train/val/test、已存在新数据逐项相交检查，同时对完整新 job 集合查重。仅检查“下一代 offset”不够；当前公式不同任务也可能得到相同整数 seed，检查应按任务身份解释。
-
-生产建议 XHard1／2 使用不同新 seed；同母场景对照只在测试中使用。划分组键为 `(task, layout_difficulty, mother_seed)`；同组及重复 demo 不跨 train/val/test。清单记录成功与失败，不能从成功集合反推未记录的失败尝试。
-
-## 五、验收、预算与结论边界
-
-下表是未来验收要求，当前没有任何新档运行 PASS。每条判定须带命令、退出码、输出路径和审查摘要。
-
-| 查什么 | 怎么查／为什么能成立 | 判定行与结论边界 |
+| 档位 | 场景 | 要完成的动作 |
 |---|---|---|
-| 默认与旧档 | 定向测试比较锚点三档配置、原 CLI 参数与新实现无新 flag 的 job；真实旧档回归单独预算 | `NATIVE_DEFAULTS=PASS changed_defaults=0`；仅证明已检查的默认和配置，不代替轨迹一致性。 |
-| 解析与支持矩阵 | 支持任务接受两档；未支持任务直接调用 ENV 也在构造场景前拒绝；CLI 组合冲突 fail-fast | `DIFFICULTY_API=PASS unsupported_accepted=0 conflicts_accepted=0`。 |
-| 母场景 | 单 seed 的 hard/xhard1/xhard2 在执行前比较物体名、颜色、位姿、相机、初态与速度；浮点保存 dtype、shape 与原始值，不能只比 seed | `NATIVE_LAYOUT=PASS mismatches=0`；对照条件和采样时点随报告列出。 |
-| 次数范围上端与步数 | 推广随机范围时，用测试进程内明确的上端次数用例真实执行；不靠反复换seed碰上端，不把单局低端成功当整档可用 | `STEPS_HEADROOM=PASS task=... tier=... resolved_count=max elapsed_steps=... limit=2000 margin=...`；只证明该上端用例，非所有布局耗时上界。 |
-| 实际次数 | 从任务与真实完成事件分别核对；指令、成功条件和计数一致；例如 PickHighlight 为 4/5 个不同目标 | `COUNT_ONLY=PASS task=PickHighlight tier=... expected=... actual=...`。 |
-| 完整记录 | 检查连续 timestep、两路 RGB、状态/动作、完整 subgoal、demo/exec 与终态；比较实际 dtype，不依赖历史说明猜测 | `H5_CONTRACT=PASS missing=0 gaps=0`；独立报告 `TASK_SUCCESS=0|1`，正常退出不等于成功。 |
-| 原件与身份 | 原数据指纹、全 job seed 集合、组划分和文件 SHA256/字节数 | `ORIGINAL_REUSE=PASS changed=0`、`SEED_ISOLATION=PASS overlaps=0 duplicates=0`、`SPLIT_ISOLATION=PASS shared_groups=0`。 |
-| 录像器冻结 | `git diff --quiet 13905997d45155ff1c98417511aedec92578042d -- src/robomme/env_record_wrapper/RecordWrapper.py` | `RECORD_WRAPPER_FREEZE=PASS changed=0`；同时审查没有运行时覆盖。 |
-| 尝试预算与失败处置 | reset 包括构造内部调用，轨迹尝试和基础设施重跑单列；每次起跑前有余额 | `BUDGET=PASS resets=... trajectories=... infra_retries=...`。 |
+| 原 hard | 6 个方块 | 按顺序拾取 3 个 |
+| 拟议 xhard1 | 同样的 hard 布局、仍为 6 个方块 | 拾取 4 个 |
+| 拟议 xhard2 | 同样的 hard 布局、仍为 6 个方块 | 拾取 5 个 |
 
-一致性分两块处理：第一块不启动训练，核对母布局与 HDF5 接口、任务数及实际动作；旧档的字节/结构/数值/行为结论分层陈述。第二块的真实训练梯度比较属于后续消费端适配计划，本方案不授权训练。新档动作有意改变，不能要求与短轨迹的 loss/梯度相同，也不能据一次新档回放宣布训练链路等价。
+同 seed 对照时，假设目标顺序是 A、B、C、D、E、F，三档分别取前三、前四、前五个。**增加的是任务次数，完整录像也会变长；不压缩、不截断录像，不加快动作。** 4／5 是候选值，尚未批准或实跑。
 
-建议第一阶段从 **1 任务 × 1 新档 × 1 局 × 1 worker** 开始，`max_attempts=1`、基础设施自动重试为 0。XHard1 成功后再按同一批准预算补 hard 对照和 XHard2；初步完整首例合计 3 个环境录制 job、3 次轨迹尝试，按构造初始化和显式 reset 各一次估计 6 次 reset。初始化次数必须从钉死的 ManiSkill 版本和测试计数确认，不能只数源码显式调用；硬上限建议设为本阶段 10 次 reset、3 次轨迹尝试，超出即停。相同 seed 仅用于这三条对照，完整对照只涉及 1 个唯一 seed。
+已定口径：已有三档数据继续复用；物体、颜色规则、相机、机器人初态、速度和成功语义保持；`MoveCube、InsertPeg` 保留三档。每条新轨迹完整录制一次，后续模型共用原始 HDF5。本轮不改模型或训练输入，视频编码细节不在这里展开。
 
-若推广到候选 9 任务，每任务 hard 对照加两个新档会变成 `9×3=27` 次轨迹尝试、约 54 次 reset，已经跨过 README 的全任务 50 次 reset 门槛。旧三档实跑回归、失败重跑还会增加预算。必须提前一次性批准完整矩阵，不能拆成多个 smoke 来绕过累计门槛。
+## 二、怎么改，先改哪里
 
-P3的PickXtimes、SwingXtimes、RouteStick、PatternLock、VideoRepick使用随机次数范围，每档还须至少一次上端次数的真实执行，不能由抽到低端的一局推断整档通过。测试仅固定目标次数，不改变母场景、速度、planner或记录上限；这10个上端用例若不与已执行样本重合，还要追加10次轨迹尝试、约20次reset到预算。是否重合以实际resolved_count为准，不预先扣掉。上端检查失败即保留FAIL，请用户裁决，不自动缩窄次数范围。通过后仍持续对每局检查2000步守卫，不把一次上端成功当成所有布局都能在上限内完成的证明。
+**直接在 ENV 内增加两档配置，继续使用原任务循环。** 场景读 hard 配置，动作次数读 xhard1／xhard2 配置。例如 `PickHighlight` 的 `spawn=6` 不动，只把 `pickup=3` 扩为候选 4／5。
 
-新档任务/容量/路径长度失败如实记录，默认不换 seed 再挑成功；基础设施重跑只允许明确分类、同 seed、有限次数并在预算内。当前 `_run_jobs` 会通过 `EpisodeJob.bump` 换 seed，因此这是生成器新档分支的必要改动，不能继承其默认 100 次尝试。
+首例只改三个生产文件，另补测试：
 
-## 六、子代理分工与合并（简述）
+| 文件与锚点 | 改什么 |
+|---|---|
+| `src/robomme/robomme_env/utils/difficulty.py::normalize_robomme_difficulty` | 允许已实现的任务显式接受新档；默认仍只接受原三档。 |
+| `src/robomme/robomme_env/PickHighlight.py::configs、_load_scene` | 新增两档次数；场景仍按 hard 生成。 |
+| `scripts/data-generation-newSeed/generate_dataset_newseed.py::_args、_run_jobs` | 新增 `--target-difficulty xhard1\|xhard2` 单档入口及记录、失败处理；与显式旧比例参数互斥。 |
 
-主会话负责将受保护源码清单提交用户逐项批准，获批并开工后实施，先完成公共解析接口和首例 ENV。生成器、定向测试、文档分别由持久子代理负责互不重叠的文件；各 ENV 扩展可并行只读设计，但受保护文件不进入子代理可写集合。主会话按“解析器→首例→生成器→测试→只读审查”的顺序整合。
+不修改旧档配置、planner 或录像器。首例通过后，再考虑其余任务：
 
-每块接入前核对文件归属、旧档差异和接口契约，接入后跑针对该块的检查与最终最小 smoke。子代理不暂存、提交或推送；共享测试数据只有一个运行负责人。推广其余任务前重新核对逐项批准与累计预算。
+- **主要改配置的另外 4 项**：PickXtimes、SwingXtimes、RouteStick、PatternLock。
+- **还需改局部逻辑的 4 项**：VideoRepick、StopCube、VideoUnmaskSwap、ButtonUnmaskSwap。两项 Swap 的第 4／5 次由谁发起，必须先确认。
+- **BinFill 暂不定稿**：原 hard 场景里的库存不一定够，不能为了增加次数而加物体。
+- **其余 6 项保留三档**：VideoUnmask、ButtonUnmask、VideoPlaceButton、VideoPlaceOrder、MoveCube、InsertPeg。
 
-## 七、阶段与验收
+具体候选次数和受保护改动见第二部分“一、二”；这些分组不代表已经批准实施。
 
-| 阶段 | 内容 | 判据与开始条件 |
-|---|---|---|
-| P0：定稿 | 沿用已确认的hard母场景；确认命名、首例4/5、任务范围、新seed区间、环境及预算；逐项批准两个受保护源码项 | 第二部分闸门全部明确；“同意方案”不等于开工。 |
-| P1：首例 | 三个生产文件打通 PickHighlight；新增定向验证，保留旧三档和录像器 | `NATIVE_DEFAULTS`、`DIFFICULTY_API`、`RECORD_WRAPPER_FREEZE`。 |
-| P2：最小验证 | 先单档单局，再在预算内补母场景对照与第二档；两次新档各录一次 | `NATIVE_LAYOUT`、`COUNT_ONLY`、`H5_CONTRACT`、独立 `TASK_SUCCESS`、`BUDGET`。 |
-| P3：可行组推广 | 对其余配置型任务及局部逻辑组逐项批准后接入；Swap规则先定稿；随机范围逐档真实验证上端 | 每任务两档分别验收并有 `STEPS_HEADROOM`；完整矩阵含上端样本，不能超过已批预算。 |
-| P4：库存受限项 | 仅在另行批准后设计 BinFill 的目标/库存分离；其他6项保留三档 | 容量不足如实报告，不制造不存在的新档。 |
-| P5：正式生成 | 另行确认每格局数、run_name、资产身份、预算、留档与开工 | clean HEAD、构建 Beta 锚点、所有前置闸门通过后才运行。 |
+## 三、怎样确认改对了
 
-### 本轮静态核实结果
+| 验收 | 通过意味着什么／判定项 |
+|---|---|
+| 旧档不变、新档入口正确 | 原配置与默认调度未改，不支持的新档会被拒绝：`NATIVE_DEFAULTS`、`DIFFICULTY_API`。 |
+| hard 布局确实保留 | 同 seed、执行前逐项比较物体、颜色、位姿、相机、初态和速度；不能只比 seed：`NATIVE_LAYOUT`、`HARD_LAYOUT_BRANCHES`。 |
+| 次数真的增加且任务成功 | 核对实际动作事件与指令，独立报告 `TASK_SUCCESS=0|1`；正常退出不算任务成功：`COUNT_ONLY`。 |
+| 完整录制且没有超限 | 检查 HDF5 连续帧、动作、状态和终态；保留 2000 步上限，随机次数档还要实跑上端次数：`H5_CONTRACT`、`STEPS_HEADROOM`。 |
+| 原数据和数据划分安全 | 不覆盖原件，新 seed 与已有数据查重，同母场景不跨训练／验证／测试集：`ORIGINAL_REUSE`、`SEED_ISOLATION`、`SPLIT_ISOLATION`。 |
+| 范围和预算受控 | 录像器保持冻结，每次 reset 与轨迹尝试都计数：`RECORD_WRAPPER_FREEZE`、`BUDGET`。 |
 
-已核实 16 个 ENV 与生成入口的配置/消费链，区分上述 5＋4＋1＋6 分组；未录制轨迹。`pyproject.toml` 的 SHA256 为 `bc2346e4526c2b5c2177fe5191710c81f883c21017d45928e615327cf29cb21a`，`uv.lock` 为 `983de83f7b22c98b96c3c25a39958b4f5920e3232cfaa209c89542ef5639ac03`。环境实测为 `sled-aspen.eecs.umich.edu`、2 张 RTX A6000，`/data` 与 NFS、SSH 配置可见，`/scratch/hongze` 不存在。项目缺少正式 A/B 判据表及 `greatlakes.md`；本轮路径以 README 明确的 Aspen 本机工作副本为准，正式实跑前还需确认环境口径，不安排集群作业。
+以上都是**待执行的验收要求，目前没有新档运行结果**。具体命令、字段和判定标准见第二部分“三、五”。任务失败如实保留，不换 seed 挑成功；基础设施故障只有获批后才能同 seed 有限重试。
 
-本轮文档检查由独立于项目环境的标准库检查器经 `uv run --no-project --offline --no-python-downloads python -` 执行，检查方案正文、既存链接与bash围栏；退出0，输出 `PLAN_STRUCTURE=PASS h1=2 links=6 tasks=16 bash_blocks=2`、`HARD_LAYOUT_REQUIREMENT=PASS user_quote=1 mother=hard`。源码/脚本/测试/依赖/README/规则文件相对核查锚点的 `git diff --quiet` 退出0，记 `SCOPE_FREEZE=PASS tracked_changes=0`。方案文件位于仓库根目录；这组结果只证明文档结构与本轮范围，不能替代任何新档运行验收。
+## 四、按什么顺序做
+
+| 阶段 | 内容与开始条件 |
+|---|---|
+| P0：确认 | 确认命名、首例 4／5、任务范围、新 seed 区间、环境和预算；逐项批准受保护源码改动。 |
+| P1：实现首例 | 收到明确“开工”后，完成上面三个文件和定向测试，通过默认、入口和录像器冻结检查。 |
+| P2：最小实跑 | 先 1 任务 × 1 新档 × 1 局 × 1 worker；成功后再补同 seed 的 hard 对照和另一新档，逐项验收。 |
+| P3／P4：推广 | 另行获批后扩展可行任务；随机次数档验证上端，Swap 先定规则，BinFill 先核库存。 |
+| P5：正式生成 | 另行确定数量、run_name、预算和留档；以 clean HEAD、Beta 锚点及明确开工令启动。 |
+
+首例建议预算为 **3 次轨迹尝试、最多 10 次 reset**，不自动重试。推广 9 个任务的三档对照是 27 次轨迹尝试、约 54 次 reset；随机范围的上端验证还可能增加 10 次轨迹尝试、约 20 次 reset，须整体批准，不能拆小测试绕过预算。
+
+### 子代理分工与合并（简述）
+
+主会话负责获批的受保护源码；子代理分别负责生成器、测试、文档和只读审查，各管不同文件。按“解析器 → 首例 ENV → 生成器 → 测试 → 审查”整合，整合前检查范围和接口，整合后跑对应验证。详细分工见第二部分“四”。
+
+**目前只完成方案和静态核实，没有改源码、录轨迹或启动训练。** 环境为 Aspen 本机、2 张 RTX A6000；项目缺正式 A/B 判据表和 `greatlakes.md`，实跑前需确认环境口径。本次精简正文不构成任何实施开工令。
 
 # 第二部分（技术细节，供 agent 追踪）
 
