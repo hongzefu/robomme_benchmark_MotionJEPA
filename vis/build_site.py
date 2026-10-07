@@ -30,16 +30,16 @@ if str(HERE) not in sys.path:
 import v2_plot  # noqa: E402
 
 # 分组 = 计划四节长度对比表的「对比的 V2 参照」；组内任务按官网编号（AGENTS.md P6），组按首个任务的官网编号排。
-# v2_median 取计划表里的 V2 交付集中位 timestep 数（倍数分母）。
+# v2_median / v2_win_median 取计划表里的 V2 交付集中位 timestep 数（倍数分母）与中位 motion 窗口数。
 GROUPS: list[dict[str, Any]] = [
-    {"key": "BinFill/hard", "title": "参照 V2 BinFill hard（demo 为同一条重复两遍）", "v2_median": 1630,
+    {"key": "BinFill/hard", "title": "参照 V2 BinFill hard（demo 为同一条重复两遍）", "v2_median": 1630, "v2_win_median": 98,
      "tasks": [("1.1", "BinFill"), ("1.2", "PickXtimes"), ("1.3", "SwingXtimes"), ("3.1", "PickHighlight")],
      "note": "BinFill 另对 V2 纯执行段（去掉假 demo，中位 815）：新版中位 1109，倍数 1.36。"},
-    {"key": "RouteStick/xhard", "title": "参照 V2 RouteStick xhard", "v2_median": 900,
+    {"key": "RouteStick/xhard", "title": "参照 V2 RouteStick xhard", "v2_median": 900, "v2_win_median": 54,
      "tasks": [("1.4", "StopCube"), ("4.3", "PatternLock"), ("4.4", "RouteStick")], "note": ""},
-    {"key": "VideoUnmaskSwap/xhard", "title": "参照 V2 VideoUnmaskSwap xhard", "v2_median": 558,
+    {"key": "VideoUnmaskSwap/xhard", "title": "参照 V2 VideoUnmaskSwap xhard", "v2_median": 558, "v2_win_median": 32,
      "tasks": [("2.1", "VideoUnmask"), ("2.2", "ButtonUnmask"), ("2.3", "VideoUnmaskSwap"), ("2.4", "ButtonUnmaskSwap")], "note": ""},
-    {"key": "VideoRepick/xhard", "title": "参照 V2 VideoRepick xhard", "v2_median": 863,
+    {"key": "VideoRepick/xhard", "title": "参照 V2 VideoRepick xhard", "v2_median": 863, "v2_win_median": 51,
      "tasks": [("3.1", "PickHighlight"), ("3.2", "VideoRepick"), ("3.3", "VideoPlaceButton"), ("3.4", "VideoPlaceOrder")],
      "note": "VideoPlaceButton、VideoPlaceOrder 不加档（2026-10-07 用户定），新版与原版相同。"},
 ]
@@ -70,7 +70,8 @@ def load_task(out_dir: Path, task: str) -> dict[str, Any]:
         rows = [track_row(r[side]["item"]["segments"], r[side]["item"]["total"], r[side]["item"]["demo"], r[side]["swaps"],
                           r["episode"], r["seed"]) for r in data["records"]]
         totals = sorted(x["total"] for x in rows)
-        sides[side] = {"bands": bands(rows), "n": len(rows), "median": totals[len(totals) // 2]}
+        wins = sorted(sum(x["windows"]) for x in rows)
+        sides[side] = {"bands": bands(rows), "n": len(rows), "median": totals[len(totals) // 2], "win_median": wins[len(wins) // 2]}
     return {"rule": data["rule"], **sides}
 
 
@@ -117,7 +118,7 @@ def main(argv=None) -> int:
                           "ratio": round(t["xhard1"]["median"] / group["v2_median"], 2)})
             n_tracks += 2
         payload_groups.append({"key": group["key"], "title": group["title"], "note": group["note"],
-                               "v2_median": group["v2_median"], "v2": v2[group["key"]], "items": items})
+                               "v2_median": group["v2_median"], "v2_win_median": group["v2_win_median"], "v2": v2[group["key"]], "items": items})
         n_tracks += 1
     payload = {"groups": payload_groups, "win": v2_plot.WIN, "stride": v2_plot.STRIDE, "budgets": list(v2_plot.BUDGETS),
                "swap_colors": v2_plot.SWAP_COLORS, "color": v2_plot.COLOR}

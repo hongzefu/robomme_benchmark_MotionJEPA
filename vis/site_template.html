@@ -60,7 +60,7 @@ const winStarts = L => { const o = []; for (let f = 0; f < Math.max(0, L - (WIN 
 const framePath = (T, n) => Array.from({length: n}, (_, i) => Math.floor(i * (T - 1) / (n - 1) + 0.5));
 const phases = r => r.demo ? [[0, r.demo, "demo"], [r.demo, r.total - r.demo, "exec"]] : [[0, r.total, "exec"]];
 
-const LEFT = 250, RIGHT = 200, ROW = 78, HEAD = 26;
+const LEFT = 250, RIGHT = 210, ROW = 78, HEAD = 26;
 
 function drawTrack(svg, r, y, sx, axisW) {
   const g = el("g", {}, svg);
@@ -101,8 +101,9 @@ function drawTrack(svg, r, y, sx, axisW) {
 
 function rightText(svg, r, x, y) {
   const [d, e] = r.windows;
-  const lines = [`timestep ${r.total}`, `窗口 ${d}+${e}=${d + e}`, `Δ32 ${((r.total - 1) / 31).toFixed(1)} · Δ8 ${((r.total - 1) / 7).toFixed(1)}`];
-  lines.forEach((t, i) => el("text", {x, y: y + 22 + i * 17, "font-size": 12.5, fill: C.ink2}, svg, t));
+  el("text", {x, y: y + 20, "font-size": 14, "font-weight": 700, fill: C.ink}, svg, `motion 窗口 ${d + e} 个`);
+  const lines = [`demo ${d} + exec ${e}`, `timestep ${r.total}`, `Δ32 ${((r.total - 1) / 31).toFixed(1)} · Δ8 ${((r.total - 1) / 7).toFixed(1)}`];
+  lines.forEach((t, i) => el("text", {x, y: y + 37 + i * 15, "font-size": 12, fill: C.ink2}, svg, t));
 }
 
 function leftText(svg, lines, y, color) {
@@ -127,7 +128,7 @@ function renderGroup(gr, host) {
     for (const it of gr.items) xmax = Math.max(xmax, it.hard.bands[b].total, it.xhard1.bands[b].total);
   }
   xmax = Math.ceil(xmax / 100) * 100;
-  const axisW = 1250, width = LEFT + axisW + RIGHT;
+  const axisW = 1220, width = LEFT + axisW + RIGHT;
   const height = rows.reduce((h, x) => h + (x.kind === "head" ? HEAD : ROW), 0) + 34;
   const svg = el("svg", {viewBox: `0 0 ${width} ${height}`, width: width, height: height}, host);
   const sx = v => LEFT + v / xmax * axisW;
@@ -164,8 +165,8 @@ function build() {
     const a = document.createElement("a"); a.href = "#g" + gi; a.textContent = gr.title.replace("参照 ", ""); nav.appendChild(a);
     const sec = document.createElement("section"); sec.id = "g" + gi;
     let tbl = `<h2>${gr.title}</h2>` + (gr.note ? `<p class="note">${gr.note}</p>` : "") +
-      `<table><tr><th>编号</th><th class="l">任务</th><th>原版中位 timestep</th><th>新版中位 timestep</th><th>V2 交付集中位 timestep</th><th>timestep 倍数（新版 ÷ V2）</th></tr>`;
-    for (const it of gr.items) tbl += `<tr><td>${it.no}</td><td class="l">${it.task}</td><td>${it.hard.median}</td><td>${it.xhard1.median}</td><td>${gr.v2_median}</td><td><b>${it.ratio.toFixed(2)}</b></td></tr>`;
+      `<table><tr><th>编号</th><th class="l">任务</th><th>原版中位 timestep</th><th>新版中位 timestep</th><th>V2 交付集中位 timestep</th><th>timestep 倍数（新版 ÷ V2）</th><th>原版中位 motion 窗口</th><th>新版中位 motion 窗口</th><th>V2 交付集中位 motion 窗口</th></tr>`;
+    for (const it of gr.items) tbl += `<tr><td>${it.no}</td><td class="l">${it.task}</td><td>${it.hard.median}</td><td>${it.xhard1.median}</td><td>${gr.v2_median}</td><td><b>${it.ratio.toFixed(2)}</b></td><td>${it.hard.win_median}</td><td>${it.xhard1.win_median}</td><td>${gr.v2_win_median}</td></tr>`;
     tbl += `</table><div class="scroll"></div>`;
     sec.innerHTML = tbl; wrap.appendChild(sec);
     gr._host = sec.querySelector(".scroll");
