@@ -84,7 +84,7 @@
 - `images` 元素：`{"slot","ref","phase","frame_idx","cam","raw_sha256","sources","transform","encoded_sha256"}`，`ref ∈ {keyframe, recent, current, wrist, command_start, demo_sheet, memory_sheet}`，`phase ∈ {demo, exec}`，`cam ∈ {front, wrist}`；不存图片本身。
 - 执行步关联：调用方在 `TraceWriter.log_step(..., source_call_id=, chunk_index=)` 记录动作来源调用。
 - `fallback ∈ {null, last_valid, model_response_error, continue_last}`；MemER 重问的每次提问各开一个调用，`retry` 取 0／1／2。
-- **服务外壳回包审计键**（R3 写入，客户端读取）：服务回包 dict 增加键 `"_sgeval_audit"`，值为 `{"channels":[{"channel":"task"|"symbolic","text","token_ids","mask","tokenizer","truncated"}], "server_final_text": str|None, "pp_generation": {...}|None}`。客户端在把动作交给环境前 `pop` 掉该键并记入语言账本；缺该键时（旧服务、Oracle 原侧）记 `server_final_text=None` 不报错。外壳必须只观察真实结果，不得多推理、多抽随机数（`OBS_EQ` 闸门，R4 测）。
+- **服务外壳回包审计键**（R3 写入，客户端读取）：服务回包 dict 增加键 `"_sgeval_audit"`，值为 `{"channels":[{"channel":"task"|"symbolic","text","token_ids","mask","tokenizer","truncated"}], "server_final_text": str|None, "pp_generation": [{...}, …]|None}`（`pp_generation` 实现为「每次 S2 fire 一块」的列表，无 fire 时为 None——MERGE-1 整合时与客户端读取对齐，单个对象无法区分多次 fire；每块含 `subgoal_raw`、`reasoning`、`kind`、`committed`、`params` 等，S2 输入全文上游不保留文字形式，暂不记）。客户端在把动作交给环境前 `pop` 掉该键并记入语言账本；缺该键时（旧服务、Oracle 原侧）记 `server_final_text=None` 不报错。外壳必须只观察真实结果，不得多推理、多抽随机数（`OBS_EQ` 闸门，R4 测）。
 - 判定行（R7 检查器）：`LANG_IO=PASS episodes=<n> unresolved_steps=0 open_calls=0 image_ref_unresolved=0`。
 
 ## 六、媒体发布索引（R7）
