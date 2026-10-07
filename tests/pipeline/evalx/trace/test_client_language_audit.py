@@ -334,3 +334,89 @@ def test_pp_act_failure_closes_call_with_error_and_retries_get_transport_attempt
     act_calls = [c for c in _calls(_lines(ep / "language.jsonl")).values() if c["open"]["model"] == "action_model"]
     assert [(c["open"]["step"], c["open"]["transport_attempt"], c["close"]["status"]) for c in act_calls] == [
         (0, 0, "reply"), (1, 0, "error"), (1, 1, "reply"), (2, 0, "reply")]
+
+
+# ── FIX-3：S2 输入（外壳从上下文 token 解码的 input_text）进 subgoal_model 调用的 in 消息 ─────────────────
+
+
+class _S2InputPPConn(_AuditPPConn):
+    """外壳回包的 S2 生成块带 ``input_text``／``input_images``（形状照 ``pp_server_wrap._S2Watch._decode_input``）：
+    第 0 次回包是首次 fire（任务前缀 + 2 张演示图 + 本次两路观测图），第 2 次回包是之后的 fire（回灌的上一子目标 +
+    cognition 占位 + 本次两路观测图）。像素哈希按外壳同一算法对客户端发出的原始帧计算。"""
+
+    def __init__(self, with_inputs: bool):
+        super().__init__(True)
+        self.with_inputs = with_inputs
+
+    async def act(self, obs):
+        a = await super().act(obs)
+        n = self.n_actions - 1
+        gen = (a[AUDIT_KEY] or {}).get("pp_generation")
+        if self.with_inputs and gen is not None:
+            h = _tw().image_sha256
+            obs_imgs = [{"source": "obs", "cam_key": c, "cam_slot": s, "pixel_sha256": h(obs["images"][c])}
+                        for s, c in enumerate(("agentview", "wrist"))]
+            if n == 0:
+                demo = [{"source": "demo", "demo_pos": i, "pixel_sha256": h(f)}
+                        for i, f in enumerate(obs["video_history"])]
+                imgs, text = demo + obs_imgs, "<|im_start|>user\npick up the cube" + "".join(
+                    f"<image:{k}>" for k in range(len(demo) + 2))
+            else:
+                imgs, text = obs_imgs, "<|fim_prefix|>pick up the cube at [500, 250]<|fim_pad|><image:0><image:1>"
+            imgs = [dict(d, index=k, n_tokens=4) for k, d in enumerate(imgs)]
+            gen = dict(gen, input_text=text, input_images=imgs, input_token_count=len(text),
+                       input_decoded_from_tokens=True)
+            a[AUDIT_KEY] = dict(a[AUDIT_KEY], pp_generation=gen)
+        return a
+
+
+def _pp_s2_run(tmp_path, name, with_inputs):
+    pp = load_script("eval-official/pp_client.py")
+    conn = _S2InputPPConn(with_inputs)
+    sess = P.FakeSession(P.FakeEnv("PickXtimes", 7, demo=2, done_at=4))
+    ident = {"task": "PickXtimes", "tier": "xhard0", "seed": 9, "source_episode": 7, "builder_episode": 1,
+             "key": "PickXtimes_xhard0_9"}
+    tag = f"{ident['key']}.a1"
+    ep = tmp_path / name / tag
+    ci = {"host": "127.0.0.1", "port": 1, "max_steps": 1300, "dataset": "hard-verify", "pp_phase2": True,
+          "trace_dir": str(ep), "episode_tag": tag}
+    res = pp.run_episode(sess, ident, ci, None, connection_factory=lambda url, timeout: conn)
+    return res, sess, conn, ep
+
+
+def test_pp_s2_input_text_lands_as_in_message_with_resolvable_frames(tmp_path):
+    """块带 ``input_text`` 时 subgoal_model 调用先写 ``dir=in role=user``（文字原样、附图按帧号落到 trace 那一帧：
+    演示图 → demo 行 front 第 i 帧、``ref=keyframe``；观测图 → 本步帧），``parsed.input_decoded_from_tokens=True``，
+    ``generation`` 不重复存 ``input_text``；动作与协议帧与不带输入的回包逐字节相同；LANG_IO 检查器零异常。"""
+    ra, sa, ca, epa = _pp_s2_run(tmp_path, "inputs", True)
+    rn, sn, cn, epn = _pp_s2_run(tmp_path, "plain", False)
+    assert ra["status"] == rn["status"] == "success"
+    assert sa.env.actions == sn.env.actions
+    assert P.compare_frames(ca.log, cn.log)[:2] == (0, 0)
+    trace = _lines(epa / "trace.jsonl")
+    sg = [c for c in _calls(_lines(epa / "language.jsonl")).values() if c["open"]["model"] == "subgoal_model"]
+    assert [c["open"]["step"] for c in sg] == [0, 2]
+    first, later = sg
+    m_in, m_out = first["msgs"]
+    assert (m_in["dir"], m_in["role"]) == ("in", "user") and m_out["dir"] == "out"
+    assert m_in["text"] == "<|im_start|>user\npick up the cube<image:0><image:1><image:2><image:3>"
+    assert [(i["slot"], i["ref"], i["phase"], i["frame_idx"], i["cam"]) for i in m_in["images"]] == [
+        (0, "keyframe", "demo", 0, "front"), (1, "keyframe", "demo", 1, "front"),
+        (2, "current", "demo", 2, "front"), (3, "wrist", "demo", 2, "wrist")]
+    assert m_in["demo_video"] == "demo[0:2]"
+    assert all(_image_ref_resolves(i, trace) for i in m_in["images"])
+    p = first["close"]["parsed"]
+    assert p["input_decoded_from_tokens"] is True and "input_text" not in p["generation"]
+    assert p["input_image_check"] == {"n": 4, "sha_mismatch": 0, "demo_unmatched": 0}
+    li = later["msgs"][0]
+    assert li["text"].startswith("<|fim_prefix|>pick up the cube at [500, 250]")
+    assert [(i["slot"], i["phase"], i["frame_idx"], i["cam"]) for i in li["images"]] == [
+        (0, "exec", 2, "front"), (1, "exec", 2, "wrist")]
+    assert all(_image_ref_resolves(i, trace) for i in li["images"]) and li["demo_video"] is None
+    # 没有 input_text 的块：与之前相同（in 消息仍按 context／prompt，parsed 不带新键）
+    sg_plain = [c for c in _calls(_lines(epn / "language.jsonl")).values() if c["open"]["model"] == "subgoal_model"]
+    assert all("input_decoded_from_tokens" not in c["close"]["parsed"] for c in sg_plain)
+    assert [m["text"] for m in sg_plain[0]["msgs"] if m["dir"] == "in"] == [GEN_T["context"]]
+    chk = load_script("eval-official/lang_io_check.py").check_episode(epa)
+    assert all(v == 0 for v in chk["counts"].values()), chk
+    print(f"PP_S2_INPUT_CLIENT=PASS subgoal_calls={len(sg)} image_ref_unresolved=0")
