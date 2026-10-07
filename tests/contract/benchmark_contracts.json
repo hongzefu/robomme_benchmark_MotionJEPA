@@ -8215,6 +8215,14 @@
     "scripts/eval-official/orig-framesamp-modul-client-env/uv.lock": {
       "category": "外部子环境依赖声明",
       "reason": "上条子项目的锁文件，由 uv 生成。"
+    },
+    "scripts/injection-dev/site/stage3_eval_site.py": {
+      "category": "一次性出图／留档脚本",
+      "reason": "sg-eval-gl-20261006-03 第三阶段 OOD 视频站的建目录与托管脚本，复用已受 C17 覆盖的 site_server.py；本轮以 STAGE3_SITE、MEDIA_FETCH 与 Playwright STAGE3_SITE_BROWSER 判定行留档于 docs/validation/sg-eval-gl-20261006-03/result.md。"
+    },
+    "scripts/injection-dev/site/stage3_eval_site.html": {
+      "category": "一次性出图／留档脚本",
+      "reason": "stage3_eval_site.py 托管的页面模板；本轮以 Playwright STAGE3_SITE_BROWSER 判定行留档于 docs/validation/sg-eval-gl-20261006-03/result.md。"
     }
   },
   "optional_keys": [

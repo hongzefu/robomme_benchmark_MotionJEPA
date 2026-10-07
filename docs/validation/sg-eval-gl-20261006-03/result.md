@@ -68,7 +68,7 @@ PonderPounce 列为 r2 重跑的验收（`reports/pp-r2/`，首跑验收 `report
 
 视频按上游 mme-vla 布局发布于 `$N/sgeval-20261006-03/publish/<模型 ID>/seed7/[qwenvl|memer/]videos/`（硬链接，附 `index.tsv`）；PP r2 发布于 `$N/sgeval-20261006-03/publish-pp-r2/pp/seed7/videos/`。
 
-**视频站**：http://sled-vail.eecs.umich.edu:8084/ （tmux `stage3-site-8084`，日志 `artifacts/sg-evaluation/sg-eval-gl-20261006-03/logs/site-8084.log`）。按用户要求只放视频与成功率、不放语言记录，版式沿用 8083 Oracle 站；`scripts/injection-dev/site/stage3_eval_site.py` 由五组发布清单建目录（`$N/sgeval-20261006-03/site-stage3/`），逐局核对发布硬链接 inode、轨迹终态与身份：`STAGE3_SITE=PASS models=5 episodes=430 media=860 smvla=19/86 pp=15/86 groundsg-qwenvl=13/86 groundsg-memer=5/86 framesamp=3/86`；浏览器检查 `STAGE3_SITE_BROWSER=PASS played=10/10 page_errors=0`（五模型 × 官方版式／原始画面，桌面 1440 与手机 390 宽无横向滚动）。
+**视频站**：http://sled-vail.eecs.umich.edu:8084/ （tmux `stage3-site-8084`，日志 `artifacts/sg-evaluation/sg-eval-gl-20261006-03/logs/site-8084.log`）。按用户要求只放视频与成功率、不放语言记录，版式沿用 8083 Oracle 站；按用户「把ground truth的也放入」「GroundSG+Oracle和生成的ground truth data也都放入」「按模型与 Task 浏览视频 改为按task 同时显示所有模型 可以勾选不显示」，页面按 Task 逐局并排显示生成真值（V9 交付的专家轨迹录像，按 task／tier／seed 对齐）、GroundSG+Oracle（1004 轮本机 1600 步、同 86 局身份、`spec_sha256` 86／86 一致，条件不同、灰色仅作参考，86 局成功 38）与五个模型，每路可勾选隐藏（浏览器本地记忆）、官方版式／原始画面统一切换、同步播放。`scripts/injection-dev/site/stage3_eval_site.py` 由五组发布清单建目录（逐局核对发布硬链接 inode、轨迹终态与身份），五模型视频从 NFS 复制进本机 `artifacts/sg-evaluation/sg-eval-gl-20261006-03/site-media/`（1.5 GB），站点目录 `…/site-stage3/`、媒体根 `artifacts/`：`STAGE3_SITE=PASS models=6 episodes=86 media=1118 smvla=19/86 pp=15/86 groundsg-qwenvl=13/86 groundsg-memer=5/86 framesamp=3/86 groundsg-oracle=38/86`；`MEDIA_FETCH=PASS total=1118 bad=0`；浏览器检查 `STAGE3_SITE_BROWSER=PASS videos_loaded=42 failed=0 page_errors=0 hide=True persist=True phone_scroll_width=390`。
 
 ## ⑨ 本机 MemER hard-verify 对拍
 
@@ -90,6 +90,7 @@ PonderPounce 列为 r2 重跑的验收（`reports/pp-r2/`，首跑验收 `report
 - 「PonderPounce需要补」→ 选「重跑 PonderPounce 86 局」
 - 「共享账本的分片锁名不区分数据集，这次靠改分片文件名绕开了。要不要另外修？这个也要跑」
 - 「ponderponce能否4卡完全并行」
+- 「把ground truth的也放入」「GroundSG+Oracle和生成的ground truth data也都放入」「按模型与 Task 浏览视频 改为按task 同时显示所有模型 可以勾选不显示」
 - 「http://sled-vail.eecs.umich.edu:8070/ 参考这个做一个你跑完的网页」「只放视频就可以 成功率也要 language的记录就先不放了」「说错了 是这个http://sled-vail.eecs.umich.edu:8083/#task=BinFill&episode=BinFill_xhard1_16400000.a1」
 
 ## ⑪ 结论、遗留与下一步
