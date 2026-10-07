@@ -52,6 +52,10 @@ tier=="xhard0"、candidate 与 spec_sha256 为 null、source_episode 为整数�
   ``RUN_BLOCKED reason=ledger_corrupt|budget_config``），读取待跑身份之前取分片排他 lease（拿不到
   ``RUN_BLOCKED reason=lease_held``）；每次尝试的 ``claim_retry``／``reserve``／``attempt_start`` 共用同一 token
   ``<route>|<key>|a<attempt_no>``（结果行 ``budget_token``），首试 ``kind_of_try=first``、重试 ``recovery``。
+* 尝试账本路线核对（1006 MERGE-2，修 R4-D2）：共享模式下取得 lease 之后、读取待跑身份之前，核对尝试账本已有
+  ``attempt_start`` 行的 ``route``；存在与当前路线（含 ``seed<n>``）不同者、或缺 ``route`` 字段的旧行（``found=legacy``），
+  即打印 ``RUN_BLOCKED reason=route_mismatch ledger=<路径> found=<已有route> want=<当前route>``、退出 3，
+  不写任何结果行（避免把别组种子的 accepted 当作已完成跳过、同一目录混两组结果）。账本无 ``attempt_start`` 行时照常跑。
 * 执行期限：``--context-deadline-s``（策略上下文加载）、``--first-infer-deadline-s``（本局第一次 ``step`` 之前）、
   ``--media-deadline-s``（录制器收尾）各有绝对期限，超期写本局结果 ``status=error infra=true
   infra_reason=deadline_<phase>``、打印 ``DEADLINE_EXCEEDED`` 并以 75 退出（run_seat.sh 重起客户端）。
@@ -1462,7 +1466,28 @@ class SeatRunner:
         再在读取待跑身份之前取分片排他 lease（拿不到即 RUN_BLOCKED reason=lease_held、退出 3）；策略上下文改在第一局
         开局时于 context_load 期限下加载（整席仍只建一次）。"""
         self._open_shared_budget()
+        self._check_route()
         return self.run_identities_v8(rows)
+
+    def _check_route(self) -> None:
+        """共享模式：尝试账本里已有 ``attempt_start`` 行的 ``route`` 必须全部等于当前路线（含 ``seed<n>``）；缺
+        ``route`` 字段的旧行视为 ``legacy``、同样不符。不符打印 ``RUN_BLOCKED reason=route_mismatch`` 并以 3 退出（不写结果
+        行、不改 accepted 计法）。账本没有任何 ``attempt_start`` 行（全新 stage）时不拦。非共享模式不记 route，不核。"""
+        led = self.ledger
+        if led.shared is None:
+            return
+        want = led.route
+        found = []
+        for starts in led.starts.values():
+            for st in starts:
+                r = st.get("route")
+                tag = "legacy" if not r else str(r)
+                if tag != want and tag not in found:
+                    found.append(tag)
+        if found:
+            print(f"RUN_BLOCKED reason=route_mismatch ledger={led.path} found={','.join(found)} want={want} "
+                  f"policy={self.args.policy} seat={self.args.seat}", flush=True)
+            raise SystemExit(EXIT_BLOCKED)
 
     def _open_shared_budget(self) -> None:
         shared = self.ledger.shared

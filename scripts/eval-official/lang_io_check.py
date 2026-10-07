@@ -13,7 +13,10 @@
    ``system`` 只能是第 0 条；``dir=out`` 之后不能再有 ``dir=in``；``call_id`` 不重复；``reuse`` 指向已有调用。
 4. 每个附图引用 ``images[].raw_sha256``（及 ``sources`` 里的 ``raw_sha256``）能在本局 trace 的帧哈希里找到：
    ``phase=demo`` 查 demo 段、``phase=exec`` 查执行步，``cam`` 区分 front／wrist；找不到计 ``image_ref_unresolved``
-   （引用错 attempt 的账本在这里暴露）。
+   （引用错 attempt 的账本在这里暴露）。帧号口径（各客户端一致）：``phase=demo`` 的 ``frame_idx=i`` 是 demo 行
+   ``<cam>_sha256[i]``；``phase=exec`` 的 ``frame_idx=k`` 是已执行步数——k≥1 对 trace ``step=k`` 行（第 k 步执行后的
+   观测），k=0 是 reset 后的初始帧，即 demo 行 ``<cam>_sha256[-1]``（演示段末帧）。带整数 ``frame_idx`` 的引用按帧号
+   精确比对那一帧；没有帧号（拼图本身、旧账本）的退回「该 phase／cam 的任一帧」（exec 集合含演示段末帧）。
 5. 同一步多一次调用（``extra_calls``）：trace 有 ``response`` 行时，每一步以 ``reply`` 关闭的 ``action_model`` 调用数必须
    等于该步的 ``response`` 行数。
 6. 缺回复（``reply_missing``）：``subgoal_model``／``planner``／``monitor`` 调用以 ``reply`` 关闭却没有 ``dir=out`` 消息。
@@ -80,36 +83,53 @@ def find_episodes(root: Path) -> list[Path]:
 
 
 def frame_sets(trace: list[dict]) -> dict:
-    """``{(phase, cam): {sha256}}``；phase ∈ demo／exec，cam ∈ front／wrist。"""
+    """``{(phase, cam): {sha256}}``（无帧号引用用）与 ``{(phase, cam, frame_idx): sha256}``（有帧号引用用）合在一个
+    字典里：phase ∈ demo／exec，cam ∈ front／wrist。exec 帧号 0 = 演示段末帧（reset 后初始帧），k≥1 = ``step=k`` 行。"""
     sets: dict = defaultdict(set)
     for r in trace:
         if r.get("kind") == "demo":
             for cam in ("front", "wrist"):
-                sets[("demo", cam)].update(x for x in r.get(f"{cam}_sha256") or [] if isinstance(x, str))
+                shas = [x if isinstance(x, str) else None for x in r.get(f"{cam}_sha256") or []]
+                sets[("demo", cam)].update(x for x in shas if x)
+                for i, x in enumerate(shas):
+                    if x:
+                        sets[("demo", cam, i)] = x
+                if shas and shas[-1]:
+                    sets[("exec", cam)].add(shas[-1])
+                    sets[("exec", cam, 0)] = shas[-1]
         elif r.get("kind") == "step":
+            k = r.get("step")
             for cam in ("front", "wrist"):
                 v = r.get(f"{cam}_sha256")
                 if isinstance(v, str):
                     sets[("exec", cam)].add(v)
+                    if isinstance(k, int) and k >= 1:
+                        sets[("exec", cam, k)] = v
     return sets
 
 
-def image_refs(img: dict) -> list[tuple[str | None, str | None, str]]:
-    """一个图引用里要核的 (phase, cam, sha256)：本身的 ``raw_sha256`` 与 ``sources`` 里每个来源帧。"""
+def image_refs(img: dict) -> list[tuple[str | None, str | None, int | None, str]]:
+    """一个图引用里要核的 (phase, cam, frame_idx, sha256)：本身的 ``raw_sha256`` 与 ``sources`` 里每个来源帧。
+    来源帧是对象时用它自己的 ``frame_idx``（缺省为 None，不继承图本身的帧号——拼图本身 ``frame_idx=None``）；
+    来源是 64 位哈希字符串时沿用图本身的 phase／cam、帧号 None。"""
     out = []
     if isinstance(img.get("raw_sha256"), str):
-        out.append((img.get("phase"), img.get("cam"), img["raw_sha256"]))
+        out.append((img.get("phase"), img.get("cam"), img.get("frame_idx"), img["raw_sha256"]))
     for s in img.get("sources") or []:
         if isinstance(s, dict) and isinstance(s.get("raw_sha256"), str):
-            out.append((s.get("phase", img.get("phase")), s.get("cam", img.get("cam")), s["raw_sha256"]))
+            out.append((s.get("phase", img.get("phase")), s.get("cam", img.get("cam")), s.get("frame_idx"),
+                        s["raw_sha256"]))
         elif isinstance(s, str) and len(s) == 64:
-            out.append((img.get("phase"), img.get("cam"), s))
+            out.append((img.get("phase"), img.get("cam"), None, s))
     return out
 
 
-def ref_found(sets: dict, phase: str | None, cam: str | None, sha: str) -> bool:
+def ref_found(sets: dict, phase: str | None, cam: str | None, sha: str, frame_idx: int | None = None) -> bool:
+    """有整数帧号且 phase 明确时按帧号精确比对；否则查该 phase／cam 的任一帧。"""
     phases = (phase,) if phase in ("demo", "exec") else ("demo", "exec")
     cams = (cam,) if cam in ("front", "wrist") else ("front", "wrist")
+    if isinstance(frame_idx, int) and not isinstance(frame_idx, bool) and phase in ("demo", "exec"):
+        return any(sets.get((phase, c, frame_idx)) == sha for c in cams)
     return any(sha in sets.get((p, c), ()) for p in phases for c in cams)
 
 
@@ -208,9 +228,9 @@ def check_episode(ep: Path, *, require_server_text: bool = False) -> dict:
                 refs = image_refs(img)
                 if not refs:
                     bad("image_ref_unresolved", f"{cid} 图引用缺 raw_sha256")
-                for phase, cam, sha in refs:
-                    if not ref_found(sets, phase, cam, sha):
-                        bad("image_ref_unresolved", f"{cid} {phase}/{cam} {sha[:12]}")
+                for phase, cam, idx, sha in refs:
+                    if not ref_found(sets, phase, cam, sha, idx):
+                        bad("image_ref_unresolved", f"{cid} {phase}/{cam}#{idx} {sha[:12]}")
         elif kind == "call_close":
             call = calls.get(cid)
             if call is None or call["closed"] is not None:
