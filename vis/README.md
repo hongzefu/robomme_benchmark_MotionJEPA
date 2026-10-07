@@ -8,7 +8,7 @@
 uv run --no-sync python vis/synthesize_reference_timeline.py --h5-dir /data/hongzefu/data_0226 --metadata-dir src/robomme/env_metadata/train --out vis/output
 ```
 
-约 50 秒；末行 `XHARD_REF=INFO tasks=11 episodes=275 synthetic=1`。产物在 `vis/output/`：每任务 `<Task>.png`（按合成 T 取最短 / 中位 / 最长三条，每条上行官方 hard 原样、下行 xhard1 合成）、`reference_<Task>.json`（逐条原段表、合成段表与统计）、`reference_summary.md`（汇总表，含与计划外推值的对账）。
+约 50 秒；末行 `XHARD_REF=INFO tasks=14 episodes=350 synthetic=1`。产物在 `vis/output/`：每任务 `<Task>.png`（按合成 T 取最短 / 中位 / 最长三条，每条上行官方 hard 原样、下行 xhard1 合成）、`reference_<Task>.json`（逐条原段表、合成段表与统计）、`reference_summary.md`（汇总表，含与计划外推值的对账）。
 
 ## 口径
 
@@ -32,9 +32,12 @@ uv run --no-sync python vis/synthesize_reference_timeline.py --h5-dir /data/hong
 | StopCube | `remain static` 段 | k′∈[8,10]、间隔钉 120：static 检查点每 100 步一段到 120k′−90 止；首段与按钮、尾段原样 |
 | VideoUnmaskSwap | demo `static` 段 | S′∈{4,5}，demo 长度 = 6·ceil((64+50S′)/6) |
 | ButtonUnmaskSwap | 无独立 demo 段 | 合成 = 原样（交换与按钮并行，时长基本不变） |
+| VideoUnmask / ButtonUnmask | [put down the container → pick up the container …] 一对 | pick 2 → 3：在尾段前追加一对（2026-10-06 用户决定纳入） |
+| VideoPlaceButton | demo 段 [pick up the cube → drop the cube onto target] 对、按钮、[pick → drop onto table] 对（代表回原位）、两段 static | 2 块各按钮前后放 1 次（共 4 对）→ 按钮 → 2 对回原位 → static 20 → static 60+100（swap 3 次）（2026-10-06 用户决定） |
+| VideoPlaceOrder | 同上 | 2 块共访问 5 次（按钮前 2 对、后 3 对）→ 2 对回原位 → static 20 → static 160（swap 3 次）（2026-10-06 用户决定） |
 
 复制的段沿用原文（含序数词），所以图上会出现「抓红4」后面又来「抓红1」，这是复制粘贴的痕迹，不代表真实序号。
 
 ## 2026-10-06 结果速览
 
-合成中位 T 与计划外推值基本吻合（PickXtimes 1128 vs 1120、RouteStick 900 vs 900、StopCube 1054 vs 1020）；VideoPlaceOrder（1154 vs 1300）与 PatternLock（737 vs 810）外推偏乐观。**两个 Swap 任务合成后有 episode 的 8 帧帧路一段都不漏**（最少漏段 0），硬性判据对它们不一定成立。详表见 `output/reference_summary.md`。
+合成中位 T 与计划外推值基本吻合（PickXtimes 1128 vs 1120、RouteStick 900 vs 900、StopCube 1054 vs 1020）；VideoPlaceOrder（1154 vs 1300）与 PatternLock（737 vs 810）外推偏乐观。**两个 Swap 任务与两个 Unmask 任务合成后都有 episode 的 8 帧帧路一段都不漏**（最少漏段 0），硬性判据对它们不一定成立。用户追加的两个 Place 任务（2 块 + 回原位 + swap 3）合成中位 1618 / 1773 帧、98 / 108 窗，远超 900 目标。详表见 `output/reference_summary.md`。

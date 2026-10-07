@@ -53,13 +53,20 @@ RULES: dict[str, dict[str, Any]] = {
     "StopCube": {"kind": "stopcube", "target": [8, 9, 10], "interval": 120, "note": "停止序号 [2,5] → [8,10]，间隔钉 120"},
     "VideoUnmaskSwap": {"kind": "demo_static", "target": [4, 5], "note": "swap [2,3] → [4,5]，demo static 每次 +50"},
     "ButtonUnmaskSwap": {"kind": "unchanged", "note": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变"},
+    "VideoUnmask": {"kind": "unmask_pick3", "note": "pick 2 → 3（追加「放下 → 抓第三个容器」）"},
+    "ButtonUnmask": {"kind": "unmask_pick3", "note": "pick 2 → 3（追加「放下 → 抓第三个容器」）"},
+    "VideoPlaceButton": {"kind": "place_two_cubes", "before": 2, "after": 2, "swaps": 3,
+                         "note": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次"},
+    "VideoPlaceOrder": {"kind": "place_two_cubes", "visits": 5, "swaps": 3,
+                        "note": "1 块放 [2,4] 次 → 2 块共访问 5 次（2+3）+ 各回原位 + swap 3 次"},
 }
 
 # 计划第一部分四节的外推值（中位 T / 窗），用来和合成值对账
 PLAN_EXTRAPOLATION = {
     "PickXtimes": (1120, 68), "StopCube": (1020, 62), "SwingXtimes": (840, 50), "BinFill": (1140, 69),
     "VideoUnmaskSwap": (560, 31), "ButtonUnmaskSwap": (520, 31), "VideoRepick": (935, 56),
-    "VideoPlaceOrder": (1300, 78), "PickHighlight": (850, 51), "PatternLock": (810, 49), "RouteStick": (900, 53),
+    "VideoPlaceOrder": (1800, 110), "PickHighlight": (850, 51), "PatternLock": (810, 49), "RouteStick": (900, 53),
+    "VideoUnmask": (480, 26), "ButtonUnmask": (525, 30), "VideoPlaceButton": (1550, 92),
 }
 
 
@@ -205,6 +212,53 @@ def synthesize(task: str, episode: int, segments: list[dict[str, Any]]) -> tuple
         meta.update({"from": s_from, "to": s_to, "demo_from": demo_len, "demo_to": new_demo})
         return segs, meta
 
+    if kind == "unmask_pick3":
+        # 官方：[static|press] → pick bin_0 → put down → pick bin_1 → 尾段；合成：在尾段前追加 [put down → pick]（复制已有的那对）
+        put = next((i for i, x in enumerate(segs) if x["text"] == "put down the container"), None)
+        if put is None or put + 1 >= len(segs):
+            meta.update({"from": 2, "to": 2, "added_pairs": 0})
+            return segs, meta
+        pair = [dict(segs[put]), dict(segs[put + 1])]
+        tail_idx = next(i for i, x in enumerate(segs) if x["text"] == TAIL)
+        segs = segs[:tail_idx] + pair + segs[tail_idx:]
+        meta.update({"from": 2, "to": 3, "added_pairs": 1})
+        return segs, meta
+
+    if kind == "place_two_cubes":
+        # 官方 demo：若干 [pick up the cube → drop the cube onto target]（按钮插在中间）→ [pick → drop onto table] → static(20) → static(60, 1 次 swap)
+        # 合成 demo：按钮前 b 对 → press → 按钮后 a 对 → 2 对回原位（用「drop onto table」那对代替）→ static(20) → static(60 + 50×(swaps−1))
+        demo = [x for x in segs if x["demo"]]
+        exec_ = [x for x in segs if not x["demo"]]
+        pairs = [(demo[i], demo[i + 1]) for i in range(len(demo) - 1)
+                 if demo[i]["text"] == "pick up the cube" and demo[i + 1]["text"] == "drop the cube onto target"]
+        home = next(((demo[i], demo[i + 1]) for i in range(len(demo) - 1)
+                     if demo[i]["text"] == "pick up the cube" and demo[i + 1]["text"] == "drop the cube onto table"), None)
+        press = next((x for x in demo if x["text"] == "press the button"), None)
+        statics = [x for x in demo if x["text"] == "static"]
+        if not pairs or home is None or press is None or len(statics) < 2:
+            meta.update({"from": len(pairs), "to": None, "note2": "段结构不符，原样"})
+            return segs, meta
+        if "visits" in rule:
+            n_total = rule["visits"]
+            n_before = n_total // 2  # 按钮插在中间附近
+            n_after = n_total - n_before
+        else:
+            n_before, n_after = rule["before"], rule["after"]
+        def take(n, offset=0):
+            out = []
+            for k in range(n):
+                a, b = pairs[(k + offset) % len(pairs)]
+                out += [dict(a), dict(b)]
+            return out
+        home_pairs = [dict(home[0]), dict(home[1])] * 2
+        for x in home_pairs:
+            x["text"] = "put the cube back to its original position" if x["text"] == "drop the cube onto table" else x["text"]
+        new_demo = take(n_before) + [dict(press)] + take(n_after, n_before) + home_pairs
+        swap_static = dict(statics[-1]); swap_static["len"] = statics[-1]["len"] + 50 * (rule["swaps"] - 1)
+        new_demo += [dict(statics[0]), swap_static]
+        meta.update({"from": len(pairs), "to": n_before + n_after, "cubes": 2, "swaps": rule["swaps"]})
+        return new_demo + exec_, meta
+
     raise ValueError(kind)
 
 
@@ -251,8 +305,8 @@ def plot_pair_rows(task: str, rows: list[tuple[str, dict[str, Any], dict[str, An
     for side in ("top", "right", "left"):
         ax.spines[side].set_visible(False)
     ax.set_title(
-        f"{task}：官方 hard vs xhard1 合成参考（{RULES[task]['note']}；按 subgoal 段复制粘贴，非实跑）",
-        fontsize=9.5,
+        f"{task}：官方 hard vs xhard1 合成参考\n{RULES[task]['note']}；按 subgoal 段复制粘贴，非实跑",
+        fontsize=8.8, loc="left", x=-0.12,
     )
     handles = [
         Rectangle((0, 0), 1, 1, facecolor=plot.COLOR["demo"], alpha=0.9, label="demo 段窗口 [f, f+32]"),
@@ -263,7 +317,7 @@ def plot_pair_rows(task: str, rows: list[tuple[str, dict[str, Any], dict[str, An
     ]
     ax.legend(handles=handles, fontsize=6.4, loc="lower center",
               bbox_to_anchor=(0.5, -0.22), ncol=5, frameon=False)
-    fig.subplots_adjust(left=0.10, right=0.70, top=0.91, bottom=0.20)
+    fig.subplots_adjust(left=0.125, right=0.70, top=0.90, bottom=0.20)
     fig.savefig(out_path, dpi=200)
     plt.close(fig)
 
