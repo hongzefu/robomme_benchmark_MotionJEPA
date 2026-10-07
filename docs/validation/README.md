@@ -43,3 +43,4 @@ docs/validation/<主题>/
 ## 运行档案索引（新增条目追加于此）
 
 - `sg-eval-gl-20261004-01/`：四模型（GroundSG+Oracle、GroundSG+QwenVL、PonderPounce、Astra）评估，三档闸门；2026-10-05 22:17 按用户令中止，部分完成。结论与未完成清单见其 `result.md`。
+- `sg-eval-gl-20261006-03/`：第三阶段——五模型（FrameSamp+Modulation、SimpleMemVLA、PonderPounce、MemER、GroundSG+QwenVL）OOD 第三档每模型 86 局（1800 步、模型 seed 7）共 430 局全部完成并通过验收（`STAGE3_MATRIX=PASS combinations=5 unique_terminal=430`）；本机 MemER hard-verify 原侧 vs 新侧对拍每侧 48 局（`GATE2=INFO compared=48 same_terminal=41`）。成绩与运行中裁决见其 `launch.md`、`result.md`。
