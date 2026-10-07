@@ -310,18 +310,18 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 | VideoUnmaskSwap | 同任务 xhard | 558 → 560 | 80 → 79 | 32 → 32 | 约 0.7 段（13%）→ 0.7 段 | 一样 |
 | VideoRepick | 同任务 xhard | 863 → 947 | 123 → 135 | 51 → 57 | 约 6 段（42%）→ 4.9 段 | 略长，漏段相当 |
 | BinFill | 同任务 hard（含假 demo ×2） | 1630 → 1109 | 233 → 158 | 98 → 68 | 约 11 段（59%）→ 5 段 | **短三成**；只比 V2 的纯执行段（815 / 116 / 49 / 约 5 段）则长三成 |
-| PickXtimes | 无同任务，参照 BinFill hard（同为计数型抓放） | 1630 → 1128 | 233 → 161 | 98 → 69 | 约 11 → 7 段 | 比 V2 BinFill 短；比 V2 任何 xhard 长 |
-| StopCube | 无，参照 RouteStick xhard（同为固定节拍长段） | 900 → 1054 | 128 → 150 | 54 → 64 | 约 11 → 5.3 段 | 长；漏段少是因为段少（每段 100 帧） |
-| SwingXtimes | 无，参照 VideoRepick xhard（重复短动作） | 863 → 833 | 123 → 118 | 51 → 51 | 约 6 → 11.4 段 | 一样长，漏段翻倍（每段只有 40 帧） |
-| PickHighlight | 无，参照 VideoRepick xhard | 863 → 855 | 123 → 122 | 51 → 52 | 约 6 → 3.4 段 | 一样长，漏段少（段少且长） |
-| PatternLock | 无，参照 RouteStick xhard（同类路径记忆） | 900 → 737 | 128 → 105 | 54 → 43 | 约 11 → 8 段 | **短两成** |
+| PickXtimes | 参照 V2 BinFill hard（用户指定） | 1630 → 1128 | 233 → 161 | 98 → 69 | 约 11 → 7 段 | **短，0.69 倍**（T 0.69、Δ8 0.69、窗 0.70、漏段 0.64） |
+| StopCube | 参照 V2 RouteStick xhard（用户指定） | 900 → 1054 | 128 → 150 | 54 → 64 | 约 11 → 5.3 段 | **长，1.17 倍**（T 1.17、Δ8 1.17、窗 1.19）；漏段 0.48 倍，因为段少（每段 100 帧） |
+| SwingXtimes | 参照 V2 BinFill hard（用户指定） | 1630 → 833 | 233 → 118 | 98 → 51 | 约 11 → 11.4 段 | **短，0.51 倍**（T 0.51、Δ8 0.51、窗 0.52）；漏段 1.04 倍，因为每段只有 40 帧 |
+| PickHighlight | 参照 V2 VideoRepick xhard 与 BinFill hard（用户指定） | 863 → 855；1630 → 855 | 123 → 122；233 → 122 | 51 → 52；98 → 52 | 约 6 → 3.4；约 11 → 3.4 | 对 VideoRepick **持平，0.99 倍**（漏段 0.57）；对 BinFill **短，0.52 倍**（漏段 0.31） |
+| PatternLock | 参照 V2 RouteStick xhard（用户指定） | 900 → 737 | 128 → 105 | 54 → 43 | 约 11 → 8 段 | **短，0.82 倍**（T 0.82、Δ8 0.82、窗 0.80、漏段 0.73） |
 | VideoUnmask | 无，参照 VideoUnmaskSwap xhard | 558 → 476 | 80 → 67 | 32 → 27 | 0.7 → 0.1 段 | 短；8 帧基本不漏 |
 | ButtonUnmask | 无，参照 VideoUnmaskSwap xhard | 558 → 515 | 80 → 73 | 32 → 31 | 0.7 → 0.9 段 | 略短；漏段相当 |
 | ButtonUnmaskSwap | 无，参照 VideoUnmaskSwap xhard | 558 → 461 | 80 → 65 | 32 → 27 | 0.7 → 0.1 段 | 短；8 帧基本不漏 |
-| VideoPlaceButton | 无，参照 BinFill hard（同为长演示段） | 1630 → 1618 | 233 → 231 | 98 → 98 | 约 11 → 2 段（执行段只有 2 段；演示段里漏的更多，未计） | 一样长 |
-| VideoPlaceOrder | 无，参照 BinFill hard | 1630 → 1773 | 233 → 253 | 98 → 108 | 约 11 → 2 段（同上） | 略长 |
+| VideoPlaceButton | 参照 V2 VideoRepick xhard（用户指定） | 863 → 1618 | 123 → 231 | 51 → 98 | 约 6 → 2 段（执行段只有 2 段；演示段里漏的更多，未计） | **长，1.87 倍**（T 1.87、Δ8 1.88、窗 1.92）；执行段漏段 0.33 倍 |
+| VideoPlaceOrder | 参照 V2 VideoRepick xhard（用户指定） | 863 → 1773 | 123 → 253 | 51 → 108 | 约 6 → 2 段（同上） | **长，2.05 倍**（T 2.05、Δ8 2.06、窗 2.12）；执行段漏段 0.33 倍 |
 
-归纳：**和 V2 持平或更长**——RouteStick、VideoUnmaskSwap、VideoRepick、StopCube、SwingXtimes、PickHighlight、VideoPlaceButton、VideoPlaceOrder；**比对应参照短**——BinFill（短三成，因为不做假 demo）、PatternLock（短两成）、PickXtimes（比 BinFill hard 短但比 V2 任何 xhard 长）、VideoUnmask、ButtonUnmask、ButtonUnmaskSwap（容器类，Δ8 65～73，8 帧基本不漏）。要把短的拉上来，各自的旋钮是：BinFill 投 8～9 块、PatternLock 节点 [12,16]、容器类任务没有不改结构的旋钮；是否调整由用户定。
+归纳（倍数 = V3 / V2 参照，按 T）：**持平或更长**——RouteStick 1.00、VideoUnmaskSwap 1.00、VideoRepick 1.10、StopCube 1.17、PickHighlight 0.99（对 VideoRepick）、VideoPlaceButton 1.87、VideoPlaceOrder 2.05；**比参照短**——BinFill 0.68（对自身含假 demo 的 hard）、PickXtimes 0.69、SwingXtimes 0.51、PickHighlight 0.52（对 BinFill）、PatternLock 0.82、VideoUnmask 0.85、ButtonUnmask 0.92、ButtonUnmaskSwap 0.83。要把短的拉上来，各自的旋钮是：BinFill 投 8～9 块、PatternLock 节点 [12,16]、容器类任务没有不改结构的旋钮；是否调整由用户定。
 
 总量：14 任务 650 条，约 48.2 万帧，stride-1 chunk 约 46 万（V2 的 58%），stride-16 窗约 2.86 万（V2 的 41%）。合成参考的图与逐条数据在根目录 [`vis/`](vis/README.md)；每个任务在代码里怎么改（换哪个字典键、重写哪个方法）见第二部分一节与八节；长度原则（8 帧必漏为硬性、T 约 900 与 50～60 窗为目标、不为 32 帧拉长）与估算公式见第二部分八节。
 
