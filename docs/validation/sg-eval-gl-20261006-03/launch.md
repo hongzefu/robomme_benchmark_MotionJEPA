@@ -55,3 +55,11 @@
 - 本机 MemER（HEAD `852559f7`）首次：success 325 步、`OFFICIAL_MEDIA=PASS`、`TRACE_ARRAYS=PASS`；暴露 GroundSG 审计文字丢失与 `LANG_IO` 初始帧误报，FIX-1 修复（12.524）。
 - 本机 MemER（HEAD `0816c0a9`）新侧：fail 243 步，`OFFICIAL_MEDIA=PASS total=1 videos=1 accepted=1 policy_seed=7`、`LANG_IO=PASS … server_text_empty=0`（`--require-server-text`）、`TRACE_ARRAYS=PASS`，分词通道 task 16／symbolic 16；原侧：success 325 步、官方视频保留于 `official/`、`LANG_IO=PASS`、`TRACE_ARRAYS=PASS`。同局两侧终态不同属 GPU 推理非逐位可复现，计划已注明不据同 seed 宣称逐位一致。
 - 代码闸门（12.524 合并后）：核心短测 3253 passed；`UPSTREAM_GUARD=PASS`；`POLICY_SEEDS=PASS models=7 seeds=0,7,42 cases=21`；`EVAL_CAP=PASS models=7 max_steps=1800 rejected_step=1801`；`OBS_EQ=PASS routes=5 mutants_rejected=6/6`；`CLIENT_REPLAY_EQ_SUMMARY=PASS routes=4`（12.522 候选）。
+
+## ⑧ 运行中变更：本机对拍缩减为每任务 3 局（2026-10-06 22:00 EDT）
+
+- 起因：首局实测新侧 977 步耗时 992 s（每次子目标提问约 17 s），按原口径每侧 `16 任务 × 12 局 = 192` 局需 50～65 小时。
+- 用户原话（2026-10-06）：「先把Greatlakes跑完再说」→「本机的对拍缩减规模。先给我方案」；主会话给出每任务 2／3／4 局三案（16 任务全保留、两侧同一批、每任务按 builder_episode 升序取前 k 局），用户选「每任务 3 局（推荐）」。
+- 新规模：`16 任务 × 1 档（xhard0）× 3 局 = 48`／侧（`HV48_MANIFEST=PASS tasks=16 per_task=3 total=48 keys_sha256=3b4d628dd2355aa702d9aaeadedfac797a2fe49b5c8e4f52cb729393182a4b45`，源 hv192 清单）；对拍轨迹上限由 384 降为 `2 侧 × 48 = 96`。
+- 切换：21:58 按清单精确 `tmux kill-session` 停 `p3-local-new`、`p3-local-orig`（删前删后 `tmux ls` 差集恰为二者，显存释放、无残留进程）；被打断的在跑局 BinFill_xhard0_543501（该任务第 9 局，不在新清单）留悬空 attempt、不重跑。21:59:19 以 `compare/run_side48.sh <new|orig> <卡>`（单片、沿用席号 50／60）重启，HEAD `5c8bb233`；已接受的 BinFill_xhard0_540302 两侧复用：新侧 `RUN_PLAN total=48 resume_skip=1 accepted=1 todo=47`、原侧 `ORIG_PLAN total=48 final=1 missing=47`。
+- 对拍定位不变：`GATE2=INFO compared=48`，差异报告、不证明等价；报告注明由 192 缩减为 48 的原因。
