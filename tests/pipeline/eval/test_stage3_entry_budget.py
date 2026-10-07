@@ -755,3 +755,60 @@ def test_obs_eq_policy_server_wrap_and_smvla(tmp_path, monkeypatch):
     assert r_on[0]["_sgeval_audit"]["channels"][0]["tokenizer"] == "qwen3-vl-fake"
     print("OBS_EQ=PASS routes=2 (policy_server_wrap,smvla_server) audit_on_off_mismatch=0 rng_diff=0 "
           "extra_infer=0 mutant_double_infer_detected=1")
+
+
+# ═══════════════════════════ LEASE_BY_DATASET（1007 FIX-4） ═══════════════════════════
+
+
+def test_lease_id_includes_dataset_and_shard_content(tmp_path, capsys):
+    """lease id 并入数据集名与清单内容短哈希：同路线、不同数据集、同名 ``shard-00.json`` 两边都拿得到 lease；同路线、
+    同数据集、同一份分片清单重复启动，第二个 ``RUN_BLOCKED reason=lease_held``、退出 3、不建环境。"""
+    bm, ec = bl(), F.env_client()
+    route = "groundsg/ground-sg-memer/seed7/new"
+    ood_dir, hv_dir, ood_copy_dir = tmp_path / "ood", tmp_path / "hard-verify", tmp_path / "ood-other"
+    for d, body in ((ood_dir, '{"rows": ["ood"]}'), (hv_dir, '{"rows": ["hv"]}'), (ood_copy_dir, '{"rows": ["x"]}')):
+        d.mkdir()
+        (d / "shard-00.json").write_text(body, encoding="utf-8")
+    sid_ood = ec.shard_id_of(route, ood_dir / "shard-00.json", "s00", "ood")
+    sid_hv = ec.shard_id_of(route, hv_dir / "shard-00.json", "s00", "hard-verify")
+    assert sid_ood != sid_hv
+    assert re.fullmatch(r"groundsg_ground-sg-memer_seed7_new--ood--shard-00-h[0-9a-f]{10}", sid_ood), sid_ood
+    assert "--hard-verify--shard-00-h" in sid_hv
+    # 同一份清单同数据集：id 稳定（与席位无关）；别处同名不同内容：id 不同
+    assert ec.shard_id_of(route, ood_dir / "shard-00.json", "s01", "ood") == sid_ood
+    assert ec.shard_id_of(route, ood_copy_dir / "shard-00.json", "s00", "ood") != sid_ood
+    # 旧形（无清单，只出现在进程内调用）不变：既有用例按它取 lease
+    assert ec.shard_id_of("pp/seed7/new", None, "s00") == "pp_seed7_new--seat-s00"
+
+    # 账本层：两个数据集的同名分片可同时持有
+    p = tmp_path / "shared" / "budget.jsonl"
+    with bm.BudgetLedger(p, **CAPS).lease(sid_hv):
+        with bm.BudgetLedger(p, **CAPS).lease(sid_ood):
+            pass
+
+    # SeatRunner 层：hard-verify 席位持有 lease 时，ood 同名分片照常跑完
+    task, tier = F.v9_cells_sorted()[0]
+    ident = F.packaged_identity(task, tier, 0)
+    hv = F.make_runner(tmp_path / "hv-stage", "pp", _short_policy(), F.World(), policy_seed=7, dataset="hard-verify",
+                       identities=str(hv_dir / "shard-00.json"), budget_ledger=str(p), **CAPS)
+    hv._open_shared_budget()
+    try:
+        world_a = F.World()
+        a = F.make_runner(tmp_path / "ood-a", "pp", _short_policy(), world_a, policy_seed=7,
+                          identities=str(ood_dir / "shard-00.json"), budget_ledger=str(p), **CAPS)
+        assert F.run_rows(a, [ident]) == 0
+        out = capsys.readouterr().out
+        want = ec.shard_id_of("pp/seed7/new", ood_dir / "shard-00.json", "s00", "ood")
+        assert "RUN_BLOCKED" not in out and f"BUDGET_LEASE shard={want}" in out
+        assert world_a.envs
+        # 同数据集同一分片重复启动：a 仍持有（席位未 close），第二个被拦
+        world_b = F.World()
+        b = F.make_runner(tmp_path / "ood-b", "pp", _short_policy(), world_b, policy_seed=7,
+                          identities=str(ood_dir / "shard-00.json"), budget_ledger=str(p), **CAPS)
+        assert F.run_rows(b, [ident]) == 3
+        assert "RUN_BLOCKED reason=lease_held" in capsys.readouterr().out and world_b.envs == []
+        assert not b.results_path.exists()
+        a._release_lease()
+    finally:
+        hv._release_lease()
+    print("LEASE_BY_DATASET=PASS cross_dataset_same_name=both_ok same_shard_dup=blocked")

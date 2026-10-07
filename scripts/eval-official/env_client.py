@@ -996,10 +996,23 @@ def budget_caps(args) -> dict | None:
     return {k: int(v) for k, v in vals.items()}
 
 
-def shard_id_of(route: str, identities: Any, seat: Any) -> str:
-    """分片排他 lease 的 shard_id：路线 + 身份清单文件名（无清单时用席位名），非 [A-Za-z0-9._-] 一律换成 ``_``。"""
-    stem = Path(str(identities)).stem if identities else f"seat-{seat}"
-    return re.sub(r"[^A-Za-z0-9._-]+", "_", f"{route}--{stem}")
+def shard_id_of(route: str, identities: Any, seat: Any, dataset: Any = None) -> str:
+    """分片排他 lease 的 shard_id，非 [A-Za-z0-9._-] 一律换成 ``_``。
+
+    * 有身份清单（生产 CLI ``--identities`` 必填）：``<route>--<dataset>--<清单文件名 stem>-h<内容 sha256 前 10 位>``
+      （1007 FIX-4）。路线不含数据集，ood 与 hard-verify 的清单都叫 ``shard-NN.json``，只拼「路线 + 文件名」会让两个
+      数据集的不同分片撞同一把锁（GL OOD MemER 第一片被本机 hard-verify 对拍挡下 ``RUN_BLOCKED reason=lease_held``）；
+      并入数据集名与清单内容短哈希后，不同数据集或不同目录下的同名不同内容分片互不相干，同一份清单（同内容）重复启动
+      仍得到同一 id、被 lease 拦下。清单读不到时哈希段记 ``-hNA``（仍含数据集名）。
+    * 无身份清单（只出现在进程内调用）：沿用 ``<route>--seat-<席位>``，不并入数据集。"""
+    if not identities:
+        return re.sub(r"[^A-Za-z0-9._-]+", "_", f"{route}--seat-{seat}")
+    p = Path(str(identities))
+    try:
+        digest = hashlib.sha256(p.read_bytes()).hexdigest()[:10]
+    except OSError:
+        digest = "NA"
+    return re.sub(r"[^A-Za-z0-9._-]+", "_", f"{route}--{dataset or 'NA'}--{p.stem}-h{digest}")
 
 
 class SeatRunner:
@@ -1498,7 +1511,8 @@ class SeatRunner:
             if hasattr(shared, "check"):
                 shared.check()
             if self._lease_cm is None and hasattr(shared, "lease"):
-                sid = shard_id_of(self.ledger.route, getattr(self.args, "identities", None), self.args.seat)
+                sid = shard_id_of(self.ledger.route, getattr(self.args, "identities", None), self.args.seat,
+                                  getattr(self.args, "dataset", None))
                 cm = shared.lease(sid)
                 cm.__enter__()
                 self._lease_cm = cm
