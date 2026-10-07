@@ -306,24 +306,24 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 
 | 编号 | V3 任务 | 对比的 V2 参照 | T：V2 → V3 | **T 倍数** | Δ8 倍数 | 窗：V2 → V3 | 窗倍数 | 8 帧漏段：V2 → V3 | 漏段倍数 | 备注 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1.1 | BinFill | V2 同任务 hard（含假 demo ×2） | 1630 → 1109 | **0.68** | 0.68 | 98 → 68 | 0.69 | 约 11 → 5 | 0.45 |  |
 | 1.1 | BinFill | V2 同任务 hard 纯执行段（去掉假 demo） | 815 → 1109 | **1.36** | 1.36 | 49 → 68 | 1.39 | 约 5 → 5 | 1.00 |  |
-| 1.2 | PickXtimes | V2 BinFill hard（用户指定） | 1630 → 1128 | **0.69** | 0.69 | 98 → 69 | 0.70 | 约 11 → 7 | 0.64 |  |
-| 1.3 | SwingXtimes | V2 BinFill hard（用户指定） | 1630 → 833 | **0.51** | 0.51 | 98 → 51 | 0.52 | 约 11 → 11.4 | 1.04 | 每段只有 40 帧，所以短了漏段反而不少 |
-| 1.4 | StopCube | V2 RouteStick xhard（用户指定） | 900 → 1054 | **1.17** | 1.17 | 54 → 64 | 1.19 | 约 11 → 5.3 | 0.48 | 每段 100 帧、段少，所以长了漏段反而少 |
-| 2.1 | VideoUnmask | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 476 | **0.85** | 0.84 | 32 → 27 | 0.84 | 0.7 → 0.1 | 0.14 | 8 帧基本不漏（24/25 条 0 漏） |
-| 2.2 | ButtonUnmask | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 515 | **0.92** | 0.91 | 32 → 31 | 0.97 | 0.7 → 0.9 | 1.29 |  |
-| 2.3 | VideoUnmaskSwap | V2 同任务 xhard | 558 → 560 | **1.00** | 0.99 | 32 → 32 | 1.00 | 0.7 → 2.2（执行 0.7 + swap 1.5） | 3.14 | 计入 swap 后每条最少漏 1 |
-| 2.4 | ButtonUnmaskSwap | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 461 | **0.83** | 0.81 | 32 → 27 | 0.84 | 0.7 → 0.8（执行 0.1 + swap 0.7） | 1.14 | swap=4 的条可能 0 漏（7/25） |
-| 3.1 | PickHighlight | V2 VideoRepick xhard（用户指定） | 863 → 855 | **0.99** | 0.99 | 51 → 52 | 1.02 | 约 6 → 3.4 | 0.57 |  |
-| 3.1 | PickHighlight | V2 BinFill hard（用户指定） | 1630 → 855 | **0.52** | 0.52 | 98 → 52 | 0.53 | 约 11 → 3.4 | 0.31 |  |
-| 3.2 | VideoRepick | V2 同任务 xhard | 863 → 947 | **1.10** | 1.10 | 51 → 57 | 1.12 | 约 6 → 4.9 | 0.82 |  |
-| 3.3 | VideoPlaceButton | V2 VideoRepick xhard（用户指定） | 863 → 961 | **1.11** | 1.11 | 51 → 57 | 1.12 | 约 6 → 1.9（执行 1 + swap 0.9） | 0.32 | V3 为官方 hard 原样实测；最短一条 900 也长于 863 |
 | 3.4 | VideoPlaceOrder | V2 VideoRepick xhard（用户指定） | 863 → 1115 | **1.29** | 1.29 | 51 → 67 | 1.31 | 约 6 → 2（执行 1 + swap 1） | 0.33 | V3 为官方 hard 原样实测；最短一条 921 |
-| 4.3 | PatternLock | V2 RouteStick xhard（用户指定） | 900 → 737 | **0.82** | 0.82 | 54 → 43 | 0.80 | 约 11 → 8 | 0.73 |  |
+| 1.4 | StopCube | V2 RouteStick xhard（用户指定） | 900 → 1054 | **1.17** | 1.17 | 54 → 64 | 1.19 | 约 11 → 5.3 | 0.48 | 每段 100 帧、段少，所以长了漏段反而少 |
+| 3.3 | VideoPlaceButton | V2 VideoRepick xhard（用户指定） | 863 → 961 | **1.11** | 1.11 | 51 → 57 | 1.12 | 约 6 → 1.9（执行 1 + swap 0.9） | 0.32 | V3 为官方 hard 原样实测；最短一条 900 也长于 863 |
+| 3.2 | VideoRepick | V2 同任务 xhard | 863 → 947 | **1.10** | 1.10 | 51 → 57 | 1.12 | 约 6 → 4.9 | 0.82 |  |
+| 2.3 | VideoUnmaskSwap | V2 同任务 xhard | 558 → 560 | **1.00** | 0.99 | 32 → 32 | 1.00 | 0.7 → 2.2（执行 0.7 + swap 1.5） | 3.14 | 计入 swap 后每条最少漏 1 |
 | 4.4 | RouteStick | V2 同任务 xhard | 900 → 900 | **1.00** | 1.00 | 54 → 54 | 1.00 | 约 11 → 6 | 0.55 |  |
+| 3.1 | PickHighlight | V2 VideoRepick xhard（用户指定） | 863 → 855 | **0.99** | 0.99 | 51 → 52 | 1.02 | 约 6 → 3.4 | 0.57 |  |
+| 2.2 | ButtonUnmask | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 515 | **0.92** | 0.91 | 32 → 31 | 0.97 | 0.7 → 0.9 | 1.29 |  |
+| 2.1 | VideoUnmask | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 476 | **0.85** | 0.84 | 32 → 27 | 0.84 | 0.7 → 0.1 | 0.14 | 8 帧基本不漏（24/25 条 0 漏） |
+| 2.4 | ButtonUnmaskSwap | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 461 | **0.83** | 0.81 | 32 → 27 | 0.84 | 0.7 → 0.8（执行 0.1 + swap 0.7） | 1.14 | swap=4 的条可能 0 漏（7/25） |
+| 4.3 | PatternLock | V2 RouteStick xhard（用户指定） | 900 → 737 | **0.82** | 0.82 | 54 → 43 | 0.80 | 约 11 → 8 | 0.73 |  |
+| 1.2 | PickXtimes | V2 BinFill hard（用户指定） | 1630 → 1128 | **0.69** | 0.69 | 98 → 69 | 0.70 | 约 11 → 7 | 0.64 |  |
+| 1.1 | BinFill | V2 同任务 hard（含假 demo ×2） | 1630 → 1109 | **0.68** | 0.68 | 98 → 68 | 0.69 | 约 11 → 5 | 0.45 |  |
+| 3.1 | PickHighlight | V2 BinFill hard（用户指定） | 1630 → 855 | **0.52** | 0.52 | 98 → 52 | 0.53 | 约 11 → 3.4 | 0.31 |  |
+| 1.3 | SwingXtimes | V2 BinFill hard（用户指定） | 1630 → 833 | **0.51** | 0.51 | 98 → 51 | 0.52 | 约 11 → 11.4 | 1.04 | 每段只有 40 帧，所以短了漏段反而不少 |
 
-按 T 倍数从大到小（倍数 = V3 ÷ V2 参照）：BinFill（对 V2 纯执行段） 1.36、VideoPlaceOrder 1.29、StopCube 1.17、VideoPlaceButton 1.11、VideoRepick 1.10、VideoUnmaskSwap 1.00、RouteStick 1.00、PickHighlight（对 VideoRepick） 0.99、ButtonUnmask 0.92、VideoUnmask 0.85、ButtonUnmaskSwap 0.83、PatternLock 0.82、PickXtimes 0.69、BinFill（对 V2 含假 demo） 0.68、PickHighlight（对 BinFill） 0.52、SwingXtimes 0.51。
+表按 T 倍数（长度倍数）从大到小排，2026-10-07 用户「按长度倍速」「倍数」（「倍速」随即更正为「倍数」），此表不按 P6 的官网顺序、编号列保留官网编号。排序（倍数 = V3 ÷ V2 参照）：BinFill（对 V2 纯执行段） 1.36、VideoPlaceOrder 1.29、StopCube 1.17、VideoPlaceButton 1.11、VideoRepick 1.10、VideoUnmaskSwap 1.00、RouteStick 1.00、PickHighlight（对 VideoRepick） 0.99、ButtonUnmask 0.92、VideoUnmask 0.85、ButtonUnmaskSwap 0.83、PatternLock 0.82、PickXtimes 0.69、BinFill（对 V2 含假 demo） 0.68、PickHighlight（对 BinFill） 0.52、SwingXtimes 0.51。
 
 漏段倍数与 T 倍数不同步：漏几段取决于段长，StopCube（T 1.17、漏段 0.48）、VideoPlaceButton（1.11、0.32）、VideoPlaceOrder（1.29、0.33）段长所以漏段倍数低；SwingXtimes（T 0.51、漏段 1.04）段短所以漏段倍数不低。
 
