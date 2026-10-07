@@ -9,23 +9,23 @@
 | 模型 | 局数 | 成功 | 局级成功率 | 任务宏平均 |
 |---|---|---|---|---|
 | SimpleMemVLA | 86 | 19 | 22.1% | 19.1% |
-| PonderPounce | 86 | 15 | 17.4% | 14.5% |
+| PonderPounce（r2 重跑） | 86 | 15 | 17.4% | 14.5% |
 | GroundSG+QwenVL | 86 | 13 | 15.1% | 14.6% |
 | MemER | 86 | 5 | 5.8% | 6.3% |
 | FrameSamp+Modulation | 86 | 3 | 3.5% | 4.7% |
 
-每个任务难度格 n=2，成绩只看大致排序，不作细分比较；未跑 seed 0／42，不报多种子均值。与旧 1600 步成绩条件不同（步数上限、SimpleMemVLA／PonderPounce 模型种子由旧实际 0 改为 7），不宣称等价或无回归。GroundSG+Oracle 本轮未跑，沿用 1004 轮 1600 步成绩；3-tier Astra 只改代码未实跑。
+PonderPounce 一行取 FIX-3（补记 S2 输入全文）后的 4 卡重跑 `ood-new-pp-seed7-r2`：86 局终态与执行步数与首跑逐局相同，成绩不变（见 `launch.md` ⑬）。每个任务难度格 n=2，成绩只看大致排序，不作细分比较；未跑 seed 0／42，不报多种子均值。与旧 1600 步成绩条件不同（步数上限、SimpleMemVLA／PonderPounce 模型种子由旧实际 0 改为 7），不宣称等价或无回归。GroundSG+Oracle 本轮未跑，沿用 1004 轮 1600 步成绩；3-tier Astra 只改代码未实跑。
 
 总闸门：
-- `STAGE3_MATRIX=PASS policy_seed=7 combinations=5 unique_terminal=430 incomplete=0 seed_mismatch=0 duplicate_combination=0`
+- `STAGE3_MATRIX=PASS policy_seed=7 combinations=5 unique_terminal=430 incomplete=0 seed_mismatch=0 duplicate_combination=0`（PP 换 r2 后重算，结果同首算）
 - `MODEL_EVAL_REPORT=PASS sets=5 complete=5 incomplete=0 episodes=430 gate2=1`
-- `BUDGET_ENFORCEMENT=PASS trajectories=530/870 resets=1078/141430 astra=0/2 shared_infra=1/50`（`BUDGET_DETAIL reserves=530 committed=528 released=0 open=2 expired=0/50 first_started=529/821 recovery=1/49`；`open=2` 为 MemER 换片时被 TERM 打断的两次预约，未提交、按已用计）
+- `BUDGET_ENFORCEMENT=PASS trajectories=530/870 resets=1254/141430 astra=0/2 shared_infra=1/50`（`BUDGET_DETAIL reserves=530 committed=528 released=0 open=2 expired=0/50 first_started=529/821 recovery=1/49`；`open=2` 为 MemER 换片时被 TERM 打断的两次预约，未提交、按已用计）。PP 重跑沿用首跑幂等 token、账本未新增 reserve，实际轨迹消耗按 530 + 88 ≈ 618 计（< 870）；reset 1078 → 1254 为重跑如实计量
 
 ## ② 版本与代码状态
 
-冻结执行提交 `0816c0a9fa5c2ca37b47bba07dd4c36334f2fb79`（GL 执行副本 `robomme_benchmark-sgeval3`）。运行期间主检出只合入两处与运行无关的修补：12.529 `eval_report.py` 上限核对（FIX-2，验收工具）、文档提交。本机对拍以主检出运行（代码与 `0816c0a9` 相同）。
+冻结执行提交 `0816c0a9fa5c2ca37b47bba07dd4c36334f2fb79`（GL 执行副本 `robomme_benchmark-sgeval3`）；PonderPounce r2 重跑用 `40c2642e`（12.535，含 FIX-3／FIX-4）。运行期间主检出只合入两处与运行无关的修补：12.529 `eval_report.py` 上限核对（FIX-2，验收工具）、文档提交。本机对拍以主检出运行（代码与 `0816c0a9` 相同）。
 
-本轮代码链：12.519 改名（R1）→ 12.520 文档与接口冻结 → 12.522 第三阶段功能（R6／R2／R3／R7／R5 + MERGE-1）→ 12.524 FIX-1／R4／D2 修复（MERGE-2）→ 12.529 FIX-2。每块合并前审查与合并后审查见各合并提交 body。
+本轮代码链：12.519 改名（R1）→ 12.520 文档与接口冻结 → 12.522 第三阶段功能（R6／R2／R3／R7／R5 + MERGE-1）→ 12.524 FIX-1／R4／D2 修复（MERGE-2）→ 12.529 FIX-2 → 12.533 FIX-4（分片 lease id 含数据集）→ 12.534 FIX-3（PP S2 输入全文进语言账本）。每块合并前审查与合并后审查见各合并提交 body。
 
 ## ③～⑥ 启动、数据、超参、硬件
 
@@ -36,12 +36,12 @@
 | 组 | 分片 | 用时与异常 |
 |---|---|---|
 | FrameSamp+Modulation | 2 × 43 | 每片约 29 min，零错误零重试 |
-| PonderPounce | 2 × 43 | 第一片 1 局 S2 上下文超限按基础设施重试（见下）；第二片零重试 |
+| PonderPounce | 2 × 43；r2 重跑 4 × 21～22 | 首跑第一片 1 局 S2 上下文超限按基础设施重试（见下）；r2 四片 10:29～11:13（约 44 min），同一局同样重试 1 次，其余零重试 |
 | SimpleMemVLA | 2 × 43 | 每片约 1.6 h，零错误零重试 |
 | GroundSG+QwenVL | 2 × 43 | 每片约 3.5～4.5 h，零错误零重试 |
 | MemER | 2 片 → 换 4 片 | 1800 步超时局 46～56 min（113 次子目标提问，A40 约 24～30 s／次）；02:13 由 2 片换 4 片（`launch.md` ⑪），08:47 完成 |
 
-单列（用户裁决「沿用现状当基础设施重试」）：PonderPounce S2 上下文 16384 token 上限在 1800 步下被触及 **1 例**——`VideoPlaceOrder_xhard1_17100000` 第 1 次尝试第 1661 步 `S2 context length 16439 exceeds cap 16384`，按基础设施错误重试，第 2 次 1057 步 `fail` 被接受；全部 430 局中仅此 1 例。成绩含此次重跑。
+单列（用户裁决「沿用现状当基础设施重试」）：PonderPounce S2 上下文 16384 token 上限在 1800 步下被触及 **1 例**——`VideoPlaceOrder_xhard1_17100000` 第 1 次尝试第 1661 步 `S2 context length 16439 exceeds cap 16384`，按基础设施错误重试，第 2 次 1057 步 `fail` 被接受；全部 430 局中仅此 1 例。成绩含此次重跑。r2 重跑在同一局、同一步、同一长度上再次触发，重试结果也相同（1057 步 fail），说明该超限可确定复现。
 
 运行中事件与处置（详见 `launch.md` ⑧～⑫）：
 1. MemER 第一片分片锁撞名（lease 名 = 路线 + 分片文件名，路线不含数据集，与本机对拍同名 `shard-00.json`）→ 逐字节副本改名重排，零预算消耗。缺陷：lease 名应含数据集，待后续修。
@@ -60,10 +60,15 @@
 | `EVAL_VIDEOS` videos=86 decode_fail=0 | PASS | PASS | PASS | PASS | PASS |
 | `OFFICIAL_MEDIA` total=86 fail=0 no_frame_error=0 | PASS | PASS | PASS | PASS | PASS |
 | `TRACE_ARRAYS` attempted_steps_missing=0 observed_state_missing=0 | PASS（86） | PASS（86） | PASS（87，含重试第 1 次） | PASS（86） | PASS（86） |
+| `LANG_IO` 中 PP 的 S2 输入（`subgoal_model` in） | — | — | r2：87／87 局含 | — | — |
 | `LANG_IO` unresolved=0 open_calls=0 image_ref_unresolved=0 server_text_empty=0（`--require-server-text`） | PASS | PASS | PASS | PASS | PASS |
 | `VIDEO_LAYOUT` published=86 error_named=0 | PASS | PASS | PASS | PASS | PASS |
 
-视频按上游 mme-vla 布局发布于 `$N/sgeval-20261006-03/publish/<模型 ID>/seed7/[qwenvl|memer/]videos/`（硬链接，附 `index.tsv`）。
+PonderPounce 列为 r2 重跑的验收（`reports/pp-r2/`，首跑验收 `reports/pp/` 亦全 PASS）。
+
+视频按上游 mme-vla 布局发布于 `$N/sgeval-20261006-03/publish/<模型 ID>/seed7/[qwenvl|memer/]videos/`（硬链接，附 `index.tsv`）；PP r2 发布于 `$N/sgeval-20261006-03/publish-pp-r2/pp/seed7/videos/`。
+
+**视频站**：http://sled-vail.eecs.umich.edu:8084/ （tmux `stage3-site-8084`，日志 `artifacts/sg-evaluation/sg-eval-gl-20261006-03/logs/site-8084.log`）。按用户要求只放视频与成功率、不放语言记录，版式沿用 8083 Oracle 站；`scripts/injection-dev/site/stage3_eval_site.py` 由五组发布清单建目录（`$N/sgeval-20261006-03/site-stage3/`），逐局核对发布硬链接 inode、轨迹终态与身份：`STAGE3_SITE=PASS models=5 episodes=430 media=860 smvla=19/86 pp=15/86 groundsg-qwenvl=13/86 groundsg-memer=5/86 framesamp=3/86`；浏览器检查 `STAGE3_SITE_BROWSER=PASS played=10/10 page_errors=0`（五模型 × 官方版式／原始画面，桌面 1440 与手机 390 宽无横向滚动）。
 
 ## ⑨ 本机 MemER hard-verify 对拍
 
@@ -82,18 +87,24 @@
 - 「本机的对拍缩减规模。先给我方案」→ 选「每任务 3 局（推荐）」
 - PonderPounce S2 上下文超限 → 选「沿用现状当基础设施重试」
 - SimpleMemVLA 上限误报 → 选「按计划修检查器（推荐）」
+- 「PonderPounce需要补」→ 选「重跑 PonderPounce 86 局」
+- 「共享账本的分片锁名不区分数据集，这次靠改分片文件名绕开了。要不要另外修？这个也要跑」
+- 「ponderponce能否4卡完全并行」
+- 「http://sled-vail.eecs.umich.edu:8070/ 参考这个做一个你跑完的网页」「只放视频就可以 成功率也要 language的记录就先不放了」「说错了 是这个http://sled-vail.eecs.umich.edu:8083/#task=BinFill&episode=BinFill_xhard1_16400000.a1」
 
 ## ⑪ 结论、遗留与下一步
 
 - 计划第三段全部判定项完成：五模型 OOD 430 局、`STAGE3_MATRIX=PASS`、`BUDGET_ENFORCEMENT=PASS`；MemER hard-verify 对拍按缩减规模完成。
 - 遗留（待用户定）：
-  1. PonderPounce S2 输入全文（context／prompt／图片）未进语言账本（上游不保留文字形式；补法为外壳把已截获 token 解码回文字，纯 CPU）。
-  2. 共享账本分片 lease 名不含数据集（本轮以改分片文件名规避）。
-  3. GL 4 个占位 job（63188714／15／16／19）空转中，约 2026-10-07 23:00～23:30 到期；计划写明未经新释放指令不自动取消，待用户指示。
-  4. 本机遗留约 3 天前 pytest 假服务进程 PID 2961357（非本轮），未动。
+  1. ~~PonderPounce S2 输入全文未进语言账本~~ → FIX-3 已修，r2 重跑验证（`launch.md` ⑬）。
+  2. ~~共享账本分片 lease 名不含数据集~~ → FIX-4 已修。
+  3. PP 重跑沿用幂等 token 未新增 reserve：账本对「有意整组重跑」不扣额度，下次重跑应换 token 前缀（如 `RUN_PREFIX` 进 token）——本轮未改代码，只在此登记。
+  4. GL 4 个占位 job（63188714／15／16／19）空转中，约 2026-10-07 23:00～23:30 到期；计划写明未经新释放指令不自动取消，待用户指示。
+  5. 本机遗留约 3 天前 pytest 假服务进程 PID 2961357（非本轮），未动。
 
 ## ⑫ 归档文件清单
 
 - `records/scripts/`：GL 运行根脚本（`gl-scripts_*.txt`：task_ood、launch_seat、seat_worker、enqueue、check_smoke、accept_group、watch_all、build_exec、memer_rebalance）与本机脚本（`local_*.txt`：MemER smoke 三份、run_side／run_side48、清单生成 build_ood86／build_hv192／build_hv48）。
-- `records/reports/`：五组 `<组>/report.md`、`stage3-report.md`、`stage3-sets.json`、`gate2-memer.md`。
+- `records/reports/`：五组 `<组>/report.md`、`pp-r2/{report.md,accept.txt}`、`stage3-report.md`、`stage3-sets.json`（均为 PP 换 r2 后的版本）、`gate2-memer.md`。
+- `records/scripts/` 另含 `gl-scripts_accept_group_r2.sh.txt`、`gl-scripts_watch_r2.sh.txt`。
 - 产物（不进 git）：`$N/sgeval-20261006-03/`（stage、media、publish、reports、queue、logs）；本机 `artifacts/sg-evaluation/sg-eval-gl-20261006-03/`（smoke、compare、inputs）。

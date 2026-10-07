@@ -96,3 +96,15 @@
   - 原侧：`TRACE_ARRAYS=PASS episodes=48`、`LANG_IO=PASS episodes=48 server_text_empty=0`、`VIDEO_LAYOUT=PASS published=48`（`compare/publish-orig/`，`--accept-from results`；原侧无尝试账本，`official_media_check.py` 全量模式不适用）。
 - 过程中一次操作失误已纠正：首次两侧发布到同一输出根致原侧 41 局撞名、7 局混入新侧目录；该目录只含硬链接（核对无唯一副本）后整删，两侧分开发布。
 - 报告：`compare/report/gate2-memer.{json,md}`。
+
+## ⑬ 收尾后追加：FIX-3／FIX-4 与 PonderPounce 4 卡重跑（2026-10-07 10:29～11:13 EDT）
+
+- **用户原话**：「PonderPounce需要补」→ 验证范围选「重跑 PonderPounce 86 局」；「共享账本的分片锁名不区分数据集，这次靠改分片文件名绕开了。要不要另外修？这个也要跑」；「ponderponce能否4卡完全并行」。
+- **代码**：12.533 FIX-4（`env_client.py::shard_id_of` lease id 改为 `<route>--<dataset>--<stem>-h<sha10>`）；12.534 FIX-3（`pp_server_wrap.py` 只读镜像 S2 上下文 token、用 S2 分词器解码，`pp_client.py` 写 `subgoal_model` 的 `in` 消息）；12.535 冻结说明注记。GL 执行副本 `robomme_benchmark-sgeval3` 更新到 `40c2642e`（clean）。
+- **smoke**：1 局 timeout 1800 步，`LANG_IO=PASS`，S2 `in`／`out` 各 90 条，`sha_mismatch=0`；新格式锁 `pp_seed7_new--ood--smoke-ood-1-h5e471d525a`。
+- **运行**：清单 `ood86/pp-r2-shard-00..03.json`（22／22／21／21），队列任务 `70`～`73-pp-r2-s0k.task`（`STAGE_OVERRIDE=$R/ood-new-pp-seed7-r2 MEDIA_OVERRIDE=$R/media-pp-r2 RUN_PREFIX=p3-ood-r2`），席 80～83，worker 会话 `p3-worker-r2-14／15／16／19`（占位 job 63188714／15／16／19，4 × A40），盯盘 `watch_r2.sh`。四片 10:29:08 同时起跑，11:07～11:13 全部 `SEAT_DONE errors=0`；席 81 `infra=1`。收尾放 `queue/STOP`。
+- **基础设施重试 1 例**：`VideoPlaceOrder_xhard1_17100000` 第 1 次第 1661 步 `S2 context length 16439 exceeds cap 16384`，第 2 次 1057 步 `fail` 被接受——与首跑同局、同步、同长度、同重试结果。
+- **验收**（`scripts/accept_group_r2.sh`，即 `accept_group.sh` 改指 r2 的 stage、媒体根、4 片清单、报告目录 `reports/pp-r2`、发布根 `publish-pp-r2`）：七项全 PASS（`EVAL_COVERAGE expected=86 missing=0`、`EVAL_REPORT cap=1800 cap_mismatch=0`、`EVAL_VIDEOS videos=86`、`OFFICIAL_MEDIA total=86 fail=0`、`TRACE_ARRAYS episodes=87`、`LANG_IO episodes=87 server_text_empty=0`、`VIDEO_LAYOUT published=86`）；87 份语言账本全部含 `subgoal_model` 消息。
+- **与首跑逐局比对**：86 局终态与执行步数全部相同（`same_status_and_steps=86`），成绩不变（15／86）。
+- **汇总重算**：`reports/stage3/sets.json` 的 PP 结果路径换为 `ood-new-pp-seed7-r2`（旧三件存 `reports/stage3-r1/`）→ `STAGE3_MATRIX=PASS policy_seed=7 combinations=5 unique_terminal=430`、`MODEL_EVAL_REPORT=PASS sets=5 episodes=430`。
+- **预算口径**：重跑沿用首跑的幂等 token（`pp/seed7/new|<key>|a<n>`），共享账本把它当续跑、未新增 reserve：`BUDGET_ENFORCEMENT=PASS trajectories=530/870 resets=1254/141430`。实际轨迹消耗应按 530 + 重跑 88 次尝试 ≈ 618 计（仍低于 870）；reset 计量 +176 已如实记入。

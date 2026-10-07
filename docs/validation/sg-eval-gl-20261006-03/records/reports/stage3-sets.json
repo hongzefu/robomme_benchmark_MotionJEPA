@@ -30,7 +30,7 @@
    "side": "new",
    "site": "gl",
    "results": [
-    "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/sgeval-20261006-03/ood-new-pp-seed7/s*/pp/results.jsonl"
+    "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/sgeval-20261006-03/ood-new-pp-seed7-r2/s*/pp/results.jsonl"
    ],
    "expect_total": 86,
    "manifest": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/sgeval-20261006-03/inputs/manifests/ood86/manifest.json",
