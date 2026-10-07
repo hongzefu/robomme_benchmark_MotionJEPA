@@ -90,6 +90,7 @@ PonderPounce 列为 r2 重跑的验收（`reports/pp-r2/`，首跑验收 `report
 - 「PonderPounce需要补」→ 选「重跑 PonderPounce 86 局」
 - 「共享账本的分片锁名不区分数据集，这次靠改分片文件名绕开了。要不要另外修？这个也要跑」
 - 「ponderponce能否4卡完全并行」
+- 「GreatLakes释放然后重新排队这次query5天的。」
 - 「把ground truth的也放入」「GroundSG+Oracle和生成的ground truth data也都放入」「按模型与 Task 浏览视频 改为按task 同时显示所有模型 可以勾选不显示」
 - 「http://sled-vail.eecs.umich.edu:8070/ 参考这个做一个你跑完的网页」「只放视频就可以 成功率也要 language的记录就先不放了」「说错了 是这个http://sled-vail.eecs.umich.edu:8083/#task=BinFill&episode=BinFill_xhard1_16400000.a1」
 
@@ -100,7 +101,7 @@ PonderPounce 列为 r2 重跑的验收（`reports/pp-r2/`，首跑验收 `report
   1. ~~PonderPounce S2 输入全文未进语言账本~~ → FIX-3 已修，r2 重跑验证（`launch.md` ⑬）。
   2. ~~共享账本分片 lease 名不含数据集~~ → FIX-4 已修。
   3. PP 重跑沿用幂等 token 未新增 reserve：账本对「有意整组重跑」不扣额度，下次重跑应换 token 前缀（如 `RUN_PREFIX` 进 token）——本轮未改代码，只在此登记。
-  4. GL 4 个占位 job（63188714／15／16／19）空转中，约 2026-10-07 23:00～23:30 到期；计划写明未经新释放指令不自动取消，待用户指示。
+  4. ~~GL 4 个占位 job 空转~~ → 2026-10-07 13:18 按用户「GreatLakes释放然后重新排队这次query5天的。」释放 63188714／15／16／19，改提 4 个 5 天占位 job `sgev-hold-10`～`13`（63431430～63431433；提交时 3 个 RUNNING、63431433 `PENDING (AssocGrpGRES)`），清单 `gl-hold-logs/hold-jobs-sgeval-20261004.txt`。
   5. 本机遗留约 3 天前 pytest 假服务进程 PID 2961357（非本轮），未动。
 
 ## ⑫ 归档文件清单
