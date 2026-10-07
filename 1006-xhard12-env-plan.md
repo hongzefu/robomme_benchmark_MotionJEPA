@@ -24,13 +24,25 @@
            → XHardMixin 把 unwrapped.spec.id 改回 "BinFill" → RobommeRecordWrapper(env_id="BinFill") 照常录制
 ```
 
-| 范围 | 任务 | 条数（hard 母样本） | 改法 |
-|---|---|---:|---|
-| 纳入·换字典 | BinFill、PickXtimes、SwingXtimes、PickHighlight、PatternLock、RouteStick | 6 × 25 | 子类重写 `configs`（BinFill 另加 `_load_scene` 后置校验） |
-| 纳入·重写一个方法 | StopCube（25）、VideoUnmask、ButtonUnmask、VideoUnmaskSwap、ButtonUnmaskSwap（各 100）、VideoRepick（25） | 450 | 换字典 + 重写 `_refresh_swap_schedule`；`_load_scene` 调 super 后追加第三次抓；重写 `_initialize_episode`+`step()`；`__init__` 后改写 `num_repeats` |
-| 纳入·原 hard 配置重生成（用户 2026-10-07 改定） | VideoPlaceButton、VideoPlaceOrder（各 25） | 50 | 子类只挂 `XHardMixin` 报原名，`configs` 与全部方法照父类、一字不改；经 `--xhard` 用 train hard 原 seed 重新生成。官方 hard 已 T 中位 961 / 1115、窗 57 / 67、8 帧合计漏最少 1 / 2，不再加长 |
-| 不纳入 | InsertPeg、MoveCube（源码不读 difficulty，没有次数型的量） | — | 加难度等于新写任务 |
-| **合计** | **14 个任务** | **650** | |
+| 编号 | 类别 | 任务 | 条数（hard 母样本） | 改法 |
+|---|---|---|---:|---|
+| 1.1 | 计数 | BinFill | 25 | 换字典（`put_in_numbers`）+ `_load_scene` 后置校验 |
+| 1.2 | 计数 | PickXtimes | 25 | 换字典（`number_min/max`） |
+| 1.3 | 计数 | SwingXtimes | 25 | 换字典（`number_min/max`） |
+| 1.4 | 计数 | StopCube | 25 | 重写 `_initialize_episode` + `step()` |
+| 2.1 | 永久性 | VideoUnmask | 100 | `_load_scene` 调 super 后追加第三次抓（用户 2026-10-06 追加） |
+| 2.2 | 永久性 | ButtonUnmask | 100 | 同 2.1（用户 2026-10-06 追加） |
+| 2.3 | 永久性 | VideoUnmaskSwap | 100 | 换字典（`swap_min/max`）+ 重写 `_refresh_swap_schedule` |
+| 2.4 | 永久性 | ButtonUnmaskSwap | 100 | 同 2.3 |
+| 3.1 | 参考 | PickHighlight | 25 | 换字典（`pickup`） |
+| 3.2 | 参考 | VideoRepick | 25 | `__init__` 后改写 `num_repeats` |
+| 3.3 | 参考 | VideoPlaceButton | 25 | 原 hard 配置重生成：子类只挂 `XHardMixin`，不改任何键和方法（用户 2026-10-07 改定） |
+| 3.4 | 参考 | VideoPlaceOrder | 25 | 同 3.3 |
+| 4.1 | 模仿 | MoveCube | — | 不纳入：源码不读 difficulty，没有次数型的量 |
+| 4.2 | 模仿 | InsertPeg | — | 不纳入：同 4.1 |
+| 4.3 | 模仿 | PatternLock | 25 | 换字典（`length`） |
+| 4.4 | 模仿 | RouteStick | 25 | 换字典（`length`） |
+| **合计** | | **14 个任务** | **650** | |
 
 **已定口径（用户原话，2026-10-06）**：①「沿用 Hard 的所有配置，只在一两个参数上改动，比如 pick 5 次变成 pick 7 次」；②「seed 先用现有的，直接拿 `src/robomme/env_metadata/train` 里已经生成过原版 hard 的那组 seed」「新 seed 的事以后再说」；③「新增部分用独立的 ENV 文件表示」「所有改动只限于生成器 `generate_dataset_newseed.py` 这一个文件和新增的那些文件」「把所有改的部分全部归档在一起，放在 `src` 里面」；④「不再把 BinFill 做成带 video 的任务」；⑤ 长度对齐 newtask-v2 xhard（T≈900、50–60 窗），token 落实为 stride-16 窗口数；⑥ 只硬性要求 8 帧有 subgoal 级遗漏，32 帧「尽量」；⑦ 只用现有 hard seed、本轮接受总量缺口（约为上次 stride-1 chunk 的四成）；⑧ 纳入「换字典 + 重写方法」共 11 个任务；⑨「积极调用一些子代理可以搞清楚一些事实」；⑩（2026-10-06 追加）「两个unmask任务都改为pick三次」「[VideoPlaceButton、VideoPlaceOrder] 改为swap3次 然后参考现在的V9的版本 都是改成放两个颜色的cube做完一整套动作然后回到原始放置位置 其他不动」。2026-10-06 子代理核实后的两处修正：`pyproject.toml` **不改**（editable `.pth` 已把整个 `src/` 加进 `sys.path`，见二节）；两个 Swap 任务 swap≥4 必须重写 `_refresh_swap_schedule`，已不是纯改参数，列入「重写一个方法」组。口径 ⑩ 的 V9 核查结论（2026-10-06 只读子代理）：V9 里四个任务的 swap 都是布尔、整局只在 demo 末尾互换一次，**没有 swap 3 次的现成实现**，要自己改 `step()` 的 swap 状态机；「两块 + 回原位」V9 有现成做法（`utils/xhard_home_site.py` 在初始位姿建隐藏落点，demo 末尾每块 `put the cube back to its original position`）；Unmask 的 3 抓在 V9 是整文件加分支，本仓库可用子类 `_load_scene` 追加两项复现，但语言目标文本在受保护的 `task_goal.py` 里只有 1 抓、2 抓两句，**必须在该文件加一句**，属 P1 逐个批准项。⑪（2026-10-07，撤回 ⑩ 的后半句）用户问「VideoPlaceButton、VideoPlaceOrder 是否不用改」，看过官方 hard 长度（两任务 T 中位 961 / 1115 均已超过 V2 VideoRepick xhard 的 863，最短 900 / 921）后定「改计划 两个任务用 --xhard 按原 hard 配置重新生成」。⑩ 前半句（两个 Unmask pick 3）不变。
 
@@ -306,24 +318,26 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 
 | 编号 | V3 任务 | 对比的 V2 参照 | T：V2 → V3 | **T 倍数** | Δ8 倍数 | 窗：V2 → V3 | 窗倍数 | 8 帧漏段：V2 → V3 | 漏段倍数 | 备注 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1.1 | BinFill | V2 同任务 hard 纯执行段（去掉假 demo） | 815 → 1109 | **1.36** | 1.36 | 49 → 68 | 1.39 | 约 5 → 5 | 1.00 |  |
-| 3.4 | VideoPlaceOrder | V2 VideoRepick xhard（用户指定） | 863 → 1115 | **1.29** | 1.29 | 51 → 67 | 1.31 | 约 6 → 2（执行 1 + swap 1） | 0.33 | V3 为官方 hard 原样实测；最短一条 921 |
-| 1.4 | StopCube | V2 RouteStick xhard（用户指定） | 900 → 1054 | **1.17** | 1.17 | 54 → 64 | 1.19 | 约 11 → 5.3 | 0.48 | 每段 100 帧、段少，所以长了漏段反而少 |
-| 3.3 | VideoPlaceButton | V2 VideoRepick xhard（用户指定） | 863 → 961 | **1.11** | 1.11 | 51 → 57 | 1.12 | 约 6 → 1.9（执行 1 + swap 0.9） | 0.32 | V3 为官方 hard 原样实测；最短一条 900 也长于 863 |
-| 3.2 | VideoRepick | V2 同任务 xhard | 863 → 947 | **1.10** | 1.10 | 51 → 57 | 1.12 | 约 6 → 4.9 | 0.82 |  |
-| 2.3 | VideoUnmaskSwap | V2 同任务 xhard | 558 → 560 | **1.00** | 0.99 | 32 → 32 | 1.00 | 0.7 → 2.2（执行 0.7 + swap 1.5） | 3.14 | 计入 swap 后每条最少漏 1 |
-| 4.4 | RouteStick | V2 同任务 xhard | 900 → 900 | **1.00** | 1.00 | 54 → 54 | 1.00 | 约 11 → 6 | 0.55 |  |
-| 3.1 | PickHighlight | V2 VideoRepick xhard（用户指定） | 863 → 855 | **0.99** | 0.99 | 51 → 52 | 1.02 | 约 6 → 3.4 | 0.57 |  |
-| 2.2 | ButtonUnmask | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 515 | **0.92** | 0.91 | 32 → 31 | 0.97 | 0.7 → 0.9 | 1.29 |  |
-| 2.1 | VideoUnmask | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 476 | **0.85** | 0.84 | 32 → 27 | 0.84 | 0.7 → 0.1 | 0.14 | 8 帧基本不漏（24/25 条 0 漏） |
-| 2.4 | ButtonUnmaskSwap | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 461 | **0.83** | 0.81 | 32 → 27 | 0.84 | 0.7 → 0.8（执行 0.1 + swap 0.7） | 1.14 | swap=4 的条可能 0 漏（7/25） |
-| 4.3 | PatternLock | V2 RouteStick xhard（用户指定） | 900 → 737 | **0.82** | 0.82 | 54 → 43 | 0.80 | 约 11 → 8 | 0.73 |  |
-| 1.2 | PickXtimes | V2 BinFill hard（用户指定） | 1630 → 1128 | **0.69** | 0.69 | 98 → 69 | 0.70 | 约 11 → 7 | 0.64 |  |
 | 1.1 | BinFill | V2 同任务 hard（含假 demo ×2） | 1630 → 1109 | **0.68** | 0.68 | 98 → 68 | 0.69 | 约 11 → 5 | 0.45 |  |
-| 3.1 | PickHighlight | V2 BinFill hard（用户指定） | 1630 → 855 | **0.52** | 0.52 | 98 → 52 | 0.53 | 约 11 → 3.4 | 0.31 |  |
+| 1.1 | BinFill | V2 同任务 hard 纯执行段（去掉假 demo） | 815 → 1109 | **1.36** | 1.36 | 49 → 68 | 1.39 | 约 5 → 5 | 1.00 |  |
+| 1.2 | PickXtimes | V2 BinFill hard（用户指定） | 1630 → 1128 | **0.69** | 0.69 | 98 → 69 | 0.70 | 约 11 → 7 | 0.64 |  |
 | 1.3 | SwingXtimes | V2 BinFill hard（用户指定） | 1630 → 833 | **0.51** | 0.51 | 98 → 51 | 0.52 | 约 11 → 11.4 | 1.04 | 每段只有 40 帧，所以短了漏段反而不少 |
+| 1.4 | StopCube | V2 RouteStick xhard（用户指定） | 900 → 1054 | **1.17** | 1.17 | 54 → 64 | 1.19 | 约 11 → 5.3 | 0.48 | 每段 100 帧、段少，所以长了漏段反而少 |
+| 2.1 | VideoUnmask | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 476 | **0.85** | 0.84 | 32 → 27 | 0.84 | 0.7 → 0.1 | 0.14 | 8 帧基本不漏（24/25 条 0 漏） |
+| 2.2 | ButtonUnmask | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 515 | **0.92** | 0.91 | 32 → 31 | 0.97 | 0.7 → 0.9 | 1.29 |  |
+| 2.3 | VideoUnmaskSwap | V2 同任务 xhard | 558 → 560 | **1.00** | 0.99 | 32 → 32 | 1.00 | 0.7 → 2.2（执行 0.7 + swap 1.5） | 3.14 | 计入 swap 后每条最少漏 1 |
+| 2.4 | ButtonUnmaskSwap | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 461 | **0.83** | 0.81 | 32 → 27 | 0.84 | 0.7 → 0.8（执行 0.1 + swap 0.7） | 1.14 | swap=4 的条可能 0 漏（7/25） |
+| 3.1 | PickHighlight | V2 VideoRepick xhard（用户指定） | 863 → 855 | **0.99** | 0.99 | 51 → 52 | 1.02 | 约 6 → 3.4 | 0.57 |  |
+| 3.1 | PickHighlight | V2 BinFill hard（用户指定） | 1630 → 855 | **0.52** | 0.52 | 98 → 52 | 0.53 | 约 11 → 3.4 | 0.31 |  |
+| 3.2 | VideoRepick | V2 同任务 xhard | 863 → 947 | **1.10** | 1.10 | 51 → 57 | 1.12 | 约 6 → 4.9 | 0.82 |  |
+| 3.3 | VideoPlaceButton | V2 VideoRepick xhard（用户指定） | 863 → 961 | **1.11** | 1.11 | 51 → 57 | 1.12 | 约 6 → 1.9（执行 1 + swap 0.9） | 0.32 | V3 为官方 hard 原样实测；最短一条 900 也长于 863 |
+| 3.4 | VideoPlaceOrder | V2 VideoRepick xhard（用户指定） | 863 → 1115 | **1.29** | 1.29 | 51 → 67 | 1.31 | 约 6 → 2（执行 1 + swap 1） | 0.33 | V3 为官方 hard 原样实测；最短一条 921 |
+| 4.1 | MoveCube | 不纳入（不加档） | — | — | — | — | — | — | — | 源码不读难度，没有次数型的量 |
+| 4.2 | InsertPeg | 不纳入（不加档） | — | — | — | — | — | — | — | 源码不读难度，没有量可调 |
+| 4.3 | PatternLock | V2 RouteStick xhard（用户指定） | 900 → 737 | **0.82** | 0.82 | 54 → 43 | 0.80 | 约 11 → 8 | 0.73 |  |
+| 4.4 | RouteStick | V2 同任务 xhard | 900 → 900 | **1.00** | 1.00 | 54 → 54 | 1.00 | 约 11 → 6 | 0.55 |  |
 
-表按 T 倍数（长度倍数）从大到小排，2026-10-07 用户「按长度倍速」「倍数」（「倍速」随即更正为「倍数」），此表不按 P6 的官网顺序、编号列保留官网编号。排序（倍数 = V3 ÷ V2 参照）：BinFill（对 V2 纯执行段） 1.36、VideoPlaceOrder 1.29、StopCube 1.17、VideoPlaceButton 1.11、VideoRepick 1.10、VideoUnmaskSwap 1.00、RouteStick 1.00、PickHighlight（对 VideoRepick） 0.99、ButtonUnmask 0.92、VideoUnmask 0.85、ButtonUnmaskSwap 0.83、PatternLock 0.82、PickXtimes 0.69、BinFill（对 V2 含假 demo） 0.68、PickHighlight（对 BinFill） 0.52、SwingXtimes 0.51。
+按 [robomme.github.io](https://robomme.github.io/) 的四类与类内顺序列全部 16 个，编号即官网 Task 编号（`AGENTS.md` P6）。T 倍数（倍数 = V3 ÷ V2 参照）：1.1 BinFill 0.68（对 V2 含假 demo）/ 1.36（对 V2 纯执行段）、1.2 PickXtimes 0.69、1.3 SwingXtimes 0.51、1.4 StopCube 1.17；2.1 VideoUnmask 0.85、2.2 ButtonUnmask 0.92、2.3 VideoUnmaskSwap 1.00、2.4 ButtonUnmaskSwap 0.83；3.1 PickHighlight 0.99（对 VideoRepick）/ 0.52（对 BinFill）、3.2 VideoRepick 1.10、3.3 VideoPlaceButton 1.11、3.4 VideoPlaceOrder 1.29；4.1 MoveCube、4.2 InsertPeg 不纳入；4.3 PatternLock 0.82、4.4 RouteStick 1.00。
 
 漏段倍数与 T 倍数不同步：漏几段取决于段长，StopCube（T 1.17、漏段 0.48）、VideoPlaceButton（1.11、0.32）、VideoPlaceOrder（1.29、0.33）段长所以漏段倍数低；SwingXtimes（T 0.51、漏段 1.04）段短所以漏段倍数不低。
 
