@@ -1,13 +1,13 @@
 {
  "task": "ButtonUnmaskSwap",
- "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+ "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
  "synthetic": true,
  "records": [
   {
    "episode": 3,
    "seed": 7300,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -54,6 +54,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 555,
      "demo": 0,
@@ -64,7 +76,10 @@
      "delta32": 17.9,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 1
+     "exec_skip8": 1,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 1
     }
    },
    "xhard1": {
@@ -110,6 +125,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 555,
      "demo": 0,
@@ -120,7 +157,10 @@
      "delta32": 17.9,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 1
+     "exec_skip8": 1,
+     "swap_events": 4,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -128,7 +168,7 @@
    "episode": 7,
    "seed": 7700,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -175,6 +215,23 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 451,
      "demo": 0,
@@ -185,7 +242,10 @@
      "delta32": 14.5,
      "exec_segments": 5,
      "shortest_exec_seg": 51,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 3,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -231,6 +291,33 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ],
+     [
+      264,
+      314,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 451,
      "demo": 0,
@@ -241,7 +328,10 @@
      "delta32": 14.5,
      "exec_segments": 5,
      "shortest_exec_seg": 51,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 5,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -249,7 +339,7 @@
    "episode": 11,
    "seed": 8100,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -296,6 +386,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 454,
      "demo": 0,
@@ -306,7 +408,10 @@
      "delta32": 14.6,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -352,6 +457,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 454,
      "demo": 0,
@@ -362,7 +489,10 @@
      "delta32": 14.6,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 4,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    }
   },
@@ -370,7 +500,7 @@
    "episode": 15,
    "seed": 8500,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -417,6 +547,23 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 458,
      "demo": 0,
@@ -427,7 +574,10 @@
      "delta32": 14.7,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 3,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -473,6 +623,33 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ],
+     [
+      264,
+      314,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 458,
      "demo": 0,
@@ -483,7 +660,10 @@
      "delta32": 14.7,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 5,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -491,7 +671,7 @@
    "episode": 19,
    "seed": 8900,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -538,6 +718,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 451,
      "demo": 0,
@@ -548,7 +740,10 @@
      "delta32": 14.5,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -594,6 +789,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 451,
      "demo": 0,
@@ -604,7 +821,10 @@
      "delta32": 14.5,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 4,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    }
   },
@@ -612,7 +832,7 @@
    "episode": 23,
    "seed": 9300,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -659,6 +879,23 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 473,
      "demo": 0,
@@ -669,7 +906,10 @@
      "delta32": 15.2,
      "exec_segments": 5,
      "shortest_exec_seg": 49,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 3,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -715,6 +955,33 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ],
+     [
+      264,
+      314,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 473,
      "demo": 0,
@@ -725,7 +992,10 @@
      "delta32": 15.2,
      "exec_segments": 5,
      "shortest_exec_seg": 49,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 5,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -733,7 +1003,7 @@
    "episode": 27,
    "seed": 9700,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -780,6 +1050,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 447,
      "demo": 0,
@@ -790,7 +1072,10 @@
      "delta32": 14.4,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -836,6 +1121,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 447,
      "demo": 0,
@@ -846,7 +1153,10 @@
      "delta32": 14.4,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 4,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    }
   },
@@ -854,7 +1164,7 @@
    "episode": 31,
    "seed": 10100,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -901,6 +1211,23 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 460,
      "demo": 0,
@@ -911,7 +1238,10 @@
      "delta32": 14.8,
      "exec_segments": 5,
      "shortest_exec_seg": 51,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 3,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -957,6 +1287,33 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ],
+     [
+      264,
+      314,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 460,
      "demo": 0,
@@ -967,7 +1324,10 @@
      "delta32": 14.8,
      "exec_segments": 5,
      "shortest_exec_seg": 51,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 5,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -975,7 +1335,7 @@
    "episode": 35,
    "seed": 10500,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -1022,6 +1382,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 472,
      "demo": 0,
@@ -1032,7 +1404,10 @@
      "delta32": 15.2,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -1078,6 +1453,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 472,
      "demo": 0,
@@ -1088,7 +1485,10 @@
      "delta32": 15.2,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 4,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -1096,7 +1496,7 @@
    "episode": 39,
    "seed": 10900,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -1143,6 +1543,23 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 466,
      "demo": 0,
@@ -1153,7 +1570,10 @@
      "delta32": 15.0,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 3,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -1199,6 +1619,33 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ],
+     [
+      264,
+      314,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 466,
      "demo": 0,
@@ -1209,7 +1656,10 @@
      "delta32": 15.0,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 5,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -1217,7 +1667,7 @@
    "episode": 43,
    "seed": 11300,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -1264,6 +1714,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 463,
      "demo": 0,
@@ -1274,7 +1736,10 @@
      "delta32": 14.9,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -1320,6 +1785,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 463,
      "demo": 0,
@@ -1330,7 +1817,10 @@
      "delta32": 14.9,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 4,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -1338,7 +1828,7 @@
    "episode": 47,
    "seed": 11700,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -1385,6 +1875,23 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 471,
      "demo": 0,
@@ -1395,7 +1902,10 @@
      "delta32": 15.2,
      "exec_segments": 5,
      "shortest_exec_seg": 50,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 3,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -1441,6 +1951,33 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ],
+     [
+      264,
+      314,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 471,
      "demo": 0,
@@ -1451,7 +1988,10 @@
      "delta32": 15.2,
      "exec_segments": 5,
      "shortest_exec_seg": 50,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 5,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -1459,7 +1999,7 @@
    "episode": 51,
    "seed": 12100,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -1506,6 +2046,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 456,
      "demo": 0,
@@ -1516,7 +2068,10 @@
      "delta32": 14.7,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -1562,6 +2117,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 456,
      "demo": 0,
@@ -1572,7 +2149,10 @@
      "delta32": 14.7,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 4,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    }
   },
@@ -1580,7 +2160,7 @@
    "episode": 55,
    "seed": 12500,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -1627,6 +2207,23 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 451,
      "demo": 0,
@@ -1637,7 +2234,10 @@
      "delta32": 14.5,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 1
+     "exec_skip8": 1,
+     "swap_events": 3,
+     "swap_skip8": 0,
+     "skip8_total": 1
     }
    },
    "xhard1": {
@@ -1683,6 +2283,33 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ],
+     [
+      264,
+      314,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 451,
      "demo": 0,
@@ -1693,7 +2320,10 @@
      "delta32": 14.5,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 1
+     "exec_skip8": 1,
+     "swap_events": 5,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -1701,7 +2331,7 @@
    "episode": 59,
    "seed": 12900,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -1748,6 +2378,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 460,
      "demo": 0,
@@ -1758,7 +2400,10 @@
      "delta32": 14.8,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -1804,6 +2449,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 460,
      "demo": 0,
@@ -1814,7 +2481,10 @@
      "delta32": 14.8,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 4,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    }
   },
@@ -1822,7 +2492,7 @@
    "episode": 63,
    "seed": 13300,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -1869,6 +2539,23 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 468,
      "demo": 0,
@@ -1879,7 +2566,10 @@
      "delta32": 15.1,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 3,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -1925,6 +2615,33 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ],
+     [
+      264,
+      314,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 468,
      "demo": 0,
@@ -1935,7 +2652,10 @@
      "delta32": 15.1,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 5,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -1943,7 +2663,7 @@
    "episode": 67,
    "seed": 13700,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -1990,6 +2710,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 485,
      "demo": 0,
@@ -2000,7 +2732,10 @@
      "delta32": 15.6,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -2046,6 +2781,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 485,
      "demo": 0,
@@ -2056,7 +2813,10 @@
      "delta32": 15.6,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 4,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -2064,7 +2824,7 @@
    "episode": 71,
    "seed": 14100,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -2111,6 +2871,23 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 479,
      "demo": 0,
@@ -2121,7 +2898,10 @@
      "delta32": 15.4,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 3,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -2167,6 +2947,33 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ],
+     [
+      264,
+      314,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 479,
      "demo": 0,
@@ -2177,7 +2984,10 @@
      "delta32": 15.4,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 5,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -2185,7 +2995,7 @@
    "episode": 75,
    "seed": 14500,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -2232,6 +3042,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 461,
      "demo": 0,
@@ -2242,7 +3064,10 @@
      "delta32": 14.8,
      "exec_segments": 5,
      "shortest_exec_seg": 50,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -2288,6 +3113,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 461,
      "demo": 0,
@@ -2298,7 +3145,10 @@
      "delta32": 14.8,
      "exec_segments": 5,
      "shortest_exec_seg": 50,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 4,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    }
   },
@@ -2306,7 +3156,7 @@
    "episode": 79,
    "seed": 14900,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -2353,6 +3203,23 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 473,
      "demo": 0,
@@ -2363,7 +3230,10 @@
      "delta32": 15.2,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 3,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -2409,6 +3279,33 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ],
+     [
+      264,
+      314,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 473,
      "demo": 0,
@@ -2419,7 +3316,10 @@
      "delta32": 15.2,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 5,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -2427,7 +3327,7 @@
    "episode": 83,
    "seed": 15300,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -2474,6 +3374,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 450,
      "demo": 0,
@@ -2484,7 +3396,10 @@
      "delta32": 14.5,
      "exec_segments": 5,
      "shortest_exec_seg": 50,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -2530,6 +3445,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 450,
      "demo": 0,
@@ -2540,7 +3477,10 @@
      "delta32": 14.5,
      "exec_segments": 5,
      "shortest_exec_seg": 50,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 4,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    }
   },
@@ -2548,7 +3488,7 @@
    "episode": 87,
    "seed": 15700,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -2595,6 +3535,23 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 443,
      "demo": 0,
@@ -2605,7 +3562,10 @@
      "delta32": 14.3,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 3,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    },
    "xhard1": {
@@ -2651,6 +3611,33 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ],
+     [
+      264,
+      314,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 443,
      "demo": 0,
@@ -2661,7 +3648,10 @@
      "delta32": 14.3,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 5,
+     "swap_skip8": 2,
+     "skip8_total": 2
     }
    }
   },
@@ -2669,7 +3659,7 @@
    "episode": 91,
    "seed": 16100,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -2716,6 +3706,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 464,
      "demo": 0,
@@ -2726,7 +3728,10 @@
      "delta32": 14.9,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -2772,6 +3777,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 464,
      "demo": 0,
@@ -2782,7 +3809,10 @@
      "delta32": 14.9,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 4,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -2790,7 +3820,7 @@
    "episode": 95,
    "seed": 16500,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -2837,6 +3867,23 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 479,
      "demo": 0,
@@ -2847,7 +3894,10 @@
      "delta32": 15.4,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 3,
+     "swap_skip8": 0,
+     "skip8_total": 0
     }
    },
    "xhard1": {
@@ -2893,6 +3943,33 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ],
+     [
+      264,
+      314,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 479,
      "demo": 0,
@@ -2903,7 +3980,10 @@
      "delta32": 15.4,
      "exec_segments": 5,
      "shortest_exec_seg": 48,
-     "skip8": 0
+     "exec_skip8": 0,
+     "swap_events": 5,
+     "swap_skip8": 1,
+     "skip8_total": 1
     }
    }
   },
@@ -2911,7 +3991,7 @@
    "episode": 99,
    "seed": 16900,
    "synthesis": {
-    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）",
     "from": null,
     "to": null
    },
@@ -2958,6 +4038,18 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 453,
      "demo": 0,
@@ -2968,7 +4060,10 @@
      "delta32": 14.6,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 1
+     "exec_skip8": 1,
+     "swap_events": 2,
+     "swap_skip8": 0,
+     "skip8_total": 1
     }
    },
    "xhard1": {
@@ -3014,6 +4109,28 @@
       }
      ]
     },
+    "swaps": [
+     [
+      64,
+      114,
+      "估"
+     ],
+     [
+      114,
+      164,
+      "估"
+     ],
+     [
+      164,
+      214,
+      "估"
+     ],
+     [
+      214,
+      264,
+      "估"
+     ]
+    ],
     "stats": {
      "T": 453,
      "demo": 0,
@@ -3024,7 +4141,10 @@
      "delta32": 14.6,
      "exec_segments": 5,
      "shortest_exec_seg": 41,
-     "skip8": 1
+     "exec_skip8": 1,
+     "swap_events": 4,
+     "swap_skip8": 0,
+     "skip8_total": 1
     }
    }
   }

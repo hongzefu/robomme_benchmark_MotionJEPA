@@ -8,13 +8,15 @@
 uv run --no-sync python vis/synthesize_reference_timeline.py --h5-dir /data/hongzefu/data_0226 --metadata-dir src/robomme/env_metadata/train --out vis/output
 ```
 
-约 50 秒；末行 `XHARD_REF=INFO tasks=14 episodes=350 synthetic=1`。产物在 `vis/output/`：每任务 `<Task>.png`（按合成 T 取最短 / 中位 / 最长三条，每条上行官方 hard 原样、下行 xhard1 合成）、`reference_<Task>.json`（逐条原段表、合成段表与统计）、`reference_summary.md`（汇总表，含与计划外推值的对账）。
+约 90 秒；倒数第二行 `XHARD_REF_SWAP=INFO tasks=4 ...`，末行 `XHARD_REF=INFO tasks=14 episodes=350 synthetic=1`。产物在 `vis/output/`：每任务 `<Task>.png`（按合成 T 取最短 / 中位 / 最长三条，每条上行官方 hard 原样、下行 xhard1 合成，竖带为 swap）、`overview.png`（14 任务各取 xhard1 最短 / 中位 / 最长三条，全局横轴，V2 总览图画法）、`reference_<Task>.json`（逐条原段表、合成段表与统计）、`reference_summary.md`（汇总表，含与计划外推值的对账）。
 
 ## 口径
 
 - 切段：`is_subgoal_boundary=True` 为段起点，段名取该步 `simple_subgoal`，demo 与尾段 `All tasks completed` 都算段（与 `scripts/patternlock-routestick-params/extract_move_durations.py` 一致）。
-- 画图：复用 `scripts/patternlock-routestick-params/plot_sampling_windows.py` 的 `draw_row`（demo / exec 底色、subgoal 块、33 帧 stride-16 不跨段窗口三行堆叠、32 帧与 8 帧帧路）。
-- 统计：T、demo 长度、窗 = demo 窗 + exec 窗、Δ8 = (T−1)/7、最短执行段、漏段8 = 8 帧帧路没有采样点落入的执行段数（执行段不含 demo 与尾段）。
+- 画图：V2 画法（2026-10-07 用户「然后恢复v2的图片数轴」）。`vis/v2_plot.py` 是 origin/newtask-v2 `70bc2ce0` 的 `scripts/injection-before-2d/{plot_sampling_windows,window_timeline,plot_injection_before_2d}.py` 中 `draw_track`、`_draw_board` 及其依赖的逐字搬运，只改 import；本仓库只在其后追加 `EXTRA_RULES`（V2 没覆盖的 12 个任务的中文短标）。每行：demo / exec 底色、subgoal 块（中文短标）、33 帧 stride-16 不跨段窗口三行堆叠、32 帧紫线与 8 帧红点帧路、每次 swap 一条半透明竖带（第 1～5 次紫 / 橙 / 青 / 玫红 / 棕），右栏 `T · 窗口 d+e=n · Δ32 · Δ8`。图例沿用 V2 原文，其中「慢条剔除」「BinFill 重复两遍」两项本仓库不出现。
+- V2 实测原图：`v2/windows_overview.png`（origin/newtask-v2 `c0e7f046` 入库的 `scripts/injection-before-2d/figures/windows_overview.png`，1,066,060 字节，07 实跑 14 组）。
+- swap 事件（2026-10-07 用户「v2有一个swap的标注 也作为subgoal 你也要考虑这个问题 swap采不到也不行」，追问后定「每次 swap 算一段」）：h5 里没有 swap 标签（整段 `static`），时刻按调度推出。VideoUnmaskSwap / ButtonUnmaskSwap 第 k 次 = `[64+50(k−1), 64+50k]`（`_refresh_swap_schedule`；ButtonUnmaskSwap 从第 0 步起算、与按钮并行，次数 h5 读不到，按 episode 序号在区间里轮流估）；VideoPlaceButton / VideoPlaceOrder 从最后一个 demo `static` 段起点每 50 帧一次（hard 1 次、xhard1 3 次；真实 h5 里 `step()` 闩锁 swap 的步可能比段边界晚十几帧，同 V2 VideoRepick 实测 B1−S = 12～17，合成接受这个近似）。
+- 统计：T、demo 长度、窗 = demo 窗 + exec 窗、Δ8 = (T−1)/7、最短执行段；8 帧帧路用 V2 的 `floor(i·(T−1)/7 + 0.5)`（2026-10-07 起，此前是 Python 银行家舍入）。`exec_skip8` = 帧路没有点落入的执行段数（不含 demo 与尾段）；`swap_skip8` = 帧路没有点落入的 swap 事件数；`skip8_total` = 两者之和，是「8 帧必漏」判据用的数。
 - Unmask 系任务的 h5 只有 ep0–99，因此也只有 25 条 hard。
 
 ## 复制规则（`RULES`，取值与 `1006-xhard12-env-plan.md` 第一部分四节一致）
@@ -38,6 +40,17 @@ uv run --no-sync python vis/synthesize_reference_timeline.py --h5-dir /data/hong
 
 复制的段沿用原文（含序数词），所以图上会出现「抓红4」后面又来「抓红1」，这是复制粘贴的痕迹，不代表真实序号。
 
-## 2026-10-06 结果速览
+## 2026-10-06 结果速览（当时漏段只数执行段、不计 swap，计入后见下节）
 
 合成中位 T 与计划外推值基本吻合（PickXtimes 1128 vs 1120、RouteStick 900 vs 900、StopCube 1054 vs 1020）；VideoPlaceOrder（1154 vs 1300）与 PatternLock（737 vs 810）外推偏乐观。**两个 Swap 任务与两个 Unmask 任务合成后都有 episode 的 8 帧帧路一段都不漏**（最少漏段 0），硬性判据对它们不一定成立。用户追加的两个 Place 任务（2 块 + 回原位 + swap 3）合成中位 1618 / 1773 帧、98 / 108 窗，远超 900 目标。详表见 `output/reference_summary.md`。
+
+## 2026-10-07 结果速览（swap 计入后）
+
+| 任务 | swap 次数 hard → xhard1 | 合计漏最少 hard → xhard1 | 0 漏条数 hard → xhard1 |
+|---|---|---|---|
+| VideoUnmaskSwap | 2–3 → 4–5 | 0 → **1** | 11/25 → **0/25** |
+| ButtonUnmaskSwap | 2–3 → 4–5（估） | 0 → 0 | 21/25 → 7/25（7 条全是 swap=4；swap=5 的 12 条每条至少漏 1） |
+| VideoPlaceButton | 1 → 3 | 1 → 4 | 0/25 → 0/25 |
+| VideoPlaceOrder | 1 → 3 | 2 → 4 | 0/25 → 0/25 |
+
+计入 swap 后，VideoUnmaskSwap 的「8 帧必漏」在合成参考上成立；ButtonUnmaskSwap 只在 swap=5 时成立，swap=4 时 Δ8≈66 的采样点恰好落进 4 段连续的 50 帧交换；两个 Unmask 任务没有 swap，仍有 0 漏条（VideoUnmask 24/25、ButtonUnmask 10/25）。其余 10 个任务 swap 漏为 0，合计漏与执行段漏相同。
