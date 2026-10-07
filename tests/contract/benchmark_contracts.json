@@ -6824,6 +6824,97 @@
       ]
     },
     {
+      "id": "C13-R4-SEVEN-ROUTES",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/env_client.py",
+        "scripts/eval-official/run_seat.sh",
+        "scripts/eval-official/framesamp_modul_client.py",
+        "scripts/eval-official/smvla_client.py",
+        "scripts/eval-official/smvla_server.py",
+        "scripts/eval-official/pp_client.py",
+        "scripts/eval-official/groundsg_client.py",
+        "scripts/eval-official/official_defs.py",
+        "scripts/eval-official/policy_server_wrap.py",
+        "scripts/eval-official/astra_hard_runner.py",
+        "scripts/eval-official/run_astra.sh",
+        "scripts/eval-official/trace_writer.py"
+      ],
+      "symbol": "七路线（FrameSamp+Modulation、SimpleMemVLA、PonderPounce、GroundSG Oracle／QwenVL／MemER、3-tier Astra）× --policy-seed 0／7／42：run_seat.sh::build_server_cmd → policy_server_wrap.run（create_policy 实参、服务元数据）／SMVLAPolicyHost.new_episode（reseed）／official_defs.make_args（Args.model_seed）与 seed_everything → SeatRunner.run_one 结果行 policy_seed／server_seed／budget_token 与 trace header／identity／end；run_astra.sh VLA 服务 --seed、astra_hard_runner check／run --policy-seed、trace／result／provenance；ood --max-steps 1800 --strict-cap：EnvSession.step 守卫 × 六个真实客户端循环、Astra TracedEnv 守卫；OBS_EQ：policy_server_wrap.AuditedPolicy／install_tokenizer_spy 与 SMVLAPolicyHost._watch_prompt／_audit_block",
+      "oracle": "计划第二部分三节第二段与八.3：期望值在用例里手写（种子取值、1800／1801、timeout、exec_steps、trace 行数）；服务 argv 的种子按路线手写取法；OBS_EQ 比较器手写（模型实际 token id／mask、动作字节、RNG、调用次数四项）",
+      "positive": "POLICY_SEEDS=PASS models=7 seeds=0,7,42 cases=21 cpu_only=1（种子到服务命令、该路线真正用的随机状态、结果行与 trace）；EVAL_CAP=PASS models=7 dataset=ood max_steps=1800 rejected_step=1801（环境恰收 1800 步、timeout、exec_steps=1800、effective_cap=1800、trace 恰 1800 个 step 行）；OBS_EQ=PASS routes=5（观察开关两侧四项全等）",
+      "negative": "对照：同一 FrameSamp+Modulation 路线去掉 strict cap，第 1801 步进入环境（判据有区分力）；OBS_EQ 三类突变（多抽随机数、多推理一次、改一个 token）在外壳与 smvla 服务上各自被比较器拒（6/6）",
+      "boundaries": "纯 CPU：服务连接、swift、环境、Astra 规划／监视／VLA 均为替身，run_astra.sh 的解释器是只记参数的桩；PonderPounce 自身循环在 1800 退出、可不置 cap_hit；PonderPounce 外壳的 OBS_EQ 在 tests/pipeline/evalx/pp/test_pp_server_wrap.py（PP_AUDIT_OBS_EQ）；Astra 无服务端观察层，不适用 OBS_EQ。POLICY_SEEDS 与 EVAL_CAP 两条用例单条超过 10 s，标 slow（pytest -m slow tests/pipeline/eval 执行）",
+      "nodeids": [
+        "tests/pipeline/eval/test_stage3_seven_routes.py::test_policy_seeds_seven_routes_three_seeds",
+        "tests/pipeline/eval/test_stage3_seven_routes.py::test_eval_cap_1800_seven_routes",
+        "tests/pipeline/eval/test_stage3_seven_routes.py::test_obs_eq_on_off_equal_and_three_mutants_rejected"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/eval/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-R4-CROSS-CHECKERS",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/trace_arrays_check.py",
+        "scripts/eval-official/lang_io_check.py",
+        "scripts/eval-official/env_client.py",
+        "scripts/eval-official/budget_ledger.py",
+        "scripts/eval-official/trace_writer.py",
+        "scripts/eval-official/framesamp_modul_client.py",
+        "scripts/eval-official/smvla_client.py",
+        "scripts/eval-official/pp_client.py",
+        "scripts/eval-official/groundsg_client.py",
+        "scripts/eval-official/astra_hard_runner.py"
+      ],
+      "symbol": "六条 env_client 路线真实客户端经 SeatRunner 产出（另含 PP／GroundSG Oracle 第 5 步环境异常局与一局 Astra）→ trace_arrays_check.main／lang_io_check.main；SeatRunner 换种子（独立目录、同一共享账本）；BudgetLedger.reserve（first／recovery）／claim_retry（infra／expired）／report_lines 的上限一致性",
+      "oracle": "检查器判定行的期望计数在用例里手写；指向执行段初始画面的图引用个数由用例按 trace demo 行与 step 行独立数出；小账本（轨迹 12、首试 9、恢复合计 3）的领取序列手算",
+      "positive": "九局真实产物 TRACE_ARRAYS=PASS；LANG_IO 在只把初始画面引用改记为 demo 段后九局 PASS；缺观测步不补零（end.arrays.missing_state_steps=[5]、无 exec_state__00004）；种子 7 accepted 后种子 42 在独立目录照常重跑，账本 route／token 各带种子；到期接续与 infra 重试共用恢复合计、report 上限与两个领取入口一致",
+      "negative": "篡改一个动作字节 tampered=1；给缺观测步补零 tampered=1；删一个观测步状态 observed_state_missing=1；改一个附图引用哈希 image_ref_unresolved=1；删一个调用关闭行 open_calls=1；第 4 次恢复在 retry 与 reserve 两入口同时被拒；同一身份第二次领重试（第三次 attempt）被拒；改任一构造参数后 reserve／claim_retry 抛 BudgetConfigMismatch、report 判 config_mismatch",
+      "boundaries": "纯 CPU 替身；跨块检查器用例超过 1 s、标 slow；已知缺陷两条见 C13-R4-KNOWN-DEFECTS",
+      "nodeids": [
+        "tests/pipeline/eval/test_stage3_counterexamples.py::test_real_route_outputs_pass_checkers_and_injected_faults_fail",
+        "tests/pipeline/eval/test_stage3_counterexamples.py::test_seed_switch_with_own_stage_reruns_and_routes_stay_separate",
+        "tests/pipeline/eval/test_stage3_counterexamples.py::test_budget_caps_consistent_across_reserve_retry_report"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/eval/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-R4-KNOWN-DEFECTS",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/lang_io_check.py",
+        "scripts/eval-official/env_client.py"
+      ],
+      "symbol": "lang_io_check.frame_sets（phase=exec 只认 step 行帧）；env_client.AttemptLedger.accepted／SeatRunner.run_identities_v8（accepted 只按身份 key）",
+      "oracle": "用例独立数出指向执行段初始画面（trace demo 行最后一帧）的图引用个数；换种子复用尝试账本时期望拒跑或按种子重跑",
+      "positive": "锁定现状：真实 GroundSG 三变体与 Astra 产物 LANG_IO=FAIL 且 image_ref_unresolved 恰等于初始画面引用数（本次 24）；种子 42 复用种子 7 的尝试账本时 rc=0、无种子 42 结果行、RUN_PLAN accepted=1 todo=0",
+      "negative": "缺陷修好后两条现状断言必失败（用例里显式断言「未修」），届时改为期望断言",
+      "boundaries": "本套件资源守卫禁止 xfail，故沿用 test_known_defect_* 体例锁定现状；不改生产代码，交主会话裁决",
+      "nodeids": [
+        "tests/pipeline/eval/test_stage3_counterexamples.py::test_real_route_outputs_pass_checkers_and_injected_faults_fail",
+        "tests/pipeline/eval/test_stage3_counterexamples.py::test_known_defect_seed_switch_reuses_other_seed_accepted"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "blocked",
+      "defect": "R4-D1：lang_io_check.frame_sets 只把 trace step 行的帧算作 phase=exec；GroundSG 新侧三变体与 Astra 把动作模型首次调用的当前画面（reset 初始画面，trace demo 行最后一帧）记为 phase=exec、frame_idx=0，真实产物 LANG_IO=FAIL。建议：frame_sets 把 demo 行最后一帧（front／wrist）同时并入 (exec, cam)，或客户端把该帧记为 phase=demo（两侧择一，须与 trace demo 行含初始画面的约定一致）。R4-D2：AttemptLedger.accepted 只按身份 key 记，同一尝试账本被另一 --policy-seed 复用时把别组 accepted 当作已完成跳过、退出 0；建议 run_identities 前核账本 attempt_start 行的 route 与当前 policy_route 一致，不一致 RUN_BLOCKED reason=route_mismatch（或 accepted 按 route 分开）。",
+      "note": "待主会话裁决：R4-D1 不修则正式运行的 LANG_IO 闸门对 GroundSG 三变体与 Astra 必判 FAIL；R4-D2 只在误复用 --stage 时触发，run_eval_gl.sh 的 stage 目录不含种子，现由操作约定（每个 (模型, policy_seed) 独立 stage）规避。",
+      "merged_from": [
+        "tests/pipeline/eval/contracts.delta.json"
+      ]
+    },
+    {
       "id": "C13-ASTRA-STAGE3",
       "domain": "C13",
       "source": [
