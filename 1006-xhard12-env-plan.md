@@ -1,15 +1,15 @@
 # 1006-xhard12-env-plan.md — 在原 16 任务 hard 母样本上派生 xhard 档：子类继承 + 独立包 + 生成器一个开关
 
-> **权威与授权**：只规划不实施。开工须用户明确、无歧义地说「开工」（`AGENTS.md` 第 2 条）；计划获批、取值获批都不是开工令。本版 2026-10-06（2.32，2.34 按用户决定纳入 Unmask 两任务 pick 3 与 Place 两任务「2 块 + 回原位 + swap 3」）把前两版「接口方案」（2.30.x）与「上次训练参照与逐任务高层方案」（2.31）合成一份完整计划；上次训练怎么做的、官方 hard 档统计、16 任务源码核查全部移到留档 [`1006-xhard12-prev-training-and-task-plan.md`](1006-xhard12-prev-training-and-task-plan.md)，本文只引用、不复述。2.32.1 按用户要求（2026-10-06「第一部分现在简略了……这两块都要展开来讲讲清楚了……列一个完整的16task的表」）把第一部分二、三节恢复为分步讲解、四节扩成 16 任务全表，第一部分篇幅因此超出正本第 2 条的 90～130 行参考值，属用户明示。2.35（2026-10-07）按用户「v2有一个swap的标注 也作为subgoal 你也要考虑这个问题 swap采不到也不行」「然后恢复v2的图片数轴」把每次 swap 计入 8 帧漏段判据，并把 `vis/` 改为 V2 数轴画法、在四节嵌图。2.36（2026-10-07）按用户「VideoPlaceButton、VideoPlaceOrder 是否不用改」「改计划 两个任务用 --xhard 按原 hard 配置重新生成」撤回口径 ⑩ 的 Place 两任务重型重写：官方 hard 档两任务 T 中位 961 / 1115、窗中位 57 / 67、8 帧合计漏最少 1 / 2（留档 4.2 节、`vis/output/reference_summary.md` hard 列），已满足长度目标与 8 帧必漏，改为子类不改任何键和方法、只挂 `XHardMixin`，经 `--xhard` 用原 seed 重新生成；S5 子代理、`home_site.py`、`XHARD_PLACE` 一并取消。
+> **权威与授权**：只规划不实施。开工须用户明确、无歧义地说「开工」（`AGENTS.md` 第 2 条）；计划获批、取值获批都不是开工令。本版 2026-10-06（2.32，2.34 按用户决定纳入 Unmask 两任务 pick 3 与 Place 两任务「2 块 + 回原位 + swap 3」）把前两版「接口方案」（2.30.x）与「上次训练参照与逐任务高层方案」（2.31）合成一份完整计划；上次训练怎么做的、官方 hard 档统计、16 任务源码核查全部移到留档 [`1006-xhard12-prev-training-and-task-plan.md`](1006-xhard12-prev-training-and-task-plan.md)，本文只引用、不复述。2.32.1 按用户要求（2026-10-06「第一部分现在简略了……这两块都要展开来讲讲清楚了……列一个完整的16task的表」）把第一部分二、三节恢复为分步讲解、四节扩成 16 任务全表，第一部分篇幅因此超出正本第 2 条的 90～130 行参考值，属用户明示。2.35（2026-10-07）按用户「v2有一个swap的标注 也作为subgoal 你也要考虑这个问题 swap采不到也不行」「然后恢复v2的图片数轴」把每次 swap 计入 8 帧漏段判据，并把 `vis/` 改为 V2 数轴画法、在四节嵌图。2.36（2026-10-07）按用户「VideoPlaceButton、VideoPlaceOrder 是否不用改」「改计划 两个任务用 --xhard 按原 hard 配置重新生成」撤回口径 ⑩ 的 Place 两任务重型重写：官方 hard 档两任务 timestep 数中位 961 / 1115、窗中位 57 / 67、8 帧合计漏最少 1 / 2（留档 4.2 节、`vis/output/reference_summary.md` hard 列），已满足长度目标与 8 帧必漏，改为子类不改任何键和方法、只挂 `XHardMixin`，经 `--xhard` 用原 seed 重新生成；S5 子代理、`home_site.py`、`XHARD_PLACE` 一并取消。
 > **代码锚点**：`deb938e0`（2.31）。工作副本 `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`，分支 `newtask-v3-MotionJepa1006`，提交编号 `2.<小版本>`。生成代码起点 `3a5951a8`（2.24），源码核查锚点 `13905997`（2.25）。
 > **外部锚点**：ManiSkill `07be6fbc66350ddca200abfb0a11b692f078f7fd`（`pyproject.toml` git rev，不改）；`.venv` gymnasium 0.29.1、torch 2.9.1；上次训练 run `wan-full1600-filter2-b176x4-72ep-a`（留档一节）。
-> **事实核查**：2026-10-06 三个只读子代理逐文件核实了 ManiSkill `spec` 挂载与 reset 生命周期、生成器锚点与导入路径、11 个任务的覆写锚点（留档 5.0–5.2 节）；本文第二部分的代码锚点以此为准。所有 T、窗口数仍是线性外推 [估算]，实跑后要重算。
+> **事实核查**：2026-10-06 三个只读子代理逐文件核实了 ManiSkill `spec` 挂载与 reset 生命周期、生成器锚点与导入路径、11 个任务的覆写锚点（留档 5.0–5.2 节）；本文第二部分的代码锚点以此为准。所有 timestep 数、窗口数仍是线性外推 [估算]，实跑后要重算。
 
 # 第一部分（给人看）
 
 ## 一、要做什么与全部运行一览
 
-**一句话**：不改原 16 个任务文件，在新包 `src/robomme_xhard/` 里给 14 个任务各写一个子类：10 个只换 `configs["hard"]` 里的一两个数或重写一个方法，另有 VideoUnmask / ButtonUnmask 追加第三次抓（用户 2026-10-06 追加）；VideoPlaceButton / VideoPlaceOrder 的官方 hard 已经够长、8 帧已必漏，子类**不改任何配置和方法**，只是让它们走同一个开关按原 hard 配置重新生成一遍（用户 2026-10-07 改定）；生成器加一个 `--xhard` 开关，用 train metadata 里 hard 记录的**原 seed** 把这些子类跑一遍，录像器照原任务名录制。目标是每条 episode 更长（T 约 900、stride-16 窗口约 50–60），且 8 帧等距采样必然漏掉至少一类 subgoal。
+**一句话**：不改原 16 个任务文件，在新包 `src/robomme_xhard/` 里给 14 个任务各写一个子类：10 个只换 `configs["hard"]` 里的一两个数或重写一个方法，另有 VideoUnmask / ButtonUnmask 追加第三次抓（用户 2026-10-06 追加）；VideoPlaceButton / VideoPlaceOrder 的官方 hard 已经够长、8 帧已必漏，子类**不改任何配置和方法**，只是让它们走同一个开关按原 hard 配置重新生成一遍（用户 2026-10-07 改定）；生成器加一个 `--xhard` 开关，用 train metadata 里 hard 记录的**原 seed** 把这些子类跑一遍，录像器照原任务名录制。目标是每条 episode 更长（timestep 数约 900、stride-16 窗口约 50–60），且 8 帧等距采样必然漏掉至少一类 subgoal。
 
 ```
  开工 ─┬─ 步骤 1  前置验证（6 项，全部只读或 ≤5 分钟 smoke）
@@ -44,7 +44,7 @@
 | 4.4 | 模仿 | RouteStick | 25 | 换字典（`length`） |
 | **合计** | | **14 个任务** | **650** | |
 
-**已定口径（用户原话，2026-10-06）**：①「沿用 Hard 的所有配置，只在一两个参数上改动，比如 pick 5 次变成 pick 7 次」；②「seed 先用现有的，直接拿 `src/robomme/env_metadata/train` 里已经生成过原版 hard 的那组 seed」「新 seed 的事以后再说」；③「新增部分用独立的 ENV 文件表示」「所有改动只限于生成器 `generate_dataset_newseed.py` 这一个文件和新增的那些文件」「把所有改的部分全部归档在一起，放在 `src` 里面」；④「不再把 BinFill 做成带 video 的任务」；⑤ 长度对齐 newtask-v2 xhard（T≈900、50–60 窗），token 落实为 stride-16 窗口数；⑥ 只硬性要求 8 帧有 subgoal 级遗漏，32 帧「尽量」；⑦ 只用现有 hard seed、本轮接受总量缺口（约为上次 stride-1 chunk 的四成）；⑧ 纳入「换字典 + 重写方法」共 11 个任务；⑨「积极调用一些子代理可以搞清楚一些事实」；⑩（2026-10-06 追加）「两个unmask任务都改为pick三次」「[VideoPlaceButton、VideoPlaceOrder] 改为swap3次 然后参考现在的V9的版本 都是改成放两个颜色的cube做完一整套动作然后回到原始放置位置 其他不动」。2026-10-06 子代理核实后的两处修正：`pyproject.toml` **不改**（editable `.pth` 已把整个 `src/` 加进 `sys.path`，见二节）；两个 Swap 任务 swap≥4 必须重写 `_refresh_swap_schedule`，已不是纯改参数，列入「重写一个方法」组。口径 ⑩ 的 V9 核查结论（2026-10-06 只读子代理）：V9 里四个任务的 swap 都是布尔、整局只在 demo 末尾互换一次，**没有 swap 3 次的现成实现**，要自己改 `step()` 的 swap 状态机；「两块 + 回原位」V9 有现成做法（`utils/xhard_home_site.py` 在初始位姿建隐藏落点，demo 末尾每块 `put the cube back to its original position`）；Unmask 的 3 抓在 V9 是整文件加分支，本仓库可用子类 `_load_scene` 追加两项复现，但语言目标文本在受保护的 `task_goal.py` 里只有 1 抓、2 抓两句，**必须在该文件加一句**，属 P1 逐个批准项。⑪（2026-10-07，撤回 ⑩ 的后半句）用户问「VideoPlaceButton、VideoPlaceOrder 是否不用改」，看过官方 hard 长度（两任务 T 中位 961 / 1115 均已超过 V2 VideoRepick xhard 的 863，最短 900 / 921）后定「改计划 两个任务用 --xhard 按原 hard 配置重新生成」。⑩ 前半句（两个 Unmask pick 3）不变。
+**已定口径（用户原话，2026-10-06）**：①「沿用 Hard 的所有配置，只在一两个参数上改动，比如 pick 5 次变成 pick 7 次」；②「seed 先用现有的，直接拿 `src/robomme/env_metadata/train` 里已经生成过原版 hard 的那组 seed」「新 seed 的事以后再说」；③「新增部分用独立的 ENV 文件表示」「所有改动只限于生成器 `generate_dataset_newseed.py` 这一个文件和新增的那些文件」「把所有改的部分全部归档在一起，放在 `src` 里面」；④「不再把 BinFill 做成带 video 的任务」；⑤ 长度对齐 newtask-v2 xhard（timestep 数 ≈900、50–60 窗），token 落实为 stride-16 窗口数；⑥ 只硬性要求 8 帧有 subgoal 级遗漏，32 帧「尽量」；⑦ 只用现有 hard seed、本轮接受总量缺口（约为上次 stride-1 chunk 的四成）；⑧ 纳入「换字典 + 重写方法」共 11 个任务；⑨「积极调用一些子代理可以搞清楚一些事实」；⑩（2026-10-06 追加）「两个unmask任务都改为pick三次」「[VideoPlaceButton、VideoPlaceOrder] 改为swap3次 然后参考现在的V9的版本 都是改成放两个颜色的cube做完一整套动作然后回到原始放置位置 其他不动」。2026-10-06 子代理核实后的两处修正：`pyproject.toml` **不改**（editable `.pth` 已把整个 `src/` 加进 `sys.path`，见二节）；两个 Swap 任务 swap≥4 必须重写 `_refresh_swap_schedule`，已不是纯改参数，列入「重写一个方法」组。口径 ⑩ 的 V9 核查结论（2026-10-06 只读子代理）：V9 里四个任务的 swap 都是布尔、整局只在 demo 末尾互换一次，**没有 swap 3 次的现成实现**，要自己改 `step()` 的 swap 状态机；「两块 + 回原位」V9 有现成做法（`utils/xhard_home_site.py` 在初始位姿建隐藏落点，demo 末尾每块 `put the cube back to its original position`）；Unmask 的 3 抓在 V9 是整文件加分支，本仓库可用子类 `_load_scene` 追加两项复现，但语言目标文本在受保护的 `task_goal.py` 里只有 1 抓、2 抓两句，**必须在该文件加一句**，属 P1 逐个批准项。⑪（2026-10-07，撤回 ⑩ 的后半句）用户问「VideoPlaceButton、VideoPlaceOrder 是否不用改」，看过官方 hard 长度（两任务 timestep 数中位 961 / 1115 均已超过 V2 VideoRepick xhard 的 863，最短 900 / 921）后定「改计划 两个任务用 --xhard 按原 hard 配置重新生成」。⑩ 前半句（两个 Unmask pick 3）不变。
 
 ## 二、现在的脚本是怎么传参的，新参数接在哪里
 
@@ -149,7 +149,7 @@ record_env = RobommeRecordWrapper(base_env, dataset=输出目录, env_id="BinFil
 
 七，close。`record_env.close()`，这一步才真正把 HDF5 写到硬盘、把视频编码出来。
 
-八，返回结果。成功就返回 `ok: True` 加 h5 路径和帧数；失败就删掉空壳 h5，返回 `ok: False` 加 `failure_class`（`task` 或 `code`）和 traceback。这个返回值就是第三步里调度员拿到的「结果」。
+八，返回结果。成功就返回 `ok: True` 加 h5 路径和 timestep 数；失败就删掉空壳 h5，返回 `ok: False` 加 `failure_class`（`task` 或 `code`）和 traceback。这个返回值就是第三步里调度员拿到的「结果」。
 
 **第五步：收尾**
 
@@ -303,8 +303,8 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 | 2.4 | 永久性 | ButtonUnmaskSwap | 按钮后容器交换次数 / pick | [2,3] / 2 | [4,5] / 2 | 按两次按钮期间容器交换 4～5 次；同 VideoUnmaskSwap，但交换与按钮同时进行，交换结束是否晚于按钮完成待验 |
 | 3.1 | 参考 | PickHighlight | 要抓的高亮块数（总块 6 不变） | 3 | 5 | 6 块里高亮 5 块，要记住并逐个抓起 5 块；不取 6 是因为全高亮就不用记了 |
 | 3.2 | 参考 | VideoRepick | 执行段重复抓放次数（15 块 cluster 不变） | [1,3] | [4,5] | 看完演示后要把同一块正确的 cube 反复抓放 4～5 次；重复动作更多、更晚才按钮 |
-| 3.3 | 参考 | VideoPlaceButton | 不加档（原 hard 配置重生成） | 1 块 / 2 次放台（按钮前后各 1）/ swap 1 | **同官方 hard** | 不提升。官方 hard 已 T 900/961/1041、窗 53/57/62、8 帧合计漏均值 1.92（最少 1）；只走 `--xhard` 用原 seed 重生成一遍，与其它 12 个任务同一来源与同一输出目录（用户 2026-10-07） |
-| 3.4 | 参考 | VideoPlaceOrder | 不加档（原 hard 配置重生成） | 1 块 / [2,4] 次访问 / swap 1 | **同官方 hard** | 不提升。官方 hard 已 T 921/1115/1408、窗 54/67/85、8 帧合计漏均值 2（最少 2）；做法同 3.3 |
+| 3.3 | 参考 | VideoPlaceButton | 不加档（原 hard 配置重生成） | 1 块 / 2 次放台（按钮前后各 1）/ swap 1 | **同官方 hard** | 不提升。官方 hard 已 timestep 数 900/961/1041、窗 53/57/62、8 帧合计漏均值 1.92（最少 1）；只走 `--xhard` 用原 seed 重生成一遍，与其它 12 个任务同一来源与同一输出目录（用户 2026-10-07） |
+| 3.4 | 参考 | VideoPlaceOrder | 不加档（原 hard 配置重生成） | 1 块 / [2,4] 次访问 / swap 1 | **同官方 hard** | 不提升。官方 hard 已 timestep 数 921/1115/1408、窗 54/67/85、8 帧合计漏均值 2（最少 2）；做法同 3.3 |
 | 4.1 | 模仿 | MoveCube | 不加档 | 官方 hard | **不改** | 三种推 / 勾 / 抓放方式随机三选一，没有次数型的量 |
 | 4.2 | 模仿 | InsertPeg | 不加档 | 官方 hard | **不改** | 任务固定「演示抓插 → 执行抓插」，源码不读难度，没有量可调 |
 | 4.3 | 模仿 | PatternLock | 图案节点数（5×5 网格） | [4,8] | [10,14] | 演示画一条 10～14 个节点的路径，执行时要原样画出来；路径更长、更难记 |
@@ -314,15 +314,15 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 
 ### 与上一代 V2 交付集的逐任务长度对比
 
-口径：V3 是合成参考中位值（`vis/output/reference_summary.md`，按官方 hard 的 subgoal 段复制粘贴，非实跑），只有 3.3、3.4 两任务不加档，取官方 hard 实测中位；V2 取上次训练实际交付的那份（BinFill 含复制两遍的假 demo，policy 侧就是这么数窗口的），来源见留档 2.1 节。「8 帧漏段」V3 数执行段（不含演示段与尾段）加每次 swap 事件（50 帧算一段，2026-10-07 用户定「每次 swap 算一段」），均值；V2 只有留档里的「漏段占比」（含演示段），按段数折成约数，带「约」的都是换算值。V2 没有的任务，参照 V2 里机制最接近的一档。
+口径：V3 是合成参考中位值（`vis/output/reference_summary.md`，按官方 hard 的 subgoal 段复制粘贴，非实跑），只有 3.3、3.4 两任务不加档，取官方 hard 实测中位；V2 取上次训练实际交付的那份（BinFill 含复制两遍的假 demo，policy 侧就是这么数窗口的），来源见留档 2.1 节。「8 帧漏段」V3 数执行段（不含演示段与尾段）加每次 swap 事件（50 timestep 算一段，2026-10-07 用户定「每次 swap 算一段」），均值；V2 只有留档里的「漏段占比」（含演示段），按段数折成约数，带「约」的都是换算值。V2 没有的任务，参照 V2 里机制最接近的一档。
 
-| 编号 | V3 任务 | 对比的 V2 参照 | T：V2 → V3 | **T 倍数** | Δ8 倍数 | 窗：V2 → V3 | 窗倍数 | 8 帧漏段：V2 → V3 | 漏段倍数 | 备注 |
+| 编号 | V3 任务 | 对比的 V2 参照 | timestep：V2 → V3 | **timestep 倍数** | Δ8 倍数 | 窗：V2 → V3 | 窗倍数 | 8 帧漏段：V2 → V3 | 漏段倍数 | 备注 |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1.1 | BinFill | V2 同任务 hard（含假 demo ×2） | 1630 → 1109 | **0.68** | 0.68 | 98 → 68 | 0.69 | 约 11 → 5 | 0.45 |  |
 | 1.1 | BinFill | V2 同任务 hard 纯执行段（去掉假 demo） | 815 → 1109 | **1.36** | 1.36 | 49 → 68 | 1.39 | 约 5 → 5 | 1.00 |  |
 | 1.2 | PickXtimes | V2 BinFill hard（用户指定） | 1630 → 1128 | **0.69** | 0.69 | 98 → 69 | 0.70 | 约 11 → 7 | 0.64 |  |
-| 1.3 | SwingXtimes | V2 BinFill hard（用户指定） | 1630 → 833 | **0.51** | 0.51 | 98 → 51 | 0.52 | 约 11 → 11.4 | 1.04 | 每段只有 40 帧，所以短了漏段反而不少 |
-| 1.4 | StopCube | V2 RouteStick xhard（用户指定） | 900 → 1054 | **1.17** | 1.17 | 54 → 64 | 1.19 | 约 11 → 5.3 | 0.48 | 每段 100 帧、段少，所以长了漏段反而少 |
+| 1.3 | SwingXtimes | V2 BinFill hard（用户指定） | 1630 → 833 | **0.51** | 0.51 | 98 → 51 | 0.52 | 约 11 → 11.4 | 1.04 | 每段只有 40 timestep，所以短了漏段反而不少 |
+| 1.4 | StopCube | V2 RouteStick xhard（用户指定） | 900 → 1054 | **1.17** | 1.17 | 54 → 64 | 1.19 | 约 11 → 5.3 | 0.48 | 每段 100 timestep、段少，所以长了漏段反而少 |
 | 2.1 | VideoUnmask | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 476 | **0.85** | 0.84 | 32 → 27 | 0.84 | 0.7 → 0.1 | 0.14 | 8 帧基本不漏（24/25 条 0 漏） |
 | 2.2 | ButtonUnmask | V2 VideoUnmaskSwap xhard（V2 无同任务） | 558 → 515 | **0.92** | 0.91 | 32 → 31 | 0.97 | 0.7 → 0.9 | 1.29 |  |
 | 2.3 | VideoUnmaskSwap | V2 同任务 xhard | 558 → 560 | **1.00** | 0.99 | 32 → 32 | 1.00 | 0.7 → 2.2（执行 0.7 + swap 1.5） | 3.14 | 计入 swap 后每条最少漏 1 |
@@ -337,15 +337,15 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 | 4.3 | PatternLock | V2 RouteStick xhard（用户指定） | 900 → 737 | **0.82** | 0.82 | 54 → 43 | 0.80 | 约 11 → 8 | 0.73 |  |
 | 4.4 | RouteStick | V2 同任务 xhard | 900 → 900 | **1.00** | 1.00 | 54 → 54 | 1.00 | 约 11 → 6 | 0.55 |  |
 
-按 [robomme.github.io](https://robomme.github.io/) 的四类与类内顺序列全部 16 个，编号即官网 Task 编号（`AGENTS.md` P6）。T 倍数（倍数 = V3 ÷ V2 参照）：1.1 BinFill 0.68（对 V2 含假 demo）/ 1.36（对 V2 纯执行段）、1.2 PickXtimes 0.69、1.3 SwingXtimes 0.51、1.4 StopCube 1.17；2.1 VideoUnmask 0.85、2.2 ButtonUnmask 0.92、2.3 VideoUnmaskSwap 1.00、2.4 ButtonUnmaskSwap 0.83；3.1 PickHighlight 0.99（对 VideoRepick）/ 0.52（对 BinFill）、3.2 VideoRepick 1.10、3.3 VideoPlaceButton 1.11、3.4 VideoPlaceOrder 1.29；4.1 MoveCube、4.2 InsertPeg 不纳入；4.3 PatternLock 0.82、4.4 RouteStick 1.00。
+按 [robomme.github.io](https://robomme.github.io/) 的四类与类内顺序列全部 16 个，编号即官网 Task 编号（`AGENTS.md` P6）。timestep 倍数（倍数 = V3 ÷ V2 参照）：1.1 BinFill 0.68（对 V2 含假 demo）/ 1.36（对 V2 纯执行段）、1.2 PickXtimes 0.69、1.3 SwingXtimes 0.51、1.4 StopCube 1.17；2.1 VideoUnmask 0.85、2.2 ButtonUnmask 0.92、2.3 VideoUnmaskSwap 1.00、2.4 ButtonUnmaskSwap 0.83；3.1 PickHighlight 0.99（对 VideoRepick）/ 0.52（对 BinFill）、3.2 VideoRepick 1.10、3.3 VideoPlaceButton 1.11、3.4 VideoPlaceOrder 1.29；4.1 MoveCube、4.2 InsertPeg 不纳入；4.3 PatternLock 0.82、4.4 RouteStick 1.00。
 
-漏段倍数与 T 倍数不同步：漏几段取决于段长，StopCube（T 1.17、漏段 0.48）、VideoPlaceButton（1.11、0.32）、VideoPlaceOrder（1.29、0.33）段长所以漏段倍数低；SwingXtimes（T 0.51、漏段 1.04）段短所以漏段倍数不低。
+漏段倍数与 timestep 倍数不同步：漏几段取决于段长，StopCube（timestep 倍数 1.17、漏段 0.48）、VideoPlaceButton（1.11、0.32）、VideoPlaceOrder（1.29、0.33）段长所以漏段倍数低；SwingXtimes（timestep 倍数 0.51、漏段 1.04）段短所以漏段倍数不低。
 
-要把 T 倍数低于 1 的拉上来，各自的旋钮是：BinFill 投 8～9 块、PatternLock 节点 [12,16]、容器类任务没有不改结构的旋钮；是否调整由用户定。
+要把 timestep 倍数低于 1 的拉上来，各自的旋钮是：BinFill 投 8～9 块、PatternLock 节点 [12,16]、容器类任务没有不改结构的旋钮；是否调整由用户定。
 
 ### 数轴图（V2 画法）
 
-2026-10-07 用户「然后恢复v2的图片数轴」，选定「vis 改用 V2 画法并嵌入计划」。画法逐字搬自 origin/newtask-v2 的 `scripts/injection-before-2d/plot_sampling_windows.py`（`70bc2ce0`，搬运件 `vis/v2_plot.py`）。每行从下到上依次是：subgoal 分段（中文短标）、33 帧 stride-16 窗口（demo 蓝、exec 绿，三行堆叠）、8 帧红点、32 帧紫线。每次 swap 画一条半透明竖带（第 1～5 次紫、橙、青、玫红、棕）。右栏写 `T · 窗口 d+e=n · Δ32 · Δ8`。swap 在 h5 里没有标签，整段都是 `static`，时刻按调度推出：VideoUnmaskSwap / ButtonUnmaskSwap 第 k 次为 `[64+50(k−1), 64+50k]`；两个 Place 任务从最后一个 demo static 段起点起，每 50 帧一次。
+2026-10-07 用户「然后恢复v2的图片数轴」，选定「vis 改用 V2 画法并嵌入计划」。画法逐字搬自 origin/newtask-v2 的 `scripts/injection-before-2d/plot_sampling_windows.py`（`70bc2ce0`，搬运件 `vis/v2_plot.py`）。每行从下到上依次是：subgoal 分段（中文短标）、33 帧 stride-16 窗口（demo 蓝、exec 绿，三行堆叠）、8 帧红点、32 帧紫线。每次 swap 画一条半透明竖带（第 1～5 次紫、橙、青、玫红、棕）。右栏写 timestep 数、窗口 d+e=n、Δ32、Δ8（图上沿用 V2 画法标作 `T`）。swap 在 h5 里没有标签，整段都是 `static`，时刻按调度推出：VideoUnmaskSwap / ButtonUnmaskSwap 第 k 次为 `[64+50(k−1), 64+50k]`；两个 Place 任务从最后一个 demo static 段起点起，每 50 timestep 一次。
 
 xhard1 合成参考总览：14 任务各取最短、中位、最长三条，全局横轴，非实跑。⚠ 3.3、3.4 两任务的合成图与 `reference_summary.md` 里的合成列仍是 2026-10-07 撤回前的「2 块 + 回原位 + swap 3」方案，现方案以图中**上行官方 hard** 与汇总表的 hard 列为准；`vis/` 是否按新方案重画另行决定。
 
@@ -355,7 +355,7 @@ V2 实测总览（origin/newtask-v2 `c0e7f046` 入库，07 实跑 14 组，含 s
 
 ![V2 采样窗口数轴总览](vis/v2/windows_overview.png)
 
-逐任务图：每任务按合成 T 取最短、中位、最长三条，每条上行官方 hard、下行 xhard1 合成。
+逐任务图：每任务按合成 timestep 数取最短、中位、最长三条，每条上行官方 hard、下行 xhard1 合成。
 
 | 类别 | 任务与图 |
 |---|---|
@@ -373,7 +373,7 @@ swap 计入后，有 swap 的四个任务在合成参考上的结果（`vis/outp
 | VideoPlaceButton | 1 → 1（不改） | 1 → 1 | 0/25 → 0/25 |
 | VideoPlaceOrder | 1 → 1（不改） | 2 → 2 | 0/25 → 0/25 |
 
-总量：14 任务 650 条，约 44.8 万帧，stride-1 chunk 约 42.7 万（V2 的约 54%），stride-16 窗约 2.65 万（V2 的约 38%）；比撤回前少约 3.3 万帧、约 2,100 窗，全部来自 Place 两任务改回官方 hard 长度（按 `vis/output/reference_*.json` 逐条把两任务的合成值换成 hard 值，按同一比例折算原总量）。合成参考的图与逐条数据在根目录 [`vis/`](vis/README.md)；每个任务在代码里怎么改（换哪个字典键、重写哪个方法）见第二部分一节与八节；长度原则（8 帧必漏为硬性、T 约 900 与 50～60 窗为目标、不为 32 帧拉长）与估算公式见第二部分八节。
+总量：14 任务 650 条，约 44.8 万 timestep，stride-1 chunk 约 42.7 万（V2 的约 54%），stride-16 窗约 2.65 万（V2 的约 38%）；比撤回前少约 3.3 万 timestep、约 2,100 窗，全部来自 Place 两任务改回官方 hard 长度（按 `vis/output/reference_*.json` 逐条把两任务的合成值换成 hard 值，按同一比例折算原总量）。合成参考的图与逐条数据在根目录 [`vis/`](vis/README.md)；每个任务在代码里怎么改（换哪个字典键、重写哪个方法）见第二部分一节与八节；长度原则（8 帧必漏为硬性、timestep 数约 900 与 50～60 窗为目标、不为 32 帧拉长）与估算公式见第二部分八节。
 
 ## 五、验收
 
@@ -384,12 +384,12 @@ swap 计入后，有 swap 的四个任务在合成参考上的结果（`vis/outp
 | 卡片来自 train hard 记录 | `jobs_from_metadata` 结果条数 = 各任务 hard 条数（25/100），seed 与 json 逐条相等，attempt 全 0，difficulty 全 hard | 口径 ② 成立 | `XHARD_JOBS=PASS source=train tasks=14 jobs=650 seed_unchanged=650` |
 | 原路径逐字节不变 | 不传 `--xhard` 时：`_args` 解析结果、造出的 jobs、`make_name(job)` 与 `BASE` 版本逐项相等；互斥参数组合报错 | 开关关闭态零行为变化 | `XHARD_BASELINE_EQ=PASS jobs_diff=0 names_diff=0 mutex_errors=5` |
 | 受保护目录零 diff | `git diff --quiet <BASE> HEAD -- src/robomme/ pyproject.toml` | P1、R5 守住 | `PROTECTED=PASS` |
-| 每任务 3 seed smoke | 每任务取 train hard 前 3 条，`--workers 1 --gpus 0`，记成功数、T、窗口数、Δ8、最短执行段 | 子类能跑通、长度与估算对账 | `XHARD_SMOKE=PASS task=<t> seeds=3 ok=<k>`；`XHARD_LENGTH=INFO task=<t> T=<min/med/max> windows=<..> delta8=<..> shortest_seg=<..> skip8=<n>` |
-| 8 帧必漏 | smoke 的 `skip8` 每条 ≥1。`skip8` = 8 帧帧路没有采样点落入的执行段数 + 没有采样点落入的 swap 事件数（每次 swap 50 帧算一段，2026-10-07 用户定）。VideoUnmask / ButtonUnmask 没有 swap，按合成参考预计做不到，只记 INFO；ButtonUnmaskSwap 在 swap=4 时可能 0 漏，实测为 0 时如实记 | 口径 ⑥ 成立 | `XHARD_SKIP8=PASS task=<t> episodes=3 min_skip8=<n≥1> exec=<n> swap=<n>`（VideoUnmask、ButtonUnmask 记 `XHARD_SKIP8=INFO`） |
+| 每任务 3 seed smoke | 每任务取 train hard 前 3 条，`--workers 1 --gpus 0`，记成功数、timestep 数、窗口数、Δ8、最短执行段 | 子类能跑通、长度与估算对账 | `XHARD_SMOKE=PASS task=<t> seeds=3 ok=<k>`；`XHARD_LENGTH=INFO task=<t> timesteps=<min/med/max> windows=<..> delta8=<..> shortest_seg=<..> skip8=<n>` |
+| 8 帧必漏 | smoke 的 `skip8` 每条 ≥1。`skip8` = 8 帧帧路没有采样点落入的执行段数 + 没有采样点落入的 swap 事件数（每次 swap 50 timestep 算一段，2026-10-07 用户定）。VideoUnmask / ButtonUnmask 没有 swap，按合成参考预计做不到，只记 INFO；ButtonUnmaskSwap 在 swap=4 时可能 0 漏，实测为 0 时如实记 | 口径 ⑥ 成立 | `XHARD_SKIP8=PASS task=<t> episodes=3 min_skip8=<n≥1> exec=<n> swap=<n>`（VideoUnmask、ButtonUnmask 记 `XHARD_SKIP8=INFO`） |
 | 核心短测 | `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q` | 没有碰坏既有链路 | passed |
 | 全量 | 650 条跑完，`run_summary.json` 的 `success_count`，每任务 metadata 条数 | 交付规模 | `XHARD_FULL=INFO requested=650 success=<n> exhausted=<n>` |
 | 3 抓语言目标 | Unmask 两任务 smoke 的 HDF5 里 `task_goal` 文本含三个颜色 | `task_goal.py` 的 3 抓句生效 | `XHARD_UNMASK_GOAL=PASS tasks=2 three_colors=1` |
-| Place 两任务原样重生成 | Place 两任务 smoke 的每条 T、`simple_subgoal` 段序列，与 `/data/hongzefu/data_0226/` 官方 h5 同 episode 逐条比对（只读） | 原样子类与原 env 行为一致；不一致只说明官方集与本仓库代码版本或渲染有差，不改判据 | `XHARD_PLACE_ORIG=INFO tasks=2 episodes=6 T_equal=<k> segs_equal=<k>` |
+| Place 两任务原样重生成 | Place 两任务 smoke 的每条 timestep 数、`simple_subgoal` 段序列，与 `/data/hongzefu/data_0226/` 官方 h5 同 episode 逐条比对（只读） | 原样子类与原 env 行为一致；不一致只说明官方集与本仓库代码版本或渲染有差，不改判据 | `XHARD_PLACE_ORIG=INFO tasks=2 episodes=6 timesteps_equal=<k> segs_equal=<k>` |
 
 ## 六、步骤
 
@@ -540,7 +540,7 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 | 身份牌（主检出） | `uv run --no-sync python -m pytest tests/lightweight/test_robomme_xhard_spec.py -q` | `XHARD_SPEC=PASS tasks=14 id_mismatch=0 entry_point_changed=0` |
 | smoke（主检出，每任务） | 四节第 3 条命令 + 统计脚本 | `XHARD_SMOKE=PASS task=<t> seeds=3 ok=<k>`；`XHARD_LENGTH=INFO ...`；`XHARD_SKIP8=PASS task=<t> episodes=3 min_skip8=<n>`（容器类任务 INFO） |
 | 3 抓语言目标 | smoke 产物 HDF5 的 `task_goal` 文本 | `XHARD_UNMASK_GOAL=PASS tasks=2 three_colors=1` |
-| Place 两任务原样重生成 | smoke 产物每条 T 与 `simple_subgoal` 段序列对 `/data/hongzefu/data_0226/record_dataset_<Task>.h5` 同 episode（只读打开） | `XHARD_PLACE_ORIG=INFO tasks=2 episodes=6 T_equal=<k> segs_equal=<k>` |
+| Place 两任务原样重生成 | smoke 产物每条 timestep 数与 `simple_subgoal` 段序列对 `/data/hongzefu/data_0226/record_dataset_<Task>.h5` 同 episode（只读打开） | `XHARD_PLACE_ORIG=INFO tasks=2 episodes=6 timesteps_equal=<k> segs_equal=<k>` |
 | 受保护目录 | `git diff --name-only <BASE> HEAD -- src/robomme/` 只含批准清单内的 `task_goal.py` | `PROTECTED=PASS allowed=task_goal.py` |
 | 全量 | `run_summary.json` | `XHARD_FULL=INFO requested=650 success=<n> exhausted=<n>` |
 
@@ -554,7 +554,7 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
      --xhard xhard1 --env <Task> --workers 1 --gpus 0 --max-tasks-per-child 0 \
      --output-dir artifacts/xhard/smoke-$(TZ=America/New_York date +%m%d)/<Task>
    ```
-   `jobs_from_metadata` 支持 `XHARD_SMOKE_LIMIT=3` 环境变量只取前 3 条（S0 实现，默认不限；写进 `parameters`）。统计用 `scripts/patternlock-routestick-params/extract_move_durations.py::extract_episode` 同口径的临时脚本算 T、stride-16 窗、Δ8、最短执行段、skip8，输出 `XHARD_LENGTH`/`XHARD_SKIP8` 行。skip8 = 执行段漏 + swap 事件漏，8 帧帧路用 `vis/v2_plot.py::frame_path`。swap 时刻：VideoUnmaskSwap / ButtonUnmaskSwap 用 `[64+50(k−1), 64+50k]`，k 取到 `swap_times`（从 HDF5 `setup` 或运行日志读，读不到则按像素差找最后一次交换落定帧反推）；VideoPlaceButton / VideoPlaceOrder 按 V2 `window_timeline.py::static_start_from_deltas` 的关节静止法求闩锁步 S，第 k 次为 `[S+50(k−1), S+50k]`，再用像素差交叉校验。脚本落 `docs/xhard-doc/<档案名>/records/`。
+   `jobs_from_metadata` 支持 `XHARD_SMOKE_LIMIT=3` 环境变量只取前 3 条（S0 实现，默认不限；写进 `parameters`）。统计用 `scripts/patternlock-routestick-params/extract_move_durations.py::extract_episode` 同口径的临时脚本算 timestep 数、stride-16 窗、Δ8、最短执行段、skip8，输出 `XHARD_LENGTH`/`XHARD_SKIP8` 行。skip8 = 执行段漏 + swap 事件漏，8 帧帧路用 `vis/v2_plot.py::frame_path`。swap 时刻：VideoUnmaskSwap / ButtonUnmaskSwap 用 `[64+50(k−1), 64+50k]`，k 取到 `swap_times`（从 HDF5 `setup` 或运行日志读，读不到则按像素差找最后一次交换落定帧反推）；VideoPlaceButton / VideoPlaceOrder 按 V2 `window_timeline.py::static_start_from_deltas` 的关节静止法求闩锁步 S，第 k 次为 `[S+50(k−1), S+50k]`，再用像素差交叉校验。脚本落 `docs/xhard-doc/<档案名>/records/`。
 4. **全量**（步骤 6，用户再说「开工」后；按第 13 条先打 `2.<n>Beta` 锚点、`git status --short` 为空）：
    ```bash
    tmux new-session -d -s xh-full \
@@ -563,7 +563,7 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
         --workers 32 --gpus 0 --output-dir artifacts/xhard/full-$(TZ=America/New_York date +%m%d) \
         2>&1 | tee artifacts/xhard/logs/xh-full.log; echo \"EXIT_CODE=\$?\" >> artifacts/xhard/logs/xh-full.log"
    ```
-   单卡 32 worker 是 `scripts/data-generation-newSeed/CLAUDE.md` 实测安全上限（双卡无收益）；预计 650 条 × 约 740 帧均值，按 56 ep/min 的 hard 口径折算约 15–25 分钟，xhard 更长、更易失败，预留 1 小时。先 `nvidia-smi` 选空闲卡。
+   单卡 32 worker 是 `scripts/data-generation-newSeed/CLAUDE.md` 实测安全上限（双卡无收益）；预计 650 条 × 约 740 timestep 均值，按 56 ep/min 的 hard 口径折算约 15–25 分钟，xhard 更长、更易失败，预留 1 小时。先 `nvidia-smi` 选空闲卡。
 5. **监听**：`tail -n +1 -F artifacts/xhard/logs/xh-full.log | stdbuf -oL tr '\r' '\n' | grep --line-buffered -E "succeeded with seed|failed|进程池已损坏|ERROR:|Traceback|BrokenProcessPool|svulkan2|out of memory|EXIT_CODE="`；一份日志一个 Monitor。
 6. **收尾**：`run_summary.json`、每任务 metadata 条数、`XHARD_FULL` 行；数轴图按留档 4.1 节切段口径，用 `vis/v2_plot.py` 的 V2 画法出实测图，每次 swap 画竖带，与 `vis/output/` 的合成参考并排；`docs/xhard-doc/<档案名>/{launch.md,result.md,records/}`；commit、push；smoke 产物按第 6 条清理（只删核实属于本轮的 `artifacts/xhard/smoke-*`，先 `ls -ld`）。
 
@@ -577,19 +577,19 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 | StopCube `range(5)` | 不改 `step()` 时 k>5 方块停在终点必失败 | `step()` 一并重写（表一） |
 | 随机流偏移 | BinFill 共用 generator，改目标数后方块坐标全变；PatternLock/RouteStick 路径变 | 写进对拍预期，不要求母布局逐项相等；其余任务实测 randint 消耗量与区间无关（留档 5.0） |
 | 成功率低于 hard | 不换 seed，原 hard 靠重试才成功的条目（BinFill 11、VideoPlaceOrder 12 等）更易失败 | 失败即缺条，`XHARD_FULL` 如实记；补齐留下一轮新 seed |
-| 两个 Swap 任务短 | 最多约 560 帧、31 窗，达不到 50–60 | 结构限制，写明；它们与两个 Unmask 任务共 400/650 条。swap 计入漏段后，VideoUnmaskSwap 的 8 帧必漏在合成参考上成立（每条最少 1）；ButtonUnmaskSwap 只在 swap=5 时成立，swap=4 时 7/25 条 0 漏，是否把 xhard1 钉成 5 由用户定 |
+| 两个 Swap 任务短 | 最多约 560 timestep、31 窗，达不到 50–60 | 结构限制，写明；它们与两个 Unmask 任务共 400/650 条。swap 计入漏段后，VideoUnmaskSwap 的 8 帧必漏在合成参考上成立（每条最少 1）；ButtonUnmaskSwap 只在 swap=5 时成立，swap=4 时 7/25 条 0 漏，是否把 xhard1 钉成 5 由用户定 |
 | 名字对不上静默出空目标 | `get_language_goal`/`get_vqa_options` 未知名字返回 `[]` 不报错 | `XHARD_SPEC` 断言 `spec.id`；smoke 核对 HDF5 的 `simple_subgoal` 非空 |
 | `Wrapper.spec` 缓存 | gymnasium `Wrapper.spec` deepcopy 并缓存，拦截前访问会固化旧 id | 仓库内无提前访问（已核实）；`XHARD_SPEC` 同时断言外层 `spec.id` |
 | 主进程提前拉起 CUDA | 主进程 `import robomme_xhard` 会经 `envs` import mani_skill/torch | 主进程只 `from robomme_xhard.jobs import ...`；worker 内才 import 整包 |
-| Place 两任务重生成与官方集不一致 | 官方集 `/data/hongzefu/data_0226/` 未核 revision、可能出自不同代码版本；同 seed 重跑的 T 或段序列可能有差；父类 `current_task_specialflag(s)` 命名不一致原样继承 | `XHARD_PLACE_ORIG` 只记 INFO、不设阈值；差异如实写进留档，不在子类里修父类 |
+| Place 两任务重生成与官方集不一致 | 官方集 `/data/hongzefu/data_0226/` 未核 revision、可能出自不同代码版本；同 seed 重跑的 timestep 数或段序列可能有差；父类 `current_task_specialflag(s)` 命名不一致原样继承 | `XHARD_PLACE_ORIG` 只记 INFO、不设阈值；差异如实写进留档，不在子类里修父类 |
 | Unmask 3 抓语言目标 | 文本在受保护的 `task_goal.py`，不改则 3 抓落到 2 抓句 | 用户逐个批准后主会话改一处；不批准则 Unmask 两任务不纳入 |
 | 容器类任务 8 帧不漏 | swap 计入后，合成参考里 VideoUnmask（24/25 条 0 漏）、ButtonUnmask（10/25）、ButtonUnmaskSwap（7/25，全是 swap=4）仍有 0 漏条 | 两个 Unmask 记 `XHARD_SKIP8=INFO`；ButtonUnmaskSwap 实测为 0 时如实记，不改判据 |
-| swap 时刻无标签 | h5 里 swap 整段是 `static`，swap 漏段要按调度推时刻；Place 两任务 `step()` 闩锁 swap 的步比段边界晚，合成参考用段边界近似 | smoke 统计按 runbook 第 3 条：VideoUnmaskSwap / ButtonUnmaskSwap 用调度常量；Place 两任务用 V2 `window_timeline.py` 的关节静止法加像素差反解起点，偏差 >1 帧记 WARN |
+| swap 时刻无标签 | h5 里 swap 整段是 `static`，swap 漏段要按调度推时刻；Place 两任务 `step()` 闩锁 swap 的步比段边界晚，合成参考用段边界近似 | smoke 统计按 runbook 第 3 条：VideoUnmaskSwap / ButtonUnmaskSwap 用调度常量；Place 两任务用 V2 `window_timeline.py` 的关节静止法加像素差反解起点，偏差 >1 timestep 记 WARN |
 | 本计划判定行 | 全部待实施 | — |
 
 ## 六、盲区诚实清单
 
-1. 所有 T、窗口数、Δ8 为线性外推（公式八节），`move_to_pose_with_screw` 实际步数未实测。
+1. 所有 timestep 数、窗口数、Δ8 为线性外推（公式八节），`move_to_pose_with_screw` 实际步数未实测。
 2. `/data/hongzefu/data_0226/` 未与 HF revision 核 sha256（留档 6.1）。
 3. wheel 不含 `robomme_xhard`（R5 不改 `packages`）；只影响非 editable 安装，本仓库不用。
 4. `XHARD_SMOKE_LIMIT` 环境变量是本轮新增的测试便利，不是正式接口；全量不设。
@@ -597,9 +597,9 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 6. `make_vec` 路径未验证（本仓库不走）。
 7. `XHard2` 档只预留名字，不写数。
 9. Place 两任务的长度引自官方 hard 实测（留档 4.2 节），本仓库代码按同 seed 重生成是否逐条等长未验，由 `XHARD_PLACE_ORIG` 记录；`vis/` 里两任务的合成图仍是撤回前方案，未重画。
-10. Unmask 两任务 pick 3 的长度参考 V9 xhard2（带 4 个干扰容器）实测均值 475 / 526 帧，本轮不加干扰，预计略短。
+10. Unmask 两任务 pick 3 的长度参考 V9 xhard2（带 4 个干扰容器）实测均值 475 / 526 timestep，本轮不加干扰，预计略短。
 8. 实测数轴图用 `vis/v2_plot.py`，不改 `scripts/patternlock-routestick-params/`。
-11. swap 漏段的时刻是按调度推出来的，不是 h5 标签；Place 两任务的闩锁步靠关节静止法反解，V2 在 VideoRepick 上实测与像素法差 ≤1 帧，Place 任务尚未实测。
+11. swap 漏段的时刻是按调度推出来的，不是 h5 标签；Place 两任务的闩锁步靠关节静止法反解，V2 在 VideoRepick 上实测与像素法差 ≤1 timestep，Place 任务尚未实测。
 
 ## 七、留档与 commit 纪律
 
@@ -609,21 +609,21 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 
 ## 八、逐任务源码依据与估算公式
 
-长度原则（原第一部分四节「目标」，2.34.1 移入）：① 硬性：8 帧等距采样必须漏掉至少一段，可以是执行段，也可以是一次 swap。每次 swap 50 帧算一段（2026-10-07 用户「swap采不到也不行」，定「每次 swap 算一段」）。对没有 swap 的任务，等价于 Δ8 = (T−1)/7 大于该任务执行段里最短一类子任务的平均段长；② 目标：对齐 newtask-v2 的 xhard 档，T 约 900、stride-16 窗约 50～60；③ 不为 32 帧单独拉长。实际落点：9 个主体任务 740～1130 帧 / 43～69 窗；4 个容器类任务 460～560 / 27～32（计入 swap 后 VideoUnmaskSwap 必漏，ButtonUnmaskSwap 仅 swap=5 时必漏，两个 Unmask 不一定漏）；2 个 Place 任务按原 hard 配置重生成，官方 hard 实测 961 / 1115 帧、57 / 67 窗、8 帧合计漏最少 1 / 2（2026-10-07 用户改定，原「2 块 + 回原位 + swap 3」合成 1618 / 1773 帧的方案撤回）。合成参考与外推值对账见 `vis/output/reference_summary.md`。
+长度原则（原第一部分四节「目标」，2.34.1 移入）：① 硬性：8 帧等距采样必须漏掉至少一段，可以是执行段，也可以是一次 swap。每次 swap 50 timestep 算一段（2026-10-07 用户「swap采不到也不行」，定「每次 swap 算一段」）。对没有 swap 的任务，等价于 Δ8 = (timestep 数−1)/7 大于该任务执行段里最短一类子任务的平均段长；② 目标：对齐 newtask-v2 的 xhard 档，timestep 数约 900、stride-16 窗约 50～60；③ 不为 32 帧单独拉长。实际落点：9 个主体任务 740～1130 timestep / 43～69 窗；4 个容器类任务 460～560 / 27～32（计入 swap 后 VideoUnmaskSwap 必漏，ButtonUnmaskSwap 仅 swap=5 时必漏，两个 Unmask 不一定漏）；2 个 Place 任务按原 hard 配置重生成，官方 hard 实测 961 / 1115 timestep、57 / 67 窗、8 帧合计漏最少 1 / 2（2026-10-07 用户改定，原「2 块 + 回原位 + swap 3」合成 1618 / 1773 timestep 的方案撤回）。合成参考与外推值对账见 `vis/output/reference_summary.md`。
 
-估算：T_xhard ≈ T_hard 中位 + Δ次数 × 该次数对应子任务段长之和（留档 4.3 均值）；窗口 ≈ demo 窗 + exec 窗，各按 `len(range(0, max(0, L-32), 16))`；Δ8 = (T−1)/7。配置原文、随机流、语言上限、metadata 条数见留档 5.1 节，此处只列每任务的实施数与依据。
+估算：xhard 的 timestep 数 ≈ hard 的 timestep 数中位 + Δ次数 × 该次数对应子任务段长之和（留档 4.3 均值）；窗口 ≈ demo 窗 + exec 窗，各按 `len(range(0, max(0, L-32), 16))`；Δ8 = (timestep 数−1)/7。配置原文、随机流、语言上限、metadata 条数见留档 5.1 节，此处只列每任务的实施数与依据。
 
-1. **BinFill**：`put_in_numbers` [5,6]。每多 1 个目标约 +179 帧（108.5+70.6）；hard 均值 4 → 5.5，T ≈ 868 + 1.5×179 ≈ 1137；窗 ≈ 69。`spawn_cubes` [10,12] ≥ 6 不必改；每色目标 ≤10 自然满足。`dynamic` 模式移走窗口随每色方块数变长。
-2. **PickXtimes**：6/7。每次 +154 帧（84.2+69.6）；4.5 → 6.5，T ≈ 1120；窗 ≈ 68。同宽平移，抽到的 N 恒为原值 +2。
-3. **SwingXtimes**：7/8。每次 +78 帧（37.5+40.6）；3 → 7.5，T ≈ 839；窗 ≈ 50。单值变双值不多消耗随机数。
-4. **StopCube**：`move_interval` 钉 120、`stop_time` [8,10]。T ≈ 120×(k−0.5) + 28 ≈ 928/1048/1168；窗 ≈ 56/63/71；static 段 100 帧，Δ8 ≥ 132 必漏。不钉 mi 时 mi=60 的 T 450–570，Δ8 64–81 < 100，不满足。
-5. **VideoUnmask / ButtonUnmask**：pick 3。每多一抓 +152 帧（放下 49 + 抓容器 103）；T ≈ 329 + 152 ≈ 481（合成 476）、373 + 152 ≈ 525（合成 515）；窗 ≈ 27 / 31。Δ8 约 68～73，大于「放下」段 49 但小于「抓容器」段 103，8 帧是否漏段取决于采样点落位（合成最少 0）。V9 xhard2（另加 4 个干扰容器）实测均值 475 / 526。
-6. **VideoUnmaskSwap / ButtonUnmaskSwap**：[4,5]。VideoUnmaskSwap demo = 6·ceil((64+50S)/6) = 264/318，exec ≈ 263，T ≈ 527–581，窗 ≈ 15–18 + 14 ≈ 31。ButtonUnmaskSwap 交换结束 264/314 步，两次按钮约 221 步。第 4、5 对的 `idx1` 规则：`swap_indices[(k-1) % 3]`（即第 4 对复用第 1 对的第一个容器、第 5 对复用第 2 对的），`idx2` 运行时取最近，与父类 1–3 对的机制一致。
-7. **PickHighlight**：5。每个 +154 帧（98.7+55.4）；T ≈ 847；窗 ≈ 51。不取 6：6/6 全高亮让「记住哪些被高亮」失去意义。
-8. **VideoRepick**：[4,5]。每次 +157 帧（98.7+58.3）；2 → 4.5，T ≈ 935；窗 ≈ 9（demo 162）+ 47 ≈ 56。改写用独立 generator，不动 `self.generator`，15 块与目标逐项不变。
-9. **VideoPlaceButton**：原 hard 配置不变（`color 3 / swap True / targets 4 / additional_place False`，留档 5.1 节）。官方 hard 实测 T 900/961/1041、Δ8 中位 137、窗 53/57/62；执行段 2 段每条漏 1，swap 1 次漏均值 0.92，合计最少 1，8 帧必漏成立。
-10. **VideoPlaceOrder**：原 hard 配置不变（`num_targets_to_pick` 抽 [2,4]，留档 5.1 节）。官方 hard 实测 T 921/1115/1408、Δ8 中位 159、窗 54/67/85；执行段漏 1、swap 漏 1，每条合计 2，8 帧必漏成立。官方 hard 有 12 条靠 attempt>0 才成功，xhard 卡片沿用 metadata 里记录的最终 seed、attempt 0，失败不换 seed（R3）。
-11. **PatternLock**：[10,14]。每个 move 约 37 帧 × 2（demo+exec）；T ≈ 74×(L−1)：L=10 → 666，12 → 814，14 → 962；窗 ≈ 37–55。备选 [9,13] 或 [12,16]；不改 `grid`（母布局全变）。
-12. **RouteStick**：[8,10]，与 newtask-v2 xhard 相同。T = 100·S = 800–1000；窗 = 2×wins(50S) = 46/54/60。
+1. **BinFill**：`put_in_numbers` [5,6]。每多 1 个目标约 +179 timestep（108.5+70.6）；hard 均值 4 → 5.5，timestep 数 ≈ 868 + 1.5×179 ≈ 1137；窗 ≈ 69。`spawn_cubes` [10,12] ≥ 6 不必改；每色目标 ≤10 自然满足。`dynamic` 模式移走窗口随每色方块数变长。
+2. **PickXtimes**：6/7。每次 +154 timestep（84.2+69.6）；4.5 → 6.5，timestep 数 ≈ 1120；窗 ≈ 68。同宽平移，抽到的 N 恒为原值 +2。
+3. **SwingXtimes**：7/8。每次 +78 timestep（37.5+40.6）；3 → 7.5，timestep 数 ≈ 839；窗 ≈ 50。单值变双值不多消耗随机数。
+4. **StopCube**：`move_interval` 钉 120、`stop_time` [8,10]。timestep 数 ≈ 120×(k−0.5) + 28 ≈ 928/1048/1168；窗 ≈ 56/63/71；static 段 100 timestep，Δ8 ≥ 132 必漏。不钉 mi 时 mi=60 的 timestep 数 450–570，Δ8 64–81 < 100，不满足。
+5. **VideoUnmask / ButtonUnmask**：pick 3。每多一抓 +152 timestep（放下 49 + 抓容器 103）；timestep 数 ≈ 329 + 152 ≈ 481（合成 476）、373 + 152 ≈ 525（合成 515）；窗 ≈ 27 / 31。Δ8 约 68～73，大于「放下」段 49 但小于「抓容器」段 103，8 帧是否漏段取决于采样点落位（合成最少 0）。V9 xhard2（另加 4 个干扰容器）实测均值 475 / 526。
+6. **VideoUnmaskSwap / ButtonUnmaskSwap**：[4,5]。VideoUnmaskSwap demo = 6·ceil((64+50S)/6) = 264/318，exec ≈ 263，timestep 数 ≈ 527–581，窗 ≈ 15–18 + 14 ≈ 31。ButtonUnmaskSwap 交换结束 264/314 步，两次按钮约 221 步。第 4、5 对的 `idx1` 规则：`swap_indices[(k-1) % 3]`（即第 4 对复用第 1 对的第一个容器、第 5 对复用第 2 对的），`idx2` 运行时取最近，与父类 1–3 对的机制一致。
+7. **PickHighlight**：5。每个 +154 timestep（98.7+55.4）；timestep 数 ≈ 847；窗 ≈ 51。不取 6：6/6 全高亮让「记住哪些被高亮」失去意义。
+8. **VideoRepick**：[4,5]。每次 +157 timestep（98.7+58.3）；2 → 4.5，timestep 数 ≈ 935；窗 ≈ 9（demo 162）+ 47 ≈ 56。改写用独立 generator，不动 `self.generator`，15 块与目标逐项不变。
+9. **VideoPlaceButton**：原 hard 配置不变（`color 3 / swap True / targets 4 / additional_place False`，留档 5.1 节）。官方 hard 实测 timestep 数 900/961/1041、Δ8 中位 137、窗 53/57/62；执行段 2 段每条漏 1，swap 1 次漏均值 0.92，合计最少 1，8 帧必漏成立。
+10. **VideoPlaceOrder**：原 hard 配置不变（`num_targets_to_pick` 抽 [2,4]，留档 5.1 节）。官方 hard 实测 timestep 数 921/1115/1408、Δ8 中位 159、窗 54/67/85；执行段漏 1、swap 漏 1，每条合计 2，8 帧必漏成立。官方 hard 有 12 条靠 attempt>0 才成功，xhard 卡片沿用 metadata 里记录的最终 seed、attempt 0，失败不换 seed（R3）。
+11. **PatternLock**：[10,14]。每个 move 约 37 timestep × 2（demo+exec）；timestep 数 ≈ 74×(L−1)：L=10 → 666，12 → 814，14 → 962；窗 ≈ 37–55。备选 [9,13] 或 [12,16]；不改 `grid`（母布局全变）。
+12. **RouteStick**：[8,10]，与 newtask-v2 xhard 相同。timestep 数 = 100·S = 800–1000；窗 = 2×wins(50S) = 46/54/60。
 
 前置验证的结论（实施时填写；⑥ 已取消）：① spec 拦截 — 待填；② PatternLock 接受率 — 待填；③ ButtonUnmaskSwap 时序 — 待填；④ BinFill 6 目标生成成功率 — 待填；⑤ VideoRepick reset 读新值 — 待填；⑥ 取消；⑦ `task_goal.py` 改动批准 — 待填。
