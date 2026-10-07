@@ -29,6 +29,15 @@ import subprocess
 import sys
 from pathlib import Path
 
+try:  # 子进程（client-env 解释器）没有 pytest，slow 标记只在 pytest 一侧需要
+    import pytest
+except ModuleNotFoundError:  # pragma: no cover - 子进程
+    class _NoMark:
+        def __getattr__(self, name):
+            return lambda f: f
+
+    pytest = type("pytest", (), {"mark": _NoMark()})
+
 REPO = Path(__file__).resolve().parents[4]
 WRAP = REPO / "scripts" / "eval-official" / "pp_server_wrap.py"
 PP_GITLINK = "723df35762bb641e1d520e4fa9359b98644adc21"
@@ -747,6 +756,7 @@ def test_audit_switch_and_generation_blocks_observe_only():
     print(f"PP_AUDIT_OBS_EQ=PASS schedules={len(SCHEDULES)} audit_on_off_mismatch=0")
 
 
+@pytest.mark.slow  # 核心短测时长控制（主会话 2026-10-07）：在 -m "" 下跑
 def test_s2_input_decoded_from_real_context_tokens_observe_only():
     """FIX-3（计划八.11 PonderPounce 行「S2 完整上下文含回灌历史、增量图文片段、附图引用」）：真实上游
     ``SoftS2SessionContext`` + 假 System 2。每次 fire 的 ``input_text`` 等于测试从假模型记下的上下文 token 独立解码的

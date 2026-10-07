@@ -384,6 +384,7 @@ def _pp_s2_run(tmp_path, name, with_inputs):
     return res, sess, conn, ep
 
 
+@pytest.mark.slow  # 核心短测时长控制（主会话 2026-10-07）：在 -m "" 下跑
 def test_pp_s2_input_text_lands_as_in_message_with_resolvable_frames(tmp_path):
     """块带 ``input_text`` 时 subgoal_model 调用先写 ``dir=in role=user``（文字原样、附图按帧号落到 trace 那一帧：
     演示图 → demo 行 front 第 i 帧、``ref=keyframe``；观测图 → 本步帧），``parsed.input_decoded_from_tokens=True``，
