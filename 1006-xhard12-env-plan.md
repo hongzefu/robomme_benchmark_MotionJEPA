@@ -1,4 +1,4 @@
-> 本文按用户最新要求改为"子类继承"接口方案，并把全部新增内容归档到 `src/` 下一个独立包里；只改计划，不构成开工令。本轮只定义接口，不展开每个任务具体改哪些次数，那部分待接口定稿后另议。工作副本为 `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`，分支为 `newtask-v3-MotionJepa1006`。本次修订前 HEAD 为 `d7a8592e`；原源码核查锚点为 `13905997d45155ff1c98417511aedec92578042d`，生成代码起点为 `3a5951a834ea014f63724647ab0bc091eb9f109d`。ManiSkill 来源仍钉在 `07be6fbc66350ddca200abfb0a11b692f078f7fd`，依赖以本分支 `pyproject.toml、uv.lock` 为准。文中所有新名字、新参数、新文件均为拟议项，尚未实施。
+> 本文按用户最新要求改为"子类继承"接口方案，并把全部新增内容归档到 `src/` 下一个独立包里，第二、三部分已合并为"ENV 怎么继承、到底改哪几个文件"；只改计划，不构成开工令。本轮只定义接口，不展开每个任务具体改哪些次数，那部分待接口定稿后另议。工作副本为 `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`，分支为 `newtask-v3-MotionJepa1006`。本次修订前 HEAD 为 `88ba9852`；原源码核查锚点为 `13905997d45155ff1c98417511aedec92578042d`，生成代码起点为 `3a5951a834ea014f63724647ab0bc091eb9f109d`。ManiSkill 来源仍钉在 `07be6fbc66350ddca200abfb0a11b692f078f7fd`，依赖以本分支 `pyproject.toml、uv.lock` 为准。文中所有新名字、新参数、新文件均为拟议项，尚未实施。
 
 # 设计目标
 
@@ -159,7 +159,7 @@ artifacts/generated/demo/
 
 输出目录由 `--output-dir` 指定，派生档必须用一个独立目录，不和原 hard 混放。因为 env_id 传的是原名，HDF5 文件名还是 `PickHighlight_ep3_seed620301.h5`，和原 hard 的同名，靠目录区分。生成器现有的 `_write_metadata` 照常在输出目录写一份 `record_dataset_<task>_metadata.json`，`parameters` 里多记 xhard、source_split、源 json 路径和母样本条数，方便追溯。HDF5 里的 `setup/difficulty` 仍然是 hard，派生身份只在目录和生成器摘要里体现。
 
-# 第二部分：每个 ENV 的继承是怎么做的
+# 第二部分：ENV 怎么继承、到底改哪几个文件
 
 ## 为什么子类就够了
 
@@ -190,7 +190,7 @@ class PickHighlightXHard2(XHardMixin, PickHighlight):
     configs = {**PickHighlight.configs, "hard": {**PickHighlight.config_hard, "pickup": 5}}
 ```
 
-这几行逐句解释。`{**PickHighlight.config_hard, "pickup": 4}` 是把原来 hard 的全部键复制一份，只把 pickup 换成 4。`{**PickHighlight.configs, "hard": ...}` 是把三档字典复制一份，只换 hard 那一项，easy 和 medium 原样保留。这就是"沿用 Hard 全部配置、只改一两个参数"的字面实现。`@register_env("PickHighlightXHard1")` 给子类登记一个新名字，生成器就靠这个名字找到它。`robomme_base_id = "PickHighlight"` 是告诉 `XHardMixin`"我本质上是 PickHighlight"，`XHardMixin` 是什么在第三部分讲。
+这几行逐句解释。`{**PickHighlight.config_hard, "pickup": 4}` 是把原来 hard 的全部键复制一份，只把 pickup 换成 4。`{**PickHighlight.configs, "hard": ...}` 是把三档字典复制一份，只换 hard 那一项，easy 和 medium 原样保留。这就是"沿用 Hard 全部配置、只改一两个参数"的字面实现。`@register_env("PickHighlightXHard1")` 给子类登记一个新名字，生成器就靠这个名字找到它。`robomme_base_id = "PickHighlight"` 是告诉 `XHardMixin`"我本质上是 PickHighlight"，`XHardMixin` 是什么下面马上讲。
 
 运行时你传 `difficulty="hard"`，父类 `__init__` 里的 `normalize_robomme_difficulty` 原样解析出 `self.difficulty = "hard"`，之后所有 `self.configs["hard"]` 读到的都是子类的新数。原来的 PickHighlight 文件没有被动一个字。
 
@@ -200,29 +200,15 @@ StopCube 这类没有 `configs` 的任务，子类要重写 `_initialize_episode
 
 子类注册时不加 `max_episode_steps` 之类的额外参数，和父类的 `@register_env` 保持一样。
 
-## 随机流的提示，接口定稿后再议
+## 子类创建完成后，把自己的身份牌改回原任务名
 
-PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随机流，母布局完全相同，新档是严格的前缀。用 `randint(min, max)` 抽次数的任务，改了范围后抽出的数不同，生成器调用次数没变，但下游如果依赖这个数，场景会跟着微变。要不要求"母布局逐项相等"是每个任务各自的决定，不属于本轮接口定义。
+先说清楚一件事：注册表里的名字不改。`@register_env("PickHighlightXHard1")` 把子类登记成这个新名字，`gym.make` 就是靠它找到子类的，这个名字一直在注册表里。要改的是 `gym.make` 挂在实例上的那张"身份牌"。
 
-# 第三部分：所有新增内容归档在 `src/robomme_xhard/` 一个包里
+`gym.make` 的顺序是三步：先按 `"PickHighlightXHard1"` 查到子类；再实例化，这时 `__init__` 跑完、场景参数都读好了；最后执行 `env.unwrapped.spec = 注册信息` 把一张身份牌挂到实例上，牌上的 `id` 本来是 `"PickHighlightXHard1"`。
 
-## 这个包里放什么
+为什么要改这张牌：录像器 `RecordWrapper.py` 有三处、`DemonstrationWrapper.py` 有六处、`MultiStepDemonstrationWrapper.py` 有两处、`EndeffectorDemonstrationWrapper.py` 有一处，都是读 `self.unwrapped.spec.id` 来判断是不是 PatternLock 或 RouteStick、取语言目标、取 VQA 选项、判断是不是无夹爪环境。`task_goal.get_language_goal` 内部是 `if env == "BinFill": ... elif env == "PickHighlight": ...` 按字符串分支，`get_vqa_options` 用 `OPTION_BUILDERS.get(env_id, 默认)` 查表，名字对不上就退到默认分支，直接出错。如果逐个去改，要动四个 wrapper 文件十几处，和"全部归档在一起"的要求背道而驰。
 
-你问能不能把所有改的部分放到 `src/robomme-xhard` 一起归档。可行，只是 Python 的包名不能带连字符，所以目录叫 `src/robomme_xhard/`，和 `src/robomme/` 并排。包里拟议四样东西。
-
-第一是 `base.py`，放一个 `XHardMixin`，所有子类都混入它。它只做一件事，就是把环境的注册名"报成"原任务名，细节下面单独讲。
-
-第二是 `envs/` 目录，每个任务一个文件，每档一个子类，就是第二部分那种写法。`envs/__init__.py` 把各文件 import 一遍，这样 `import robomme_xhard` 一句就能让全部 `@register_env` 执行完。
-
-第三是 `jobs.py`，放两个函数。`jobs_from_metadata` 负责读 train 的 hard 记录、造卡片；`make_name` 负责按卡片的 xhard 拼出 `gym.make` 要用的名字。生成器只调用这两个函数，自己不写逻辑。
-
-第四是 `README.md`，中文说明这个包是干什么的、怎么加一个新任务的子类、怎么跑。
-
-## 为什么录像器和 wrapper 都可以不改
-
-上一版计划说要在 `RecordWrapper.py` 加一个 `_task_id()` 方法。这次我又查了一遍，发现按注册名分支的地方远不止录像器那三处。`DemonstrationWrapper.py` 有六处 `self.unwrapped.spec.id`，判断是不是 PatternLock 或 RouteStick、取语言目标、取 VQA 选项；`MultiStepDemonstrationWrapper.py` 有两处；`EndeffectorDemonstrationWrapper.py` 有一处判断是不是无夹爪环境。如果逐个去改，就得动四个 wrapper 文件、十几处，和"全部归档在一起"的要求背道而驰。
-
-所以换一个思路：既然大家都是去读 `self.unwrapped.spec.id`，那就让子类自己把 `spec.id` 报成原任务名，所有读的地方自然都对了。`gym.make` 的流程是先实例化 class，再执行 `env.unwrapped.spec = spec_` 把注册信息挂上去。Python 允许在子类里把 `spec` 定义成带 setter 的 property，这样赋值那一刻会被拦截，我们把 id 换成原名再存起来：
+所以让子类自己把牌改回原名。Python 允许在子类里把 `spec` 定义成带 setter 的 property，这样第三步挂牌那一刻会被拦截，我们把 id 换成原名再存起来：
 
 ```python
 # 拟议代码，尚未实施。放在 src/robomme_xhard/base.py。
@@ -243,41 +229,27 @@ class XHardMixin:
         self.__dict__["_xhard_spec"] = value
 ```
 
-效果是：`gym.make("PickHighlightXHard1")` 造出来的环境，任何人读 `env.unwrapped.spec.id` 得到的都是 `"PickHighlight"`，`spec` 里的其它字段（entry_point、max_episode_steps 等）原样保留。录像器的 stick 判断、语言目标、VQA 查表、无夹爪判断全部按原任务走，四个 wrapper 文件一个字不改。原 16 个任务没有混入这个 Mixin，行为完全不受影响。
+效果是：`gym.make("PickHighlightXHard1")` 造出来的环境，任何人读 `env.unwrapped.spec.id` 得到的都是 `"PickHighlight"`，牌上其它字段（entry_point、max_episode_steps 等）原样保留。录像器的 stick 判断、语言目标、VQA 查表、无夹爪判断全部按原任务走，四个 wrapper 文件一个字不改。原 16 个任务没有混入这个 Mixin，行为完全不受影响。
 
-这个 property 拦截的做法在实施时要先做一个最小 smoke：`gym.make` 一个子类，断言 `unwrapped.spec.id` 等于原名、外层 wrapper 的 `spec.id` 也等于原名、`spec.entry_point` 没变。本轮没有可用的虚拟环境，这一点还没有实跑验证，列为实施第一步。
+这个做法在实施时要先做一个最小 smoke：`gym.make` 一个子类，断言 `unwrapped.spec.id` 等于原名、外层 wrapper 的 `spec.id` 也等于原名、`spec.entry_point` 没变；同时核实 `BaseEnv` 没有把 `spec` 当普通属性用（`gym.Env` 只声明了 `spec = None` 类属性，子类 property 会覆盖它，预计没有冲突）。本轮没有可用的虚拟环境，这一点还没有实跑验证，列为实施第一步。
 
-另外要确认一下 `BaseEnv` 自己有没有把 `spec` 当普通属性用。`gym.Env` 只是声明了 `spec = None` 这个类属性，子类的 property 会覆盖它，预计没有冲突，但同样在 smoke 里核实。
+## 随机流的提示，接口定稿后再议
 
-## 生成器还剩哪几处要改
+PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随机流，母布局完全相同，新档是严格的前缀。用 `randint(min, max)` 抽次数的任务，改了范围后抽出的数不同，生成器调用次数没变，但下游如果依赖这个数，场景会跟着微变。要不要求"母布局逐项相等"是每个任务各自的决定，不属于本轮接口定义。
 
-生成器 `scripts/data-generation-newSeed/generate_dataset_newseed.py` 是唯一要动的旧文件，改动缩到四处，每处一两行。
+## 到底改哪几个文件
 
-第一处，文件顶部 `import robomme_xhard`，触发注册。
+把上面的东西合起来，要动的只有三样。
 
-第二处，`_args` 加 `--xhard` 和 `--source-split`，以及互斥校验。
+第一样，新包 `src/robomme_xhard/`，全部是新增文件，和 `src/robomme/` 并排（Python 包名不能带连字符，所以用下划线）。包里四件东西：`base.py` 放 `XHardMixin`；`envs/` 放每个任务的子类文件，`envs/__init__.py` 把它们 import 一遍，这样 `import robomme_xhard` 一句就能让全部 `@register_env` 执行完；`jobs.py` 放两个函数，`jobs_from_metadata` 读 train 的 hard 记录造卡片，`make_name` 按卡片的 xhard 拼出 `gym.make` 要用的名字；`README.md` 中文说明这个包是干什么的、怎么加一个新任务的子类、怎么跑。
 
-第三处，`generate_dataset_newseed` 里排任务单那段：如果传了 xhard，就 `jobs = robomme_xhard.jobs_from_metadata(...)`，否则走原来的列表推导。`EpisodeJob` 加一栏 `xhard: str | None = None`。
+第二样，生成器 `scripts/data-generation-newSeed/generate_dataset_newseed.py`，四处一两行的小改：顶部 `import robomme_xhard`；`_args` 加 `--xhard`、`--source-split` 和互斥校验；排任务单那段传了 xhard 就 `jobs = robomme_xhard.jobs_from_metadata(...)`，否则走原来的列表推导，`EpisodeJob` 加一栏 `xhard: str | None = None`；`_worker` 里 `gym.make(job.task, **kwargs)` 改成 `gym.make(robomme_xhard.make_name(job), **kwargs)`，重试那段加一个判断，xhard 不为空时不 `bump`。
 
-第四处，`_worker` 里 `gym.make(job.task, **kwargs)` 改成 `gym.make(robomme_xhard.make_name(job), **kwargs)`；重试那段加一个判断，xhard 不为空时不 `bump`。
+第三样，`pyproject.toml` 一行。它用的是 hatchling，`[tool.hatch.build.targets.wheel]` 里 `packages = ["src/robomme"]` 写死了只打包 `robomme`，要改成 `packages = ["src/robomme", "src/robomme_xhard"]`，然后 `uv sync` 一次。如果连这一行都不想碰，备选是把包放到 `src/robomme/xhard/` 作为子包自动被打包，生成器写 `import robomme.xhard`，那就真的只剩"新增文件加生成器"两样，代价是新东西混进原包目录。两种都可行，我倾向并排放，改一行配置换来彻底隔离。
 
-## 包怎么被安装到
+除这三样之外全都不改：原 16 个任务文件、`robomme_env/__init__.py`（注册由生成器 import 新包触发）、`RecordWrapper.py` 和另外三个 wrapper（靠 `XHardMixin` 报原名）、`utils/difficulty.py`、`task_goal.py`、`subgoal_language.py`、`vqa_options.py`（如果某任务的语言模板写死了次数，那是"每个任务改什么"的范围，另议）、`seed_layout.py`、`env_metadata/train` 下的 json（只读）、planner、`_execute_tasks`、HDF5 结构。
 
-`pyproject.toml` 用的是 hatchling，`[tool.hatch.build.targets.wheel]` 里 `packages = ["src/robomme"]` 写死了只打包 `robomme`。新包要能 `import robomme_xhard`，这一行得改成 `packages = ["src/robomme", "src/robomme_xhard"]`，然后 `uv sync` 一次。这是除生成器之外唯一要碰的旧文件，而且只是一行配置。
-
-如果你连这一行都不想改，备选是把包放到 `src/robomme/xhard/`，作为 `robomme` 的子包自动被打包，生成器写 `import robomme.xhard`。代价是新东西混在原包目录里，没有并排那么干净。两种都可行，我倾向并排放 `src/robomme_xhard/`，改一行配置换来彻底隔离。
-
-## 不改的文件
-
-原 16 个任务文件不改。`robomme_env/__init__.py` 不改，注册由生成器 import 新包触发。`RecordWrapper.py`、`DemonstrationWrapper.py`、`MultiStepDemonstrationWrapper.py`、`EndeffectorDemonstrationWrapper.py` 四个 wrapper 不改，靠 `XHardMixin` 报原名。`utils/difficulty.py` 不改。`task_goal.py`、`subgoal_language.py`、`vqa_options.py` 不改；如果某个任务的语言模板写死了次数，那是"每个任务改什么"的范围，另议。`seed_layout.py` 不改。`env_metadata/train` 下的 json 只读。planner、`_execute_tasks`、HDF5 结构都不动。
-
-## 改动清单汇总
-
-新增一个包 `src/robomme_xhard/`，里面是 `base.py`、`envs/`、`jobs.py`、`README.md`。
-
-改两个旧文件：生成器四处小改，`pyproject.toml` 一行。
-
-新增一个轻量测试 `tests/lightweight/test_robomme_xhard.py`，验证这几件事：不传 `--xhard` 时卡片内容和 `make_name` 返回的名字与现在一致；传了之后卡片确实来自 train 的 hard 记录、seed 原样没变；互斥参数会报错；每个子类的 `configs` 除了目标键之外和父类完全相等；`XHardMixin` 让 `unwrapped.spec.id` 返回原名且其它字段不变。测试放在 `tests/` 是沿用仓库现有约定，如果你希望测试也归进包里，可以放 `src/robomme_xhard/tests/`，pytest 一样能收。
+另外新增一个轻量测试 `tests/lightweight/test_robomme_xhard.py`，验证这几件事：不传 `--xhard` 时卡片内容和 `make_name` 返回的名字与现在一致；传了之后卡片确实来自 train 的 hard 记录、seed 原样没变；互斥参数会报错；每个子类的 `configs` 除了目标键之外和父类完全相等；`XHardMixin` 让 `unwrapped.spec.id` 返回原名且其它字段不变。测试放在 `tests/` 是沿用仓库现有约定，如果你希望测试也归进包里，可以放 `src/robomme_xhard/tests/`，pytest 一样能收。
 
 # 后续待定，本轮不展开
 
