@@ -107,8 +107,11 @@ function rightText(svg, r, x, y) {
 }
 
 function leftText(svg, lines, y, color) {
-  lines.forEach((t, i) => el("text", {x: LEFT - 10, y: y + 20 + i * 17, "text-anchor": "end", "font-size": i ? 12 : 13,
-    "font-weight": i ? 400 : 700, fill: i ? C.ink3 : (color || C.ink)}, svg, t));
+  lines.forEach((t, i) => {
+    const strong = i === 0 || t.startsWith("motion 窗口");
+    el("text", {x: LEFT - 10, y: y + 18 + i * 16, "text-anchor": "end", "font-size": i === 0 ? 13 : 12,
+      "font-weight": strong ? 700 : 400, fill: i === 0 ? (color || C.ink) : (strong ? C.ink : C.ink3)}, svg, t);
+  });
 }
 
 function renderGroup(gr, host) {
@@ -130,7 +133,7 @@ function renderGroup(gr, host) {
   xmax = Math.ceil(xmax / 100) * 100;
   const axisW = 1220, width = LEFT + axisW + RIGHT;
   const height = rows.reduce((h, x) => h + (x.kind === "head" ? HEAD : ROW), 0) + 34;
-  const svg = el("svg", {viewBox: `0 0 ${width} ${height}`, width: width, height: height}, host);
+  const svg = el("svg", {viewBox: `0 0 ${width} ${height}`, width: "100%", preserveAspectRatio: "xMinYMin meet", style: "display:block;min-width:900px"}, host);
   const sx = v => LEFT + v / xmax * axisW;
   const step = xmax <= 1200 ? 100 : 200;
   const top = 4;
@@ -147,7 +150,8 @@ function renderGroup(gr, host) {
       y += HEAD; continue;
     }
     drawTrack(svg, x.r, y, sx, axisW);
-    leftText(svg, x.left.filter(Boolean), y, x.color);
+    const [d0, e0] = x.r.windows;
+    leftText(svg, [x.left[0], `motion 窗口 ${d0 + e0} 个（demo ${d0} + exec ${e0}）`, ...x.left.slice(1)].filter(Boolean), y, x.color);
     rightText(svg, x.r, LEFT + axisW + 10, y);
     el("line", {x1: 0, x2: width, y1: y + ROW, y2: y + ROW, stroke: "#EBF0EE"}, svg);
     y += ROW;
