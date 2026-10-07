@@ -1,962 +1,428 @@
-# RoboMME 数据生成脚本恢复仓库
+# RoboMME MotionJEPA 全任务训练数据仓库（newtask-v3）— AGENTS.md
+
+本文件由三部分构成：①下面的「运行环境判定」与本段头部；②标记块 `common-agents`——[AgentMetaRules-hongzefu](https://github.com/hongzefu/AgentMetaRules-hongzefu) 正本 `AGENTS.md`「强制规则」第 1–26 条与附录 A 的逐字副本（标记行 `src=` 记正本 commit、`blob=` 记块内容 blob id，**块内禁止手改**；同步核对命令 `uv run --no-project python /data/hongzefu/AgentMetaRules-hongzefu/scripts/sync_rules.py check --repo newtask-v3`）；③标记块之后的项目专属规则、覆盖项、占位符取值、项目 scope 与规则来源。优先级：系统 / 开发者 / 用户当前指令 > 标记块外明确写出的覆盖项与项目专属规则 > 标记块内的正本条目。平时只读本文件，不需要去读 GitHub 上的正本；正本改动经同步脚本回流。项目目标、历史计划和示例命令不代表本轮实施授权。
+
+**历史账本已归档**：2026-07-13 至 2026-10-06 的旧版规则 1–10、仓库目标、三阶段任务说明、「当前进度」表与追加式执行日志，已按正本第 22 条**逐字节**归档到 [`docs/ledger/AGENTS-ledger-20260713-20261006.md`](docs/ledger/AGENTS-ledger-20260713-20261006.md)（即 commit `deb938e0` 时的整份 `AGENTS.md`），只读、不再追加；本文件不再放进度表与执行日志。旧条号对照：旧 1 → 正本第 1 条；旧 2 → 第 3 条；旧 3 → 第 4 条（覆盖）；旧 4 → 第 7 条；旧 5（Workflow）→ `CLAUDE.md`「Workflow 与 Agent 模型」；旧 6 → 第 9 条；旧 7 → 第 5 条；旧 8 → 第 11 条（覆盖）；旧 9 → 第 14 条（覆盖）；旧 10 → 第 20 条。
+
+## 0. 运行环境判定（每次开工第一步）
+
+（正本第 0 条的本仓库实例。）每次会话开工前、执行任何带路径的命令之前，先跑一次只读判定，并把结论写进当轮第一条回复；判定未完成前不得执行任何带写入的命令：
+
+```bash
+echo "repo=$(git rev-parse --show-toplevel 2>/dev/null)"
+hostname
+for p in /nfs/turbo/coe-chaijy-unreplicated/hongzefu /data/hongzefu ~/.ssh/config; do
+  printf '%s: %s\n' "$p" "$([ -e "$p" ] && echo 存在 || echo 不存在)"
+done
+nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | sort | uniq -c
+command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 无"
+```
+
+| 判据 | 环境 A：sled-aspen 本机（2026-10-06 口径） |
+|---|---|
+| 主机名（`hostname` 前缀） | `sled-aspen`（完整域名 `sled-aspen.eecs.umich.edu`） |
+| 仓库根 | `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`（分支 `newtask-v3-MotionJepa1006`，远端 `hongzefu/robomme_benchmark_MotionJEPA`） |
+| 共享存储路径（NFS） | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/` 存在、可直读；只作只读参考源，不在其上改代码或写产物 |
+| 本机盘路径 | `/data/hongzefu/`（NVMe） |
+| 单机工作盘路径 | 无（不适用） |
+| `~/.ssh/config`（集群 ControlMaster） | 文件存在，但**只有 `Host host1`（本机转发），没有 `greatlakes` 别名、`ssh -G greatlakes` 为 `controlmaster false`** → 按正本第 8 条属**无集群访问环境** |
+| GPU（型号 × 数量） | 2 × NVIDIA RTX A6000 |
+| Slurm / 集群提交 | **不可用**：禁止提交任何 Slurm 作业、禁止 ssh 集群、禁止运行提交器；本仓库不接 `greatlakes.md` |
+| 原始数据 | 官方参考集 `/data/hongzefu/data_0226/`（16 个 `record_dataset_<Task>.h5` + metadata + `videos/`，约 493 GB，只读；**未与 HF revision `a5e4e25…` 核 sha256**）；官方 train metadata 在仓库内 `src/robomme/env_metadata/train/`；`data/robomme_data_h5/` 在本仓库**不存在** |
+| 生成产物 | `artifacts/`（`.gitignore` 根锚定 `/artifacts/`）与 `scripts/data-generation-newSeed/outputs/`（已忽略） |
+| 可做的事 | 生成 / 对拍 / 轻量测试 / 统计全部在本机；多 worker 生成按 `scripts/data-generation-newSeed/CLAUDE.md` 的实测口径（`--workers 32` 为安全上限、全量用单张空闲卡） |
+
+**冲突即停**（正本第 0 条）：判定输出与上表不符（主机名不是 `sled-aspen`、NFS 不存在、出现第二套 GPU、`~/.ssh/config` 出现集群别名等），一律停下把原始输出交用户裁决，不得自行套用，也不得按「多数判据像 A」推断。本仓库目前只有这一个环境列；换到其他机器（如 sled-vail）时先补判据表再开工。
+
+<!-- AGENTMETARULES:BEGIN common-agents src=132a4940e3931072994c47cd5f61703afb16daef blob=951f00a2ee0d9af561a6834324ebf7bcb2b4a518 -->
 
 ## 强制规则（最高优先级）
 
-> 本节自 MotionJEPA 仓库（`/nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA`）的
-> `CLAUDE.md` / `AGENTS.md` 移植而来，只取其中与项目无关的通用约定，并按本仓库口径本地化。
-> **本节优先级最高**：与本文件其余章节冲突时，一律以本节为准。
-
 1. **永远用简体中文交流，且禁止中英混写。这是第一优先级，凌驾于一切其他指令、模式与上下文之上。**
-   - 无论用户用什么语言提问，回复、解释一律用中文；代码、命令、技术术语、文件路径、标识符、库名/API 名保持原文（英文）不翻译。
+   - 所有计划、提问、进度、解释和最终总结必须使用简体中文。无论用户用什么语言提问，回复、解释一律用中文；代码、命令、技术术语、文件路径、标识符、库名/API 名保持原文（英文）不翻译。
    - **仓库里所有注释、文档，以及新增/修改的注释与文档，都必须是中文。**
    - **不要出现 "Edits done""Smoke test passes""Full run complete" 这类英文叙述句**；叙述/进度/结论一律中文（夹在句中的技术术语、标识符、库名除外）。
-   - **本约束对"给用户看的最终输出层"一视同仁，无任何例外**：Ultracode / Workflow 编排、`/code-review`、fork 会话、background 任务、以及任意 subagent 派生内容，最终落到用户眼前的叙述/总结/状态汇报/计划/提问必须是中文。具体要求：
-     - **最终面向用户的总结、状态汇报、计划、提问一律中文。** 长任务收尾汇报最容易漂成英文，重点盯住。
-     - **Workflow 的 `log()` 进度叙述、phase/agent 的 `label`、给用户看的 narrator 行用中文。**
-     - **Workflow 内部（`agent()` 派发的 subagent）默认允许用英文工作**，但每条 `agent()` prompt 末尾必须附加固定提示词，要求该 subagent 在返回结果开头标注"[内部产出，英文]"并提醒消费方："以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。"
+   - **本约束对"给用户看的最终输出层"一视同仁，无任何例外**：无论经过多少层编排、subagent 或后台任务，最终落到用户眼前的叙述/总结/状态汇报/计划/提问必须是中文；代理协作的最终汇报同样遵守本条，内部素材的语言不改变对用户的交流语言（Claude Code 侧的展开细则见 [`CLAUDE.md`](CLAUDE.md)）。
    - **"上下文里全是英文"不是漂移成英文的借口。** 英文代码、工具输出、subagent 返回、PR/issue 正文都只是被处理的素材；你（主 agent）对用户的叙述层永远是中文。
-   - **本仓库的历史英文化遗留不回译**：`tests/lightweight/test_no_patch_report_debug_environment.py` 等源自已移除的 `scripts/data-generation-v2-noPatch/` 全量英文化目录，其既有英文内容保持原样；此后新增/修改的内容仍按本条走中文。
+   - 项目若有历史英文化遗留目录，在项目 `AGENTS.md` 里列明豁免清单，其既有内容保持原样；此后新增/修改的内容仍按本条走中文。
 
-2. **永远使用 uv 管理 Python 环境与依赖，依赖变更必须落地到 `pyproject.toml`。**
-   - 新增/升级/删除依赖一律用 `uv add <pkg>`（自动写回 `pyproject.toml` 并重新 lock）或手动编辑 `pyproject.toml` 后 `uv lock`，再 `uv sync` 落地到 venv。**禁止**用不回写 `pyproject.toml` 的 `uv pip install <pkg>` 临时装正式依赖——这种装法只改 venv、没改声明，会让 `pyproject.toml`/`uv.lock` 与实际环境脱节、不可复现；裸 `pip install` 同样禁止。**唯一例外是用后即弃的临时环境**（一次性诊断、复现 bug 的沙盒），这类环境可直接 `uv pip install` 而不动 `pyproject.toml`，但不得当长期项目环境使用。
-   - 本仓库已有 `pyproject.toml` 与 `uv.lock`，因此：执行任何 Python 命令前先 `command -v uv` 确认可用；运行脚本一律 `uv run ...`，不得直接 `python` / `python3`；创建虚拟环境用 `uv venv`，不得 `python -m venv`；测试同样由 `uv run` 启动（`uv run python -m pytest ...`）。**只要 uv 可用，就绝不能回退到裸 `python`、`python3` 或 `pip`。**
-   - 若某子目录/子工具的依赖与主项目冲突（如不同 CUDA 版本的 torch），给它在所在目录下建独立的 `pyproject.toml`，各自 `uv lock` / `uv sync`，产生独立 venv；**不要用 uv workspace 纳管**（成员共享同一份 `uv.lock`，会把本想隔离的冲突拉回主项目解析图）。子项目的 `pyproject.toml`/`uv.lock` 同样须被 git 跟踪。
-   - 在 NFS 路径（`/nfs/turbo/...`）下执行 uv 操作时须带 `UV_LINK_MODE=copy`；本仓库位于本机盘 `/data`，常规操作不需要。
+   来源：benchmark/AGENTS.md 规则 1；global CLAUDE.md「语言」；policy/AGENTS.md 规则 1；mjepa/AGENTS.md 规则 1。
 
-3. **每次完成代码改动后，必须运行端到端测试，且总耗时必须控制在 5 分钟以内。** 如果全量测试会超时，选取覆盖核心路径的子集运行，而不是跳过测试：
-   - 无需数据集（任何机器都能跑，核心路径）：`uv run python -m pytest tests/lightweight/ -q`
-   - 需要数据集 / MuJoCo 环境（按环境条件跑）：`uv run python -m pytest tests/dataset/ -q`
-   - 只改了某个生成链路时，至少跑该链路的定向单测（如改 swap 变体枚举 → `uv run python -m pytest tests/lightweight/test_swap_variant_plan.py -q`），再视时间预算补跑 `tests/lightweight/` 全量。
-   - 涉及实跑生成的验证一律先做「单任务、单 episode、单 worker」的最小 smoke，通过后再放大规模；smoke 失败不得直接启动全量。
+2. **所有计划必须用中文书写，计划与实施范围必须明确。** 仓库文档中的项目目标、未来 scope、roadmap、历史计划和示例命令都不等于当前实施授权；只执行用户本轮明确要求的工作，任何工具、回退机制或并行代理都不扩大这一范围。遇到范围、实现方式或破坏性操作存在歧义时，必须先询问用户，不得擅自扩展；已经明确的决定与授权沿用，不重复询问。计划默认分为两个部分（纯文档改动的计划例外，见下方第三条子项）：
+   - **第一部分（给人看）**：以可读叙述为主、结论先行，黑话仍应少用；但**关键机制与保证处必须给到代码级细节**——具体文件路径、命令、判定行、实测数字直接内联在叙述里，达到「读者不翻代码就能核对」的密度（2026-08-29 用户定标；**标杆样例（2026-10-06 起所有仓库统一，用户原话「所有的密度的标杆都改成这个」）：robomme_benchmark_MotionJEPA 仓库 `docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md` 的第一部分**——先「要做什么与全部运行一览」（三句话 + ASCII 批次图 + 批次表 + 已定口径原话），再逐模型「原侧是哪份代码、和上游原版差在哪」每模型三四条，然后「我们这一侧要改什么」一行一块的表（先说为什么非改不可），最后验收判定行表、步骤表、子代理分工简述；第一部分只留决策信息（约 90～130 行），每节一张表加一两段话，逐文件逐函数的细节整段移到第二部分并在第一部分末尾一句话指向；此前的标杆 policy 仓库 `0829-destructive-restructure-plan.md` 不再作标杆；项目可在 `<PLAN_EXEMPLAR>` 指定自己的标杆）；对文件的引用和对步骤的介绍必须精确，不能只在第二部分补足第一部分缺失的关键依据。「密度差不多」指每段的信息密度而非篇幅，不为凑长度灌水；对照标杆的六个特征写：
+     1. **文首引言块**先定死权威性、代码锚点 commit、工作副本路径、commit 编号体例、外部依赖锚点，以及「只规划不实施、每步须单独获批」的授权边界。
+     2. **总览节**给「一句话方案」加编号的「已定死口径」清单，每条口径注明依据所在小节；用户拍板的原话逐字保留、不替用户改写。
+     3. **每个机制小节**按「定义 → `文件::函数` 锚点与配置键 → 公式或代码块 → 数轴 / 示意图演示 → ⚠ 陷阱与反例 → 带实测数字的收益」展开。
+     4. **改动前后链路图**逐跳标形状 / dtype / 字节量、可训练参数与「这一跳有没有改数」；改动一览用「文件 / 锚点 / 改什么 / 关闭态 / 开启态」表。
+     5. **每条验收**写成「查什么 / 怎么查 / 过了说明什么 / 判定行」，并解释为什么该判据能成立（如为什么能逐位）；判定行写法与最终验收的具名要求见第 22 条。
+     6. **实施步骤表**「阶段 / 内容 / 判据」，判据直接引用上面的判定行；实施完成后实测结果以子节追加在步骤表之后，不改写原计划。
+   - **第二部分（技术细节，供 agent 追踪）**：写清具体文件、函数、命令、参数、验证方式等实现细节，保证 agent 执行与核对时信息完整；第一部分已内联的细节可引用不重复。现有能力、拟新增接口、实测结果与待验证判据须明确区分。结构参照同一标杆文档的第二部分：〇 前置声明与红线（编号、可被正文引用）→ 按阶段 / 按文件的逐项改动清单 → 子代理分配表（含代码或配置改动时）→ 对拍闸门总表 → runbook → 风险登记 → 盲区诚实清单 → 留档与 commit 纪律。
+   - **例外——纯文档改动的计划不分两部分**：本轮计划的产出物只有仓库内文档（Markdown 正文的重写、重排、补写、删改），不含任何代码、配置、数据或训练链路改动时，计划**不分第一部分 / 第二部分**，写成一篇单一连贯叙述：为什么改 → 改哪个文件的哪一段（替换范围精确到起止标题；编号规则精确到条目边界）→ 新正文按其自身组织顺序逐段说明要写成什么样（引用的代码锚点、实测数字随段给出）→ 验证命令与 commit 计划。上面两条关于细节密度与引用精确度的要求照旧适用，只是不再机械二分——纯文档任务里「给人看」与「供 agent 追踪」两侧内容高度重合，二分只会把同一份内容写两遍。
+   - **两部分结构是硬性格式，不因「精简版」「重写版」「v2」「已做过的不再赘述」而豁免（2026-09-27 新增）**：只要计划涉及任何代码、配置、数据或训练链路改动，正文必须恰好含两个一级标题 `# 第一部分（给人看）` 与 `# 第二部分（技术细节，供 agent 追踪）`，各自按上面两条的结构展开；不得写成单篇平铺，不得用「§一～§八」之类自拟章节代替二分，也不得把两部分合并进同一节再声明「前半给人看、后半技术细节」。用户要求「简略」「只写最新版本」时，减的是篇幅与历史决策，**不减这两个标题与各自的骨架**（第一部分至少含总览／已定口径、机制、验收表、步骤表，含代码或配置改动时另含子代理分工与合并（简述）；第二部分至少含红线、逐文件改动清单、子代理分配表（含代码或配置改动时）、闸门、runbook、风险、盲区、留档纪律）。交付前自检 `grep -c '^# 第一部分\|^# 第二部分' <计划>` 必须等于 2，不等于 2 不得交付。实测踩坑：2026-09-27 benchmark 仓库把已按两部分写好的 §〇′ 方案改写成「精简定稿版」时写成了单篇八节，被用户当场指出「依旧是两段 第一部分 第二部分 为什么没有遵守规则」。
+   - **子代理分工与合并必须写进计划（2026-10-01 新增）**：计划涉及代码或配置改动、且执行宿主支持子代理时——**第一部分**加一小节「子代理分工与合并（简述）」，几句话讲清拆成哪几块、每块管哪些文件、按什么顺序合回工作分支、每次合并前后分别审什么，写给人看、不堆命令；**第二部分**加「子代理分配表」，列「子任务编号 / 目标 / 可写文件集合 / 禁触路径 / 接口契约与依赖 / 合并顺序 / 验收命令与判定行（在哪里、以什么环境跑） / 资源占用（GPU、端口、run_name、tmux 前缀） / 共享文件归属裁决」；切不开的部分也要列，写「主会话自做」及理由；受保护目录（第 21 条）的文件不进可写集合。该表经批准即构成写入型子代理的派发授权，表外子任务不派。需要由子代理启动长任务时（Claude Code 的运行型子代理，2026-10-04 新增，见 `CLAUDE.md`「运行型子代理」），同一张表另列运行型子任务：完整命令原文、运行位置、tmux 会话名或 JobID、日志路径、起跑成功的判据；表内写明才派，监听、预算账本与清理仍归主会话。执行机制按各宿主自己的规则（Claude Code：`CLAUDE.md`「计划执行模式」；Codex：第 26 条），本条只定计划里要写什么。用户原话（2026-10-01，语音转写）：「最好是查看这个任务这个任务本身最好就已经好了撒贝镇的分配。在第二部分就是任务的markdown的第二部分最好已经设计好怎么去分配这个SubAgent。」「在第一部份中减数怎么去分配。怎么去合并。简单的叙述让用户稍微能看懂」。
+   - **计划文件命名（2026-09-16，美国东部时间，用户确认）**：根目录计划统一命名为 `MMDD-<主题>-plan.md`，使用四位创建日期替代 `v1-`、`v2-`、`v5.0-` 等版本前缀；`8frame` 等主题信息保留。新计划以 `America/New_York` 的创建日期为准，执行 `TZ=America/New_York date +%m%d` 取值，例如东部时间 9 月 16 日新建的计划均以 `0916-` 开头。后续修订不改变日期前缀；同日计划通过主题区分，禁止覆盖已有计划。历史文件迁移沿用首次新增 Git 提交自身时区所记录的月日，不按当前时区重新换算，也不使用最后修改时间。
+   - **计划改名的引用维护**：同步更新现行 Markdown 链接、普通引用、源码注释/docstring 和配置注释中的完整文件名；保留历史用户原话、固定提交描述、原始记录与明确只读的源码快照，归档中的导航链接更新到现位置。不得顺带修改正文版本含义、commit 编号、分支名、run_name 或训练产物路径。
+   - **开工必须由用户明确、无歧义地说「开工」（2026-10-04 新增）**：计划获批、预算获批、资源到位（占位 job 排到、卡到手、下载完成）、用户说「同意」「放行」「都按推荐」「尽可能高效利用」「可以直接跑」等，**都不是开工令**；只有用户明确、无歧义地说出「开工」（或同样不可能被读成别的意思的指令，如「现在开始实施」），才允许开始改代码、下载、提交作业、运行。不得把任何其他事件或措辞当作开工条件，也不得在计划里设计「某条件满足即视为开工」的自动触发；拿不准时只问一句「是否开工」，不自行推断。开工令只覆盖它所指的那份计划与范围，不延伸到后续计划。开工前允许的只有：只读核实、改计划文件、以及用户单独点名要做的事。实测踩坑：2026-10-04 benchmark 仓库把「都同意……都可以直接跑……尽可能的早点开始占用卡」读成立即开工并提交了 9 个占位 job，被用户叫停（「不要现在开始计划！！！」）。用户原话（2026-10-04）：「所有的开工都是要我明确确认无歧义的说开工。任何其他都不能作为开工条件 这个写入agentmetarules」。
+   - 是否进入或退出计划模式、能否写计划文件，以当前宿主指令为准；上述格式要求不授予实施或执行命令的权限。
 
-4. **后台进程的起法（超 5 分钟必须 tmux）与等法（一律 Monitor），命令必须规范写：**
-   - **任何预计超过 5 分钟的后台任务（全量数据生成、合并、审计等）必须用 tmux detached session 起，脱离 harness 会话**——`run_in_background` 起的进程是 Claude Code 会话的子进程，会话退出/崩溃会连带杀死跑了几小时的任务。标准模板（2026-08-06 nohup vs tmux 六判据实测后定；内部仍是下述 pipefail+tee 管道；`EXIT_CODE=` 尾行作 Monitor 的统一完成信号）：
-     ```bash
-     tmux new-session -d -s <任务名> \
-       "set -o pipefail; PYTHONUNBUFFERED=1 uv run python scripts/<入口脚本>.py <参数> 2>&1 | tee /path/to/run.log; echo \"EXIT_CODE=\$?\" >> /path/to/run.log"
-     ```
-     配套命令：死活判断 `tmux has-session -t <任务名>`（实测运行中为真、结束后为假，无 stale 假阳性）；中途停止 `tmux kill-session -t <任务名>`（实测连 tee 一并干净退出、零孤儿；⚠ 强杀不会写 `EXIT_CODE=` 尾行，判死只能靠 has-session）；人肉围观 `tmux attach -t <任务名>`（Ctrl-b d 脱开）；`tmux ls` 一览所有在跑任务。落选方案 nohup（存活性/日志/退出码与 tmux 逐项打平，但需 setsid+pidfile+按进程组 `kill -- -PGID` 三件套且只杀 wrapper 会留孤儿）不再使用。**≤5 分钟的短任务照旧直接 `run_in_background`，不强制 tmux。**
-   - **等待任何后台进程（生成、合并、测试、日志变化）一律用 Monitor。Monitor 要"挂在一个流上、有关心的行就发事件"，禁止塞 `while ...; do sleep N; done; echo 完成` 这种最后才输出一次的阻塞脚本。** 正确形态是 tail 日志 + 过滤完成/报错行（`tr` 需 `stdbuf -oL` 防管道缓冲吞行）；**一份日志挂一个 Monitor，禁止一条 `tail -F` 同时挂多个日志文件**（实测多文件 tail 每次切换都打 `==> 文件 <==` 头部行，噪声大到触发 Monitor 限流）：
-     ```bash
-     tail -n +1 -F /path/to/run.log | stdbuf -oL tr '\r' '\n' \
-       | grep --line-buffered -E "全部完成|EXIT_CODE=|Error|Traceback|out of memory|找不到"
-     ```
-   - **进程存活检测禁止用裸 `pgrep -f "<pattern>"`**（pattern 在 Monitor 自身 argv 里 → 永远自匹配恒真）。tmux 起的任务用 `tmux has-session`；其余用括号技巧 `pgrep -f "[g]enerate_swap_variants.py"` 或启动时 `$!` 记下的具体 PID。
-   - **`run_in_background` 直接起的进程退出时 harness 会自动重新唤醒，无需再挂 pgrep 轮询；但 tmux 里起的任务 harness 感知不到退出，Monitor 是唯一完成信号，必须挂。**
-   - **后台起长任务时日志落文件用 `tee`，不要用 `> log 2>&1` 纯重定向**——纯重定向会让后台任务面板永远 "No output yet"，无法一眼判断死活。三个坑逐一处理：`PYTHONUNBUFFERED=1` 防管道块缓冲吞输出、`set -o pipefail` 防主命令崩了 `$?` 被 tee 的 0 顶替、日志文件照常供 Monitor tail（该管道已内嵌在上面的 tmux 模板里；短任务直接 `run_in_background` 时单独套用同一管道即可）。
+   来源：policy/AGENTS.md 规则 2；mjepa/AGENTS.md 规则 8；benchmark/AGENTS.md 规则 10（六个特征）。
 
-5. **Workflow 只有三条约定，其余全部作废：**
-   - **①逐次审批**：**每次生成 workflow 前，必须先把方案（要做什么、分几个 phase、规模多大、用什么模型）交用户审批，获准后才能调 Workflow 工具。** 除此之外的一切开启条件（`ultracode` 关键字、用户原话是否说过「用 workflow」、任务规模是否够大、fan-out 数量刻度等）**一律作废**，不再作为自行启动的依据。
-   - **②模型规则（2026-08-06 更新，按启动方式分两条）**：**用 Agent 工具 launch 单个 subagent 时强制 `model: "opus"`**；Workflow 脚本里调 `agent()` 默认且仅允许 `model: "sonnet"`，**唯一例外**：workflow 收尾的总结/综合 agent、或负责制定计划（plan）的 agent，可用 `model: "opus"`，但**单次 workflow 内（按 workflow 计，不是按完整任务计——一个任务跑多个 workflow 时每个 workflow 各自计数）**累计使用 opus 不得超过 3 次。两条通用：禁止 haiku、fable 及一切白名单外模型，且 **`model` 参数不得省略**——省略会静默继承主会话模型（常是 fable），同样算违规。
-   - **③不设置任何额外并发限制**：`parallel()`/`pipeline()` 直接传入完整条目即可，不要为控制并发人为拆批、加节流或降低单批数量——Workflow 工具自身已有并发上限（`min(16, cpu核数-2)`），脚本层面不叠加限制。
+3. **永远使用 uv 管理 Python 环境与依赖，依赖变更必须落地到 `pyproject.toml`。**
+   - 执行任何 Python 命令前，先确认工作区是否提供 `uv`、`uv.lock` 或由 uv 管理的 `pyproject.toml`（`command -v uv`）。uv 可用时：运行脚本一律 `uv run ...`（或本仓库 uv 管理的 `.venv/bin/python`），禁止裸 `python` / `python3`；创建虚拟环境用 `uv venv`，不得 `python -m venv`；测试同样由 `uv run` 启动（`uv run python -m pytest ...`）。**只要 uv 可用，就绝不能回退到裸 `python`、`python3` 或 `pip`。**
+   - 新增/升级/删除依赖一律用 `uv add <pkg>`（自动写回 `pyproject.toml` 并重新 lock）或手动编辑 `pyproject.toml` 后跑 `uv lock`，再用 `uv sync` 落地到 venv。**禁止**用不回写 `pyproject.toml` 的 `uv pip install <pkg>` 临时装正式依赖——这种装法只改了 venv、没改声明，会让 `pyproject.toml`/`uv.lock` 与实际环境脱节、不可复现；裸 `pip install` 同样禁止。
+   - **唯一例外是用后即弃的临时环境**（一次性诊断、复现 bug 的沙盒、不打算长期保留）：这类环境可以直接 `uv pip install` 而不动 `pyproject.toml`。但不能把这种环境当长期项目环境使用——没有 lock 文件意味着不可复现，下次想要同样的环境只能凭记忆重装。
+   - **同一项目内，若某子目录/子工具的依赖与主项目冲突**（如不同 CUDA 版本的 torch、互斥的包版本），给它在所在目录下建一份独立的 `pyproject.toml`，各自 `uv lock` / `uv sync`，产生独立的 `uv.lock` 与独立 venv（venv 目录名可用 `UV_PROJECT_ENVIRONMENT=<目录名>` 显式指定，便于复用既有命名习惯如 `.venv-flow`）。**不要用 uv workspace 把这种冲突依赖的子项目纳入主项目**：workspace 成员默认共享 workspace 根的同一份 `uv.lock`，会把本想隔离的冲突重新拉回主项目的解析图里，等于白做隔离。子项目同样适用上面各条：依赖变更必须落地到子项目自己的 `pyproject.toml`，其 `pyproject.toml`/`uv.lock` 也必须被 git 跟踪以保证可复现（venv 目录本身仍照常 gitignore）。
+   - **NFS 上执行 uv 操作必须设置 `UV_LINK_MODE=copy`**（NFS 不支持 hardlink；cache 在本机盘、venv 在 NFS，跨设备必须 copy）。
+   - **venv 解释器必须钉死**：不依赖两端系统 python 恰好一致——系统 python 由 OS 更新决定、两端补丁号会漂移，而 `.venv` 里编译好的扩展模块对 ABI 敏感。多机共用一份工作副本时，把 uv managed 解释器装到共享盘（`UV_PYTHON_INSTALL_DIR=<共享盘目录> uv python install <版本>`），`uv venv --python <PY_INTERPRETER>` 显式指定其绝对路径，两端指向**同一个二进制**才可复现。**禁止**用手动重链 / 改 `pyvenv.cfg` 的方式修补死链（集群侧细则见 [`greatlakes.md`](greatlakes.md)「venv 可移植性」）。
+   - **`UV_CACHE_DIR` 必须显式设定，不能靠「不设」**：uv 缓存目录遵循 XDG，一旦设了 `XDG_CACHE_HOME` 指向别处，uv cache 会被一起拖走（2026-09-17 实测 uv 0.10.2：只设 `XDG_CACHE_HOME=/tmp/x` → `uv cache dir` 返回 `/tmp/x/uv`；补上 `UV_CACHE_DIR` 才压回）。落点填 `<FAST_LOCAL_CACHE_ROOT>`：工作副本在 NFS 时压回本机 `$HOME/.cache/uv`（uv cache 只是下载缓存，不该走 NFS）；单机环境按第 14 条把它与其它缓存一起指到工作盘下。计算节点只通过 `uv run --frozen --no-sync` 使用预装环境，不在计算节点安装依赖。
 
-6. **仓库文档中禁止用硬编码行号引用代码**（`file.py:123` 这类）。行号随代码演进必然漂移。引用代码一律用**稳定符号锚点**：函数/类/方法名、CLI flag 名、JSON 字段名、或代码段的语义描述；文件级 markdown 链接可保留。本条不约束代码内注释与 commit message。
+   来源：global CLAUDE.md「uv 依赖管理」；policy/AGENTS.md 规则 3；mjepa/AGENTS.md 规则 2；benchmark/AGENTS.md 规则 2；evalgl/AGENTS.md 规则 3(a)。
 
-7. **凡 patch 级特征图/热力图（如 16×16 网格）的放大可视化只能用最近邻 `cv2.INTER_NEAREST`，禁止 linear/bilinear 等任何插值**——patch 级特征只有网格分辨率，线性插值会伪造亚格子细节并糊掉格子边界。本仓库的可视化脚本（如 `scripts/data-generation-MotionJEPALabel/draw_variant_diagrams.py`）同受此约束。（真实照片帧、渲染视频帧的缩放不受此限。）
+4. **每次完成代码改动后，必须运行覆盖核心路径的真实验证，总耗时控制在 5 分钟以内。** 如果全量测试会超时，选取覆盖核心路径的最小真实子集运行，而不是跳过测试；必要的较长验证按第 7 条长任务纪律执行并说明耗时。
+   - 项目 `AGENTS.md` 须列出「无需数据集、任何机器都能跑」的核心短测命令，与「需要数据集 / 环境」的条件测试；只改了某条链路时至少跑该链路的定向单测，再视时间预算补跑核心短测全量；运行前核实环境与依赖。
+   - **涉及实跑的验证一律先做最小规模 smoke**（各维度取 1，如单任务、单 episode、单 worker），通过后再放大规模；smoke 失败不得直接启动全量。
+   - 纯文档改动至少执行 `git diff --check`，核对链接、示例、最终文件范围及原有要求是否保留，不启动无关训练测试。
+   - 浏览器交互类页面改动须实跑交互测试（Playwright 等用 `uv run --no-project --with playwright` 临时环境，不加入正式依赖，`--shots <目录>` 留截图供目视复核）；静态文本检查无法替代实跑交互——曾有闸门页因首次执行 JS 抛错而动态内容全空、静态检查毫无察觉。
 
-8. **每次改动完成（并跑过规则 3 的测试）后必须 `git commit`，且只能提交本轮自己改的内容：**
-   - **commit message 用简体中文**，subject **沿用本仓库现行体例** `<大版本>.<小版本>[.<修订>] <中文描述>`（照抄 `git log`，如 `2.9.2 变体简图出图验证与账本补记`）。大版本号只在系统性、跨机制的重大更新时递增；小版本号用于该大版本内的常规迭代，每次 commit 递增；从哪个版本号接续以 `git log` 最近一次为准。
-   - **只 commit 自己改的文件**：一律 `git add <逐个明确路径>`，**禁止 `git add -A`、`git add .`、`git commit -a`** 这类全量暂存——它们会把用户或其他 agent 的在途改动一并裹进来。
-   - **提交前先 `git status --short` 核对工作区**：若存在不属于本轮改动的文件（他人编辑、别的 agent 产物、遗留脏文件），**一律绕开、不得提交，也不得 stash/revert 掉**；必要时在汇报里点名这些文件，交用户处置。
-   - **subject 沿用上述体例不动，body 必须详写过程**——目标是人类不看会话记录也能了解具体过程、复现当时场景，详略以「会话工作总结」为准（按主题分节、成段叙述、带实测数字，不是三五行摘要）。body 须包含：①**用户指令原话**（本轮涉及的全部关键用户消息：初始指令 + 中途追加/纠偏，按时间顺序原话保留，闲聊/确认类可略）；②**结构化后的完整计划**（要做什么、分几步、判据是什么）；③**实施过程分节叙述**（一、二、三…写清每一步做了什么、关键设计点与取舍理由）；④**计划到实施中的意外**（踩的坑、临时改向、被推翻的假设、外部事件、顺手修的 bug 及各自处置）；⑤**重要实验/测试**（命令/入口、关键参数口径、实测数字与结论）；⑥**当前状态与下一步**。纯文档/一行修补类微小改动 body 可相应精简，但用户指令原话与测试/验证结果两项不可省。
+   来源：policy/AGENTS.md 规则 4；mjepa/AGENTS.md 规则 4；benchmark/AGENTS.md 规则 3；evalgl/AGENTS.md 规则 4。
 
-9. **本机（非集群）上跑任何消费数据集的任务，一律优先用 `/data` 本地盘副本，不读 NFS 原件。**
-   - **理由**：`/nfs/turbo` 是网络文件系统，实测带宽约 132 MB/s 就是天花板，且已被坐实为大批量读取任务的真实瓶颈（加大 batch 吞吐纹丝不动，纯卡在读取上）。`/data` 是本机 NVMe（14 TB），不受此限。
-   - **本仓库口径**：仓库本体与官方参考集都已在本机盘上——官方参考数据固定在仓库内 `data/robomme_data_h5/`，生成产物落 `artifacts/generated/<...>/` 或各生成目录自己的 `outputs/`；跨仓库引用 MotionJEPA 侧数据时优先取 `/data/hongzefu/` 下的本机副本。
-   - **同步只用 rsync**，NFS 侧是权威源，两边不一致时以 NFS 为准；NFS 原件被重建或增量更新后必须重跑同步，别让本地副本悄悄变陈旧：
-     ```bash
-     rsync -a --info=progress2 /nfs/turbo/coe-chaijy-unreplicated/hongzefu/<目录> /data/hongzefu/
-     ```
+5. **凡 patch 级特征图 / 热力图（如 16×16 网格）的放大可视化只能用最近邻 `cv2.INTER_NEAREST`，禁止 linear/bilinear 等任何插值**——patch 级特征只有网格分辨率，线性插值会伪造亚格子细节并糊掉格子边界。项目内所有可视化脚本同受此约束。（真实照片帧、渲染视频帧的缩放不受此限。）
 
-10. **仅 OpenAI Codex agent：`bwrap` / `apply_patch` 故障回退**
+   来源：benchmark/AGENTS.md 规则 6；policy/AGENTS.md 规则 5；mjepa/AGENTS.md 规则 5。
 
-    > 本条只适用于 OpenAI Codex 主 agent 及其 Codex subagent。其他 agent、Claude Code
-    > （含其 subagent 与 Workflow）、自动化工具和人类用户必须忽略本条。本条不修改上面
-    > 任何规则，也不覆盖系统、开发者或用户给出的更高优先级规则。
+6. **正式长训练 / 评估开始前确认全新的 `run_name`。** 用户已明确指定的新名称直接沿用，无需重复确认。禁止通过复用名称或覆盖 / 强制类参数（如 `overwrite=true`）清空已有 `<STORE_ROOT>/runs/<run_name>/`。预计不超过 5 分钟、跑完即删的冒烟可自行命名，结束后只清理已核实属于本轮的临时 run；更长的调试或基准按第 17 条留档，不能按短测删除其保留结果。计划外补跑的 run 名须事后请用户追认并写进留档。
 
-    Codex 运行环境偶尔会在启动沙箱时报告：
+   来源：mjepa/AGENTS.md 规则 6；policy/AGENTS.md 规则 6；env-b-aws-replication.md 十一节第 3 条。
 
-    ```text
-    bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted
-    ```
-
-    该错误可能同时导致 `apply_patch` 和普通只读命令无法启动。它是 Codex 沙箱/隔离层故障，
-    不是仓库代码错误；不得据此修改项目代码、宿主机网络或沙箱配置，也不得用更宽泛的命令
-    绕过原任务边界。
-
-    1. 先保留原始错误并向用户或父 agent 简短说明。普通命令若因该错误失败，在更高优先级
-       规则允许时，用**相同的最小命令**、准确的 `justification` 和
-       `sandbox_permissions="require_escalated"` 重试；不得顺手扩大读取、写入或网络范围。
-    2. 文件编辑仍必须先尝试 `apply_patch`。只有确认失败发生在 `apply_patch` 的沙箱启动阶段，
-       而不是 patch 语法、上下文或目标文件错误时，才可在允许升级权限的前提下回退到
-       `/usr/bin/patch`，对固定字面路径应用可审计的最小 unified diff。
-    3. 只有不改变语义的纯机械替换才可回退到 `perl -0pi`，且匹配文本、目标文件和预期替换
-       次数必须预先核验。禁止用 Python 写文件、glob、递归目标、未校验变量、符号链接目标，
-       也禁止把单文件失败扩大成目录级重写。
-    4. 删除操作不会因沙箱故障自动获得授权。仍须逐项核验固定目标、文件类型、符号链接、
-       恢复能力和用户授权，并遵守上级规则中的破坏性操作约束。
-    5. 回退后立即检查 `.orig`、`.rej` 和其他探针/临时文件，逐文件查看
-       `git diff -- <path>`，再运行 `git diff --check` 与 `git status --short`。若出现拒绝块、
-       部分应用、目标数量异常或范围外改动，必须停止并上报，不得继续叠加补丁掩盖问题。
-
-## 仓库目标
-
-本仓库专门用于寻找、恢复并验证 RoboMME dataset 的生成脚本。最终目标不是只找到一个历史文件，而是完成以下闭环：
-
-1. 下载官方参考 dataset；
-2. 从 Git 历史中找到最新且可用的数据生成脚本及其完整依赖；
-3. 用恢复后的脚本重新生成数据，并与官方参考 dataset 做一致性审查。
-
-不要把无关的 benchmark 功能开发、模型训练或大规模重构混入本任务。三个阶段必须按顺序执行；上一阶段没有证据证明完成时，不得把下一阶段标记为完成。
-
-## 全局执行规则
-
-- 每次开始工作前先阅读本文件；每个阶段开始、取得关键进展、遇到阻塞以及完成时，都必须更新本文件中的“当前进度”和“追加式执行日志”。不能只在聊天消息、终端输出或其他报告里记录进展。
-- `AGENTS.md` 是本任务的持续状态账本。更新进度表的同时保留已有日志，不得覆盖或删除旧记录。
-- 所有下载数据、生成数据、审查产物和日志都必须位于本仓库根目录内。禁止使用仓库外目录作为真实存储位置，也禁止用符号链接、bind mount 或仅存于 `/tmp` 的文件绕过此限制。
-- 官方参考数据固定放在 `data/robomme_data_h5/`；重新生成的数据必须放在另一个仓库内目录，例如 `artifacts/generated/<commit>/`，绝不能覆盖或混入参考数据。
-- 当前 `.gitignore` 和 `.dockerignore` 没有忽略 `data/`。下载前必须先避免大型数据被 Git 跟踪或被无意加入 Docker build context，并在执行日志中记录具体处理。除非用户明确要求，不得提交下载或生成的 HDF5、图片、视频等大型产物。
-- 任何“完成”“一致”或“可用”的判断都必须附带可复现命令、退出状态、输出路径和审查摘要。没有证据时只能写“未验证”或“进行中”。
-- 不得用破坏性 Git 操作清理工作区。检查历史优先使用 `git log`、`git show`、`git ls-tree`、`git diff`；需要运行历史版本时使用隔离 worktree 或恢复分支，不能覆盖用户现有修改。
-
-## 第一阶段：下载官方参考 dataset
-
-依据根目录 `readme.md`：
-
-- 官方来源：`https://huggingface.co/datasets/Yinpei/robomme_data_h5`
-- README 声明的数据规模：16 个任务，共 1,600 条 demonstration，每个任务 100 条；
-- 仓库内固定下载目录：`data/robomme_data_h5/`；
-- `scripts/dataset_replay.py` 的默认读取目录也是 `data/robomme_data_h5/`。
-
-执行要求：
-
-1. 先记录当前磁盘空间、下载工具、源 URL/版本信息和目标绝对路径。
-2. README 只给出了下载链接，没有给出 CLI；实际采用的补充下载命令必须在日志中明确标注为“根据 README 链接补充”，并且仍须由 uv 管理相关 Python 工具。
-3. 下载目标必须解析到本仓库下的 `data/robomme_data_h5/`，不能下载到其他位置后再做链接。
-4. 下载后至少记录文件清单、文件数量、总大小以及可获得的 revision/checksum 信息，并核对是否符合 README 的 16 个任务、1,600 条 demonstration、每任务 100 条声明。
-5. 使用以下回放入口进行初步 sanity check，并记录成功/失败的任务和视频输出位置：
+7. **预计超过 5 分钟的训练、抽取、评估、数据构建与诊断必须放入 detached tmux session，脱离 agent 会话。** 由 agent 会话直接起的后台进程是该会话的子进程，会话退出/崩溃会连带杀死跑了几小时的任务。标准模板（2026-08-06 在 MotionJEPA 仓库做 nohup vs tmux 六判据实测后定：存活性/日志一致性/退出码三项打平，tmux 在死活判断/停止清理/人肉查看三项胜出，且免 setsid+pidfile+按进程组 kill 三件套——nohup 只杀 wrapper 会留孤儿，弃用；脚本化版本见 [`templates/run_long_task.sh`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/templates/run_long_task.sh)）：
 
    ```bash
-   uv run scripts/dataset_replay.py --h5-data-dir ./data/robomme_data_h5
+   tmux new-session -d -s <本轮唯一会话名> \
+     "set -o pipefail; PYTHONUNBUFFERED=1 <长任务命令> 2>&1 | tee <STORE_ROOT>/logs/<run>.log; echo \"EXIT_CODE=\$?\" >> <STORE_ROOT>/logs/<run>.log"
    ```
 
-只有参考数据已完整落在仓库内、清单核对完成且结果写入本文件后，第一阶段才能标记为“完成”。
-
-## 第二阶段：扫描 Git 并恢复最新可用生成脚本
-
-只能在第一阶段完成后正式开始本阶段。“最新”不等于“可用”，不得只按文件名、提交日期或分支 tip 做结论。
-
-最低扫描范围：
-
-1. 在不破坏工作区的前提下更新并检查所有 branch、remote ref 和 tag；记录扫描时的远端状态和 commit SHA。
-2. 搜索包含 `dataset`、`generate`、`record`、`rollout`、`demonstration`、`inspect`、`replay` 等关键词的提交和历史路径，并追踪文件的新增、重命名和删除。
-3. 优先核查已知旧入口名：
-   - `generate-dataset-control-seed-readJson-advanceV3.py`
-   - `generate_dataset.py`
-   - `Env-rollout-parallel-segmentation*.py`
-4. 对每个候选记录：ref、完整 commit SHA、脚本路径、最后修改提交和日期、命令行参数、输出目录、导入依赖、环境源码、metadata/config、`pyproject.toml` 与 `uv.lock` 的匹配关系。
-5. 使用 `git show <commit>:<path>` 和 `git diff --name-status origin/main...<candidate>` 建立依赖闭包。不能只把单个入口脚本复制到当前 `main` 后直接宣称已恢复。
-6. 排除或修复写向仓库外绝对路径的候选；任何输出路径都必须显式指向本仓库内。
-7. 在隔离 worktree 或恢复分支中先运行 `uv run <script> --help`，再执行“单任务、单 episode、单 worker”的最小 smoke test。记录实际默认值，不能只相信 help 文本或注释。
-
-当前初始化预检发现的线索：
-
-- 当前 `main` 只有 `scripts/dataset_replay.py`，没有正式批量生成入口；
-- 初步候选链位于 `origin/cvpr2026Challenge-heldOutSeed-4-5/4` 的 `2fa5660d8b78f31a6735538660d18a8e830bff63`，包括：
-  - `scripts/dev3/Env-rollout-parallel-segmentation.py`
-  - `scripts/dev3/Env-rollout-parallel-segmentationV2-withReplay.py`
-  - `scripts/dev3/inspect_stat.py`
-  - `scripts/dev3/env_specific_extraction/`
-- 这只是 `/init` 期间的只读预检线索，尚未验证可用。候选脚本的部分 argparse 默认值与 help/docstring 存在不一致，因此必须完成依赖闭包检查和最小生成测试后才能选定。
-- 更旧的显式生成器存在写向 `/data/hongzefu/data_0226/...` 等仓库外硬编码路径，不符合本任务约束，不能直接采用。
-
-只有候选来源和依赖闭包明确、最小 smoke test 成功、产物确实位于仓库内，并且恢复/兼容性修改有清晰 diff 时，第二阶段才能标记为“完成”。
-
-## 第三阶段：重新生成并做一致性审查
-
-1. 保持官方参考数据只读。生成输出写入 `artifacts/generated/<candidate-commit>/`，日志与报告写入仓库内的独立目录。
-2. 固定并记录 commit、依赖锁、随机种子、task、episode、difficulty、action space、worker 数、渲染设备和所有非默认参数。
-3. 先完成单任务、单 episode 的小样本生成和审查；通过后再逐步扩大到全量。不得在小样本失败时直接启动全量生成。
-4. 一致性审查至少覆盖：
-   - 文件级：任务文件集合、文件数量、episode 数、大小和可用 checksum；
-   - HDF5 结构级：group/dataset/attribute 名称、层级、dtype、shape、长度和缺失字段；
-   - 元数据级：task ID、episode/seed、difficulty、task goal、action space、相机和环境配置；
-   - 内容级：action、observation、状态、完成标志、轨迹长度和关键数值；严格相等与容差比较必须分别报告；
-   - 行为级：用 `scripts/dataset_replay.py` 回放，并记录成功率、终止状态、异常和视频证据；
-   - 测试级：先运行 `uv run python -m pytest tests/lightweight/`，再按环境条件运行 `uv run python -m pytest tests/dataset/`。
-5. 必须区分“字节级一致”“结构一致”“数值容差内一致”和“行为一致”，不能用一次成功回放替代全量一致性结论。
-6. 每个发现的差异都要记录参考值、生成值、影响范围、可能原因、是否阻塞以及后续动作。详细报告可以单独保存，但本文件必须保留摘要和报告路径。
-
-只有目标范围内的数据全部生成、审查命令可复现、所有差异都有结论，并且汇总结果写入本文件后，第三阶段才能标记为“完成”。
-
-## 当前进度
-
-| 阶段 | 状态 | 已有证据 | 下一步 |
-| --- | --- | --- | --- |
-| `/init` 仓库初始化 | 完成 | 已确认根目录 `readme.md`、官方 dataset 链接、仓库内标准数据路径、当前 Git 状态及历史候选线索；已创建本文件 | 按第一阶段下载参考 dataset |
-| 第一阶段：下载参考 dataset | 完成 | 固定官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；16 个 HDF5、1,600 episode 的 SHA-256/HDF5 审计通过；16 任务双 GPU 回放共 160 episode、160 success 视频、无 worker 或 step 错误 | 可正式开始第二阶段：扫描 Git 历史并恢复最新可用生成脚本 |
-| 第二阶段：恢复生成脚本 | 完成 | 扫描 14 个远端 branch、0 tag、71 个关键词 commit 和 539 个历史路径；选定最新兼容 `a3842d1...`；最终唯一入口为 `scripts/generate_dataset.sh`，固化补丁为 `scripts/generate_dataset_a3842d1.patch`；候选 worktree/lock/Python 3.11.14、help、原 seed 1×1×1 smoke 与生成后契约均通过 | 已正式进入第三阶段 |
-| 第三阶段：生成与一致性审查 | 完成（按用户修订的同 seed/离线完成口径） | 复用正式 16×9 共 144 条；metadata 原 seed attempt 1/1 均生成成功。新离线审计确认双方最终严格布尔完成率均为 144/144，`joint_strict_equal=false`，最大绝对差 `5.661269342205344e-9`；详细结论见 `scripts/reports/DATASET_COMPARISON_16x9.md` | 不得声称字节级、非 joint 全内容、数值容差或行为一致；若未来要求官方逐位值，需取得官方生成机数值运行时 |
-| `dataset-gen` 目录整理与产物清理 | 完成 | 已将 5 个 branch-specific 生成/验证文件及报告归并到 `scripts/data-generation/`，新增中文 README；根目录 `AGENTS.md` 保留；最终只保留指定 dataset、回放、16×9 报告和 reference 日志 | 已完成路径修正、独立契约验证、默认 16×9 对比、worktree 注销、缓存与中间产物清理；本轮不重新生成 16×100
-| 独立 No-Patch 验证/比较/报告拆分 | 完成（中央 reports） | validator、comparator、report writer 已拆分；所有新 JSON/Markdown 报告统一写入 `scripts/data-generation-v2-noPatch/reports/` | 完整 16×9 中央复核通过：双方完成 144/144、73,907 vectors、591,256 elements、最大差 `5.661269342205344e-09` |
-| 独立 No-Patch README 文档 | 完成（全目录英文化） | README、四个 Python 入口、中央 Markdown 报告及相应轻量测试均已改为英文；JSON schema、CLI flag、路径和数值结果未变 | 后续生成或只读复核仍由英文 report writer 写入中央 reports |
-| 独立 No-Patch 报告调试环境快照 | 完成 | schema 3 已写入完整硬件/软件/允许环境/全量依赖快照；轻量 mock 成功与失败路径均通过；中央 16×9 报告已刷新 | 后续生成或只读复核会在每次写报告前自动刷新该快照 |
-| No-Patch 16×100 全量生成与复核 | 受阻 | 1,600/1,600 轨迹均由 20 workers、GPU 0、attempt 1 成功生成，双方完成率和合约均通过；但 10 条 timestep 集不一致，另有 8 条对齐轨迹超过 `1e-8`，正式报告为 `status=failed` | 保留正式失败产物和所有旧证据；需取得与官方生成机一致的统一数值运行时后才能重跑、独立复核和执行严格清理 |
-| 官方与生成集前 10 episode 手动回放 | 进行中 | 已确认两边各有 16 个 HDF5，独立视频与报告目录尚不存在；GPU 0 预检时空闲 | 最小扩展官方 `scripts/dataset_replay.py`，完成单卡 16-worker 定向测试后依次回放两份 dataset |
-| W&B 最新两次训练参数核查 | 完成 | W&B 在线 API 与本地 run 目录一致确认最新两次为 `xqkorgzc`（2026-07-04，no-state）和 `rr2gv2an`（2026-07-03，with-state），二者均 `finished`；解析后配置仅 `run_name` 与 `state.enabled` 不同 | 回答用户时以历史 run 的 `dataset-4env-v4` 配置为准，不得误用当前同名脚本中的 `dataset-4env-v5` |
-| MotionJEPA 当前开关与 SigLIP 路径核查 | 完成 | 当前 `rgb-decoder-v1` 的 `configs/default.yaml` 与 `scripts/train.py` 表明 DINO、flow、ViT、state、EMA、W&B 等有结构开关；SigLIP 仅有 `loss.siglip_weight`，没有 `siglip.enabled` | `siglip_weight=0` 只能清零其 loss 系数；如需真正关闭 SigLIP token/decoder/前向，必须单独改造数据、模型、训练和验证路径 |
-| MotionJEPA 最新双配方默认值与旧脚本保护 | 完成 | `configs/default.yaml` 已对齐 `xqkorgzc` no-state 配方；`configs/legacy.yaml` 与修改前默认值逐字一致；11 个旧文件归档；中英文 README 损失公式已对齐当前 SigLIP+DINO+flow+SIGReg/state 可选逻辑 | 两个活动入口仍继承未显式覆盖的 default 字段；若要求跨未来默认值变更精确复现，需新增不可变配置快照 |
-| 异常 `.codex-motionjepa-edit` gitlink 清理 | 完成 | 用户明确要求不保留备份并全部删除；物理目录已删除，父仓库索引已将 mode `160000` gitlink 记为删除 | 提交前复核已暂存删除与现有 `AGENTS.md` 未暂存修改，避免混淆提交范围 |
-| newtask-v2 重建方案与原值提取 | 完成（仅方案及静态配置） | 根目录 `NEWTASK_V2_PLAN.md` 和 `scripts/configs/newtask-v2/native_sampling.json` 已落盘；12 份难度字典、6 个布局数组、7 份来源散列和文档检查通过 | 后续获准实施后从固定 `94449db0a068a6b454b55a13ebd48f0394d89cc8` 建立 `newtask-v2`，首个实现 `10.0`；本轮未实现或生成 |
-| newtask-v2 两文件平铺与清理计划修订 | 完成（仅文档） | 已明确两个生成侧文件平铺、必要函数归属和旧目录清理顺序；4 条主文件命令与 6 个文档链接检查通过，原值 JSON、源码及历史账本未变 | 后续实施以修订后的 `NEWTASK_V2_PLAN.md` 为准，首个实现仍为 `10.0`；本轮未迁移、删除或生成 |
-| newtask-v2 五项对拍与留档计划展开（2.23） | 完成（仅文档，当时未记账） | 第四步展开为共用校准、五项编号对拍、15 格矩阵、三种操作与 docs 留档规范；静态检查退出码 0 | 已被 2.24 修订取代 |
-| newtask-v2 计划对抗审查与修订（2.24） | 完成（文档、快照补录、账本） | 11 路只读对抗审查；补齐随机流清单与疑似旧错误清单，改写 seed 入口、两次 reset、导入顺序因果链、防漂移检查对象；按用户决策改写确定性退出路径、预算口径、PNG 留档、①依赖③、旧测试工厂保留、12 任务保留、A 路 worktree、清理后抽样复验；JSON 只增不改 | 等用户授权后按修订计划实施；本轮未创建分支或 worktree、未生成、未对拍 |
-| xhard 新档：上次训练参照与逐任务高层方案（2.31） | 完成（仅文档） | 四路只读 subagent 调查：newtask-v2 交付集实为 BinFill/RouteStick/VideoUnmaskSwap/VideoRepick 且已有 xhard 档；MotionJEPA 上次训练 stride-1 chunk 796,001、policy 侧 stride-16 约 69,716 窗；官方 16 任务 hard 各 25 条统计（32 帧零漏段、8 帧仅计数/Imitation 类漏 3–4 段）；16 任务 hard 配置与上限逐一核查；按用户四项决策写成 `1006-xhard12-prev-training-and-task-plan.md` | 等用户审阅逐任务方案；实施前先做第一部分第七节的五项验证；本轮未改源码、未生成 |
-
-## 追加式执行日志
-
-### 2026-07-13 — `/init`
-
-- 状态：完成。
-- 操作：只读检查 `readme.md`、`tests/README.md`、`scripts/`、`.gitignore`、当前分支/工作树、远端 refs 和历史数据生成脚本路径；创建根目录 `AGENTS.md`。
-- 关键证据：官方数据来源为 `Yinpei/robomme_data_h5`；标准本地读取路径为 `data/robomme_data_h5/`；README 中 Data Generation 段落已被注释且命令只是 `scripts/dev/xxxx` 占位符；当前 `main` 没有正式批量生成脚本。
-- Git 状态：初始化检查时 `main` 位于 `6cea3594a7d2f475e124afa3c7575a24ac0b40ea`，跟踪 `origin/main`，修改本文件前工作树干净。
-- 预检线索：记录了 `origin/cvpr2026Challenge-heldOutSeed-4-5/4` 的候选生成/回放/审查链，但没有把它判定为可用。
-- 数据操作：未下载 dataset，未生成数据，未运行 Python。
-- 下一步：执行第一阶段；开始前先在本节之后追加新日志，并同步更新“当前进度”表。
-
-### 后续日志模板
-
-复制下面的结构追加，不能删除已有日志：
-
-```text
-### YYYY-MM-DD HH:MM TZ — 第一/二/三阶段：<里程碑>
-
-- 状态：进行中 / 受阻 / 完成。
-- 目标：
-- 执行命令：
-- 输入与来源：
-- 输出路径：
-- 结果与证据：
-- 差异或阻塞：
-- 修改文件：
-- 下一步：
-```
-
-### 2026-07-13 America/Detroit — 第一阶段：开始实施并行下载审计与回放
-
-- 状态：进行中。
-- 目标：在仓库内下载并审计官方 `Yinpei/robomme_data_h5`，并以 16 个 `spawn` 子进程完成按任务并行的回放 sanity check。
-- 执行命令：预检已执行 `command -v uv`、`test -f pyproject.toml`、`test -f uv.lock`、`df -h .` 与 `nvidia-smi --query-gpu=index,name,memory.total,memory.free --format=csv,noheader`；下载与回放命令待实现验证后执行。
-- 输入与来源：README 官方链接 `https://huggingface.co/datasets/Yinpei/robomme_data_h5`。
-- 输出路径：计划使用 `data/robomme_data_h5/`、`artifacts/reports/reference/<revision>/`、`runs/replay_videos/` 与仓库内 `.cache/`。
-- 结果与证据：`uv` 位于 `/home/hongzefu/.local/bin/uv`；仓库有 `pyproject.toml`/`uv.lock`；`/data` 可用空间约 4.6 TB；GPU 0 和 GPU 1 均为 RTX 6000 Ada，空闲显存分别约 44,449 MiB、45,461 MiB。
-- 差异或阻塞：尚未下载参考数据，未进行 HDF5 审计或环境回放；阶段不得标记为完成。
-- 修改文件：`.gitignore`、`.dockerignore`、`AGENTS.md`，以及待新增的审计/回放实现和轻量测试。
-- 下一步：实现审计脚本和 16 任务 `spawn` 并行回放，先完成轻量测试，再固定 Hugging Face revision 并下载。
-
-
-### 2026-07-13 America/Detroit — 第一阶段：审计与并行回放实现已完成轻量验证
-
-- 状态：进行中。
-- 目标：完成参考数据审计入口与 16 任务同步 `spawn` 回放调度，随后开始固定版本下载。
-- 执行命令：`uv run python -m py_compile scripts/dataset_replay.py scripts/audit_reference_dataset.py`（退出码 0）；`uv run --extra dev python -m pytest tests/lightweight/test_dataset_replay_parallel.py tests/lightweight/test_step_error_handling.py`（退出码 1）。
-- 输入与来源：本仓库 `scripts/dataset_replay.py`、新建 `scripts/audit_reference_dataset.py` 与 `tests/lightweight/test_dataset_replay_parallel.py`。
-- 输出路径：回放任务日志由 `--replay-log-dir` 指向 `artifacts/reports/reference/<revision>/replay_logs/`；汇总为同目录 `replay_summary.json`；视频保持在 `runs/replay_videos/joint_angle/`。
-- 结果与证据：新增并行回放测试 2 项均通过，验证单任务 worker 在 barrier 释放后回传 mock 结果、源代码声明 `spawn`、16 任务和 GPU 0/1 分配；脚本语法编译通过。
-- 差异或阻塞：既有 `tests/lightweight/test_step_error_handling.py::test_step_error_returns_status_error` 失败，原因是未修改的 `src/robomme/env_record_wrapper.py` 中 `DemonstrationWrapper.step()` 不含该测试预期的 `try/except`。此问题与参考数据下载及本次回放调度无关，未在第一阶段扩展修复。
-- 修改文件：`.gitignore`、`.dockerignore`、`AGENTS.md`、`scripts/dataset_replay.py`、`scripts/audit_reference_dataset.py`、`tests/lightweight/test_dataset_replay_parallel.py`。
-- 下一步：查询官方 dataset revision，使用仓库内缓存下载数据并运行 HDF5 审计。
-
-
-### 2026-07-13 America/Detroit — 第一阶段：官方版本已固定，开始下载
-
-- 状态：进行中。
-- 目标：将固定版本官方参考数据完整下载到仓库内标准目录。
-- 执行命令：`git ls-remote https://huggingface.co/datasets/Yinpei/robomme_data_h5 HEAD`（退出码 0）。
-- 输入与来源：`Yinpei/robomme_data_h5`，完整 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`。
-- 输出路径：`/data/hongzefu/robomme_benchmark-restore-DataGen/data/robomme_data_h5/`；下载与 uv 缓存均位于仓库内 `.cache/`。
-- 结果与证据：已获得 40 字符 HEAD SHA；尚未完成文件传输或 HDF5 审计。
-- 差异或阻塞：无；下载中的网络、权限或磁盘错误将以实际退出码记录。
-- 修改文件：`AGENTS.md`。
-- 下一步：执行固定 revision 下载，随后审计 16 个 HDF5 文件和 1,600 个 episode。
-
-
-### 2026-07-13 America/Detroit — 第一阶段：参考数据下载、解包与完整性审计通过
-
-- 状态：进行中。
-- 目标：确认官方参考数据完整后启动 16 任务、双 GPU 的并行回放 sanity check。
-- 执行命令：`UV_CACHE_DIR="$PWD/.cache/uv" HF_HOME="$PWD/.cache/huggingface" uv run hf download Yinpei/robomme_data_h5 --repo-type dataset --revision a5e4e25ffe8af34f64944f9533d06455ce5f8337 --local-dir "$PWD/data/robomme_data_h5" --max-workers 8`（退出码 0）；`UV_CACHE_DIR="$PWD/.cache/uv" HF_HOME="$PWD/.cache/huggingface" uv run data/robomme_data_h5/tarxz_h5.py decompress --input_dir "$PWD/data/robomme_data_h5" --jobs 16`（退出码 0）；`UV_CACHE_DIR="$PWD/.cache/uv" HF_HOME="$PWD/.cache/huggingface" uv run scripts/audit_reference_dataset.py --h5-data-dir "$PWD/data/robomme_data_h5" --source-revision a5e4e25ffe8af34f64944f9533d06455ce5f8337 --report "$PWD/artifacts/reports/reference/a5e4e25ffe8af34f64944f9533d06455ce5f8337/dataset_audit.json"`（退出码 0）。
-- 输入与来源：`Yinpei/robomme_data_h5`，固定 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；官方下载的 16 个 `.h5.tar.xz` 由随附 `tarxz_h5.py` 在同一目录内解包，归档被保留。
-- 输出路径：参考 HDF5 位于 `data/robomme_data_h5/`；审计报告位于 `artifacts/reports/reference/a5e4e25ffe8af34f64944f9533d06455ce5f8337/dataset_audit.json`。
-- 结果与证据：审计 `passed=true`、HDF5 文件数 16、每任务 100 个 `episode_*`、总数 1,600、HDF5 总字节数 512,595,968,744、无符号链接、`errors=[]`；报告保存所有文件 SHA-256。
-- 差异或阻塞：无完整性差异。参考目录同时保留官方 16 个 `.tar.xz` 归档和解包后的 `.h5`，目录占用约 530 GB；两者均被 Git/Docker 忽略。
-- 修改文件：`AGENTS.md`、仓库内忽略的数据/报告/缓存产物。
-- 下一步：运行同步 16 任务回放并记录每个任务日志、视频与汇总结果。
-
-
-### 2026-07-13 America/Detroit — 第一阶段：官方参考 dataset 下载、审计与并行回放完成
-
-- 状态：完成。
-- 目标：下载固定版本官方参考数据，验证 16×100 demonstration，并完成 16 任务同步双 GPU 回放 sanity check。
-- 执行命令：`git ls-remote https://huggingface.co/datasets/Yinpei/robomme_data_h5 HEAD`（退出码 0，得到 `a5e4e25ffe8af34f64944f9533d06455ce5f8337`）；根据 README 链接补充的 `UV_CACHE_DIR="$PWD/.cache/uv" HF_HOME="$PWD/.cache/huggingface" uv run hf download Yinpei/robomme_data_h5 --repo-type dataset --revision a5e4e25ffe8af34f64944f9533d06455ce5f8337 --local-dir "$PWD/data/robomme_data_h5" --max-workers 8`（退出码 0）；`uv run data/robomme_data_h5/tarxz_h5.py decompress --input_dir "$PWD/data/robomme_data_h5" --jobs 16`（退出码 0）；`uv run scripts/audit_reference_dataset.py --h5-data-dir "$PWD/data/robomme_data_h5" --source-revision a5e4e25ffe8af34f64944f9533d06455ce5f8337 --report "$PWD/artifacts/reports/reference/a5e4e25ffe8af34f64944f9533d06455ce5f8337/dataset_audit.json"`（退出码 0）；`set -o pipefail; uv run scripts/dataset_replay.py --h5-data-dir ./data/robomme_data_h5 --replay-log-dir artifacts/reports/reference/a5e4e25ffe8af34f64944f9533d06455ce5f8337/replay_logs 2>&1 | tee artifacts/reports/reference/a5e4e25ffe8af34f64944f9533d06455ce5f8337/dataset_replay_driver.log`（退出码 0）。
-- 输入与来源：官方 dataset `Yinpei/robomme_data_h5`，完整 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；官方发布为 16 个 `.h5.tar.xz`，使用其随附脚本在同一目录原地解包，归档保留。
-- 输出路径：参考数据 `data/robomme_data_h5/`；完整审计报告 `artifacts/reports/reference/a5e4e25ffe8af34f64944f9533d06455ce5f8337/dataset_audit.json`；驱动日志 `artifacts/reports/reference/a5e4e25ffe8af34f64944f9533d06455ce5f8337/dataset_replay_driver.log`；每任务日志与汇总 `artifacts/reports/reference/a5e4e25ffe8af34f64944f9533d06455ce5f8337/replay_logs/`；视频 `runs/replay_videos/joint_angle/`。
-- 结果与证据：审计 `passed=true`、HDF5 文件数 16、每任务 100 个 `episode_*`、总数 1,600、HDF5 总字节数 512,595,968,744、无符号链接、`errors=[]`；审计报告含每文件 SHA-256。同步 `spawn` 回放使用 GPU 0/1 各 8 个 worker，全部 16 个 task ready，进程退出码均为 0；汇总 `failures=[]`、`episodes_replayed=160`、`step_errors=0`、outcome 为 160 个 `success`，并产生 160 个 MP4 视频。
-- 差异或阻塞：无参考数据完整性或回放差异。运行时仅出现 PyTorch、SAPIEN/URDF 的弃用/材质警告，未影响回放结果。既有 `tests/lightweight/test_step_error_handling.py::test_step_error_returns_status_error` 在未修改的 `DemonstrationWrapper.step()` 上失败，已单独记录，不阻塞第一阶段；新增 `tests/lightweight/test_dataset_replay_parallel.py` 2/2 通过，且 `py_compile` 退出码 0。
-- 修改文件：`.gitignore`、`.dockerignore`、`AGENTS.md`、`scripts/dataset_replay.py`、`scripts/audit_reference_dataset.py`、`tests/lightweight/test_dataset_replay_parallel.py`；数据、归档、缓存、报告和视频均位于仓库内且被 Git/Docker 忽略。
-- 下一步：正式开始第二阶段，扫描所有 branch、remote ref 与 tag，建立候选生成脚本及其依赖闭包，再在隔离 worktree 中完成最小 smoke test。
-
-
-### 2026-07-13 23:56 EDT — 第二阶段：开始全历史扫描与生成链恢复
-
-- 状态：进行中。
-- 目标：更新并扫描全部 branch、remote ref 与 tag，建立数据生成候选的完整依赖闭包，选定最新可用版本后先完成单任务、单 episode、单 worker 的隔离 smoke test。
-- 执行命令：`cat AGENTS.md`、`git status --short --branch`、`git remote -v`、`git rev-parse HEAD`、`git branch --show-current`、`command -v uv`、`ls -l pyproject.toml uv.lock`（均退出码 0）。
-- 输入与来源：当前分支 `dataset-gen`，跟踪 `origin/dataset-gen`；开始 commit 为 `b41ab7f0b4cbebcb3cbb0a908827f4cafc60763d`；远端为 `https://github.com/RoboMME/robomme_benchmark`。
-- 输出路径：历史扫描和候选报告计划写入 `artifacts/reports/recovery/`；隔离 worktree、缓存、生成数据和运行日志均只使用仓库内目录。
-- 结果与证据：工作树开始时干净；`uv` 位于 `/home/hongzefu/.local/bin/uv`；根目录 `pyproject.toml` 与 `uv.lock` 均存在；第一阶段账本已证明可正式进入第二阶段。
-- 差异或阻塞：尚未更新远端或判定任何候选可用；`2fa5660...` 仍只是预检线索。受限 shell 最初因 `bwrap` loopback 权限失败，随后获准以同样的只读命令完成预检，不影响仓库状态。
-- 修改文件：`AGENTS.md`。
-- 下一步：获取远端最新 refs，记录 branch/tag/SHA 快照，并行扫描关键词提交、历史路径和三个已知入口族。
-
-
-### 2026-07-14 00:02 EDT — 第二阶段：远端快照完成并锁定官方生成链候选
-
-- 状态：进行中。
-- 目标：区分“最新历史入口”和“可重建官方完整 demonstration 的入口”，以官方 HDF5 实际 schema 与 metadata 作为候选筛选证据。
-- 执行命令：`git fetch --all --tags --prune`、`git ls-remote --heads --tags origin`、`git for-each-ref ...`、`git log --all ...`、`git show <commit>:<path>`、`git diff --name-status origin/main...2fa5660...`（均退出码 0）；两条未正确引用 `--format=%(...)` 的首次 refs 格式化命令退出码 2，修正引用后退出码 0；官方 HDF5 检查使用 `UV_CACHE_DIR="$PWD/.cache/uv" uv run python -c ...`，其中两次错误假定根 group/字段名的探索命令退出码 1，修正为实际 `episode_N/timestep_N/{obs,action,info}` 后退出码 0。
-- 输入与来源：远端 `origin` 当前 14 个 branch，无 tag；`origin/cvpr2026Challenge-heldOutSeed-4-5/4` 固定为 `2fa5660d8b78f31a6735538660d18a8e830bff63`；参考 HDF5 为第一阶段固定 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`。
-- 输出路径：本里程碑仅做只读扫描；后续恢复报告写入 `artifacts/reports/recovery/`，隔离 worktree 写入 `artifacts/recovery/worktrees/`。
-- 结果与证据：`2fa5660.../scripts/dev3/Env-rollout-parallel-segmentation.py` 的 docstring 与校验逻辑明确是 setup-only，不执行 planner，故虽更新但不能重建官方完整 demonstration；其 `V2-withReplay` 能跑完整 rollout，但采用 heldout/dev3 seed 规则和后续环境语义。`fa05d07b0c71818625442ca270202ddf61df1e9e` 的提交标题为 `final v1 dataset train`，入口 `scripts/dev/generate-dataset-control-seed-readJson-advanceV3.py` 严格读取 16 个 metadata JSON 中同 episode 的 seed/difficulty；官方 `BinFill/episode_0` 实测 seed=4000、difficulty=easy，且存在 `eef_state_raw`、`eef_action_raw` 和 `fail_recover_*`，与 `fa05d07...` 一致，而紧随其后的 `68a65a0...` 已移除这些字段。
-- 差异或阻塞：`fa05d07...` 原入口把 metadata 与输出硬编码到 `/data/hongzefu/...`，不符合仓库内路径约束；必须以清晰补丁改成显式仓库内参数。尚未完成隔离 `--help` 和单 episode smoke test，因此还不能标记第二阶段完成。
-- 修改文件：`AGENTS.md`。
-- 下一步：记录 `fa05d07...` 的 pyproject/uv.lock 与完整源码依赖闭包，在仓库内隔离 worktree 应用最小路径兼容补丁，运行 `uv run ... --help` 和 1×1×1 smoke test。
-
-
-### 2026-07-14 00:25 EDT — 第二阶段：隔离 smoke 成功但严格值验收未通过
-
-- 状态：进行中。
-- 目标：在不修改当前工作树源码的隔离 worktree 中验证 `fa05d07b0c71818625442ca270202ddf61df1e9e` 的真实 CLI、完整依赖和 1×1×1 生成能力，并在扩大生成前做官方数据逐叶子严格预比较。
-- 执行命令：`git worktree add --detach artifacts/recovery/worktrees/fa05d07-original fa05d07b0c71818625442ca270202ddf61df1e9e`；`UV_CACHE_DIR="$PWD/.cache/uv" uv run scripts/dev/generate-dataset-control-seed-readJson-advanceV3.py --help`（退出码 0）；应用仅含仓库内路径参数、固定 seed 单次尝试和缺失 episode 非零退出的临时补丁后，分别以 GPU 1、GPU 0、Python 3.11.13、2 workers/2 episodes 及历史 toppra wheel 运行 `uv run ... --env BinFill --episodes 1 --max-workers 1 ...` 或对应变体（均退出码 0）。所有 Python 命令前均确认 `command -v uv` 及候选 worktree 的 `pyproject.toml`/`uv.lock`。
-- 输入与来源：候选 commit `fa05d07b0c71818625442ca270202ddf61df1e9e`；历史入口 `scripts/dev/generate-dataset-control-seed-readJson-advanceV3.py`；metadata 来自同一 commit 的 `src/robomme/env_metadata/1206/`；官方参考为 `data/robomme_data_h5/record_dataset_BinFill.h5`。
-- 输出路径：隔离 worktree `artifacts/recovery/worktrees/fa05d07-original/`；smoke 产物 `artifacts/generated/fa05d07b0c71818625442ca270202ddf61df1e9e/smoke*/`；日志 `artifacts/reports/recovery/fa05d07b0c71818625442ca270202ddf61df1e9e/smoke_BinFill_ep0.log`；历史 toppra wheel 备份 `artifacts/recovery/dependencies/fa05d07b0c71818625442ca270202ddf61df1e9e/`。
-- 结果与证据：原始 `--help` 可运行，但确认 `--gpus` 的实际默认值是 `1`，help 文本错误写成 `0`；路径兼容补丁后的 `BinFill/episode_0` 使用官方 seed 4000、difficulty easy，完整生成 5 个子任务并成功合并 HDF5。与官方参考逐层比较时，18,160 个对象路径、schema、dtype、shape 和除 16 个浮点标量外的全部内容严格相等；仅 `timestep_7..22/action/joint_action` 的元素 4 存在绝对值约 `5e-20` 至 `2.2408256619612515e-18` 的末位差异。episode 1 同样仅有 15 个标量差异，最大绝对差 `1.1363794020363693e-17`。GPU 0/1、Python 3.11.13/3.11.14、1/2 workers 和两份 toppra 二进制均产生相同值，已排除这些变量。
-- 差异或阻塞：小样本只达到结构一致和数值容差内一致，未达到严格值一致，因此不得声称“完全一致”，也不得按仓库规则直接扩大到 16×9。进一步发现旧 uv 环境使用 SciPy 1.17.1，而候选锁文件解析为 SciPy 1.17.0；该运行时漂移是下一项待验证变量。第三阶段仍保持“未开始”，本次预比较仅作为第二阶段候选验收。
-- 修改文件：`AGENTS.md`、`scripts/compare_generated_dataset.py`、`tests/lightweight/test_compare_generated_dataset.py`；候选临时补丁、生成 HDF5、视频、wheel 和日志均在仓库内被忽略的 `artifacts/` 下，未覆盖官方参考数据。
-- 下一步：用 uv 在隔离 worktree 验证 SciPy 1.17.1；若严格匹配则固化精确运行时，若仍不匹配则继续以历史环境二进制和数值调用链缩小来源。严格 smoke 通过后再完成第二阶段并启动 16×9。
-
-
-### 2026-07-14 00:50 EDT — 第二阶段：最新兼容生成链恢复完成
-
-- 状态：完成。
-- 目标：完成全部 Git/ref 扫描、判定“最新且可用”的官方 train 生成链，固化完整依赖闭包与仓库内路径补丁，并证明恢复入口能用原 seed 生成官方结构数据。
-- 执行命令：`git fetch --all --tags --prune`；关键词 commit/path 扫描；`git show <commit>:<path>`；`git diff --name-status origin/main...a3842d1...`；`git ls-tree a3842d1...`；`scripts/run_recovered_dataset_generator.sh --output-dir artifacts/generated/a3842d1.../runner-smoke-root --env BinFill --episodes 1 --max-workers 1 --gpus 1 --save-video`（退出码 0）；`uv run scripts/compare_generated_dataset.py ... --tasks BinFill --episodes 0 --rtol 1e-7 --atol 0 --allow-joint-action-allclose`（退出码 0）；比较器 8 项轻量测试退出码 0。
-- 输入与来源：最新官方 HDF5/action 兼容 commit `a3842d1b77bc79e2f70cefcbab136207e7067065`，父提交 `6c9bbf9b8bde9127042b5d1850cf5f5fb60e7287`；入口最后修改为 `fa05d07b0c71818625442ca270202ddf61df1e9e`；metadata 固定为同一 tree 的 `src/robomme/env_metadata/train/`。
-- 输出路径：tracked 恢复报告与补丁 `recovery/a3842d1b77bc79e2f70cefcbab136207e7067065/`；运行器 `scripts/run_recovered_dataset_generator.sh`；smoke `artifacts/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/runner-smoke-root/`；日志和比较报告 `artifacts/reports/recovery/a3842d1b77bc79e2f70cefcbab136207e7067065/`。
-- 结果与证据：扫描 14 个远端 branch、0 tag、71 个关键词 commit、539 个关键词历史路径。全历史较新的 `2fa5660.../dev3` 属 heldout seed/逐 episode 格式，不能生成官方 train；`68a65a...` 起删除官方 raw/fail-recovery 字段。`a3842d1...` 是删除发生前的最新兼容 commit。原入口硬编码 `1206/`，其中 4 条 seed 与官方不同；补丁改用已与官方 1,600 条 seed/difficulty 全量核对一致的 `train/`，并强制所有路径位于仓库内、原 seed 只尝试一次、缺失 episode 非零退出。固化运行器从 fixed commit 自动建 worktree、应用补丁并以候选 `uv.lock`/Python 3.11.14 启动。BinFill episode 0 使用 seed 4000 成功完成 5 个子任务并生成 HDF5/JSON/video。
-- 差异或阻塞：完整叶子审查共 14,858 条 dataset record；仅 16 个 `action/joint_action[4]` float64 值不同，最大绝对差 `2.2408256619612515e-18`，`rtol=1e-7, atol=0` 全部通过。报告明确为 `strict_equal=false`、`accepted=true`、allowed=16、rejected=0。用户随后明确接受该微小差异，只要求同一原 seed 再次生成成功。旧 2 月本机产物与当前 smoke 在这些值上逐位相同，SciPy/GPU/Python/worker/toppra 变体均被排除；最可能但未确认的来源是不同 CPU/OpenBLAS kernel 的 SVD 末位差异。
-- 修改文件：`AGENTS.md`、`recovery/a3842d1b77bc79e2f70cefcbab136207e7067065/{README.md,generator-repo-local.patch}`、`scripts/run_recovered_dataset_generator.sh`、`scripts/compare_generated_dataset.py`、`tests/lightweight/test_compare_generated_dataset.py`。初次 a384 smoke 的 `tee` 因报告目录尚未创建而令整体退出码 1，但生成器实际成功；创建目录后在独立输出重跑退出码 0。固化运行器第一次测试发现相对 output-dir 会相对 worktree 解析，随后已修正为相对主仓库根目录，并以独立输出重跑退出码 0。
-- 下一步：按用户批准的验收边界正式启动 16×9，并要求 144 条全部使用 metadata 原 seed 成功。
-
-
-### 2026-07-14 00:50 EDT — 第三阶段：启动 16×9 固定 seed 生成与审查
-
-- 状态：进行中。
-- 目标：对全部 16 个 env 生成 episode 0–8（每 env 9 条，共 144 条），每条只允许 `train/` 中原 seed 的一次尝试；之后完成文件/schema/metadata/内容/行为/测试六层审查。
-- 执行命令：计划执行 `scripts/run_recovered_dataset_generator.sh --output-dir artifacts/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8 --episodes 9 --max-workers 9 --gpus 0,1 --save-video`；完整日志写入独立报告目录。
-- 输入与来源：候选 commit `a3842d1b77bc79e2f70cefcbab136207e7067065`、候选 `uv.lock` SHA-256 `af4a645421c486ca1b1f27f5e54e8043497434b4efc49d2cbbf5eaa1b79d532e`、同 tree 的 `train/` metadata、官方参考 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`。
-- 输出路径：生成数据 `artifacts/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/`；报告 `artifacts/reports/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/`；官方 `data/robomme_data_h5/` 只读。
-- 结果与证据：尚未启动正式长任务；smoke 已证明相同恢复链可生成并通过用户批准的容差策略。
-- 差异或阻塞：验收策略只允许 `action/joint_action` 浮点叶子通过 `rtol=1e-7, atol=0`；schema、路径、dtype、shape、存储属性、metadata、离散值和其他内容仍须严格一致。任一 episode 原 seed 失败、任一非允许差异或任一 replay step error 都阻塞完成。
-- 修改文件：`AGENTS.md`。
-- 下一步：执行正式生成；生成器非零退出或缺少任一 episode 时停止，不启动后续扩大范围。
-
-
-### 2026-07-14 01:18 EDT — 第三阶段：16×9 固定 seed 正式生成完成
-
-- 状态：进行中。
-- 目标：完成全部 16 个 env 的 episode 0–8，并证明每条都用 `train/` metadata 原 seed 一次生成成功；生成通过后才进入内容比较。
-- 执行命令：`set -o pipefail; scripts/run_recovered_dataset_generator.sh --output-dir artifacts/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8 --episodes 9 --max-workers 9 --gpus 0,1 --save-video 2>&1 | tee artifacts/reports/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/generation_driver.log`（退出码 0）。启动前确认 `uv`/锁文件、输出目录不存在、磁盘剩余约 4.1 TB、GPU 0/1 空闲约 44.4/45.5 GiB。
-- 输入与来源：恢复运行器固定 commit `a3842d1b77bc79e2f70cefcbab136207e7067065`、Python 3.11.14、候选 `uv.lock`、同 tree 的 `train/` metadata、`--max-seed-attempts 1`；workers=9、GPU=0,1、action space 沿候选生成器默认 `pd_joint_pos`、保存视频。
-- 输出路径：数据 `artifacts/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/`；完整驱动日志 `artifacts/reports/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/generation_driver.log`。
-- 结果与证据：生成器最终打印 `✓ All requested environments processed.` 并退出 0。日志精确包含 144 次 `attempt 1/1` 和 144 次 `[SUCCESS]`；无 episode 使用替代 seed。输出包含 16 个标准 `record_dataset_<Task>.h5`、16 个 metadata JSON、154 个生成视频，总占用约 48 GB，无文件系统符号链接。关键修复 seed 已实际成功：VideoPlaceButton episode 3 使用 10301，VideoPlaceOrder episode 2 使用 11206。每个任务都找到并合并 9 个 episode 文件。
-- 差异或阻塞：部分 episode 的 screw planner 在同一 seed/同一 episode 内按历史逻辑尝试 3 次后 fallback 到 RRT* 并成功；这不是 seed 重试，不改变 setup seed。PatternLock/RouteStick 有非致命 URDF material 警告。生成视频数 154 大于 144，是部分任务一次 episode 产生额外视频文件；HDF5/metadata episode 数仍需由下一步结构审计确认。尚未运行全量内容比较，因此第三阶段不能完成。
-- 修改文件：`AGENTS.md`；正式 HDF5、JSON、MP4 和日志均位于仓库内被忽略的 `artifacts/`，未改动只读参考数据。
-- 下一步：先核对 16×9 HDF5/metadata/seed/difficulty 清单，再运行完整逐叶子比较；只有非 `joint_action` 差异为 0 且允许差异全部 allclose 时，才开始行为回放。
-
-
-### 2026-07-14 01:31 EDT — 第三阶段：正式输出独立审计通过并硬化最终验收
-
-- 状态：进行中。
-- 目标：在长时间逐叶比较前排除旧输出、额外 episode、seed/metadata 漂移和过宽浮点容差，并固化可重复生成边界。
-- 执行命令：只读扫描正式输出的 16 个 HDF5、16 个 metadata JSON、生成日志和视频；`uv run --extra dev python -m pytest tests/lightweight/test_compare_generated_dataset.py ...`（10 passed，退出码 0）；`bash -n scripts/run_recovered_dataset_generator.sh`（退出码 0）；分别以官方参考目录和正式非空目录作为 `--output-dir` 运行负向检查（均按预期退出 2）；最终比较命令为 `uv run scripts/compare_generated_dataset.py ... --episodes 0 1 2 3 4 5 6 7 8 --rtol 1e-7 --atol 0 --allow-joint-action-allclose --joint-action-max-abs-diff 1e-12`（正在运行）。每次 Python 命令前均确认 `command -v uv`、`pyproject.toml` 和 `uv.lock`。
-- 输入与来源：正式输出 `artifacts/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/`、候选 `train/` metadata、只读官方参考 HDF5。
-- 输出路径：最终比较报告 `artifacts/reports/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/comparison/`；旧规则下的中止部分报告保留为同级 `comparison-pre-hardening-partial/`，不得作为结论。
-- 结果与证据：独立审计确认 16 个任务都严格只有 episode 0–8，共 144 条；candidate metadata、生成 JSON、生成 HDF5 setup 与官方参考的 seed/difficulty 144/144 一致，setup 所有字段的值、shape、dtype 144/144 精确一致；共 73,907 个连续 timestep，144/144 最终 `is_completed=True` 且 `simple_subgoal=All tasks completed`。正式日志包含 144 个 `attempt 1/1`、144 个 `[SUCCESS]`、无 Traceback/episode failure。16 个 HDF5 共 49,271,290,156 字节；144 个主视频覆盖完整，另有 10 个诊断视频。
-- 差异或阻塞：代码审查发现运行器曾允许写入任意仓库内目录、比较器曾忽略生成侧额外 episode，且 joint_action 容差没有绝对误差上限。现已改为：输出只能位于候选专用目录的全新空子目录；拒绝官方目录和非空旧输出；worktree 完整 diff 必须与固化补丁逐字一致；生成侧额外 episode 一律阻塞；joint_action 除 `rtol=1e-7, atol=0` 外还必须满足最大绝对差 `<=1e-12`。第一次完整比较在旧代码下运行约 12 分钟后主动中止（退出码 130），未作为验收证据；最终规则比较已从头启动。5 次 screw planner 内部回退 RRT* 的 episode 最终均成功，不是 seed 重试。
-- 修改文件：`AGENTS.md`、`scripts/run_recovered_dataset_generator.sh`、`scripts/compare_generated_dataset.py`、`tests/lightweight/test_compare_generated_dataset.py`；未修改官方参考数据或正式 HDF5。
-- 下一步：等待最终逐叶比较完成；只有 `rejected_difference_count=0` 且所有允许差异绝对值不超过 `1e-12` 时，才启动 16×9 行为回放。
-
-
-### 2026-07-14 01:52 EDT — 第二/三阶段：生成后轨迹契约与重复 seed 验证完成
-
-- 状态：进行中（恢复器硬化完成，第三阶段完整比较仍在运行）。
-- 目标：确保“生成器退出 0”确实对应完整 HDF5 轨迹落盘，并以同一原 seed 的独立重跑验证恢复链可重复使用。
-- 执行命令：`uv run python -m py_compile scripts/validate_generated_dataset_contract.py scripts/compare_generated_dataset.py`（退出码 0）；两份定向轻测 `uv run --extra dev python -m pytest tests/lightweight/test_validate_generated_dataset_contract.py tests/lightweight/test_compare_generated_dataset.py ...`（24 passed，退出码 0）；正式 16×9 契约验证 `uv run --frozen scripts/validate_generated_dataset_contract.py ...`（退出码 0）；setup-only 负向样本契约验证（按预期退出码 1）；最终运行器 `--no-save-video` 负向检查（按预期退出码 2）；最终恢复链以 `--env BinFill --episodes 1 --max-workers 1 --gpus 1 --save-video` 在全新目录重跑（退出码 0）；两次有效 seed 4000 smoke 以 `rtol=0, atol=0` 严格比较（退出码 0）。所有 Python 命令前均确认 uv 与两份锁文件。
-- 输入与来源：候选 `a3842d1...` 的 `train/` metadata；正式输出 `official-train-episodes-0-8/`；首次有效 `runner-smoke-root/`；最终有效 `runner-smoke-final-contract-v2/`。
-- 输出路径：验证器 `scripts/validate_generated_dataset_contract.py`；正式契约报告 `artifacts/reports/generated/a3842d1.../official-train-episodes-0-8/generation_contract.json`；最终 smoke 日志 `artifacts/reports/recovery/a3842d1.../runner_smoke_final_contract_v2.log`；重复 seed 比较 `artifacts/reports/recovery/a3842d1.../repeated-seed-valid-smoke-comparison/`。
-- 结果与证据：正式契约报告 `passed=true`，16 env、144 episodes、73,907 timesteps、0 errors；episode/生成 JSON/source metadata/HDF5 setup 的 seed 和 difficulty 类型及值一致；每条 timestep 连续，最终 `is_completed` 为严格 bool true，`simple_subgoal=All tasks completed`，无 symlink/temp 残留。最终 BinFill smoke 再次以原 seed 4000、attempt 1/1 完成全部 5 子任务，自动契约通过。两次有效 smoke 的 14,858 个 dataset 叶记录差异为 0，canonical SHA-256 同为 `13b2dbdf23a2cfae3b515d6d6be7d34704bf99fb88a4c4e2905f52c33ffa1504`。
-- 差异或阻塞：探索时发现历史 `--no-save-video` 不只关闭 MP4，还会关闭 timestep 记录；该次进程虽打印 SUCCESS，但 HDF5 只有 setup，严格比较产生 18,152 个缺失对象，不能视为有效生成。已修复为运行器固定记录模式并拒绝该参数；契约验证器也新增至少一个连续 timestep 和最终完成标志校验，旧 setup-only 样本现按预期报 `h5_no_timesteps`。此探索产物仅作负向证据，不影响正式 16×9（正式命令使用 `--save-video` 且已有 73,907 timestep）。
-- 修改文件：`scripts/validate_generated_dataset_contract.py`、`tests/lightweight/test_validate_generated_dataset_contract.py`、`scripts/run_recovered_dataset_generator.sh`、`recovery/a3842d1.../README.md`、`AGENTS.md`；未修改正式 HDF5 或官方参考数据。
-- 下一步：等待最终完整逐叶比较结束；通过后按隔离视频目录执行 144 条行为回放。
-
-
-### 2026-07-14 02:02 EDT — 第三阶段：完整内容比较结束并定位 PatternLock 单 episode 下游差异
-
-- 状态：进行中；严格内容/原 joint-only 策略未通过，行为一致性正在验证。
-- 目标：完整扫描 16 env × 9 episode 的全部 HDF5 对象、元数据和内容，明确区分严格一致、容差一致、下游状态/渲染差异与行为成功。
-- 执行命令：最终命令 `uv run scripts/compare_generated_dataset.py --reference-dir data/robomme_data_h5 --generated-dir artifacts/generated/a3842d1.../official-train-episodes-0-8 --episodes 0 1 2 3 4 5 6 7 8 --rtol 1e-7 --atol 0 --allow-joint-action-allclose --joint-action-max-abs-diff 1e-12 ...`（退出码 1）；随后用 `jq -s` 对全部差异按 task/episode/path 聚合并写入 `difference_summary.json`。另用最终恢复运行器在全新目录重跑 PatternLock episode 0–1，再以 `rtol=0, atol=0` 与本次正式产物严格比较（生成与比较均退出码 0）。
-- 输入与来源：官方参考 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；正式生成候选 `a3842d1b77bc79e2f70cefcbab136207e7067065`；PatternLock 原 seed 15001/15100。
-- 输出路径：完整报告 `artifacts/reports/generated/a3842d1.../official-train-episodes-0-8/comparison/`；差异聚合 `comparison/difference_summary.json`；PatternLock 重跑日志 `artifacts/reports/recovery/a3842d1.../runner_patternlock_repeat_episodes_0_1.log`；重跑严格报告 `artifacts/reports/recovery/a3842d1.../patternlock-formal-vs-repeat-strict/comparison.json`。
-- 结果与证据：完整比较写出 1,996,551 条叶记录、5,963 条差异。16 个任务文件和生成侧 episode 集合均完整；对象层级、group/dataset/attribute、dtype、shape、存储属性、setup、seed、difficulty、task goal、相机/环境配置均未发现差异。全部 5,963 条均为 `dataset_content`；其中 5,355 条位于 `action/joint_action`。除 PatternLock episode 1 外，其余 episode 的非 joint 差异为 0。PatternLock episode 1 另有 608 条下游差异，涉及 eef action/state、joint state、camera extrinsic 和少量 RGB/depth 像素；数值最大绝对差 `4.76837158203125e-7`，图像层差异集中于 33 个 wrist RGB、16 个 wrist depth、5 个 front RGB 和 5 个 front depth 叶。所有 HDF5 对象仍存在且轨迹长度相同。
-- 差异或阻塞：报告如实为 `strict_equal=false`、`passed=false`、`accepted=false`；原策略允许 5,271 条、拒绝 692 条。拒绝项由 608 条非 joint 下游差异及 84 条超过 `1e-12` 绝对上限/未通过 rtol 的 joint action 组成；PatternLock joint action 最大绝对差 `5.661269342205344e-9`，其余任务最大不超过 RouteStick 的 `1.1102230246251565e-15`。因此不能声称字节、严格内容或原 joint-only 策略一致。作为复现性取证，PatternLock episode 0/1 在当前恢复链再次用相同 seed attempt 1/1 成功，96/126 timestep 均最终完成；与本次正式产物的 6,006 个叶记录严格相等、差异 0。这证明当前恢复链可重复，官方差异来自官方历史运行与当前运行之间，而非本次同 seed 重跑漂移；后半句是基于证据的推断。是否按用户“同 seed 再次生成成功即可”的行为口径接受，仍需 144 条回放全部成功后定论。
-- 修改文件：`AGENTS.md`；比较、聚合、PatternLock 重跑和报告均位于仓库内 `artifacts/`，未修改参考或正式 HDF5。
-- 下一步：完成正在运行的 144 条 `joint_angle` 回放；严格检查 16 worker、144/144 outcome success、0 step error、144 个隔离视频，再运行完整 lightweight/dataset pytest。
-
-
-### 2026-07-14 02:27 EDT — 第三阶段：16×9 行为回放、测试与最终验收完成
-
-- 状态：完成（按用户修订的同 seed/行为验收口径）；严格内容比较未通过，相关限定继续保留。
-- 目标：完成 16 个 env、每个 9 条原 seed 数据的行为回放、两套测试、文件 checksum 和差异定性，并把可复现结论写入仓库 Markdown。
-- 执行命令：在独立 `behavior_replay/` 工作目录用 `uv run scripts/dataset_replay.py --h5-data-dir <official-train-episodes-0-8> --action-space-type joint_angle --replay-number 9 --replay-log-dir <behavior_replay/replay_logs>`（退出码 0）；`uv run --locked --extra dev python -m pytest tests/lightweight/`（退出码 1）；`uv run --locked --extra dev python -m pytest tests/dataset/`（退出码 0）；对 16 个生成 HDF5 和 16 个 metadata JSON 分别执行 `sha256sum`（均退出码 0）。所有 Python 命令前均确认 `command -v uv`、`pyproject.toml` 与 `uv.lock`。
-- 输入与来源：正式生成 commit `a3842d1b77bc79e2f70cefcbab136207e7067065`、候选锁 SHA-256 `af4a645421c486ca1b1f27f5e54e8043497434b4efc49d2cbbf5eaa1b79d532e`、候选 `train/` metadata 原 seed、只读官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`。
-- 输出路径：最终结论 `recovery/a3842d1b77bc79e2f70cefcbab136207e7067065/STAGE3_16x9_CONSISTENCY.md`；正式数据 `artifacts/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/`；生成契约、逐叶比较、checksum、回放和测试日志均位于 `artifacts/reports/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/`。
-- 结果与证据：正式生成和契约为 16 env、144 episode、73,907 timestep、144 次 attempt 1/1 成功、0 error。生成 HDF5 共 49,271,290,156 字节；HDF5/metadata SHA-256 清单各 16 行。行为回放 16 worker 全部 ready 且退出码 0，144/144 outcome `success`、0 step error、`failures=[]`；隔离目录有 144 个非空 MP4，共 125,986,178 字节。`tests/dataset/` 为 31 passed、369 warnings；`tests/lightweight/` 为 136 passed、3 failed、802 warnings。
-- 差异或阻塞：逐叶比较退出码 1，报告保持 `strict_equal=false`、`accepted=false`：1,996,551 个叶中有 5,963 个内容差异，其中 5,355 个 joint-action 叶；原窄策略允许 5,271 条、拒绝 692 条。608 个非 joint 差异只出现在 PatternLock episode 1，涉及微小 EEF/state/extrinsic 与稀疏 RGB/depth 像素；该 episode 轨迹长度、完成标志和 replay 均成功。BinFill seed 4000 与 PatternLock seed 15001/15100 的当前环境独立重跑均 attempt 1/1 成功，且与本次当前产物逐叶严格相同。轻量测试的三项失败分别是未知环境空列表语义、SwingXtimes 连字符文案和已迁移到 `FailAwareWrapper` 的旧 AST 断言；相关测试/实现均早于本次恢复工作且本次未修改，不影响 16×9 生成契约或行为回放，但不得写成轻量测试全通过。
-- 修改文件：新增 `recovery/a3842d1b77bc79e2f70cefcbab136207e7067065/STAGE3_16x9_CONSISTENCY.md`，更新本 `AGENTS.md`；正式 HDF5、metadata、视频、日志、checksum 和 JSON/JSONL 报告均在仓库内被忽略的 `artifacts/`，官方参考保持只读。
-- 下一步：第二、第三阶段在用户修订的行为/同 seed 范围内均已完成。若未来要求字节级或严格内容一致，现有证据表明需要取得官方生成机的 CPU/BLAS/仿真数值运行时；不能从本轮 144/144 成功回放反推严格内容一致。
-
-
-### 2026-07-14 America/Detroit — `dataset-gen` cleanup：开始整理最终交付树
-
-- 状态：进行中。
-- 目标：以 `origin/main@6cea3594a7d2f475e124afa3c7575a24ac0b40ea` 为最终 tree 基线，保留已有两条提交并追加一个 cleanup commit；最终仅允许 `AGENTS.md` 与 `scripts/**` 不同于 main。
-- 执行命令：已检查 `git status --short --branch`、`git rev-parse HEAD origin/main`、分支提交链、`git diff --name-status origin/main...HEAD`、根 `pyproject.toml`/`uv.lock` SHA-256，并在执行 Python 前确认 `command -v uv` 与两份 uv 管理文件。
-- 输入与来源：当前 `dataset-gen@ecf9928ef4e29ae21099b3e496e7e2c4d860728f`；固定候选 `a3842d1b77bc79e2f70cefcbab136207e7067065`；现有正式生成数据 `artifacts/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/`。
-- 输出路径：计划形成 `scripts/generate_dataset.sh`、`scripts/generate_dataset_a3842d1.patch`、`scripts/validate_generated_dataset_contract.py`、`scripts/compare_joint_actions.py`、`scripts/reports/DATASET_COMPARISON_16x9.md`；机器 JSON 仅写入仓库内 `artifacts/reports/`。
-- 结果与证据：基线 SHA 已确认；根 `pyproject.toml` 与 `uv.lock` 当前均和 main 字节一致；本轮固定只复用 16×9，不补 episode 9、不运行 16×100，joint 差异只报告且不设通过阈值。
-- 差异或阻塞：尚未完成脚本迁移、fresh 1×1×1 smoke、16×9 新报告、pytest 与最终路径级检查，因此 cleanup 不得标记为完成。
-- 修改文件：`AGENTS.md`（本条开始日志）；后续只允许整理后的 `scripts/**`。
-- 下一步：并行整理生成入口和 joint 审计工具；随后恢复 main 文件、删除旧路径并完成验证。
-
-
-### 2026-07-14 America/Detroit — `dataset-gen` cleanup：代码归并与 16×9 离线 joint 报告完成
-
-- 状态：进行中；脚本与报告已完成，fresh smoke、pytest 和提交尚未完成。
-- 目标：将恢复链归并到 `scripts/`，并按最终离线口径重新审计现有 16×9 数据。
-- 执行命令：`bash -n scripts/generate_dataset.sh`（退出码 0）；`scripts/generate_dataset.sh --help`（退出码 0，未要求 output-dir）；`sha256sum scripts/generate_dataset_a3842d1.patch`；`uv run --locked python -m py_compile scripts/compare_joint_actions.py scripts/validate_generated_dataset_contract.py`（退出码 0）；`uv run --locked scripts/compare_joint_actions.py`（修复 NumPy 元素索引 JSON 类型后最终退出码 0）。所有 Python 命令前均确认 `command -v uv` 和根 `pyproject.toml`/`uv.lock`。
-- 输入与来源：只读官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`、正式生成候选 `a3842d1b77bc79e2f70cefcbab136207e7067065`、双方 episode 0–8；root lock SHA-256 `983de83f7b22c98b96c3c25a39958b4f5920e3232cfaa209c89542ef5639ac03`，candidate lock SHA-256 `af4a645421c486ca1b1f27f5e54e8043497434b4efc49d2cbbf5eaa1b79d532e`。
-- 输出路径：tracked 报告 `scripts/reports/DATASET_COMPARISON_16x9.md`；机器 JSON `artifacts/reports/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/joint_16x9/comparison.json`。
-- 结果与证据：`validation_passed=true`、`joint_scope_complete=true`、`error_count=0`；16 个文件、144 条轨迹、73,907 个 joint 路径和 591,256 个 joint 元素完成核对；官方/生成最终严格布尔 `info/is_completed` 均为 144/144。joint 严格不相等：5,355 个路径、16,380 个元素有差异，最大绝对差 `5.661269342205344e-9`、mean abs `8.029681035134313e-13`、RMSE `5.061379303136063e-11`。差异只报告，无阈值、无“容差通过”结论。
-- 差异或阻塞：首次 joint 扫描因最差元素索引保留 `numpy.int64` 而在 JSON 写出时报 TypeError、退出码 2；已最小修正为 Python `int` 并从头复跑成功。该失败未作为报告证据。新报告明确不声明字节级、非 joint 全内容、数值容差或行为回放一致。
-- 修改文件：新增 `scripts/generate_dataset.sh`、`scripts/generate_dataset_a3842d1.patch`、`scripts/compare_joint_actions.py`、`scripts/reports/DATASET_COMPARISON_16x9.md`；最小扩展 `scripts/validate_generated_dataset_contract.py` 的预期 env/episode 闭环；恢复 main 的 ignore/replay 内容并撤出旧 `recovery/`、旧运行器、通用比较器、第一阶段审计脚本和分支新增测试。
-- 下一步：在全新目录运行 BinFill 1×1×1 smoke，然后执行 main 自带 lightweight/dataset 测试与最终白名单检查。
-
-
-### 2026-07-14 04:17 EDT — `dataset-gen` cleanup：最终 smoke、测试与提交前验收完成
-
-- 状态：完成；本条与整理后的代码将由单个本地 cleanup commit 落盘，不推送远端。
-- 目标：验证唯一生成入口在隔离候选环境中可重复生成完整轨迹，刷新正式 16×9 离线报告，并确保最终 tree 除 `AGENTS.md`、`scripts/**` 外与最新 main 完全一致。
-- 执行命令：`bash -n scripts/generate_dataset.sh`、`scripts/generate_dataset.sh --help`（均退出码 0）；在故意注入 ambient `UV_*`、`GIT_*`、`PYTHONPATH` 与导出同名 `uv` shell function 的环境中运行 `scripts/generate_dataset.sh --output-dir artifacts/generated/a3842d1.../cleanup-smoke-final-v4 --env BinFill --episodes 1 --max-workers 1 --gpus 1`（退出码 0）；仓库外 output-dir 与非空 output-dir 负测均按预期退出 2；`uv run --locked python -m py_compile scripts/validate_generated_dataset_contract.py scripts/compare_joint_actions.py`（退出码 0）；`uv run --locked python scripts/compare_joint_actions.py`（退出码 0）；`uv run --locked python -m pytest tests/lightweight/`（退出码 1）；`uv run --locked python -m pytest tests/dataset/`（退出码 0）。每次 Python 命令前均确认 `command -v uv` 与根 `pyproject.toml`/`uv.lock`。
-- 输入与来源：最新 main `6cea3594a7d2f475e124afa3c7575a24ac0b40ea`；生成候选 `a3842d1b77bc79e2f70cefcbab136207e7067065`；官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；正式 16×9 episode 0–8 数据。
-- 输出路径：fresh smoke 为 `artifacts/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/cleanup-smoke-final-v4/`，契约为 `artifacts/reports/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/cleanup-smoke-final-v4/generation_contract.json`；机器 joint JSON 为 `artifacts/reports/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/joint_16x9/comparison.json`；tracked 报告为 `scripts/reports/DATASET_COMPARISON_16x9.md`；pytest 日志为 `artifacts/reports/cleanup/tests/`。
-- 结果与证据：生成入口默认 16 env × 100 episode、20 workers、GPU 1，必须显式使用候选专用仓库内新目录；固定候选 lock、uv-managed Python 3.11.14、`train/` metadata、原 seed 单次尝试和记录模式。入口还拒绝 workspace mount/submount、路径 symlink、Git replace refs、非标准 index 标志、ambient Git/uv 配置及 shell function 劫持，并在 sync 后和生成后复核完整 worktree closure。最终 BinFill smoke 使用 seed 4000、attempt 1/1，550 个连续 timestep，最终严格布尔 `is_completed=true`，契约 `passed=true`/0 error；HDF5 SHA-256 为 `19e1ccf35f9bc3dcb254596ed008d2ee9b94e35b2b369aabc58a644a01b2239c`。固化补丁 SHA-256 为 `0336aa404ce805a160986857763ad89dbe72990d3afe662084a0d08d9c20c366`，与候选完整 worktree diff 逐字一致且只修改历史生成入口。
-- 16×9 结论：`validation_passed=true`、`joint_scope_complete=true`、官方/生成离线完成率均为 144/144。73,907 个 joint 路径、591,256 个元素中，5,355 个路径和 16,380 个元素严格不等；差异元素比例 `2.7703735776042866e-2`，最大绝对差 `5.661269342205344e-9`、mean abs `8.029681035134313e-13`、RMSE `5.061379303136063e-11`。Joint 差异只报告、无容差阈值、不影响退出码 0；不据此声明字节、非 joint 全内容、容差或行为一致。
-- 测试结论：`tests/dataset/` 为 31 passed、370 warnings；`tests/lightweight/` 为 109 passed、4 failed、803 warnings。四项失败均来自恢复为 main 的既有实现/测试期望：未知 env 返回 `[]` 而测试要求 `[""]`、SwingXtimes 文案含 `back-and-forth` 连字符、`DemonstrationWrapper.step()` 没有旧测试要求的 `try/except`、main 的 `dataset_replay.py` 没有旧测试要求的 status 检查；本次按范围约束未修改 main 源码或测试。可选 ruff 检查因 unchanged lock 未提供 ruff 而退出 2，未安装依赖、未修改 lock。
-- 路径与版本验收：提交前白名单严格只有 `AGENTS.md`、`scripts/compare_joint_actions.py`、`scripts/generate_dataset.sh`、`scripts/generate_dataset_a3842d1.patch`、`scripts/reports/DATASET_COMPARISON_16x9.md`、`scripts/validate_generated_dataset_contract.py`；`pyproject.toml`、`uv.lock`、`.gitignore`、`.dockerignore` 与 `scripts/dataset_replay.py` 均和 main 字节一致，`git diff --check` 通过，Git 未跟踪 `data/`、`artifacts/`、视频或缓存。约 500 GB 本地数据仅由 `.git/info/exclude` 保护；该规则不提交且不保护 Docker context，因此当前含数据 checkout 不得直接作为 Docker build context。
-- 修改文件：最终只保留上述 6 个白名单路径；删除旧 `recovery/`、旧运行器、通用全叶比较器、第一阶段审计脚本和分支新增的 3 个 lightweight 测试；`.gitignore`、`.dockerignore` 与 `scripts/dataset_replay.py` 精确恢复 main。
-- 下一步：显式暂存白名单及必要删除，复核 cached diff/文件大小后创建本地 `Consolidate dataset generation and 16x9 joint audit` 提交；不 push，不补 episode 9，不执行 16×100。
-
-
-### 2026-07-14 America/Detroit — dataset-gen 目录整理与产物清理：开始实施
-
-- 状态：进行中。
-- 目标：将生成工具集中到 `scripts/data-generation/`，保留根目录 `AGENTS.md`，新增中文 README，并只保留用户指定的数据集、回放和最终 16×9 完整报告。
-- 执行命令：已完成 `git status --short --branch`、`git worktree list --porcelain`、目录大小和保留范围盘点；移动操作已完成，路径补丁和 README 正在整理。
-- 保留路径：`data/robomme_data_h5/`、`runs/replay_videos/`、`artifacts/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/`、对应 `artifacts/reports/generated/.../official-train-episodes-0-8/` 与 `artifacts/reports/reference/`。
-- 差异或阻塞：当前尚未删除中间产物，也尚未完成移动后的帮助、完整性验证和 16×9 对比复验。
-- 修改文件：5 个 dataset-gen 文件已移动到 `scripts/data-generation/`；新增 `scripts/data-generation/README.md`；根 `AGENTS.md` 保持原位置。
-- 下一步：完成路径引用检查，注销临时 Git worktree，删除明确中间目录，再执行验证和最终白名单检查。
-
-
-
-
-### 2026-07-14 America/Detroit — dataset-gen 目录整理与产物清理：完成
-
-- 状态：完成。
-- 目标：集中 dataset generation 工具、补充中文 README，并按用户白名单清理中间产物；不重新启动完整 16×100 GPU 生成。
-- 执行命令：`command -v uv`（`/home/hongzefu/.local/bin/uv`）、根 `pyproject.toml`/`uv.lock` 检查、`bash -n scripts/data-generation/generate_dataset.sh`、`scripts/data-generation/generate_dataset.sh --help` 均通过；对现有最终 16×9 运行 `uv run --locked scripts/data-generation/validate_generated_dataset_contract.py` 和 `uv run --locked scripts/data-generation/compare_joint_actions.py`，均退出码 0。
-- 整理结果：`generate_dataset.sh`、固定补丁、validator、comparator、16×9 Markdown 报告和中文 README 位于 `scripts/data-generation/`；生成器仓库根目录已改为 `SCRIPT_DIR/../..`，comparator 默认 Markdown 报告路径已改为 `scripts/data-generation/reports/DATASET_COMPARISON_16x9.md`。
-- 完整性证据：validator 报告 `artifacts/reports/generated/a3842d1b77bc79e2f70cefcbab136207e7067065/official-train-episodes-0-8/generation_contract-rerun-cleanup.json` 显示 16 env、144 episodes、73,907 timesteps、0 errors；根仓库 `src/robomme/env_metadata/train` 用于复验。
-- 对比证据：默认 JSON `artifacts/reports/generated/a3842d1b77bc79e2f70cefcbab136207e7065/official-train-episodes-0-8/joint_16x9/comparison.json` 显示 `validation_passed=true`、官方/生成完成状态均为 144/144；joint 严格不相等，5,355 个路径和 16,380 个元素存在差异，最大绝对差 `5.661269342205344e-9`，差异仅报告。
-- 清理证据：所有恢复 worktree 已先通过 `git worktree remove --force` 注销并执行 `git worktree prune`；删除旧生成、smoke、`artifacts/recovery/`、`artifacts/reports/recovery/`、`artifacts/reports/cleanup/`、`artifacts/test-tmp/`、根 `recovery/`、`.cache`、`.venv`、`.pytest_cache` 和 `__pycache__`。保留 `data/robomme_data_h5/`、`runs/replay_videos/`、最终 16×9 dataset、最终完整报告目录和 `artifacts/reports/reference/`。
-- 最终检查：保留/删除白名单、单主 worktree、无 `__pycache__` 和 `git diff --check` 均通过。
-- 修改文件：根 `AGENTS.md` 与 `scripts/data-generation/` 下的整理后工具和 README；未修改 main 原有 `scripts/dataset_replay.py`、`evaluation.py` 等基础脚本。
-- 后续：如需完整 16×100 重新生成，直接按 `scripts/data-generation/README.md` 执行；当前整理任务无未完成步骤。
-
-### 2026-07-14 America/Detroit — 独立 No-Patch 数据生成：开始实施
-
-- 状态：进行中。
-- 目标：仅新增 `scripts/data-generation-v2-noPatch/generate_dataset.py`，直接基于当前 `src/robomme` 完成 train metadata 原 seed 的 16×9 数据生成、临时 HDF5 合并、内置验证和 `action/joint_action` 逐元素比较；不读取、导入、调用或复制旧 `scripts/data-generation/`，不使用历史 commit、worktree、patch 或独立 uv 环境。
-- 执行命令：已确认 `command -v uv` 为 `/home/hongzefu/.local/bin/uv`，根 `pyproject.toml`/`uv.lock` 存在；`git diff --no-index -- uv.lock <(git show main:uv.lock)` 无输出且退出码 0。后续 Python 命令只会使用 `uv run --locked`。
-- 输入与来源：当前分支 `dataset-gen@9071b418f6aba3285e282620bef62359bd14288f` 的 `src/robomme`、`src/robomme/env_metadata/train/` 和只读 `data/robomme_data_h5/`。
-- 输出路径：待以全新仓库内目录传给新脚本；脚本会在该目录写入合并 HDF5、metadata JSON、JSON/Markdown 验证报告。
-- 结果与证据：已完成当前 wrapper、planner、环境注册、metadata schema 和 reference HDF5 调用链的只读核对；尚未运行生成或 smoke。
-- 差异或阻塞：无；生成实现和 fresh 1×1×1 smoke 尚待完成。
-- 修改文件：`AGENTS.md`；待新增的唯一执行脚本为 `scripts/data-generation-v2-noPatch/generate_dataset.py`。
-
-- 下一步：完成独立脚本，先运行 `--help`/语法检查，再用 BinFill episode 0 执行单 worker 单 GPU smoke 和内置比较。
-
-### 2026-07-14 America/Detroit — 独立 No-Patch 数据生成：16×9 验收完成
-
-- 状态：完成。
-- 目标：以当前分支和当前 uv 锁定环境完成独立 No-Patch 生成、合并、验证和官方 joint_action 对比。
-- 执行命令：uv run --locked scripts/data-generation-v2-noPatch/generate_dataset.py --output-dir artifacts/generated/no-patch-smoke-binfll-v2 --env BinFill --episodes 1 --workers 1 --gpus 0；随后以 all、episodes 9、workers 9、gpus 0,1 写入 artifacts/generated/no-patch-full-16x9；两次均退出码 0。所有 Python 命令前均确认 command -v uv 与根 pyproject.toml/uv.lock。
-- 输入与来源：当前 dataset-gen HEAD 9071b418f6aba3285e282620bef62359bd14288f、src/robomme/env_metadata/train、只读 data/robomme_data_h5；未读取、导入、调用或复制旧生成目录，未使用历史 commit、worktree、patch 或独立 uv 环境。
-- 输出路径：完整输出 artifacts/generated/no-patch-full-16x9，含 16 个合并 HDF5、16 个 metadata JSON、no_patch_generation_report.json 和 no_patch_generation_report.md；worker 临时目录已清理，最终目录约 46 GB。
-- 结果与证据：BinFill smoke 为 1/1 完成、550 个 joint 向量、最大差 2.2408256619612515e-18。完整 scope 为固定 16 环境 episode 0-8：生成与官方均 16 文件、144 episode、73,907 个连续 joint 向量、591,256 个元素、最终严格 bool is_completed 均 144/144、验证错误均为 0；逐元素最大绝对差 5.661269342205344e-9，小于 1e-8。
-- 差异或阻塞：首次 smoke 将合法 setup 元数据组误视为 timestep，已在新脚本的连续 timestep 解析中显式排除 setup 后用全新目录重跑通过。最终 joint 严格不等元素为 16,380，报告仅按本次验收阈值判定通过。
-- 修改文件：AGENTS.md 与新增 scripts/data-generation-v2-noPatch/generate_dataset.py；未修改 src/robomme、uv.lock、pyproject.toml、参考数据或旧生成目录。
-- 下一步：如需重新运行，输出目录必须是仓库内不存在或空目录；默认 all 与 episodes 9 即复现完整 16×9 验收。
-
-### 2026-07-14 America/Detroit — 独立 No-Patch 验证、比较与报告拆分：开始实施
-
-- 状态：进行中。
-- 目标：按用户最新授权，将 `generate_dataset.py` 中的生成后合约验证、官方 `joint_action` 比较和 JSON/Markdown 报告写入拆为同目录独立模块；生成器仍在同一进程直接调用它们，且不读取、导入、调用或复制 `scripts/data-generation/`。
-- 执行命令：已确认 `command -v uv` 为 `/home/hongzefu/.local/bin/uv`，并确认根 `pyproject.toml`/`uv.lock` 存在；后续 Python 命令仅使用 `uv run --locked`。
-- 输入与来源：当前 `dataset-gen` HEAD、`src/robomme/env_metadata/train/`、只读 `data/robomme_data_h5/` 与既有 `artifacts/generated/no-patch-full-16x9/`。
-- 输出路径：新增三个 Python 模块位于 `scripts/data-generation-v2-noPatch/`；权威 JSON/Markdown 报告将写入每个生成输出的 `reports/` 子目录。
-- 结果与证据：开始前内嵌 16×9 报告已记录官方/生成完成均为 144/144、73,907 个 joint 向量、591,256 个元素及最大绝对差 `5.661269342205344e-9`。
-- 差异或阻塞：无；本轮不重新生成完整 16×9 HDF5，只会对已有产物做只读复核并写新报告。
-- 修改文件：`AGENTS.md`；待新增三个 No-Patch 模块并重构 `generate_dataset.py`。
-- 下一步：提取共享 HDF5 合约 helper，接入独立 validator/comparator/reporter，并运行 CLI、smoke 与既有完整输出复核。
-
-### 2026-07-14 America/Detroit — 独立 No-Patch 验证、比较与报告拆分：完成
-
-- 状态：完成。
-- 目标：将 No-Patch 生成后的 HDF5/metadata 合约审计、joint_action 逐元素比较和报告写入拆分为本目录独立模块，并让生成器同进程复用它们。
-- 执行命令：`uv run --locked python -m py_compile` 检查四个 Python 文件；四个 `--help` 入口均通过；完整 16×9 分别运行新 validator、comparator 和 reporter；最终 BinFill 1×1 使用 `uv run --locked scripts/data-generation-v2-noPatch/generate_dataset.py --output-dir artifacts/generated/no-patch-split-smoke-binfll-v2 --env BinFill --episodes 1 --workers 1 --gpus 0`，均退出码 0。额外非法环境负测按预期退出码 1，仍写出 reports。
-- 输入与来源：当前 `src/robomme`、严格 `src/robomme/env_metadata/train/` 和只读 `data/robomme_data_h5/`；未读取、导入、调用或复制旧 `scripts/data-generation/`。
-- 输出路径：完整复核报告为 `artifacts/generated/no-patch-full-16x9/reports/no_patch_generation_report.json` 和 `.md`；最终 smoke 报告位于 `artifacts/generated/no-patch-split-smoke-binfll-v2/reports/`。
-- 结果与证据：完整范围为 16 环境、episode 0–8；官方/生成最终严格 bool 完成均为 144/144，连续 timestep、setup seed/difficulty、`(8,) float64` 与有限数值合约均 0 error；比较覆盖 73,907 个向量、591,256 个元素，最大绝对差 `5.661269342205344e-9`，小于 `1e-8`。最终 smoke 最大差 `2.2408256619612515e-18`。
-- 差异或阻塞：无；`uv.lock` 与 `main` 完全一致，SHA-256 为 `983de83f7b22c98b96c3c25a39958b4f5920e3232cfaa209c89542ef5639ac03`。
-- 修改文件：`AGENTS.md`、重构的 `scripts/data-generation-v2-noPatch/generate_dataset.py`，以及新增 `validate_generated_dataset_contract.py`、`compare_joint_actions.py`、`write_generation_report.py`。
-- 下一步：重新生成时继续使用当前 `uv run --locked` 入口；已有输出可直接运行 `write_generation_report.py` 只读复核并刷新其 `reports/`。
-
-### 2026-07-14 America/Detroit — 独立 No-Patch 报告目录：开始修订
-
-- 状态：进行中。
-- 目标：按用户要求将生成器和独立复核器生成的 JSON/Markdown 统一写入 `scripts/data-generation-v2-noPatch/reports/`，不再向每个数据输出目录写新报告。
-- 执行命令：已重新阅读 `AGENTS.md`，并将只用当前仓库的 `uv run --locked` 进行后续 Python 验证。
-- 输入与来源：现有拆分后的 report writer、既有完整 16×9 输出和只读官方 reference。
-- 输出路径：固定中央目录 `/data/hongzefu/robomme_benchmark-restore-DataGen/scripts/data-generation-v2-noPatch/reports/`。
-- 差异或阻塞：无；历史输出目录中的旧报告副本保留为既有产物，不作为后续 writer 的写入目标。
-- 修改文件：`AGENTS.md`；待更新 `write_generation_report.py` 并刷新中央完整报告。
-- 下一步：修改报告 writer、做语法检查并通过现有 16×9 输出生成中央 JSON/Markdown。
-
-### 2026-07-14 America/Detroit — 独立 No-Patch 报告目录：完成
-
-- 状态：完成。
-- 目标：将生成器和独立复核器产生的权威 JSON/Markdown 统一固定写入 `scripts/data-generation-v2-noPatch/reports/`。
-- 执行命令：已先确认 `command -v uv` 与根 `pyproject.toml`/`uv.lock`；使用 `uv run --locked python -m py_compile` 检查四个 No-Patch 脚本，再以 `uv run --locked scripts/data-generation-v2-noPatch/write_generation_report.py --output-dir artifacts/generated/no-patch-full-16x9 --env all --episodes 9 --workers 9 --gpus 0,1 --prior-report artifacts/generated/no-patch-full-16x9/no_patch_generation_report.json --max-abs-diff 1e-8` 做只读完整复核。
-- 输入与来源：既有 `artifacts/generated/no-patch-full-16x9/`、严格 train metadata 与只读 `data/robomme_data_h5/`；未重新生成 HDF5。
-- 输出路径：`scripts/data-generation-v2-noPatch/reports/no_patch_generation_report.json` 与 `.md`。
-- 结果与证据：完整 16 环境 × episode 0–8 复核通过；官方/生成最终严格 bool 完成均为 144/144，合约错误为 0，joint 比较覆盖 73,907 个向量和 591,256 个元素，比较错误为 0，最大绝对差 `5.661269342205344e-09` 小于 `1e-8`。
-- 差异或阻塞：无；新固定文件名表示中央目录仅保留最新一次生成或复核的报告。历史输出目录中的旧报告副本未修改。
-- 修改文件：`AGENTS.md`、`scripts/data-generation-v2-noPatch/write_generation_report.py`、`scripts/data-generation-v2-noPatch/generate_dataset.py`，以及中央 reports 中的新 JSON/Markdown。
-- 下一步：后续生成和只读复核会通过同一 writer 自动覆盖中央目录中的最新完整报告；`uv.lock` 仍与 `main` 完全一致。
-
-### 2026-07-14 America/Detroit — 独立 No-Patch README：开始编写
-
-- 状态：进行中。
-- 目标：为 `scripts/data-generation-v2-noPatch/` 新增中文 README，说明独立生成、验证/对比、完整报告、参数、产物与验收口径。
-- 执行命令：已重读 `AGENTS.md`，正在从当前四个脚本与中央 reports 的实际实现提取 CLI 和报告 schema；后续 Python 帮助检查将先确认 `uv`、`pyproject.toml` 与 `uv.lock`。
-- 输入与来源：当前 No-Patch 脚本、严格 train metadata、只读官方 HDF5、既有完整 16×9 生成输出及中央 JSON/Markdown 报告。
-- 输出路径：待新增 `scripts/data-generation-v2-noPatch/README.md`。
-- 差异或阻塞：无；README 将明确中央 reports 只保留最新一次生成或复核的报告，历史 artifact 副本不再是新 writer 的输出目标。
-- 修改文件：`AGENTS.md`；待新增同目录 README。
-- 下一步：核对四个 CLI 的 `--help`、公共函数的实际校验范围、报告字段和完整复核数值，然后写入并验证文档。
-
-### 2026-07-14 America/Detroit — 独立 No-Patch README：完成
-
-- 状态：完成。
-- 目标：为 No-Patch 目录提供可直接执行的生成、验证、比较、复核和产物说明。
-- 执行命令：已先确认 `command -v uv`、根 `pyproject.toml` 与 `uv.lock`，再以 `uv run --locked` 运行四个 CLI 的 `--help`，均退出码 0；同时复核当前脚本实现、中央完整报告与新 smoke 产物布局。
-- 输入与来源：当前四个 No-Patch 脚本、严格 train metadata、只读官方 HDF5、中央 `reports/` 与既有完整 16×9 产物。
-- 输出路径：新增 `scripts/data-generation-v2-noPatch/README.md`。
-- 结果与证据：README 说明输出目录约束、原始 seed/difficulty、0–2 z/3–5 xy recovery、一次尝试、HDF5/metadata 产物、独立合约验证、joint_action 逐元素比较、只读完整复核、中央报告字段与最新覆盖语义；记录当前完整 16×9 的 144/144、73,907 vectors、591,256 elements 和 `5.661269342205344e-09`。
-- 差异或阻塞：无；新 README 使用 22 个成对代码围栏并通过空白符检查。旧 `scripts/data-generation/` 的已有删除状态未在本轮改动。
-- 修改文件：`AGENTS.md`、`scripts/data-generation-v2-noPatch/README.md`。
-
-### 2026-07-14 America/Detroit — 独立 No-Patch README：开始精简
-
-- 状态：进行中。
-- 目标：按用户要求将 README 精简为完整 16×9 生成、生成器对 validator/comparator/report writer 三个模块的调用逻辑、参数和最终产物；不描述产物内部格式。
-- 执行命令：已重读 `AGENTS.md` 和当前 README；本轮仅文档改写，不需要运行新的 Python 命令。
-- 输入与来源：当前四个 No-Patch 脚本、中央 reports 约定及已验证的 16×9 结果。
-- 输出路径：更新 `scripts/data-generation-v2-noPatch/README.md`。
-- 差异或阻塞：无；“三个”按生成器调用的 validator、comparator、report writer 三个独立模块解释。
-- 修改文件：`AGENTS.md`；待重写 README。
-- 下一步：替换为简短的 16×9 使用说明并检查 Markdown 格式。
-
-### 2026-07-14 America/Detroit — 独立 No-Patch README：精简完成
-
-- 状态：完成。
-- 目标：将过长 README 收缩为用户指定的完整 16×9 生成、三个模块调用逻辑、参数和最终产物。
-- 执行命令：本轮仅重写 Markdown；未运行新的 Python 命令。已检查 10 个代码围栏成对闭合，且 README 与已跟踪文档的空白符检查无报错。
-- 输入与来源：当前 `generate_dataset.py`、validator、comparator、report writer 及已验证的中央报告路径。
-- 输出路径：更新 `scripts/data-generation-v2-noPatch/README.md`。
-- 结果与证据：README 从 284 行收缩为 94 行，移除了 HDF5/metadata 内部格式、报告 schema、smoke、排错与冗长验收说明；保留完整命令、同进程三个调用、参数表、已有输出复核命令、最终 HDF5/metadata 文件名及中央 JSON/Markdown 报告路径。
-- 差异或阻塞：无；“三个”明确指 validator、comparator 与 report writer。
-- 修改文件：`AGENTS.md`、`scripts/data-generation-v2-noPatch/README.md`。
-
-### 2026-07-14 America/Detroit — 独立 No-Patch 报告调试环境快照：开始
-
-- 状态：进行中。
-- 目标：在每次中央 No-Patch JSON/Markdown 报告写入前采集完整硬件、软件、受限运行环境和全量依赖快照；保持生成、复核和验收逻辑不变。
-- 执行命令：已重读 `AGENTS.md`、当前 report writer、中央 schema 2 报告及轻量测试约定；已用 `nvidia-smi --help-query-gpu` 和完整 `--query-gpu` 实测本机支持 UUID、序列号、PCI、VBIOS、功耗、时钟、链路和风扇字段。本轮尚未执行 Python 命令。
-- 输入与来源：当前 `scripts/data-generation-v2-noPatch/write_generation_report.py`、中央 `reports/`、既有 `artifacts/generated/no-patch-full-16x9/`、当前项目的 `uv.lock`。
-- 输出路径：待刷新 `scripts/data-generation-v2-noPatch/reports/no_patch_generation_report.json` 与 `.md`；待新增 `tests/lightweight/test_no_patch_report_debug_environment.py`。
-- 差异或阻塞：无；仅采集明确允许的运行变量和 Slurm 分配变量，不采集进程列表、完整环境变量或其他作业信息。
-- 修改文件：`AGENTS.md`；待修改 writer、测试和中央报告。
-- 下一步：实现 best-effort 快照、Markdown 调试环境章节和失败路径测试；所有 Python 验证前先确认 `uv`、`pyproject.toml` 和 `uv.lock`。
-
-### 2026-07-14 America/Detroit — 独立 No-Patch 报告调试环境快照：完成
-
-- 状态：完成。
-- 目标：为每次中央报告写入增加完整、最佳努力的调试环境 provenance，同时保持生成、复核、HDF5 和验收逻辑不变。
-- 执行命令：已先确认 `command -v uv`、根 `pyproject.toml` 与 `uv.lock`；使用 `uv run --locked --extra dev python -m pytest -q tests/lightweight/test_no_patch_report_debug_environment.py`（2 passed）和 `uv run --locked python -m py_compile`；随后以 `uv run --locked scripts/data-generation-v2-noPatch/write_generation_report.py --output-dir artifacts/generated/no-patch-full-16x9 --env all --episodes 9 --workers 9 --gpus 0,1 --prior-report artifacts/generated/no-patch-full-16x9/no_patch_generation_report.json --max-abs-diff 1e-8` 完成只读复核。
-- 输入与来源：当前 writer、当前锁定 uv 环境、既有 `artifacts/generated/no-patch-full-16x9/`、严格 train metadata 与只读官方 HDF5。
-- 输出路径：已刷新 `scripts/data-generation-v2-noPatch/reports/no_patch_generation_report.json` 与 `.md`；新增 `tests/lightweight/test_no_patch_report_debug_environment.py`。
-- 结果与证据：JSON 顶层 schema 为 3，`debug_environment` 保存完整 `lscpu --json`、CPU affinity、内存/存储、2 张 GPU 的 UUID/序列号/PCI/VBIOS/功耗/时钟/链路/动态遥测、CPython/uv/git/Torch/CUDA/cuDNN、受限变量及 111 个按名称排序的 distributions；Markdown 展示完整 GPU 字段和核心依赖摘要。完整复核仍为官方/生成 144/144、73,907 vectors、591,256 elements、最大差 `5.661269342205344e-09`、0 comparison error、验收通过。
-- 差异或阻塞：无；未修改 `uv.lock`、HDF5、metadata 或旧 `scripts/data-generation/`，并确认新代码无旧目录引用。
-- 修改文件：`AGENTS.md`、`scripts/data-generation-v2-noPatch/write_generation_report.py`、`tests/lightweight/test_no_patch_report_debug_environment.py`、中央 JSON/Markdown 报告。
-- 下一步：后续生成或已有输出复核会自动取得新快照；中央 reports 保持最新一次报告语义。
-
-### 2026-07-14 23:19 EDT — 独立 No-Patch 目录全量英文化：开始实施
-
-- 状态：进行中。
-- 目标：将 `scripts/data-generation-v2-noPatch/` 的 README、四个 Python 模块中的人类可读文本，以及中央 Markdown 报告统一改为英文；不改变生成、验证、比较、JSON schema、CLI flag、路径或数值结果。
-- 执行命令：已重读 `AGENTS.md`，检查 `git status --short --branch`、`git diff --check` 与相关 diff；开始时工作树无未提交改动。后续 Python 验证仅在确认 `command -v uv`、`pyproject.toml` 与 `uv.lock` 后使用 `uv run --locked` 执行。
-- 输入与来源：当前 `scripts/data-generation-v2-noPatch/` 的 README、四个 Python 模块、中央 JSON/Markdown 报告及既有轻量测试。
-- 输出路径：更新同目录 README、Python 模块和 `reports/no_patch_generation_report.md`；仅为测试断言更新 `tests/lightweight/test_no_patch_report_debug_environment.py`。
-- 结果与证据：开始前中央 JSON 不含中文；既有报告调试环境轻量测试 2/2 通过。
-- 差异或阻塞：内置 `apply_patch` 因受限沙箱的 `bwrap` loopback 权限错误无法读取文件；后续仅以 Git 统一 diff 或纯 `render_markdown(现有 JSON)` 完成受限文本写入。未运行数据生成、HDF5 复核或会刷新硬件/软件快照的 report writer CLI。
-- 修改文件：`AGENTS.md`；其余目标文件待更新。
-- 下一步：翻译静态文本，令已跟踪 Markdown 与纯 `render_markdown(现有 JSON)` 输出一致，并完成语法、帮助文本和轻量回归验证。
-
-### 2026-07-14 23:40 EDT — 独立 No-Patch 目录全量英文化：完成
-
-- 状态：完成。
-- 目标：完成 `scripts/data-generation-v2-noPatch/` 的 README、四个 Python 模块、中央 Markdown 报告和相应测试的英文统一，同时保持算法、JSON schema、CLI flag、路径和数值结果不变。
-- 执行命令：`command -v uv`、`test -f pyproject.toml`、`test -f uv.lock`（退出码 0）；`uv run --locked python -m py_compile scripts/data-generation-v2-noPatch/*.py`（退出码 0）；`uv run --locked python -m pytest tests/lightweight/test_no_patch_report_debug_environment.py`（退出码 0，3 passed）；四个入口分别执行 `uv run --locked <script> --help`（均退出码 0，输出均无中文）；`if rg -n --pcre2 '\p{Han}|[，。；、（）]' scripts/data-generation-v2-noPatch; then exit 1; fi`（退出码 0）；`git diff --check`（退出码 0）。
-- 输入与来源：当前 No-Patch README、生成器、validator、comparator、report writer、中央 `no_patch_generation_report.json` 与既有报告调试环境轻量测试。
-- 输出路径：更新 `scripts/data-generation-v2-noPatch/README.md`、四个 Python 模块和 `scripts/data-generation-v2-noPatch/reports/no_patch_generation_report.md`；测试仍为 `tests/lightweight/test_no_patch_report_debug_environment.py`。
-- 结果与证据：目标目录的 `.py`、`.md`、`.json` 均无中文或中文标点；成功和探测失败路径生成的 Markdown 均由测试断言为无中文；已跟踪 Markdown 与 `render_markdown(现有 JSON)` 严格相等。报告 Markdown 仅由该纯渲染函数重建，中央 JSON、HDF5、metadata、随机种子、比较阈值、数值结果和环境快照均未修改。
-- 差异或阻塞：无功能或数据差异。内置 `apply_patch` 的沙箱限制已通过非破坏性 Git diff 补丁和纯 Markdown 渲染绕过；未采用直接覆盖式 shell 写入。
-- 修改文件：`AGENTS.md`、`scripts/data-generation-v2-noPatch/{README.md,generate_dataset.py,validate_generated_dataset_contract.py,compare_joint_actions.py,write_generation_report.py,reports/no_patch_generation_report.md}`、`tests/lightweight/test_no_patch_report_debug_environment.py`。
-- 下一步：后续生成或只读复核会自动使用英文 report writer 写入中央 reports；若新增人类可读文本，轻量测试会阻止中文回归。
-
-### 2026-07-15 00:02 EDT — 16×100 全量生成、单 GPU 固化与严格产物清理：开始实施
-
-- 状态：进行中。
-- 目标：将当前 No-Patch 生成、验证、比较和报告链从 16×9 升级为 16×100；正式运行固定 20 workers 且只允许物理 GPU 0；生成和独立复核通过后删除所有旧 16×9、smoke、历史审计、回放和缓存产物。
-- 执行命令：已重新阅读本文件末尾并检查 `git status --short --branch`、`command -v uv`、根 `pyproject.toml`/`uv.lock`、`df -h .` 与 `nvidia-smi --query-gpu=...`（均退出码 0）。
-- 输入与来源：当前 `dataset-gen` 分支比 `origin/dataset-gen` 领先 2 个提交；官方参考固定为仓库内 `data/robomme_data_h5/`；现有 `.codex-motionjepa-edit` 状态属于用户已有状态，本轮不触碰。
-- 输出路径：最终数据固定为 `artifacts/generated/no-patch-full-16x100/`；最终中央报告固定为 `scripts/data-generation/reports/generation_report.json` 与 `generation_report.md`。
-- 结果与证据：`uv` 位于 `/home/hongzefu/.local/bin/uv`；仓库有锁文件；磁盘剩余约 4.0 TB；GPU 0 为 RTX 6000 Ada 46,068 MiB，当前约 44,449 MiB 空闲。
-- 差异或阻塞：尚未修改实现或启动 smoke/full generation；旧 16×9 和中间产物会保留到新 16×100 完整验收通过，避免提前丢失现有证据。
-- 修改文件：`AGENTS.md`。
-- 下一步：更新英文 README、四个 Python 模块、报告 schema/文件名与轻量测试，完成静态预检后运行 20-worker/GPU-0 并发 smoke。
-
-### 2026-07-15 00:09 EDT — 16×100 实现升级预检完成并启动单 GPU 并发 smoke
-
-- 状态：进行中。
-- 目标：确认 16×100 默认范围、20-worker 默认值、GPU 0 强制策略、schema 4、新报告名和英文文档均可运行，再用 32 条轨迹实际验证 20-worker 单 GPU 并发。
-- 执行命令：`uv run --locked python -m py_compile` 检查四个数据生成模块和定向测试（退出码 0）；四个模块分别运行 `uv run --locked <entry> --help`（均退出码 0）；`uv run --locked --extra dev python -m pytest -q tests/lightweight/test_no_patch_report_debug_environment.py`（退出码 0，5 passed）；目标目录陈旧引用扫描和 `git diff --check` 均退出码 0。
-- 输入与来源：当前仓库源码、100 条/任务的 train metadata、只读官方参考数据；未修改 `pyproject.toml` 或 `uv.lock`。
-- 输出路径：临时 smoke 将写入 `artifacts/generated/no-patch-gpu0-workers20-smoke/`，中央临时报告使用新名称 `scripts/data-generation/reports/generation_report.json` 与 `.md`。
-- 结果与证据：默认 `episodes=100`、`workers=20`、`gpus=0`；`1`、多 GPU、空值和重复 GPU 0 均由轻量测试证明会被拒绝；新 manifest 小文件 SHA-256 测试通过；目标实现无 `16x9`、旧报告名、旧目录或多 GPU 示例。
-- 差异或阻塞：尚未实测 20 个同时运行的 GPU 0 worker；旧生成与审计产物仍按计划保留。
-- 修改文件：`readme.md`、`scripts/data-generation/` 下 README 与四个模块、中央旧报告删除、定向轻量测试、`AGENTS.md`。
-- 下一步：运行 `--env all --episodes 2 --workers 20 --gpus 0` smoke；只有 32/32 生成、验证和比较通过后才启动 16×100。
-
-### 2026-07-15 00:13 EDT — 20-worker/GPU-0 并发 smoke 完成，正式 16×100 准备启动
-
-- 状态：进行中；并发 smoke 完成，正式全量尚未启动。
-- 目标：实测 20 个并发进程只使用 GPU 0，并在相同实现/锁文件下完成 16 个任务各 2 条的生成、合并、验证和 joint-action 比较。
-- 执行命令：`env CUDA_VISIBLE_DEVICES=0 uv run --locked scripts/data-generation/generate_dataset.py --output-dir artifacts/generated/no-patch-gpu0-workers20-smoke --env all --episodes 2 --workers 20 --gpus 0`（退出码 0）；随后用 `jq`、`find`、`du` 和 `nvidia-smi` 只读核对报告、文件集合、大小与 GPU 使用。
-- 输入与来源：当前 16×100 实现、train metadata 的 episode 0–1 原 seed/difficulty、只读官方 reference。
-- 输出路径：临时数据 `artifacts/generated/no-patch-gpu0-workers20-smoke/`；临时中央报告 `scripts/data-generation/reports/generation_report.json` 与 `.md`。
-- 结果与证据：32/32 worker 成功、32/32 生成与官方最终严格布尔完成、0 合约错误、0 comparison error；所有 `attempt_count=1`、所有 `gpu=0`；最大绝对差 `5.661269342205344e-09`，小于 `1e-8`。输出为 16 个 HDF5 和 16 个 metadata JSON，`.workers` 已自动清理，总大小约 9.9 GB。运行时 GPU 0 观测峰值约 16.4 GiB，GPU 1 始终约 6 MiB/0% 利用率。
-- 差异或阻塞：仅有 PyTorch/pynvml、SAPIEN/pkg_resources 和 URDF material 警告，以及历史 planner 的非致命 screw fallback；没有 OOM、Traceback、worker failure 或 GPU 越界。
-- 修改文件：`AGENTS.md`；smoke 数据和中央临时报告不作为最终产物。
-- 下一步：删除 smoke 数据，确认最终输出目录不存在、磁盘和 GPU 0 状态后，按显式 `100/20/0` 参数启动正式 1,600 条生成。
-
-### 2026-07-15 01:55 EDT — W&B 最新两次训练参数核查完成
-
-- 状态：完成。
-- 目标：回答用户“目前最新的两次 W&B 训练采用什么参数”，以在线 run 排序和当次保存配置为准，避免把当前启动脚本默认值误判为历史实际参数。
-- 执行命令：只读扫描 `/data/hongzefu` 与 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu` 下的 `wandb/run-*`；读取两个 run 的 `files/config.yaml`、`files/wandb-metadata.json`、`files/output.log`；比较去除 `_wandb` 运行环境元数据后的解析配置；在先确认 MotionJEPA 的 `uv`、`pyproject.toml` 与 `uv.lock` 后，以 `uv run --no-sync python -c ...` 调用 W&B Public API 按 `created_at` 降序只读查询 `hongzefu-university-of-michigan/motionjepa`（退出码 0，凭据值未写入本文件）。
-- 输入与来源：在线 W&B project `motionjepa`；本地 run `run-20260704_150203-xqkorgzc` 与 `run-20260703_094016-rr2gv2an`；MotionJEPA commit `5c739bc3e4a81f9ace3ba278d6478af3eb3e58a1`。
-- 输出路径：未创建训练或报告产物；只更新本账本。
-- 结果与证据：在线排序确认 `xqkorgzc` 是最新 run、`rr2gv2an` 是次新 run，二者均 `finished`。实际共同配置包括 `dataset-4env-v4/dataset-token`、4×A40、每卡 batch 4、梯度累积 2、有效 batch 32、60 epochs、seed 42、主学习率 `3e-4`、ViT 学习率 `1e-4`、cosine、FP32、ViT+DINO+sum-dense flow、WAFT online cat、flow weight 0.4；唯一模型/训练配置差异是最新 run `state.enabled=false`，次新 run `state.enabled=true`。两份解析配置除 `run_name` 和该布尔值外无差异。
-- 差异或阻塞：当前同名 Slurm 脚本已写成 `dataset-4env-v5`，但历史 W&B metadata/config 明确记录两次实际运行均使用 `dataset-4env-v4`；本次结论以历史 run 证据为准。在线 API 首次因当前 shell 未配置凭据退出码 1，随后通过既有训练配置中已提供的凭据进行只读查询并成功。本账本未记录凭据值；核查过程中确认同名 Slurm 脚本明文保存 W&B API key，建议立即在 W&B 旋转并改为受控环境变量或登录态注入。
-- 修改文件：`AGENTS.md`。
-- 下一步：无；如需复现实验，应从对应 W&B `config.yaml` 固化参数，而不是直接复用当前已变化的同名脚本。
-
-### 2026-07-15 02:32 EDT — 16×100 正式生成完成但 joint-action 验收受阻
-
-- 状态：受阻；正式数据生成与合约审计完成，但 joint-action 验收未通过，未执行旧产物清理，也未将 16×100 标记为完成。
-- 目标：以 20 workers、物理 GPU 0 和 train metadata 原 seed/difficulty 完成 16 个任务各 100 条生成，并要求每条单次尝试、双方最终严格布尔完成、合约无错误且 joint-action 最大绝对差不超过 `1e-8`。
-- 执行命令：`env CUDA_VISIBLE_DEVICES=0 uv run --locked scripts/data-generation/generate_dataset.py --output-dir artifacts/generated/no-patch-full-16x100 --env all --episodes 100 --workers 20 --gpus 0`（退出码 1，退出前已完成生成、合并、验证、比较和 SHA-256 manifest）。
-- 输入与来源：当前 schema 4 生成链、`src/robomme/env_metadata/train/`、只读官方 `data/robomme_data_h5/`；本任务所有 20 个 Python worker 的 NVIDIA 进程均仅位于 GPU 0。运行期间 GPU 1 曾由仓库外 MotionJEPA 进程占用，本任务未使用或触碰这些进程。
-- 输出路径：正式生成数据位于 `artifacts/generated/no-patch-full-16x100/`；失败报告已原子写入 `scripts/data-generation/reports/generation_report.json` 与 `generation_report.md`。
-- 结果与证据：生成请求/成功/失败为 1,600/1,600/0；顶层恰有 16 个 HDF5 和 16 个 metadata JSON，总字节数 510,364,369,421；scope 为 `full_16x100=true`；metadata、生成合约和官方合约均为 0 errors；生成与官方最终严格布尔完成均为 1,600/1,600；manifest 状态为 collected。joint-action 共比较 761,885 vectors、6,095,080 elements，最大绝对差为 `0.007857919612339614`，位置为 `BinFill/episode_99/timestep_625/element_5`，超过 `1e-8`。
-- 差异或阻塞：10 个 episode 的 timestep 集不匹配：`BinFill/11,94`、`VideoRepick/39,59`、`VideoPlaceButton/58,83`、`VideoPlaceOrder/46,50`、`PickHighlight/3,38`；comparison error_count=10、`within_max_abs_diff=false`、最终 `status=failed`。运行中的 `screw plan failed` 与 URDF material 警告未导致 worker 失败，但需要核查它们是否与上述确定性差异有关。按用户计划，失败时不得清理旧数据、静默降低 worker 数或使用其他 GPU，因此清理与独立只读复核暂缓。
-- 修改文件：正式 16×100 数据、schema 4 中央失败报告、`AGENTS.md`；未触碰 `.codex-motionjepa-edit`。
-- 下一步：只读定位 10 个异常 episode 的长度、首个分歧 timestep、worker provenance 与运行日志关联；确认是实现缺陷、并发确定性问题还是生成器既有行为后，再决定是否需要保持 20 workers/GPU 0 重新生成受影响范围或全量。
-
-### 2026-07-15 03:03 EDT — 16×100 失败范围复现与统一 CPU 数值路径核查
-
-- 状态：受阻；已证明正式失败不是 worker、GPU、attempt 次数或一般并发随机性导致，当前机器尚无可令全部异常轨迹通过的统一运行时设置。
-- 目标：只读识别 16×100 正式比较的完整失败范围，并在保持 GPU 0、20 workers、原 seed/difficulty 和单次 attempt 的前提下，定向复现全部异常 episode 与两个正常对照。
-- 执行命令：使用 `uv run --locked` 执行仓库内临时诊断入口 `artifacts/diagnostics/16x100-failure/reproduce_selected.py`，依次验证当前默认、单线程 BLAS、`OPENBLAS_CORETYPE=HASWELL`，以及 Haswell + `MKL_ENABLE_INSTRUCTIONS=AVX2` + `ATEN_CPU_CAPABILITY=avx2`；每次均显式 `CUDA_VISIBLE_DEVICES=0`，最后一次请求 20/成功 20/失败 0。
-- 输入与来源：正式生成的 1,600 条轨迹、官方固定 revision 数据，以及完整扫描发现的 10 条 timestep 不一致和 8 条对齐后超 `1e-8` episode；两个对照为 `PickXtimes/episode_0` 与 `StopCube/episode_0`。
-- 输出路径：临时诊断报告位于 `artifacts/diagnostics/16x100-failure/selected-rerun*/selected_rerun_report.json`；这些均不是最终白名单产物，只有全量验收未来通过后才可随其他中间产物一起删除。
-- 结果与证据：默认和单线程复现均有 19/20 与正式产物稳定，证明 17 条异常在当前数值路径上可重复；Haswell 令 4 条 `PatternLock` 和一次分叉后的 `PickHighlight/episode_3` 通过，两个正常对照仍通过。加入 AVX2 后结果不再改善：官方通过 7/20，仍失败 13/20，其中 10 条 timestep 集不一致，`BinFill/99`、`ButtonUnmask/55`、`ButtonUnmaskSwap/87`、`VideoUnmaskSwap/88` 中后 3 条数值超阈值（`BinFill/99` 也超阈值，合计 4 条对齐超阈值；所选 20 条还包含已经由 Haswell 修复的 4 条 PatternLock）。所有结果均记录 `gpu=0`、`attempt_count=1`。
-- 差异或阻塞：完整正式范围实际受影响 18/1,600：10 条 timestep 不一致，另有 8 条对齐但超阈值；统一 Haswell/AVX2 仅修复其中 5 条，仍有 13 条无法满足官方参考。不能按 episode 混用 CPU 内核、重试到命中、放宽阈值或复制官方数据，因为这些做法违反统一运行时、单次 attempt 和原始生成验收口径。
-- 修改文件：`AGENTS.md`；仅新增被忽略的诊断脚本与诊断输出，未修改正式 HDF5、官方数据、正式 schema 4 报告或 `.codex-motionjepa-edit`。
-- 下一步：核对恢复 commit 的精确二进制依赖与官方生成机运行时证据；若仓库内不存在能够解释剩余差异的统一依赖版本，则保持阶段受阻并运行源码/测试收尾检查，不执行旧产物清理或独立成功复核。
-
-### 2026-07-15 04:02 EDT — 16×100 实现与测试收尾完成，正式验收保持受阻
-
-- 状态：受阻；16×100 接口升级、正式生成、失败报告、诊断和要求的完整测试均已执行，但 joint-action 验收未通过，因此未执行独立成功复核或严格数据清理。
-- 目标：在不放宽 `1e-8`、不重试 seed、不混用 CPU 内核、不修改官方数据的前提下，完成恢复源码/调用链核查、完整测试、英文与陈旧引用扫描、正式目录和工作树终检。
-- 执行命令：以仓库内 detached worktree 的 `a3842d1b77bc79e2f70cefcbab136207e7067065` 原始 `src/robomme` 运行 20 条定向 `uv run --locked` 复现后注销 worktree；另以临时诊断 wrapper 恢复原入口 task loop 前的 `evaluate()` 调用。完整测试为 `uv run --locked python -m pytest tests/lightweight/`（退出码 1）和 `env CUDA_VISIBLE_DEVICES=0 uv run --locked python -m pytest tests/dataset/`（退出码 0）；随后运行目标英文/陈旧引用 `rg` 扫描、正式目录 `find` 核对、schema 4 `jq` 摘要、`git diff --check` 与 `git status --short --branch`。
-- 输入与来源：当前 16×100 实现、锁定 `uv.lock`、选定恢复 commit、正式 1,600 条生成数据、官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`、全部仓库 lightweight/dataset 测试。
-- 输出路径：正式数据仍为 `artifacts/generated/no-patch-full-16x100/`；正式失败报告为 `scripts/data-generation/reports/generation_report.json` 与 `generation_report.md`；诊断 JSON 位于被忽略的 `artifacts/diagnostics/16x100-failure/`。
-- 结果与证据：精确恢复源码与 pre-loop `evaluate()` 两项复现均为 20/20 成功、19/20 与正式产物稳定、仅 3/20 通过官方参考，排除当前源码漂移和入口调用顺序。`tests/lightweight/` 为 114 passed、4 failed、803 warnings、耗时 710.52 秒；失败为两条既有 task-goal 断言和两条既有 step-error/status 断言，本轮生成/report 定向测试 5/5 通过。`tests/dataset/` 为 31 passed、369 warnings、耗时 880.49 秒。目标 README、Python、正式报告和定向测试中禁止的旧字符串与中文扫描均无匹配，`git diff --check` 退出码 0。
-- 正式目录核对：恰有 16 个 `.h5`、16 个 `_metadata.json`、0 其他文件、0 子目录、0 符号链接，总字节数 `510364369421`，与报告 manifest 一致。报告为 schema 4，`full_16x100=true`，20 workers、GPU 值仅 `0`、attempt 值仅 `1`、生成 1,600/1,600、双方完成 1,600/1,600、双方合约 0 errors、manifest 32 个生成文件并含官方 revision/SHA-256；但 `status=failed`、comparison errors=10、最大差 `0.007857919612339614`。
-- 差异或阻塞：仓库、Git 历史和官方 HDF5 均未保存官方生成机 CPU/BLAS/PhysX provenance。当前机器无法用一个统一运行时令全部 18 条异常 episode 通过；因此没有依据重跑第二个 510 GB 全量。严格白名单仍未满足：旧 `artifacts/generated/*`、`artifacts/reports/`、`runs/replay_videos/`、`.venv`、`.pytest_cache` 和源码/测试 `__pycache__` 均按失败保护规则保留。
-- 修改文件：`AGENTS.md`、`readme.md`、`scripts/data-generation/{README.md,generate_dataset.py,validate_generated_dataset_contract.py,write_generation_report.py}`、删除旧名中央报告、新增 `reports/generation_report.json`/`.md`、`tests/lightweight/test_no_patch_report_debug_environment.py`；未触碰用户已有 `.codex-motionjepa-edit`，未创建提交或推送。
-- 下一步：必须先取得官方生成机的 CPU 型号、NumPy/OpenBLAS 内核、SAPIEN/PhysX 二进制及完整启动环境，或由用户明确修改验收口径；在此之前保持 `status=failed` 和旧证据，不执行清理。
-
-### 2026-07-15 03:15 EDT — MotionJEPA 当前配置开关与 SigLIP 路径核查完成
-
-- 状态：完成。
-- 目标：回答当前训练配置能够开关哪些内容，并确认 SigLIP 是否存在真正的关闭开关。
-- 执行命令：只读检查 MotionJEPA 当前 `rgb-decoder-v1` 分支的 `configs/default.yaml`、`scripts/train.py` 与 `src/motion_jepa/data/dataset_bin.py`；使用 `rg`、`sed` 与带行号输出核对配置布尔项、模块构造、Dataset 字段、训练和验证 loss 路径（均退出码 0）；未运行 Python。
-- 输入与来源：`/nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA` 当前工作树；该工作树只读检查时为 `rgb-decoder-v1...origin/rgb-decoder-v1`。
-- 输出路径：未生成训练或诊断产物；只更新本账本。
-- 结果与证据：结构级开关包括 `dino.enabled`、`optical_flow.enabled`、`vit.enabled`、`state.enabled`、`ema.enabled`、`wandb.enabled`，另有 flow 子开关、motion filter、compile、validation 与 attribution 等行为开关。不存在 `siglip.enabled`；`tokens/` 始终被要求，Dataset 始终读取并返回 SigLIP `current/future/delta`，SigLIP decoder 始终构造并执行，训练与验证始终计算 SigLIP MSE。`loss.siglip_weight=0` 只在总 loss 聚合时把系数乘成 0，不能省掉读取、decoder、前向和 MSE；非 ViT 模式下 SigLIP delta 仍是 MotionEncoder 基础输入，因而也不是语义上的完整消融。
-- 差异或阻塞：如果“关闭”仅指当前 ViT 模式下取消 SigLIP 重建监督，可把 `loss.siglip_weight=0`，但计算路径仍保留；如果要求结构、显存、计算和数据依赖都关闭，现有配置做不到，需新增跨 Dataset、encoder 维度、decoder、optimizer/EMA/DDP、训练/验证/归因/日志和 checkpoint 的 `siglip.enabled` 支持。
-- 修改文件：`AGENTS.md`。
-- 下一步：无；本轮只做机制核查，未修改 MotionJEPA 源码。
-
-### 2026-07-15 EDT — MotionJEPA 最新双配方默认值与旧脚本保护：开始实施
-
-- 状态：进行中。
-- 目标：将 MotionJEPA 默认配置对齐最新 W&B no-state run `xqkorgzc` 的完整配方，仅保留 no-state/with-state 两个 v2 活动脚本，并把其他 11 个脚本归档到既有 `scripts/legacy/`，通过独立 legacy 配置保护旧行为。
-- 执行命令：已完整阅读本文件；检查当前数据恢复仓库与 MotionJEPA 工作树状态；确认 MotionJEPA 位于 `rgb-decoder-v1...origin/rgb-decoder-v1` 且开始时工作树干净；确认 `uv`、MotionJEPA `pyproject.toml` 与 `uv.lock` 均存在；未运行 Python。
-- 输入与来源：W&B run `xqkorgzc`（no-state）与 `rr2gv2an`（with-state）；MotionJEPA 当前 `configs/default.yaml` 和 `scripts/train-script-hongzefu/`。
-- 输出路径：代码和文档修改位于 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA/`；本仓库只追加本持续状态账本。
-- 结果与证据：开始前 MotionJEPA 工作树干净；当前数据恢复仓库已有用户未提交修改，本轮不触碰除本账本追加记录以外的既有改动。
-- 差异或阻塞：尚未修改 MotionJEPA 或运行验证，因此不得标记完成；本任务由用户显式要求，范围限定为训练默认值、脚本归档与相关活动文档，不扩展到数据生成工作。
-- 修改文件：`AGENTS.md`。
-- 下一步：读取默认配置、两份当前入口、11 个待归档文件和活动文档引用；随后应用最小补丁并验证。
-
-### 2026-07-15 04:01 EDT — MotionJEPA 最新双配方默认值与旧脚本保护：完成
-
-- 状态：完成。
-- 目标：对齐最新 W&B no-state 默认配方，同时保护 with-state 对照和全部旧训练脚本的历史行为。
-- 执行命令：`cmp configs/legacy.yaml <(git show HEAD:configs/default.yaml)`、全部相关 shell 的 `bash -n`、旧入口训练调用/活动目录/陈旧路径 `rg` 审计、`git diff --check`（均退出码 0）；每次 Python 前均确认 `command -v uv`、`pyproject.toml` 与 `uv.lock`，随后以 `uv run --no-sync` 执行 Hydra compose 精确断言和 `py_compile`（均退出码 0）。
-- 输入与来源：W&B `xqkorgzc` no-state 配方、`rr2gv2an` with-state 配方、修改前 `configs/default.yaml` 与当前 `dataset-4env-v5` 环境选择。
-- 输出路径：MotionJEPA 的 `configs/{default,legacy}.yaml`、`scripts/train-script-hongzefu/`、`scripts/legacy/` 及当前使用文档；未生成训练、dataset 或 W&B 产物。
-- 结果与证据：Hydra compose 断言确认 current 配方为 ViT + DINO + sum-dense flow + WAFT cat、state off、batch4×accum2、compile false、60 epochs、flow weight 0.4；legacy 保持 flow/ViT off、state on、batch32、compile true、40 epochs；对 current 仅覆盖 `state.enabled=true` 后，配置树唯一差异就是该布尔值。with-state 活动脚本还显式固定 `state.dim=13` 与 `state.loss_weight=1.0`。活动目录严格只有 README 和两个 v2 脚本；11 个旧文件全部移入 `scripts/legacy/`，其中 9 个训练入口的每个 `scripts/train.py` 调用都带 `--config-name legacy`。
-- 差异或阻塞：直接导入完整 `scripts/train.py --cfg job` 以及运行 `tests/test_utils.py` 时，当前执行环境在无错误文本、无可捕获退出码的情况下终止了整个子 shell；禁用 pytest 插件、单线程运行和直接函数断言均相同。最小 uv/Python 与 `torch 2.9.0+cu128` 导入正常。因 Hydra 官方 compose、Python 语法、shell 语法和静态配置验收均已通过，本配置/归档任务完成，但不声称该 pytest 文件本轮通过。
-- 修改文件：MotionJEPA 的默认/legacy 配置、两个活动脚本和 README、11 个归档文件、legacy README，以及当前 README、中文训练/数据流说明、Great Lakes 指南和显存评估引用；本仓库仅更新 `AGENTS.md`。
-- 下一步：无；本轮不提交训练、不创建 W&B run、不修改 dataset。提交代码前可在不受当前子 shell 终止问题影响的环境补跑 `uv run --no-sync python -m pytest -q tests/test_utils.py`。
-
-### 2026-07-15 EDT — MotionJEPA README 当前损失公式修正
-
-- 状态：完成。
-- 目标：修正代码审查发现的中英文 README 默认损失公式过期问题，并解释两个活动入口未完全冻结配置的复现风险。
-- 执行命令：只读核对 MotionJEPA `scripts/train.py` 的 SigLIP、DINO、flow、SIGReg 与 state 聚合项；修改后运行 `git diff --check` 并审查精确 diff（退出码 0）；未运行训练或 Python。
-- 结果与证据：README 现明确记录当前默认损失为 `1.0*MSE_siglip + 1.0*dino_loss_scale*MSE_dino + 0.4*flow_loss_scale*MSE_flow + 0.003*SIGReg`，并说明 `state.enabled=true` 时额外加入默认权重 1.0 的 state MSE。
-- 修改文件：MotionJEPA `README.md`、`README_zh.md`；本仓库 `AGENTS.md`。
-- 差异或阻塞：未处理审查项 P2；两个正式 shell 入口仍从 `configs/default.yaml` 继承未显式覆盖字段，因此当前配方正确，但未来默认值变化会影响同一脚本的复现结果。
-- 下一步：如用户要求解决 P2，为两个正式入口新增独立不可变配置快照并显式选择该配置；本轮不修改训练逻辑。
-
-### 2026-07-17 00:39 EDT — 异常 MotionJEPA gitlink 全量删除
-
-- 状态：完成。
-- 目标：按用户明确要求，永久删除 `.codex-motionjepa-edit` 嵌套仓库的全部内容，并从父仓库移除缺少 `.gitmodules` 映射的异常 gitlink。
-- 执行命令：`git rm -f -- .codex-motionjepa-edit`（退出码 128，因缺少 submodule mapping，未删除内容）；`rm -rf -- .codex-motionjepa-edit`（退出码 0）；`git update-index --force-remove -- .codex-motionjepa-edit`（退出码 0）。
-- 输入与来源：父仓库 HEAD 中 mode `160000`、commit `dd6a5e39fdb3e670c833c3b5b6e9fdaf92caa3ac` 的 gitlink；目录内原有未提交、已暂存和未跟踪 MotionJEPA 文件均按用户要求不保留。
-- 输出路径：无保留产物或备份；`.codex-motionjepa-edit` 物理路径已删除，父仓库索引记录该路径删除。
-- 结果与证据：`test ! -e .codex-motionjepa-edit` 退出码 0；`git diff --cached --summary` 显示 `delete mode 160000 .codex-motionjepa-edit`；`git submodule status` 退出码 0 且无输出；工作树和 staged diff 检查均无空白错误。
-- 差异或阻塞：无；原目录缺少 `.gitmodules`，因此不能由普通 `git rm` 直接处理。
-- 修改文件：删除 `.codex-motionjepa-edit` gitlink；更新 `AGENTS.md` 账本。
-- 下一步：无；若需要将删除同步到远端，后续应明确提交并推送当前 `dataset-gen` 分支。
-
-### 2026-07-19 11:16 EDT — 官方与生成集 16×10 joint-angle 手动回放：开始实施
-
-- 状态：进行中。
-- 目标：使用官方 `scripts/dataset_replay.py` 在物理 GPU 0 上分别以 16 个同步 `spawn` worker 回放官方参考集和 No-Patch 16×100 生成集的全部 16 个任务、episode 0–9，并生成互不覆盖的 320 个手工核查视频。
-- 执行命令：开始前已执行 `command -v uv`、根 `pyproject.toml`/`uv.lock` 检查、两份目录 HDF5 文件计数、目标输出目录存在性检查、`git status --short --branch`、`nvidia-smi --query-gpu=...` 与 `nvidia-smi pmon -c 1`（均退出码 0）。
-- 输入与来源：官方 `data/robomme_data_h5/` 与生成集 `artifacts/generated/no-patch-full-16x100/`，两边均确认恰有 16 个 `record_dataset_<Task>.h5`。
-- 输出路径：视频计划写入 `runs/replay_videos/manual_check_16env_ep0-9/{official,generated_16x100}/joint_angle/`；日志和 JSON 汇总计划写入 `artifacts/reports/manual_check_16env_ep0-9/{official,generated_16x100}/`。
-- 结果与证据：`uv` 位于 `/home/hongzefu/.local/bin/uv`；两个目标输出根目录均尚不存在；GPU 0 为 RTX 6000 Ada 46,068 MiB，预检时使用 1,682 MiB、空闲 43,784 MiB、利用率 0%。
-- 差异或阻塞：当前官方脚本硬编码 `CUDA_VISIBLE_DEVICES=1`、串行遍历任务且所有视频共用一个目录，不能直接满足单 GPU 0、高并发和双数据集隔离要求；将只扩展调度、GPU/输出参数和审计汇总，不改 action 提取或环境回放语义。工作树已有 `.codex-motionjepa-edit` staged 删除、`AGENTS.md` 和 `scripts/data-generation/README.md` 修改，本轮保留并不触碰无关状态。
-- 修改文件：本条先更新 `AGENTS.md`；待修改 `scripts/dataset_replay.py` 并新增定向轻量测试。
-- 下一步：实现单 GPU 16-worker 并行调度和隔离输出，运行语法及定向测试，通过后执行官方集与生成集两批回放。
-
-### 2026-08-18 — swap 变体派生数据集 ep90-93×2env 穷举 318 条 + 双层标签（data-generation-MotionJEPALabel）
-
-- 状态：完成。
-- 目标：对 VideoUnmaskSwap/ButtonUnmaskSwap 的 train ep90-93（MotionJEPA eval 集前 4 条），布局逐比特不变、只穷举 swap 交换对序列（P^k，含相邻重复），生成 318 条变体的官方格式数据集，h5 内嵌 timestep 级 swap_gt 标注，另出 v7 同构 chunk 标签与富标签，全程零 src 改动。
-- 执行命令：`pytest tests/lightweight/test_swap_variant_plan.py`（20 过）；`probe_original.py --gpus 0 --workers 8`（8/8，与官方 joint_action ≤1.1e-17）；`make_chunk_labels.py --regression`（319/319 复现 v7 人工资产）；smoke 9 条（PASS）；tmux 全量三轮（318/318）；`merge_variant_h5.py --delete-source`（85 GiB，校验过）；`make_chunk_labels.py`（7268 chunk/2784 正例）；`verify_variants.py`（PASS）。
-- 输入与来源：seed/difficulty 读 `env_metadata/train`；swap 次数按 env `__init__` RNG 流离线复算；原始交换序列与布局基线来自 Phase 0 无注入控制跑；官方比对基线 `/data/hongzefu/robomme_data_h5`。
-- 输出路径：`scripts/data-generation-MotionJEPALabel/outputs/full/`（merged h5×2、metadata、episode_map、两份标签 JSON、verification_report、videos/traces）；`outputs/phase0/`（控制跑基线）。
-- 结果与证据：覆盖 318/318 无缺口；布局指纹 0 失配；is_original 7/8 ≤1.4e-6、Button/ep91 1.55e-3（交换角色规范化的接触链混沌放大，子目标名称序列相同、切换步差 ≤1，已静态实证 window1 角色翻转）；标签主键网格与 h5 完全对账。
-- 差异或阻塞：三处踩坑均已处置并文档化——①「谁在动」须用窗口首末净位移判定（路径长会被对角交换擦碰旁观 bin 的抖动误报）；② Button/ep91 抓取子目标（step≈200）与第三 swap 窗口（164-214）重叠致 85 条确定性失败，仅重试 attempt 启用「最后按钮 post-solve evaluate 前 hold 到 swap 结束+10」两阶段补救（83 条 hold→214、2 条 hold→224），attempt 0 不 hold 保 is_original 可比性；③ 穷举引入对角交换穿越旁观 bin：193/318 条 min_clearance<0.055 m，环境原行为不修，逐条量化在 episode_map 与富标签供下游过滤。
-- 修改文件：新增 `scripts/data-generation-MotionJEPALabel/`（8 脚本+README+CLAUDE.md）、`tests/lightweight/test_swap_variant_plan.py`；`.gitignore` 补 outputs 行；`AGENTS.md` 本条。
-- 下一步：MotionJEPA 侧适配由用户自行进行（merged h5 已满足其 build_data_raw 的 0-based 密集断言，标签与 swap_labels_v7 同 schema）；如需扩 ep94-99 或禁相邻重复口径，枚举层参数已就绪。
-
-### 2026-08-18 — swap 变体 2D 简图（draw_variant_diagrams.py，2.9.1）
-
-- 状态：完成。
-- 目标：为 318 条变体的 `01|23` 签名提供可读可视化——每源 episode（2 task × ep90-93）一张 PNG、每变体一子图：真实 bin 布局与尺寸、bin 藏 cube 颜色（灰斜线=空诱饵）、金框/银虚线框=第一/第二抓取目标、按序圈号双向弧箭头（同对重复交换错弧度）、★橙底=原始组合、⚠=min_clearance<0.055。
-- 执行命令：`uv run python scripts/data-generation-MotionJEPALabel/draw_variant_diagrams.py`（默认参数，退出码 0）。
-- 输入与来源：`outputs/phase0/original_index.json` 的布局指纹 + `outputs/full/episode_map_{Task}.json`；matplotlib 3.10.8 + Noto Sans CJK JP。
-- 输出路径：`outputs/full/diagrams/{Task}_ep{N}_variants.png` 共 8 张（216 变体大图 2046×3322px）。
-- 结果与证据：抽查 VideoUnmaskSwap_ep90（★var3=12 与 phase0 原始序列一致，金框=藏蓝 cube bin 与任务语言一致）与 ButtonUnmaskSwap_ep91 裁片（★var128=12|12|03 居中、相邻重复对双弧错开、③ 连 0-3、var127 带 ⚠），全部与 episode_map 逐项吻合；8 张图已发送用户。
-- 差异或阻塞：小变体图的下排子图标题与上排图区轻微贴近，可读性不受影响，未改。
-- 修改文件：新增 `draw_variant_diagrams.py`；README/CLAUDE.md 的 diagrams 引用与命令行（本轮预写）；AGENTS.md 本条。
-- 下一步：无；图在 outputs/ 下天然被 gitignore，需要重出图直接重跑脚本。
-
-### 2026-08-18 — 移植 MotionJEPA 通用 agent 约定进 AGENTS.md 并新增 CLAUDE.md 指针
-
-- 状态：完成。
-- 目标：把 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA` 的 `CLAUDE.md`「强制规则（最高优先级）」14 条里**纯通用**的部分 + 其 `AGENTS.md` 的 Codex `bwrap` 回退节，移植进本仓库 `AGENTS.md` 并本地化；同时消除本仓库旧「Python 与 uv 规则」与全局 uv 口径的冲突；另建根目录 `CLAUDE.md` 作单句指针，指向本文件这一权威源。
-- 执行命令：只读比对两仓库文档；`sed`/heredoc 拼接改写 `AGENTS.md`；`uv run python -m pytest tests/lightweight/ -q` 核验仓库未被破坏。
-- 输入与来源：`/nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA/CLAUDE.md`（强制规则 1–14）与同仓库 `AGENTS.md`（Codex `bwrap` 节）。
-- 输出路径：本仓库 `AGENTS.md`（置顶新增 `## 强制规则（最高优先级）` 10 条）、新增 `CLAUDE.md`。
-- 结果与证据：章节顺序核验为 `强制规则（最高优先级)` → `仓库目标` → `全局执行规则` → `第一阶段…`，旧 `## Python 与 uv 规则` 已删除；`uv pip install` 全文仅剩「禁止装正式依赖 / 仅用后即弃临时环境例外」一处语境；历史日志与「当前进度」表零改动。
-- 差异或阻塞：搬运时做了四处本地化——①测试清单换成本仓库的 `tests/lightweight/`、`tests/dataset/`；②commit subject 体例保留本仓库现行的 `<大版本>.<小版本>[.<修订>] <中文描述>`，不引入 MotionJEPA 的 `commitV6.2:`；③tmux/Monitor 示例换成本仓库生成入口与 `[g]enerate_swap_variants.py` 括号技巧；④`/data` 优先条的权威副本路径换成本仓库口径。明确未搬：greatlakes slurm 提交规约、`run_name` 确认、训练配置落点询问、Beta commit + `docs/training-doc/` 建档、评估绝对口径、Playwright 站点交互测试——均为 MotionJEPA 训练/站点侧特有，本数据生成仓用不上。中文规则里补了一条例外：`tests/lightweight/test_no_patch_report_debug_environment.py` 等源自已移除 `scripts/data-generation-v2-noPatch/` 的英文化遗留不回译。
-- 修改文件：`AGENTS.md`（头部新增章节、删除旧 uv 小节与重复的中文条目、本条日志）、新增 `CLAUDE.md`。
-- 下一步：无。后续所有工作以 `AGENTS.md` 的强制规则章节为最高优先级口径。
-
-### 2026-08-19 — 单事件 swap clip 数据集扩源到 train+test+val（33 源 153 条）并全链路重生成
-
-- 状态：完成。
-- 目标：把 `scripts/data-generation-MotionJEPALabel/` 的源从 train ep90-99（4 源、19 条）扩到 train ep90-99 + test ep0-49 + val ep0-49 三个 split，全链路重生成；动机是 MotionJEPA 每事件 1 token 的线性回归/聚类在 19 个 token 上不可用（稀有类各 2 条）。
-- 执行命令：`pytest tests/lightweight/test_swap_clip_plan.py -q`（76 passed）；`probe_original.py --gpus 0,1 --workers 16`（tmux，66/66 成功 135.5 s，train 8 条官方红线 clip 区间严格 0.0、test/val 58 条 comparison_skipped）；单源 smoke（test:3，3 条）与跨 split 碰撞 smoke（train:91,test:3,val:3，13 条）均端到端退出码 0；全量生成（tmux，153/153，182.1 s，零重试零闸门失败）；merge（Video 80 条 5.46 GiB + Button 73 条 4.98 GiB）；`make_clip_labels.py --regression`（319/319）；`verify_clips.py`（十二条判据全过、退出码 0、告警 31 条）；`draw_clip_diagrams.py`（79 张）；`prune_outputs.py --yes`（释放 18.0 GiB）。
-- 输入与来源：seed/difficulty 读 `src/robomme/env_metadata/{train,test,val}/`（禁止公式反推：train Button ep98=16801、val Button ep39/ep43=1073901/1074301 均为 attempt 尾号）；三重筛选逐 split 独立执行（4-bin → k≥2 → split 内共同源号），入选 train {91,95,98,99}、test 15 源、val 14 源。
-- 输出路径：`scripts/data-generation-MotionJEPALabel/outputs/event1/`（h5×2 + metadata + episode_map + videos + diagrams + verification_report.md，约 10.8 GiB）；`outputs/phase0/original_index.json`（520 KiB）。
-- 结果与证据：源键全链路改 `(split, task, episode)`；`staging_episode` 三段编码（split 位 1e6）；`variant_seed` 编码不动、跨 split 唯一性由三重守卫断言（单测 33×2×6 全组合、生成闸门、merge 闸门）；h5 `setup/swap_gt` 增第 11 个字段 `split`；`event_slots` 分布 03:63/12:63/01:11/23:14/02:2；判据 12 命中 33/33 源（有方向 33/33）；判据 3 差 0.0；判据 4 Video 80/80 逐位相同、Button 最大 3.37e-2、无泄露子集 106/153；判据 11 机械臂↔容器 0/153。
-- 差异或阻塞：①**cross_diagonal 首次真实非空**（Button/val/ep11、val/ep31 的 (0,2) 入选最近邻，共 2 条）——判据 10c-iii 按计划从硬失败降级为告警+计数，正确性由 topo 分布两路对账硬判据（含分 split）兜底；②**判据 5 在 Button/val/ep11 两条超阈**（末帧位置集合差 1.28e-2/6.5e-3）——根因是对角交换冲量 ~17 的剧烈容器互撞把旁观 bin 撞离 6~8 mm 未弹回，属第一次 swap 的物理余波，按用户既定「保留+量化」原则给判据 5 加条件降级（有力互撞源降为量化告警、无互撞超阈仍硬失败）；③跨 split smoke 抓到一个过严闸门（staging_episode 唯一性误跨任务比较），改为 task 内查重；④argmin 余量 <0.005 的告警 21 条（全局最小 0.00055，规模效应，不作废）；⑤全库 `tests/lightweight/` 有 4 条既有失败（test_TaskGoal 2 + test_step_error_handling 2），git stash 基线复测同炸、与本轮无关，未处置。
-- 修改文件：`scripts/data-generation-MotionJEPALabel/` 下 8 个脚本（clip_plan/clip_worker/probe_original/generate_swap_clips/merge_clip_h5/make_clip_labels/verify_clips/draw_clip_diagrams）、README.md、CLAUDE.md（追加 §十六）；`tests/lightweight/test_swap_clip_plan.py`；`AGENTS.md` 本条。`swap_inject.py`/`prune_outputs.py` 零改动。
-- 下一步：MotionJEPA 侧对 153 个事件各生成 1 token（swap 窗口 50 帧取中间幅度最大 32 帧）做线性回归与聚类；无泄露子集按 `action_dev_max == 0` 过滤（106 条），整条原版可达子集按 `later_windows_follow_native_nn == true` 过滤（125 条）。
-
-### 2026-09-08 America/Detroit — newtask-v2 重建方案：开始只读核查
-
-- 状态：进行中，仅编写方案，未执行重建。
-- 目标：从 `dataset-gen-NewSeed` 重新规划 `newtask-v2`，首个实现版本从 `10.0` 开始；仅将原任务的位置分布和参数候选变成显式输入，原始取值及执行调用链保持不变。
-- 用户范围：已确认沿用 `BinFill`、`RouteStick`、`VideoUnmaskSwap`、`VideoRepick` 四个任务；初始指令要求只写根目录 Markdown，不修改实现、不创建目标分支、不运行生成。
-- 执行命令：`git status --short`、`git branch -a`、`git rev-parse HEAD origin/dataset-gen-NewSeed newtask-v1 origin/newtask-v1`、`git show`、`rg`、`sed`，均为只读核查。
-- 输入与来源：本地基线与本地远端跟踪引用均为 `94449db0a068a6b454b55a13ebd48f0394d89cc8`；`newtask-v1` 为 `be7a59db07ffd50011576dda9c432f81903e031b`，仅作差异参照；本轮没有刷新远端服务器状态。
-- 输出路径：根目录 `NEWTASK_V2_PLAN.md`。
-- 结果与证据：开始时工作区干净；已确认 newSeed 入口直接使用 `gym.make`、`RobommeRecordWrapper` 和原任务 `task_list`，不能用 v1 的独立执行链替代。
-- 差异或阻塞：尚未进行运行时一致性验证；四任务显式配置的初值须从基线源码提取，不能复制 v1 已改变的候选或位置配置。
-- 修改文件：本账本及方案文档。
-- 下一步：完成源码参数清单、ASCII 调用图、最小注入边界和后续验收计划。
-
-### 2026-09-08 America/Detroit — newtask-v2 重建方案：纳入入口约束并提前提取原配置
-
-- 状态：进行中，等待静态对账收尾；没有开始实现。
-- 用户追加：要求所有入口放在仓库根 `scripts/`，用于提取配置和生成新 dataset；并明确允许制定计划时先简单提取原版配置。
-- 实施：方案增加 `scripts/extract_native_config.py`、`scripts/generate_dataset.py`、`scripts/merge_dataset.py` 三个拟建顶层入口；后两者只转交基线已有生成、合并实现。现在只落盘原值 JSON，不实现入口。
-- 执行命令：先 `command -v uv`，再 `uv run --no-sync python -`，用标准库 AST 读取四个 task 的难度字典、布局和网格字面量，以 SHA-256 固定七份来源文件；其余构造参数、位置公式和工具默认值逐项核对源码后用 `apply_patch` 落盘。
-- 输出路径：`NEWTASK_V2_PLAN.md`、`scripts/configs/newtask-v2/native_sampling.json`。
-- 结果与证据：12 份难度字典已提取，保留原字段、原整数区间、原锚点顺序；记录两个 Video 任务整体旋转 `(0,180)` 实际为弧度、单值 `randint` 仍消耗随机数、RouteStick 的原布局为 `1 x 9` 等保真边界。
-- 意外与处理：`uv` 提示继承的 `VIRTUAL_ENV` 指向另一工作副本，并按默认规则忽略它，实际使用当前项目环境；未加 `--active`，未安装或修改依赖。一次文档补丁因上下文不匹配被整体拒绝，修正匹配后正常应用，未使用编辑回退。
-- 修改文件：仅根目录方案、配置 JSON 与本账本。
-- 下一步：检查快照对账、文档链接和最终 diff；只提交这三个文件，不创建 `newtask-v2`，不生成数据。
-
-### 2026-09-08 America/Detroit — newtask-v2 重建方案与原版配置快照交付
-
-- 状态：完成，仅指方案和静态配置快照交付；新版实现及运行时一致性仍未验证。
-- 输出：根目录 `NEWTASK_V2_PLAN.md` 包含原版完整调用图、配置输入支路、三个顶层 `scripts/` 入口、四任务候选与位置表、实施白名单、五步实施及三路对照计划；`scripts/configs/newtask-v2/native_sampling.json` 保存当前原值，尚未接入生成器。
-- 复核修正：补齐 `_execute_tasks` 循环结束后的原求值、异常 attempt 不进入 `_raw_summary` 的分支、RouteStick 方向候选与阈值。纯配置模块改为拟建 `src/robomme/sampling_config.py`，避免父进程经过环境包初始化提前导入仿真依赖。
-- 执行命令：`command -v uv` 后以 `uv run --no-sync python -` 运行标准库静态断言，检查配置与源码 AST、SHA-256、Markdown 链接、`bash -n` 命令围栏和历史账本保留；`git diff --check` 退出码 0。完整检查程序保存在本轮提交正文，可按固定基线复现。
-- 实测结果：12 份难度字典、6 个布局数组、7 份来源文件散列、6 个文档链接和 2 个命令围栏全部通过，静态检查退出码 0；检查耗时小于 1 秒；三个拟建脚本均未创建。首次文档链接检查误把代码里的 `entry["solve"](...)` 识别为链接，改为先排除代码围栏及行内代码后通过，未据此修改原代码。
-- 修改范围：仅 `AGENTS.md`、`NEWTASK_V2_PLAN.md`、`scripts/configs/newtask-v2/native_sampling.json`。没有新增或修改运行源码，没有依赖变更，没有创建目标分支，没有启动数据生成、回放或仿真。
-- 版本边界：本轮计划与原值提取按源分支 `2.21` 提交；`newtask-v2` 首个实现版本仍保留为 `10.0`。
-- 下一步：等待用户对方案的后续指令；不能把本条交付状态视作重建或生成授权。
-
-### 2026-09-08 America/Detroit — newtask-v2 计划修订：只保留两个生成侧 Python 并平铺
-
-- 状态：进行中，仅修改方案和账本。
-- 用户指令：保留 `generate_dataset_newseed.py` 和 `seed_layout.py`，将实际需要的函数及依赖迁入这两个文件；不放在 `data-generation-newSeed/` 内，直接与其他三个原有 Python 脚本平铺到根 `scripts/`；本轮要求“修改计划”。
-- 方案调整：最终产品脚本为两个生成侧文件加 `dataset_replay.py`、`evaluation.py`、`run_example.py`，共五个；原值 JSON 保留。撤销独立的提取、生成转交、合并和配置辅助 Python 文件设计。
-- 依赖分工：seed 文件吸收原任务规范、默认 episode 数、任务解析和异常定义；主文件吸收原 timestep/末帧检查、原子写入、配置提取与校验；原最小合并函数并入主文件的按需分支，生成后不自动合并。
-- 路径约束：迁移后主文件的 `REPO_ROOT` 改从 `SCRIPT_DIR.parent` 计算；删除旧 `CONTRACT_DIR` 依赖；保留原线程／绑卡导入顺序与顶层 spawn worker 定义；四个 task 不反向导入脚本。
-- 清理约束：明确先迁移依赖并验证，再清理旧脚本目录、孤立测试与文档引用；不保留旧目录兼容层、不新增其他辅助 Python 文件；不清理根数据、生成产物及历史账本。
-- 执行命令：`git status --short`、`git log`、`rg`、`sed` 只读核查；通过 `apply_patch` 更新根目录文档。
-- 修改文件：`NEWTASK_V2_PLAN.md`、`AGENTS.md`。
-- 下一步：检查所有图、目标结构、函数归属和命令一致，验证纯文档改动范围并提交；不执行计划。
-
-### 2026-09-08 America/Detroit — 两文件平铺计划修订完成
-
-- 状态：完成，仅文档修订交付。
-- 结果：根目录方案中的配置支路、最终目录、两文件职责、最小依赖表、六步实施顺序和全部使用命令已统一；四任务原参数、位置说明和 JSON 快照保持不变。独立只读复核没有发现残留的独立新入口或辅助 Python 实施安排。
-- 验证：确认 `command -v uv` 后，用 `uv run --no-sync python -` 执行标准库文档检查，4 条运行命令都指向平铺主文件、2 个命令围栏通过 `bash -n`、6 个文件链接有效；原 JSON 与七份来源源码散列未变、三个原脚本未变、历史账本保留；退出码 0，耗时小于 1 秒。`git diff --check` 退出码 0。
-- 修改范围：只有 `NEWTASK_V2_PLAN.md` 和 `AGENTS.md`；没有执行源码迁移、删除、配置改写、测试改写或数据生成。本轮为纯文档变更，不运行仿真或实现测试。
-- 提交口径：源分支文档版本接续为 `2.22`，不占用目标分支首个实现 `10.0`；仅逐路径暂存并提交本轮两份文档，验证程序随提交正文保存。
-- 下一步：按用户后续指令实施，不能把清理清单视为本轮删除授权。
-
-### 2026-09-08 America/Detroit — newtask-v2 五项对拍与留档计划展开（2.23，补记）
-
-- 状态：完成，仅文档修订；本条为补记。当时用户限定"只改这一份计划"，因此 2.23 提交未更新本账本，与本文件"每阶段必须更新账本"的规则冲突，现按用户 2.24 决策补记。
-- 用户指令：要求把对照写成逐层验证；点名①关键帧目视、②变量跳变／物体位置／产生消失、③HDF5 产物一致为用户关心的重要对拍；确认④随机流、⑤连续 worker 列入；要求对拍作为可复现测试并写 docs、保留轻量证据；轻量证据纳入 Git；最终限定只改 `NEWTASK_V2_PLAN.md`。
-- 结果：计划第四步展开为 4.0 共用校准、4.1–4.5 五项编号对拍、4.6 15 格矩阵与预算、4.7 三种操作与测试入口、4.8 docs 与轻量证据规范。
-- 验证：`uv run --no-sync python -` 标准库静态检查退出码 0（0.046 秒）；6 个链接、2 个围栏、4 条命令、5 项对拍、6 个步骤计数通过；第二至第六节逐字未变；JSON 与 7 份来源散列未变。
-- 修改范围：仅 `NEWTASK_V2_PLAN.md`。中途曾误创建临时分支与平铺文件，按用户纠偏全部撤回。
-- 下一步：已被 2.24 的对抗审查与修订取代。
-
-### 2026-09-08 America/Detroit — newtask-v2 计划对抗审查与修订（2.24）
-
-- 状态：完成，仅文档、快照补录与账本；未实施、未生成、未对拍。
-- 用户指令：对计划做对抗验证，不启动 workflow，尽可能并行 subagent；随后要求给出修复方案并指出需用户决策项；决策结果：RRT* 触发局换 episode 补足、穷尽再议容差；smoke ≤5 分钟 + 全量走 tmux；PNG 全部不入 Git；①全部保留但在③通过后执行；保留旧测试工厂、新对拍不用；其余 12 任务生成能力保证；本轮同时补录 JSON 与更新账本；清理后抽样复验。
-- 审查方式：11 个只读 subagent 并行核查（两任务参数 ×2、位置分布、调用链与 seed、迁移清理、JSON 快照、注入可行性、CLI 命令、对拍方法论、v1 分支与历史版本、纯文本自洽）。仓库未被 checkout、修改或运行生成。
-- 审查结论：数值层（12 份难度字典、位置常量、6 个锚点数组、7 份散列、seed 公式、env_code、弧度判定）全部正确。高严重度问题：随机流清单遗漏（RouteStick 障碍颜色 `torch.rand(3)`×4、walk 随机起点、VideoRepick 全局 `np.random.seed`、BinFill `_initialize_episode` 的 `randperm(3)` 两次执行、ManiSkill 环境级随机流与 job.seed 正交）；验收判据死锁（screw→RRTStar 回退不可播种且有 1 秒墙钟预算，历史同 seed 重跑约 1/20 分叉，与"逐位一致、受阻即不通过、全部通过才提交"互锁）；A 路源码来源留白（第三步后工作区不再等于基线）；`--check-config` 只比固定 ref 不读工作树；第三节第 7 条导入顺序因果链写错（spawn 子进程重跑主模块顶层早于绑卡）。中严重度：`min_gap` 实际值 0.02 未记、`include_*` 三种取值被抹平、`_spawned_cubes` 缓存污染路径、`readme.md` 死链未点名、merge CLI 参数不符、`--difficulty` 语义未解释、`--output-dir` required 未处理、现有测试工厂与 4.0 禁令冲突、v1 教训未引用、多处内部自相矛盾。
-- 修订内容：`NEWTASK_V2_PLAN.md` 逐节修订（第一节基线表、第二节调用图与两次 reset 差异表、第三节八条硬约束、第四节随机消费顺序与疑似旧错误清单、第五节 `min_gap`/`include_*`/工具清单、第六节随机流生命周期表、第七节迁移与清理补项、第八节退出路径／预算／PNG／顺序／抽样复验、第九节 `--no-sync` 与 ratio 说明、第十节自检项）；`native_sampling.json` 以标准库脚本只增不改补录（`schema_version` 1→2，旧值递归子集断言通过）；本账本补 2.23 与 2.24 两条。
-- 验证：见本轮提交正文中的静态检查程序与实测数字。
-- 修改范围：`NEWTASK_V2_PLAN.md`、`scripts/configs/newtask-v2/native_sampling.json`、`AGENTS.md`；源码、测试、依赖未变；未创建分支或 worktree。
-- 下一步：等用户授权后按修订计划第一步起实施；A 路须先在 `artifacts/` 下建 detached worktree。
-
-### 2026-10-06 America/Detroit — xhard 新档：上次训练参照与逐任务高层方案（2.31）
-
-- 状态：完成，仅文档；未改源码、未生成、未对拍。
-- 用户指令：参考 newtask-v2 分支"采样窗口数轴"的做法，为每个任务设计 xhard 方案，长度对齐 NWTaskV2，让 8 帧/32 帧采样有遗漏（8 帧须有 subgoal 级遗漏），motion 窗口数量尽量对齐上次训练的 token 数；不再把 BinFill 做成带 video 的任务；每任务少改参数；只设计高层方案，调查中有疑问立刻问；积极用 subagent；把上次训练的内容写进一个 Markdown，分"给人看的高层"与"给 agent 看的细节"两部分。
-- 调查方式：4 个只读 subagent（均 opus）并行：①origin/newtask-v2 窗口口径与交付集构成；②本分支 16 任务源码 hard 配置、条数公式、随机流、语言上限；③官方参考数据 hard 档 400 条 `info` 字段统计；④MotionJEPA 与 policy 仓库的训练/评估口径与 token 数。主会话另用 `uv run --no-sync python` 对 ③ 的 JSON 补算 stride-16 窗口数。仓库源码零改动。
-- 关键发现：newtask-v2 交付四任务是 BinFill/RouteStick/VideoUnmaskSwap/VideoRepick（非 artifact 的 PatternLock/PickXtimes 组），且已有 xhard 档（RouteStick 8–10、两 Video 任务 swap 4–5）；token 有两套口径（MotionJEPA stride-1 796,001 chunk；policy stride-16 69,716 窗）；官方 hard 档 32 帧帧路在 16 任务上零漏段，8 帧只在计数类与 Imitation 类漏 3–4 段；BinFill 假 demo 是生成器 `--binfill-demo` 把成品重复两遍，`src` 未动；16 任务里 5 个（ButtonUnmask、VideoUnmask、VideoPlaceButton、InsertPeg、MoveCube）没有次数旋钮，3 个（StopCube、VideoRepick、VideoPlaceOrder）次数写死在方法里。
-- 用户决策（AskUserQuestion）：参照长度取 newtask-v2 xhard 档；token 落实为每条 50–60 个 stride-16 窗（T≈900）；只用现有 hard seed、本轮接受总量缺口；只硬性要求 8 帧 subgoal 级遗漏；纳入"换字典 + 重写方法"共 11 个任务。
-- 输出路径：根目录 `1006-xhard12-prev-training-and-task-plan.md`（第一部分高层结论与逐任务表；第二部分口径、统计、配置原文、估算公式与未核实清单）。
-- 结果与证据：逐任务方案见该文件第一部分第五节；总量估算 425 条、约 33.1 万帧、stride-1 chunk 约 31 万（上次四成）、stride-16 约 1.96 万窗。官方 hard 统计脚本与 JSON 在会话 scratchpad，重跑命令记于文件 B.1。
-- 差异或阻塞：官方集实际位于 `/data/hongzefu/data_0226/`，非 AGENTS.md 规定的仓库内 `data/robomme_data_h5/`，且未用 sha256 核对 revision；所有 T/窗口数为线性外推，实施前须按文件第一部分第七节做五项验证。
-- 修改文件：新增 `1006-xhard12-prev-training-and-task-plan.md`；`AGENTS.md` 进度表与本条。
-- 下一步：等用户审阅逐任务取值；获准后按前篇接口实施并先跑每任务 3 seed smoke。
+   - **日志三件套**：`PYTHONUNBUFFERED=1` 防管道块缓冲吞输出、`set -o pipefail` 防主命令崩了 `$?` 被 tee 的 0 顶替、日志用 `tee` 落文件供后续 tail 查看（**不要用 `> log 2>&1` 纯重定向**——纯重定向会让后台任务面板永远 "No output yet"，无法一眼判断死活）；正常结束或报错退出时记录 `EXIT_CODE=` 尾行作统一完成信号。≤5 分钟的短任务照旧直接后台起、不强制 tmux，但单独套用同一管道。日志与产物遵守第 14 条存储边界。
+   - **配套命令**：死活判断 `tmux has-session -t '=完整会话名'`（运行中为真、结束后为假，无 stale 假阳性；`=` 前缀是精确匹配，`-t` 不带 `=` 时做前缀匹配）；中途停止 `tmux kill-session -t '=完整会话名'`（连 tee 一并干净退出、零孤儿；⚠ 强杀不会写 `EXIT_CODE=` 尾行，不能当作成功，判死只能靠 has-session）；人肉围观 `tmux attach -t <会话名>`（Ctrl-b d 脱开）；`tmux ls` 一览所有在跑任务。结束还须核对日志退出码。非 tmux 任务记录启动时 `$!` 的精确 PID；**禁止裸 `pgrep -f "<pattern>"` 判断进程存活**——`-f` 按全命令行匹配，pattern 字符串就写在调用者自己的 argv 里，pgrep 永远匹配到自己、条件恒真。确需按 pattern 匹配时用括号技巧破坏自匹配：`pgrep -f "[e]xtract_optical_flow.py"`（正则 `[e]` 匹配字面 `e`，但自己 argv 里存的是 `[e]xtract`，`e` 后跟 `]` 不跟 `x`，匹配不到自己）。
+   - **多变量长命令先落脚本再进 tmux**：`export A=1 B=2 bash x.sh` 会把 `bash` 当成 export 参数——一律先写成脚本文件再 `tmux new-session "bash <文件>"`（2026-09-04 实测踩中）。多卡分片时避开正被训练 / 评估占用的卡（落在忙卡上的片实测慢 2–3 倍）。
+   - 盯日志的 Monitor / 过滤管道里**每一级都必须行缓冲**：中间夹的 `tr`/`awk`/`sed` 对管道输出默认 4KB 块缓冲——日志持续增长时事件被后续输出推出来、看似正常，**任务一结束，最后几行（RESULT/EXIT_CODE/PASS）就永远卡在缓冲区里，监听端静默不报**（2026-08-24 MotionJEPA 仓库两次实测踩中：epoch 基准与冷缓存复测都在结束时无事件，均由用户来问「跑完了吗」才发现；中段事件能到达掩盖了问题）。修法：`tr` 写成 `stdbuf -oL tr`、awk 加 `fflush()`、sed 加 `-u`，只给 `grep --line-buffered` 不够（脚本化版本见 [`templates/monitor_filter.sh`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/templates/monitor_filter.sh)）：
+
+     ```bash
+     tail -n +1 -F <STORE_ROOT>/logs/<run>.log | stdbuf -oL tr '\r' '\n' \
+       | grep --line-buffered -E "全部完成|done|EXIT_CODE=|Error|Traceback|out of memory|CUDA|找不到"
+     ```
+
+   - 使用当前宿主的流式监听、完成通知或等待工具持续观察任务，不写反复睡眠检查的忙轮询；每份日志独立监听，只输出关注的事件。Claude 的 Monitor 机制只在 `CLAUDE.md` 规定。
+
+   **tmux 会话清理红线（2026-09-04 事故后新增，最高优先级）**：**任何情况下禁止执行 `tmux kill-server`**，同样禁止一切等效的全局杀法——`tmux kill-session -a`（杀掉除当前外的全部会话）、`pkill -f tmux`、`killall tmux`，以及指定 socket 的变体 `tmux -L <name> kill-server` / `tmux -S <path> kill-server`。理由：tmux server 是全用户共享的**一个**进程，用户自己的工作现场、远程连接乃至 agent 会话本身都挂在同一个 server 上，销毁后不可恢复。2026-09-04 实测代价：为清理四个评估会话执行了一次 `tmux kill-server`，把用户原有会话 `0`、`7`、`19`、`20`、`claude-private` 与一条在跑的 400 ep Wan 抽取一并杀掉，全部无法恢复。这是硬禁令，**不因「已确认 `tmux ls` 里只有我的会话」而豁免**。落地纪律四条：
+   - **唯一允许的清理方式**是 `tmux kill-session -t '=确切会话名'`，一次只杀一个、名字写全并加 `=` 精确匹配。禁止通配、禁止靠前缀模糊匹配、禁止 `xargs` 批量传入——`tmux -t` 本身做前缀匹配，`-t ev` 会命中所有以 `ev` 开头的会话。
+   - **起会话时就为清理做准备**：自己起的 tmux 会话必须带可辨识前缀（如 `ev-`、`p3-`、`wan-`），并在当轮回复或对应留档（第 12 条 `launch.md`）里记下本轮起过的会话名清单；清理时以这份清单为唯一依据。`tmux ls` 里不在清单内的会话**一律不动**，包括看起来空闲的、看起来是残留的、名字只是数字的（上面被误杀的 `0`、`7`、`19`、`20` 正是这一类）。
+   - **删前删后各查一次**，三步照抄：
+
+     ```bash
+     tmux ls                                 # 删前：打印全部会话，逐个核对目标名字确在自己的清单里
+     tmux kill-session -t '=确切会话名'
+     tmux ls                                 # 删后：对比只少了目标会话，其余一个不少
+     ```
+
+     两次 `tmux ls` 的差集不等于「恰好只有目标会话」时立即停止，把两次原始输出交用户处置，不自行解释为可继续。最后一个会话退出后 server 可能不存在，应结合删前清单判断。
+   - **有疑问先问用户**：不确定某个会话是不是自己起的、名字对不上清单、清单丢失时，一律不删，先把 `tmux ls` 原文交用户裁决。
+
+   来源：policy/AGENTS.md 规则 7（含清理红线全文）；global CLAUDE.md「后台进程等待」；mjepa/AGENTS.md 规则 7（`=` 精确匹配、强杀不写退出码）；benchmark/AGENTS.md 规则 4；env-b-aws-replication.md 十节 1、5、7。
+
+8. **集群提交按环境分叉，权威源是本仓库的 [`greatlakes.md`](greatlakes.md)。**
+   - **有集群访问的环境**：向 GreatLakes 提交前必须遵守 `greatlakes.md` 的 account、partition、占位 job 规格、NFS 路径及认证规约（项目仓库以标记块副本接入；文件尚不存在时必须先向用户确认集群 account、partition、资源上限和 NFS 路径，不得直接复制其他仓库的集群配置）。要点提醒（不替代原文）：
+     - **一切工作负载一律经 48 h 占位 job 运行**（`--account=<GL_ACCOUNT> --partition=<GL_PARTITION> --nodes=1 --ntasks-per-node=1 --gres=gpu:1 --time=48:00:00 --wrap='sleep infinity'`），工作负载用 `srun --jobid=<hold> --overlap --exact --ntasks=1 --gpu_cmode=shared <脚本>` 塞进去跑，不把工作负载直接 `sbatch`；任务一旦确定要上集群，**开工第一步、读代码或改代码之前就提交占位 job**，让排队与改代码并行，JobID 立刻记入本会话清单。
+     - 规格默认压到最低 `--cpus-per-task=1 --mem=24G` 以快速排队；ManiSkill 多 worker CPU 生成按每 worker 1 CPU + 12 G；一次默认最多 4 个占位 job、单 job 超过默认规格先提交再提醒用户、超过 4 个先让用户审核数量；任务结束、commit 完成后按清单里自己的 JobID 逐个 `scancel`，绝不 `scancel -u`。
+     - **不要写 `--qos=interactive`**（chaijy2/spgpu 实测报 `Invalid qos specification`，默认不指定 qos 即可；遇 `(AssocGrpMemLimit)` 先降 `--mem`，确需指定时先用 `sacctmgr show assoc user=<用户> format=qos` 查清正确名）、分区强制至少 1 GPU、计算节点唯一可见共享路径是 `<SHARED_ROOT>`。
+     - account、partition、规格、数量、qos、PENDING 读法、Okta 登录、ControlMaster 一律以 `greatlakes.md` 原文（「资源约束」「算力使用规则」两节）为准。
+   - **无集群访问的环境**（无 `~/.ssh/config`、无 ControlMaster）：**禁止提交任何 Slurm 作业、禁止 ssh 集群、禁止运行提交器**；训练、建库、评估一律在本机跑。`greatlakes.md` 与引用集群的历史留档保留为只读存档，可读不可执行；历史命令不能作为已有访问权限或提交授权的依据。确有集群需求时先问用户，不得自行尝试恢复连接。
+
+   来源：policy/AGENTS.md 规则 8；evalgl/AGENTS.md 规则 8；mjepa/AGENTS.md 规则 3。
+
+9. **仓库长期文档中禁止用硬编码行号引用代码**（`file.py:123` 这类）。行号随代码演进必然漂移。引用代码一律用**稳定符号锚点**：函数/类/方法名、CLI flag 名、JSON 字段名、配置键、或代码段的语义描述；文件级 markdown 链接可保留。本条不约束代码内注释与 commit message；审计报告中的临时行号见第 19 条，同样不得抄入长期文档。
+
+   来源：benchmark/AGENTS.md 规则 5；policy/AGENTS.md 规则 9；mjepa/AGENTS.md 规则 9。
+
+10. **修改学习率、batch size、训练步数 / epoch 数、loss 权重等训练超参前，必须先让用户确认改动应落在全局默认配置还是具体启动脚本的覆盖参数中。** 用户已指定落点时直接沿用，未指定时必须澄清。实际改动还必须满足项目自身的覆盖白名单约束（如有），不能为满足落点选择绕过项目约束。
+
+    来源：policy/AGENTS.md 规则 10；mjepa/AGENTS.md 规则 10。
+
+11. **每次改动完成（并跑过第 4 条的验证）后必须 `git commit`，且只能提交本轮自己改的内容；commit 后立即 push。**
+    - **commit message 用简体中文**，subject **沿用该仓库既有的 message 风格**（前缀习惯、编号体例照抄现有 `git log`；项目在 `<COMMIT_SUBJECT_STYLE>` 写明。已知实例：`commitV<大版本>.<小版本>: <中文描述>` + 文档/修补/撤销用 `docs:` / `fix:` / `revert:`；或 `<大版本>.<小版本>[.<修订>] <中文描述>`）。大版本号只在系统性、跨机制的重大更新时递增；小版本号用于该大版本内的常规迭代，每次 commit 递增；从哪个版本号接续以 `git log` 最近一次为准。
+    - **subject 沿用既有体例不动，body 必须详写过程**——目标是人类不看会话记录也能了解具体过程、复现当时场景，详略以「会话工作总结」为准（按主题分节、成段叙述、带实测数字，不是三五行摘要）。body 须包含：
+      1. **用户指令原话**：本轮改动涉及的全部关键用户消息（初始指令 + 中途追加/纠偏），按时间顺序原话保留；闲聊/确认类可略。
+      2. **结构化后的完整计划**：指令整理成的逻辑完整的执行计划（要做什么、分几步、判据是什么）。
+      3. **实施过程分节叙述**：按主题分节（一、二、三…）写清每一步做了什么、关键设计点与取舍理由。
+      4. **计划到实施中的意外**：与计划不符之处——踩的坑、临时改向、被推翻的假设、外部事件、顺手修的 bug，及各自处置。
+      5. **重要实验/测试**：本轮跑过的所有重要实验与测试——命令/入口、关键参数口径、实测数字与结论。
+      6. **当前状态与下一步**：本 commit 之后链路处于什么状态、待办是什么。
+
+      纯文档/一行修补类微小改动，body 可相应精简，但用户指令原话与测试/验证结果两项不可省。
+    - **只 commit 本轮自己改的内容**：一律 `git add <逐个明确路径>`，**禁止 `git add -A`、`git add .`、`git commit -a`** 这类全量暂存——它们会把用户或其他 agent 的在途改动一并裹进来。同文件混有他人改动时，用 `git apply --cached` 只暂存确认属于本轮的 hunk，不能整文件带入。
+    - **提交前先 `git status --short` 核对工作区**：存在不属于本轮改动的文件（用户或其他 agent 的在途编辑、遗留脏文件）时**一律绕开、不提交**，必要时在汇报里点名交用户处置。**不得对用户及其他 agent 的在途改动做提交、stash、checkout、clean、删除或回滚中的任何一种**；不为得到 clean HEAD 擅自清理工作区。其他条目提到「不碰他人在途改动」均指本条。**唯一例外**：Claude Code 的 `SubagentStop` hook 只追加写入的 `docs/subagent-stats/over-15min.jsonl`（超过 15 分钟的子代理统计，机制见 `CLAUDE.md`「子代理超时统计」）——任何会话提交时都可把它整文件带入，但不得删改已有行；判定工作区 clean 时排除它。
+    - **每次 `git commit` 完成后必须立即 `git push` 同步到远端**，不得让已提交的 commit 滞留本地；本轮结束时 `git status -sb` 首行不得残留 `ahead` 计数。该同步已获用户长期授权，无需逐次确认；凭据走 gh CLI（`credential.https://github.com.helper=!/usr/bin/gh auth git-credential`），HTTPS 免交互。**声明式例外**：项目 `AGENTS.md` 明确声明「本仓库不继承自动推送授权」、当前分支没有 upstream、仓库是第三方 fork 或当前机器是无凭据一侧时，不得自行推送，先问用户再决定是否 `git push -u origin <branch>`。
+    - push 只推当前分支到其既有 upstream（裸 `git push`）。**禁止 `git push --force` 与 `--force-with-lease`**。push 被拒（非快进、认证失败、网络不可达）时立即停止，将 git 原始报错交用户处置，不得改写历史或反复重试。**例外（用户逐次批准，2026-09-26）**：本地分支带着他人在途 commit、又必须把自己的改动同步到远端时，用 plumbing 在远端 HEAD 上构造**只含自己改动文件**的 commit 并 `git push origin <sha>:refs/heads/<分支>` 快进推送，本地再落一个以该 commit 为第二父的合并提交（脚本与流程见第 25 条同步机制）；被拒仍立即停止，最多重建一次，不 force。
+    - **禁止 `git clean -x`、`git clean -X`** 及等效删除被忽略产物的清理方式（会删掉 `<STORE_ROOT>` 下全部不进 git 的数据，并破坏 worktree 管理状态）。带覆盖选项或清空输出根的命令执行前，核实确切目录、符号链接目标、内容归属和授权；不能因文件未被 Git 跟踪就认为可以删除。检查历史优先使用 `git log`、`git show`、`git ls-tree`、`git diff`；需要运行历史版本时使用隔离 worktree 或恢复分支，不能覆盖用户现有修改。
+    - **计划执行模式的 `sub/` 提交例外（2026-10-01 新增；机制见 `CLAUDE.md`「计划执行模式」）**：主会话按已批准计划派出的写入型子代理在各自分支上的提交，subject 固定前缀 `sub/<子任务编号>: ` + 中文描述，body 只写目标、改动文件、验证命令与判定行三项，**不占项目版本号、不套 `<COMMIT_SUBJECT_STYLE>`**；这些提交算「本轮自己改的内容」，经主会话 `--no-ff` 合并提交原样进历史并随合并提交 push（用户 2026-10-01：「尽可能保留子代理里的每一个commit信息」）。本条六项 body 由合并提交承担，合并提交 subject 按项目体例递增。`sub/` 分支本身不是推送对象；合并后审查 FAIL 时合并提交以 `ahead` 留本地、汇报写明交用户，属本条「立即 push」的显式例外。
+
+    来源：global CLAUDE.md「git 提交」；policy/AGENTS.md 规则 11；mjepa/AGENTS.md 规则 11；benchmark/AGENTS.md 规则 7 与全局执行规则；benchmark 日志 2026-09-09（`git apply --cached`）。
+
+12. **正式训练与评估必须从 clean HEAD 启动并留档到 `<DOC_ROOT>/<run_name>/`，且起跑前先打 Beta commit 锚点。**
+
+    **(1) 起跑前 Beta commit（可复现锚点）**
+    - **正式训练起跑前必须先 `git commit`**，subject 在项目既有体例上加 `Beta` 标记（如 `commitV<大版本>.<小版本>Beta: <中文描述>`），body 写本轮计划与参数口径。提交后 `git status --short` **必须为空**才允许起跑——这样启动时 HEAD 就精确等于所跑的代码。
+    - **配对编号**：Beta 与跑完后回写结论的正式 commit 用**同一个小版本号**（`commitV7.12Beta` 起跑 → `commitV7.12` 回写结论），一眼看出是同一轮实验的首尾；下一轮从 `V7.13Beta` 开始。
+    - **两个独立 commit，禁止 squash/amend 合并**——档案里记的 Beta hash 必须永久可解析，合掉就成死链接。
+    - **评估**：工作区 clean 时直接记当前 HEAD hash，**不制造空 commit**；有未提交改动才照同样规则先 commit 再跑。
+    - ⚠ 为什么要这条：MotionJEPA v7 前三个 run 都是先起跑后提交，启动时工作区带着未提交的入口脚本改动，「跑的是哪版代码」只能靠 mtime 与 commit 时间戳事后推断，无一精确。
+    - **多阶段产物打包期间冻结 HEAD**：provenance 若要求各阶段 worker 的 `git_commit` 唯一，则从第一阶段起跑到打包完成之间不得 commit（连文档改动也不行），评估前先把文档提交掉（2026-09-04 实测：中途一次文档 commit 让 400 ep 建库的抽取阶段重跑了三次）。
+
+    **(2) 建档制度**
+    - 每次正式训练与每次评估都必须在 `<DOC_ROOT>/<run_name>/` 留档，与第 6 条绑定：**确认 run_name 的同时建档目录**。跑完即删的冒烟/短测 run 不建档。
+    - **三件套**：`launch.md`（目的 / 运行环境 / 被跑对象——权重或配置，含 commit 与路径 / 本轮代码改动 / 分片配置 / 执行顺序 / 完整命令 / 产物路径 / 盯盘项 / **本轮 tmux 会话清单**）、`result.md`（实测数字与结论）、`records/`（只归档 git 无法还原的日志、指标、结果）。
+    - **三件套与十二节的对应**：`launch.md` 承载①②③④⑤⑥节（起跑那一刻写），`result.md` 承载①一句话结论与⑦⑧⑨⑩⑪节，`records/` 对应⑫归档文件清单；项目若沿用单文件体例，可把十二节合写进 run 目录下的 `README.md`，此时不再另建 `launch.md` / `result.md`，两段式写入时点不变。上级 `<DOC_ROOT>/README.md` 始终只是总索引，不是 run 档案本身。
+    - **两段式**：①起跑那一刻先写「版本与代码状态」「启动与配置还原」两节（这些事后无法准确重建）；②训练/评估跑完后补「训练过程行为」「评估」「用户决策」「结论」各节并归档数据文件。
+    - **README 全中文，详略比照第 11 条的 commit body**（按主题分节、成段叙述、带实测数字），必须含**用户决策原话**与**实测结果**两项。章节：①一句话结论+指标速览 ②版本与代码状态 ③启动与配置还原 ④数据集与划分口径 ⑤关键超参 ⑥硬件与耗时 ⑦训练过程行为 ⑧训练后评估 ⑨用户决策记录 ⑩计划外事件与处置 ⑪结论与下一步 ⑫归档文件清单。
+    - **只归档 git 还原不出来的东西**：
+      - **归档**：逐 epoch / 逐步全指标（如 `metrics/train_metrics_epoch.jsonl`）、清洗后的 `*.summary.log`、评估结果文件——纯实测数据，git 里没有。
+      - **禁止归档 `config.yaml`、`launch.sh` 及任何 bash/yaml 拷贝**：配置 ≡ 默认配置文件 `@ <Beta hash>` + 入口脚本覆盖项，两者都已被 Beta commit 锁死。README ③节写还原命令 `git show <beta-hash>:<配置路径>` 并逐项列出覆盖值，启动命令原文写成 README 里的代码块而非独立文件。`<DOC_ROOT>` 下应保持**零 .sh / 零 .yaml**。
+      - **不归档 checkpoint 权重**（GB 级），留在 `<STORE_ROOT>`。
+    - `<DOC_ROOT>/README.md` 是总索引，每建一个 run 档案就往一览表加一行。
+
+    **(3) 日志清洗（tqdm 中间态占 99%，必须洗）**
+    ```bash
+    tr '\r' '\n' < <STORE_ROOT>/runs/<run>/train.log | grep -vE '%\|' > <DOC_ROOT>/<run>/metrics/train.summary.log
+    ```
+    实测 8.3 MB / 54984 行 → 22 KB / 192 行，**epoch 汇总行、启动横幅、配置回显、结束行零丢失**（核验：`grep -c '^Epoch ' train.summary.log` 应等于该 run 的 epoch 数）。评估日志同理，产出 `eval/*.summary.log`。
+
+    来源：mjepa/AGENTS.md 规则 12；policy/AGENTS.md 规则 12；evalgl/AGENTS.md 规则 13；env-b-aws-replication.md 十节 2。
+
+13. **正式全量数据集构建同样适用第 12 条的 Beta 锚点、两段式建档、归档白名单、日志清洗与总索引，留档到 `<DOC_ROOT>/<档案名>/`**（2026-08-18 随 MotionJEPA v8-400ep 建库定稿；确认档案名的同时建目录）。以下只列与第 12 条不同之处：
+    - **Beta 时点与闸门**：Beta commit 打在第一阶段起跑之前，body 另写源目录、目标路径与全部 env 覆盖项。**闸门绑定**：真正开始烧 GPU·h 的那一步（如 `CONFIRM_FULL=yes`）之前 HEAD 必须精确等于所跑的代码（运行时产物如 pin 更新须先单独 commit）；打包期间冻结 HEAD 同第 12 条 (1)。
+    - **可复现面与第二段时点**：「启动与配置还原」一节里，**全部 env 覆盖项构成的那张表就是可复现面**；第二段在全部任务成功且验收通过后才补写。集群任务记提交与作业状态；单机任务记本机入口、设备、进程与退出码，不制造集群记录。
+    - **归档白名单的差异**：归档各阶段与 finalize 的清洗后日志、内存采样峰值、pin 快照、各道守卫的判定行、比对输出、耗时表；禁止拷贝的范围另含 `.sbatch`；**不归档数据集产物本身**（GB 级），留在 `<STORE_ROOT>`。
+    - **日志清洗核验**：清洗命令同第 12 条 (3)，产出 `<DOC_ROOT>/<档案>/logs/<名>.summary.log`；分片入口核验 `grep -c 'SHARD_EXIT_CODE\|FINALIZE_EXIT_CODE' <清洗后>` 应等于分片数 + 1，其他入口按实际阶段核对原始与清洗后日志的退出记录数量及值，不得丢失完成、失败或关键指标。
+    - **章节体例**：正式全量构建一律用完整体例，不得用冒烟档案的压缩版；冒烟 / 演练档案可用压缩版。
+
+    来源：mjepa/AGENTS.md 规则 15；policy/AGENTS.md 规则 12。
+
+14. **工作副本位置与存储边界必须在项目 `AGENTS.md` 里显式声明，并按环境分叉。**
+    - **唯一工作副本 `<WORK_ROOT>`**：一切代码改动、命令运行与新产物都落工作副本；若另有只读归档 `<ARCHIVE_ROOT>`（如共享存储上的旧副本），不得在归档上改代码或写入新产物，旧产物只能以**只读 symlink 逐项引用**（逐项指向具体目录或文件、不整层链；禁止穿透 symlink 向归档写入）。多机共用一份工作副本时，**git 操作一律在有凭据的一侧发起**（另一侧不需要任何 git 凭据、不需要 gh、不需要出网，只 `cd` 进来跑作业）。要区分「工作副本落点」与「原始数据永久保留区」两个概念，分别声明。
+    - **本机跑消费数据集的任务一律优先用本地快盘副本，不读网络盘原件**：网络文件系统（如 turbo NFS 实测约 132 MB/s）是大批量读取任务的真实瓶颈（加大 batch 吞吐纹丝不动，纯卡在读取上）。**同步只用 rsync**（`rsync -a --info=progress2 <网络盘目录> <本地目录>/`），网络盘侧是权威源，两边不一致时以它为准；原件被重建或增量更新后必须重跑同步，别让本地副本悄悄变陈旧。
+    - **派生数据、索引、缓存、模型、tokenizer、checkpoint、日志和 smoke 产物一律收敛到单一根 `<STORE_ROOT>`**（整体不进 git，随仓库走），不得散落到源码目录内，不得自行把新的外部目录作为长期依赖；用符号链接、bind mount 或仅存于 `/tmp` 的文件绕过此限制同样禁止。单机环境下一切持久化文件只落工作盘（原始数据、派生库、缓存、权重、日志、下载物，一个不例外），不写 `$HOME`、`/` 或其他盘，只有真正的临时文件才用 scratchpad 或 `/tmp`；不存在的共享存储不得新建指向它的 symlink，也不得写进任何新脚本的默认值，既有代码里的这些路径按各自任务单独立项修，不静默改、不绕过。
+    - **禁止覆盖 `HOME`**——覆盖会打断 ssh 与一切按 `~` 定位的配置（找不到 `~/.ssh/config` 与 ControlMaster socket，直接打断集群提交）；改为逐项显式设置 `UV_CACHE_DIR` / `XDG_CACHE_HOME` / `WANDB_*` / `HF_HOME` / `MAMBA_ROOT_PREFIX` 等缓存类环境变量指向 `<FAST_LOCAL_CACHE_ROOT>`（`UV_CACHE_DIR` 的特殊性见第 3 条）。不能只设置 uv 就假定模型缓存会跟随。
+    - **凡带 `--force` 或输出根参数的命令起跑前先 `ls -ld <输出根>`**，确认它是本环境的实体目录且归属正确（`--force` 类命令可能 `rmtree` 整个输出根，穿透 symlink 即删主副本数据）。**对产物目录的删除必须显式列目录，不得跨运行 glob**（2026-09-12 实测：`find <产物根> -name "*.h5" -size -200c -delete` 没限定到旧运行目录，把正在写的 36 个 in-flight 文件一并 unlink，整轮重跑）。
+    - **开发副本例外模式**（长任务期间主副本锁死只读时可用，2026-09-15 用户批准）：开发转到 `<WORK_ROOT>-temp/`，其 `<STORE_ROOT>` 整体是一条指向主副本的 symlink——**这条链是可写的**，因此开发副本里一切写入 `<STORE_ROOT>` 的操作等同于直接写主副本数据，按写主副本的标准审慎对待；**红线**：开发副本里禁止执行任何带 `--force` 或输出根参数的破坏性命令，确需执行时回到主副本并先 `ls -ld`；开发副本**必须有自己的 `.venv`**（共用时 `uv sync` / `uv add` 会换掉正被训练进程使用的包文件，dataloader worker 重建时读到新文件即污染在跑的训练）；开发副本是临时工作区，不跨长任务周期保留，仓库权威副本始终是主副本。
+    - 吞吐基准的记录与比较口径见第 16 条（底层存储介质、batch、worker、预热与稳态窗口，不同介质不得混比）。
+
+    来源：policy/AGENTS.md 规则 13、14；benchmark/AGENTS.md 规则 8 与全局执行规则；evalgl/AGENTS.md 规则 10、11；mjepa/AGENTS.md「当前运行环境与存储边界」；benchmark 日志 2026-09-12（跨运行 glob 事故）。
+
+15. **原始数据与外部资产：来源可核、身份钉死、大下载先问。**
+    - **数据路径按实际环境核实**：不猜测已有副本、数据规模或同步状态；输入需先核实来源，输出需核实实际目录。原始数据的来源与暂存按环境分叉，在项目 `AGENTS.md` 声明：为集群作业暂存的副本属**临时暂存**，必须与原件逐文件 sha256 核对同源，并在全流程验收通过后删除；原件永久保留区不动。本机没有原件时从公开/私有数据源获取，落点在工作盘下，逐文件记 sha256 入 `<STORE_ROOT>` 的 input manifest。**获取前先与用户确认落点与口径，不得自行开始几百 GB 的下载。** 留档里同时记 sha256 前缀 + 字节数，异地即可用「前缀 + 字节数双命中」判同源并传递结论。
+    - **判定「有没有远端归档」必须同时查 HF 的 repo 与 Storage Buckets**（2026-09-26 MotionJEPA 清理盘点实测踩中）：model / dataset repo（`/api/models|datasets?author=…`、`hf download`）与 bucket（`hf buckets list <owner>`、`hf buckets list <owner>/<bucket> -R`）是两套互不可见的存储；只查 repo API 会把已整库归档在 bucket 里的 ckpt 与数据集（当次漏看约 620 GB）误报成「不在 HF、删了不可恢复」，据此的保留 / 删除清单整份失真。凡给出「远端有 / 没有备份」「删了能否恢复」的结论，必须附两类查询的原始输出；本地资产旁若有 `bucket-tree.json`、`download-list.txt` 一类清单，即是 bucket 归档的线索，先顺着它核实。比对同源用 bucket 内 `SHA256SUMS*` 与本地 sha256，不用 `xetHash` 代替 sha256。
+    - **上传到 HF 的文件必须读回校验，且校验不在本机做**（2026-10-03 用户原话「上传HUGingFace的文件需要校验。但是校验不要在本机进行你可以生成一个在greatlake上的纯CPUJ0B来实现。以后都要这么做写进AgentMetarule」）：
+      - 有集群访问的环境：上传后在 greatlakes 起一个纯 CPU job（`standard` 分区、直接 `sbatch` 跑完即退），逐对象流式读回、比对 sha256、字节数与对象数，末行判定行 `HF_VERIFY=PASS|FAIL`；规格、凭据与例外边界以 [`greatlakes.md`](greatlakes.md)「HF 上传校验 job」为准。
+      - 无集群访问的环境：在本机校验，并在汇报里写明原因。
+      - 未经校验 PASS 的上传，不得写成「已备份」，也不得据此删除本地副本。
+    - **外部大二进制依赖（权重、tokenizer、VAE 等）的身份保证三反模式**，一个都不能犯：①只查「文件在不在」（`[[ -f ]]` 后直接加载）；②真锚点只写在文档或命令行里、没有任何代码读它；③自证循环——现场哈希那份即将被使用的文件再把结果当「期望值」，只能证明多卡用同一份字节，挡不住「这份文件本身就是错的」。
+    - **资产锁四条设计点**：进 git 的 manifest 每条记**落点 + 指纹 + 来源**；表自己防篡改（顶层 sha256 是剔掉该键后 canonical JSON 的哈希，改任一值不改它即 fail-loud）；两个档位——`cheap`（字节数 + 首尾各 1 MiB 的 blake2b，放进每次起跑的前置）与 `full`（逐文件全量 sha256），并显式声明 cheap 挡不住「保持长度改中间字节」；**`revision` 必须是 40 位 commit sha，禁 `main` 或移动分支**（第三方依赖同理：锁定到 40 位 commit，禁止退回 PyPI 官方包或移动分支）。逃生阀默认关、跳过时打醒目警告，真正要堵的洞不给逃生阀。末行统一判定行 `ASSETS=PASS|FAIL`。
+    - **边界要写明**：资产锁保证输入字节同一，**不保证输出数值逐位同一**（跨架构实测有差），禁止把 `ASSETS=PASS` 读成「数值可逐位对拍」；服务端统计（如 `usedStorage`）异步滞后且对等长篡改失明，不采信。
+    - **异地从零复刻五步**：clone 钉分支 → `UV_LINK_MODE=copy uv sync`（主 venv + 各子 venv，子 venv 用 `UV_PROJECT_ENVIRONMENT`）→ 私有凭据只走环境变量（token 只在命令 env 里出现、不落任何文件、不进留档；私有 git 依赖走 ssh 不建 `~/.ssh/config`）→ `plan`（打印总量与缺失数）→ `fetch`（建议放 tmux）→ `verify --level full`。已知阻塞两条：路径白名单式硬编码是异地复刻的头号阻塞（加常量前缀而不是改成与路径无关的判据，由测试盯两份同值）；钉 commit sha 的 HF `snapshot_download` **不写 `refs/main`**，离线加载会失败，落盘后须补写 `refs/main = revision`（已存在且不同则响亮失败不覆盖）。
+
+    来源：policy/AGENTS.md 规则 15；external-assets-lock.md 一、二、五、六节；evalgl/AGENTS.md 规则 6(c)；env-b-aws-replication.md 四节；2026-09-26 MotionJEPA 盘点漏查 bucket（用户原话「HuggingFace你要查bucket bucket查了吗？」「把这个bucket教训写入项目md和https://github.com/hongzefu/AgentMetaRules-hongzefu」）。
+
+16. **GPU 利用率的测量与判读必须防止「中位数假象」**：结论必须以稳态窗口内的 **util 均值、0% 采样占比、慢步/非慢步分层均值** 为准，禁止以中位数作为标题结论；采样间隔必须显著小于步时——步时数秒量级时用 `nvidia-smi -lms 500` 流式密集采样（500ms 即 NVML 有效密度上限，`utilization.gpu` 本身是其约 1/6~1 秒内部周期的均值，不把重复读数当作新增证据），需要与旧数据对照时可并行保留 15 秒 legacy 采样通道。性能优化的首要判据是「GPU 是否吃满」，不得凭单一统计量宣称无瓶颈（2026-08-24 v1-e2e-b64 中位 100% 掩盖了均值仅 69-70% 的实测教训）；但也**不能以「GPU 吃满」替代吞吐、正确性和资源成本**。性能与吞吐结论必须带稳态与环境证据：GPU、底层存储介质（本机 NVMe / NFS / 本地 RAID）、batch size、worker 数、warmup 与预热区间、稳态窗口、采样间隔与吞吐；不同介质或环境的数字不得混比，跨介质 / 跨环境对照必须在同一介质、当前环境上重测。
+
+    - **监控自身的干扰必须先验证**：只读GPU查询不等于无扰动。禁止未经影响验证，用高频 `watch`／循环反复启动全量、全卡 `nvidia-smi` 查询；采样不得扰动正式训练、生成或评估主线。上述采样密度要求仍保留，但不是直接增加查询负载的许可：优先复用已有监控数据；确需新增采样时，用单个持久进程只查询必要GPU与字段，并在正式运行前以同环境的监控关闭／开启对照核对步时、吞吐、CPU执行与驱动锁等待，记录实际开销。不得宣称500ms间隔、`nvidia-smi dmon`或持久进程天然零影响；尚未通过干扰验证时，不把该监控加入正式主线。
+    - **干预已有监控须核实归属与授权**：其他用户或其他任务的监控进程，即使看似造成争用，也不能擅自暂停或停止。先核对精确PID、启动时间及任务归属，取得相应授权后只操作被授权对象；父进程链不能证明命令是谁键入的，不据此归责。监控开关实验也不能自行扩展正式任务范围或重启主worker。
+    - **实测教训（2026-09-26，benchmark V6 S3）**：两条高频全卡查询在快速S0基线结束后、本轮S3启动前开始运行。用户授权暂停30秒并自动恢复后，驱动锁等待采样占比按暂停前／暂停中／恢复后为70.0%／1.7%／75.0%，主worker进程CPU时间占窗口比例为21.1%／91.8%／24.0%；两者是不同统计量。随后经用户批准关闭两条监控，8个相邻身份的生成间隔恢复到对应基线的0.995～1.010倍，主worker与源码未更换。该可逆对照证明当时显著干扰，不证明所有监控方式都有同样影响，也不把速度恢复当作完整正确性验收。
+
+    来源：policy/AGENTS.md 规则 16；mjepa/AGENTS.md 规则 17；原第 14 条末项「吞吐基准记介质」于 2026-09-26 并入；benchmark [V6 S3报告](https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/newtaskRelease-v5/docs/validation/newtask-v6/20260926-s3.md)「两条高频查询的来源与暂停／恢复实验」「用户授权关闭与恢复速度」。
+
+17. **预计或实际运行超过 5 分钟的调试 / 基准 / 诊断 run 一律视作完整运行，同等适用第 12 条**（clean HEAD 启动、按第 12 条 (2) 的体例留档），不得以「只是调试」为由跳过留档。与第 12 条的差异只有：Beta 锚点只对正式训练强制，单纯诊断在已有 clean HEAD 上记录提交即可、不制造空提交；短测意外超过 5 分钟时补记真实启动状态并保存结果，不得声称事后提交就是启动版本；**无法满足可复现要求的结果须标为探索性**，正式结论另从可复现锚点重测。≤5 分钟的短 smoke 不强制留档，临时 run 清理按第 6 条。
+
+    来源：policy/AGENTS.md 规则 17；mjepa/AGENTS.md 规则 16。
+
+18. **每次针对训练链路的修复或重构**（含 dataloader、数据格式、dtype/精度、transforms、collate、交付路径等一切影响训练输入或训练语义的改动），必须产出**重构前后两张链路图**（从数据源到进入模型的逐跳图，标注形状/dtype/字节量与「这一跳有没有改数」），并**分两块讨论一致性**：
+    - **第一块（非训练轻量化测试）**：不启动训练，用轻量对拍（index 序列、逐样本/逐 batch 内容、dtype/shape 逐键比对等）证明新旧链路交付内容一致，判据显式（逐位或量化阈值）并预先说明。
+    - **第二块（本机训练梯度一致，最后检验）**：在本机可跑档位启动真实训练，固定数据、种子及必要的环境条件，新旧链路各跑前 N 步（步数按当次改动商定、在实施计划中明确；已有用户决定直接沿用），逐步比对 loss/梯度范数等标量与参数摘要一致，作为收尾检验。第二块不通过不得宣称改动等价；语义有意改变时检查约定的新行为和预期差异，不强求等价。
+    - 第二块若复用既有基线 run 的固化产物（而非同场次重跑对照侧），必须先通过环境指纹 preflight（代码、依赖、硬件、数据、精度），并在留档写明所引用基线的 run_name、commit 与指纹比对结论；指纹不符即该基线失效，必须重跑基线后再对拍，或明确更改比较口径，**不悄悄放宽阈值**。历史基线不可得时改为**同机同时刻双侧对拍**（旧码 worktree vs HEAD），不放宽阈值、只换对照物；与 gate 冲突时不改 gate、不改指纹采集，补跑一侧使指纹一致。
+    - 一致性结论必须区分**「字节级一致」「结构一致」「数值容差内一致」「行为一致」**四个层级，不能用一次成功回放替代全量一致性结论。
+
+    来源：policy/AGENTS.md 规则 18；mjepa/AGENTS.md 规则 18；benchmark/AGENTS.md 第三阶段第 5 条；env-b-aws-replication.md 二节、7.4 节。
+
+19. **纯审计任务**（代码/文档评审、对抗验证、Codex 审计等一切不修改仓库的评审类任务，无论由 Claude 还是 Codex 执行）**只看任务发起那一刻的仓库，后续改动一律不看。** 锚定规则：
+    - **发起**：立即记录 `AUDIT_BASE=$(git rev-parse HEAD)` 并运行 `git status --porcelain`。porcelain 非空（**含未跟踪 `??` 条目**；只追加的 `docs/subagent-stats/over-15min.jsonl` 除外，见第 11 条）→ 可能是用户或其他 agent 的在途工作，按第 11 条一律不动，立即停止并把 porcelain 原文交用户三选一：(a) 等改动落地后再审；(b) 只审 `AUDIT_BASE`、报告中列出被排除的在途改动清单；(c) 审当前工作区、放弃锚定（报告须标注「未锚定」）。未获用户答复不得开审；期间可以继续读取已明确范围的提交内容。
+    - **范围冻结**：审计范围冻结在 `AUDIT_BASE`——不看其后的文件改动，**也不读取其后的任何 ref / commit / diff**（`git log AUDIT_BASE`、`git show AUDIT_BASE:<path>` 允许；裸 `git log`、`git diff HEAD`、`git log <branch>` 禁止）。git worktree 快照只冻结文件、不冻结 refs，此条不因使用快照而豁免。用户明确要求审当前工作区时，记录实际范围并标明其中未提交内容未由该提交锚定。
+    - **禁执行**：纯审计不得执行仓库内任何脚本、测试或训练命令，不得 `uv run` / `uv sync`（脚本会按自身位置推仓库根并 `mkdir` 目录树，在快照里执行会凭空造出假 `<STORE_ROOT>`）。需要动态验证即不属纯审计，先明确新的验证范围并按第 3、7 条另行请示；已有执行授权按其执行，不把它描述为纯静态审计。
+    - **收官复核**：报告产出前重跑 `git rev-parse HEAD` 与 `git status --porcelain`；与发起时不一致 → 报告开头写明「审计期间仓库由 X 变为 Y，本报告锚定 X」并列出期间变动的文件，交用户决定是否补审；不自动把新版本算作已审。
+    - **报告标注**：报告开头固定写明 `AUDIT_BASE` 全 sha；报告内引用行号必须与 `AUDIT_BASE` 同时出现（长期文档禁行号见第 9 条）。
+    - **可选加强（仅 Claude 侧长时审计、经用户同意）**：`git worktree add --detach <STORE_ROOT>/audit/worktrees/<任务名> $AUDIT_BASE` 建只读快照，审计 agent 工作目录设为快照目录。快照内没有 `<STORE_ROOT>` 与 `.venv`，上条禁执行在快照内尤其致命。清理由发起方负责（`git worktree remove --force` + `git worktree prune`；审计 agent 自己的 cwd 在快照内、删不掉自己）；快照视同临时产物，不跨会话保留——源码快照不属第 14 条枚举的「派生数据」，落在只读归档路径下也不违反同条的工作副本 / 归档边界，此两条豁免以本条为准。Codex 插件不支持指定 cwd 且其 sandbox 默认只读，Codex 审计一律走上面各条、不用快照。
+    - **重锚**：用户在审计期间明确要求查看新改动时允许重锚（记 `AUDIT_BASE_2`，报告分段标明各自锚点）；除用户明确指令外不得自行重锚。
+
+    来源：policy/AGENTS.md 规则 19；mjepa/AGENTS.md 规则 19。
+
+20. **Codex 专属：`apply_patch` 的无管理员权限回退**（本条只对 Codex 生效，不适用于 Claude、其他 agent 或人工工作流）：
+    - **默认工具不变**：Codex 编辑文件仍必须优先使用 `apply_patch`。只有当 `apply_patch` 明确因 Bubblewrap / namespace 权限失败（例如输出含 `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted` 或同因的 `fs sandbox helper failed`），且当前用户没有管理员权限时，才允许启用本条回退。补丁语法错误、上下文不匹配、普通文件权限错误不属于本例外。该错误是 Codex 沙箱/隔离层故障，不是仓库代码错误；不得据此修改项目代码、宿主机网络或沙箱配置，也不得用更宽泛的命令绕过原任务边界。
+    - **普通命令**：普通命令若受同一沙箱错误阻断，Codex 应优先使用产品提供的、经批准的 unsandboxed / full-access 执行（用**相同的最小命令**、准确的 `justification` 与 `sandbox_permissions="require_escalated"` 重试，不得顺手扩大读取、写入或网络范围）；不得自行修改 sysctl、AppArmor、setuid、Linux capabilities 或其他宿主机安全配置。
+    - **受控补丁回退**：使用同一份 unified diff，严格按顺序执行：
+      ```bash
+      patch --dry-run --batch --fuzz=0 -p1 < change.patch
+      patch --batch --fuzz=0 -p1 < change.patch
+      git diff --check
+      ```
+      `change.patch` 只能作为临时补丁载体放在 `/tmp` 中本轮唯一目录或通过 stdin 提供，不得作为仓库长期文件；应用后必须清理临时文件。
+    - **硬闸**：只有 dry-run 退出码为 0 且输出无 offset、fuzz、拒绝块或非预期目标才能应用正式 patch（**`--fuzz=0` 本身不会禁止 offset，必须显式核对输出**）；dry-run 与正式应用必须消费完全相同的补丁字节，两次之间目标文件不得变化；禁止用 offset/fuzz 勉强套用。dry-run 失败即停止并报告用户，不得强制应用；正式应用出现偏移或异常也立即停止，不继续叠加补丁掩盖问题。
+    - **禁止整文件覆盖**：本例外只允许补丁式修改，禁止改用 `cat >`、`sed -i`、`perl -pi`、脚本重写或其他整文件覆盖方式规避 `apply_patch`；禁止 glob、递归目标、未校验变量、符号链接目标，禁止把单文件失败扩大成目录级重写。
+    - **删除操作不会因沙箱故障自动获得授权**：仍须逐项核验固定目标、文件类型、符号链接、恢复能力和用户授权，并遵守第 11、14 条的破坏性操作约束。
+    - **应用后核对**：除 `git diff --check` 外，还必须运行 `git status --short`，并对本轮每个明确目标逐文件检查 `git diff -- <path>`；发现越界文件、`.orig` / `.rej`、非预期 hunk 或用户在途改动被带入时立即停止，不得暂存或提交。
+    - **授权边界不扩张**：本回退只替代失效的文件补丁传输机制，不绕过破坏性操作审批；授权范围按第 2 条，逐文件暂存与他人在途改动保护按第 11 条。
+
+    来源：policy/AGENTS.md 规则 20；mjepa/AGENTS.md 规则 20；benchmark/AGENTS.md 规则 9（删除授权、最小命令重试）。
+
+21. **受保护目录 `<PROTECTED_DIRS>` 的任何改动和覆盖都必须由用户逐个批准**（模式来自 robomme_benchmark 2026-09-10 用户原话「在agentsmd中加入新约定 对 src/robomme 的任何改动和覆盖 都需要用户逐个批准」）。
+    - **「改动」**指对该目录下任何文件的新增、修改、删除、重命名；**「覆盖」**指不改源文件但改变其运行行为的一切手段：子类覆写方法、monkeypatch、运行时替换类或函数、导入钩子打补丁、`sys.modules` 注入替身等。两者同等对待。
+    - **逐个批准**：动手前先列出「文件 / 函数或类锚点 / 改什么 / 为什么」清单交用户，用户逐条明确同意后只改被同意的那一条；同一文件里未点名的其他改动、以及「顺手修」都不算获准。计划文档里写了改动清单不等于批准；某一处获准也不延伸到下一处或下一轮。用户以「一口气全做完 不要再来问我了」之类原话一次性授权时，按该授权覆盖后续逐阶段批准，但保持其余技术约束不变并把原话写进留档。
+    - 项目 `AGENTS.md` 可列**默认冻结项**（具体文件与验证命令，如 `git diff --quiet HEAD -- <路径>`）。
+    - 测试代码在测试进程内对受保护目录做的临时 mock／patch 不落盘时不受本条约束；但生产入口与对拍观察器对受保护目录的运行时补丁属于「覆盖」，同样逐个批准。
+
+    来源：benchmark/AGENTS.md 规则 11；benchmark 日志 2026-09-17（一次性授权措辞）。
+
+22. **证据纪律与过程记录。**
+    - 任何「完成」「一致」「可用」的判断都必须附带可复现命令、退出状态、输出路径和审查摘要；没有证据时只能写「未验证」或「进行中」。验收判定统一写成具名判定行 `NAME=PASS k=v`（如 `ASSETS=PASS assets=6 mismatches=0`），最终验收列出具名判定项，不用一条笼统 PASS 代替；判据 FAIL 时只记证据链与候选修法，不自行改判据、不自行放宽，裁决权交用户。评测类任务的成功与否由独立的成功字段（如 `task_success`）单独报告；正常执行但未完成任务如实记为 0/1，**不为挑出成功回合而重试**——重试只允许用于基础设施故障，且须记录原因与次数。
+    - **不维护追加式执行日志**（2026-09-27 起）：`AGENTS.md` / `CLAUDE.md` 只放规则，不作持续状态账本，不写「当前进度」表、不追加执行日志——每个会话都会整份加载这些文件，账本会无限膨胀（benchmark 仓库实测账本 430 KB、约 20 万 token 每次启动注入）。过程与证据改记在两处：①第 11 条的 commit body（用户原话、计划、实施、意外、实测、下一步）；②需要长期留档的运行按第 12、13、17 条写入 `<DOC_ROOT>`。项目已有的历史账本整段移入 `docs/ledger/`（逐字节归档、只读、不再追加），规则文件里只留一行指针。
+    - 留档文档采「高层导读」写法：判定行一律内联原文，records 快照在各留档目录，导读不复述其内容；用户指令原话与执行前用 AskUserQuestion 定下的口径逐条编号写进留档；来源之间口径冲突时保留并注明冲突，不替来源改写。
+
+    来源：benchmark/AGENTS.md 全局执行规则、「后续日志模板」；env-b-aws-replication.md 一节、7.6 节、十一节；evalgl/README.md「验收」。
+
+23. **服务型 / 并发作业形态（server + client、job array 分片等）。**
+    - **每片必须用独立输出目录**：进度文件落在各自的 save_dir 下，多片并发写同一个目录会互相覆盖进度；分片各写各的，最后合并再汇总。
+    - **server 就绪判定分两层**：健康检查端点通过只证明**权重已加载且开始监听**，**不证明首次推理就绪**（JIT 编译发生在第一次推理，client 首次调用的超时要单独放宽）。轮询循环里必须同时检查 server 进程是否已死（`kill -0 $SERVER_PID`），死了立刻退出并 `tail` 日志，不要空等到超时。
+    - **起跑前探端口**：`(exec 3<>/dev/tcp/127.0.0.1/$PORT)` 成功即说明端口已被占用，换端口重试——防止连到别人的服务、静默产出空结果。
+    - **给用户的网页链接一律写完整域名（2026-10-02 新增）**：在本机起的站点、看板、文件服务等，交给用户的链接必须写机器的完整域名加端口，如本机 sled-vail 写 `http://sled-vail.eecs.umich.edu:8081/`（aspen 为 `sled-aspen.eecs.umich.edu`）；不得写短主机名 `http://sled-vail:8081/`、`localhost` 或 `127.0.0.1`——短名在用户的浏览器里解析不到，链接打不开。带锚点的深链接同样以完整域名开头（如 `http://sled-vail.eecs.umich.edu:8081/#task=MoveCube&tier=xhard0&ep=1`）。用户原话（2026-10-02）：「注意你给我链接要是 http://sled-vail.eecs.umich.edu:8081/ 你现在给的是错误的」「这个约定加入agentmetarules」。
+    - **`trap cleanup EXIT` 收掉 server**，否则调度器发 SIGTERM 时留孤儿进程、`EXIT_CODE=` 行不落盘；sbatch 层用 `exec` 交棒给带 trap 的运行器，让终止信号直达运行器而不是打到 wrapper 上。任何需要第二个 CUDA 上下文的情形（同卡多进程，**或单进程内 torch + Vulkan/图形互操作，如 SAPIEN / ManiSkill 渲染**）sbatch / srun 都要加 `--gpu_cmode=shared`——集群默认 `exclusive`，不加则 Vulkan 建不了 device（详见 `greatlakes.md`）。
+    - **不得依赖「重试到出结果文件」作为恢复机制**：进程活着、不报错退出、不产出任何结果、持续占着 GPU 的静默空转，外层重试包装接管不到。改为按进度文件 mtime 做无进展检测（超阈值即杀掉重起）+ 有限次重试 + 对最终结果文件的完整性断言（任务数、episode 数）。盯这类作业不能只等「完成」事件，过滤器必须同时覆盖缺陷特征行。
+    - **探针失败就记录失败并定位原因，不自动降级**到未验证的候选配置（如 CPU 渲染）；作业模板不得继承上一轮诊断遗留的兼容开关或设备覆盖（起跑前显式 `unset`）；同卡共驻等资源组合在探针验证前只是「待验证的起始配置」，不是已证结论。
+    - **占位 job 数量与规格的放行按第 8 条**：超出默认规格先提交再提醒，超出默认数量先让用户审核。
+
+    来源：evalgl/AGENTS.md 规则 14、15；evalgl/CLAUDE.md Monitor 第 7 条；evalgl/gl_smoke.sbatch。
+
+24. **第三方源码的唯一真源。**
+    - 引入外部仓库源码只能二选一：**submodule + 锁定 gitlink**，或 **vendoring**（普通源码目录，不得包含独立 `.git`、`.gitmodules` 或 gitlink；来源清单文件记录导入时的提交与文件清单、不随日常修改重写，升级来源时显式记录新提交及差异；普通 `git clone` 即可恢复，bootstrap 只校验不下载）。两种方式都要求：**禁止以 fork 最新 HEAD 替换锁定版本**，禁止直接提交到第三方默认分支；确需修改第三方代码时先说明具体阻塞、文件和修改范围，从原锁定提交建立专用分支（如 `<用途>-<主仓库任务分支>`），先在配套分支提交并推送，再由主仓库提交来源变更和新 gitlink。
+    - **editable 安装的实际指向必须校验**：`pip install -e` 的指向藏在 site-packages 的 `.pth` 文件里、肉眼不可见，装错了不报错、只是跑的是另一份代码。每次运行前跑校验脚本，指向不符即停，不得将就跑；嵌套的第二份同名源码目录必须不存在或为空，禁止初始化第二份。
+    - 生产入口不得依赖测试目录（用 AST 或 import 检查钉死）。
+
+    来源：evalgl/AGENTS.md 规则 5、6；policy/AGENTS.md「策略评估的工作副本与第三方分支机制」；benchmark 日志 2026-09-11。
+
+25. **规则文件的维护元规则。**
+    - **分工**：通用约定与 Codex 专属条目（第 20、26 条）进 `AGENTS.md`；Claude Code 专属（最终输出层展开、Monitor、Workflow / Agent 模型、Skill、plan mode）进 `CLAUDE.md`，`CLAUDE.md` 顶部 `@AGENTS.md` 引用而不复制，避免两份规则分叉；两份同等强制，冲突时以 `AGENTS.md` 为准，两份都服从系统、开发者及用户当前指令。新增约定按适用范围二选一落位。
+    - **编号稳定**：新增条目插在末尾或标注插入位，**不重编号**——其他文件与计划会按条号交叉引用，重编号会全部失效。
+    - **搬运用脚本不手抄**：在仓库间移动规则正文时用一次性脚本按行首标记切块搬运，每处替换带 assert 命中次数校验，保证移动的是原文而非改写；通用化改写只动专有名词（如「`run_in_background` 起的进程是 Claude Code 会话的子进程」→「由 agent 会话直接起的后台进程是该会话的子进程」）。
+    - **规则来源段**：项目 `AGENTS.md` 末尾写明通用规则引用自本正本的哪个 commit（与标记行的 `src=` 一致），并**逐条列出未采用的条目及原因**（例：纯评测仓库可不采用第 10、13、16、18 条，但要写明）；正本更新后回流时记录新 sha（方式见下条「同步机制」）。
+    - **跨宿主中立**：Claude 的模型名称、Workflow、Monitor、计划工具约束不施加给 Codex 或其他代理；Codex 专属条目（第 20、26 条）也不施加给 Claude Code 或其他代理。各代理使用当前宿主提供的工具并遵守其权限，不假定工具存在或支持某个参数。
+    - **同步机制（2026-09-26 新增）**：Codex 等代理只自动加载项目仓库内的 `AGENTS.md`（且默认只读前 32 KiB），不会跟随链接去读正本，因此项目仓库以**标记块副本**接入，不只写引用：
+      - **标记块**：项目 `AGENTS.md` / `CLAUDE.md` / `greatlakes.md` 里，正本正文整段放在一对标记行之间——`<!-- AGENTMETARULES:BEGIN <块名> src=<正本 commit sha> blob=<块内容 blob id> -->` … `<!-- AGENTMETARULES:END <块名> -->`，块名分别为 `common-agents`（本文件「强制规则」至附录 A）、`common-claude`、`common-greatlakes`；标记外只写项目专属内容（第 0 条判据表、占位符取值、项目专属规则 `P1…Pn`、按条号的覆盖项、规则来源段）。同步目标登记在 [`sync-targets.json`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/sync-targets.json)，脚本为 [`scripts/sync_rules.py`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/scripts/sync_rules.py)。
+      - **先改正本再回流**：通用条目的任何改动只在正本仓库改，commit 并 push 后再回流——`sync_rules.py check` 只读比对各目标标记块与正本 HEAD 块、报出漂移（末行 `SYNC_SUMMARY=PASS|FAIL`）；`sync_rules.py apply` 只替换标记块内容与标记行里的 sha，不碰标记外内容；目标仓库带着他人在途工作时用 [`scripts/land_rules_commit.py`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/scripts/land_rules_commit.py)（远端侧只含规则文件的 plumbing 提交 + 本地侧合并提交，见第 11 条 push 例外）。回流提交同时更新项目「规则来源」段的 sha。脚本按第 3 条经 `uv run --no-project python` 运行。
+      - **项目副本只改标记外内容**：标记块内禁止手改；在项目里发现正本需要修改时，回正本仓库改正本再 `apply`，不在副本里先改后补。项目对正本的偏离一律写成标记外的按条号覆盖项。
+      - `apply` 写的是别的仓库：只写 `sync-targets.json` 登记的文件；目标工作区的在途改动、暂存、提交与推送按目标仓库自己的第 11 条口径（含声明式例外）处理。
+
+    来源：benchmark 日志 2026-09-09（拆分口径、编号取舍、脚本搬运）；evalgl/AGENTS.md「规则来源」；mjepa/AGENTS.md 前言；2026-09-26 用户要求「每个仓库都要有一份agentsmd greatlake md等等 AgentMetaRules只负责每次同步的时候检查一下 平时只在仓库内交互 不要每次都读github太麻烦了」（标记块同步机制）。
+
+26. **仅 OpenAI Codex：完全按多代理流程工作——持久化子代理、尽可能多并发、写入边界清晰。**
+    - **适用对象**：本条只约束 OpenAI Codex 主代理及其子代理。Claude Code（包括其 Agent 工具子代理与 Workflow）和其他代理必须忽略本条；Claude Code 的子代理范式（一个时间点放一批、用完即弃、默认只读）见 `CLAUDE.md`「Workflow 与 Agent 模型」，两套范式互不套用，逐项对照见 [`docs/subagent-claude-vs-codex.md`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/docs/subagent-claude-vs-codex.md)。
+    - **默认多代理（本条即委派许可）**：Codex 只在用户或适用的 `AGENTS.md` / skill 指令明确要求时才派子代理，「深入 / 彻底 / 调研」一类措辞不算许可；**本条就是本正本对子代理、委派与并行代理工作的明确要求**。凡任务能拆出互相独立的探索、实现、验证、审查子任务，一律交给子代理并行完成，不等用户逐次说「用多代理」。主代理先定总计划，自己做紧挨着的关键路径步骤（下一步立刻依赖其结果的阻塞任务不外包），把可并行的旁路任务交给子代理；存在前后依赖的步骤按依赖顺序执行，不为并行而并行。并行不扩大授权（第 2 条）。
+    - **并发打满宿主容量**：按宿主实际容量安排，独立子任务足够时让同时在跑的子代理数尽量接近上限。**并发容量的标准值是 `~/.codex/config.toml` 里 `[agents] max_concurrent_threads_per_session = 16`（不含主代理）：开工时先检查当前机器的这一项（`grep -A1 '^\[agents\]' ~/.codex/config.toml`），不是 16 或缺失就改成 16 并在汇报里说明**——配置改动只对新建任务生效，已有任务树保持创建时的容量，以实际拒绝信息为准。2026-09-26 在 sled-vail 用新建 SSH App 任务实测 16 个子代理与主代理同时 running、第 17 个返回 `agent thread limit reached`（见 [`docs/codex-app-ssh-multiagent.md`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/docs/codex-app-ssh-multiagent.md)）。满额时给已有空闲代理追加任务或等空位；不得把累计创建数说成同时运行数，也不得另开顶层任务规避容量限制。
+    - **持久化与互相通讯**：子代理按职责长期存在（如「模块 A 实现」「测试与验证」「审查」），**单个任务结束不关闭**，同职责的下一项工作交回原代理，保留其已积累的上下文。按宿主实际暴露的工具使用：
+      - `followup_task`：给已有子代理追加任务，目标空闲时触发新一轮、运行中则在消息边界送达。同职责的后续工作一律走它，不重新 `spawn_agent`。
+      - `send_message`：送达消息但**不触发新回合**，用于通报共享事实（如「`<文件>` 已由 `<代理>` 改完，按新接口调整」）；需要对方立即改向时用 `interrupt_agent`（中断当前回合，代理仍可接收消息与后续任务）。
+      - `wait_agent`：等待任意在世代理的邮箱更新；按官方建议长等（分钟级），不忙轮询、不反射式等待，等待期间主代理做不重叠的工作。
+      - `list_agents`：核对在世代理、任务名与状态；追加任务或汇报并发数之前先查。
+      - **关闭**：只在该职责整体结束、或需要腾出并发槽时关闭。宿主提供 `close_agent` 时按其语义——已完成的代理在关闭前仍占并发槽，不需要的不要长期挂着；2026-09-26 实测的 SSH App 暴露的是 V2 工具集（有 `list_agents` / `interrupt_agent`，无 `close_agent`），据 `rust-v0.157.0` 源码，空闲代理在容量不足时由宿主自动卸载，无需手动关闭。
+    - **共享目录与写入隔离**：所有代理共享同一容器、文件系统与当前工作目录，一个代理的编辑**立即**对其他所有代理可见，并行写入必须事先划界：
+      - 同一文件或共享产物只指定一个写入负责人，其他代理对该对象只读；并行修改按互不重叠的文件集合（官方称 disjoint write set）或独立 worktree 分隔。
+      - 委派写任务时写明该代理负责的文件 / 模块，并告知它**不是唯一在改代码的代理**：不回滚他人改动、按他人改动调整自己的实现，最终答复列出改过的文件路径。
+      - 子代理不暂存、不提交、不 push；整合前由主代理核对重叠、差异和 `git status --short`，他人在途改动按第 11 条处理。
+      - 计划第二部分的「子代理分配表」（第 2 条）对 Codex 同样生效：按表的可写集合、禁触、接口契约与依赖派持久代理，验收在共享目录跑，「合并顺序」读作整合顺序；Codex 子代理仍不暂存、不提交、不 push。
+    - **委派说明**：每项委派（含给持久代理的 `followup_task`）都要明确目标、上下文、可读与可写范围、禁止事项、依赖、交付内容和验收方式；依任务需要限制文件、目录、分支或工作区，避免子代理自行推断更大范围。
+    - **模型档位**：子代理及递归子代理的模型档位不得高于本次用户主请求所用模型；默认继承父代理模型，轻量任务可酌情降档。若无法可靠比较档位，则沿用父代理模型。模型档位与推理强度是独立设置；本条只限制前者，推理强度按任务独立选择。
+      - **Aspen 固定为 GPT-5.6 家族（2026-10-06）**：Aspen 当前只使用 `gpt-5.6-sol`、`gpt-5.6-terra`、`gpt-5.6-luna`，禁止给 Codex 主代理或子代理配置 GPT-5.5、GPT-6、Claude `opus` / `sonnet` 或其他模型。主代理与通用兜底角色用 `gpt-5.6-sol/high`；规划角色用 `gpt-5.6-sol/xhigh`；审查角色用 `gpt-5.6-sol/high`；实现与测试角色用 `gpt-5.6-terra/high`；只读探索角色用 `gpt-5.6-luna/high`。具体角色文件及安装口径见 [`codex/aspen/agents/`](https://github.com/hongzefu/AgentMetaRules-hongzefu/tree/main/codex/aspen/agents) 与 [`docs/codex-aspen-gpt56-roles.md`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/docs/codex-aspen-gpt56-roles.md)。任何指定档位不可用时必须停止并报告原始错误，不得静默切换模型；用户当前指令或宿主更高优先级要求另有规定时从其规定。
+    - **整合与责任**：子代理交回结论、证据（第 22 条）、验证结果、改动文件清单和未解决事项；主代理负责整合、最终验收及经授权的提交（第 11 条），对用户的汇报按第 1 条用中文。
+
+    来源：2026-09-26 用户要求「尽可能积极调用使用multi agent来实现 但是分隔要保持清晰」「子agent要小于等于主要请求agent的规格」（并澄清只限制模型档位、不限制推理强度），及同日补充「codex强调修改文件要保持subagent之间的任务的的清晰 尽可能多并发 完全是multi agent的处理流程」「而codex一般是持久化的运行多agent 几个agent互相通讯 不会因为单个任务结束就关闭这个agent」；OpenAI 官方文档 [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)；openai/codex `rust-v0.157.0` 源码 `codex-rs/prompts/src/multi_agent_instructions.rs`、`codex-rs/core/src/tools/handlers/multi_agents_spec.rs`、`codex-rs/core/src/agent/role.rs`、`codex-rs/core/src/tools/spec_plan.rs`、`codex-rs/core/src/agent/control/residency.rs`；本机实测 [`docs/codex-app-ssh-multiagent.md`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/docs/codex-app-ssh-multiagent.md)。
+
+## 附录 A：占位符表
+
+| 占位符 | 含义 | 出现在 |
+|---|---|---|
+| `<WORK_ROOT>` | 唯一工作副本绝对路径 | 第 0、14 条 |
+| `<ARCHIVE_ROOT>` | 只读归档副本（可无） | 第 14 条 |
+| `<STORE_ROOT>` | 不进 git 的产物根（相对仓库） | 第 6、7、11–15、19 条 |
+| `<DOC_ROOT>` | 留档根（如 `docs/training-doc/`、`docs/eval-doc/`） | 第 12、13、17 条 |
+| `<FAST_LOCAL_CACHE_ROOT>` | `UV_CACHE_DIR` 等缓存落点 | 第 3、14 条 |
+| `<PY_INTERPRETER>` | 钉死的 uv managed 解释器绝对路径 | 第 3 条 |
+| `<SHARED_ROOT>` / `<LOCAL_ROOT>` / `<SINGLE_NODE_ROOT>` | 判定命令里探测的共享盘 / 本机盘 / 单机工作盘路径 | 第 0、8 条 |
+| `<GL_REPO>` | 集群侧可见的仓库绝对路径 | `greatlakes.md`、`templates/hold_job.sbatch`、`templates/run_in_hold.sh` |
+| `<GL_SUBMIT>` | 提交器路径（默认本仓库 `scripts/gl_submit.py`） | `greatlakes.md` |
+| `<GL_ACCOUNT>` / `<GL_PARTITION>` | Slurm 账户 / 分区 | 第 8 条、`greatlakes.md` |
+| `<SSH_HOST>` | `~/.ssh/config` 里的 ControlMaster 别名 | `greatlakes.md` |
+| `<PROTECTED_DIRS>` | 逐个批准的受保护目录 | 第 21 条 |
+| `<COMMIT_SUBJECT_STYLE>` | commit subject 体例 | 第 11 条 |
+| `<PLAN_EXEMPLAR>` | 计划密度标杆文档 | 第 2 条 |
+
+<!-- AGENTMETARULES:END common-agents src=132a4940e3931072994c47cd5f61703afb16daef blob=951f00a2ee0d9af561a6834324ebf7bcb2b4a518 -->
+
+## 项目专属规则（P1…Pn）
+
+编号用 `P1`、`P2`…，与标记块内的通用条号区分；只增不重编号。每条写明日期、用户原话或实测出处。
+
+- **P1. 对 `src/robomme/` 的任何改动和覆盖都必须由用户逐个批准**（正本第 21 条的本仓库实例，`<PROTECTED_DIRS>` = `src/robomme/`；来源：benchmark 仓库 2026-09-10 用户原话「在agentsmd中加入新约定 对 src/robomme 的任何改动和覆盖 都需要用户逐个批准」，本仓库 2026-10-06 xhard 计划口径「原 16 个 ENV 文件一个字节不改」）。
+    - 「改动」指新增、修改、删除、重命名；「覆盖」指子类覆写方法、monkeypatch、运行时替换、导入钩子、`sys.modules` 注入等一切不改源文件但改变其运行行为的手段。**xhard 新档的子类继承（见 P2）本身就是「覆盖」，其每个子类改哪个键 / 重写哪个方法都要在计划里列清并经用户逐个批准后才能写。**
+    - **默认冻结项**：录像器 `src/robomme/env_record_wrapper/RecordWrapper.py` 与另外三个 wrapper（`DemonstrationWrapper.py`、`MultiStepDemonstrationWrapper.py`、`EndeffectorDemonstrationWrapper.py`）不改、不覆盖；新档靠子类把 `unwrapped.spec.id` 报成原任务名来复用它们。验证命令 `git diff --quiet HEAD -- src/robomme/`（零 diff）。
+    - 测试进程内对 `src/robomme` 的临时 mock／patch 不落盘时不受本条约束。
+- **P2. xhard 新档的全部改动只落两处：新包 `src/robomme_xhard/` 与生成器 `scripts/data-generation-newSeed/generate_dataset_newseed.py` 的一个开关**（2026-10-06 用户原话「所有改动只限于生成器 `generate_dataset_newseed.py` 这一个文件和新增的那些文件」「把所有改的部分全部归档在一起，放在 `src` 里面」）。
+    - 不改 `pyproject.toml`：本仓库 editable 安装的 `.venv/lib/python3.11/site-packages/_editable_impl_robomme.pth` 指向整个 `src/` 目录，生成器与 `tests/conftest.py` 也都把 `src/` 插入 `sys.path`，并排新包无需登记即可 import（2026-10-06 只读核实）；`[tool.hatch.build.targets.wheel] packages` 只影响 wheel 打包，不改。
+    - 新档的 seed 直接取 `src/robomme/env_metadata/train/` 里 hard 记录的原 seed，失败不换 seed（attempt 固定 0）；新 seed 的派生另议。
+    - `robomme_env/__init__.py`、`utils/`、planner、HDF5 结构一律不动；新子类的注册由生成器在 worker 进程内 `import robomme_xhard` 触发，且必须放在绑卡之后（`_pool_init` / `_worker` 内 `import robomme.robomme_env` 之后），不得放文件顶部。
+- **P3. 官方参考集位置与只读**：本机官方参考数据在 `/data/hongzefu/data_0226/`（文件日期 2026-02-28 至 03-01；12 个任务 metadata 与仓库 train metadata 逐字节相同，4 个 Unmask 系任务 ep0–99 内一致），**只读**，任何统计脚本不得写入该目录；它尚未用 sha256 与 HF revision 核对，引用时写明「未核 revision」。正本第 14 条「本机优先用本地快盘副本」已满足；需要 NFS 侧数据时先核实存在再读、不写。
+- **P4. 不做 BinFill 假 demo**（2026-10-06 用户决策「不再把 BinFill 做成带 video 的任务」）：origin/newtask-v2 的 `--binfill-demo`（把成品轨迹重复两遍、前半标 `is_video_demo=True`）**不移植、不传**；本分支生成器已核实不含该代码，保持不含。统计脚本也不复用其 `simulate_binfill_demo` 模拟分支。
+- **P5. 不得擅加大规模 reset 对拍或 rollout 生成；采样生成分布的实现须另与用户沟通**（沿用 benchmark 仓库 2026-09-26 用户原话「不要做大量reset对拍！除非用户指定！」「禁止擅加大规模 reset 对拍 禁止加入大量的rollout生成 用户需要采样生成的分布 也要单独和用户沟通怎么实现」）。正式生成规模以用户明确要求为准；每任务 smoke 默认 3 个 hard seed，放大前先报规模、耗时、用途并取得用户对该批次的明确决定；正本第 4 条的最小 smoke 仍可执行。用户叫停时精确 `tmux kill-session -t '=会话名'`，核对无残留 worker，保留已写产物与日志。
+
+## 对正本的覆盖项（按正本条号；未列出的条目按正本执行）
+
+- **覆盖第 1 条（历史英文化遗留）**：豁免清单只有 `tests/lightweight/test_no_patch_report_debug_environment.py`（源自已删除的 `scripts/data-generation-v2-noPatch/` 英文化目录），既有英文内容保持原样；其余新增 / 修改内容一律中文。
+- **覆盖第 2 条（计划密度标杆与命名）**：`<PLAN_EXEMPLAR>` = benchmark 仓库 [`docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md`](https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/newtaskRelease-taskV9/docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md) 的第一部分（正本 2026-10-06 统一口径；本机没有该仓库的检出，核对时从 GitHub 读）。根目录计划按 `MMDD-<主题>-plan.md` 命名；既有 `NEWTASK_V2_PLAN.md` 沿用现名。本仓库现行计划 [`1006-xhard12-env-plan.md`](1006-xhard12-env-plan.md)，其留档 [`1006-xhard12-prev-training-and-task-plan.md`](1006-xhard12-prev-training-and-task-plan.md)。
+- **覆盖第 4 条（核心短测）**：无需数据集的核心短测 `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q`（pytest 在 `pyproject.toml` 的 `dev` extra 里，`.venv` 没有时先 `uv sync --extra dev`，2026-10-06 实测只增 pytest/pluggy/iniconfig 三包；`gpu` marker 无自动 skip，靠 `-m` 排除；`tests/lightweight/` 里真正 `gym.make` 的只有 `test_TaskGoalI_isList.py`，标 `slow, gpu`）；需要环境 / 渲染栈的条件测试 `uv run --no-sync python -m pytest tests/lightweight/ -m gpu -q` 与 `uv run --no-sync python -m pytest tests/dataset/ -q`；只改某条生成链路时至少跑该链路的定向单测（如改 seed 公式 → `tests/lightweight/test_seed_layout.py`）；涉及实跑生成一律先做「单任务、单 episode、单 worker」smoke。
+- **覆盖第 8 条（集群）**：本环境无集群访问（见第 0 条判据表），按正本第 8 条「无集群访问的环境」执行：不提交 Slurm、不 ssh 集群、不跑提交器；一切生成与测试在本机。第 15 条「HF 上传校验不在本机做」的集群分支不适用，若有 HF 上传则在本机校验并在汇报里写明原因。
+- **覆盖第 11 条（commit 体例与 push）**：`<COMMIT_SUBJECT_STYLE>` = `<大版本>.<小版本>[.<修订>] <中文描述>`（如 `2.31 写入上次训练参照与 xhard 逐任务高层方案`），从 `git log` 最近一次接续；commit 后立即 `git push`（正本口径，分支 upstream 为 `origin/newtask-v3-MotionJepa1006`）。
+- **覆盖第 14 条（存储边界）**：`<WORK_ROOT>` = `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`；`<STORE_ROOT>` = `artifacts/`（`.gitignore` 根锚定忽略；另有 `scripts/data-generation-newSeed/outputs/` 与 `scripts/data-generation-MotionJEPALabel/outputs/` 已忽略，新产物优先落 `artifacts/`）；跨仓库引用 MotionJEPA / policy 侧数据时优先取 `/data/hongzefu/` 下的本机副本，NFS 原件是权威源、同步只用 rsync；本机没有 policy 仓库源码，其口径只能从 NFS 原件与 MotionJEPA 文档转引并注明。
+- **覆盖第 21 条（受保护目录）**：见 P1。
+- **覆盖第 22 条（账本）**：历史账本已归档 `docs/ledger/`，不再追加；过程与证据记在 commit body（第 11 条）与 `<DOC_ROOT>` = `docs/`（新档生成留档按第 13 条写 `docs/xhard-doc/<档案名>/`）。
+- **覆盖第 24 条（第三方源码）**：ManiSkill 经 `pyproject.toml` 的 `[tool.uv.sources]` 钉死 git rev `07be6fbc66350ddca200abfb0a11b692f078f7fd`（YinpeiDai/ManiSkill），不是 submodule 也不是 vendoring；不得改成移动分支；editable 指向校验命令 `uv run --no-sync python -c "import robomme,sys;print(robomme.__file__)"` 须落在本仓库 `src/`。
+
+## 占位符取值
+
+| 占位符 | 本仓库取值 |
+|---|---|
+| `<WORK_ROOT>` | `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006` |
+| `<ARCHIVE_ROOT>` | 无 |
+| `<STORE_ROOT>` | `artifacts/` |
+| `<DOC_ROOT>` | `docs/`（`docs/ledger/` 历史账本只读；`docs/xhard-doc/` 新档生成留档） |
+| `<FAST_LOCAL_CACHE_ROOT>` | 默认（本机盘 `$HOME/.cache/uv`） |
+| `<PY_INTERPRETER>` | 本仓库 uv 管理的 `.venv`（python3.11，单机不钉共享盘解释器） |
+| `<SHARED_ROOT>` / `<LOCAL_ROOT>` / `<SINGLE_NODE_ROOT>` | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu` / `/data/hongzefu` / 无 |
+| `<GL_REPO>` / `<GL_SUBMIT>` / `<GL_ACCOUNT>` / `<GL_PARTITION>` / `<SSH_HOST>` | 无集群访问，不适用 |
+| `<PROTECTED_DIRS>` | `src/robomme/`（默认冻结四个 wrapper，见 P1） |
+| `<COMMIT_SUBJECT_STYLE>` | `<大>.<小>[.<修订>] <中文描述>` |
+| `<PLAN_EXEMPLAR>` | benchmark 仓库 `docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md` 第一部分 |
+
+## 项目 scope（未来工作，不代表当前实施授权）
+
+- 仓库总体目标：为 MotionJEPA 全任务训练产出训练数据——在官方 16 任务的 hard 母样本（同一 seed）上派生更难、更长的 xhard 档，使 8 帧等距采样必然遗漏 subgoal、每条 episode 的 stride-16 motion 窗口数对齐 newtask-v2 xhard（约 50–60 窗，T 约 900）。方案见 `1006-xhard12-env-plan.md`，上次训练的参照与官方 hard 档统计见 `1006-xhard12-prev-training-and-task-plan.md`。
+- 当前分支 `newtask-v3-MotionJepa1006`：以 `3a5951a8`（2.24）为生成代码起点，源码核查锚点 `13905997`（2.25）；生成器为 `scripts/data-generation-newSeed/generate_dataset_newseed.py`，seed 公式唯一定义在同目录 `seed_layout.py`。
+- 明确弃用、勿从历史翻出：`scripts/data-generation-v2-noPatch/`（已删除）；2026-07 的三阶段「恢复生成脚本」任务已完成并归档在账本；origin/newtask-v2 的 `--binfill-demo`（P4）；`NEWTASK_V2_PLAN.md` 只作历史参考，不是当前计划。
+
+## 规则来源与未采用清单
+
+- 通用规则 = 上方标记块，正本 commit 见标记行 `src=`（2026-10-06 首次接入；此前本文件的强制规则 1–10 是 2026-08-18 自 MotionJEPA 移植的旧版，已随账本归档）。
+- 未采用的正本条目及原因：第 6 条（run_name）、第 10 条（训练超参落点）、第 12 条（训练 / 评估留档）、第 16 条（GPU 利用率判读）、第 17 条（长诊断 run 留档）、第 18 条（训练链路一致性）——本仓库无训练 / 评估链路；第 8 条集群分支与第 15 条集群校验分支——本环境无集群访问；第 23 条（server + client / job array 形态）——本仓库生成器是本机进程池，无服务形态，但其中「给用户的网页链接写完整域名 `sled-aspen.eecs.umich.edu`」一句照常适用。第 13 条（数据集构建留档）**采用**，新档全量生成按其 Beta 锚点与两段式留档。
+- Claude Code 独有机制见同目录 `CLAUDE.md`（标记块 `common-claude`）；本仓库无 `greatlakes.md`。两份文件冲突时以本文件为准。
