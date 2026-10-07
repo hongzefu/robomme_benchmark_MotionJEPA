@@ -102,7 +102,7 @@ PonderPounce 列为 r2 重跑的验收（`reports/pp-r2/`，首跑验收 `report
   2. ~~共享账本分片 lease 名不含数据集~~ → FIX-4 已修。
   3. PP 重跑沿用幂等 token 未新增 reserve：账本对「有意整组重跑」不扣额度，下次重跑应换 token 前缀（如 `RUN_PREFIX` 进 token）——本轮未改代码，只在此登记。
   4. ~~GL 4 个占位 job 空转~~ → 2026-10-07 13:18 按用户「GreatLakes释放然后重新排队这次query5天的。」释放 63188714／15／16／19，改提 4 个 5 天占位 job `sgev-hold-10`～`13`（63431430～63431433；提交时 3 个 RUNNING、63431433 `PENDING (AssocGrpGRES)`），清单 `gl-hold-logs/hold-jobs-sgeval-20261004.txt`。
-  5. 本机遗留约 3 天前 pytest 假服务进程 PID 2961357（非本轮），未动。
+  5. ~~本机遗留 pytest 假服务进程 PID 2961357~~ → 2026-10-07 按用户「旧 pytest 进程（PID 2961357） 清理」TERM 结束（孤儿进程，`serve_policy.py --port=23310`，checkpoint 指向 pytest 临时目录，已运行 3 天 19 小时，无子进程）；端口 23310 已释放。
 
 ## ⑫ 归档文件清单
 
