@@ -77,9 +77,12 @@ report.json 键的分工（站点 S1-E 依赖）：``per_policy.<p>.cells／task
 1006 第三阶段（seed 7、ood 1800 步；计划第二部分八.10 第 9 条、八.12 第 8 条）对带 ``--dataset`` 的口径追加：
 
 - 真实步数上限（``--cap``，ood 给 1800）：每条结果行实际的 ``max_steps``／``effective_max_steps``／``effective_cap``
-  （写了的都要等于 ``--cap``，一个都没写也算不符）以及能找到的局目录 ``trace.jsonl`` header 的 ``max_steps``／
-  ``effective_cap`` 必须等于 ``--cap``，不符计 ``cap_mismatch``（EVAL_REPORT 追加 ``cap=`` 与该字段，>0 即 FAIL）——
-  仍在 1600 截断的旧路线在 ``--cap 1800`` 下不能误过。hard-verify 不做（官方循环口径不变）。
+  （写了的都要等于 ``--cap``，一个都没写也算不符）必须等于 ``--cap``；能找到的局目录 ``trace.jsonl`` header
+  写了 ``effective_cap`` 时只核 ``effective_cap == --cap``，不拿 header ``max_steps`` 比（SimpleMemVLA 的 header
+  ``max_steps`` 记的是客户端理论动作上界 ``hard_bound(1800)×16 = 1840``，不是实际执行 cap；实际执行步数另由
+  exec_over_cap 拦）；header 没写 ``effective_cap``（旧路线／旧口径）时仍核 header ``max_steps == --cap``。
+  不符计 ``cap_mismatch``（EVAL_REPORT 追加 ``cap=`` 与该字段，>0 即 FAIL）——仍在 1600 截断的旧路线在
+  ``--cap 1800`` 下不能误过。hard-verify 不做（官方循环口径不变）。
 - 模型种子：按 ``(model, policy_seed)`` 分组报告，三行都带 ``policy_seed=<s>``。给 ``--policy-seed`` 时每条结果行的
   ``policy_seed`` 必须等于它（缺字段也算不符，不把历史缺字段补成已证种子）；不给时取结果行里唯一的种子，出现多个计
   ``policy_seed_mixed``。不符都计入 ``count_mismatch``。
@@ -461,7 +464,9 @@ def read_trace_edges(d: Path | None) -> tuple[dict, dict]:
 
 def cap_problems(row: dict, cap: int, media: dict | None = None) -> list[str]:
     """结果行实际步数上限与 ``cap`` 不符的地方：写了的 ``max_steps``／``effective_max_steps``／``effective_cap``
-    都要等于 cap、至少写一个；局目录找得到 trace 时 header 的 ``max_steps``（及 ``effective_cap``）也要等于 cap。"""
+    都要等于 cap、至少写一个；局目录找得到 trace 时，header 写了 ``effective_cap`` 就只核它等于 cap（header
+    ``max_steps`` 可能是理论循环上界，如 SimpleMemVLA 的 115×16=1840），没写 ``effective_cap`` 才核 header
+    ``max_steps`` 等于 cap（旧路线保护）。"""
     out = []
     present = {f: row.get(f) for f in CAP_FIELDS if row.get(f) is not None}
     if not present:
@@ -475,9 +480,9 @@ def cap_problems(row: dict, cap: int, media: dict | None = None) -> list[str]:
             out.append(f"result.{f}={v}")
     path = (media or {}).get("path")
     head, _ = read_trace_edges(Path(path)) if path else ({}, {})
-    for f in ("max_steps", "effective_cap"):
-        if head.get(f) is not None and head.get(f) != cap:
-            out.append(f"trace.header.{f}={head.get(f)}")
+    f = "effective_cap" if head.get("effective_cap") is not None else "max_steps"
+    if head.get(f) is not None and head.get(f) != cap:
+        out.append(f"trace.header.{f}={head.get(f)}")
     return out
 
 

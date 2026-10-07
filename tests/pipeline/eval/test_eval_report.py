@@ -444,7 +444,7 @@ def test_dataset_requires_expect_total(tmp_path):
 # ---------------------------------------------------------------- 1006 第三阶段：真实 1800 上限、模型种子、无帧 error 单列
 
 
-def _ood_rows(tmp_path, cap_values, *, seed=7, trace_max=None, **kw):
+def _ood_rows(tmp_path, cap_values, *, seed=7, trace_max=None, trace_extra=None, **kw):
     """ood 两个身份：结果行写 max_steps／effective_max_steps／effective_cap（取 cap_values），rec 目录写 trace header。"""
     idents = [_ident(0), _ident(1)]
     st = Stage(tmp_path / "stage")
@@ -452,7 +452,8 @@ def _ood_rows(tmp_path, cap_values, *, seed=7, trace_max=None, **kw):
         row = st.accepted(ident, f"a{i}", "success", dataset="ood", policy_seed=seed, **cap_values, **kw)
         if trace_max is not None:
             Path(row["rec_dir"], "trace.jsonl").write_text(
-                json.dumps({"kind": "header", "max_steps": trace_max, "identity": {"key": ident["key"]}}) + "\n"
+                json.dumps({"kind": "header", "max_steps": trace_max, **(trace_extra or {}),
+                            "identity": {"key": ident["key"]}}) + "\n"
                 + json.dumps({"kind": "end", "status": "success"}) + "\n", encoding="utf-8")
     return idents
 
@@ -485,6 +486,31 @@ def test_dataset_cap_1800_rejects_old_1600_rows(tmp_path, capsys):
     idents = _ood_rows(absent, {})
     _, lines, rep = _ds_report(absent, capsys, idents, "ood", [POL], "--cap", "1800")
     assert _lines_of(lines, "EVAL_REPORT", POL)["cap_mismatch"] == "2"  # 一个上限字段都没写也不算过
+
+
+def test_dataset_cap_trace_header_effective_cap_over_theoretical_bound(tmp_path, capsys):
+    """trace header 写了 effective_cap 时只核它：SimpleMemVLA header max_steps=1840（115×16 理论上界）＋
+    effective_cap=1800 不算不符；只写 max_steps=1600（旧口径）仍拦；effective_cap=1600 也拦。"""
+    ok = tmp_path / "smvla"
+    idents = _ood_rows(ok, {"max_steps": 1800, "effective_max_steps": 1800, "effective_cap": 1800},
+                       trace_max=1840, trace_extra={"effective_cap": 1800})
+    _, lines, rep = _ds_report(ok, capsys, idents, "ood", [POL], "--cap", "1800", "--policy-seed", "7")
+    rp = _lines_of(lines, "EVAL_REPORT", POL)
+    assert rp[""] == "PASS" and rp["cap_mismatch"] == "0" and not rep["cap_mismatch_detail"]
+
+    old = tmp_path / "old"
+    idents = _ood_rows(old, {"max_steps": 1800}, trace_max=1600)
+    _, lines, rep = _ds_report(old, capsys, idents, "ood", [POL], "--cap", "1800")
+    assert _lines_of(lines, "EVAL_REPORT", POL)["cap_mismatch"] == "2"
+    assert any("trace.header.max_steps=1600" in p for x in rep["cap_mismatch_detail"] for p in x["problems"])
+
+    eff = tmp_path / "eff1600"
+    idents = _ood_rows(eff, {"max_steps": 1800}, trace_max=1840, trace_extra={"effective_cap": 1600})
+    _, lines, rep = _ds_report(eff, capsys, idents, "ood", [POL], "--cap", "1800")
+    assert _lines_of(lines, "EVAL_REPORT", POL)["cap_mismatch"] == "2"
+    probs = [p for x in rep["cap_mismatch_detail"] for p in x["problems"]]
+    assert any("trace.header.effective_cap=1600" in p for p in probs)
+    assert not any("trace.header.max_steps" in p for p in probs)
 
 
 def test_dataset_policy_seed_grouping(tmp_path, capsys):
