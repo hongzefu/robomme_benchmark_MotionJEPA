@@ -275,46 +275,6 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 
 ## 四、16 个任务逐一怎么改、哪些不改
 
-### 目标：每条 episode 要做到多长
-
-三条原则，优先级从高到低：
-
-1. **硬性：8 帧等距采样必须漏掉至少一类执行段。** 8 帧帧路相邻采样点间隔 Δ8 = (T−1)/7，要大于该任务执行段里最短一类子任务的平均段长（官方 hard 实测，留档 4.3 节）。例如 BinFill 投箱段平均 71 帧，Δ8 要超过 71；StopCube 的 remain static 段 100 帧，Δ8 要超过 100。
-2. **目标：对齐 newtask-v2 的 xhard 档，T 约 900 帧、stride-16 motion 窗口约 50～60 个。** 这是用户定的「token 数对齐上次训练」的落实方式。
-3. **不为 32 帧单独拉长。** 官方 hard 下 32 帧帧路在 16 个任务上一段都不漏，要漏得 T 超 1500，不追求。
-
-实际落点分三档：
-
-| 落点 | 任务 | 预计 T | 预计窗 | 说明 |
-|---|---|---|---|---|
-| 落在目标区 | SwingXtimes、PickHighlight、PatternLock、RouteStick、VideoRepick、StopCube | 810～1140 | 49～69 | 符合 900 / 50～60 |
-| 超出目标区 | BinFill、PickXtimes、VideoPlaceOrder | 1120～1300 | 68～78 | 官方 hard 本来就在 900 附近，「必须比 hard 更难」优先于「对齐 900」；区间下沿取 hard 上沿，和 newtask-v2 的分档习惯一致（hard 4–7 → xhard 8–10） |
-| 够不到目标区 | VideoUnmaskSwap、ButtonUnmaskSwap、VideoUnmask、ButtonUnmask | 476～560 | 27～32 | 结构性短；合成参考显示四个任务都有 episode 8 帧一段不漏，硬性判据对它们不一定成立（见下） |
-| 远超目标区（用户追加） | VideoPlaceButton、VideoPlaceOrder | 1620～1770 | 98～108 | 两块 cube + 回原位 + swap 3 次，demo 段本身就超 1300 帧；按用户决定做，不为对齐 900 削减 |
-
-### 合成参考数轴（已做，独立于本计划，见根目录 `vis/`）
-
-上面的 T 与窗口数是线性外推。用户 2026-10-06 提议用**官方 hard 的现成数据**按 subgoal 段复制粘贴合成一版 xhard1 参考数轴，并要求「不作为任务内部的内容，直接实现，单独在根目录有一个文件夹 vis」。已实现：[`vis/synthesize_reference_timeline.py`](vis/synthesize_reference_timeline.py) 读 `/data/hongzefu/data_0226/` 每任务 25 条 hard episode，按 [`vis/README.md`](vis/README.md) 的复制规则拼出合成时间轴，按 `plot_sampling_windows.py` 口径出图到 `vis/output/<Task>.png`，汇总表在 [`vis/output/reference_summary.md`](vis/output/reference_summary.md)。合成中位 T 与本节外推值的对账（2026-10-06 实跑，14 任务 350 条，`XHARD_REF=INFO tasks=14 episodes=350 synthetic=1`）：
-
-| 任务 | 外推 T | 合成 T（中位） | 外推窗 | 合成窗（中位） | 合成最少漏段8 |
-|---|---:|---:|---:|---:|---:|
-| PickXtimes | 1120 | 1128 | 68 | 69 | 6 |
-| StopCube | 1020 | 1054 | 62 | 64 | 4 |
-| SwingXtimes | 840 | 833 | 50 | 51 | 10 |
-| BinFill | 1140 | 1109 | 69 | 68 | 4 |
-| VideoUnmaskSwap | 560 | 560 | 31 | 32 | **0** |
-| ButtonUnmaskSwap | 520 | 461（合成不变） | 31 | 27 | **0** |
-| VideoRepick | 935 | 947 | 56 | 57 | 4 |
-| VideoPlaceOrder（2 块 + 回原位 + swap 3） | 1800 | 1773 | 110 | 108 | 1 |
-| VideoPlaceButton（2 块 + 回原位 + swap 3） | 1550 | 1618 | 92 | 98 | 1 |
-| VideoUnmask（pick 3） | 480 | 476 | 26 | 27 | **0** |
-| ButtonUnmask（pick 3） | 525 | 515 | 30 | 31 | **0** |
-| PickHighlight | 850 | 855 | 51 | 52 | 3 |
-| PatternLock | 810 | 737 | 49 | 43 | 6 |
-| RouteStick | 900 | 900 | 53 | 54 | 5 |
-
-两处提示：**两个 Swap 任务与两个 Unmask 任务合成后都有 episode 的 8 帧帧路一段都不漏**（它们执行段只有 3～5 段、每段 50～100 帧，Δ8 约 65～80 不足以跨过「拿起容器」段），硬性判据 1 对这四个任务不一定成立，用户 2026-10-06 已决定纳入 Unmask 两任务（pick 3），Swap 两任务去留仍待定；PatternLock 的合成值低于外推（demo 段 move 更短），外推偏乐观。合成与真实的差别只在段长随机波动与 planner 路径，真实 smoke 出来后在 `vis/` 再加一版实测对照。
-
 ### 配置对比：每个任务 xhard1 相对官方 hard 把哪个量提高到多少
 
 写法与 benchmark 仓库 `scripts/README.md`「五档配置对比」一致：列「官方 hard → xhard1」，`[a,b]` 为整数均匀区间；只写任务层面的量，不写实现。本轮只定 xhard1 一档，xhard2 先留名字不定数。按 env_code 顺序列全部 16 个。
@@ -340,46 +300,30 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 
 **纳入 14 个**（#1～12、15、16），**不纳入 2 个**（InsertPeg、MoveCube：源码不读难度、没有次数型的量，加难度等于新写任务）。#6、8、10、11 四个是用户 2026-10-06 追加纳入的，其中 #10、11 的改法已不是「少改参数」而是重写演示段，长度也远超 900 目标，按用户决定做。
 
-### 预计长度与母样本
+### 与上一代 V2 交付集的逐任务长度对比
 
-T 与窗口数按官方 hard 中位加每个子任务平均段长线性外推（公式与依据见第二部分八节），开工后每任务 3 个 seed smoke 出实测值对账。「母布局」指同一 seed 下场景是否逐项不变。
+口径：V3 一律是合成参考中位值（`vis/output/reference_summary.md`，按官方 hard 的 subgoal 段复制粘贴，非实跑）；V2 取上次训练实际交付的那份（BinFill 含复制两遍的假 demo，policy 侧就是这么数窗口的），来源见留档 2.1 节。「8 帧漏段」V3 只数执行段（不含演示段与尾段）；V2 只有留档里的「漏段占比」（含演示段），按段数折成约数，带「约」的都是换算值。V2 没有的任务，参照 V2 里机制最接近的一档。
 
-| # | 环境 | hard 条数 | 预计 T（hard → xhard1，中位） | 预计窗 | Δ8 对最短执行段 | 8 帧漏段 | 母布局 |
-|---:|---|---:|---|---|---|---|---|
-| 1 | PickXtimes | 25 | 812 → 约 1120 | 49 → 约 68 | 160 > 70（放到 target） | 必漏 | 不变 |
-| 2 | StopCube | 25 | 309 → 900～1140 | 18 → 54～69 | 128～163 > 100（remain static） | 必漏 | 不变 |
-| 3 | SwingXtimes | 25 | 488 → 约 840 | 29 → 约 50 | 120 > 40（摆到一侧） | 必漏 | 不变 |
-| 4 | BinFill | 25 | 868 → 约 1140 | 53 → 约 69 | 162 > 71（投箱） | 必漏 | **变**（方块坐标与颜色顺序随目标数偏移） |
-| 5 | VideoUnmaskSwap | 100 | 457 → 约 560 | 26 → 约 31 | 80 > 49（放下） | 不一定（合成最少 0） | 不变 |
-| 6 | VideoUnmask | 100 | 329 → 约 476 | 18 → 约 27 | 68 > 49（放下）但 < 103（抓容器） | 不一定（合成最少 0） | 不变 |
-| 7 | ButtonUnmaskSwap | 100 | 461 → 约 520（待验） | 27 → 约 31 | 74 > 46（放下） | 不一定（合成最少 0） | 不变 |
-| 8 | ButtonUnmask | 100 | 373 → 约 515 | 22 → 约 31 | 73 > 47（放下）但 < 103（抓容器） | 不一定（合成最少 0） | 不变 |
-| 9 | VideoRepick | 25 | 543 → 约 935 | 31 → 约 56 | 134 > 58（放下） | 必漏 | 不变 |
-| 10 | VideoPlaceButton | 25 | 961 → 约 1620 | 57 → 约 98 | 231 > 全部 | 必漏 | **变**（第二块 cube、回原位落点、3 次 swap 都是新抽签） |
-| 11 | VideoPlaceOrder | 25 | 1115 → 约 1770 | 67 → 约 108 | 253 > 全部 | 必漏 | **变**（同上） |
-| 12 | PickHighlight | 25 | 539 → 约 850 | 32 → 约 51 | 121 > 55（放回桌面） | 必漏 | 不变 |
-| 15 | PatternLock | 25 | 324 → 约 810（666～960） | 18 → 约 49 | 116 > 25～40（每步） | 必漏 | 网格不变，路径变 |
-| 16 | RouteStick | 25 | 500 → 800～1000 | 28 → 46～60 | 114～143 > 50（每步） | 必漏 | 障碍与颜色不变，路线方向变 |
+| V3 任务 | 对比的 V2 参照 | T：V2 → V3 | Δ8：V2 → V3 | 窗口：V2 → V3 | 8 帧漏段：V2 → V3 | 长了还是短了 |
+|---|---|---|---|---|---|---|
+| RouteStick | 同任务 xhard | 900 → 900 | 128 → 128 | 54 → 54 | 约 11 段（58%）→ 6 段（执行段 9 段里漏 6） | 一样 |
+| VideoUnmaskSwap | 同任务 xhard | 558 → 560 | 80 → 79 | 32 → 32 | 约 0.7 段（13%）→ 0.7 段 | 一样 |
+| VideoRepick | 同任务 xhard | 863 → 947 | 123 → 135 | 51 → 57 | 约 6 段（42%）→ 4.9 段 | 略长，漏段相当 |
+| BinFill | 同任务 hard（含假 demo ×2） | 1630 → 1109 | 233 → 158 | 98 → 68 | 约 11 段（59%）→ 5 段 | **短三成**；只比 V2 的纯执行段（815 / 116 / 49 / 约 5 段）则长三成 |
+| PickXtimes | 无同任务，参照 BinFill hard（同为计数型抓放） | 1630 → 1128 | 233 → 161 | 98 → 69 | 约 11 → 7 段 | 比 V2 BinFill 短；比 V2 任何 xhard 长 |
+| StopCube | 无，参照 RouteStick xhard（同为固定节拍长段） | 900 → 1054 | 128 → 150 | 54 → 64 | 约 11 → 5.3 段 | 长；漏段少是因为段少（每段 100 帧） |
+| SwingXtimes | 无，参照 VideoRepick xhard（重复短动作） | 863 → 833 | 123 → 118 | 51 → 51 | 约 6 → 11.4 段 | 一样长，漏段翻倍（每段只有 40 帧） |
+| PickHighlight | 无，参照 VideoRepick xhard | 863 → 855 | 123 → 122 | 51 → 52 | 约 6 → 3.4 段 | 一样长，漏段少（段少且长） |
+| PatternLock | 无，参照 RouteStick xhard（同类路径记忆） | 900 → 737 | 128 → 105 | 54 → 43 | 约 11 → 8 段 | **短两成** |
+| VideoUnmask | 无，参照 VideoUnmaskSwap xhard | 558 → 476 | 80 → 67 | 32 → 27 | 0.7 → 0.1 段 | 短；8 帧基本不漏 |
+| ButtonUnmask | 无，参照 VideoUnmaskSwap xhard | 558 → 515 | 80 → 73 | 32 → 31 | 0.7 → 0.9 段 | 略短；漏段相当 |
+| ButtonUnmaskSwap | 无，参照 VideoUnmaskSwap xhard | 558 → 461 | 80 → 65 | 32 → 27 | 0.7 → 0.1 段 | 短；8 帧基本不漏 |
+| VideoPlaceButton | 无，参照 BinFill hard（同为长演示段） | 1630 → 1618 | 233 → 231 | 98 → 98 | 约 11 → 2 段（执行段只有 2 段；演示段里漏的更多，未计） | 一样长 |
+| VideoPlaceOrder | 无，参照 BinFill hard | 1630 → 1773 | 233 → 253 | 98 → 108 | 约 11 → 2 段（同上） | 略长 |
 
-几点说明：
+归纳：**和 V2 持平或更长**——RouteStick、VideoUnmaskSwap、VideoRepick、StopCube、SwingXtimes、PickHighlight、VideoPlaceButton、VideoPlaceOrder；**比对应参照短**——BinFill（短三成，因为不做假 demo）、PatternLock（短两成）、PickXtimes（比 BinFill hard 短但比 V2 任何 xhard 长）、VideoUnmask、ButtonUnmask、ButtonUnmaskSwap（容器类，Δ8 65～73，8 帧基本不漏）。要把短的拉上来，各自的旋钮是：BinFill 投 8～9 块、PatternLock 节点 [12,16]、容器类任务没有不改结构的旋钮；是否调整由用户定。
 
-- **StopCube 改两个量**：只提停止序号时，往返间隔抽到 60 的三分之一 episode 只有 450～570 帧，Δ8 小于 100 帧的 static 段，8 帧漏不掉；把间隔钉在 120 才满足硬性判据。
-- **两个 Swap 任务天生短**，各有 100 条 hard seed，与两个 Unmask 任务一起占 400/650，长度上不去是结构问题。
-- **预计成功率低于 hard**：官方 hard seed 里 BinFill 11 条、VideoPlaceOrder 12 条、SwingXtimes 5 条、VideoRepick 6 条、PatternLock 1 条是换过 seed 才成功的；xhard 不换 seed，这些任务更容易失败，失败即缺条、不补。
-- **两个 Place 任务**按用户决定做成「2 块 + 回原位 + swap 3」，demo 段单独就超 1300 帧，整条 1600～1800 帧、约 100 窗，远超 900 / 50～60 的目标；这是「参考 V9 做法」优先于「对齐长度」的取舍，长度不作为它们的判据。
-- **待验四项**：PatternLock [10,14] 在 5×5 网格的可行性（过低改 [9,13]）；ButtonUnmaskSwap 5 次交换是否在两次按钮之前结束；BinFill 投 6 块时方块生成成功率；Place 两任务 swap 3 次（demo 末尾 static 段 160 步）的互换动画与 4 个台的几何是否冲突。都在六节步骤 1。
-
-### 总量
-
-| 任务 | 条数 | 预计 T | 预计帧数 | 预计 stride-16 窗 |
-|---|---:|---:|---:|---:|
-| BinFill / PickXtimes / SwingXtimes / PickHighlight / PatternLock / RouteStick | 25 × 6 | 1140 / 1120 / 840 / 850 / 810 / 900 | 141,500 | 8,525 |
-| VideoUnmaskSwap / ButtonUnmaskSwap / VideoUnmask / ButtonUnmask | 100 × 4 | 560 / 520 / 476 / 515 | 207,100 | 12,000 |
-| StopCube / VideoRepick | 25 × 2 | 1020 / 935 | 48,875 | 2,900 |
-| VideoPlaceButton / VideoPlaceOrder | 25 × 2 | 1620 / 1770 | 84,750 | 5,150 |
-| **合计** | **650** | | **约 48.2 万** | **约 28,600** |
-
-对照上次训练：stride-1 chunk 约 46 万（上次 796,001，约六成）；stride-16 窗约 2.86 万（上次 69,716）。缺口已按口径 ⑦ 接受，补齐路径是 10 个 25 条的任务各加约 75 条新 seed，另议。每个任务在代码里怎么改（换哪个字典键、重写哪个方法）见第二部分一节与八节。
+总量：14 任务 650 条，约 48.2 万帧，stride-1 chunk 约 46 万（V2 的 58%），stride-16 窗约 2.86 万（V2 的 41%）。合成参考的图与逐条数据在根目录 [`vis/`](vis/README.md)；每个任务在代码里怎么改（换哪个字典键、重写哪个方法）见第二部分一节与八节；长度原则（8 帧必漏为硬性、T 约 900 与 50～60 窗为目标、不为 32 帧拉长）与估算公式见第二部分八节。
 
 ## 五、验收
 
@@ -619,6 +563,8 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 - 留档根 `docs/` 新建；`docs/ledger/` 只读不动。
 
 ## 八、逐任务源码依据与估算公式
+
+长度原则（原第一部分四节「目标」，2.34.1 移入）：① 硬性：8 帧等距采样必须漏掉至少一类执行段，Δ8 = (T−1)/7 大于该任务执行段里最短一类子任务的平均段长；② 目标：对齐 newtask-v2 的 xhard 档，T 约 900、stride-16 窗约 50～60；③ 不为 32 帧单独拉长。实际落点：9 个主体任务 740～1130 帧 / 43～69 窗；4 个容器类任务 460～560 / 27～32（8 帧不一定漏）；2 个 Place 任务 1620～1770 / 98～108（用户追加，不为对齐 900 削减）。合成参考与外推值对账见 `vis/output/reference_summary.md`。
 
 估算：T_xhard ≈ T_hard 中位 + Δ次数 × 该次数对应子任务段长之和（留档 4.3 均值）；窗口 ≈ demo 窗 + exec 窗，各按 `len(range(0, max(0, L-32), 16))`；Δ8 = (T−1)/7。配置原文、随机流、语言上限、metadata 条数见留档 5.1 节，此处只列每任务的实施数与依据。
 
