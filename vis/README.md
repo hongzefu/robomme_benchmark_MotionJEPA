@@ -21,22 +21,23 @@ uv run --no-sync python vis/synthesize_reference_timeline.py --h5-dir /data/hong
 
 ## 复制规则（`RULES`，取值与 `1006-xhard12-env-plan.md` 第一部分四节一致）
 
+表格、汇总、总览图里的任务一律按 [robomme.github.io](https://robomme.github.io/) 的四类顺序排列（计数 → 永久性 → 参考 → 模仿，类内按官网编号；`SUITE_ORDER`，`AGENTS.md` P6）。
+
 | 任务 | 复制的单元 | 规则 |
 |---|---|---|
+| BinFill | [pick up the nth color cube → put it into the bin] 一对 | T → 5 或 6 |
 | PickXtimes | 执行段 [pick up … for the nth time → place … onto the target] 一对 | 对数 N → N+2 |
 | SwingXtimes | [right-side → left-side] 一对 | 3 → 7 或 8（按 hard 序号轮流） |
-| BinFill | [pick up the nth color cube → put it into the bin] 一对 | T → 5 或 6 |
-| VideoRepick | 执行段 [pick up the correct cube … → put it down] 一对 | N → 4 或 5 |
-| PickHighlight | [pick up the nth highlighted cube → place the cube onto the table] 一对，插在最后一个 pick 之前 | 3 → 5 |
-| VideoPlaceOrder | demo 段 [pick up the cube → drop the cube onto target] 一对 | P → 4 |
-| PatternLock | demo 与 exec 各自的 `move …` 段 | 节点 L → L′∈[10,14]，两侧各补 L′−L 段 |
-| RouteStick | demo 与 exec 各自的 `move to the nearest …` 段 | S → S′∈[8,10]，两侧各补 |
 | StopCube | `remain static` 段 | k′∈[8,10]、间隔钉 120：static 检查点每 100 步一段到 120k′−90 止；首段与按钮、尾段原样 |
+| VideoUnmask / ButtonUnmask | [put down the container → pick up the container …] 一对 | pick 2 → 3：在尾段前追加一对（2026-10-06 用户决定纳入） |
 | VideoUnmaskSwap | demo `static` 段 | S′∈{4,5}，demo 长度 = 6·ceil((64+50S′)/6) |
 | ButtonUnmaskSwap | 无独立 demo 段 | 合成 = 原样（交换与按钮并行，时长基本不变） |
-| VideoUnmask / ButtonUnmask | [put down the container → pick up the container …] 一对 | pick 2 → 3：在尾段前追加一对（2026-10-06 用户决定纳入） |
+| PickHighlight | [pick up the nth highlighted cube → place the cube onto the table] 一对，插在最后一个 pick 之前 | 3 → 5 |
+| VideoRepick | 执行段 [pick up the correct cube … → put it down] 一对 | N → 4 或 5 |
 | VideoPlaceButton | demo 段 [pick up the cube → drop the cube onto target] 对、按钮、[pick → drop onto table] 对（代表回原位）、两段 static | 2 块各按钮前后放 1 次（共 4 对）→ 按钮 → 2 对回原位 → static 20 → static 60+100（swap 3 次）（2026-10-06 用户决定） |
 | VideoPlaceOrder | 同上 | 2 块共访问 5 次（按钮前 2 对、后 3 对）→ 2 对回原位 → static 20 → static 160（swap 3 次）（2026-10-06 用户决定） |
+| PatternLock | demo 与 exec 各自的 `move …` 段 | 节点 L → L′∈[10,14]，两侧各补 L′−L 段 |
+| RouteStick | demo 与 exec 各自的 `move to the nearest …` 段 | S → S′∈[8,10]，两侧各补 |
 
 复制的段沿用原文（含序数词），所以图上会出现「抓红4」后面又来「抓红1」，这是复制粘贴的痕迹，不代表真实序号。
 

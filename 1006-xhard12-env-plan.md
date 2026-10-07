@@ -26,8 +26,8 @@
 
 | 范围 | 任务 | 条数（hard 母样本） | 改法 |
 |---|---|---:|---|
-| 纳入·换字典 | PickXtimes、SwingXtimes、PickHighlight、PatternLock、RouteStick、BinFill | 6 × 25 | 子类重写 `configs`（BinFill 另加 `_load_scene` 后置校验） |
-| 纳入·重写一个方法 | VideoUnmaskSwap、ButtonUnmaskSwap、VideoUnmask、ButtonUnmask（各 100）、StopCube、VideoRepick（各 25） | 450 | 换字典 + 重写 `_refresh_swap_schedule`；`_load_scene` 调 super 后追加第三次抓；重写 `_initialize_episode`+`step()`；`__init__` 后改写 `num_repeats` |
+| 纳入·换字典 | BinFill、PickXtimes、SwingXtimes、PickHighlight、PatternLock、RouteStick | 6 × 25 | 子类重写 `configs`（BinFill 另加 `_load_scene` 后置校验） |
+| 纳入·重写一个方法 | StopCube（25）、VideoUnmask、ButtonUnmask、VideoUnmaskSwap、ButtonUnmaskSwap（各 100）、VideoRepick（25） | 450 | 换字典 + 重写 `_refresh_swap_schedule`；`_load_scene` 调 super 后追加第三次抓；重写 `_initialize_episode`+`step()`；`__init__` 后改写 `num_repeats` |
 | 纳入·重型重写（用户 2026-10-06 追加） | VideoPlaceButton、VideoPlaceOrder（各 25） | 50 | 两块 cube 各做完一整套再放回原位（按 V9 `xhard_home_site` 做法）+ demo 末尾 swap 3 次；重写 `_load_scene`（VPO 另重写 `_initialize_episode`）与 `step()` 的 swap 状态机 |
 | 不纳入 | InsertPeg、MoveCube（源码不读 difficulty，没有次数型的量） | — | 加难度等于新写任务 |
 | **合计** | **14 个任务** | **650** | |
@@ -277,28 +277,28 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 
 ### 配置对比：每个任务 xhard1 相对官方 hard 把哪个量提高到多少
 
-写法与 benchmark 仓库 `scripts/README.md`「五档配置对比」一致：列「官方 hard → xhard1」，`[a,b]` 为整数均匀区间；只写任务层面的量，不写实现。本轮只定 xhard1 一档，xhard2 先留名字不定数。按 env_code 顺序列全部 16 个。
+写法与 benchmark 仓库 `scripts/README.md`「五档配置对比」一致：列「官方 hard → xhard1」，`[a,b]` 为整数均匀区间；只写任务层面的量，不写实现。本轮只定 xhard1 一档，xhard2 先留名字不定数。按 [robomme.github.io](https://robomme.github.io/) 的四类（计数 Counting、永久性 Permanence、参考 Reference、模仿 Imitation）与类内顺序列全部 16 个，编号即官网 Task 编号（`AGENTS.md` P6）。
 
-| # | 环境 | 梯度维度 | 官方 hard | xhard1 | 难度怎么提升（任务层面） |
-|---:|---|---|---|---|---|
-| 1 | PickXtimes | 抓放次数 | [4,5] | [6,7] | 同一块 cube 多抓放 2 次再按钮；要数的次数更多、更晚才能按钮 |
-| 2 | StopCube | 停止序号 / 方块往返间隔 | [2,5] / 60、80、120 随机 | [8,10] / 钉 120 | 方块往返 8～10 趟才按钮，每趟固定 120 步；要盯着数到更后面的一趟，等待段更长 |
-| 3 | SwingXtimes | 左右摆动轮数 | 3 | [7,8] | 握着 cube 左右摆 7～8 轮才放下按钮；重复动作更多 |
-| 4 | BinFill | 投入 bin 的总块数（库存 [10,12] 不变） | [3,5] | [5,6] | 要从同一堆方块里按颜色多投 1～3 块；每色各自计数、总次数更多 |
-| 5 | VideoUnmaskSwap | 演示段容器交换次数 / pick | [2,3] / 2 | [4,5] / 2 | 演示里容器被交换 4～5 次才让抓；要跟踪更长的交换序列才知道 cube 在哪 |
-| 6 | VideoUnmask | 抓容器次数（容器数 15 不变） | 2 | 3 | 看完演示后要连抓三个藏着 cube 的容器（抓 → 放下 → 抓 → 放下 → 抓）；要记住三个位置而不是两个。V9 xhard2 起同为 pick 3（另加干扰容器，本轮不加） |
-| 7 | ButtonUnmaskSwap | 按钮后容器交换次数 / pick | [2,3] / 2 | [4,5] / 2 | 按两次按钮期间容器交换 4～5 次；同 VideoUnmaskSwap，但交换与按钮同时进行，交换结束是否晚于按钮完成待验 |
-| 8 | ButtonUnmask | 抓容器次数（容器数 15 不变） | 2 | 3 | 按钮揭示后连抓三个容器（抓 → 放下 → 抓 → 放下 → 抓）；同 VideoUnmask，V9 xhard2 起 pick 3 |
-| 9 | VideoRepick | 执行段重复抓放次数（15 块 cluster 不变） | [1,3] | [4,5] | 看完演示后要把同一块正确的 cube 反复抓放 4～5 次；重复动作更多、更晚才按钮 |
-| 10 | VideoPlaceButton | 演示用的 cube 数 / 放台次数 / 回原位 / swap 次数 | 1 块 / 2 次（按钮前后各 1）/ 最后放到桌面 / 1 | 2 块 / 4 次（每块按钮前后各 1）/ 每块放回原位 / 3 | 演示里两种颜色的 cube 各做完「按钮前放一次、按钮后放一次」再各自放回原来的位置，末尾目标台互换 3 次；执行时要记住指定颜色那块在按钮前（或后）放过的台。按 V9 `xhard_home_site` 的回原位做法；V9 的 2 块档（xhard3）另加一次额外放台与 5 个台，本轮不加 |
-| 11 | VideoPlaceOrder | 演示用的 cube 数 / 总访问次数 / 回原位 / swap 次数 | 1 块 / [2,4] 次 / 最后放到桌面 / 1 | 2 块 / 5 次（2+3）/ 每块放回原位 / 3 | 演示里两种颜色的 cube 分别访问 2 个和 3 个目标台、按钮插在中间、再各自放回原位，末尾目标台互换 3 次；执行时要记住指定颜色那块第 N 次放的台。取值同 V9 xhard1（哪块多访问随机） |
-| 12 | PickHighlight | 要抓的高亮块数（总块 6 不变） | 3 | 5 | 6 块里高亮 5 块，要记住并逐个抓起 5 块；不取 6 是因为全高亮就不用记了 |
-| 13 | InsertPeg | 不加档 | 官方 hard | **不改** | 任务固定「演示抓插 → 执行抓插」，源码不读难度，没有量可调 |
-| 14 | MoveCube | 不加档 | 官方 hard | **不改** | 三种推 / 勾 / 抓放方式随机三选一，没有次数型的量 |
-| 15 | PatternLock | 图案节点数（5×5 网格） | [4,8] | [10,14] | 演示画一条 10～14 个节点的路径，执行时要原样画出来；路径更长、更难记 |
-| 16 | RouteStick | 路线段数（执行段 = 50·L 步） | [4,7] | [8,10] | 演示绕障碍走 8～10 段，执行时原样走一遍；和 newtask-v2 的 xhard 相同 |
+| 编号 | 类别 | 环境 | 梯度维度 | 官方 hard | xhard1 | 难度怎么提升（任务层面） |
+|---|---|---|---|---|---|---|
+| 1.1 | 计数 | BinFill | 投入 bin 的总块数（库存 [10,12] 不变） | [3,5] | [5,6] | 要从同一堆方块里按颜色多投 1～3 块；每色各自计数、总次数更多 |
+| 1.2 | 计数 | PickXtimes | 抓放次数 | [4,5] | [6,7] | 同一块 cube 多抓放 2 次再按钮；要数的次数更多、更晚才能按钮 |
+| 1.3 | 计数 | SwingXtimes | 左右摆动轮数 | 3 | [7,8] | 握着 cube 左右摆 7～8 轮才放下按钮；重复动作更多 |
+| 1.4 | 计数 | StopCube | 停止序号 / 方块往返间隔 | [2,5] / 60、80、120 随机 | [8,10] / 钉 120 | 方块往返 8～10 趟才按钮，每趟固定 120 步；要盯着数到更后面的一趟，等待段更长 |
+| 2.1 | 永久性 | VideoUnmask | 抓容器次数（容器数 15 不变） | 2 | 3 | 看完演示后要连抓三个藏着 cube 的容器（抓 → 放下 → 抓 → 放下 → 抓）；要记住三个位置而不是两个。V9 xhard2 起同为 pick 3（另加干扰容器，本轮不加） |
+| 2.2 | 永久性 | ButtonUnmask | 抓容器次数（容器数 15 不变） | 2 | 3 | 按钮揭示后连抓三个容器（抓 → 放下 → 抓 → 放下 → 抓）；同 VideoUnmask，V9 xhard2 起 pick 3 |
+| 2.3 | 永久性 | VideoUnmaskSwap | 演示段容器交换次数 / pick | [2,3] / 2 | [4,5] / 2 | 演示里容器被交换 4～5 次才让抓；要跟踪更长的交换序列才知道 cube 在哪 |
+| 2.4 | 永久性 | ButtonUnmaskSwap | 按钮后容器交换次数 / pick | [2,3] / 2 | [4,5] / 2 | 按两次按钮期间容器交换 4～5 次；同 VideoUnmaskSwap，但交换与按钮同时进行，交换结束是否晚于按钮完成待验 |
+| 3.1 | 参考 | PickHighlight | 要抓的高亮块数（总块 6 不变） | 3 | 5 | 6 块里高亮 5 块，要记住并逐个抓起 5 块；不取 6 是因为全高亮就不用记了 |
+| 3.2 | 参考 | VideoRepick | 执行段重复抓放次数（15 块 cluster 不变） | [1,3] | [4,5] | 看完演示后要把同一块正确的 cube 反复抓放 4～5 次；重复动作更多、更晚才按钮 |
+| 3.3 | 参考 | VideoPlaceButton | 演示用的 cube 数 / 放台次数 / 回原位 / swap 次数 | 1 块 / 2 次（按钮前后各 1）/ 最后放到桌面 / 1 | 2 块 / 4 次（每块按钮前后各 1）/ 每块放回原位 / 3 | 演示里两种颜色的 cube 各做完「按钮前放一次、按钮后放一次」再各自放回原来的位置，末尾目标台互换 3 次；执行时要记住指定颜色那块在按钮前（或后）放过的台。按 V9 `xhard_home_site` 的回原位做法；V9 的 2 块档（xhard3）另加一次额外放台与 5 个台，本轮不加 |
+| 3.4 | 参考 | VideoPlaceOrder | 演示用的 cube 数 / 总访问次数 / 回原位 / swap 次数 | 1 块 / [2,4] 次 / 最后放到桌面 / 1 | 2 块 / 5 次（2+3）/ 每块放回原位 / 3 | 演示里两种颜色的 cube 分别访问 2 个和 3 个目标台、按钮插在中间、再各自放回原位，末尾目标台互换 3 次；执行时要记住指定颜色那块第 N 次放的台。取值同 V9 xhard1（哪块多访问随机） |
+| 4.1 | 模仿 | MoveCube | 不加档 | 官方 hard | **不改** | 三种推 / 勾 / 抓放方式随机三选一，没有次数型的量 |
+| 4.2 | 模仿 | InsertPeg | 不加档 | 官方 hard | **不改** | 任务固定「演示抓插 → 执行抓插」，源码不读难度，没有量可调 |
+| 4.3 | 模仿 | PatternLock | 图案节点数（5×5 网格） | [4,8] | [10,14] | 演示画一条 10～14 个节点的路径，执行时要原样画出来；路径更长、更难记 |
+| 4.4 | 模仿 | RouteStick | 路线段数（执行段 = 50·L 步） | [4,7] | [8,10] | 演示绕障碍走 8～10 段，执行时原样走一遍；和 newtask-v2 的 xhard 相同 |
 
-**纳入 14 个**（#1～12、15、16），**不纳入 2 个**（InsertPeg、MoveCube：源码不读难度、没有次数型的量，加难度等于新写任务）。#6、8、10、11 四个是用户 2026-10-06 追加纳入的，其中 #10、11 的改法已不是「少改参数」而是重写演示段，长度也远超 900 目标，按用户决定做。
+**纳入 14 个**（1.1～3.4、4.3、4.4），**不纳入 2 个**（4.1 MoveCube、4.2 InsertPeg：源码不读难度、没有次数型的量，加难度等于新写任务）。2.1、2.2、3.3、3.4 四个是用户 2026-10-06 追加纳入的，其中 3.3、3.4 的改法已不是「少改参数」而是重写演示段，长度也远超 900 目标，按用户决定做。
 
 ### 与上一代 V2 交付集的逐任务长度对比
 
@@ -306,20 +306,20 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 
 | V3 任务 | 对比的 V2 参照 | T：V2 → V3 | Δ8：V2 → V3 | 窗口：V2 → V3 | 8 帧漏段：V2 → V3 | 长了还是短了 |
 |---|---|---|---|---|---|---|
-| RouteStick | 同任务 xhard | 900 → 900 | 128 → 128 | 54 → 54 | 约 11 段（58%）→ 6 段（执行段 9 段里漏 6，无 swap） | 一样 |
-| VideoUnmaskSwap | 同任务 xhard | 558 → 560 | 80 → 79 | 32 → 32 | 约 0.7 段（13%）→ 2.2 段（执行 0.7 + swap 1.5，每条最少 1） | 长度一样；计入 swap 后 8 帧必漏 |
-| VideoRepick | 同任务 xhard | 863 → 947 | 123 → 135 | 51 → 57 | 约 6 段（42%）→ 4.9 段 | 略长，漏段相当 |
 | BinFill | 同任务 hard（含假 demo ×2） | 1630 → 1109 | 233 → 158 | 98 → 68 | 约 11 段（59%）→ 5 段 | **短三成**；只比 V2 的纯执行段（815 / 116 / 49 / 约 5 段）则长三成 |
 | PickXtimes | 参照 V2 BinFill hard（用户指定） | 1630 → 1128 | 233 → 161 | 98 → 69 | 约 11 → 7 段 | **短，0.69 倍**（T 0.69、Δ8 0.69、窗 0.70、漏段 0.64） |
-| StopCube | 参照 V2 RouteStick xhard（用户指定） | 900 → 1054 | 128 → 150 | 54 → 64 | 约 11 → 5.3 段 | **长，1.17 倍**（T 1.17、Δ8 1.17、窗 1.19）；漏段 0.48 倍，因为段少（每段 100 帧） |
 | SwingXtimes | 参照 V2 BinFill hard（用户指定） | 1630 → 833 | 233 → 118 | 98 → 51 | 约 11 → 11.4 段 | **短，0.51 倍**（T 0.51、Δ8 0.51、窗 0.52）；漏段 1.04 倍，因为每段只有 40 帧 |
-| PickHighlight | 参照 V2 VideoRepick xhard 与 BinFill hard（用户指定） | 863 → 855；1630 → 855 | 123 → 122；233 → 122 | 51 → 52；98 → 52 | 约 6 → 3.4；约 11 → 3.4 | 对 VideoRepick **持平，0.99 倍**（漏段 0.57）；对 BinFill **短，0.52 倍**（漏段 0.31） |
-| PatternLock | 参照 V2 RouteStick xhard（用户指定） | 900 → 737 | 128 → 105 | 54 → 43 | 约 11 → 8 段 | **短，0.82 倍**（T 0.82、Δ8 0.82、窗 0.80、漏段 0.73） |
+| StopCube | 参照 V2 RouteStick xhard（用户指定） | 900 → 1054 | 128 → 150 | 54 → 64 | 约 11 → 5.3 段 | **长，1.17 倍**（T 1.17、Δ8 1.17、窗 1.19）；漏段 0.48 倍，因为段少（每段 100 帧） |
 | VideoUnmask | 无，参照 VideoUnmaskSwap xhard | 558 → 476 | 80 → 67 | 32 → 27 | 0.7 → 0.1 段 | 短；8 帧基本不漏 |
 | ButtonUnmask | 无，参照 VideoUnmaskSwap xhard | 558 → 515 | 80 → 73 | 32 → 31 | 0.7 → 0.9 段 | 略短；漏段相当 |
+| VideoUnmaskSwap | 同任务 xhard | 558 → 560 | 80 → 79 | 32 → 32 | 约 0.7 段（13%）→ 2.2 段（执行 0.7 + swap 1.5，每条最少 1） | 长度一样；计入 swap 后 8 帧必漏 |
 | ButtonUnmaskSwap | 无，参照 VideoUnmaskSwap xhard | 558 → 461 | 80 → 65 | 32 → 27 | 0.7 → 0.8 段（执行 0.1 + swap 0.7；swap=4 的条可能 0 漏，7/25） | 短；swap=5 时必漏、swap=4 时不一定 |
+| PickHighlight | 参照 V2 VideoRepick xhard 与 BinFill hard（用户指定） | 863 → 855；1630 → 855 | 123 → 122；233 → 122 | 51 → 52；98 → 52 | 约 6 → 3.4；约 11 → 3.4 | 对 VideoRepick **持平，0.99 倍**（漏段 0.57）；对 BinFill **短，0.52 倍**（漏段 0.31） |
+| VideoRepick | 同任务 xhard | 863 → 947 | 123 → 135 | 51 → 57 | 约 6 段（42%）→ 4.9 段 | 略长，漏段相当 |
 | VideoPlaceButton | 参照 V2 VideoRepick xhard（用户指定） | 863 → 1618 | 123 → 231 | 51 → 98 | 约 6 → 4 段（执行 2 + swap 2；演示段其余段里漏的更多，未计） | **长，1.87 倍**（T 1.87、Δ8 1.88、窗 1.92）；漏段 0.67 倍 |
 | VideoPlaceOrder | 参照 V2 VideoRepick xhard（用户指定） | 863 → 1773 | 123 → 253 | 51 → 108 | 约 6 → 4 段（同上） | **长，2.05 倍**（T 2.05、Δ8 2.06、窗 2.12）；漏段 0.67 倍 |
+| PatternLock | 参照 V2 RouteStick xhard（用户指定） | 900 → 737 | 128 → 105 | 54 → 43 | 约 11 → 8 段 | **短，0.82 倍**（T 0.82、Δ8 0.82、窗 0.80、漏段 0.73） |
+| RouteStick | 同任务 xhard | 900 → 900 | 128 → 128 | 54 → 54 | 约 11 段（58%）→ 6 段（执行段 9 段里漏 6，无 swap） | 一样 |
 
 归纳（倍数 = V3 / V2 参照，按 T）：**持平或更长**——RouteStick 1.00、VideoUnmaskSwap 1.00、VideoRepick 1.10、StopCube 1.17、PickHighlight 0.99（对 VideoRepick）、VideoPlaceButton 1.87、VideoPlaceOrder 2.05；**比参照短**——BinFill 0.68（对自身含假 demo 的 hard）、PickXtimes 0.69、SwingXtimes 0.51、PickHighlight 0.52（对 BinFill）、PatternLock 0.82、VideoUnmask 0.85、ButtonUnmask 0.92、ButtonUnmaskSwap 0.83。要把短的拉上来，各自的旋钮是：BinFill 投 8～9 块、PatternLock 节点 [12,16]、容器类任务没有不改结构的旋钮；是否调整由用户定。
 
@@ -337,15 +337,12 @@ V2 实测总览（origin/newtask-v2 `c0e7f046` 入库，07 实跑 14 组，含 s
 
 逐任务图：每任务按合成 T 取最短、中位、最长三条，每条上行官方 hard、下行 xhard1 合成。
 
-| 任务 | 图 | 任务 | 图 |
-|---|---|---|---|
-| PickXtimes | [图](vis/output/PickXtimes.png) | StopCube | [图](vis/output/StopCube.png) |
-| SwingXtimes | [图](vis/output/SwingXtimes.png) | BinFill | [图](vis/output/BinFill.png) |
-| VideoUnmaskSwap | [图](vis/output/VideoUnmaskSwap.png) | VideoUnmask | [图](vis/output/VideoUnmask.png) |
-| ButtonUnmaskSwap | [图](vis/output/ButtonUnmaskSwap.png) | ButtonUnmask | [图](vis/output/ButtonUnmask.png) |
-| VideoRepick | [图](vis/output/VideoRepick.png) | VideoPlaceButton | [图](vis/output/VideoPlaceButton.png) |
-| VideoPlaceOrder | [图](vis/output/VideoPlaceOrder.png) | PickHighlight | [图](vis/output/PickHighlight.png) |
-| PatternLock | [图](vis/output/PatternLock.png) | RouteStick | [图](vis/output/RouteStick.png) |
+| 类别 | 任务与图 |
+|---|---|
+| 1 计数（Counting） | 1.1 [BinFill](vis/output/BinFill.png) · 1.2 [PickXtimes](vis/output/PickXtimes.png) · 1.3 [SwingXtimes](vis/output/SwingXtimes.png) · 1.4 [StopCube](vis/output/StopCube.png) |
+| 2 永久性（Permanence） | 2.1 [VideoUnmask](vis/output/VideoUnmask.png) · 2.2 [ButtonUnmask](vis/output/ButtonUnmask.png) · 2.3 [VideoUnmaskSwap](vis/output/VideoUnmaskSwap.png) · 2.4 [ButtonUnmaskSwap](vis/output/ButtonUnmaskSwap.png) |
+| 3 参考（Reference） | 3.1 [PickHighlight](vis/output/PickHighlight.png) · 3.2 [VideoRepick](vis/output/VideoRepick.png) · 3.3 [VideoPlaceButton](vis/output/VideoPlaceButton.png) · 3.4 [VideoPlaceOrder](vis/output/VideoPlaceOrder.png) |
+| 4 模仿（Imitation） | 4.3 [PatternLock](vis/output/PatternLock.png) · 4.4 [RouteStick](vis/output/RouteStick.png)（4.1 MoveCube、4.2 InsertPeg 不纳入，无图） |
 
 swap 计入后，有 swap 的四个任务在合成参考上的结果（`vis/output/reference_summary.md`「有 swap 的四个任务」）：
 
@@ -467,18 +464,18 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 
 | 文件 | 子类代码要点（锚点已核实） |
 |---|---|
+| `bin_fill.py` | `{**BinFill.config_hard,"put_in_numbers":[5,6]}`；另重写 `_load_scene(self, options)`：`super()._load_scene(options)` 后核对每个有目标颜色的实际方块数 ≥ 目标数，不足即 `raise SceneGenerationError(...)`（父类把生成失败吞成 debug 日志，否则 `_initialize_episode` 的 `cube_collection[i]` IndexError；`SceneGenerationError` 由生成器归为 `task` 失败、xhard 不换 seed）。`SceneGenerationError` 的 import 路径以 `_worker` 现用的为准 |
 | `pick_xtimes.py` | `@register_env("PickXtimesXHard1") class PickXtimesXHard1(XHardMixin, PickXtimes): robomme_base_id="PickXtimes"; configs={**PickXtimes.configs,"hard":{**PickXtimes.config_hard,"number_min":6,"number_max":7}}`。`__init__` 用局部 generator 读 `configs[difficulty]['number_min/max']`，自动生效 |
 | `swing_xtimes.py` | 同上，`"number_min":7,"number_max":8`；`max_swings = num_repeats*2` 在 `_initialize_episode` 自动派生 |
-| `pick_highlight.py` | `{**PickHighlight.config_hard,"pickup":5}`；`step` 已 `min(pickup, len(target_cubes))` |
-| `pattern_lock.py` | `{**PatternLock.config_hard,"length":[10,14]}`；拒绝采样 1000 次不中静默兜底，接受率由前置验证 ② 定，若过低改 [9,13] |
-| `route_stick.py` | `{**RouteStick.config_hard,"length":[8,10]}`；`configs` 整体保留三档（`_load_scene` 用 `configs.get(..., config_easy)`） |
-| `bin_fill.py` | `{**BinFill.config_hard,"put_in_numbers":[5,6]}`；另重写 `_load_scene(self, options)`：`super()._load_scene(options)` 后核对每个有目标颜色的实际方块数 ≥ 目标数，不足即 `raise SceneGenerationError(...)`（父类把生成失败吞成 debug 日志，否则 `_initialize_episode` 的 `cube_collection[i]` IndexError；`SceneGenerationError` 由生成器归为 `task` 失败、xhard 不换 seed）。`SceneGenerationError` 的 import 路径以 `_worker` 现用的为准 |
-| `video_unmask_swap.py` / `button_unmask_swap.py` | `{**父.config_hard,"swap_min":4,"swap_max":5}`；重写 `_refresh_swap_schedule(self)`：k=1..3 照父类（64+50(k−1) 到 64+50k），k=4、5 新增：`swap_pair4_idx1`/`swap_pair5_idx1` 若不存在则按 `swap_indices[(k-1) % len(swap_indices)]` 取、`idx2=None`，区间 64+150 到 64+200、64+200 到 64+250；`step()` 用 `len(self.swap_schedule)` 与 `getattr(self, f'swap_pair{i+1}_idx2')` 泛化遍历，不必重写；VideoUnmaskSwap 的 static 演示 `static_steps = swap_schedule[-1][3]` 自动变长（264/314）。origin/newtask-v2 已实现过 swap 4–5，写之前 `git log origin/newtask-v2 -- src/robomme/robomme_env/VideoUnmaskSwap.py` 参考其 diff（只参考、不照搬进 `src/robomme/`） |
 | `stop_cube.py` | 重写 `_initialize_episode(self, env_idx, options)`：照父类顺序用新建 generator（`manual_seed(self.seed)`）抽 `interval`（抽后覆盖 30）→ `move_interval` 的 `randint(0,3)`（抽后**覆盖为 120**）→ `stop_time = randint(8, 11)`（原 `randint(2,6)` 的位置，消耗量相同）→ `rotation_angle`，其余照抄父类；重写 `step()`：`for segment in range(5)` 改为 `range(self.stop_time)`。`evaluate` 的 `move_interval*stop_time` 超时自动随之变 |
-| `video_repick.py` | 重写 `__init__(self, *args, seed=None, **kwargs)`：`super().__init__(*args, seed=seed, **kwargs)` 后 `self.num_repeats = int(torch.randint(4, 6, (1,), generator=torch.Generator().manual_seed(seed)).item())`——用独立 generator，不动 `self.generator` 的随机流；构造期间那次 `_initialize_episode` 用旧值，生成器随后 `record_env.reset()` 重跑 `_initialize_episode` 读到新值（已核实默认 `reconfiguration_freq=0`、reset 不重跑 `_load_scene`，hard 分支 `_load_scene` 不依赖 `num_repeats`）；前置验证 ⑤ 实证 |
 | `video_unmask.py` / `button_unmask.py`（S2） | `configs` 不改（`bin` 15、`pick` 2 保持，3 抓不走 `pick` 键，避免父类 `>1` 分支语义混淆）；重写 `_load_scene(self, options)`：`super()._load_scene(options)` 后，若 `len(self.spawned_bins) >= 3 and len(self.color_names) >= 3` 则在 `self.task_list` 的尾段之前追加两项——`put down the container`（`is_bin_putdown(self, obj=self.bin_1)` + `solve_putdown_whenhold`）与 `pick up the container that hides the {color_names[2]} cube`（`is_bin_pickup(self, obj=self.bin_2)` + `solve_pickup_bin(..., obj=self.bin_2)`，`segment` 指向 `bin_2`，`failure_func` 照父类第二抓的写法），然后重算 `self.recovery_pickup_indices, self.recovery_pickup_tasks = task4recovery(self.task_list)`；不足 3 个容器抛 `SceneGenerationError`；设 `self.xhard_pick_count = 3` 供语言目标读取。写法对照 V9 `VideoUnmask::_append_xhard_pick_tasks`（只参考，不搬干扰容器部分）。**配套**：`task_goal.py` 的两个分支在 `pick > 1` 的 2 抓句之上加一个「`getattr(env.unwrapped, "xhard_pick_count", 0) >= 3`」分支，句型照 V9 `_unmask_multi_pick_clause`（`…then pick up the container hiding the {c0} cube, next pick up another container hiding the {c1} cube, finally pick up another container hiding the {c2} cube`，ButtonUnmask 前缀 `first press the button, then …`）——这是受保护目录的一处改动，主会话按 R1 例外处理 |
+| `video_unmask_swap.py` / `button_unmask_swap.py` | `{**父.config_hard,"swap_min":4,"swap_max":5}`；重写 `_refresh_swap_schedule(self)`：k=1..3 照父类（64+50(k−1) 到 64+50k），k=4、5 新增：`swap_pair4_idx1`/`swap_pair5_idx1` 若不存在则按 `swap_indices[(k-1) % len(swap_indices)]` 取、`idx2=None`，区间 64+150 到 64+200、64+200 到 64+250；`step()` 用 `len(self.swap_schedule)` 与 `getattr(self, f'swap_pair{i+1}_idx2')` 泛化遍历，不必重写；VideoUnmaskSwap 的 static 演示 `static_steps = swap_schedule[-1][3]` 自动变长（264/314）。origin/newtask-v2 已实现过 swap 4–5，写之前 `git log origin/newtask-v2 -- src/robomme/robomme_env/VideoUnmaskSwap.py` 参考其 diff（只参考、不照搬进 `src/robomme/`） |
+| `pick_highlight.py` | `{**PickHighlight.config_hard,"pickup":5}`；`step` 已 `min(pickup, len(target_cubes))` |
+| `video_repick.py` | 重写 `__init__(self, *args, seed=None, **kwargs)`：`super().__init__(*args, seed=seed, **kwargs)` 后 `self.num_repeats = int(torch.randint(4, 6, (1,), generator=torch.Generator().manual_seed(seed)).item())`——用独立 generator，不动 `self.generator` 的随机流；构造期间那次 `_initialize_episode` 用旧值，生成器随后 `record_env.reset()` 重跑 `_initialize_episode` 读到新值（已核实默认 `reconfiguration_freq=0`、reset 不重跑 `_load_scene`，hard 分支 `_load_scene` 不依赖 `num_repeats`）；前置验证 ⑤ 实证 |
 | `video_place_button.py`（S5） | `configs = {**父.configs, "hard": {**父.config_hard}}`（键不变，仍 `color 3 / swap True / targets 4 / additional_place False`）。重写 `_load_scene(self, options)`：保留父类 spawn 段原文（按钮、4 个台、cube 生成），把 `tasks` 的构造换成「2 块」模板：用父类同一局部 generator 再抽第二块 demo cube（从 `non_target_cubes` 里取一块不同颜色）、两块各自的按钮前台与按钮后台（`randperm(4)` 前两个给块 1、后两个给块 2，保证不撞台）、答案块（二选一）、`task_flag` before/after；task_list = 块 1 pick→前台、块 2 pick→前台、press the button、块 1 pick→后台、块 2 pick→后台、块 1 `put the cube back to its original position`（`home_site.build_home_sites`）、块 2 同、static 20、static 160（specialflag `swap`）、NO RECORD reset 30、执行段两项原样（抓答案块、放到答案台）。重写 `step()`：swap 分支改为三段——`start_step` 起每 50 步做一次 `swap_flat_two_lane`，三次的台对由 `swap_pair_ids = randperm(4)` 依次取 (0,1)、(2,3)、(0,2)（第三次跨前两对，保证三次后台位整体变动），答案台在三次互换后重算；其余分支照父类。前置验证 ⑥ 若发现 `current_task_specialflag(s)` 命名不一致影响 swap 分支，在子类 `step()` 里按正确属性名读、不修父类 |
 | `video_place_order.py`（S5） | `configs` 键不变。重写 `_load_scene`：保留 spawn 段；抽签改为 2 块 demo cube、`visit_counts = (2, 3)`（哪块 3 次由 `randint(0,2)` 定）、每块的访问台序列 `randperm(4)[:k]`、答案块与 `which_in_subset ∈ [1, 该块访问数]`、按钮插点 `button_after_visit ∈ [1, 4]`；`swap_pair_ids` 同 VPB。重写 `_initialize_episode`：task_list = 按块展开 [访问 1 pick→台 … 访问 k pick→台] 两块交错或顺序排（按 V9 `_build_xhard_task_list`：按钮落在两个单元之间，不切进 pick 与 drop 之间）、两块各 `put the cube back to its original position`、static 20、static 160（swap）、NO RECORD、执行段两项原样；`button_task_index` 按 V9 `xhard_button_task_index` 规则算。重写 `step()` 同 VPB。语言目标文本不用改（`which_in_subset` 序数词已支持） |
+| `pattern_lock.py` | `{**PatternLock.config_hard,"length":[10,14]}`；拒绝采样 1000 次不中静默兜底，接受率由前置验证 ② 定，若过低改 [9,13] |
+| `route_stick.py` | `{**RouteStick.config_hard,"length":[8,10]}`；`configs` 整体保留三档（`_load_scene` 用 `configs.get(..., config_easy)`） |
 
 `README.md`（S0）：中文说明包的用途、`XHardMixin` 原理、怎么加一个任务的子类（三步：建文件、写 `configs`/方法、在 `envs/__init__.py` 加一行）、怎么跑（见四节 runbook）、本轮取值表（第一部分四节）。
 
@@ -506,8 +503,8 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 | 子任务 | 目标 | 可写文件集合 | 禁触路径 | 接口契约与依赖 | 合并顺序 | 验收命令与判定行（worktree 内） | 资源 | 共享文件归属 |
 |---|---|---|---|---|---|---|---|---|
 | S0 | 新包骨架 | `src/robomme_xhard/{__init__,base,jobs}.py`、`envs/__init__.py`（空）、`README.md` | R1、R5 | `XHardMixin.robomme_base_id`；`make_name(job)`；`jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls)` | 派发前 | 主会话自做：`uv run --no-sync python -c "from robomme_xhard.jobs import make_name, jobs_from_metadata"` | CPU | 主会话 |
-| S1 | 换字典组 6 子类 | `src/robomme_xhard/envs/{pick_xtimes,swing_xtimes,pick_highlight,pattern_lock,route_stick,bin_fill}.py` | `src/robomme/**`、`envs/__init__.py`、其它 envs 文件 | 继承 `XHardMixin` + 父类；`robomme_base_id`；只改第二部分一节表所列的键；BinFill 后置校验抛 `SceneGenerationError` | 1 | `python -m pytest tests/lightweight/test_robomme_xhard.py -k "configs or register" -q`（S4 合入前用 S1 自带的最小断言脚本 `python -c` 逐类比 configs） | CPU | 无 |
-| S2 | 重写方法组 6 子类 | `src/robomme_xhard/envs/{video_unmask_swap,button_unmask_swap,video_unmask,button_unmask,stop_cube,video_repick}.py` | 同上 | 同上；重写方法只许表一所列；复制父类函数体时逐字相同、只改指定行；Unmask 两子类设 `xhard_pick_count=3`、不碰 `task_goal.py` | 2 | 同上 `-k configs`；另附 `git diff` 可读的「父类原文 vs 子类改行」对照写进交回 | CPU | 无 |
+| S1 | 换字典组 6 子类 | `src/robomme_xhard/envs/{bin_fill,pick_xtimes,swing_xtimes,pick_highlight,pattern_lock,route_stick}.py` | `src/robomme/**`、`envs/__init__.py`、其它 envs 文件 | 继承 `XHardMixin` + 父类；`robomme_base_id`；只改第二部分一节表所列的键；BinFill 后置校验抛 `SceneGenerationError` | 1 | `python -m pytest tests/lightweight/test_robomme_xhard.py -k "configs or register" -q`（S4 合入前用 S1 自带的最小断言脚本 `python -c` 逐类比 configs） | CPU | 无 |
+| S2 | 重写方法组 6 子类 | `src/robomme_xhard/envs/{stop_cube,video_unmask,button_unmask,video_unmask_swap,button_unmask_swap,video_repick}.py` | 同上 | 同上；重写方法只许表一所列；复制父类函数体时逐字相同、只改指定行；Unmask 两子类设 `xhard_pick_count=3`、不碰 `task_goal.py` | 2 | 同上 `-k configs`；另附 `git diff` 可读的「父类原文 vs 子类改行」对照写进交回 | CPU | 无 |
 | S3 | 生成器开关 | `scripts/data-generation-newSeed/generate_dataset_newseed.py` | `src/**`、`seed_layout.py`、`pyproject.toml` | `EpisodeJob.xhard`；`--xhard`/`--source-split` 与互斥；两处不 bump；worker 内 import；`make_name` | 4 | `python -m pytest tests/lightweight/test_seed_layout.py -q` + `python scripts/data-generation-newSeed/generate_dataset_newseed.py --help`（含 `--xhard`）+ 自带 `python -c` 断言不传 `--xhard` 时 jobs 与 BASE 相等 | CPU | 无 |
 | S5 | Place 两任务重型子类 | `src/robomme_xhard/envs/{video_place_button,video_place_order}.py` | `src/robomme/**`、`envs/__init__.py`、其它 envs 文件、`home_site.py`（只读调用） | 调用 S0 的 `home_site.build_home_sites`；执行段判据不变；swap 三次台对规则见一节；`step()` 只改 swap 分支 | 3 | 自带 `python -c` 纯逻辑断言 task_list 形状（不 `gym.make`）；交回父类 `_load_scene`/`_initialize_episode`/`step()` 原文与子类的逐段对照 | CPU | 无 |
 | S4 | 轻量测试 | `tests/lightweight/test_robomme_xhard.py`、`tests/lightweight/test_robomme_xhard_spec.py` | `src/**`、`scripts/**` | 按一节用例清单；spec 测试标 `gpu, slow` | 5 | `python -m pytest tests/lightweight/test_robomme_xhard.py -q` passed（基于合入 S1、S2、S5、S3 后的分支） | CPU | 无 |
@@ -547,7 +544,7 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
    ```bash
    tmux new-session -d -s xh-full \
      "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py \
-        --xhard xhard1 --env PickXtimes,StopCube,SwingXtimes,BinFill,VideoUnmaskSwap,VideoUnmask,ButtonUnmaskSwap,ButtonUnmask,VideoRepick,VideoPlaceButton,VideoPlaceOrder,PickHighlight,PatternLock,RouteStick \
+        --xhard xhard1 --env BinFill,PickXtimes,SwingXtimes,StopCube,VideoUnmask,ButtonUnmask,VideoUnmaskSwap,ButtonUnmaskSwap,PickHighlight,VideoRepick,VideoPlaceButton,VideoPlaceOrder,PatternLock,RouteStick \
         --workers 32 --gpus 0 --output-dir artifacts/xhard/full-$(TZ=America/New_York date +%m%d) \
         2>&1 | tee artifacts/xhard/logs/xh-full.log; echo \"EXIT_CODE=\$?\" >> artifacts/xhard/logs/xh-full.log"
    ```
@@ -606,14 +603,14 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 1. **BinFill**：`put_in_numbers` [5,6]。每多 1 个目标约 +179 帧（108.5+70.6）；hard 均值 4 → 5.5，T ≈ 868 + 1.5×179 ≈ 1137；窗 ≈ 69。`spawn_cubes` [10,12] ≥ 6 不必改；每色目标 ≤10 自然满足。`dynamic` 模式移走窗口随每色方块数变长。
 2. **PickXtimes**：6/7。每次 +154 帧（84.2+69.6）；4.5 → 6.5，T ≈ 1120；窗 ≈ 68。同宽平移，抽到的 N 恒为原值 +2。
 3. **SwingXtimes**：7/8。每次 +78 帧（37.5+40.6）；3 → 7.5，T ≈ 839；窗 ≈ 50。单值变双值不多消耗随机数。
-4. **PickHighlight**：5。每个 +154 帧（98.7+55.4）；T ≈ 847；窗 ≈ 51。不取 6：6/6 全高亮让「记住哪些被高亮」失去意义。
-5. **PatternLock**：[10,14]。每个 move 约 37 帧 × 2（demo+exec）；T ≈ 74×(L−1)：L=10 → 666，12 → 814，14 → 962；窗 ≈ 37–55。备选 [9,13] 或 [12,16]；不改 `grid`（母布局全变）。
-6. **RouteStick**：[8,10]，与 newtask-v2 xhard 相同。T = 100·S = 800–1000；窗 = 2×wins(50S) = 46/54/60。
-7. **VideoUnmaskSwap / ButtonUnmaskSwap**：[4,5]。VideoUnmaskSwap demo = 6·ceil((64+50S)/6) = 264/318，exec ≈ 263，T ≈ 527–581，窗 ≈ 15–18 + 14 ≈ 31。ButtonUnmaskSwap 交换结束 264/314 步，两次按钮约 221 步。第 4、5 对的 `idx1` 规则：`swap_indices[(k-1) % 3]`（即第 4 对复用第 1 对的第一个容器、第 5 对复用第 2 对的），`idx2` 运行时取最近，与父类 1–3 对的机制一致。
-8. **StopCube**：`move_interval` 钉 120、`stop_time` [8,10]。T ≈ 120×(k−0.5) + 28 ≈ 928/1048/1168；窗 ≈ 56/63/71；static 段 100 帧，Δ8 ≥ 132 必漏。不钉 mi 时 mi=60 的 T 450–570，Δ8 64–81 < 100，不满足。
-9. **VideoRepick**：[4,5]。每次 +157 帧（98.7+58.3）；2 → 4.5，T ≈ 935；窗 ≈ 9（demo 162）+ 47 ≈ 56。改写用独立 generator，不动 `self.generator`，15 块与目标逐项不变。
+4. **StopCube**：`move_interval` 钉 120、`stop_time` [8,10]。T ≈ 120×(k−0.5) + 28 ≈ 928/1048/1168；窗 ≈ 56/63/71；static 段 100 帧，Δ8 ≥ 132 必漏。不钉 mi 时 mi=60 的 T 450–570，Δ8 64–81 < 100，不满足。
+5. **VideoUnmask / ButtonUnmask**：pick 3。每多一抓 +152 帧（放下 49 + 抓容器 103）；T ≈ 329 + 152 ≈ 481（合成 476）、373 + 152 ≈ 525（合成 515）；窗 ≈ 27 / 31。Δ8 约 68～73，大于「放下」段 49 但小于「抓容器」段 103，8 帧是否漏段取决于采样点落位（合成最少 0）。V9 xhard2（另加 4 个干扰容器）实测均值 475 / 526。
+6. **VideoUnmaskSwap / ButtonUnmaskSwap**：[4,5]。VideoUnmaskSwap demo = 6·ceil((64+50S)/6) = 264/318，exec ≈ 263，T ≈ 527–581，窗 ≈ 15–18 + 14 ≈ 31。ButtonUnmaskSwap 交换结束 264/314 步，两次按钮约 221 步。第 4、5 对的 `idx1` 规则：`swap_indices[(k-1) % 3]`（即第 4 对复用第 1 对的第一个容器、第 5 对复用第 2 对的），`idx2` 运行时取最近，与父类 1–3 对的机制一致。
+7. **PickHighlight**：5。每个 +154 帧（98.7+55.4）；T ≈ 847；窗 ≈ 51。不取 6：6/6 全高亮让「记住哪些被高亮」失去意义。
+8. **VideoRepick**：[4,5]。每次 +157 帧（98.7+58.3）；2 → 4.5，T ≈ 935；窗 ≈ 9（demo 162）+ 47 ≈ 56。改写用独立 generator，不动 `self.generator`，15 块与目标逐项不变。
+9. **VideoPlaceButton**：2 块、每块按钮前后各 1 次共 4 次、各回原位、swap 3。demo ≈ 4×181 + 2×181 + 80 + 20 + 160 ≈ 1346，exec ≈ 200，T ≈ 1546（合成 1618）；窗 ≈ 82 + 10 ≈ 92（合成 98）。
 10. **VideoPlaceOrder**：2 块、访问 (2,3) 共 5 次、各回原位、swap 3。demo ≈ 5×181（放台）+ 2×181（回原位）+ 88（按钮）+ 20 + 160（swap static）≈ 1535，exec ≈ 200，T ≈ 1735（合成参考 1773）；窗 ≈ 94 + 10 ≈ 104（合成 108）。V9 xhard1 同配置但 1 次 swap 实测 1696。
-11. **VideoPlaceButton**：2 块、每块按钮前后各 1 次共 4 次、各回原位、swap 3。demo ≈ 4×181 + 2×181 + 80 + 20 + 160 ≈ 1346，exec ≈ 200，T ≈ 1546（合成 1618）；窗 ≈ 82 + 10 ≈ 92（合成 98）。
-12. **VideoUnmask / ButtonUnmask**：pick 3。每多一抓 +152 帧（放下 49 + 抓容器 103）；T ≈ 329 + 152 ≈ 481（合成 476）、373 + 152 ≈ 525（合成 515）；窗 ≈ 27 / 31。Δ8 约 68～73，大于「放下」段 49 但小于「抓容器」段 103，8 帧是否漏段取决于采样点落位（合成最少 0）。V9 xhard2（另加 4 个干扰容器）实测均值 475 / 526。
+11. **PatternLock**：[10,14]。每个 move 约 37 帧 × 2（demo+exec）；T ≈ 74×(L−1)：L=10 → 666，12 → 814，14 → 962；窗 ≈ 37–55。备选 [9,13] 或 [12,16]；不改 `grid`（母布局全变）。
+12. **RouteStick**：[8,10]，与 newtask-v2 xhard 相同。T = 100·S = 800–1000；窗 = 2×wins(50S) = 46/54/60。
 
 前置验证七项的结论（实施时填写）：① spec 拦截 — 待填；② PatternLock 接受率 — 待填；③ ButtonUnmaskSwap 时序 — 待填；④ BinFill 6 目标生成成功率 — 待填；⑤ VideoRepick reset 读新值 — 待填；⑥ Place 两任务 specialflag — 待填；⑦ `task_goal.py` 改动批准 — 待填。

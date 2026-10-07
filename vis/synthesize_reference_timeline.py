@@ -52,8 +52,6 @@ RULES: dict[str, dict[str, Any]] = {
                     "place": r"^put it down$", "target": [4, 5], "note": "重抓 [1,3] → [4,5]"},
     "PickHighlight": {"kind": "pairs_exec_lastpick", "pick": r"^pick up the \w+ highlighted cube",
                       "place": r"^place the cube onto the table$", "target": [5], "note": "高亮块 3 → 5"},
-    "VideoPlaceOrder": {"kind": "pairs_demo", "pick": r"^pick up the cube$", "place": r"^drop the cube onto target$",
-                        "target": [4], "note": "演示放台 [2,4] → 4"},
     "PatternLock": {"kind": "moves_both", "move": r"^move ", "target": [10, 11, 12, 13, 14], "note": "节点 [4,8] → [10,14]"},
     "RouteStick": {"kind": "moves_both", "move": r"^move to the nearest ", "target": [8, 9, 10], "note": "段数 [4,7] → [8,10]"},
     "StopCube": {"kind": "stopcube", "target": [8, 9, 10], "interval": 120, "note": "停止序号 [2,5] → [8,10]，间隔钉 120"},
@@ -67,6 +65,16 @@ RULES: dict[str, dict[str, Any]] = {
     "VideoPlaceOrder": {"kind": "place_two_cubes", "visits": 5, "swaps": 3,
                         "note": "1 块放 [2,4] 次 → 2 块共访问 5 次（2+3）+ 各回原位 + swap 3 次"},
 }
+
+# 任务排列顺序：按 https://robomme.github.io/ 的四类与类内顺序（AGENTS.md P6）。
+# 计数 Counting 1.1–1.4、永久性 Permanence 2.1–2.4、参考 Reference 3.1–3.4、模仿 Imitation 4.1–4.4。
+SUITE_ORDER = [
+    "BinFill", "PickXtimes", "SwingXtimes", "StopCube",
+    "VideoUnmask", "ButtonUnmask", "VideoUnmaskSwap", "ButtonUnmaskSwap",
+    "PickHighlight", "VideoRepick", "VideoPlaceButton", "VideoPlaceOrder",
+    "MoveCube", "InsertPeg", "PatternLock", "RouteStick",
+]
+assert set(RULES) <= set(SUITE_ORDER)
 
 # 计划第一部分四节的外推值（中位 T / 窗），用来和合成值对账
 PLAN_EXTRAPOLATION = {
@@ -354,13 +362,13 @@ def main(argv=None) -> int:
     parser.add_argument("--h5-dir", default="/data/hongzefu/data_0226")
     parser.add_argument("--metadata-dir", default=str(REPO_ROOT / "src" / "robomme" / "env_metadata" / "train"))
     parser.add_argument("--out", default=str(REPO_ROOT / "vis" / "output"))
-    parser.add_argument("--tasks", default=",".join(RULES))
+    parser.add_argument("--tasks", default=",".join(t for t in SUITE_ORDER if t in RULES))
     args = parser.parse_args(argv)
 
     v2_plot.use_cjk_font()
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
-    tasks = [t for t in args.tasks.split(",") if t]
+    tasks = sorted((t for t in args.tasks.split(",") if t), key=SUITE_ORDER.index)
     summary_rows = []
     swap_rows = []
     swap_min: dict[str, int] = {}

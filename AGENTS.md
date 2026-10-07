@@ -387,6 +387,13 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - **P4. 不做 BinFill 假 demo**（2026-10-06 用户决策「不再把 BinFill 做成带 video 的任务」）：origin/newtask-v2 的 `--binfill-demo`（把成品轨迹重复两遍、前半标 `is_video_demo=True`）**不移植、不传**；本分支生成器已核实不含该代码，保持不含。统计脚本也不复用其 `simulate_binfill_demo` 模拟分支。
 - **P5. 不得擅加大规模 reset 对拍或 rollout 生成；采样生成分布的实现须另与用户沟通**（沿用 benchmark 仓库 2026-09-26 用户原话「不要做大量reset对拍！除非用户指定！」「禁止擅加大规模 reset 对拍 禁止加入大量的rollout生成 用户需要采样生成的分布 也要单独和用户沟通怎么实现」）。正式生成规模以用户明确要求为准；每任务 smoke 默认 3 个 hard seed，放大前先报规模、耗时、用途并取得用户对该批次的明确决定；正本第 4 条的最小 smoke 仍可执行。用户叫停时精确 `tmux kill-session -t '=会话名'`，核对无残留 worker，保留已写产物与日志。
 
+- **P6. 凡列出多个任务的表格、列表、汇总、图，一律按 [robomme.github.io](https://robomme.github.io/) 的四类与类内顺序排列**（2026-10-07 用户原话「按照https://robomme.github.io/的分类来排列表格 你现在都乱排的 写入agentsmd」）。顺序与编号照抄官网 Task 编号：
+    - **1 计数 Counting**：1.1 BinFill、1.2 PickXtimes、1.3 SwingXtimes、1.4 StopCube；
+    - **2 永久性 Permanence**：2.1 VideoUnmask、2.2 ButtonUnmask、2.3 VideoUnmaskSwap、2.4 ButtonUnmaskSwap；
+    - **3 参考 Reference**：3.1 PickHighlight、3.2 VideoRepick、3.3 VideoPlaceButton、3.4 VideoPlaceOrder；
+    - **4 模仿 Imitation**：4.1 MoveCube、4.2 InsertPeg、4.3 PatternLock、4.4 RouteStick。
+    - 不按 env_code、字母序或改法分组排任务；表格要编号时用官网编号（如 `2.3`），可另加「类别」列。只列部分任务时，保持上述相对顺序。代码里需要任务顺序时（如 `vis/synthesize_reference_timeline.py::SUITE_ORDER`）同样照此顺序；`seed_layout.py` 的 env_code 是 seed 公式的一部分，不受本条影响、不改。
+
 ## 对正本的覆盖项（按正本条号；未列出的条目按正本执行）
 
 - **覆盖第 1 条（历史英文化遗留）**：豁免清单只有 `tests/lightweight/test_no_patch_report_debug_environment.py`（源自已删除的 `scripts/data-generation-v2-noPatch/` 英文化目录），既有英文内容保持原样；其余新增 / 修改内容一律中文。
