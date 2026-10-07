@@ -26,6 +26,9 @@
   返回）；第一次 Ponder 时父类才新建上下文，外壳在父类 ``_fire_s2`` 期间把模块里的上下文类临时换成「建好即挂观察」
   的工厂，返回后立即还原。外壳只观察真实结果：不多推理、不多抽随机数、不改动作。环境变量 ``SGEVAL_AUDIT=0`` 时
   不挂观察、不加审计键（``OBS_EQ`` 对照）。
+- S2 输入（FIX-3，计划八.11 PonderPounce 行）：另挂在上下文实例的 ``_append`` 上只读镜像进上下文的 token id，每次
+  ``fire`` 把「上次 fire 输入之后新增的段 + 本次观测段」用 S2 分词器解码成 ``input_text``（视觉段为 ``<image:k>``），
+  附图描述放 ``input_images``；详见 ``_S2Watch`` 与 ``generation_blocks``。
 - 外壳自用参数 ``--sgeval-metadata-out <path>``：启动时从 argv 摘掉（其余原样交给 vla_eval），写服务元数据
   ``server-metadata-<port>.json``（``policy_seed`` 即 ``--args.seed``、``argv``、``pid``、``port``）。
 
@@ -38,6 +41,7 @@
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import sys
@@ -95,21 +99,75 @@ def _tolist(x: Any) -> list | None:
         return None
 
 
+def _pixel_sha256(img: Any) -> str | None:
+    """送进 S2 的一帧（PIL 或数组）的像素哈希，算法与 ``trace_writer.image_sha256`` 相同（``dtype.str|shape|`` + 连续
+    字节）；RGB 的 PIL 转回 ``uint8 (H, W, 3)`` 与客户端发出的原始帧逐字节相同，客户端据此核对帧号。失败返回 None。"""
+    try:
+        import numpy as np
+
+        arr = np.ascontiguousarray(np.asarray(img))
+        h = hashlib.sha256()
+        h.update(f"{arr.dtype.str}|{arr.shape}|".encode())
+        h.update(arr.tobytes())
+        return h.hexdigest()
+    except Exception:  # noqa: BLE001 观察失败不影响服务
+        return None
+
+
 class _S2Watch:
     """System 2 上下文（``SoftS2SessionContext``）的只读观察：包住实例的 ``fire`` 与 ``_restore``，原样调用、原样返回，
-    记下本次真实生成结果（reasoning、子目标、token、gate 分数）、上下文长度增量与回滚次数。"""
+    记下本次真实生成结果（reasoning、子目标、token、gate 分数）、上下文长度增量与回滚次数。
 
-    def __init__(self, ctx: Any, sink: list):
+    FIX-3（1006 计划八.11 PonderPounce 行「S2 完整上下文含回灌历史、增量图文片段、附图引用」）：上游
+    ``ponderpounce/inference/append_context.py::SoftS2SessionContext`` 只保留 KV cache（``self.cache``）与累计的
+    cognition mask／query id，**不保留上下文的 token id**；所有进上下文的 token 都经实例方法 ``_append(segment)``
+    （``_Segment.input_ids``／``mm_token_type_ids`` 是 CPU 张量），任务前缀 + 演示图（``self._prefix``）在构造时的
+    ``reset()`` 里就已追加。所以输入观察挂在实例的 ``_append`` 上：原方法照常调用、原样返回，成功后只读地把这段
+    token id 记进一份镜像（按追加起点 ``_context_len`` 截断，``_restore`` 回滚／``reset`` 由此体现）；构造时已追加的
+    前缀从 ``ctx._prefix`` 只读补进镜像。每次 ``fire`` 的输入 = 镜像里「上次 fire 输入之后」到「本次观测段」为止的
+    全部段（第一次含任务前缀与演示图；之后含上次 fire 提交的生成 token 即回灌的上一子目标、cognition 占位 token、
+    本次观测图；回滚掉的生成段不在其中），用 S2 自己的分词器（``ctx.compiler.tokenizer``，即
+    ``session.s2_processor.tokenizer``）``decode(skip_special_tokens=False)`` 成文字，视觉 token 段
+    （``<|vision_start|>`` + ``<|image_pad|>``×n + ``<|vision_end|>``）换成 ``<image:k>`` 占位，不解码像素。只读：
+    不调模型、不抽随机数、不改上下文、不多做前向；``ctx`` 没有 ``_append``／``compiler.tokenizer`` 时（测试桩）不观察
+    输入，生成块与之前逐字节相同。"""
+
+    def __init__(self, ctx: Any, sink: list, cam_keys: Any = None):
         self.ctx, self.sink = ctx, sink
         self.restores = 0
         self.fire_index = 0
+        self.cam_keys = tuple(cam_keys) if cam_keys else None
+        self.input_errors = 0
+        self._segs: list[dict] = []      # 上下文镜像：每段 {start, end, ids, mm, origin, images}
+        self._consumed = 0               # 已作为某次 fire 输入报告过的上下文长度
+        self._await_obs = False          # 本次 fire 的观测段还没追加
+        self._fire_pils: Any = None
+        self._restored = False
+        self._pending: dict | None = None
         orig_fire, orig_restore = ctx.fire, getattr(ctx, "_restore", None)
+        compiler = getattr(ctx, "compiler", None)
+        self._tok = getattr(compiler, "tokenizer", None)
+        self._vs = getattr(compiler, "vision_start_id", None)
+        self._ve = getattr(compiler, "vision_end_id", None)
+        orig_append = getattr(ctx, "_append", None)
+        self.observe_input = callable(orig_append) and callable(getattr(self._tok, "decode", None))
+        if self.observe_input:
+            try:
+                self._seed_prefix()
+            except Exception:  # noqa: BLE001 观察失败不影响服务
+                self.input_errors += 1
 
         def fire(*a, **k):
             before = getattr(ctx, "_context_len", None)
             prefix_restore = getattr(ctx, "_prefix_snapshot", None) is not None
             self.restores = 0
-            result = orig_fire(*a, **k)
+            self._await_obs, self._pending, self._restored = True, None, False
+            self._fire_pils = a[0] if a else k.get("obs_pils")
+            try:
+                result = orig_fire(*a, **k)
+            finally:
+                self._await_obs, self._fire_pils = False, None
+            pending, self._pending = self._pending, None
             after = getattr(ctx, "_context_len", None)
             rollbacks = max(0, self.restores - (1 if prefix_restore else 0))
             sg_tokens = getattr(result, "subgoal_tokens", None)
@@ -126,6 +184,7 @@ class _S2Watch:
                 "context_len_before": before,
                 "context_len_after": after,
                 "context_delta": (after - before) if isinstance(before, int) and isinstance(after, int) else None,
+                **(pending or {}),
             })
             self.fire_index += 1
             return result
@@ -136,6 +195,106 @@ class _S2Watch:
                 self.restores += 1
                 return orig_restore(*a, **k)
             ctx._restore = restore
+        if self.observe_input:
+            def append(segment, *a, **k):
+                start = getattr(ctx, "_context_len", None)
+                out = orig_append(segment, *a, **k)
+                try:
+                    self._on_append(segment, start)
+                except Exception:  # noqa: BLE001 观察失败不影响服务
+                    self.input_errors += 1
+                return out
+            ctx._append = append
+
+    # -- S2 输入观察（只读：只读 segment 的 CPU token id，不碰 cache、不调模型） --
+    def _demo_images(self) -> list:
+        demo = getattr(getattr(self.ctx, "session", None), "demo_images", None) or []
+        return [{"source": "demo", "demo_pos": i, "pixel_sha256": _pixel_sha256(im)} for i, im in enumerate(demo)]
+
+    def _obs_images(self) -> list:
+        pils = list(self._fire_pils or [])
+        keys = self.cam_keys or ()
+        return [{"source": "obs", "cam_key": keys[j] if j < len(keys) else None, "cam_slot": j,
+                 "pixel_sha256": _pixel_sha256(im)} for j, im in enumerate(pils)]
+
+    def _seed_prefix(self) -> None:
+        """构造时 ``reset()`` 已追加的任务前缀 + 演示图（``ctx._prefix``）补进镜像（只读）。"""
+        prefix = getattr(self.ctx, "_prefix", None)
+        clen = getattr(self.ctx, "_context_len", None)
+        ids = _tolist(getattr(prefix, "input_ids", None))
+        if not ids or not isinstance(clen, int) or clen < len(ids):
+            return
+        self._segs.append({"start": 0, "end": len(ids), "ids": ids,
+                           "mm": _tolist(getattr(prefix, "mm_token_type_ids", None)), "origin": "prefix",
+                           "images": self._demo_images()})
+
+    def _on_append(self, segment: Any, start: Any) -> None:
+        if not isinstance(start, int):
+            return
+        ids = _tolist(getattr(segment, "input_ids", None)) or []
+        # 追加起点及之后的镜像段已被 _restore／reset 丢弃（段整体追加，不会跨起点）
+        self._segs = [s for s in self._segs if s["start"] < start]
+        if self._consumed > start:  # 上下文回到了已报告位置之前（current_obs_only 每次回到前缀、或 reset）
+            self._consumed, self._restored = start, True
+        if segment is getattr(self.ctx, "_prefix", None):
+            origin, images = "prefix", self._demo_images()
+        elif self._await_obs:
+            origin, images = "obs", self._obs_images()
+        else:
+            cm = _tolist(getattr(segment, "cognition_mask", None)) or []
+            origin, images = ("cog" if any(cm) else "generated"), []
+        end = start + len(ids)
+        if ids:
+            self._segs.append({"start": start, "end": end, "ids": ids,
+                               "mm": _tolist(getattr(segment, "mm_token_type_ids", None)), "origin": origin,
+                               "images": images})
+        if origin == "obs":
+            self._await_obs = False
+            segs = [s for s in self._segs if s["start"] >= self._consumed and s["end"] <= end]
+            self._pending = self._decode_input(segs, base=self._consumed)
+            self._consumed = end
+
+    def _decode_input(self, segs: list, *, base: int) -> dict:
+        """镜像段 → 文字（S2 分词器 decode，视觉段换 ``<image:k>``）+ 逐图描述（来源、相机、像素哈希）。"""
+        tok = self._tok
+        parts: list[str] = []
+        buf: list[int] = []
+        images: list[dict] = []
+
+        def flush() -> None:
+            if buf:
+                parts.append(str(tok.decode(list(buf), skip_special_tokens=False)))
+                buf.clear()
+
+        for s in segs:
+            ids = s["ids"]
+            mm = s["mm"] if s["mm"] is not None and len(s["mm"]) == len(ids) else [0] * len(ids)
+            pending_imgs = list(s["images"])
+            i = 0
+            while i < len(ids):
+                if mm[i] == 1:  # 一张图的视觉 token 段（<|image_pad|>×n）
+                    j = i
+                    while j < len(ids) and mm[j] == 1:
+                        j += 1
+                    if buf and self._vs is not None and buf[-1] == self._vs:
+                        buf.pop()
+                    flush()
+                    k = len(images)
+                    parts.append(f"<image:{k}>")
+                    d = dict(pending_imgs.pop(0)) if pending_imgs else {"source": s["origin"]}
+                    d.update(index=k, n_tokens=j - i)
+                    images.append(d)
+                    if j < len(ids) and self._ve is not None and ids[j] == self._ve:
+                        j += 1
+                    i = j
+                    continue
+                buf.append(int(ids[i]))
+                i += 1
+        flush()
+        return {"input_text": "".join(parts), "input_token_count": sum(len(s["ids"]) for s in segs),
+                "input_images": images, "input_decoded_from_tokens": True, "input_base_len": base,
+                "input_context_restored": self._restored,
+                "input_segments": [{"origin": s["origin"], "tokens": len(s["ids"])} for s in segs]}
 
 
 class SubgoalReportingServer(PonderPounceRoboMMEServer):
@@ -158,7 +317,7 @@ class SubgoalReportingServer(PonderPounceRoboMMEServer):
 
         def factory(*a, **k):
             ctx = orig_cls(*a, **k)
-            _S2Watch(ctx, sink)
+            _S2Watch(ctx, sink, cam_keys=getattr(self, "_camera_keys", None))
             return ctx
 
         rs.SoftS2SessionContext = factory
@@ -223,8 +382,12 @@ def generation_blocks(fires: list, *, task_text: Any = None, active_subgoal: Any
     ``subgoal_raw``（= ``subgoal_text``，``at [x, y]`` 原文）、``reasoning``（= ``reasoning_text``）、``kind``／``committed``
     （原字段）、``params``（fire 序号、gate 分数、输入帧数、上下文长度增量、是否回滚）。``text`` 不给（上游只保留拆开后的
     reasoning 与子目标，不保留整块解码原文；客户端缺 ``text`` 时取 ``subgoal_raw``）；``context``／``prompt``／``images``
-    不给（S2 输入是上下文里累积的 token，上游不保留文字形式，外壳不多解码），客户端记 None。``s2_task_text`` 与
-    回包时刻的 ``active_subgoal``／``n_s2_fires``／``n_s1_fires`` 随每块附上。"""
+    不给。S2 输入（FIX-3）：上下文实例可观察时每块另带 ``input_text``（本次 fire 前新增进上下文的 token 用 S2 分词器
+    解码，视觉段为 ``<image:k>``）、``input_token_count``、``input_images``（第 k 个占位对应的图：``source=demo`` 带
+    ``demo_pos``，``source=obs`` 带 ``cam_key``／``cam_slot``，均带 ``pixel_sha256``）、``input_decoded_from_tokens=True``、
+    ``input_base_len``（这段追加在多长的上下文之后）、``input_context_restored``（上下文先回退到已报告位置之前，如
+    ``current_obs_only`` 每次回到前缀）、``input_segments``（各段来源 prefix／generated／cog／obs 与 token 数）；不可观察
+    时这些键不出现。``s2_task_text`` 与回包时刻的 ``active_subgoal``／``n_s2_fires``／``n_s1_fires`` 随每块附上。"""
     if not fires:
         return None
     out = []

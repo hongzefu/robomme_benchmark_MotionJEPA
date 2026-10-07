@@ -61,7 +61,8 @@ PonderPounce 的噪声种子是 ``crc32(f"{seed}:{sid}:{n}")``，两侧各起自
 第三阶段语言账本（冻结说明第五节；只在第二阶段开关打开且有轨迹落点时记，轨迹同目录 ``language.jsonl``）：
 每个观测一个 ``action_model`` 调用（发送前写 ``in``：``role=fields`` 的 ``task_description`` + 当前前视／腕部帧引用；
 回包后 pop 掉 ``_sgeval_audit``，逐通道写分词消息，``close_call`` 记 ``server_final_text``）；审计块带
-``pp_generation`` 时另开 ``subgoal_model`` 调用记 S2 完整生成块（见 ``TracedConnection._log_generation``）。执行步
+``pp_generation`` 时另开 ``subgoal_model`` 调用记 S2 完整生成块（见 ``TracedConnection._log_generation``；块带外壳
+解码的 S2 输入 ``input_text`` 时先记 ``in`` 消息与附图引用，回包后写，属第五节同类例外）。执行步
 ``source_call_id`` 指向本步动作来自的 ``action_model`` 调用、``chunk_index=0``。审计键在动作交给环境之前一律 pop 掉，
 不改动作、RNG 与请求字节。
 
@@ -468,21 +469,41 @@ class TracedConnection:
                              "raw_sha256": h(imgs[key]), "sources": None, "transform": None, "encoded_sha256": None})
         return refs or None
 
-    def _log_generation(self, step: int, gen: Any) -> None:
+    def _log_generation(self, step: int, gen: Any, obs: Any = None) -> None:
         """S2 完整生成块记成一个 ``subgoal_model`` 调用（服务端内部推理，事后记账）。
 
         读取的键（R3 外壳写入，缺键记 None）：``context``／``prompt``（S2 输入全文，含回灌历史）、``images``（附图引用）、
         ``text``（完整生成块原文）、``reasoning``、``subgoal_raw``（``at [x, y]`` 原文）、``kind``（``transition``／
         ``nontransition``）、``committed``（提交或回滚）。``parsed`` 记换算后子目标与整块原样；nontransition 显式记
-        ``text_output=False``、``out`` 文字为 None。"""
+        ``text_output=False``、``out`` 文字为 None。
+
+        FIX-3：块带 ``input_text``（外壳从 S2 上下文 token 解码的输入文字）时，先写 ``dir=in role=user`` 消息（附图按
+        ``input_images`` 解析成帧引用，见 ``_s2_input_images``），``parsed`` 另记 ``input_decoded_from_tokens=True`` 与
+        ``input_image_check``，``parsed.generation`` 去掉 ``input_text``（不重复存）；没有该键时与之前逐字节相同。"""
         if not isinstance(gen, dict):
             return
         cid = self._lang("open_call", "subgoal_model", step, params=gen.get("params"))
         if cid is None:
             return
-        ctx = gen.get("context", gen.get("prompt"))
-        if ctx is not None or gen.get("images"):
-            self._lang("message", cid, dir="in", role="user", text=ctx, images=gen.get("images"))
+        decoded = isinstance(gen.get("input_text"), str)
+        check = None
+        if decoded:
+            # FIX-3：S2 输入是服务外壳从上下文 token 解码出的文字（本次 fire 前新增的段：首次含任务前缀与演示图，之后含
+            # 回灌的上一子目标与 cognition 占位、本次观测图）。它来自回包，只能在回包后写——与冻结说明第五节已登记的
+            # 「带 channel 的分词通道消息」同类的「发送前落盘」例外；仍记 dir=in（描述的是进模型的内容）。
+            try:
+                imgs, demo_video, check = self._s2_input_images(gen.get("input_images"), obs, step)
+            except Exception as e:  # noqa: BLE001 账本辅助一律不影响控制流
+                self.lang_errors += 1
+                print(f"TRACE_HOOK_ERROR route=pp/new where=language.s2_images {type(e).__name__}: {e}"[:600],
+                      flush=True)
+                imgs, demo_video, check = None, None, None
+            self._lang("message", cid, dir="in", role="user", text=gen["input_text"], images=imgs,
+                       demo_video=demo_video)
+        else:
+            ctx = gen.get("context", gen.get("prompt"))
+            if ctx is not None or gen.get("images"):
+                self._lang("message", cid, dir="in", role="user", text=ctx, images=gen.get("images"))
         kind = gen.get("kind", gen.get("transition"))
         nontransition = kind in ("nontransition", False)
         raw = gen.get("subgoal_raw")
@@ -491,7 +512,61 @@ class TracedConnection:
         parsed = {"subgoal": pp_subgoal_to_official(None if raw is None else str(raw)), "subgoal_raw": raw,
                   "reasoning": gen.get("reasoning"), "kind": kind, "committed": gen.get("committed"),
                   "text_output": not nontransition and text is not None, "generation": gen}
+        if decoded:  # 行 schema 冻结：标志与图核对结果落在 parsed；输入原文已在 in 消息里，generation 不再重复
+            parsed["generation"] = {k: v for k, v in gen.items() if k != "input_text"}
+            parsed["input_decoded_from_tokens"] = True
+            parsed["input_image_check"] = check
         self._lang("close_call", cid, status="reply", parsed=parsed)
+
+    def _s2_input_images(self, descs: Any, obs: Any, step: int) -> tuple[list | None, str | None, dict]:
+        """S2 输入第 k 个 ``<image:k>`` → 冻结说明的 images 元素（slot=k）。
+
+        - ``source=obs``：本次观测（S2 fire 发生在处理这条观测时，生成块随它的回包返回），帧号与 ``_image_refs`` 同口径
+          （step 0 为 demo 段末帧 ``demo_index``，k≥1 为执行第 k 步后），``raw_sha256`` 用客户端对发出原始帧的哈希
+          （即 trace 帧哈希），与外壳的 ``pixel_sha256`` 核对；
+        - ``source=demo``：S2 前缀里的演示图（服务端按 demo_fps 抽帧）；在本次观测的 ``video_history``（= trace demo
+          行前 N 帧）里按像素哈希顺序匹配出帧号，``ref=keyframe``、``cam=front``；匹配不上时帧号 None、``raw_sha256``
+          取外壳哈希（检查器会如实报 unresolved）。
+        返回 ``(images, demo_video, check)``；check = ``{"n", "sha_mismatch", "demo_unmatched"}``。"""
+        check = {"n": 0, "sha_mismatch": 0, "demo_unmatched": 0}
+        if not isinstance(descs, list) or not descs:
+            return None, None, check
+        h = load_trace_writer().image_sha256
+        imgs = obs.get("images") if isinstance(obs, dict) else None
+        imgs = imgs if isinstance(imgs, dict) else {}
+        phase, idx = ("demo", self.demo_index) if step == 0 else ("exec", step)
+        vh = obs.get("video_history") if isinstance(obs, dict) else None
+        vh_hashes = [h(f) for f in vh] if isinstance(vh, list) and any(
+            isinstance(d, dict) and d.get("source") == "demo" for d in descs) else []
+        cams = {"agentview": ("current", "front"), "wrist": ("wrist", "wrist")}
+        out, demo_idx, nxt = [], [], 0
+        for k, d in enumerate(descs):
+            d = d if isinstance(d, dict) else {}
+            px = d.get("pixel_sha256")
+            check["n"] += 1
+            if d.get("source") == "obs":
+                ref, cam = cams.get(str(d.get("cam_key")), ("current", None))
+                raw = h(imgs[d["cam_key"]]) if d.get("cam_key") in imgs else px
+                check["sha_mismatch"] += int(px is not None and raw != px)
+                out.append({"slot": k, "ref": ref, "phase": phase, "frame_idx": idx, "cam": cam, "raw_sha256": raw,
+                            "sources": None, "transform": None, "encoded_sha256": None})
+                continue
+            fi = None
+            if px is not None:
+                for i in list(range(nxt, len(vh_hashes))) + list(range(0, min(nxt, len(vh_hashes)))):
+                    if vh_hashes[i] == px:
+                        fi = i
+                        break
+            if fi is None:
+                check["demo_unmatched"] += 1
+            else:
+                nxt = fi + 1
+                demo_idx.append(fi)
+            out.append({"slot": k, "ref": "keyframe", "phase": "demo", "frame_idx": fi, "cam": "front",
+                        "raw_sha256": px if fi is None else vh_hashes[fi], "sources": None, "transform": None,
+                        "encoded_sha256": None})
+        demo_video = f"demo[{min(demo_idx)}:{max(demo_idx) + 1}]" if demo_idx else None
+        return out, demo_video, check
 
     async def act(self, obs: dict) -> dict:
         step = self.actions_received
@@ -542,7 +617,7 @@ class TracedConnection:
                        parsed={"text_reconstructed_channels": recon} if recon else None)
             gen = self.last_audit.get("pp_generation") if isinstance(self.last_audit, dict) else None
             for g in (gen if isinstance(gen, list) else [gen] if gen is not None else []):
-                self._log_generation(step, g)
+                self._log_generation(step, g, obs)
         self.last_call_id = cid
         return action
 
