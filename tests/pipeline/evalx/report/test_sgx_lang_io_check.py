@@ -226,3 +226,50 @@ def test_unresolved_step_reuse_and_missing_language(tmp_path, capsys):
     rc, v, line = _run(capsys, d)
     print(line)
     assert rc == 1 and v["language_missing"] == "1" and v["unresolved_steps"] == "4"
+
+
+def test_exec_frame0_resolves_to_demo_last_frame(tmp_path, capsys):
+    """执行帧号口径：``phase=exec, frame_idx=0`` 是 reset 后初始帧 = demo 段末帧（前视、腕部各一）；k≥1 对 step k。
+    真实 smoke（MemER 第 0 步动作调用附腕部帧）曾因检查器只在 step 行里找而误报。改成不存在的哈希、或帧号错位
+    （哈希虽在 trace 里但不是那一帧）仍 FAIL。"""
+    d = episode(tmp_path)
+    rows = _lang(d)
+    a0 = next(r for r in rows if r.get("call_id") == "a0" and r["kind"] == "message")
+    a0["images"] = [{"slot": 0, "ref": "current", "phase": "exec", "frame_idx": 0, "cam": "front", "raw_sha256": "df1"},
+                    {"slot": 1, "ref": "wrist", "phase": "exec", "frame_idx": 0, "cam": "wrist", "raw_sha256": "dw1"}]
+    _write(d / "language.jsonl", rows)
+    rc, v, line = _run(capsys, d)
+    assert rc == 0 and v["image_ref_unresolved"] == "0", line
+    # 不存在的哈希
+    a0["images"][1]["raw_sha256"] = "nope"
+    _write(d / "language.jsonl", rows)
+    rc, v, _ = _run(capsys, d)
+    assert rc == 1 and v["image_ref_unresolved"] == "1"
+    # 哈希在 trace 里、但帧号错位：exec 帧 0 填了 demo 首帧、demo 帧 1 填了 step 1 的画面
+    a0["images"][1]["raw_sha256"] = "dw0"
+    c0 = next(r for r in rows if r.get("call_id") == "c0" and r.get("role") == "user")
+    c0["images"][0]["raw_sha256"] = "f1"
+    _write(d / "language.jsonl", rows)
+    rc, v, _ = _run(capsys, d)
+    assert rc == 1 and v["image_ref_unresolved"] == "2"
+
+
+def test_frame_idx_exact_for_sources_and_sheet_fallback(tmp_path, capsys):
+    """拼图来源帧（对象，带自身 phase／frame_idx）按各自帧号精确比对；拼图本身 ``frame_idx=None`` 的退回集合查找
+    （exec 集合含演示段末帧）。"""
+    d = episode(tmp_path)
+    rows = _lang(d)
+    a1 = next(r for r in rows if r.get("call_id") == "a1" and r["kind"] == "message")
+    sheet = {"slot": 1, "ref": "memory_sheet", "phase": "exec", "frame_idx": None, "cam": "front",
+             "raw_sha256": "df1",
+             "sources": [{"phase": "demo", "frame_idx": 0, "cam": "front", "raw_sha256": "df0"},
+                         {"phase": "exec", "frame_idx": 0, "cam": "front", "raw_sha256": "df1"},
+                         {"phase": "exec", "frame_idx": 2, "cam": "front", "raw_sha256": "f2"}]}
+    a1["images"].append(sheet)
+    _write(d / "language.jsonl", rows)
+    rc, v, line = _run(capsys, d)
+    assert rc == 0 and v["image_ref_unresolved"] == "0", line
+    sheet["sources"][2]["frame_idx"] = 3  # f2 不是第 3 步的画面
+    _write(d / "language.jsonl", rows)
+    rc, v, _ = _run(capsys, d)
+    assert rc == 1 and v["image_ref_unresolved"] == "1"

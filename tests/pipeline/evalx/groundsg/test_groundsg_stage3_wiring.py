@@ -251,6 +251,72 @@ def test_audit_key_popped_without_language_log(tmp_path):
     assert set(out) == {"actions"}
 
 
+class RecordingLikeClient(F.FakeClient):
+    """模仿 ``framesamp_modul_client.RecordingClient``：``_roundtrip`` 里先把审计键 pop 掉、存进 ``_last_audit``，
+    交给上层的回包已不含审计键（真实 smoke 里语言账本 ``server_final_text`` 全为 null 的来源）。"""
+
+    def __init__(self, server):
+        super().__init__(server)
+        self._last_audit = None
+        self.seen: list[dict] = []
+
+    def infer(self, obs):
+        out = self.server.handle(obs)
+        self._last_audit = out.pop(mc_audit_key(), None) if isinstance(out, dict) else None
+        self.seen.append(dict(out))
+        return out
+
+
+def mc_audit_key() -> str:
+    return F.groundsg_client().AUDIT_KEY
+
+
+class ToggleAuditServer(AuditServer):
+    """第一次 infer 回包带审计块，之后不带（核第二次不误用第一次的块）。"""
+
+    def __init__(self):
+        super().__init__()
+        self.n_infer = 0
+
+    def handle(self, obj):
+        out = super().handle(obj)
+        if "actions" in out:
+            self.n_infer += 1
+            if self.n_infer > 1:
+                out.pop("_sgeval_audit", None)
+        return out
+
+
+def test_audit_read_back_from_recording_client_last_audit(tmp_path):
+    """内层客户端已在 ``_roundtrip`` 里 pop 审计键时，``TracingClient`` 回落读 ``_last_audit``：语言账本记 task／symbolic
+    两条 channel 消息、``server_final_text`` 非空；交给官方代码的 dict 不含审计键；第二次 infer（回包无审计块）调用前
+    清零，不会误用第一次的块。"""
+    mc = F.groundsg_client()
+    tap = mc.EpisodeTap(None)
+    log = StrictLanguageLog(tmp_path / "language.jsonl")
+    tap.lang = mc.LangTap(log, tap, variant="memer")
+    inner = RecordingLikeClient(ToggleAuditServer())
+    tc = mc.TracingClient(inner, tap)
+    tc.reset()
+    obs = {"observation/image": F.frame(1), "observation/wrist_image": F.frame(2),
+           "observation/state": F.frame(3)[0, 0, :].astype("float32"), "prompt": "p", "grounded_subgoal": "g"}
+    out1 = tc.infer(obs)
+    assert mc.AUDIT_KEY not in out1 and set(out1) == {"actions"}
+    out2 = tc.infer(obs)
+    assert mc.AUDIT_KEY not in out2
+    assert all(mc.AUDIT_KEY not in s for s in inner.seen)
+    calls = log.calls("action_model")
+    assert len(calls) == 2
+    first, second = calls
+    chans = [m for m in first["messages"] if m["channel"] is not None]
+    assert [m["channel"] for m in chans] == ["task", "symbolic"]
+    assert chans[0]["text"] == "Task: p;" and chans[1]["token_ids"] == [3]
+    assert first["close"]["server_final_text"] == "Task: p;\nCurrent Subgoal: g;\nAction: "
+    assert first["close"]["server_truncated"] is True
+    assert [m for m in second["messages"] if m["channel"] is not None] == []
+    assert second["close"]["server_final_text"] is None and inner._last_audit is None
+
+
 def test_step_rows_unchanged_without_language_log(tmp_path, monkeypatch):
     """语言账本不存在（显式去掉）时 step 行仍是旧 9 键（不加 source_call_id／chunk_index）。"""
     tw = F.groundsg_client().trace_writer
