@@ -1,4 +1,4 @@
-> 本文按用户最新要求改为"子类继承"接口方案，并把全部新增内容归档到 `src/` 下一个独立包里；只改计划，不构成开工令。本轮只定义接口，不展开每个任务具体改哪些次数，那部分待接口定稿后另议。工作副本为 `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`，分支为 `newtask-v3-MotionJepa1006`。本次修订前 HEAD 为 `ddd914c2`；原源码核查锚点为 `13905997d45155ff1c98417511aedec92578042d`，生成代码起点为 `3a5951a834ea014f63724647ab0bc091eb9f109d`。ManiSkill 来源仍钉在 `07be6fbc66350ddca200abfb0a11b692f078f7fd`，依赖以本分支 `pyproject.toml、uv.lock` 为准。文中所有新名字、新参数、新文件均为拟议项，尚未实施。
+> 本文按用户最新要求改为"子类继承"接口方案，并把全部新增内容归档到 `src/` 下一个独立包里；只改计划，不构成开工令。本轮只定义接口，不展开每个任务具体改哪些次数，那部分待接口定稿后另议。工作副本为 `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`，分支为 `newtask-v3-MotionJepa1006`。本次修订前 HEAD 为 `d7a8592e`；原源码核查锚点为 `13905997d45155ff1c98417511aedec92578042d`，生成代码起点为 `3a5951a834ea014f63724647ab0bc091eb9f109d`。ManiSkill 来源仍钉在 `07be6fbc66350ddca200abfb0a11b692f078f7fd`，依赖以本分支 `pyproject.toml、uv.lock` 为准。文中所有新名字、新参数、新文件均为拟议项，尚未实施。
 
 # 设计目标
 
@@ -8,19 +8,120 @@
 
 # 第一部分：现在的脚本是怎么传参的，新参数接在哪里
 
-## 先看现在的脚本是怎么跑的，分五环
+## 先看现在的脚本是怎么跑的，用 BinFill 举例分五步走
 
-第一环是命令行。你敲 `--env PickHighlight --episodes 100 --difficulty 211` 这类参数，`_args` 把它们读进来，交给 `generate_dataset_newseed` 这个函数。
+下面从敲命令那一刻到硬盘上出现 HDF5 文件，顺着代码走一遍。例子用 BinFill，因为 train 目录里 BinFill 的 metadata 能和 seed 公式对上号。
 
-第二环是排任务单。这个函数给每个 episode 造一个 `EpisodeJob`，可以理解成一张卡片，上面写着 task 名、episode 号、seed、difficulty、输出目录这几样。现在 seed 是用 `layout.seed(task, episode, attempt)` 公式算出来的，difficulty 是按 211 的比例轮着排的。100 个 episode 就是 100 张卡片。
+### 第零步：你敲的命令
 
-第三环是发给工人。卡片扔进进程池，每个 worker 进程拿一张，执行 `_worker(job)`。
+```bash
+uv run python scripts/data-generation-newSeed/generate_dataset_newseed.py --output-dir artifacts/generated/demo --env BinFill --episodes 4 --difficulty 211 --workers 2 --gpus 0
+```
 
-第四环是工人造环境并录制，这是最关键的一环。`_worker` 里真正和环境打交道的只有这几句：先拼一个 kwargs，里面是 obs_mode、control_mode、render_mode、reward_mode，再加上 `seed=job.seed` 和 `difficulty=job.difficulty`；然后 `base_env = gym.make(job.task, **kwargs)`；再用 `RobommeRecordWrapper(base_env, dataset=输出目录, env_id=job.task, episode=job.episode, seed=job.seed, save_video=True)` 把环境包一层；接着 `record_env.reset()`；再按 `job.task in STICK_TASKS` 决定用 stick planner 还是 arm planner；最后 `_execute_tasks` 让 planner 按 task_list 一步步做，录像器一路录 RGB、动作，最后写成 HDF5，文件名是 `{env_id}_ep{episode}_seed{seed}.h5`。
+意思是：BinFill 这个任务生成 4 条，难度按 2:1:1 的比例轮，开 2 个工人，用 0 号卡。
 
-这里面 `gym.make(job.task)` 这一句要特别理解：它是拿着名字 `"PickHighlight"` 去 ManiSkill 的注册表里查，找到当初用 `@register_env("PickHighlight")` 登记的那个 class，然后 `PickHighlight(seed=..., difficulty="hard", ...)` 把它实例化。新档要做的，就是让这一句去找另一个 class。
+### 第一步：`main` 读参数，交给 `generate_dataset_newseed`
 
-第五环是失败换 seed。场景生成失败、planner 卡死这类情况，脚本调 `job.bump(新seed)` 换一个 seed 重来，最多重试到 `--max-attempts`。
+文件最底下的 `main` 调 `_args` 把命令行解析成一个对象，然后原样转给 `generate_dataset_newseed` 这个函数。`main` 自己什么都不干，就是个入口。
+
+### 第二步：`generate_dataset_newseed` 做准备，造出 4 张卡片
+
+这个函数先做几件杂事：检查参数合法、建输出目录、把 `--env BinFill` 解析成任务列表 `["BinFill"]`、把 `--gpus 0` 解析成 `["0"]`、按 `--layout train` 拿到 seed 公式、把 `"211"` 展开成难度循环 `("easy", "easy", "medium", "hard")`。
+
+然后是最重要的一段，造卡片。代码就是一个列表推导：
+
+```python
+jobs = [
+    EpisodeJob(
+        task=task,
+        episode=episode,
+        attempt=0,
+        seed=layout.seed(task, episode, 0),
+        difficulty=difficulty_for(episode, cycle),
+        output_root=str(output),
+        repo_root=str(REPO_ROOT),
+    )
+    for task in tasks
+    for episode in range(episode_start, episode_start + episodes)
+]
+```
+
+`EpisodeJob` 就是一张卡片，七个字段。seed 怎么来的：train 布局的公式是 `env_code * 1000 + episode * 100 + attempt`，BinFill 的 env_code 是 4，所以 episode 0 的 seed 是 4000，episode 1 是 4100，episode 2 是 4200，episode 3 是 4300。difficulty 怎么来的：`episode % 4` 去难度循环里取，所以 episode 0、1 是 easy，2 是 medium，3 是 hard。
+
+现在手里有 4 张卡片：
+
+```text
+BinFill ep0 seed4000 easy   attempt0
+BinFill ep1 seed4100 easy   attempt0
+BinFill ep2 seed4200 medium attempt0
+BinFill ep3 seed4300 hard   attempt0
+```
+
+造完卡片，它把这次运行的所有参数写进输出目录的 `run_parameters.json`，然后把卡片交给 `_run_jobs`。
+
+### 第三步：`_run_jobs` 是调度员，开进程池、发卡片、处理失败
+
+`_run_jobs` 给每张 GPU 卡开一个进程池，池里有"workers 除以卡数"个工人进程。每个工人进程启动时跑一次 `_pool_init`，作用是把自己绑死在那张卡上、把 CPU 线程压到 1、预热 import。
+
+然后进入一个 while 循环：只要还有卡片没发或者有工人在干活，就一直转。循环里做两件事。一是只要有空闲工人，就从队列头取一张卡片，`pools[gpu].submit(_worker, job)` 扔给工人。二是等任何一个工人干完，拿回结果，写一行到 `episode_results.jsonl`，然后判断：
+
+- 结果 `ok` 为真：记到成功列表，打印一行 `succeeded with seed 4000`。
+- 结果失败且 `failure_class` 是 `task`（场景生成失败、planner 耗尽这类"这个 seed 不通"）：`job.bump(新seed)` 造一张新卡片塞回队列，新 seed 是 `layout.seed(task, episode, attempt + 1)`，也就是原 seed 加 1。所以 train metadata 里 BinFill episode 3 的 seed 是 4301 而不是 4300，就是因为 4300 失败过一次，4301 才成功。
+- 结果失败且是代码层面的真 bug：连续三次就放弃，记进 exhausted。
+- 整个进程池崩了（工人段错误）：重建池，把这个池名下的卡片退回队列。
+
+### 第四步：`_worker` 是工人，一张卡片对应一次真实的仿真录制
+
+这是和环境打交道的地方，每个工人进程里跑。按顺序做八件事。
+
+一，import。把 `src` 加进 `sys.path`，import gymnasium、torch、`robomme.robomme_env`（这一句让 16 个任务的 `@register_env` 执行，名字进注册表）、`RobommeRecordWrapper`、planner 类。
+
+二，拼 kwargs 并造环境：
+
+```python
+kwargs = {
+    "obs_mode": "rgb+depth+segmentation",
+    "control_mode": "pd_joint_pos",
+    "render_mode": "rgb_array",
+    "reward_mode": "dense",
+    "seed": job.seed,             # 4300
+    "difficulty": job.difficulty, # "hard"
+}
+base_env = gym.make(job.task, **kwargs)   # 即 gym.make("BinFill", seed=4300, difficulty="hard")
+```
+
+`gym.make("BinFill")` 去注册表里找名字叫 BinFill 的 class，实例化成一个环境对象。环境自己的 `__init__` 里会根据 `difficulty="hard"` 去 `configs["hard"]` 读参数，根据 seed 摆场景。
+
+三，套录像器：
+
+```python
+record_env = RobommeRecordWrapper(base_env, dataset=输出目录, env_id="BinFill", episode=3, seed=4300, save_video=True)
+```
+
+录像器包在环境外面，以后每走一步它都把 RGB、动作、状态记下来。它根据 `env_id`、`episode`、`seed` 决定文件名 `BinFill_ep3_seed4300.h5`。
+
+四，reset。`record_env.reset()`，场景真正摆出来，机器人归位。
+
+五，选 planner。BinFill 不是 stick 任务，用 arm planner。PatternLock 和 RouteStick 用 stick planner，判断依据是 `job.task in STICK_TASKS`。
+
+六，执行任务。`_execute_tasks(record_env, planner, torch, job)`。环境里有一个 `task_list`，是环境自己在 `_load_scene` 时按难度生成的子任务清单，比如 hard 档可能是"拿红块、放进桶、拿蓝块、放进桶、按按钮"。`_execute_tasks` 逐条取出来，调每条的 `solve(record_env, planner)` 让 planner 规划并执行，每做完一条调 `evaluate` 看是否失败或已成功。全部做完还不成功就抛异常。
+
+七，close。`record_env.close()`，这一步才真正把 HDF5 写到硬盘、把视频编码出来。
+
+八，返回结果。成功就返回 `ok: True` 加 h5 路径和帧数；失败就删掉空壳 h5，返回 `ok: False` 加失败类型和 traceback。这个返回值就是第三步里调度员拿到的"结果"。
+
+### 第五步：收尾
+
+4 张卡片都成功后，`generate_dataset_newseed` 按任务把成功记录写成 `record_dataset_BinFill_metadata.json`，格式和 `src/robomme/env_metadata/train` 里的一模一样（task、episode、seed、difficulty 四个字段）。再写一份 `run_summary.json` 记成功数、耗时。硬盘上最终是：
+
+```text
+artifacts/generated/demo/
+  run_parameters.json
+  episode_results.jsonl               每次 attempt 一行，含失败的
+  hdf5_files/BinFill_ep0_seed4000.h5  ...  BinFill_ep3_seed4301.h5
+  videos/...
+  record_dataset_BinFill_metadata.json
+```
 
 ## 新参数只加一个 `--xhard`
 
@@ -30,19 +131,17 @@
 
 `EpisodeJob` 这张卡片加一栏 `xhard`，默认是空，原路径不受影响。
 
-## 传了 `--xhard` 之后五环各自怎么变
+## 传了 `--xhard` 之后五步各自怎么变
 
-第一环命令行，多解析 `--xhard` 和 `--source-split`，做上面说的互斥校验。
+第一步 `main` 和 `_args`，多解析 `--xhard` 和 `--source-split`，做上面说的互斥校验。另外文件顶部要加一句 `import robomme_xhard`，作用是触发新包里所有 `@register_env` 执行，让新名字进入注册表。不加这句，`gym.make("BinFillXHard1")` 会找不到名字。因为是生成器自己 import，原来的 `robomme_env/__init__.py` 就不用动了。
 
-第二环排任务单变化最大，但生成器自己不写这段逻辑，而是调用新包里的 `robomme_xhard.jobs_from_metadata(tasks, split, xhard, output_root)`。这个函数打开 `src/robomme/env_metadata/train/record_dataset_<task>_metadata.json`，文件里每条记录长这样：`{"task": "BinFill", "episode": 3, "seed": 4301, "difficulty": "hard"}`。只挑 difficulty 是 hard 的记录，每条造一张卡片，task、episode、seed 原样抄过来，difficulty 固定写 hard，xhard 写成 `xhard1`。原来那个"seed 不能越过下一代布局 offset"的护栏在这个分支跳过，因为它只对公式 seed 有意义。
+第二步造卡片变化最大，但生成器自己不写这段逻辑，而是调用新包里的 `robomme_xhard.jobs_from_metadata(tasks, split, xhard, output_root)`。这个函数打开 `src/robomme/env_metadata/train/record_dataset_BinFill_metadata.json`，文件里每条记录长这样：`{"task": "BinFill", "episode": 3, "seed": 4301, "difficulty": "hard"}`。只挑 difficulty 是 hard 的记录，每条造一张卡片，task、episode、seed 原样抄过来，difficulty 固定写 hard，xhard 写成 `xhard1`。以 BinFill 为例，卡片就是 `BinFill ep3 seed4301 hard xhard1`、`BinFill ep7 seed4701 hard xhard1`……原来那个"seed 不能越过下一代布局 offset"的护栏在这个分支跳过，因为它只对公式 seed 有意义。
 
-第三环发给工人，不变。
+第三步调度员只有一个小判断：带 xhard 的卡片失败了不 `bump`，直接记成失败。新档的意义就是"同一个 seed 的更难版本"，换了 seed 就不是同一个场景了，所以 attempt 固定为 0。
 
-第四环造环境，只改名字。`gym.make(job.task, **kwargs)` 改成 `gym.make(robomme_xhard.make_name(job), **kwargs)`。`make_name` 的规则是：卡片的 xhard 为空就原样返回 `job.task`，否则返回 `f"{job.task}XHard1"` 这样的新名字。kwargs 一个不改，difficulty 还是 hard，seed 还是原 seed。注册表会找到新包里的子类，用同一个 seed 把它造出来。`RobommeRecordWrapper(..., env_id=job.task, ...)` 这一句不用改，因为 `job.task` 本来就是原名 `"PickHighlight"`。planner 的选择还是按 `job.task in STICK_TASKS`，同样是原名。后面 reset、planner、录制全走原路。
+第四步工人只改第二件事里的名字。`gym.make(job.task, **kwargs)` 改成 `gym.make(robomme_xhard.make_name(job), **kwargs)`。`make_name` 的规则是：卡片的 xhard 为空就原样返回 `job.task`，否则返回 `f"{job.task}XHard1"` 这样的新名字。kwargs 一个不改，seed 还是 4301，difficulty 还是 hard。注册表会找到新包里的子类，用同一个 seed 把它造出来。第三件事套录像器时 `env_id=job.task` 不用改，因为 `job.task` 本来就是原名 `"BinFill"`。第五件事选 planner 还是按 `job.task in STICK_TASKS`，同样是原名。reset、执行任务、close、返回结果全走原路。
 
-第五环，派生档不换 seed。新档的意义就是"同一个 seed 的更难版本"，失败就按原 seed 记成失败，attempt 固定为 0，不调用 `bump`。
-
-另外生成器文件顶部要加一句 `import robomme_xhard`。这一句的作用是触发新包里所有 `@register_env` 执行，让新名字进入注册表。不加这句，`gym.make("PickHighlightXHard1")` 会找不到名字。因为是生成器自己 import，原来的 `robomme_env/__init__.py` 就不用动了。
+第五步收尾不变，照常写 metadata 和 summary，只是 `parameters` 里多记 xhard、source_split、源 json 路径和母样本条数。
 
 把整条链串起来就是：
 
@@ -50,9 +149,10 @@
 --xhard xhard1
   → 生成器 import robomme_xhard，新子类完成注册
   → robomme_xhard.jobs_from_metadata 读 train json 的 hard 记录，每条一张卡片（原 seed、原 episode、difficulty=hard）
-  → worker 拿卡片：gym.make(robomme_xhard.make_name(job)) 即 gym.make("PickHighlightXHard1", seed=原seed, difficulty="hard")
+  → 调度员发卡片给工人，失败不换 seed
+  → 工人：gym.make(robomme_xhard.make_name(job)) 即 gym.make("BinFillXHard1", seed=4301, difficulty="hard")
   → 注册表找到子类，子类只换了 configs["hard"] 里的一两个数，其余全是父类代码
-  → RobommeRecordWrapper(env_id=job.task) 照常录制、写 HDF5
+  → RobommeRecordWrapper(env_id="BinFill") 照常录制、写 HDF5
 ```
 
 ## 输出放哪、身份怎么分
