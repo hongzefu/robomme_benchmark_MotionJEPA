@@ -291,6 +291,10 @@ class TracingClient:
         self._tap.on_request("infer", obs)
         lang = self._tap.lang
         cid = lang.action_open(obs) if lang is not None else None
+        # 真实内层（framesamp_modul_client.RecordingClient）在 _roundtrip 里已把审计键 pop 并存进 _last_audit：
+        # 调用前清零，免得本次回包没带审计块时误用上一次的
+        if hasattr(self._inner, "_last_audit"):
+            self._inner._last_audit = None
         try:
             out = self._inner.infer(obs)
         except BaseException:
@@ -298,6 +302,8 @@ class TracingClient:
                 lang.close(cid, status="error")
             raise
         audit = out.pop(AUDIT_KEY, None) if isinstance(out, dict) else None
+        if audit is None:
+            audit = getattr(self._inner, "_last_audit", None)
         if lang is not None:
             lang.action_close(cid, audit)
         self._tap.on_response(out["actions"], call_id=cid)
