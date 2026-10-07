@@ -63,3 +63,15 @@
 - 新规模：`16 任务 × 1 档（xhard0）× 3 局 = 48`／侧（`HV48_MANIFEST=PASS tasks=16 per_task=3 total=48 keys_sha256=3b4d628dd2355aa702d9aaeadedfac797a2fe49b5c8e4f52cb729393182a4b45`，源 hv192 清单）；对拍轨迹上限由 384 降为 `2 侧 × 48 = 96`。
 - 切换：21:58 按清单精确 `tmux kill-session` 停 `p3-local-new`、`p3-local-orig`（删前删后 `tmux ls` 差集恰为二者，显存释放、无残留进程）；被打断的在跑局 BinFill_xhard0_543501（该任务第 9 局，不在新清单）留悬空 attempt、不重跑。21:59:19 以 `compare/run_side48.sh <new|orig> <卡>`（单片、沿用席号 50／60）重启，HEAD `5c8bb233`；已接受的 BinFill_xhard0_540302 两侧复用：新侧 `RUN_PLAN total=48 resume_skip=1 accepted=1 todo=47`、原侧 `ORIG_PLAN total=48 final=1 missing=47`。
 - 对拍定位不变：`GATE2=INFO compared=48`，差异报告、不证明等价；报告注明由 192 缩减为 48 的原因。
+
+## ⑨ 运行中裁决：PonderPounce S2 上下文超限按基础设施错误重试（2026-10-06 22:40 EDT）
+
+- 现象：`ood-new-pp-seed7/s20`（PonderPounce 第一片）`VideoPlaceOrder_xhard1_17100000` 第 1 次尝试在第 1661 步服务端报 `observation_failed: RuntimeError: Ponder context overflow at step 1661: S2 context length 16439 exceeds cap 16384`，客户端记 `status=error infra=True infra_reason=pp_server_error`，按基础设施错误领共享重试名额重跑；第 2 次 1057 步 `fail`，账本接受第 2 次。第 1 次局目录的官方重绘失败（`OFFICIAL_RENDER=FAIL … reason=renderer_rc_1`，原始帧照常发布），不影响被接受的第 2 次。该片 `SEAT_DONE done=43 errors=0 infra=1`、`OFFICIAL_RENDER_TALLY ok=43 fail=1`、`SEAT_REC_SYNC=PASS n=44`。截至此时全部 OOD 结果中仅此 1 例。
+- 定性：PonderPounce 自身 S2 上下文 16384 token 上限在 1800 步下可被触及（1600 步口径未见），属模型长度上限而非基础设施故障。
+- 主会话给出三案（记模型失败不重试／沿用现状当基础设施重试／记 timeout），用户选「沿用现状当基础设施重试」。据此不改代码；`result.md` 单列此类局的个数、身份与两次尝试终态，注明成绩含这些重跑。
+
+## ⑩ 运行中事件：MemER 第一片分片锁撞名、SimpleMemVLA 上限误报（2026-10-06 23:10～23:20 EDT）
+
+- **分片锁撞名**：`50-memer-s00`（GL OOD MemER 第一片）起跑即 `RUN_BLOCKED reason=lease_held … shard=groundsg_ground-sg-memer_seed7_new--shard-00`，0 局执行、零预算消耗。原因：共享账本分片 lease 名由「路线 + 分片文件名」拼成，路线 `groundsg/ground-sg-memer/seed7/new` 不含数据集，本机对拍新侧（`hv48/shard-00.json`）与 GL OOD（`ood86/shard-00.json`）同名而撞锁；保护本身正确（防同分片重复启动），缺陷是 lease 名不区分数据集。处置（不改代码）：`ood86/ood-memer-shard-00.json` 为 `shard-00.json` 的逐字节副本（`cmp` 相同），新任务 `52-memer-s00b`（沿用席号 50）入队，原任务文件留 `queue/failed/` 作记录；23:14:46 由 w14 领取。MemER 第二片 `shard-01.json` 不撞名。
+- **SimpleMemVLA 上限误报**：组验收 `EVAL_REPORT=FAIL … cap_mismatch=86`，86 条问题全是 `trace.header.max_steps=1840`（SimpleMemVLA 客户端理论动作上界 115 × 16）；结果行与 trace header 的 `effective_cap=1800`、`exec_over_cap=0`，smoke 实测第 1801 步进环境前被拒。计划八.3 明写该 1840 合法、验收应区分理论循环上界与实际执行 cap。主会话给出两案（按计划修检查器／不改代码留档注明），用户选「按计划修检查器」：子代理 FIX-2 改 `eval_report.py` 的上限核对（trace header 写了 `effective_cap` 时以它为准、不比 header `max_steps`），按审查流程合入后重跑 SimpleMemVLA 组验收；运行中的 GL 与本机任务不受影响（不读该文件）。
+- 截至 23:15：FrameSamp+Modulation、PonderPounce 两组七项验收全过（`EVAL_COVERAGE`、`EVAL_REPORT`、`EVAL_VIDEOS`、`OFFICIAL_MEDIA`、`TRACE_ARRAYS`、`LANG_IO`、`VIDEO_LAYOUT` 均 PASS，各 86）；SimpleMemVLA 除上述误报外六项 PASS。
