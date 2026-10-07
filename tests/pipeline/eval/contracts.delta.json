@@ -799,10 +799,10 @@
       "scripts/eval-official/astra_hard_runner.py"
     ],
     "symbol": "六条 env_client 路线真实客户端经 SeatRunner 产出（另含 PP／GroundSG Oracle 第 5 步环境异常局与一局 Astra）→ trace_arrays_check.main／lang_io_check.main；SeatRunner 换种子（独立目录、同一共享账本）；BudgetLedger.reserve（first／recovery）／claim_retry（infra／expired）／report_lines 的上限一致性",
-    "oracle": "检查器判定行的期望计数在用例里手写；指向执行段初始画面的图引用个数由用例按 trace demo 行与 step 行独立数出；小账本（轨迹 12、首试 9、恢复合计 3）的领取序列手算",
-    "positive": "九局真实产物 TRACE_ARRAYS=PASS；LANG_IO 在只把初始画面引用改记为 demo 段后九局 PASS；缺观测步不补零（end.arrays.missing_state_steps=[5]、无 exec_state__00004）；种子 7 accepted 后种子 42 在独立目录照常重跑，账本 route／token 各带种子；到期接续与 infra 重试共用恢复合计、report 上限与两个领取入口一致",
+    "oracle": "检查器判定行的期望计数在用例里手写；小账本（轨迹 12、首试 9、恢复合计 3）的领取序列手算",
+    "positive": "九局真实产物 TRACE_ARRAYS=PASS；九局真实产物不做任何规范化直接 LANG_IO=PASS image_ref_unresolved=0；缺观测步不补零（end.arrays.missing_state_steps=[5]、无 exec_state__00004）；种子 7 accepted 后种子 42 在独立目录照常重跑，账本 route／token 各带种子；到期接续与 infra 重试共用恢复合计、report 上限与两个领取入口一致",
     "negative": "篡改一个动作字节 tampered=1；给缺观测步补零 tampered=1；删一个观测步状态 observed_state_missing=1；改一个附图引用哈希 image_ref_unresolved=1；删一个调用关闭行 open_calls=1；第 4 次恢复在 retry 与 reserve 两入口同时被拒；同一身份第二次领重试（第三次 attempt）被拒；改任一构造参数后 reserve／claim_retry 抛 BudgetConfigMismatch、report 判 config_mismatch",
-    "boundaries": "纯 CPU 替身；跨块检查器用例超过 1 s、标 slow；已知缺陷两条见 C13-R4-KNOWN-DEFECTS",
+    "boundaries": "纯 CPU 替身；跨块检查器用例超过 1 s、标 slow；R4 原钉两条缺陷的修复见 C13-R4-DEFECTS-FIXED",
     "nodeids": [
       "tests/pipeline/eval/test_stage3_counterexamples.py::test_real_route_outputs_pass_checkers_and_injected_faults_fail",
       "tests/pipeline/eval/test_stage3_counterexamples.py::test_seed_switch_with_own_stage_reruns_and_routes_stay_separate",
@@ -813,25 +813,26 @@
     "status": "verified"
   },
   {
-    "id": "C13-R4-KNOWN-DEFECTS",
+    "id": "C13-R4-DEFECTS-FIXED",
     "domain": "C13",
     "source": [
       "scripts/eval-official/lang_io_check.py",
       "scripts/eval-official/env_client.py"
     ],
-    "symbol": "lang_io_check.frame_sets（phase=exec 只认 step 行帧）；env_client.AttemptLedger.accepted／SeatRunner.run_identities_v8（accepted 只按身份 key）",
-    "oracle": "用例独立数出指向执行段初始画面（trace demo 行最后一帧）的图引用个数；换种子复用尝试账本时期望拒跑或按种子重跑",
-    "positive": "锁定现状：真实 GroundSG 三变体与 Astra 产物 LANG_IO=FAIL 且 image_ref_unresolved 恰等于初始画面引用数（本次 24）；种子 42 复用种子 7 的尝试账本时 rc=0、无种子 42 结果行、RUN_PLAN accepted=1 todo=0",
-    "negative": "缺陷修好后两条现状断言必失败（用例里显式断言「未修」），届时改为期望断言",
-    "boundaries": "本套件资源守卫禁止 xfail，故沿用 test_known_defect_* 体例锁定现状；不改生产代码，交主会话裁决",
+    "symbol": "lang_io_check.frame_sets（exec 帧 0 映射 demo 末帧、按 (phase, cam, frame_idx) 精确比对）；env_client.SeatRunner._check_route（共享模式取得 lease 后、读取待跑身份前核对尝试账本 attempt_start.route）",
+    "oracle": "真实九局产物的检查器期望（PASS、image_ref_unresolved=0）手写；换种子复用尝试账本的期望判定行、退出码与「不写新行」手写；全新 stage 与同路线续跑的 RUN_PLAN 计数手写",
+    "positive": "真实 GroundSG 三变体与 Astra 在内的九局产物不做规范化直接 LANG_IO=PASS image_ref_unresolved=0；全新 stage（空账本）首跑与同路线续跑不误拒（RUN_PLAN accepted=1 todo=1）",
+    "negative": "种子 42 复用种子 7 的尝试账本：RUN_BLOCKED reason=route_mismatch found=pp/seed7/new want=pp/seed42/new、rc=3、不调用策略、结果文件与尝试行不增；缺 route 字段的历史 attempt_start 行 found=legacy 同样拒",
+    "boundaries": "纯 CPU 替身；路线核对只在共享预算模式生效（非共享模式 attempt_start 不记 route，行为与 BASE 相同）",
     "nodeids": [
       "tests/pipeline/eval/test_stage3_counterexamples.py::test_real_route_outputs_pass_checkers_and_injected_faults_fail",
-      "tests/pipeline/eval/test_stage3_counterexamples.py::test_known_defect_seed_switch_reuses_other_seed_accepted"
+      "tests/pipeline/eval/test_stage3_counterexamples.py::test_seed_switch_reusing_other_seed_ledger_is_blocked",
+      "tests/pipeline/eval/test_stage3_counterexamples.py::test_route_guard_allows_fresh_stage_and_same_route_resume",
+      "tests/pipeline/eval/test_stage3_counterexamples.py::test_route_guard_rejects_legacy_ledger_rows"
     ],
     "resource": "cpu",
     "mutants": [],
-    "status": "blocked",
-    "defect": "R4-D1：lang_io_check.frame_sets 只把 trace step 行的帧算作 phase=exec；GroundSG 新侧三变体与 Astra 把动作模型首次调用的当前画面（reset 初始画面，trace demo 行最后一帧）记为 phase=exec、frame_idx=0，真实产物 LANG_IO=FAIL。建议：frame_sets 把 demo 行最后一帧（front／wrist）同时并入 (exec, cam)，或客户端把该帧记为 phase=demo（两侧择一，须与 trace demo 行含初始画面的约定一致）。R4-D2：AttemptLedger.accepted 只按身份 key 记，同一尝试账本被另一 --policy-seed 复用时把别组 accepted 当作已完成跳过、退出 0；建议 run_identities 前核账本 attempt_start 行的 route 与当前 policy_route 一致，不一致 RUN_BLOCKED reason=route_mismatch（或 accepted 按 route 分开）。",
-    "note": "待主会话裁决：R4-D1 不修则正式运行的 LANG_IO 闸门对 GroundSG 三变体与 Astra 必判 FAIL；R4-D2 只在误复用 --stage 时触发，run_eval_gl.sh 的 stage 目录不含种子，现由操作约定（每个 (模型, policy_seed) 独立 stage）规避。"
+    "status": "verified",
+    "note": "1006 MERGE-2 修复：D1 由 FIX-1、D2 由 env_client route 核对"
   }
 ]
