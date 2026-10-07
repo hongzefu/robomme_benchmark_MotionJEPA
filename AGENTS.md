@@ -211,6 +211,7 @@
 | newtask-v2 两文件平铺与清理计划修订 | 完成（仅文档） | 已明确两个生成侧文件平铺、必要函数归属和旧目录清理顺序；4 条主文件命令与 6 个文档链接检查通过，原值 JSON、源码及历史账本未变 | 后续实施以修订后的 `NEWTASK_V2_PLAN.md` 为准，首个实现仍为 `10.0`；本轮未迁移、删除或生成 |
 | newtask-v2 五项对拍与留档计划展开（2.23） | 完成（仅文档，当时未记账） | 第四步展开为共用校准、五项编号对拍、15 格矩阵、三种操作与 docs 留档规范；静态检查退出码 0 | 已被 2.24 修订取代 |
 | newtask-v2 计划对抗审查与修订（2.24） | 完成（文档、快照补录、账本） | 11 路只读对抗审查；补齐随机流清单与疑似旧错误清单，改写 seed 入口、两次 reset、导入顺序因果链、防漂移检查对象；按用户决策改写确定性退出路径、预算口径、PNG 留档、①依赖③、旧测试工厂保留、12 任务保留、A 路 worktree、清理后抽样复验；JSON 只增不改 | 等用户授权后按修订计划实施；本轮未创建分支或 worktree、未生成、未对拍 |
+| xhard 新档：上次训练参照与逐任务高层方案（2.31） | 完成（仅文档） | 四路只读 subagent 调查：newtask-v2 交付集实为 BinFill/RouteStick/VideoUnmaskSwap/VideoRepick 且已有 xhard 档；MotionJEPA 上次训练 stride-1 chunk 796,001、policy 侧 stride-16 约 69,716 窗；官方 16 任务 hard 各 25 条统计（32 帧零漏段、8 帧仅计数/Imitation 类漏 3–4 段）；16 任务 hard 配置与上限逐一核查；按用户四项决策写成 `1006-xhard12-prev-training-and-task-plan.md` | 等用户审阅逐任务方案；实施前先做第一部分第七节的五项验证；本轮未改源码、未生成 |
 
 ## 追加式执行日志
 
@@ -946,3 +947,16 @@
 - 验证：见本轮提交正文中的静态检查程序与实测数字。
 - 修改范围：`NEWTASK_V2_PLAN.md`、`scripts/configs/newtask-v2/native_sampling.json`、`AGENTS.md`；源码、测试、依赖未变；未创建分支或 worktree。
 - 下一步：等用户授权后按修订计划第一步起实施；A 路须先在 `artifacts/` 下建 detached worktree。
+
+### 2026-10-06 America/Detroit — xhard 新档：上次训练参照与逐任务高层方案（2.31）
+
+- 状态：完成，仅文档；未改源码、未生成、未对拍。
+- 用户指令：参考 newtask-v2 分支"采样窗口数轴"的做法，为每个任务设计 xhard 方案，长度对齐 NWTaskV2，让 8 帧/32 帧采样有遗漏（8 帧须有 subgoal 级遗漏），motion 窗口数量尽量对齐上次训练的 token 数；不再把 BinFill 做成带 video 的任务；每任务少改参数；只设计高层方案，调查中有疑问立刻问；积极用 subagent；把上次训练的内容写进一个 Markdown，分"给人看的高层"与"给 agent 看的细节"两部分。
+- 调查方式：4 个只读 subagent（均 opus）并行：①origin/newtask-v2 窗口口径与交付集构成；②本分支 16 任务源码 hard 配置、条数公式、随机流、语言上限；③官方参考数据 hard 档 400 条 `info` 字段统计；④MotionJEPA 与 policy 仓库的训练/评估口径与 token 数。主会话另用 `uv run --no-sync python` 对 ③ 的 JSON 补算 stride-16 窗口数。仓库源码零改动。
+- 关键发现：newtask-v2 交付四任务是 BinFill/RouteStick/VideoUnmaskSwap/VideoRepick（非 artifact 的 PatternLock/PickXtimes 组），且已有 xhard 档（RouteStick 8–10、两 Video 任务 swap 4–5）；token 有两套口径（MotionJEPA stride-1 796,001 chunk；policy stride-16 69,716 窗）；官方 hard 档 32 帧帧路在 16 任务上零漏段，8 帧只在计数类与 Imitation 类漏 3–4 段；BinFill 假 demo 是生成器 `--binfill-demo` 把成品重复两遍，`src` 未动；16 任务里 5 个（ButtonUnmask、VideoUnmask、VideoPlaceButton、InsertPeg、MoveCube）没有次数旋钮，3 个（StopCube、VideoRepick、VideoPlaceOrder）次数写死在方法里。
+- 用户决策（AskUserQuestion）：参照长度取 newtask-v2 xhard 档；token 落实为每条 50–60 个 stride-16 窗（T≈900）；只用现有 hard seed、本轮接受总量缺口；只硬性要求 8 帧 subgoal 级遗漏；纳入"换字典 + 重写方法"共 11 个任务。
+- 输出路径：根目录 `1006-xhard12-prev-training-and-task-plan.md`（第一部分高层结论与逐任务表；第二部分口径、统计、配置原文、估算公式与未核实清单）。
+- 结果与证据：逐任务方案见该文件第一部分第五节；总量估算 425 条、约 33.1 万帧、stride-1 chunk 约 31 万（上次四成）、stride-16 约 1.96 万窗。官方 hard 统计脚本与 JSON 在会话 scratchpad，重跑命令记于文件 B.1。
+- 差异或阻塞：官方集实际位于 `/data/hongzefu/data_0226/`，非 AGENTS.md 规定的仓库内 `data/robomme_data_h5/`，且未用 sha256 核对 revision；所有 T/窗口数为线性外推，实施前须按文件第一部分第七节做五项验证。
+- 修改文件：新增 `1006-xhard12-prev-training-and-task-plan.md`；`AGENTS.md` 进度表与本条。
+- 下一步：等用户审阅逐任务取值；获准后按前篇接口实施并先跑每任务 3 seed smoke。
