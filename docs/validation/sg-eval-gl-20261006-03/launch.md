@@ -81,3 +81,18 @@
 - 起因：MemER 1800 步在 A40 上每局 46～56 分钟（超时局 113 次子目标提问，约 24～30 s／次），两片各 43 局只占 2 席需 22～32 小时，超过 4 个占位 job 剩余约 23 小时；用户「先把Greatlakes跑完再说」。按用户「我授权你自己来管理J0B。尽可能让我少排队」自行调度，不改规模、预算、口径。
 - 做法：QwenVL 第一片 02:11 收尾空出一席后，经 `srun --jobid --overlap` 只向两个 MemER 任务的 `run_eval_gl.sh` 主进程（gl1518 PID 2356901、gl1503 PID 4105462，先以父进程号核实）发 TERM，任务自带收尾把已跑完的局全量同步后退出（`V8_SEAT_DONE outcome=aborted rc=143`，`SEAT_REC_SYNC … left=0`；各 1 个 `transcode_fail` 为被打断的半局原始帧，照常发布、未被接受）；worker 不受影响。`scripts/memer_rebalance.py 4` 从各席尝试账本取已接受 8 局（第一片 5、第二片 3），余 78 局按行序交替均分为 `ood86/ood-memer-rb-00..03.json`（20／20／19／19），入队 `60..63-memer-rb*`（席号 53～56，同一 stage）；02:14 起 w15／w19／w14 领 rb0／rb1／rb2（`RUN_PLAN todo=20/20/19`），rb3 待 w16 跑完 QwenVL 第二片后领。被打断的身份在新席从第 1 次尝试开始，共享账本同 token 幂等。
 - 截至 02:41：QwenVL 第一片 43／43 完成（`done=43 errors=0 infra=0`）；共享基础设施重试已用 1（PonderPounce 上下文超限那次）。
+
+## ⑫ 本机 MemER hard-verify 对拍完成（2026-10-07 06:03 EDT）与 ⑧ 节更正
+
+- **⑧ 节更正**：21:58 停机时，新侧 `BinFill_xhard0_543501` 已跑完（`fail` 1031 步，账本接受），被打断的是下一局 `ButtonUnmask_xhard0_581900`（局目录只有半局事件）；原侧被打断的才是 `BinFill_xhard0_543501`（结果文件补 infra 错误行）。两者都不在 48 局清单内；新侧完整跑完的那局计入轨迹预算。
+- **完成**：原侧 05:54:51 `SIDE_DONE`（`ORIG_PLAN total=48 final=48 missing=0`、`SEAT_REC_SYNC=PASS n=48 left=0`、`OFFICIAL_SEAT_DONE outcome=pass`；终态 success 10／fail 32／timeout 6）；新侧 06:03:20 `SIDE_DONE`。
+- **清单外身份的过滤**：比较器与检查器按 48 局清单核对；两侧结果 `results.epochs.jsonl` 与新侧尝试账本各去掉清单外的 `BinFill_xhard0_543501` 行，过滤副本写在 `compare/report/`（原文件不动）；数组与语言账本检查器只传清单内被接受的 48 个局目录；新侧 `OFFICIAL_MEDIA` 用指向这 48 个目录的临时符号链接根（核完即删）。
+- **判定行**：
+  - `GATE2_INPUTS=PASS expected=48 missing=0 extra=0 unaccepted=0 ambiguous=0 trace_binding_mismatch=0`
+  - `GATE2_PROVENANCE=PASS mode=host expect_host=sled-vail foreign_rows=0 unknown_rows=0`
+  - `GATE2=INFO policy=groundsg-memer compared=48 same_terminal=41 s2f=0 f2s=4 sr_orig=0.2083 sr_new=0.2917 sr_diff_pp=8.33 mcnemar_p=0.125 identical_trace=0 matrix=ss:10,sf:0,st:0,fs:4,ff:26,ft:2,ts:0,tf:1,tt:5 prompt_diff=3078 reply_diff=1067 site=local`
+  - `GATE2_LANG_FIRST_DIFF … task=BinFill source_episode=11 call=10 message_index=2 dir=out` 原侧回复坐标 `(203,629)`、新侧 `(203,625)`：子目标模型输出的微小数值差使两侧轨迹分叉（48 局全部 `episodes_diff`），终态差异属 GPU 推理非逐位可复现，不是接口行为不一致；差异报告，不证明等价。
+  - 新侧：`OFFICIAL_MEDIA=PASS total=48 videos=48 accepted=48`、`TRACE_ARRAYS=PASS episodes=48`、`LANG_IO=PASS episodes=48 server_text_empty=0`、`VIDEO_LAYOUT=PASS published=48`（`compare/publish-new/`）。
+  - 原侧：`TRACE_ARRAYS=PASS episodes=48`、`LANG_IO=PASS episodes=48 server_text_empty=0`、`VIDEO_LAYOUT=PASS published=48`（`compare/publish-orig/`，`--accept-from results`；原侧无尝试账本，`official_media_check.py` 全量模式不适用）。
+- 过程中一次操作失误已纠正：首次两侧发布到同一输出根致原侧 41 局撞名、7 局混入新侧目录；该目录只含硬链接（核对无唯一副本）后整删，两侧分开发布。
+- 报告：`compare/report/gate2-memer.{json,md}`。
