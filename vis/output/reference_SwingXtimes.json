@@ -1,0 +1,5601 @@
+{
+ "task": "SwingXtimes",
+ "rule": "摆动 3 → [7,8]",
+ "synthetic": true,
+ "records": [
+  {
+   "episode": 3,
+   "seed": 3301,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 535,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 179,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 179,
+       "len": 35,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 214,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 252,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 290,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 328,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 366,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 404,
+       "len": 36,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 440,
+       "len": 59,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 499,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 535,
+     "demo": 0,
+     "windows": 32,
+     "windows_demo": 0,
+     "windows_exec": 32,
+     "delta8": 76.3,
+     "delta32": 17.2,
+     "exec_segments": 9,
+     "shortest_exec_seg": 35,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 833,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 179,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 179,
+       "len": 35,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 214,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 252,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 290,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 328,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 366,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 404,
+       "len": 35,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 439,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 477,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 515,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 553,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 591,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 629,
+       "len": 35,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 664,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 702,
+       "len": 36,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 738,
+       "len": 59,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 797,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 833,
+     "demo": 0,
+     "windows": 51,
+     "windows_demo": 0,
+     "windows_exec": 51,
+     "delta8": 118.9,
+     "delta32": 26.8,
+     "exec_segments": 17,
+     "shortest_exec_seg": 35,
+     "skip8": 11
+    }
+   }
+  },
+  {
+   "episode": 7,
+   "seed": 3700,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 8,
+    "added_pairs": 5
+   },
+   "hard": {
+    "item": {
+     "total": 504,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 106,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 106,
+       "len": 33,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 139,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 177,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 220,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 262,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 304,
+       "len": 42,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 346,
+       "len": 35,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 381,
+       "len": 81,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 462,
+       "len": 42,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 504,
+     "demo": 0,
+     "windows": 30,
+     "windows_demo": 0,
+     "windows_exec": 30,
+     "delta8": 71.9,
+     "delta32": 16.2,
+     "exec_segments": 9,
+     "shortest_exec_seg": 33,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 900,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 106,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 106,
+       "len": 33,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 139,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 177,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 220,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 262,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 304,
+       "len": 42,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 346,
+       "len": 33,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 379,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 417,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 460,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 502,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 544,
+       "len": 42,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 586,
+       "len": 33,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 619,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 657,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 742,
+       "len": 35,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 777,
+       "len": 81,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 858,
+       "len": 42,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 900,
+     "demo": 0,
+     "windows": 55,
+     "windows_demo": 0,
+     "windows_exec": 55,
+     "delta8": 128.4,
+     "delta32": 29.0,
+     "exec_segments": 19,
+     "shortest_exec_seg": 33,
+     "skip8": 12
+    }
+   }
+  },
+  {
+   "episode": 11,
+   "seed": 4101,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 486,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 26,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 128,
+       "len": 40,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 168,
+       "len": 40,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 208,
+       "len": 45,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 253,
+       "len": 44,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 297,
+       "len": 44,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 341,
+       "len": 35,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 376,
+       "len": 73,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 449,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 486,
+     "demo": 0,
+     "windows": 29,
+     "windows_demo": 0,
+     "windows_exec": 29,
+     "delta8": 69.3,
+     "delta32": 15.6,
+     "exec_segments": 9,
+     "shortest_exec_seg": 26,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 791,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 26,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 128,
+       "len": 40,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 168,
+       "len": 40,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 208,
+       "len": 45,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 253,
+       "len": 44,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 297,
+       "len": 44,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 341,
+       "len": 26,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 367,
+       "len": 40,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 407,
+       "len": 40,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 447,
+       "len": 45,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 492,
+       "len": 44,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 536,
+       "len": 44,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 580,
+       "len": 26,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 606,
+       "len": 40,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 646,
+       "len": 35,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 681,
+       "len": 73,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 754,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 791,
+     "demo": 0,
+     "windows": 48,
+     "windows_demo": 0,
+     "windows_exec": 48,
+     "delta8": 112.9,
+     "delta32": 25.5,
+     "exec_segments": 17,
+     "shortest_exec_seg": 26,
+     "skip8": 10
+    }
+   }
+  },
+  {
+   "episode": 15,
+   "seed": 4500,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 8,
+    "added_pairs": 5
+   },
+   "hard": {
+    "item": {
+     "total": 485,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "pick up the green cube",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 40,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 150,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 188,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 231,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 315,
+       "len": 42,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 357,
+       "len": 35,
+       "text": "put the green cube on the table",
+       "demo": false
+      },
+      {
+       "start": 392,
+       "len": 54,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 446,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 485,
+     "demo": 0,
+     "windows": 29,
+     "windows_demo": 0,
+     "windows_exec": 29,
+     "delta8": 69.1,
+     "delta32": 15.6,
+     "exec_segments": 9,
+     "shortest_exec_seg": 35,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 895,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "pick up the green cube",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 40,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 150,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 188,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 231,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 315,
+       "len": 42,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 357,
+       "len": 40,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 397,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 435,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 478,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 520,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 562,
+       "len": 42,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 604,
+       "len": 40,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 644,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 682,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 725,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 767,
+       "len": 35,
+       "text": "put the green cube on the table",
+       "demo": false
+      },
+      {
+       "start": 802,
+       "len": 54,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 856,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 895,
+     "demo": 0,
+     "windows": 54,
+     "windows_demo": 0,
+     "windows_exec": 54,
+     "delta8": 127.7,
+     "delta32": 28.8,
+     "exec_segments": 19,
+     "shortest_exec_seg": 35,
+     "skip8": 12
+    }
+   }
+  },
+  {
+   "episode": 19,
+   "seed": 4903,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 466,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the green cube",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 20,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 135,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 173,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 211,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 249,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 287,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 325,
+       "len": 36,
+       "text": "put the green cube on the table",
+       "demo": false
+      },
+      {
+       "start": 361,
+       "len": 65,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 426,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 466,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 66.4,
+     "delta32": 15.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 20,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 734,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the green cube",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 20,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 135,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 173,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 211,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 249,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 287,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 325,
+       "len": 20,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 345,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 383,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 421,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 459,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 497,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 535,
+       "len": 20,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 555,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 593,
+       "len": 36,
+       "text": "put the green cube on the table",
+       "demo": false
+      },
+      {
+       "start": 629,
+       "len": 65,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 694,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 734,
+     "demo": 0,
+     "windows": 44,
+     "windows_demo": 0,
+     "windows_exec": 44,
+     "delta8": 104.7,
+     "delta32": 23.6,
+     "exec_segments": 17,
+     "shortest_exec_seg": 20,
+     "skip8": 11
+    }
+   }
+  },
+  {
+   "episode": 23,
+   "seed": 5300,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 8,
+    "added_pairs": 5
+   },
+   "hard": {
+    "item": {
+     "total": 493,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 101,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 101,
+       "len": 30,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 131,
+       "len": 43,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 174,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 217,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 260,
+       "len": 43,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 303,
+       "len": 43,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 346,
+       "len": 34,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 380,
+       "len": 72,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 452,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 493,
+     "demo": 0,
+     "windows": 29,
+     "windows_demo": 0,
+     "windows_exec": 29,
+     "delta8": 70.3,
+     "delta32": 15.9,
+     "exec_segments": 9,
+     "shortest_exec_seg": 30,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 897,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 101,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 101,
+       "len": 30,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 131,
+       "len": 43,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 174,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 217,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 260,
+       "len": 43,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 303,
+       "len": 43,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 346,
+       "len": 30,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 376,
+       "len": 43,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 419,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 462,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 505,
+       "len": 43,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 548,
+       "len": 43,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 591,
+       "len": 30,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 621,
+       "len": 43,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 664,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 707,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 750,
+       "len": 34,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 784,
+       "len": 72,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 856,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 897,
+     "demo": 0,
+     "windows": 55,
+     "windows_demo": 0,
+     "windows_exec": 55,
+     "delta8": 128.0,
+     "delta32": 28.9,
+     "exec_segments": 19,
+     "shortest_exec_seg": 30,
+     "skip8": 12
+    }
+   }
+  },
+  {
+   "episode": 27,
+   "seed": 5700,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 459,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the green cube",
+       "demo": false
+      },
+      {
+       "start": 103,
+       "len": 28,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 131,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 169,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 207,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 245,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 283,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 321,
+       "len": 36,
+       "text": "put the green cube on the table",
+       "demo": false
+      },
+      {
+       "start": 357,
+       "len": 65,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 422,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 459,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.4,
+     "delta32": 14.8,
+     "exec_segments": 9,
+     "shortest_exec_seg": 28,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 743,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the green cube",
+       "demo": false
+      },
+      {
+       "start": 103,
+       "len": 28,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 131,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 169,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 207,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 245,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 283,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 321,
+       "len": 28,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 349,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 387,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 425,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 463,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 501,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 539,
+       "len": 28,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 567,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 605,
+       "len": 36,
+       "text": "put the green cube on the table",
+       "demo": false
+      },
+      {
+       "start": 641,
+       "len": 65,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 706,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 743,
+     "demo": 0,
+     "windows": 45,
+     "windows_demo": 0,
+     "windows_exec": 45,
+     "delta8": 106.0,
+     "delta32": 23.9,
+     "exec_segments": 17,
+     "shortest_exec_seg": 28,
+     "skip8": 10
+    }
+   }
+  },
+  {
+   "episode": 31,
+   "seed": 6101,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 8,
+    "added_pairs": 5
+   },
+   "hard": {
+    "item": {
+     "total": 490,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 17,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 132,
+       "len": 42,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 174,
+       "len": 47,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 221,
+       "len": 46,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 267,
+       "len": 46,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 313,
+       "len": 46,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 359,
+       "len": 37,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 396,
+       "len": 55,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 451,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 490,
+     "demo": 0,
+     "windows": 29,
+     "windows_demo": 0,
+     "windows_exec": 29,
+     "delta8": 69.9,
+     "delta32": 15.8,
+     "exec_segments": 9,
+     "shortest_exec_seg": 17,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 886,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 17,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 132,
+       "len": 42,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 174,
+       "len": 47,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 221,
+       "len": 46,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 267,
+       "len": 46,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 313,
+       "len": 46,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 359,
+       "len": 17,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 376,
+       "len": 42,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 418,
+       "len": 47,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 465,
+       "len": 46,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 511,
+       "len": 46,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 557,
+       "len": 46,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 603,
+       "len": 17,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 620,
+       "len": 42,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 662,
+       "len": 47,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 709,
+       "len": 46,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 755,
+       "len": 37,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 792,
+       "len": 55,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 847,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 886,
+     "demo": 0,
+     "windows": 54,
+     "windows_demo": 0,
+     "windows_exec": 54,
+     "delta8": 126.4,
+     "delta32": 28.5,
+     "exec_segments": 19,
+     "shortest_exec_seg": 17,
+     "skip8": 12
+    }
+   }
+  },
+  {
+   "episode": 35,
+   "seed": 6500,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 449,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 104,
+       "text": "pick up the green cube",
+       "demo": false
+      },
+      {
+       "start": 104,
+       "len": 31,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 135,
+       "len": 40,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 175,
+       "len": 37,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 212,
+       "len": 37,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 249,
+       "len": 37,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 286,
+       "len": 37,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 323,
+       "len": 34,
+       "text": "put the green cube on the table",
+       "demo": false
+      },
+      {
+       "start": 357,
+       "len": 56,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 413,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 449,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.0,
+     "delta32": 14.5,
+     "exec_segments": 9,
+     "shortest_exec_seg": 31,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 739,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 104,
+       "text": "pick up the green cube",
+       "demo": false
+      },
+      {
+       "start": 104,
+       "len": 31,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 135,
+       "len": 40,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 175,
+       "len": 37,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 212,
+       "len": 37,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 249,
+       "len": 37,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 286,
+       "len": 37,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 323,
+       "len": 31,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 354,
+       "len": 40,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 394,
+       "len": 37,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 431,
+       "len": 37,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 468,
+       "len": 37,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 505,
+       "len": 37,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 542,
+       "len": 31,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 573,
+       "len": 40,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 613,
+       "len": 34,
+       "text": "put the green cube on the table",
+       "demo": false
+      },
+      {
+       "start": 647,
+       "len": 56,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 703,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 739,
+     "demo": 0,
+     "windows": 45,
+     "windows_demo": 0,
+     "windows_exec": 45,
+     "delta8": 105.4,
+     "delta32": 23.8,
+     "exec_segments": 17,
+     "shortest_exec_seg": 31,
+     "skip8": 10
+    }
+   }
+  },
+  {
+   "episode": 39,
+   "seed": 6902,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 8,
+    "added_pairs": 5
+   },
+   "hard": {
+    "item": {
+     "total": 453,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 32,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 134,
+       "len": 36,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 170,
+       "len": 36,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 206,
+       "len": 36,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 242,
+       "len": 36,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 278,
+       "len": 36,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 314,
+       "len": 36,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 64,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 414,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 453,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.6,
+     "delta32": 14.6,
+     "exec_segments": 9,
+     "shortest_exec_seg": 32,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 805,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 32,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 134,
+       "len": 36,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 170,
+       "len": 36,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 206,
+       "len": 36,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 242,
+       "len": 36,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 278,
+       "len": 36,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 314,
+       "len": 32,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 346,
+       "len": 36,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 382,
+       "len": 36,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 418,
+       "len": 36,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 454,
+       "len": 36,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 490,
+       "len": 36,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 526,
+       "len": 32,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 558,
+       "len": 36,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 594,
+       "len": 36,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 630,
+       "len": 36,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 666,
+       "len": 36,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 702,
+       "len": 64,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 766,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 805,
+     "demo": 0,
+     "windows": 49,
+     "windows_demo": 0,
+     "windows_exec": 49,
+     "delta8": 114.9,
+     "delta32": 25.9,
+     "exec_segments": 19,
+     "shortest_exec_seg": 32,
+     "skip8": 12
+    }
+   }
+  },
+  {
+   "episode": 43,
+   "seed": 7300,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 499,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 103,
+       "len": 30,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 133,
+       "len": 45,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 178,
+       "len": 42,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 220,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 263,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 305,
+       "len": 43,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 348,
+       "len": 35,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 383,
+       "len": 76,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 459,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 499,
+     "demo": 0,
+     "windows": 30,
+     "windows_demo": 0,
+     "windows_exec": 30,
+     "delta8": 71.1,
+     "delta32": 16.1,
+     "exec_segments": 9,
+     "shortest_exec_seg": 30,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 819,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 103,
+       "len": 30,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 133,
+       "len": 45,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 178,
+       "len": 42,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 220,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 263,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 305,
+       "len": 43,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 348,
+       "len": 30,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 378,
+       "len": 45,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 42,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 465,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 508,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 43,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 593,
+       "len": 30,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 623,
+       "len": 45,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 668,
+       "len": 35,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 703,
+       "len": 76,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 779,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 819,
+     "demo": 0,
+     "windows": 50,
+     "windows_demo": 0,
+     "windows_exec": 50,
+     "delta8": 116.9,
+     "delta32": 26.4,
+     "exec_segments": 17,
+     "shortest_exec_seg": 30,
+     "skip8": 10
+    }
+   }
+  },
+  {
+   "episode": 47,
+   "seed": 7700,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 8,
+    "added_pairs": 5
+   },
+   "hard": {
+    "item": {
+     "total": 538,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 147,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 147,
+       "len": 39,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 186,
+       "len": 43,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 229,
+       "len": 45,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 274,
+       "len": 44,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 318,
+       "len": 45,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 44,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 407,
+       "len": 37,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 444,
+       "len": 59,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 503,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 538,
+     "demo": 0,
+     "windows": 32,
+     "windows_demo": 0,
+     "windows_exec": 32,
+     "delta8": 76.7,
+     "delta32": 17.3,
+     "exec_segments": 9,
+     "shortest_exec_seg": 37,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 969,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 147,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 147,
+       "len": 39,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 186,
+       "len": 43,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 229,
+       "len": 45,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 274,
+       "len": 44,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 318,
+       "len": 45,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 44,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 407,
+       "len": 39,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 446,
+       "len": 43,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 489,
+       "len": 45,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 534,
+       "len": 44,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 578,
+       "len": 45,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 623,
+       "len": 44,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 667,
+       "len": 39,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 706,
+       "len": 43,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 749,
+       "len": 45,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 794,
+       "len": 44,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 838,
+       "len": 37,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 875,
+       "len": 59,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 934,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 969,
+     "demo": 0,
+     "windows": 59,
+     "windows_demo": 0,
+     "windows_exec": 59,
+     "delta8": 138.3,
+     "delta32": 31.2,
+     "exec_segments": 19,
+     "shortest_exec_seg": 37,
+     "skip8": 13
+    }
+   }
+  },
+  {
+   "episode": 51,
+   "seed": 8100,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 453,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 111,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 111,
+       "len": 25,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 136,
+       "len": 37,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 173,
+       "len": 37,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 210,
+       "len": 37,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 247,
+       "len": 37,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 284,
+       "len": 37,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 321,
+       "len": 36,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 357,
+       "len": 61,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 418,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 453,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.6,
+     "delta32": 14.6,
+     "exec_segments": 9,
+     "shortest_exec_seg": 25,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 725,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 111,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 111,
+       "len": 25,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 136,
+       "len": 37,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 173,
+       "len": 37,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 210,
+       "len": 37,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 247,
+       "len": 37,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 284,
+       "len": 37,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 321,
+       "len": 25,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 346,
+       "len": 37,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 383,
+       "len": 37,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 420,
+       "len": 37,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 457,
+       "len": 37,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 494,
+       "len": 37,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 531,
+       "len": 25,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 556,
+       "len": 37,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 593,
+       "len": 36,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 629,
+       "len": 61,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 690,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 725,
+     "demo": 0,
+     "windows": 44,
+     "windows_demo": 0,
+     "windows_exec": 44,
+     "delta8": 103.4,
+     "delta32": 23.4,
+     "exec_segments": 17,
+     "shortest_exec_seg": 25,
+     "skip8": 11
+    }
+   }
+  },
+  {
+   "episode": 55,
+   "seed": 8500,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 8,
+    "added_pairs": 5
+   },
+   "hard": {
+    "item": {
+     "total": 524,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 116,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 116,
+       "len": 32,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 148,
+       "len": 47,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 195,
+       "len": 46,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 241,
+       "len": 46,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 287,
+       "len": 46,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 333,
+       "len": 46,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 379,
+       "len": 36,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 415,
+       "len": 72,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 487,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 524,
+     "demo": 0,
+     "windows": 31,
+     "windows_demo": 0,
+     "windows_exec": 31,
+     "delta8": 74.7,
+     "delta32": 16.9,
+     "exec_segments": 9,
+     "shortest_exec_seg": 32,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 958,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 116,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 116,
+       "len": 32,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 148,
+       "len": 47,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 195,
+       "len": 46,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 241,
+       "len": 46,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 287,
+       "len": 46,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 333,
+       "len": 46,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 379,
+       "len": 32,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 411,
+       "len": 47,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 458,
+       "len": 46,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 504,
+       "len": 46,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 46,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 596,
+       "len": 46,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 642,
+       "len": 32,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 674,
+       "len": 47,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 721,
+       "len": 46,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 767,
+       "len": 46,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 813,
+       "len": 36,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 849,
+       "len": 72,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 921,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 958,
+     "demo": 0,
+     "windows": 58,
+     "windows_demo": 0,
+     "windows_exec": 58,
+     "delta8": 136.7,
+     "delta32": 30.9,
+     "exec_segments": 19,
+     "shortest_exec_seg": 32,
+     "skip8": 12
+    }
+   }
+  },
+  {
+   "episode": 59,
+   "seed": 8900,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 488,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 120,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 120,
+       "len": 29,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 149,
+       "len": 43,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 192,
+       "len": 40,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 232,
+       "len": 41,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 39,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 312,
+       "len": 41,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 353,
+       "len": 40,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 393,
+       "len": 54,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 447,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 488,
+     "demo": 0,
+     "windows": 29,
+     "windows_demo": 0,
+     "windows_exec": 29,
+     "delta8": 69.6,
+     "delta32": 15.7,
+     "exec_segments": 9,
+     "shortest_exec_seg": 29,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 793,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 120,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 120,
+       "len": 29,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 149,
+       "len": 43,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 192,
+       "len": 40,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 232,
+       "len": 41,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 39,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 312,
+       "len": 41,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 353,
+       "len": 29,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 382,
+       "len": 43,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 425,
+       "len": 40,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 465,
+       "len": 41,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 506,
+       "len": 39,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 545,
+       "len": 41,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 586,
+       "len": 29,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 615,
+       "len": 43,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 658,
+       "len": 40,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 698,
+       "len": 54,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 752,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 793,
+     "demo": 0,
+     "windows": 48,
+     "windows_demo": 0,
+     "windows_exec": 48,
+     "delta8": 113.1,
+     "delta32": 25.5,
+     "exec_segments": 17,
+     "shortest_exec_seg": 29,
+     "skip8": 11
+    }
+   }
+  },
+  {
+   "episode": 63,
+   "seed": 9300,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 8,
+    "added_pairs": 5
+   },
+   "hard": {
+    "item": {
+     "total": 492,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 111,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 111,
+       "len": 29,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 140,
+       "len": 44,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 184,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 227,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 270,
+       "len": 43,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 313,
+       "len": 43,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 356,
+       "len": 35,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 391,
+       "len": 63,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 454,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 492,
+     "demo": 0,
+     "windows": 29,
+     "windows_demo": 0,
+     "windows_exec": 29,
+     "delta8": 70.1,
+     "delta32": 15.8,
+     "exec_segments": 9,
+     "shortest_exec_seg": 29,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 896,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 111,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 111,
+       "len": 29,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 140,
+       "len": 44,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 184,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 227,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 270,
+       "len": 43,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 313,
+       "len": 43,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 356,
+       "len": 29,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 385,
+       "len": 44,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 429,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 472,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 515,
+       "len": 43,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 558,
+       "len": 43,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 601,
+       "len": 29,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 630,
+       "len": 44,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 674,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 717,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 760,
+       "len": 35,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 795,
+       "len": 63,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 858,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 896,
+     "demo": 0,
+     "windows": 54,
+     "windows_demo": 0,
+     "windows_exec": 54,
+     "delta8": 127.9,
+     "delta32": 28.9,
+     "exec_segments": 19,
+     "shortest_exec_seg": 29,
+     "skip8": 12
+    }
+   }
+  },
+  {
+   "episode": 67,
+   "seed": 9700,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 570,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 178,
+       "text": "pick up the green cube",
+       "demo": false
+      },
+      {
+       "start": 178,
+       "len": 49,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 227,
+       "len": 46,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 316,
+       "len": 45,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 361,
+       "len": 43,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 404,
+       "len": 45,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 449,
+       "len": 38,
+       "text": "put the green cube on the table",
+       "demo": false
+      },
+      {
+       "start": 487,
+       "len": 49,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 536,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 570,
+     "demo": 0,
+     "windows": 34,
+     "windows_demo": 0,
+     "windows_exec": 34,
+     "delta8": 81.3,
+     "delta32": 18.4,
+     "exec_segments": 9,
+     "shortest_exec_seg": 38,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 936,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 178,
+       "text": "pick up the green cube",
+       "demo": false
+      },
+      {
+       "start": 178,
+       "len": 49,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 227,
+       "len": 46,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 316,
+       "len": 45,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 361,
+       "len": 43,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 404,
+       "len": 45,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 449,
+       "len": 49,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 498,
+       "len": 46,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 544,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 587,
+       "len": 45,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 632,
+       "len": 43,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 675,
+       "len": 45,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 720,
+       "len": 49,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 769,
+       "len": 46,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 815,
+       "len": 38,
+       "text": "put the green cube on the table",
+       "demo": false
+      },
+      {
+       "start": 853,
+       "len": 49,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 902,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 936,
+     "demo": 0,
+     "windows": 57,
+     "windows_demo": 0,
+     "windows_exec": 57,
+     "delta8": 133.6,
+     "delta32": 30.2,
+     "exec_segments": 17,
+     "shortest_exec_seg": 38,
+     "skip8": 11
+    }
+   }
+  },
+  {
+   "episode": 71,
+   "seed": 10100,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 8,
+    "added_pairs": 5
+   },
+   "hard": {
+    "item": {
+     "total": 490,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 105,
+       "len": 41,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 146,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 184,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 227,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 269,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 42,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 353,
+       "len": 39,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 392,
+       "len": 55,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 447,
+       "len": 43,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 490,
+     "demo": 0,
+     "windows": 29,
+     "windows_demo": 0,
+     "windows_exec": 29,
+     "delta8": 69.9,
+     "delta32": 15.8,
+     "exec_segments": 9,
+     "shortest_exec_seg": 38,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 902,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 105,
+       "len": 41,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 146,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 184,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 227,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 269,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 42,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 353,
+       "len": 41,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 394,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 432,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 475,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 517,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 559,
+       "len": 42,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 601,
+       "len": 41,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 642,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 680,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 723,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 765,
+       "len": 39,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 804,
+       "len": 55,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 859,
+       "len": 43,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 902,
+     "demo": 0,
+     "windows": 55,
+     "windows_demo": 0,
+     "windows_exec": 55,
+     "delta8": 128.7,
+     "delta32": 29.1,
+     "exec_segments": 19,
+     "shortest_exec_seg": 38,
+     "skip8": 12
+    }
+   }
+  },
+  {
+   "episode": 75,
+   "seed": 10500,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 497,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 114,
+       "len": 43,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 157,
+       "len": 44,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 201,
+       "len": 42,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 243,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 285,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 327,
+       "len": 42,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 369,
+       "len": 36,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 405,
+       "len": 58,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 463,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 497,
+     "demo": 0,
+     "windows": 30,
+     "windows_demo": 0,
+     "windows_exec": 30,
+     "delta8": 70.9,
+     "delta32": 16.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 36,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 839,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 114,
+       "len": 43,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 157,
+       "len": 44,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 201,
+       "len": 42,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 243,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 285,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 327,
+       "len": 42,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 369,
+       "len": 43,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 412,
+       "len": 44,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 456,
+       "len": 42,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 498,
+       "len": 42,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 540,
+       "len": 42,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 582,
+       "len": 42,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 624,
+       "len": 43,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 667,
+       "len": 44,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 711,
+       "len": 36,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 747,
+       "len": 58,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 805,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 839,
+     "demo": 0,
+     "windows": 51,
+     "windows_demo": 0,
+     "windows_exec": 51,
+     "delta8": 119.7,
+     "delta32": 27.0,
+     "exec_segments": 17,
+     "shortest_exec_seg": 36,
+     "skip8": 10
+    }
+   }
+  },
+  {
+   "episode": 79,
+   "seed": 10900,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 8,
+    "added_pairs": 5
+   },
+   "hard": {
+    "item": {
+     "total": 464,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 107,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 107,
+       "len": 23,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 130,
+       "len": 40,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 170,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 208,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 246,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 284,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 322,
+       "len": 40,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 362,
+       "len": 62,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 424,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 464,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 66.1,
+     "delta32": 14.9,
+     "exec_segments": 9,
+     "shortest_exec_seg": 23,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 818,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 107,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 107,
+       "len": 23,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 130,
+       "len": 40,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 170,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 208,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 246,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 284,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 322,
+       "len": 23,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 345,
+       "len": 40,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 385,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 461,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 499,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 537,
+       "len": 23,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 560,
+       "len": 40,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 638,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 676,
+       "len": 40,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 716,
+       "len": 62,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 778,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 818,
+     "demo": 0,
+     "windows": 50,
+     "windows_demo": 0,
+     "windows_exec": 50,
+     "delta8": 116.7,
+     "delta32": 26.4,
+     "exec_segments": 19,
+     "shortest_exec_seg": 23,
+     "skip8": 12
+    }
+   }
+  },
+  {
+   "episode": 83,
+   "seed": 11300,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 555,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 149,
+       "text": "pick up the green cube",
+       "demo": false
+      },
+      {
+       "start": 149,
+       "len": 36,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 185,
+       "len": 45,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 230,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 316,
+       "len": 43,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 359,
+       "len": 43,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 402,
+       "len": 40,
+       "text": "put the green cube on the table",
+       "demo": false
+      },
+      {
+       "start": 442,
+       "len": 61,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 503,
+       "len": 52,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 555,
+     "demo": 0,
+     "windows": 33,
+     "windows_demo": 0,
+     "windows_exec": 33,
+     "delta8": 79.1,
+     "delta32": 17.9,
+     "exec_segments": 9,
+     "shortest_exec_seg": 36,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 889,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 149,
+       "text": "pick up the green cube",
+       "demo": false
+      },
+      {
+       "start": 149,
+       "len": 36,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 185,
+       "len": 45,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 230,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 316,
+       "len": 43,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 359,
+       "len": 43,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 402,
+       "len": 36,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 438,
+       "len": 45,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 483,
+       "len": 43,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 526,
+       "len": 43,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 569,
+       "len": 43,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 612,
+       "len": 43,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 655,
+       "len": 36,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 691,
+       "len": 45,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 736,
+       "len": 40,
+       "text": "put the green cube on the table",
+       "demo": false
+      },
+      {
+       "start": 776,
+       "len": 61,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 837,
+       "len": 52,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 889,
+     "demo": 0,
+     "windows": 54,
+     "windows_demo": 0,
+     "windows_exec": 54,
+     "delta8": 126.9,
+     "delta32": 28.6,
+     "exec_segments": 17,
+     "shortest_exec_seg": 36,
+     "skip8": 11
+    }
+   }
+  },
+  {
+   "episode": 87,
+   "seed": 11700,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 8,
+    "added_pairs": 5
+   },
+   "hard": {
+    "item": {
+     "total": 462,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 128,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 128,
+       "len": 32,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 160,
+       "len": 34,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 194,
+       "len": 34,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 228,
+       "len": 34,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 262,
+       "len": 34,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 296,
+       "len": 34,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 330,
+       "len": 35,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 365,
+       "len": 59,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 424,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 462,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.9,
+     "delta32": 14.9,
+     "exec_segments": 9,
+     "shortest_exec_seg": 32,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 798,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 128,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 128,
+       "len": 32,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 160,
+       "len": 34,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 194,
+       "len": 34,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 228,
+       "len": 34,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 262,
+       "len": 34,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 296,
+       "len": 34,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 330,
+       "len": 32,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 362,
+       "len": 34,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 396,
+       "len": 34,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 430,
+       "len": 34,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 464,
+       "len": 34,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 498,
+       "len": 34,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 532,
+       "len": 32,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 564,
+       "len": 34,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 598,
+       "len": 34,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 632,
+       "len": 34,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 666,
+       "len": 35,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 701,
+       "len": 59,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 760,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 798,
+     "demo": 0,
+     "windows": 48,
+     "windows_demo": 0,
+     "windows_exec": 48,
+     "delta8": 113.9,
+     "delta32": 25.7,
+     "exec_segments": 19,
+     "shortest_exec_seg": 32,
+     "skip8": 13
+    }
+   }
+  },
+  {
+   "episode": 91,
+   "seed": 12100,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 459,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 109,
+       "len": 29,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 138,
+       "len": 37,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 175,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 213,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 251,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 289,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 327,
+       "len": 36,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 62,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 425,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 459,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.4,
+     "delta32": 14.8,
+     "exec_segments": 9,
+     "shortest_exec_seg": 29,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 743,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 109,
+       "len": 29,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 138,
+       "len": 37,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 175,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 213,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 251,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 289,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 327,
+       "len": 29,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 356,
+       "len": 37,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 393,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 431,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 469,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 507,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 545,
+       "len": 29,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 574,
+       "len": 37,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 611,
+       "len": 36,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 647,
+       "len": 62,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 709,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 743,
+     "demo": 0,
+     "windows": 45,
+     "windows_demo": 0,
+     "windows_exec": 45,
+     "delta8": 106.0,
+     "delta32": 23.9,
+     "exec_segments": 17,
+     "shortest_exec_seg": 29,
+     "skip8": 11
+    }
+   }
+  },
+  {
+   "episode": 95,
+   "seed": 12500,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 8,
+    "added_pairs": 5
+   },
+   "hard": {
+    "item": {
+     "total": 473,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 118,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 118,
+       "len": 28,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 146,
+       "len": 39,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 185,
+       "len": 39,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 224,
+       "len": 39,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 263,
+       "len": 39,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 39,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 341,
+       "len": 36,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 377,
+       "len": 61,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 438,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 473,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 67.4,
+     "delta32": 15.2,
+     "exec_segments": 9,
+     "shortest_exec_seg": 28,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 841,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 118,
+       "text": "pick up the blue cube",
+       "demo": false
+      },
+      {
+       "start": 118,
+       "len": 28,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 146,
+       "len": 39,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 185,
+       "len": 39,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 224,
+       "len": 39,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 263,
+       "len": 39,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 39,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 341,
+       "len": 28,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 369,
+       "len": 39,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 408,
+       "len": 39,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 447,
+       "len": 39,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 486,
+       "len": 39,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 525,
+       "len": 39,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 564,
+       "len": 28,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 592,
+       "len": 39,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 631,
+       "len": 39,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 670,
+       "len": 39,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 709,
+       "len": 36,
+       "text": "put the blue cube on the table",
+       "demo": false
+      },
+      {
+       "start": 745,
+       "len": 61,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 806,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 841,
+     "demo": 0,
+     "windows": 51,
+     "windows_demo": 0,
+     "windows_exec": 51,
+     "delta8": 120.0,
+     "delta32": 27.1,
+     "exec_segments": 19,
+     "shortest_exec_seg": 28,
+     "skip8": 12
+    }
+   }
+  },
+  {
+   "episode": 99,
+   "seed": 12900,
+   "synthesis": {
+    "rule": "摆动 3 → [7,8]",
+    "from": 3,
+    "to": 7,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 472,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 113,
+       "len": 31,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 144,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 182,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 220,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 258,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 296,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 334,
+       "len": 40,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 374,
+       "len": 57,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 431,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 472,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 67.3,
+     "delta32": 15.2,
+     "exec_segments": 9,
+     "shortest_exec_seg": 31,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 762,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "pick up the red cube",
+       "demo": false
+      },
+      {
+       "start": 113,
+       "len": 31,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 144,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 182,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 220,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 258,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 296,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 334,
+       "len": 31,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 365,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 403,
+       "len": 38,
+       "text": "move to the top of the right-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 441,
+       "len": 38,
+       "text": "move to the top of the left-side target for the second time",
+       "demo": false
+      },
+      {
+       "start": 479,
+       "len": 38,
+       "text": "move to the top of the right-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 517,
+       "len": 38,
+       "text": "move to the top of the left-side target for the third time",
+       "demo": false
+      },
+      {
+       "start": 555,
+       "len": 31,
+       "text": "move to the top of the right-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 586,
+       "len": 38,
+       "text": "move to the top of the left-side target for the first time",
+       "demo": false
+      },
+      {
+       "start": 624,
+       "len": 40,
+       "text": "put the red cube on the table",
+       "demo": false
+      },
+      {
+       "start": 664,
+       "len": 57,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 721,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 762,
+     "demo": 0,
+     "windows": 46,
+     "windows_demo": 0,
+     "windows_exec": 46,
+     "delta8": 108.7,
+     "delta32": 24.5,
+     "exec_segments": 17,
+     "shortest_exec_seg": 31,
+     "skip8": 11
+    }
+   }
+  }
+ ]
+}

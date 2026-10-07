@@ -1,0 +1,5529 @@
+{
+ "task": "VideoPlaceOrder",
+ "rule": "演示放台 [2,4] → 4",
+ "synthetic": true,
+ "records": [
+  {
+   "episode": 3,
+   "seed": 11305,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 5,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1408,
+     "demo": 1124,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 113,
+       "len": 96,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 209,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 278,
+       "len": 83,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 361,
+       "len": 77,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 438,
+       "len": 91,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 529,
+       "len": 72,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 601,
+       "len": 110,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 711,
+       "len": 101,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 812,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 927,
+       "len": 81,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 1008,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1064,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1124,
+       "len": 195,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1319,
+       "len": 76,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1395,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1408,
+     "demo": 1124,
+     "windows": 85,
+     "windows_demo": 69,
+     "windows_exec": 16,
+     "delta8": 201.0,
+     "delta32": 45.4,
+     "exec_segments": 2,
+     "shortest_exec_seg": 76,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1408,
+     "demo": 1124,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 113,
+       "len": 96,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 209,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 278,
+       "len": 83,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 361,
+       "len": 77,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 438,
+       "len": 91,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 529,
+       "len": 72,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 601,
+       "len": 110,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 711,
+       "len": 101,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 812,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 927,
+       "len": 81,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 1008,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1064,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1124,
+       "len": 195,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1319,
+       "len": 76,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1395,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1408,
+     "demo": 1124,
+     "windows": 85,
+     "windows_demo": 69,
+     "windows_exec": 16,
+     "delta8": 201.0,
+     "delta32": 45.4,
+     "exec_segments": 2,
+     "shortest_exec_seg": 76,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 7,
+   "seed": 11705,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 4,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1131,
+     "demo": 930,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 115,
+       "len": 80,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 195,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 268,
+       "len": 99,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 367,
+       "len": 88,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 455,
+       "len": 95,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 550,
+       "len": 91,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 641,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 714,
+       "len": 100,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 814,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 870,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 930,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1043,
+       "len": 70,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1113,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1131,
+     "demo": 930,
+     "windows": 68,
+     "windows_demo": 57,
+     "windows_exec": 11,
+     "delta8": 161.4,
+     "delta32": 36.5,
+     "exec_segments": 2,
+     "shortest_exec_seg": 70,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1131,
+     "demo": 930,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 115,
+       "len": 80,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 195,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 268,
+       "len": 99,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 367,
+       "len": 88,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 455,
+       "len": 95,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 550,
+       "len": 91,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 641,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 714,
+       "len": 100,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 814,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 870,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 930,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1043,
+       "len": 70,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1113,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1131,
+     "demo": 930,
+     "windows": 68,
+     "windows_demo": 57,
+     "windows_exec": 11,
+     "delta8": 161.4,
+     "delta32": 36.5,
+     "exec_segments": 2,
+     "shortest_exec_seg": 70,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 11,
+   "seed": 12100,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 5,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1311,
+     "demo": 1114,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 103,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 193,
+       "len": 72,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 265,
+       "len": 101,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 366,
+       "len": 100,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 466,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 579,
+       "len": 83,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 662,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 731,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 821,
+       "len": 67,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 888,
+       "len": 104,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 992,
+       "len": 62,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1054,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1114,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1229,
+       "len": 69,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1298,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1311,
+     "demo": 1114,
+     "windows": 79,
+     "windows_demo": 68,
+     "windows_exec": 11,
+     "delta8": 187.1,
+     "delta32": 42.3,
+     "exec_segments": 2,
+     "shortest_exec_seg": 69,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1311,
+     "demo": 1114,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 103,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 193,
+       "len": 72,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 265,
+       "len": 101,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 366,
+       "len": 100,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 466,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 579,
+       "len": 83,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 662,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 731,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 821,
+       "len": 67,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 888,
+       "len": 104,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 992,
+       "len": 62,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1054,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1114,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1229,
+       "len": 69,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1298,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1311,
+     "demo": 1114,
+     "windows": 79,
+     "windows_demo": 68,
+     "windows_exec": 11,
+     "delta8": 187.1,
+     "delta32": 42.3,
+     "exec_segments": 2,
+     "shortest_exec_seg": 69,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 15,
+   "seed": 12501,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 4,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1099,
+     "demo": 890,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 105,
+       "len": 76,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 181,
+       "len": 70,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 251,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 341,
+       "len": 68,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 409,
+       "len": 88,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 497,
+       "len": 88,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 585,
+       "len": 85,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 670,
+       "len": 104,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 774,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 830,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 890,
+       "len": 118,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1008,
+       "len": 73,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1081,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1099,
+     "demo": 890,
+     "windows": 66,
+     "windows_demo": 54,
+     "windows_exec": 12,
+     "delta8": 156.9,
+     "delta32": 35.4,
+     "exec_segments": 2,
+     "shortest_exec_seg": 73,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1099,
+     "demo": 890,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 105,
+       "len": 76,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 181,
+       "len": 70,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 251,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 341,
+       "len": 68,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 409,
+       "len": 88,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 497,
+       "len": 88,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 585,
+       "len": 85,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 670,
+       "len": 104,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 774,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 830,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 890,
+       "len": 118,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1008,
+       "len": 73,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1081,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1099,
+     "demo": 890,
+     "windows": 66,
+     "windows_demo": 54,
+     "windows_exec": 12,
+     "delta8": 156.9,
+     "delta32": 35.4,
+     "exec_segments": 2,
+     "shortest_exec_seg": 73,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 19,
+   "seed": 12900,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 4,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1111,
+     "demo": 913,
+     "segments": [
+      {
+       "start": 0,
+       "len": 111,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 111,
+       "len": 79,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 190,
+       "len": 70,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 260,
+       "len": 98,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 358,
+       "len": 83,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 441,
+       "len": 88,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 529,
+       "len": 112,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 641,
+       "len": 75,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 716,
+       "len": 81,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 797,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 853,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 913,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1026,
+       "len": 69,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1095,
+       "len": 16,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1111,
+     "demo": 913,
+     "windows": 67,
+     "windows_demo": 56,
+     "windows_exec": 11,
+     "delta8": 158.6,
+     "delta32": 35.8,
+     "exec_segments": 2,
+     "shortest_exec_seg": 69,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1111,
+     "demo": 913,
+     "segments": [
+      {
+       "start": 0,
+       "len": 111,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 111,
+       "len": 79,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 190,
+       "len": 70,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 260,
+       "len": 98,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 358,
+       "len": 83,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 441,
+       "len": 88,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 529,
+       "len": 112,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 641,
+       "len": 75,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 716,
+       "len": 81,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 797,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 853,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 913,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1026,
+       "len": 69,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1095,
+       "len": 16,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1111,
+     "demo": 913,
+     "windows": 67,
+     "windows_demo": 56,
+     "windows_exec": 11,
+     "delta8": 158.6,
+     "delta32": 35.8,
+     "exec_segments": 2,
+     "shortest_exec_seg": 69,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 23,
+   "seed": 13301,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 3,
+    "to": 4,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 921,
+     "demo": 729,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 109,
+       "len": 91,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 77,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 277,
+       "len": 83,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 360,
+       "len": 84,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 444,
+       "len": 77,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 521,
+       "len": 92,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 613,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 669,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 729,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 844,
+       "len": 64,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 908,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 921,
+     "demo": 729,
+     "windows": 54,
+     "windows_demo": 44,
+     "windows_exec": 10,
+     "delta8": 131.4,
+     "delta32": 29.7,
+     "exec_segments": 2,
+     "shortest_exec_seg": 64,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1121,
+     "demo": 929,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 109,
+       "len": 91,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 77,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 277,
+       "len": 83,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 360,
+       "len": 84,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 444,
+       "len": 109,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 553,
+       "len": 91,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 644,
+       "len": 77,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 721,
+       "len": 92,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 813,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 869,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 929,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1044,
+       "len": 64,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1108,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1121,
+     "demo": 929,
+     "windows": 67,
+     "windows_demo": 57,
+     "windows_exec": 10,
+     "delta8": 160.0,
+     "delta32": 36.1,
+     "exec_segments": 2,
+     "shortest_exec_seg": 64,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 27,
+   "seed": 13700,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 3,
+    "to": 4,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 930,
+     "demo": 730,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 105,
+       "len": 84,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 189,
+       "len": 84,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 273,
+       "len": 94,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 367,
+       "len": 93,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 460,
+       "len": 71,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 531,
+       "len": 83,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 614,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 670,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 730,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 845,
+       "len": 67,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 912,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 930,
+     "demo": 730,
+     "windows": 55,
+     "windows_demo": 44,
+     "windows_exec": 11,
+     "delta8": 132.7,
+     "delta32": 30.0,
+     "exec_segments": 2,
+     "shortest_exec_seg": 67,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1119,
+     "demo": 919,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 105,
+       "len": 84,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 189,
+       "len": 84,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 273,
+       "len": 94,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 367,
+       "len": 93,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 460,
+       "len": 105,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 565,
+       "len": 84,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 649,
+       "len": 71,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 720,
+       "len": 83,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 803,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 859,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 919,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1034,
+       "len": 67,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1101,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1119,
+     "demo": 919,
+     "windows": 67,
+     "windows_demo": 56,
+     "windows_exec": 11,
+     "delta8": 159.7,
+     "delta32": 36.1,
+     "exec_segments": 2,
+     "shortest_exec_seg": 67,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 31,
+   "seed": 14101,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 4,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1154,
+     "demo": 951,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 103,
+       "len": 85,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 188,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 257,
+       "len": 100,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 357,
+       "len": 70,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 427,
+       "len": 97,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 524,
+       "len": 96,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 620,
+       "len": 108,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 728,
+       "len": 107,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 835,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 891,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 951,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1066,
+       "len": 70,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1136,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1154,
+     "demo": 951,
+     "windows": 69,
+     "windows_demo": 58,
+     "windows_exec": 11,
+     "delta8": 164.7,
+     "delta32": 37.2,
+     "exec_segments": 2,
+     "shortest_exec_seg": 70,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1154,
+     "demo": 951,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 103,
+       "len": 85,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 188,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 257,
+       "len": 100,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 357,
+       "len": 70,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 427,
+       "len": 97,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 524,
+       "len": 96,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 620,
+       "len": 108,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 728,
+       "len": 107,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 835,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 891,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 951,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1066,
+       "len": 70,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1136,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1154,
+     "demo": 951,
+     "windows": 69,
+     "windows_demo": 58,
+     "windows_exec": 11,
+     "delta8": 164.7,
+     "delta32": 37.2,
+     "exec_segments": 2,
+     "shortest_exec_seg": 70,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 35,
+   "seed": 14500,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 5,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1230,
+     "demo": 1028,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 102,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 192,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 265,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 354,
+       "len": 81,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 435,
+       "len": 82,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 517,
+       "len": 75,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 592,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 661,
+       "len": 102,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 763,
+       "len": 70,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 833,
+       "len": 79,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 912,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 968,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1028,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1141,
+       "len": 72,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1213,
+       "len": 17,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1230,
+     "demo": 1028,
+     "windows": 74,
+     "windows_demo": 63,
+     "windows_exec": 11,
+     "delta8": 175.6,
+     "delta32": 39.6,
+     "exec_segments": 2,
+     "shortest_exec_seg": 72,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1230,
+     "demo": 1028,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 102,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 192,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 265,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 354,
+       "len": 81,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 435,
+       "len": 82,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 517,
+       "len": 75,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 592,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 661,
+       "len": 102,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 763,
+       "len": 70,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 833,
+       "len": 79,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 912,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 968,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1028,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1141,
+       "len": 72,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1213,
+       "len": 17,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1230,
+     "demo": 1028,
+     "windows": 74,
+     "windows_demo": 63,
+     "windows_exec": 11,
+     "delta8": 175.6,
+     "delta32": 39.6,
+     "exec_segments": 2,
+     "shortest_exec_seg": 72,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 39,
+   "seed": 14903,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 3,
+    "to": 4,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 968,
+     "demo": 757,
+     "segments": [
+      {
+       "start": 0,
+       "len": 104,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 104,
+       "len": 96,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 83,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 283,
+       "len": 90,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 373,
+       "len": 111,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 484,
+       "len": 76,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 560,
+       "len": 81,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 641,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 697,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 757,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 870,
+       "len": 84,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 954,
+       "len": 14,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 968,
+     "demo": 757,
+     "windows": 58,
+     "windows_demo": 46,
+     "windows_exec": 12,
+     "delta8": 138.1,
+     "delta32": 31.2,
+     "exec_segments": 2,
+     "shortest_exec_seg": 84,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1168,
+     "demo": 957,
+     "segments": [
+      {
+       "start": 0,
+       "len": 104,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 104,
+       "len": 96,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 83,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 283,
+       "len": 90,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 373,
+       "len": 111,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 484,
+       "len": 104,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 588,
+       "len": 96,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 684,
+       "len": 76,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 760,
+       "len": 81,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 841,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 897,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 957,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1070,
+       "len": 84,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1154,
+       "len": 14,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1168,
+     "demo": 957,
+     "windows": 70,
+     "windows_demo": 58,
+     "windows_exec": 12,
+     "delta8": 166.7,
+     "delta32": 37.6,
+     "exec_segments": 2,
+     "shortest_exec_seg": 84,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 43,
+   "seed": 15300,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 5,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1277,
+     "demo": 1084,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 103,
+       "len": 88,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 191,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 260,
+       "len": 108,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 368,
+       "len": 74,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 442,
+       "len": 102,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 544,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 613,
+       "len": 83,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 696,
+       "len": 85,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 781,
+       "len": 98,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 879,
+       "len": 89,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 968,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1024,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1084,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1197,
+       "len": 67,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1264,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1277,
+     "demo": 1084,
+     "windows": 77,
+     "windows_demo": 66,
+     "windows_exec": 11,
+     "delta8": 182.3,
+     "delta32": 41.2,
+     "exec_segments": 2,
+     "shortest_exec_seg": 67,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1277,
+     "demo": 1084,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 103,
+       "len": 88,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 191,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 260,
+       "len": 108,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 368,
+       "len": 74,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 442,
+       "len": 102,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 544,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 613,
+       "len": 83,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 696,
+       "len": 85,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 781,
+       "len": 98,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 879,
+       "len": 89,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 968,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1024,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1084,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1197,
+       "len": 67,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1264,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1277,
+     "demo": 1084,
+     "windows": 77,
+     "windows_demo": 66,
+     "windows_exec": 11,
+     "delta8": 182.3,
+     "delta32": 41.2,
+     "exec_segments": 2,
+     "shortest_exec_seg": 67,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 47,
+   "seed": 15702,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 4,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1120,
+     "demo": 917,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 102,
+       "len": 80,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 182,
+       "len": 84,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 266,
+       "len": 90,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 356,
+       "len": 109,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 465,
+       "len": 75,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 540,
+       "len": 98,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 638,
+       "len": 67,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 705,
+       "len": 96,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 801,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 857,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 917,
+       "len": 117,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1034,
+       "len": 69,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1103,
+       "len": 17,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1120,
+     "demo": 917,
+     "windows": 67,
+     "windows_demo": 56,
+     "windows_exec": 11,
+     "delta8": 159.9,
+     "delta32": 36.1,
+     "exec_segments": 2,
+     "shortest_exec_seg": 69,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1120,
+     "demo": 917,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 102,
+       "len": 80,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 182,
+       "len": 84,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 266,
+       "len": 90,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 356,
+       "len": 109,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 465,
+       "len": 75,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 540,
+       "len": 98,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 638,
+       "len": 67,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 705,
+       "len": 96,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 801,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 857,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 917,
+       "len": 117,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1034,
+       "len": 69,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1103,
+       "len": 17,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1120,
+     "demo": 917,
+     "windows": 67,
+     "windows_demo": 56,
+     "windows_exec": 11,
+     "delta8": 159.9,
+     "delta32": 36.1,
+     "exec_segments": 2,
+     "shortest_exec_seg": 69,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 51,
+   "seed": 16100,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 3,
+    "to": 4,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 972,
+     "demo": 775,
+     "segments": [
+      {
+       "start": 0,
+       "len": 118,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 118,
+       "len": 115,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 233,
+       "len": 74,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 307,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 396,
+       "len": 86,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 482,
+       "len": 90,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 572,
+       "len": 87,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 659,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 715,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 775,
+       "len": 114,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 889,
+       "len": 70,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 959,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 972,
+     "demo": 775,
+     "windows": 58,
+     "windows_demo": 47,
+     "windows_exec": 11,
+     "delta8": 138.7,
+     "delta32": 31.3,
+     "exec_segments": 2,
+     "shortest_exec_seg": 70,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1205,
+     "demo": 1008,
+     "segments": [
+      {
+       "start": 0,
+       "len": 118,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 118,
+       "len": 115,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 233,
+       "len": 74,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 307,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 396,
+       "len": 118,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 514,
+       "len": 115,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 629,
+       "len": 86,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 715,
+       "len": 90,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 805,
+       "len": 87,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 892,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 948,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1008,
+       "len": 114,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1122,
+       "len": 70,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1192,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1205,
+     "demo": 1008,
+     "windows": 72,
+     "windows_demo": 61,
+     "windows_exec": 11,
+     "delta8": 172.0,
+     "delta32": 38.8,
+     "exec_segments": 2,
+     "shortest_exec_seg": 70,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 55,
+   "seed": 16503,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 5,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1258,
+     "demo": 1059,
+     "segments": [
+      {
+       "start": 0,
+       "len": 112,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 112,
+       "len": 76,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 188,
+       "len": 74,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 262,
+       "len": 81,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 343,
+       "len": 71,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 414,
+       "len": 80,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 494,
+       "len": 77,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 571,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 661,
+       "len": 94,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 755,
+       "len": 109,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 864,
+       "len": 79,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 943,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 999,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1059,
+       "len": 112,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1171,
+       "len": 69,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1240,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1258,
+     "demo": 1059,
+     "windows": 76,
+     "windows_demo": 65,
+     "windows_exec": 11,
+     "delta8": 179.6,
+     "delta32": 40.5,
+     "exec_segments": 2,
+     "shortest_exec_seg": 69,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1258,
+     "demo": 1059,
+     "segments": [
+      {
+       "start": 0,
+       "len": 112,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 112,
+       "len": 76,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 188,
+       "len": 74,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 262,
+       "len": 81,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 343,
+       "len": 71,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 414,
+       "len": 80,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 494,
+       "len": 77,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 571,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 661,
+       "len": 94,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 755,
+       "len": 109,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 864,
+       "len": 79,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 943,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 999,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1059,
+       "len": 112,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1171,
+       "len": 69,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1240,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1258,
+     "demo": 1059,
+     "windows": 76,
+     "windows_demo": 65,
+     "windows_exec": 11,
+     "delta8": 179.6,
+     "delta32": 40.5,
+     "exec_segments": 2,
+     "shortest_exec_seg": 69,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 59,
+   "seed": 16900,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 3,
+    "to": 4,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 997,
+     "demo": 791,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 105,
+       "len": 97,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 202,
+       "len": 106,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 308,
+       "len": 120,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 428,
+       "len": 95,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 523,
+       "len": 71,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 594,
+       "len": 81,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 675,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 731,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 791,
+       "len": 116,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 907,
+       "len": 76,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 983,
+       "len": 14,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 997,
+     "demo": 791,
+     "windows": 59,
+     "windows_demo": 48,
+     "windows_exec": 11,
+     "delta8": 142.3,
+     "delta32": 32.1,
+     "exec_segments": 2,
+     "shortest_exec_seg": 76,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1199,
+     "demo": 993,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 105,
+       "len": 97,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 202,
+       "len": 106,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 308,
+       "len": 120,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 428,
+       "len": 95,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 523,
+       "len": 105,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 628,
+       "len": 97,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 725,
+       "len": 71,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 796,
+       "len": 81,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 877,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 933,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 993,
+       "len": 116,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1109,
+       "len": 76,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1185,
+       "len": 14,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1199,
+     "demo": 993,
+     "windows": 72,
+     "windows_demo": 61,
+     "windows_exec": 11,
+     "delta8": 171.1,
+     "delta32": 38.6,
+     "exec_segments": 2,
+     "shortest_exec_seg": 76,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 63,
+   "seed": 17300,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 5,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1335,
+     "demo": 1135,
+     "segments": [
+      {
+       "start": 0,
+       "len": 112,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 112,
+       "len": 97,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 209,
+       "len": 71,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 280,
+       "len": 96,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 376,
+       "len": 72,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 448,
+       "len": 93,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 541,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 610,
+       "len": 117,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 727,
+       "len": 97,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 824,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 937,
+       "len": 82,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 1019,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1075,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1135,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1248,
+       "len": 69,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1317,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1335,
+     "demo": 1135,
+     "windows": 80,
+     "windows_demo": 69,
+     "windows_exec": 11,
+     "delta8": 190.6,
+     "delta32": 43.0,
+     "exec_segments": 2,
+     "shortest_exec_seg": 69,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1335,
+     "demo": 1135,
+     "segments": [
+      {
+       "start": 0,
+       "len": 112,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 112,
+       "len": 97,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 209,
+       "len": 71,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 280,
+       "len": 96,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 376,
+       "len": 72,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 448,
+       "len": 93,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 541,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 610,
+       "len": 117,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 727,
+       "len": 97,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 824,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 937,
+       "len": 82,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 1019,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1075,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1135,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1248,
+       "len": 69,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1317,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1335,
+     "demo": 1135,
+     "windows": 80,
+     "windows_demo": 69,
+     "windows_exec": 11,
+     "delta8": 190.6,
+     "delta32": 43.0,
+     "exec_segments": 2,
+     "shortest_exec_seg": 69,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 67,
+   "seed": 17700,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 4,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1115,
+     "demo": 923,
+     "segments": [
+      {
+       "start": 0,
+       "len": 124,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 124,
+       "len": 98,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 222,
+       "len": 68,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 290,
+       "len": 88,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 378,
+       "len": 74,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 452,
+       "len": 82,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 534,
+       "len": 93,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 627,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 700,
+       "len": 107,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 807,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 863,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 923,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1036,
+       "len": 66,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1102,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1115,
+     "demo": 923,
+     "windows": 66,
+     "windows_demo": 56,
+     "windows_exec": 10,
+     "delta8": 159.1,
+     "delta32": 35.9,
+     "exec_segments": 2,
+     "shortest_exec_seg": 66,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1115,
+     "demo": 923,
+     "segments": [
+      {
+       "start": 0,
+       "len": 124,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 124,
+       "len": 98,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 222,
+       "len": 68,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 290,
+       "len": 88,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 378,
+       "len": 74,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 452,
+       "len": 82,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 534,
+       "len": 93,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 627,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 700,
+       "len": 107,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 807,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 863,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 923,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1036,
+       "len": 66,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1102,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1115,
+     "demo": 923,
+     "windows": 66,
+     "windows_demo": 56,
+     "windows_exec": 10,
+     "delta8": 159.1,
+     "delta32": 35.9,
+     "exec_segments": 2,
+     "shortest_exec_seg": 66,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 71,
+   "seed": 18100,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 3,
+    "to": 4,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 925,
+     "demo": 724,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 109,
+       "len": 86,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 195,
+       "len": 67,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 262,
+       "len": 84,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 346,
+       "len": 88,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 434,
+       "len": 92,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 526,
+       "len": 82,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 608,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 664,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 724,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 837,
+       "len": 70,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 907,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 925,
+     "demo": 724,
+     "windows": 55,
+     "windows_demo": 44,
+     "windows_exec": 11,
+     "delta8": 132.0,
+     "delta32": 29.8,
+     "exec_segments": 2,
+     "shortest_exec_seg": 70,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1120,
+     "demo": 919,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 109,
+       "len": 86,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 195,
+       "len": 67,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 262,
+       "len": 84,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 346,
+       "len": 109,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 455,
+       "len": 86,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 541,
+       "len": 88,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 629,
+       "len": 92,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 721,
+       "len": 82,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 803,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 859,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 919,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1032,
+       "len": 70,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1102,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1120,
+     "demo": 919,
+     "windows": 67,
+     "windows_demo": 56,
+     "windows_exec": 11,
+     "delta8": 159.9,
+     "delta32": 36.1,
+     "exec_segments": 2,
+     "shortest_exec_seg": 70,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 75,
+   "seed": 18501,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 3,
+    "to": 4,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 934,
+     "demo": 735,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 115,
+       "len": 76,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 191,
+       "len": 88,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 279,
+       "len": 99,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 378,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 467,
+       "len": 71,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 538,
+       "len": 81,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 619,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 675,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 735,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 848,
+       "len": 73,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 921,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 934,
+     "demo": 735,
+     "windows": 55,
+     "windows_demo": 44,
+     "windows_exec": 11,
+     "delta8": 133.3,
+     "delta32": 30.1,
+     "exec_segments": 2,
+     "shortest_exec_seg": 73,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1125,
+     "demo": 926,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 115,
+       "len": 76,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 191,
+       "len": 88,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 279,
+       "len": 99,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 378,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 467,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 582,
+       "len": 76,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 658,
+       "len": 71,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 729,
+       "len": 81,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 810,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 866,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 926,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1039,
+       "len": 73,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1112,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1125,
+     "demo": 926,
+     "windows": 67,
+     "windows_demo": 56,
+     "windows_exec": 11,
+     "delta8": 160.6,
+     "delta32": 36.3,
+     "exec_segments": 2,
+     "shortest_exec_seg": 73,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 79,
+   "seed": 18901,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 3,
+    "to": 4,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 953,
+     "demo": 752,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 109,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 198,
+       "len": 93,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 291,
+       "len": 102,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 393,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 483,
+       "len": 70,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 553,
+       "len": 83,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 636,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 692,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 752,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 865,
+       "len": 71,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 936,
+       "len": 17,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 953,
+     "demo": 752,
+     "windows": 56,
+     "windows_demo": 45,
+     "windows_exec": 11,
+     "delta8": 136.0,
+     "delta32": 30.7,
+     "exec_segments": 2,
+     "shortest_exec_seg": 71,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1151,
+     "demo": 950,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 109,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 198,
+       "len": 93,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 291,
+       "len": 102,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 393,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 483,
+       "len": 109,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 592,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 681,
+       "len": 70,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 751,
+       "len": 83,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 834,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 890,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 950,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1063,
+       "len": 71,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1134,
+       "len": 17,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1151,
+     "demo": 950,
+     "windows": 69,
+     "windows_demo": 58,
+     "windows_exec": 11,
+     "delta8": 164.3,
+     "delta32": 37.1,
+     "exec_segments": 2,
+     "shortest_exec_seg": 71,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 83,
+   "seed": 19301,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 3,
+    "to": 4,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 929,
+     "demo": 735,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 114,
+       "len": 86,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 82,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 282,
+       "len": 88,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 370,
+       "len": 94,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 464,
+       "len": 70,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 534,
+       "len": 85,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 619,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 675,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 735,
+       "len": 114,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 849,
+       "len": 67,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 916,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 929,
+     "demo": 735,
+     "windows": 55,
+     "windows_demo": 44,
+     "windows_exec": 11,
+     "delta8": 132.6,
+     "delta32": 29.9,
+     "exec_segments": 2,
+     "shortest_exec_seg": 67,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1129,
+     "demo": 935,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 114,
+       "len": 86,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 82,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 282,
+       "len": 88,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 370,
+       "len": 94,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 464,
+       "len": 114,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 578,
+       "len": 86,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 664,
+       "len": 70,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 734,
+       "len": 85,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 819,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 875,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 935,
+       "len": 114,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1049,
+       "len": 67,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1116,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1129,
+     "demo": 935,
+     "windows": 68,
+     "windows_demo": 57,
+     "windows_exec": 11,
+     "delta8": 161.1,
+     "delta32": 36.4,
+     "exec_segments": 2,
+     "shortest_exec_seg": 67,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 87,
+   "seed": 19700,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 5,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1307,
+     "demo": 1113,
+     "segments": [
+      {
+       "start": 0,
+       "len": 112,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 112,
+       "len": 94,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 206,
+       "len": 68,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 274,
+       "len": 82,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 356,
+       "len": 91,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 447,
+       "len": 108,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 555,
+       "len": 108,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 663,
+       "len": 83,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 746,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 835,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 908,
+       "len": 89,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 997,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1053,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1113,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1226,
+       "len": 68,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1294,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1307,
+     "demo": 1113,
+     "windows": 79,
+     "windows_demo": 68,
+     "windows_exec": 11,
+     "delta8": 186.6,
+     "delta32": 42.1,
+     "exec_segments": 2,
+     "shortest_exec_seg": 68,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1307,
+     "demo": 1113,
+     "segments": [
+      {
+       "start": 0,
+       "len": 112,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 112,
+       "len": 94,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 206,
+       "len": 68,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 274,
+       "len": 82,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 356,
+       "len": 91,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 447,
+       "len": 108,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 555,
+       "len": 108,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 663,
+       "len": 83,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 746,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 835,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 908,
+       "len": 89,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 997,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1053,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1113,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1226,
+       "len": 68,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1294,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1307,
+     "demo": 1113,
+     "windows": 79,
+     "windows_demo": 68,
+     "windows_exec": 11,
+     "delta8": 186.6,
+     "delta32": 42.1,
+     "exec_segments": 2,
+     "shortest_exec_seg": 68,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 91,
+   "seed": 20100,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 3,
+    "to": 4,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 957,
+     "demo": 757,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 115,
+       "len": 88,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 203,
+       "len": 83,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 286,
+       "len": 94,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 380,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 470,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 539,
+       "len": 102,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 641,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 697,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 757,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 870,
+       "len": 70,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 940,
+       "len": 17,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 957,
+     "demo": 757,
+     "windows": 57,
+     "windows_demo": 46,
+     "windows_exec": 11,
+     "delta8": 136.6,
+     "delta32": 30.8,
+     "exec_segments": 2,
+     "shortest_exec_seg": 70,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1160,
+     "demo": 960,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 115,
+       "len": 88,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 203,
+       "len": 83,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 286,
+       "len": 94,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 380,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 470,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 585,
+       "len": 88,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 673,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 742,
+       "len": 102,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 844,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 900,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 960,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1073,
+       "len": 70,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1143,
+       "len": 17,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1160,
+     "demo": 960,
+     "windows": 69,
+     "windows_demo": 58,
+     "windows_exec": 11,
+     "delta8": 165.6,
+     "delta32": 37.4,
+     "exec_segments": 2,
+     "shortest_exec_seg": 70,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 95,
+   "seed": 20500,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 4,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1143,
+     "demo": 934,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 115,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 204,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 277,
+       "len": 87,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 364,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 437,
+       "len": 87,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 524,
+       "len": 89,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 613,
+       "len": 101,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 714,
+       "len": 104,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 818,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 874,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 934,
+       "len": 118,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1052,
+       "len": 73,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1125,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1143,
+     "demo": 934,
+     "windows": 69,
+     "windows_demo": 57,
+     "windows_exec": 12,
+     "delta8": 163.1,
+     "delta32": 36.8,
+     "exec_segments": 2,
+     "shortest_exec_seg": 73,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1143,
+     "demo": 934,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 115,
+       "len": 89,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 204,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 277,
+       "len": 87,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 364,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 437,
+       "len": 87,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 524,
+       "len": 89,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 613,
+       "len": 101,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 714,
+       "len": 104,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 818,
+       "len": 56,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 874,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 934,
+       "len": 118,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1052,
+       "len": 73,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1125,
+       "len": 18,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1143,
+     "demo": 934,
+     "windows": 69,
+     "windows_demo": 57,
+     "windows_exec": 12,
+     "delta8": 163.1,
+     "delta32": 36.8,
+     "exec_segments": 2,
+     "shortest_exec_seg": 73,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 99,
+   "seed": 20903,
+   "synthesis": {
+    "rule": "演示放台 [2,4] → 4",
+    "from": 5,
+    "to": 4,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 1311,
+     "demo": 1100,
+     "segments": [
+      {
+       "start": 0,
+       "len": 106,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 106,
+       "len": 92,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 198,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 267,
+       "len": 93,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 360,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 433,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 523,
+       "len": 85,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 608,
+       "len": 92,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 700,
+       "len": 91,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 791,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 864,
+       "len": 119,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 983,
+       "len": 57,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1040,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1100,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1213,
+       "len": 84,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1297,
+       "len": 14,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1311,
+     "demo": 1100,
+     "windows": 79,
+     "windows_demo": 67,
+     "windows_exec": 12,
+     "delta8": 187.1,
+     "delta32": 42.3,
+     "exec_segments": 2,
+     "shortest_exec_seg": 84,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1311,
+     "demo": 1100,
+     "segments": [
+      {
+       "start": 0,
+       "len": 106,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 106,
+       "len": 92,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 198,
+       "len": 69,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 267,
+       "len": 93,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 360,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 433,
+       "len": 90,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 523,
+       "len": 85,
+       "text": "press the button",
+       "demo": true
+      },
+      {
+       "start": 608,
+       "len": 92,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 700,
+       "len": 91,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
+       "start": 791,
+       "len": 73,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 864,
+       "len": 119,
+       "text": "drop the cube onto table",
+       "demo": true
+      },
+      {
+       "start": 983,
+       "len": 57,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1040,
+       "len": 60,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 1100,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": false
+      },
+      {
+       "start": 1213,
+       "len": 84,
+       "text": "place the cube onto the correct target",
+       "demo": false
+      },
+      {
+       "start": 1297,
+       "len": 14,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1311,
+     "demo": 1100,
+     "windows": 79,
+     "windows_demo": 67,
+     "windows_exec": 12,
+     "delta8": 187.1,
+     "delta32": 42.3,
+     "exec_segments": 2,
+     "shortest_exec_seg": 84,
+     "skip8": 1
+    }
+   }
+  }
+ ]
+}

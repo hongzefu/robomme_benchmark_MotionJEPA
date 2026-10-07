@@ -1,0 +1,5901 @@
+{
+ "task": "RouteStick",
+ "rule": "段数 [4,7] → [8,10]",
+ "synthetic": true,
+ "records": [
+  {
+   "episode": 3,
+   "seed": 16300,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 5,
+    "to": 8,
+    "added_moves_per_side": 3
+   },
+   "hard": {
+    "item": {
+     "total": 500,
+     "demo": 250,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 493,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 500,
+     "demo": 250,
+     "windows": 28,
+     "windows_demo": 14,
+     "windows_exec": 14,
+     "delta8": 71.3,
+     "delta32": 16.1,
+     "exec_segments": 5,
+     "shortest_exec_seg": 43,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 800,
+     "demo": 400,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 643,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 800,
+     "demo": 400,
+     "windows": 46,
+     "windows_demo": 23,
+     "windows_exec": 23,
+     "delta8": 114.1,
+     "delta32": 25.8,
+     "exec_segments": 8,
+     "shortest_exec_seg": 43,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 7,
+   "seed": 16700,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 5,
+    "to": 9,
+    "added_moves_per_side": 4
+   },
+   "hard": {
+    "item": {
+     "total": 500,
+     "demo": 250,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 493,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 500,
+     "demo": 250,
+     "windows": 28,
+     "windows_demo": 14,
+     "windows_exec": 14,
+     "delta8": 71.3,
+     "delta32": 16.1,
+     "exec_segments": 5,
+     "shortest_exec_seg": 43,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 900,
+     "demo": 450,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 900,
+     "demo": 450,
+     "windows": 54,
+     "windows_demo": 27,
+     "windows_exec": 27,
+     "delta8": 128.4,
+     "delta32": 29.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 43,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 11,
+   "seed": 17100,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 4,
+    "to": 10,
+    "added_moves_per_side": 6
+   },
+   "hard": {
+    "item": {
+     "total": 400,
+     "demo": 200,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 393,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 400,
+     "demo": 200,
+     "windows": 22,
+     "windows_demo": 11,
+     "windows_exec": 11,
+     "delta8": 57.0,
+     "delta32": 12.9,
+     "exec_segments": 4,
+     "shortest_exec_seg": 43,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 993,
+     "demo": 500,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 886,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 936,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 986,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 993,
+     "demo": 500,
+     "windows": 59,
+     "windows_demo": 30,
+     "windows_exec": 29,
+     "delta8": 141.7,
+     "delta32": 32.0,
+     "exec_segments": 10,
+     "shortest_exec_seg": 43,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 15,
+   "seed": 17500,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 7,
+    "to": 8,
+    "added_moves_per_side": 1
+   },
+   "hard": {
+    "item": {
+     "total": 700,
+     "demo": 350,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 700,
+     "demo": 350,
+     "windows": 40,
+     "windows_demo": 20,
+     "windows_exec": 20,
+     "delta8": 99.9,
+     "delta32": 22.5,
+     "exec_segments": 7,
+     "shortest_exec_seg": 43,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 800,
+     "demo": 400,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 800,
+     "demo": 400,
+     "windows": 46,
+     "windows_demo": 23,
+     "windows_exec": 23,
+     "delta8": 114.1,
+     "delta32": 25.8,
+     "exec_segments": 8,
+     "shortest_exec_seg": 43,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 19,
+   "seed": 17900,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 4,
+    "to": 9,
+    "added_moves_per_side": 5
+   },
+   "hard": {
+    "item": {
+     "total": 400,
+     "demo": 200,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 393,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 400,
+     "demo": 200,
+     "windows": 22,
+     "windows_demo": 11,
+     "windows_exec": 11,
+     "delta8": 57.0,
+     "delta32": 12.9,
+     "exec_segments": 4,
+     "shortest_exec_seg": 43,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 893,
+     "demo": 450,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 643,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 836,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 886,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 893,
+     "demo": 450,
+     "windows": 53,
+     "windows_demo": 27,
+     "windows_exec": 26,
+     "delta8": 127.4,
+     "delta32": 28.8,
+     "exec_segments": 9,
+     "shortest_exec_seg": 43,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 23,
+   "seed": 18300,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 7,
+    "to": 10,
+    "added_moves_per_side": 3
+   },
+   "hard": {
+    "item": {
+     "total": 700,
+     "demo": 350,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 700,
+     "demo": 350,
+     "windows": 40,
+     "windows_demo": 20,
+     "windows_exec": 20,
+     "delta8": 99.9,
+     "delta32": 22.5,
+     "exec_segments": 7,
+     "shortest_exec_seg": 43,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1000,
+     "demo": 500,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 750,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 943,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 993,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1000,
+     "demo": 500,
+     "windows": 60,
+     "windows_demo": 30,
+     "windows_exec": 30,
+     "delta8": 142.7,
+     "delta32": 32.2,
+     "exec_segments": 10,
+     "shortest_exec_seg": 43,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 27,
+   "seed": 18700,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 7,
+    "to": 8,
+    "added_moves_per_side": 1
+   },
+   "hard": {
+    "item": {
+     "total": 700,
+     "demo": 350,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 700,
+     "demo": 350,
+     "windows": 40,
+     "windows_demo": 20,
+     "windows_exec": 20,
+     "delta8": 99.9,
+     "delta32": 22.5,
+     "exec_segments": 7,
+     "shortest_exec_seg": 43,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 800,
+     "demo": 400,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 800,
+     "demo": 400,
+     "windows": 46,
+     "windows_demo": 23,
+     "windows_exec": 23,
+     "delta8": 114.1,
+     "delta32": 25.8,
+     "exec_segments": 8,
+     "shortest_exec_seg": 43,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 31,
+   "seed": 19100,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 4,
+    "to": 9,
+    "added_moves_per_side": 5
+   },
+   "hard": {
+    "item": {
+     "total": 400,
+     "demo": 200,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 393,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 400,
+     "demo": 200,
+     "windows": 22,
+     "windows_demo": 11,
+     "windows_exec": 11,
+     "delta8": 57.0,
+     "delta32": 12.9,
+     "exec_segments": 4,
+     "shortest_exec_seg": 43,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 893,
+     "demo": 450,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 643,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 836,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 886,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 893,
+     "demo": 450,
+     "windows": 53,
+     "windows_demo": 27,
+     "windows_exec": 26,
+     "delta8": 127.4,
+     "delta32": 28.8,
+     "exec_segments": 9,
+     "shortest_exec_seg": 43,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 35,
+   "seed": 19500,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 7,
+    "to": 10,
+    "added_moves_per_side": 3
+   },
+   "hard": {
+    "item": {
+     "total": 700,
+     "demo": 350,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 700,
+     "demo": 350,
+     "windows": 40,
+     "windows_demo": 20,
+     "windows_exec": 20,
+     "delta8": 99.9,
+     "delta32": 22.5,
+     "exec_segments": 7,
+     "shortest_exec_seg": 43,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1000,
+     "demo": 500,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 750,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 943,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 993,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1000,
+     "demo": 500,
+     "windows": 60,
+     "windows_demo": 30,
+     "windows_exec": 30,
+     "delta8": 142.7,
+     "delta32": 32.2,
+     "exec_segments": 10,
+     "shortest_exec_seg": 43,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 39,
+   "seed": 19900,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 5,
+    "to": 8,
+    "added_moves_per_side": 3
+   },
+   "hard": {
+    "item": {
+     "total": 500,
+     "demo": 250,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 493,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 500,
+     "demo": 250,
+     "windows": 28,
+     "windows_demo": 14,
+     "windows_exec": 14,
+     "delta8": 71.3,
+     "delta32": 16.1,
+     "exec_segments": 5,
+     "shortest_exec_seg": 43,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 800,
+     "demo": 400,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 643,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 800,
+     "demo": 400,
+     "windows": 46,
+     "windows_demo": 23,
+     "windows_exec": 23,
+     "delta8": 114.1,
+     "delta32": 25.8,
+     "exec_segments": 8,
+     "shortest_exec_seg": 43,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 43,
+   "seed": 20300,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 6,
+    "to": 9,
+    "added_moves_per_side": 3
+   },
+   "hard": {
+    "item": {
+     "total": 600,
+     "demo": 300,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 593,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 600,
+     "demo": 300,
+     "windows": 34,
+     "windows_demo": 17,
+     "windows_exec": 17,
+     "delta8": 85.6,
+     "delta32": 19.3,
+     "exec_segments": 6,
+     "shortest_exec_seg": 43,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 900,
+     "demo": 450,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 900,
+     "demo": 450,
+     "windows": 54,
+     "windows_demo": 27,
+     "windows_exec": 27,
+     "delta8": 128.4,
+     "delta32": 29.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 43,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 47,
+   "seed": 20700,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 5,
+    "to": 10,
+    "added_moves_per_side": 5
+   },
+   "hard": {
+    "item": {
+     "total": 500,
+     "demo": 250,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 493,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 500,
+     "demo": 250,
+     "windows": 28,
+     "windows_demo": 14,
+     "windows_exec": 14,
+     "delta8": 71.3,
+     "delta32": 16.1,
+     "exec_segments": 5,
+     "shortest_exec_seg": 43,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 993,
+     "demo": 500,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 943,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 986,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 993,
+     "demo": 500,
+     "windows": 59,
+     "windows_demo": 30,
+     "windows_exec": 29,
+     "delta8": 141.7,
+     "delta32": 32.0,
+     "exec_segments": 10,
+     "shortest_exec_seg": 43,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 51,
+   "seed": 21100,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 5,
+    "to": 8,
+    "added_moves_per_side": 3
+   },
+   "hard": {
+    "item": {
+     "total": 500,
+     "demo": 250,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 493,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 500,
+     "demo": 250,
+     "windows": 28,
+     "windows_demo": 14,
+     "windows_exec": 14,
+     "delta8": 71.3,
+     "delta32": 16.1,
+     "exec_segments": 5,
+     "shortest_exec_seg": 43,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 800,
+     "demo": 400,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 643,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 800,
+     "demo": 400,
+     "windows": 46,
+     "windows_demo": 23,
+     "windows_exec": 23,
+     "delta8": 114.1,
+     "delta32": 25.8,
+     "exec_segments": 8,
+     "shortest_exec_seg": 43,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 55,
+   "seed": 21500,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 7,
+    "to": 9,
+    "added_moves_per_side": 2
+   },
+   "hard": {
+    "item": {
+     "total": 700,
+     "demo": 350,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 700,
+     "demo": 350,
+     "windows": 40,
+     "windows_demo": 20,
+     "windows_exec": 20,
+     "delta8": 99.9,
+     "delta32": 22.5,
+     "exec_segments": 7,
+     "shortest_exec_seg": 43,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 900,
+     "demo": 450,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 750,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 900,
+     "demo": 450,
+     "windows": 54,
+     "windows_demo": 27,
+     "windows_exec": 27,
+     "delta8": 128.4,
+     "delta32": 29.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 43,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 59,
+   "seed": 21900,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 6,
+    "to": 10,
+    "added_moves_per_side": 4
+   },
+   "hard": {
+    "item": {
+     "total": 600,
+     "demo": 300,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 593,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 600,
+     "demo": 300,
+     "windows": 34,
+     "windows_demo": 17,
+     "windows_exec": 17,
+     "delta8": 85.6,
+     "delta32": 19.3,
+     "exec_segments": 6,
+     "shortest_exec_seg": 43,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1000,
+     "demo": 500,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 750,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 943,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 993,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1000,
+     "demo": 500,
+     "windows": 60,
+     "windows_demo": 30,
+     "windows_exec": 30,
+     "delta8": 142.7,
+     "delta32": 32.2,
+     "exec_segments": 10,
+     "shortest_exec_seg": 43,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 63,
+   "seed": 22300,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 5,
+    "to": 8,
+    "added_moves_per_side": 3
+   },
+   "hard": {
+    "item": {
+     "total": 500,
+     "demo": 250,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 493,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 500,
+     "demo": 250,
+     "windows": 28,
+     "windows_demo": 14,
+     "windows_exec": 14,
+     "delta8": 71.3,
+     "delta32": 16.1,
+     "exec_segments": 5,
+     "shortest_exec_seg": 43,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 800,
+     "demo": 400,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 643,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 800,
+     "demo": 400,
+     "windows": 46,
+     "windows_demo": 23,
+     "windows_exec": 23,
+     "delta8": 114.1,
+     "delta32": 25.8,
+     "exec_segments": 8,
+     "shortest_exec_seg": 43,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 67,
+   "seed": 22700,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 7,
+    "to": 9,
+    "added_moves_per_side": 2
+   },
+   "hard": {
+    "item": {
+     "total": 700,
+     "demo": 350,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 700,
+     "demo": 350,
+     "windows": 40,
+     "windows_demo": 20,
+     "windows_exec": 20,
+     "delta8": 99.9,
+     "delta32": 22.5,
+     "exec_segments": 7,
+     "shortest_exec_seg": 43,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 900,
+     "demo": 450,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 750,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 900,
+     "demo": 450,
+     "windows": 54,
+     "windows_demo": 27,
+     "windows_exec": 27,
+     "delta8": 128.4,
+     "delta32": 29.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 43,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 71,
+   "seed": 23100,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 6,
+    "to": 10,
+    "added_moves_per_side": 4
+   },
+   "hard": {
+    "item": {
+     "total": 600,
+     "demo": 300,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 593,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 600,
+     "demo": 300,
+     "windows": 34,
+     "windows_demo": 17,
+     "windows_exec": 17,
+     "delta8": 85.6,
+     "delta32": 19.3,
+     "exec_segments": 6,
+     "shortest_exec_seg": 43,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1000,
+     "demo": 500,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 750,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 943,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 993,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1000,
+     "demo": 500,
+     "windows": 60,
+     "windows_demo": 30,
+     "windows_exec": 30,
+     "delta8": 142.7,
+     "delta32": 32.2,
+     "exec_segments": 10,
+     "shortest_exec_seg": 43,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 75,
+   "seed": 23500,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 4,
+    "to": 8,
+    "added_moves_per_side": 4
+   },
+   "hard": {
+    "item": {
+     "total": 400,
+     "demo": 200,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 393,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 400,
+     "demo": 200,
+     "windows": 22,
+     "windows_demo": 11,
+     "windows_exec": 11,
+     "delta8": 57.0,
+     "delta32": 12.9,
+     "exec_segments": 4,
+     "shortest_exec_seg": 43,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 793,
+     "demo": 400,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 593,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 643,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 786,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 793,
+     "demo": 400,
+     "windows": 46,
+     "windows_demo": 23,
+     "windows_exec": 23,
+     "delta8": 113.1,
+     "delta32": 25.5,
+     "exec_segments": 8,
+     "shortest_exec_seg": 43,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 79,
+   "seed": 23900,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 7,
+    "to": 9,
+    "added_moves_per_side": 2
+   },
+   "hard": {
+    "item": {
+     "total": 700,
+     "demo": 350,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 700,
+     "demo": 350,
+     "windows": 40,
+     "windows_demo": 20,
+     "windows_exec": 20,
+     "delta8": 99.9,
+     "delta32": 22.5,
+     "exec_segments": 7,
+     "shortest_exec_seg": 43,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 900,
+     "demo": 450,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 750,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 900,
+     "demo": 450,
+     "windows": 54,
+     "windows_demo": 27,
+     "windows_exec": 27,
+     "delta8": 128.4,
+     "delta32": 29.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 43,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 83,
+   "seed": 24300,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 6,
+    "to": 10,
+    "added_moves_per_side": 4
+   },
+   "hard": {
+    "item": {
+     "total": 600,
+     "demo": 300,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 593,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 600,
+     "demo": 300,
+     "windows": 34,
+     "windows_demo": 17,
+     "windows_exec": 17,
+     "delta8": 85.6,
+     "delta32": 19.3,
+     "exec_segments": 6,
+     "shortest_exec_seg": 43,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1000,
+     "demo": 500,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 750,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 943,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 993,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1000,
+     "demo": 500,
+     "windows": 60,
+     "windows_demo": 30,
+     "windows_exec": 30,
+     "delta8": 142.7,
+     "delta32": 32.2,
+     "exec_segments": 10,
+     "shortest_exec_seg": 43,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 87,
+   "seed": 24700,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 6,
+    "to": 8,
+    "added_moves_per_side": 2
+   },
+   "hard": {
+    "item": {
+     "total": 600,
+     "demo": 300,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 593,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 600,
+     "demo": 300,
+     "windows": 34,
+     "windows_demo": 17,
+     "windows_exec": 17,
+     "delta8": 85.6,
+     "delta32": 19.3,
+     "exec_segments": 6,
+     "shortest_exec_seg": 43,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 800,
+     "demo": 400,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 800,
+     "demo": 400,
+     "windows": 46,
+     "windows_demo": 23,
+     "windows_exec": 23,
+     "delta8": 114.1,
+     "delta32": 25.8,
+     "exec_segments": 8,
+     "shortest_exec_seg": 43,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 91,
+   "seed": 25100,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 4,
+    "to": 9,
+    "added_moves_per_side": 5
+   },
+   "hard": {
+    "item": {
+     "total": 400,
+     "demo": 200,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 393,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 400,
+     "demo": 200,
+     "windows": 22,
+     "windows_demo": 11,
+     "windows_exec": 11,
+     "delta8": 57.0,
+     "delta32": 12.9,
+     "exec_segments": 4,
+     "shortest_exec_seg": 43,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 893,
+     "demo": 450,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 643,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 836,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 886,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 893,
+     "demo": 450,
+     "windows": 53,
+     "windows_demo": 27,
+     "windows_exec": 26,
+     "delta8": 127.4,
+     "delta32": 28.8,
+     "exec_segments": 9,
+     "shortest_exec_seg": 43,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 95,
+   "seed": 25500,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 5,
+    "to": 10,
+    "added_moves_per_side": 5
+   },
+   "hard": {
+    "item": {
+     "total": 500,
+     "demo": 250,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 493,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 500,
+     "demo": 250,
+     "windows": 28,
+     "windows_demo": 14,
+     "windows_exec": 14,
+     "delta8": 71.3,
+     "delta32": 16.1,
+     "exec_segments": 5,
+     "shortest_exec_seg": 43,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 993,
+     "demo": 500,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 943,
+       "len": 43,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 986,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 993,
+     "demo": 500,
+     "windows": 59,
+     "windows_demo": 30,
+     "windows_exec": 29,
+     "delta8": 141.7,
+     "delta32": 32.0,
+     "exec_segments": 10,
+     "shortest_exec_seg": 43,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 99,
+   "seed": 25900,
+   "synthesis": {
+    "rule": "段数 [4,7] → [8,10]",
+    "from": 4,
+    "to": 8,
+    "added_moves_per_side": 4
+   },
+   "hard": {
+    "item": {
+     "total": 400,
+     "demo": 200,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 393,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 400,
+     "demo": 200,
+     "windows": 22,
+     "windows_demo": 11,
+     "windows_exec": 11,
+     "delta8": 57.0,
+     "delta32": 12.9,
+     "exec_segments": 4,
+     "shortest_exec_seg": 43,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 793,
+     "demo": 400,
+     "segments": [
+      {
+       "start": 0,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 50,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 100,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 150,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 200,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": true
+      },
+      {
+       "start": 300,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": true
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 550,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 593,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 643,
+       "len": 50,
+       "text": "move to the nearest right target by circling around the stick clockwise",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 50,
+       "text": "move to the nearest left target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 43,
+       "text": "move to the nearest right target by circling around the stick counterclockwise",
+       "demo": false
+      },
+      {
+       "start": 786,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 793,
+     "demo": 400,
+     "windows": 46,
+     "windows_demo": 23,
+     "windows_exec": 23,
+     "delta8": 113.1,
+     "delta32": 25.5,
+     "exec_segments": 8,
+     "shortest_exec_seg": 43,
+     "skip8": 5
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,4761 @@
+{
+ "task": "BinFill",
+ "rule": "投入 [3,5] → [5,6]",
+ "synthetic": true,
+ "records": [
+  {
+   "episode": 3,
+   "seed": 4301,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 4,
+    "to": 5,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 940,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 108,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 108,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 175,
+       "len": 104,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 279,
+       "len": 75,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 354,
+       "len": 228,
+       "text": "pick up the third green cube",
+       "demo": false
+      },
+      {
+       "start": 582,
+       "len": 87,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 669,
+       "len": 101,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 770,
+       "len": 66,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 836,
+       "len": 69,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 905,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 940,
+     "demo": 0,
+     "windows": 57,
+     "windows_demo": 0,
+     "windows_exec": 57,
+     "delta8": 134.1,
+     "delta32": 30.3,
+     "exec_segments": 9,
+     "shortest_exec_seg": 66,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1115,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 108,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 108,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 175,
+       "len": 104,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 279,
+       "len": 75,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 354,
+       "len": 228,
+       "text": "pick up the third green cube",
+       "demo": false
+      },
+      {
+       "start": 582,
+       "len": 87,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 669,
+       "len": 101,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 770,
+       "len": 66,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 836,
+       "len": 108,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 944,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1011,
+       "len": 69,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1080,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1115,
+     "demo": 0,
+     "windows": 68,
+     "windows_demo": 0,
+     "windows_exec": 68,
+     "delta8": 159.1,
+     "delta32": 35.9,
+     "exec_segments": 11,
+     "shortest_exec_seg": 66,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 7,
+   "seed": 4701,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 785,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 127,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 127,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 194,
+       "len": 102,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 296,
+       "len": 58,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 354,
+       "len": 94,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 448,
+       "len": 68,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 516,
+       "len": 90,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 606,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 675,
+       "len": 75,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 750,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 785,
+     "demo": 0,
+     "windows": 48,
+     "windows_demo": 0,
+     "windows_exec": 48,
+     "delta8": 112.0,
+     "delta32": 25.3,
+     "exec_segments": 9,
+     "shortest_exec_seg": 58,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1139,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 127,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 127,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 194,
+       "len": 102,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 296,
+       "len": 58,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 354,
+       "len": 94,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 448,
+       "len": 68,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 516,
+       "len": 90,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 606,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 675,
+       "len": 127,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 802,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 869,
+       "len": 102,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 971,
+       "len": 58,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1029,
+       "len": 75,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1104,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1139,
+     "demo": 0,
+     "windows": 70,
+     "windows_demo": 0,
+     "windows_exec": 70,
+     "delta8": 162.6,
+     "delta32": 36.7,
+     "exec_segments": 13,
+     "shortest_exec_seg": 58,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 11,
+   "seed": 5100,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 3,
+    "to": 5,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 584,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 52,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 154,
+       "len": 114,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 268,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 339,
+       "len": 87,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 426,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 485,
+       "len": 58,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 543,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 584,
+     "demo": 0,
+     "windows": 35,
+     "windows_demo": 0,
+     "windows_exec": 35,
+     "delta8": 83.3,
+     "delta32": 18.8,
+     "exec_segments": 7,
+     "shortest_exec_seg": 52,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 923,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 52,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 154,
+       "len": 114,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 268,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 339,
+       "len": 87,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 426,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 485,
+       "len": 102,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 587,
+       "len": 52,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 639,
+       "len": 114,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 753,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 824,
+       "len": 58,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 882,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 923,
+     "demo": 0,
+     "windows": 56,
+     "windows_demo": 0,
+     "windows_exec": 56,
+     "delta8": 131.7,
+     "delta32": 29.7,
+     "exec_segments": 11,
+     "shortest_exec_seg": 52,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 15,
+   "seed": 5501,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 994,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 154,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 154,
+       "len": 101,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 255,
+       "len": 123,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 378,
+       "len": 97,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 475,
+       "len": 117,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 592,
+       "len": 98,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 690,
+       "len": 104,
+       "text": "pick up the third red cube",
+       "demo": false
+      },
+      {
+       "start": 794,
+       "len": 85,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 879,
+       "len": 76,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 955,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 994,
+     "demo": 0,
+     "windows": 61,
+     "windows_demo": 0,
+     "windows_exec": 61,
+     "delta8": 141.9,
+     "delta32": 32.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 76,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1469,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 154,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 154,
+       "len": 101,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 255,
+       "len": 123,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 378,
+       "len": 97,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 475,
+       "len": 117,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 592,
+       "len": 98,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 690,
+       "len": 104,
+       "text": "pick up the third red cube",
+       "demo": false
+      },
+      {
+       "start": 794,
+       "len": 85,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 879,
+       "len": 154,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 1033,
+       "len": 101,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1134,
+       "len": 123,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 1257,
+       "len": 97,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1354,
+       "len": 76,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1430,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1469,
+     "demo": 0,
+     "windows": 90,
+     "windows_demo": 0,
+     "windows_exec": 90,
+     "delta8": 209.7,
+     "delta32": 47.4,
+     "exec_segments": 13,
+     "shortest_exec_seg": 76,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 19,
+   "seed": 5900,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 4,
+    "to": 5,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 775,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 118,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 118,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 188,
+       "len": 114,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 73,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 375,
+       "len": 86,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 461,
+       "len": 55,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 516,
+       "len": 100,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 616,
+       "len": 64,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 680,
+       "len": 61,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 741,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 775,
+     "demo": 0,
+     "windows": 47,
+     "windows_demo": 0,
+     "windows_exec": 47,
+     "delta8": 110.6,
+     "delta32": 25.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 55,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 963,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 118,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 118,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 188,
+       "len": 114,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 73,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 375,
+       "len": 86,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 461,
+       "len": 55,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 516,
+       "len": 100,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 616,
+       "len": 64,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 680,
+       "len": 118,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 798,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 868,
+       "len": 61,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 929,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 963,
+     "demo": 0,
+     "windows": 59,
+     "windows_demo": 0,
+     "windows_exec": 59,
+     "delta8": 137.4,
+     "delta32": 31.0,
+     "exec_segments": 11,
+     "shortest_exec_seg": 55,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 23,
+   "seed": 6300,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 856,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 122,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 122,
+       "len": 84,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 206,
+       "len": 105,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 380,
+       "len": 104,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 484,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 555,
+       "len": 115,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 670,
+       "len": 79,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 749,
+       "len": 67,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 816,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 856,
+     "demo": 0,
+     "windows": 52,
+     "windows_demo": 0,
+     "windows_exec": 52,
+     "delta8": 122.1,
+     "delta32": 27.6,
+     "exec_segments": 9,
+     "shortest_exec_seg": 67,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1236,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 122,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 122,
+       "len": 84,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 206,
+       "len": 105,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 380,
+       "len": 104,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 484,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 555,
+       "len": 115,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 670,
+       "len": 79,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 749,
+       "len": 122,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 871,
+       "len": 84,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 955,
+       "len": 105,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 1060,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1129,
+       "len": 67,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1196,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1236,
+     "demo": 0,
+     "windows": 76,
+     "windows_demo": 0,
+     "windows_exec": 76,
+     "delta8": 176.4,
+     "delta32": 39.8,
+     "exec_segments": 13,
+     "shortest_exec_seg": 67,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 27,
+   "seed": 6700,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 5,
+    "to": 5,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 964,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 63,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 165,
+       "len": 120,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 285,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 355,
+       "len": 114,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 469,
+       "len": 62,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 531,
+       "len": 104,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 635,
+       "len": 60,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 695,
+       "len": 103,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 798,
+       "len": 60,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 858,
+       "len": 64,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 922,
+       "len": 42,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 964,
+     "demo": 0,
+     "windows": 59,
+     "windows_demo": 0,
+     "windows_exec": 59,
+     "delta8": 137.6,
+     "delta32": 31.1,
+     "exec_segments": 11,
+     "shortest_exec_seg": 60,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 964,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 63,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 165,
+       "len": 120,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 285,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 355,
+       "len": 114,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 469,
+       "len": 62,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 531,
+       "len": 104,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 635,
+       "len": 60,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 695,
+       "len": 103,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 798,
+       "len": 60,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 858,
+       "len": 64,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 922,
+       "len": 42,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 964,
+     "demo": 0,
+     "windows": 59,
+     "windows_demo": 0,
+     "windows_exec": 59,
+     "delta8": 137.6,
+     "delta32": 31.1,
+     "exec_segments": 11,
+     "shortest_exec_seg": 60,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 31,
+   "seed": 7101,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 842,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 131,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 131,
+       "len": 82,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 213,
+       "len": 113,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 326,
+       "len": 80,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 406,
+       "len": 95,
+       "text": "pick up the third red cube",
+       "demo": false
+      },
+      {
+       "start": 501,
+       "len": 74,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 575,
+       "len": 100,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 675,
+       "len": 74,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 749,
+       "len": 59,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 808,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 842,
+     "demo": 0,
+     "windows": 51,
+     "windows_demo": 0,
+     "windows_exec": 51,
+     "delta8": 120.1,
+     "delta32": 27.1,
+     "exec_segments": 9,
+     "shortest_exec_seg": 59,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1248,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 131,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 131,
+       "len": 82,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 213,
+       "len": 113,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 326,
+       "len": 80,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 406,
+       "len": 95,
+       "text": "pick up the third red cube",
+       "demo": false
+      },
+      {
+       "start": 501,
+       "len": 74,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 575,
+       "len": 100,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 675,
+       "len": 74,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 749,
+       "len": 131,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 880,
+       "len": 82,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 962,
+       "len": 113,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 1075,
+       "len": 80,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1155,
+       "len": 59,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1214,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1248,
+     "demo": 0,
+     "windows": 76,
+     "windows_demo": 0,
+     "windows_exec": 76,
+     "delta8": 178.1,
+     "delta32": 40.2,
+     "exec_segments": 13,
+     "shortest_exec_seg": 59,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 35,
+   "seed": 7501,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 3,
+    "to": 5,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 650,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 107,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 107,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 178,
+       "len": 105,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 283,
+       "len": 78,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 361,
+       "len": 116,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 477,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 547,
+       "len": 61,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 608,
+       "len": 42,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 650,
+     "demo": 0,
+     "windows": 39,
+     "windows_demo": 0,
+     "windows_exec": 39,
+     "delta8": 92.7,
+     "delta32": 20.9,
+     "exec_segments": 7,
+     "shortest_exec_seg": 61,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1011,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 107,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 107,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 178,
+       "len": 105,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 283,
+       "len": 78,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 361,
+       "len": 116,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 477,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 547,
+       "len": 107,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 654,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 725,
+       "len": 105,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 830,
+       "len": 78,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 908,
+       "len": 61,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 969,
+       "len": 42,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1011,
+     "demo": 0,
+     "windows": 62,
+     "windows_demo": 0,
+     "windows_exec": 62,
+     "delta8": 144.3,
+     "delta32": 32.6,
+     "exec_segments": 11,
+     "shortest_exec_seg": 61,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 39,
+   "seed": 7900,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 3,
+    "to": 6,
+    "added_pairs": 3
+   },
+   "hard": {
+    "item": {
+     "total": 597,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 105,
+       "len": 61,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 166,
+       "len": 95,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 261,
+       "len": 78,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 339,
+       "len": 97,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 436,
+       "len": 76,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 512,
+       "len": 51,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 563,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 597,
+     "demo": 0,
+     "windows": 36,
+     "windows_demo": 0,
+     "windows_exec": 36,
+     "delta8": 85.1,
+     "delta32": 19.2,
+     "exec_segments": 7,
+     "shortest_exec_seg": 51,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1109,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 105,
+       "len": 61,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 166,
+       "len": 95,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 261,
+       "len": 78,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 339,
+       "len": 97,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 436,
+       "len": 76,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 512,
+       "len": 105,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 617,
+       "len": 61,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 678,
+       "len": 95,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 773,
+       "len": 78,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 851,
+       "len": 97,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 948,
+       "len": 76,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1024,
+       "len": 51,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1075,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1109,
+     "demo": 0,
+     "windows": 68,
+     "windows_demo": 0,
+     "windows_exec": 68,
+     "delta8": 158.3,
+     "delta32": 35.7,
+     "exec_segments": 13,
+     "shortest_exec_seg": 51,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 43,
+   "seed": 8300,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 5,
+    "to": 5,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 956,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 105,
+       "len": 54,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 159,
+       "len": 123,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 282,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 353,
+       "len": 109,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 462,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 521,
+       "len": 104,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 625,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 692,
+       "len": 99,
+       "text": "pick up the third green cube",
+       "demo": false
+      },
+      {
+       "start": 791,
+       "len": 63,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 854,
+       "len": 65,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 919,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 956,
+     "demo": 0,
+     "windows": 58,
+     "windows_demo": 0,
+     "windows_exec": 58,
+     "delta8": 136.4,
+     "delta32": 30.8,
+     "exec_segments": 11,
+     "shortest_exec_seg": 54,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 956,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 105,
+       "len": 54,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 159,
+       "len": 123,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 282,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 353,
+       "len": 109,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 462,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 521,
+       "len": 104,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 625,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 692,
+       "len": 99,
+       "text": "pick up the third green cube",
+       "demo": false
+      },
+      {
+       "start": 791,
+       "len": 63,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 854,
+       "len": 65,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 919,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 956,
+     "demo": 0,
+     "windows": 58,
+     "windows_demo": 0,
+     "windows_exec": 58,
+     "delta8": 136.4,
+     "delta32": 30.8,
+     "exec_segments": 11,
+     "shortest_exec_seg": 54,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 47,
+   "seed": 8703,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 788,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 129,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 129,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 106,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 306,
+       "len": 72,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 378,
+       "len": 98,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 476,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 535,
+       "len": 92,
+       "text": "pick up the third green cube",
+       "demo": false
+      },
+      {
+       "start": 627,
+       "len": 60,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 687,
+       "len": 64,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 751,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 788,
+     "demo": 0,
+     "windows": 48,
+     "windows_demo": 0,
+     "windows_exec": 48,
+     "delta8": 112.4,
+     "delta32": 25.4,
+     "exec_segments": 9,
+     "shortest_exec_seg": 59,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1166,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 129,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 129,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 106,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 306,
+       "len": 72,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 378,
+       "len": 98,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 476,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 535,
+       "len": 92,
+       "text": "pick up the third green cube",
+       "demo": false
+      },
+      {
+       "start": 627,
+       "len": 60,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 687,
+       "len": 129,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 816,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 887,
+       "len": 106,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 993,
+       "len": 72,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1065,
+       "len": 64,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1129,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1166,
+     "demo": 0,
+     "windows": 71,
+     "windows_demo": 0,
+     "windows_exec": 71,
+     "delta8": 166.4,
+     "delta32": 37.6,
+     "exec_segments": 13,
+     "shortest_exec_seg": 59,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 51,
+   "seed": 9102,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 4,
+    "to": 5,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 868,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 76,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 191,
+       "len": 124,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 315,
+       "len": 92,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 407,
+       "len": 81,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 488,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 555,
+       "len": 110,
+       "text": "pick up the fourth blue cube",
+       "demo": false
+      },
+      {
+       "start": 665,
+       "len": 88,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 753,
+       "len": 73,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 826,
+       "len": 42,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 868,
+     "demo": 0,
+     "windows": 53,
+     "windows_demo": 0,
+     "windows_exec": 53,
+     "delta8": 123.9,
+     "delta32": 28.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 67,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1059,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 76,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 191,
+       "len": 124,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 315,
+       "len": 92,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 407,
+       "len": 81,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 488,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 555,
+       "len": 110,
+       "text": "pick up the fourth blue cube",
+       "demo": false
+      },
+      {
+       "start": 665,
+       "len": 88,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 753,
+       "len": 115,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 868,
+       "len": 76,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 944,
+       "len": 73,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1017,
+       "len": 42,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1059,
+     "demo": 0,
+     "windows": 65,
+     "windows_demo": 0,
+     "windows_exec": 65,
+     "delta8": 151.1,
+     "delta32": 34.1,
+     "exec_segments": 11,
+     "shortest_exec_seg": 67,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 55,
+   "seed": 9500,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 5,
+    "to": 6,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 939,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 121,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 121,
+       "len": 62,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 183,
+       "len": 110,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 293,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 364,
+       "len": 90,
+       "text": "pick up the third green cube",
+       "demo": false
+      },
+      {
+       "start": 454,
+       "len": 55,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 509,
+       "len": 123,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 632,
+       "len": 72,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 704,
+       "len": 98,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 802,
+       "len": 54,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 856,
+       "len": 46,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 902,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 939,
+     "demo": 0,
+     "windows": 57,
+     "windows_demo": 0,
+     "windows_exec": 57,
+     "delta8": 134.0,
+     "delta32": 30.3,
+     "exec_segments": 11,
+     "shortest_exec_seg": 46,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1122,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 121,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 121,
+       "len": 62,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 183,
+       "len": 110,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 293,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 364,
+       "len": 90,
+       "text": "pick up the third green cube",
+       "demo": false
+      },
+      {
+       "start": 454,
+       "len": 55,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 509,
+       "len": 123,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 632,
+       "len": 72,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 704,
+       "len": 98,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 802,
+       "len": 54,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 856,
+       "len": 121,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 977,
+       "len": 62,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1039,
+       "len": 46,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1085,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1122,
+     "demo": 0,
+     "windows": 69,
+     "windows_demo": 0,
+     "windows_exec": 69,
+     "delta8": 160.1,
+     "delta32": 36.2,
+     "exec_segments": 13,
+     "shortest_exec_seg": 46,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 59,
+   "seed": 9900,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 5,
+    "to": 5,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 970,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 120,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 120,
+       "len": 79,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 199,
+       "len": 103,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 372,
+       "len": 86,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 458,
+       "len": 65,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 523,
+       "len": 104,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 627,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 694,
+       "len": 90,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 784,
+       "len": 77,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 861,
+       "len": 62,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 923,
+       "len": 47,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 970,
+     "demo": 0,
+     "windows": 59,
+     "windows_demo": 0,
+     "windows_exec": 59,
+     "delta8": 138.4,
+     "delta32": 31.3,
+     "exec_segments": 11,
+     "shortest_exec_seg": 62,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 970,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 120,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 120,
+       "len": 79,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 199,
+       "len": 103,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 372,
+       "len": 86,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 458,
+       "len": 65,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 523,
+       "len": 104,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 627,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 694,
+       "len": 90,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 784,
+       "len": 77,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 861,
+       "len": 62,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 923,
+       "len": 47,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 970,
+     "demo": 0,
+     "windows": 59,
+     "windows_demo": 0,
+     "windows_exec": 59,
+     "delta8": 138.4,
+     "delta32": 31.3,
+     "exec_segments": 11,
+     "shortest_exec_seg": 62,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 63,
+   "seed": 10300,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 5,
+    "to": 6,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 1044,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 134,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 134,
+       "len": 86,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 220,
+       "len": 117,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 337,
+       "len": 86,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 94,
+       "text": "pick up the third green cube",
+       "demo": false
+      },
+      {
+       "start": 517,
+       "len": 66,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 583,
+       "len": 81,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 664,
+       "len": 66,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 730,
+       "len": 129,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 859,
+       "len": 92,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 951,
+       "len": 58,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1009,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1044,
+     "demo": 0,
+     "windows": 64,
+     "windows_demo": 0,
+     "windows_exec": 64,
+     "delta8": 149.0,
+     "delta32": 33.6,
+     "exec_segments": 11,
+     "shortest_exec_seg": 58,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1264,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 134,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 134,
+       "len": 86,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 220,
+       "len": 117,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 337,
+       "len": 86,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 94,
+       "text": "pick up the third green cube",
+       "demo": false
+      },
+      {
+       "start": 517,
+       "len": 66,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 583,
+       "len": 81,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 664,
+       "len": 66,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 730,
+       "len": 129,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 859,
+       "len": 92,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 951,
+       "len": 134,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 1085,
+       "len": 86,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1171,
+       "len": 58,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1229,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1264,
+     "demo": 0,
+     "windows": 77,
+     "windows_demo": 0,
+     "windows_exec": 77,
+     "delta8": 180.4,
+     "delta32": 40.7,
+     "exec_segments": 13,
+     "shortest_exec_seg": 58,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 67,
+   "seed": 10700,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 5,
+    "to": 5,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 981,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 185,
+       "len": 112,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 297,
+       "len": 63,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 360,
+       "len": 94,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 454,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 513,
+       "len": 102,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 615,
+       "len": 68,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 683,
+       "len": 106,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 789,
+       "len": 83,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 872,
+       "len": 72,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 944,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 981,
+     "demo": 0,
+     "windows": 60,
+     "windows_demo": 0,
+     "windows_exec": 60,
+     "delta8": 140.0,
+     "delta32": 31.6,
+     "exec_segments": 11,
+     "shortest_exec_seg": 59,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 981,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 185,
+       "len": 112,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 297,
+       "len": 63,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 360,
+       "len": 94,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 454,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 513,
+       "len": 102,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 615,
+       "len": 68,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 683,
+       "len": 106,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 789,
+       "len": 83,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 872,
+       "len": 72,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 944,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 981,
+     "demo": 0,
+     "windows": 60,
+     "windows_demo": 0,
+     "windows_exec": 60,
+     "delta8": 140.0,
+     "delta32": 31.6,
+     "exec_segments": 11,
+     "shortest_exec_seg": 59,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 71,
+   "seed": 11102,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 5,
+    "to": 6,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 1011,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 137,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 137,
+       "len": 72,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 102,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 64,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 375,
+       "len": 119,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 494,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 565,
+       "len": 96,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 661,
+       "len": 54,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 715,
+       "len": 135,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 850,
+       "len": 78,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 928,
+       "len": 49,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 977,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1011,
+     "demo": 0,
+     "windows": 62,
+     "windows_demo": 0,
+     "windows_exec": 62,
+     "delta8": 144.3,
+     "delta32": 32.6,
+     "exec_segments": 11,
+     "shortest_exec_seg": 49,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1220,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 137,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 137,
+       "len": 72,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 102,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 64,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 375,
+       "len": 119,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 494,
+       "len": 71,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 565,
+       "len": 96,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 661,
+       "len": 54,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 715,
+       "len": 135,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 850,
+       "len": 78,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 928,
+       "len": 137,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 1065,
+       "len": 72,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1137,
+       "len": 49,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1186,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1220,
+     "demo": 0,
+     "windows": 75,
+     "windows_demo": 0,
+     "windows_exec": 75,
+     "delta8": 174.1,
+     "delta32": 39.3,
+     "exec_segments": 13,
+     "shortest_exec_seg": 49,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 75,
+   "seed": 11500,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 5,
+    "to": 5,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 894,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 122,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 122,
+       "len": 68,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 190,
+       "len": 111,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 301,
+       "len": 61,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 362,
+       "len": 99,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 461,
+       "len": 64,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 525,
+       "len": 87,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 612,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 671,
+       "len": 86,
+       "text": "pick up the fourth blue cube",
+       "demo": false
+      },
+      {
+       "start": 757,
+       "len": 52,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 809,
+       "len": 50,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 859,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 894,
+     "demo": 0,
+     "windows": 54,
+     "windows_demo": 0,
+     "windows_exec": 54,
+     "delta8": 127.6,
+     "delta32": 28.8,
+     "exec_segments": 11,
+     "shortest_exec_seg": 50,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 894,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 122,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 122,
+       "len": 68,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 190,
+       "len": 111,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 301,
+       "len": 61,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 362,
+       "len": 99,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 461,
+       "len": 64,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 525,
+       "len": 87,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 612,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 671,
+       "len": 86,
+       "text": "pick up the fourth blue cube",
+       "demo": false
+      },
+      {
+       "start": 757,
+       "len": 52,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 809,
+       "len": 50,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 859,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 894,
+     "demo": 0,
+     "windows": 54,
+     "windows_demo": 0,
+     "windows_exec": 54,
+     "delta8": 127.6,
+     "delta32": 28.8,
+     "exec_segments": 11,
+     "shortest_exec_seg": 50,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 79,
+   "seed": 11900,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 5,
+    "to": 6,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 963,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 124,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 124,
+       "len": 65,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 189,
+       "len": 113,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 75,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 377,
+       "len": 102,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 479,
+       "len": 55,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 534,
+       "len": 116,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 717,
+       "len": 97,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 814,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 873,
+       "len": 53,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 926,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 963,
+     "demo": 0,
+     "windows": 59,
+     "windows_demo": 0,
+     "windows_exec": 59,
+     "delta8": 137.4,
+     "delta32": 31.0,
+     "exec_segments": 11,
+     "shortest_exec_seg": 53,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1152,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 124,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 124,
+       "len": 65,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 189,
+       "len": 113,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 75,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 377,
+       "len": 102,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 479,
+       "len": 55,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 534,
+       "len": 116,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 67,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 717,
+       "len": 97,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 814,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 873,
+       "len": 124,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 997,
+       "len": 65,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1062,
+       "len": 53,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1115,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1152,
+     "demo": 0,
+     "windows": 70,
+     "windows_demo": 0,
+     "windows_exec": 70,
+     "delta8": 164.4,
+     "delta32": 37.1,
+     "exec_segments": 13,
+     "shortest_exec_seg": 53,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 83,
+   "seed": 12301,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 4,
+    "to": 5,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 819,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 80,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 195,
+       "len": 87,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 282,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 351,
+       "len": 94,
+       "text": "pick up the third green cube",
+       "demo": false
+      },
+      {
+       "start": 445,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 514,
+       "len": 112,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 626,
+       "len": 93,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 719,
+       "len": 63,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 782,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 819,
+     "demo": 0,
+     "windows": 50,
+     "windows_demo": 0,
+     "windows_exec": 50,
+     "delta8": 116.9,
+     "delta32": 26.4,
+     "exec_segments": 9,
+     "shortest_exec_seg": 63,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1014,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 80,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 195,
+       "len": 87,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 282,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 351,
+       "len": 94,
+       "text": "pick up the third green cube",
+       "demo": false
+      },
+      {
+       "start": 445,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 514,
+       "len": 112,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 626,
+       "len": 93,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 719,
+       "len": 115,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 834,
+       "len": 80,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 914,
+       "len": 63,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 977,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1014,
+     "demo": 0,
+     "windows": 62,
+     "windows_demo": 0,
+     "windows_exec": 62,
+     "delta8": 144.7,
+     "delta32": 32.7,
+     "exec_segments": 11,
+     "shortest_exec_seg": 63,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 87,
+   "seed": 12700,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 791,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 125,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 125,
+       "len": 79,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 204,
+       "len": 90,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 294,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 96,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 459,
+       "len": 61,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 520,
+       "len": 93,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 613,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 682,
+       "len": 69,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 751,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 791,
+     "demo": 0,
+     "windows": 48,
+     "windows_demo": 0,
+     "windows_exec": 48,
+     "delta8": 112.9,
+     "delta32": 25.5,
+     "exec_segments": 9,
+     "shortest_exec_seg": 61,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1154,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 125,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 125,
+       "len": 79,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 204,
+       "len": 90,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 294,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 96,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 459,
+       "len": 61,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 520,
+       "len": 93,
+       "text": "pick up the third blue cube",
+       "demo": false
+      },
+      {
+       "start": 613,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 682,
+       "len": 125,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 807,
+       "len": 79,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 886,
+       "len": 90,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 976,
+       "len": 69,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1045,
+       "len": 69,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1114,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1154,
+     "demo": 0,
+     "windows": 71,
+     "windows_demo": 0,
+     "windows_exec": 71,
+     "delta8": 164.7,
+     "delta32": 37.2,
+     "exec_segments": 13,
+     "shortest_exec_seg": 61,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 91,
+   "seed": 13101,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 5,
+    "to": 5,
+    "added_pairs": 0
+   },
+   "hard": {
+    "item": {
+     "total": 945,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 103,
+       "len": 64,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 167,
+       "len": 86,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 253,
+       "len": 75,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 328,
+       "len": 87,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 415,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 474,
+       "len": 101,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 575,
+       "len": 75,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 120,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 770,
+       "len": 86,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 856,
+       "len": 52,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 908,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 945,
+     "demo": 0,
+     "windows": 58,
+     "windows_demo": 0,
+     "windows_exec": 58,
+     "delta8": 134.9,
+     "delta32": 30.5,
+     "exec_segments": 11,
+     "shortest_exec_seg": 52,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 945,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 103,
+       "len": 64,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 167,
+       "len": 86,
+       "text": "pick up the second red cube",
+       "demo": false
+      },
+      {
+       "start": 253,
+       "len": 75,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 328,
+       "len": 87,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 415,
+       "len": 59,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 474,
+       "len": 101,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 575,
+       "len": 75,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 120,
+       "text": "pick up the second green cube",
+       "demo": false
+      },
+      {
+       "start": 770,
+       "len": 86,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 856,
+       "len": 52,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 908,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 945,
+     "demo": 0,
+     "windows": 58,
+     "windows_demo": 0,
+     "windows_exec": 58,
+     "delta8": 134.9,
+     "delta32": 30.5,
+     "exec_segments": 11,
+     "shortest_exec_seg": 52,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 95,
+   "seed": 13500,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 3,
+    "to": 6,
+    "added_pairs": 3
+   },
+   "hard": {
+    "item": {
+     "total": 695,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 131,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 131,
+       "len": 73,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 204,
+       "len": 102,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 306,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 376,
+       "len": 139,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 515,
+       "len": 88,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 603,
+       "len": 55,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 658,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 695,
+     "demo": 0,
+     "windows": 42,
+     "windows_demo": 0,
+     "windows_exec": 42,
+     "delta8": 99.1,
+     "delta32": 22.4,
+     "exec_segments": 7,
+     "shortest_exec_seg": 55,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1298,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 131,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 131,
+       "len": 73,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 204,
+       "len": 102,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 306,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 376,
+       "len": 139,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 515,
+       "len": 88,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 603,
+       "len": 131,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 734,
+       "len": 73,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 807,
+       "len": 102,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 909,
+       "len": 70,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 979,
+       "len": 139,
+       "text": "pick up the first green cube",
+       "demo": false
+      },
+      {
+       "start": 1118,
+       "len": 88,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 1206,
+       "len": 55,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 1261,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1298,
+     "demo": 0,
+     "windows": 80,
+     "windows_demo": 0,
+     "windows_exec": 80,
+     "delta8": 185.3,
+     "delta32": 41.8,
+     "exec_segments": 13,
+     "shortest_exec_seg": 55,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 99,
+   "seed": 13902,
+   "synthesis": {
+    "rule": "投入 [3,5] → [5,6]",
+    "from": 3,
+    "to": 5,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 644,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 140,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 140,
+       "len": 87,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 227,
+       "len": 85,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 312,
+       "len": 66,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 378,
+       "len": 93,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 471,
+       "len": 60,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 531,
+       "len": 68,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 599,
+       "len": 45,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 644,
+     "demo": 0,
+     "windows": 39,
+     "windows_demo": 0,
+     "windows_exec": 39,
+     "delta8": 91.9,
+     "delta32": 20.7,
+     "exec_segments": 7,
+     "shortest_exec_seg": 60,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1022,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 140,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 140,
+       "len": 87,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 227,
+       "len": 85,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 312,
+       "len": 66,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 378,
+       "len": 93,
+       "text": "pick up the second blue cube",
+       "demo": false
+      },
+      {
+       "start": 471,
+       "len": 60,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 531,
+       "len": 140,
+       "text": "pick up the first red cube",
+       "demo": false
+      },
+      {
+       "start": 671,
+       "len": 87,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 758,
+       "len": 85,
+       "text": "pick up the first blue cube",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 66,
+       "text": "put it into the bin",
+       "demo": false
+      },
+      {
+       "start": 909,
+       "len": 68,
+       "text": "press the button",
+       "demo": false
+      },
+      {
+       "start": 977,
+       "len": 45,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1022,
+     "demo": 0,
+     "windows": 62,
+     "windows_demo": 0,
+     "windows_exec": 62,
+     "delta8": 145.9,
+     "delta32": 32.9,
+     "exec_segments": 11,
+     "shortest_exec_seg": 60,
+     "skip8": 4
+    }
+   }
+  }
+ ]
+}

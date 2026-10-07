@@ -1,0 +1,6381 @@
+{
+ "task": "PatternLock",
+ "rule": "节点 [4,8] → [10,14]",
+ "synthetic": true,
+ "records": [
+  {
+   "episode": 3,
+   "seed": 15300,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 5,
+    "to": 10,
+    "added_moves_per_side": 5
+   },
+   "hard": {
+    "item": {
+     "total": 306,
+     "demo": 153,
+     "segments": [
+      {
+       "start": 0,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 41,
+       "len": 27,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 68,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 113,
+       "len": 40,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 153,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 194,
+       "len": 27,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 221,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 266,
+       "len": 27,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 293,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 306,
+     "demo": 153,
+     "windows": 16,
+     "windows_demo": 8,
+     "windows_exec": 8,
+     "delta8": 43.6,
+     "delta32": 9.8,
+     "exec_segments": 4,
+     "shortest_exec_seg": 27,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 681,
+     "demo": 347,
+     "segments": [
+      {
+       "start": 0,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 41,
+       "len": 27,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 68,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 113,
+       "len": 40,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 153,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 194,
+       "len": 27,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 221,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 266,
+       "len": 40,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 306,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 347,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 388,
+       "len": 27,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 415,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 460,
+       "len": 27,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 487,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 528,
+       "len": 27,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 555,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 27,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 627,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 668,
+       "len": 13,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 681,
+     "demo": 347,
+     "windows": 39,
+     "windows_demo": 20,
+     "windows_exec": 19,
+     "delta8": 97.1,
+     "delta32": 21.9,
+     "exec_segments": 9,
+     "shortest_exec_seg": 27,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 7,
+   "seed": 15700,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 6,
+    "to": 11,
+    "added_moves_per_side": 5
+   },
+   "hard": {
+    "item": {
+     "total": 358,
+     "demo": 179,
+     "segments": [
+      {
+       "start": 0,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 30,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 61,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 96,
+       "len": 43,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 139,
+       "len": 40,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 179,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 240,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 275,
+       "len": 43,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 318,
+       "len": 33,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 351,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 358,
+     "demo": 179,
+     "windows": 20,
+     "windows_demo": 10,
+     "windows_exec": 10,
+     "delta8": 51.0,
+     "delta32": 11.5,
+     "exec_segments": 5,
+     "shortest_exec_seg": 30,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 709,
+     "demo": 358,
+     "segments": [
+      {
+       "start": 0,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 30,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 61,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 96,
+       "len": 43,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 139,
+       "len": 40,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 179,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 209,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 240,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 275,
+       "len": 43,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 40,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 358,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 388,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 419,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 454,
+       "len": 43,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 497,
+       "len": 33,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 530,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 560,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 591,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 626,
+       "len": 43,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 669,
+       "len": 33,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 702,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 709,
+     "demo": 358,
+     "windows": 41,
+     "windows_demo": 21,
+     "windows_exec": 20,
+     "delta8": 101.1,
+     "delta32": 22.8,
+     "exec_segments": 10,
+     "shortest_exec_seg": 30,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 11,
+   "seed": 16100,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 5,
+    "to": 12,
+    "added_moves_per_side": 7
+   },
+   "hard": {
+    "item": {
+     "total": 274,
+     "demo": 137,
+     "segments": [
+      {
+       "start": 0,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 30,
+       "len": 32,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 62,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 101,
+       "len": 36,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 137,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 167,
+       "len": 32,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 199,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 238,
+       "len": 27,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 265,
+       "len": 9,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 274,
+     "demo": 137,
+     "windows": 14,
+     "windows_demo": 7,
+     "windows_exec": 7,
+     "delta8": 39.0,
+     "delta32": 8.8,
+     "exec_segments": 4,
+     "shortest_exec_seg": 27,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 741,
+     "demo": 375,
+     "segments": [
+      {
+       "start": 0,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 30,
+       "len": 32,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 62,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 101,
+       "len": 36,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 137,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 167,
+       "len": 32,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 199,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 238,
+       "len": 36,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 274,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 304,
+       "len": 32,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 336,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 375,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 405,
+       "len": 32,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 437,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 476,
+       "len": 27,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 503,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 533,
+       "len": 32,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 565,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 604,
+       "len": 27,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 631,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 661,
+       "len": 32,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 693,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 732,
+       "len": 9,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 741,
+     "demo": 375,
+     "windows": 43,
+     "windows_demo": 22,
+     "windows_exec": 21,
+     "delta8": 105.7,
+     "delta32": 23.9,
+     "exec_segments": 11,
+     "shortest_exec_seg": 27,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 15,
+   "seed": 16500,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 6,
+    "to": 13,
+    "added_moves_per_side": 7
+   },
+   "hard": {
+    "item": {
+     "total": 334,
+     "demo": 167,
+     "segments": [
+      {
+       "start": 0,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 31,
+       "len": 45,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 76,
+       "len": 21,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 97,
+       "len": 38,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 135,
+       "len": 32,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 167,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 198,
+       "len": 45,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 243,
+       "len": 21,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 264,
+       "len": 38,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 25,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 327,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 334,
+     "demo": 167,
+     "windows": 18,
+     "windows_demo": 9,
+     "windows_exec": 9,
+     "delta8": 47.6,
+     "delta32": 10.7,
+     "exec_segments": 5,
+     "shortest_exec_seg": 21,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 813,
+     "demo": 410,
+     "segments": [
+      {
+       "start": 0,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 31,
+       "len": 45,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 76,
+       "len": 21,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 97,
+       "len": 38,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 135,
+       "len": 32,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 167,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 198,
+       "len": 45,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 243,
+       "len": 21,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 38,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 302,
+       "len": 32,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 334,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 365,
+       "len": 45,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 410,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 441,
+       "len": 45,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 486,
+       "len": 21,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 507,
+       "len": 38,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 545,
+       "len": 25,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 570,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 601,
+       "len": 45,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 646,
+       "len": 21,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 667,
+       "len": 38,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 705,
+       "len": 25,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 730,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 761,
+       "len": 45,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 806,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 813,
+     "demo": 410,
+     "windows": 48,
+     "windows_demo": 24,
+     "windows_exec": 24,
+     "delta8": 116.0,
+     "delta32": 26.2,
+     "exec_segments": 12,
+     "shortest_exec_seg": 21,
+     "skip8": 9
+    }
+   }
+  },
+  {
+   "episode": 19,
+   "seed": 16900,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 8,
+    "to": 14,
+    "added_moves_per_side": 6
+   },
+   "hard": {
+    "item": {
+     "total": 484,
+     "demo": 242,
+     "segments": [
+      {
+       "start": 0,
+       "len": 33,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 33,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 69,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 107,
+       "len": 30,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 137,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 204,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 242,
+       "len": 33,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 275,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 349,
+       "len": 30,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 379,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 410,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 446,
+       "len": 27,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 473,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 484,
+     "demo": 242,
+     "windows": 28,
+     "windows_demo": 14,
+     "windows_exec": 14,
+     "delta8": 69.0,
+     "delta32": 15.6,
+     "exec_segments": 7,
+     "shortest_exec_seg": 27,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 892,
+     "demo": 446,
+     "segments": [
+      {
+       "start": 0,
+       "len": 33,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 33,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 69,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 107,
+       "len": 30,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 137,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 204,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 242,
+       "len": 33,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 275,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 311,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 349,
+       "len": 30,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 379,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 410,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 446,
+       "len": 33,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 479,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 515,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 553,
+       "len": 30,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 583,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 614,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 27,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 677,
+       "len": 33,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 710,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 746,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 784,
+       "len": 30,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 814,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 845,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 881,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 892,
+     "demo": 446,
+     "windows": 52,
+     "windows_demo": 26,
+     "windows_exec": 26,
+     "delta8": 127.3,
+     "delta32": 28.7,
+     "exec_segments": 13,
+     "shortest_exec_seg": 27,
+     "skip8": 10
+    }
+   }
+  },
+  {
+   "episode": 23,
+   "seed": 17300,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 8,
+    "to": 10,
+    "added_moves_per_side": 2
+   },
+   "hard": {
+    "item": {
+     "total": 498,
+     "demo": 249,
+     "segments": [
+      {
+       "start": 0,
+       "len": 46,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 46,
+       "len": 46,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 92,
+       "len": 25,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 117,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 148,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 186,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 225,
+       "len": 24,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 249,
+       "len": 46,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 295,
+       "len": 46,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 341,
+       "len": 25,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 366,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 397,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 435,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 474,
+       "len": 16,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 490,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 498,
+     "demo": 249,
+     "windows": 28,
+     "windows_demo": 14,
+     "windows_exec": 14,
+     "delta8": 71.0,
+     "delta32": 16.0,
+     "exec_segments": 7,
+     "shortest_exec_seg": 16,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 682,
+     "demo": 341,
+     "segments": [
+      {
+       "start": 0,
+       "len": 46,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 46,
+       "len": 46,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 92,
+       "len": 25,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 117,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 148,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 186,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 225,
+       "len": 24,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 249,
+       "len": 46,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 295,
+       "len": 46,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 341,
+       "len": 46,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 387,
+       "len": 46,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 433,
+       "len": 25,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 458,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 489,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 527,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 566,
+       "len": 16,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 582,
+       "len": 46,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 628,
+       "len": 46,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 674,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 682,
+     "demo": 341,
+     "windows": 40,
+     "windows_demo": 20,
+     "windows_exec": 20,
+     "delta8": 97.3,
+     "delta32": 22.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 16,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 27,
+   "seed": 17700,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 6,
+    "to": 11,
+    "added_moves_per_side": 5
+   },
+   "hard": {
+    "item": {
+     "total": 316,
+     "demo": 158,
+     "segments": [
+      {
+       "start": 0,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 31,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 67,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 102,
+       "len": 27,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 129,
+       "len": 29,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 158,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 189,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 225,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 260,
+       "len": 27,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 287,
+       "len": 21,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 308,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 316,
+     "demo": 158,
+     "windows": 16,
+     "windows_demo": 8,
+     "windows_exec": 8,
+     "delta8": 45.0,
+     "delta32": 10.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 21,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 624,
+     "demo": 316,
+     "segments": [
+      {
+       "start": 0,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 31,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 67,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 102,
+       "len": 27,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 129,
+       "len": 29,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 158,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 189,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 225,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 260,
+       "len": 27,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 287,
+       "len": 29,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 316,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 347,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 383,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 418,
+       "len": 27,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 445,
+       "len": 21,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 466,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 497,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 533,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 568,
+       "len": 27,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 595,
+       "len": 21,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 616,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 624,
+     "demo": 316,
+     "windows": 36,
+     "windows_demo": 18,
+     "windows_exec": 18,
+     "delta8": 89.0,
+     "delta32": 20.1,
+     "exec_segments": 10,
+     "shortest_exec_seg": 21,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 31,
+   "seed": 18100,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 6,
+    "to": 12,
+    "added_moves_per_side": 6
+   },
+   "hard": {
+    "item": {
+     "total": 414,
+     "demo": 207,
+     "segments": [
+      {
+       "start": 0,
+       "len": 39,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 39,
+       "len": 50,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 89,
+       "len": 52,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 141,
+       "len": 30,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 171,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 207,
+       "len": 39,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 246,
+       "len": 50,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 296,
+       "len": 52,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 348,
+       "len": 30,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 378,
+       "len": 24,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 402,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 414,
+     "demo": 207,
+     "windows": 22,
+     "windows_demo": 11,
+     "windows_exec": 11,
+     "delta8": 59.0,
+     "delta32": 13.3,
+     "exec_segments": 5,
+     "shortest_exec_seg": 24,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 894,
+     "demo": 453,
+     "segments": [
+      {
+       "start": 0,
+       "len": 39,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 39,
+       "len": 50,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 89,
+       "len": 52,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 141,
+       "len": 30,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 171,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 207,
+       "len": 39,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 246,
+       "len": 50,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 296,
+       "len": 52,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 348,
+       "len": 30,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 378,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 414,
+       "len": 39,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 453,
+       "len": 39,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 492,
+       "len": 50,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 542,
+       "len": 52,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 594,
+       "len": 30,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 624,
+       "len": 24,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 648,
+       "len": 39,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 687,
+       "len": 50,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 737,
+       "len": 52,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 789,
+       "len": 30,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 819,
+       "len": 24,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 843,
+       "len": 39,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 882,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 894,
+     "demo": 453,
+     "windows": 53,
+     "windows_demo": 27,
+     "windows_exec": 26,
+     "delta8": 127.6,
+     "delta32": 28.8,
+     "exec_segments": 11,
+     "shortest_exec_seg": 24,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 35,
+   "seed": 18500,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 4,
+    "to": 13,
+    "added_moves_per_side": 9
+   },
+   "hard": {
+    "item": {
+     "total": 194,
+     "demo": 97,
+     "segments": [
+      {
+       "start": 0,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 35,
+       "len": 24,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 59,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 97,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 132,
+       "len": 24,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 156,
+       "len": 29,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 185,
+       "len": 9,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 194,
+     "demo": 97,
+     "windows": 10,
+     "windows_demo": 5,
+     "windows_exec": 5,
+     "delta8": 27.6,
+     "delta32": 6.2,
+     "exec_segments": 3,
+     "shortest_exec_seg": 24,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 749,
+     "demo": 388,
+     "segments": [
+      {
+       "start": 0,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 35,
+       "len": 24,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 59,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 97,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 132,
+       "len": 24,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 156,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 194,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 229,
+       "len": 24,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 253,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 291,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 326,
+       "len": 24,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 350,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 388,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 24,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 447,
+       "len": 29,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 476,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 511,
+       "len": 24,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 535,
+       "len": 29,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 564,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 599,
+       "len": 24,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 623,
+       "len": 29,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 652,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 687,
+       "len": 24,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 711,
+       "len": 29,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 740,
+       "len": 9,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 749,
+     "demo": 388,
+     "windows": 44,
+     "windows_demo": 23,
+     "windows_exec": 21,
+     "delta8": 106.9,
+     "delta32": 24.1,
+     "exec_segments": 12,
+     "shortest_exec_seg": 24,
+     "skip8": 9
+    }
+   }
+  },
+  {
+   "episode": 39,
+   "seed": 18900,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 5,
+    "to": 14,
+    "added_moves_per_side": 9
+   },
+   "hard": {
+    "item": {
+     "total": 256,
+     "demo": 128,
+     "segments": [
+      {
+       "start": 0,
+       "len": 30,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 30,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 68,
+       "len": 28,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 96,
+       "len": 32,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 128,
+       "len": 30,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 158,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 196,
+       "len": 28,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 224,
+       "len": 20,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 244,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 256,
+     "demo": 128,
+     "windows": 12,
+     "windows_demo": 6,
+     "windows_exec": 6,
+     "delta8": 36.4,
+     "delta32": 8.2,
+     "exec_segments": 4,
+     "shortest_exec_seg": 20,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 804,
+     "demo": 414,
+     "segments": [
+      {
+       "start": 0,
+       "len": 30,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 30,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 68,
+       "len": 28,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 96,
+       "len": 32,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 128,
+       "len": 30,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 158,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 196,
+       "len": 28,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 224,
+       "len": 32,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 256,
+       "len": 30,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 286,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 324,
+       "len": 28,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 352,
+       "len": 32,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 384,
+       "len": 30,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 414,
+       "len": 30,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 444,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 482,
+       "len": 28,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 510,
+       "len": 20,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 530,
+       "len": 30,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 560,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 598,
+       "len": 28,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 626,
+       "len": 20,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 646,
+       "len": 30,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 676,
+       "len": 38,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 714,
+       "len": 28,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 742,
+       "len": 20,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 762,
+       "len": 30,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 792,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 804,
+     "demo": 414,
+     "windows": 47,
+     "windows_demo": 24,
+     "windows_exec": 23,
+     "delta8": 114.7,
+     "delta32": 25.9,
+     "exec_segments": 13,
+     "shortest_exec_seg": 20,
+     "skip8": 10
+    }
+   }
+  },
+  {
+   "episode": 43,
+   "seed": 19300,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 6,
+    "to": 10,
+    "added_moves_per_side": 4
+   },
+   "hard": {
+    "item": {
+     "total": 324,
+     "demo": 162,
+     "segments": [
+      {
+       "start": 0,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 30,
+       "len": 28,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 58,
+       "len": 35,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 93,
+       "len": 32,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 125,
+       "len": 37,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 162,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 192,
+       "len": 28,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 220,
+       "len": 35,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 255,
+       "len": 32,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 287,
+       "len": 27,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 314,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 324,
+     "demo": 162,
+     "windows": 18,
+     "windows_demo": 9,
+     "windows_exec": 9,
+     "delta8": 46.1,
+     "delta32": 10.4,
+     "exec_segments": 5,
+     "shortest_exec_seg": 27,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 574,
+     "demo": 287,
+     "segments": [
+      {
+       "start": 0,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 30,
+       "len": 28,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 58,
+       "len": 35,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 93,
+       "len": 32,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 125,
+       "len": 37,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 162,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 192,
+       "len": 28,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 220,
+       "len": 35,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 255,
+       "len": 32,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 287,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 317,
+       "len": 28,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 345,
+       "len": 35,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 380,
+       "len": 32,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 412,
+       "len": 27,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 439,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 469,
+       "len": 28,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 497,
+       "len": 35,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 532,
+       "len": 32,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 564,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 574,
+     "demo": 287,
+     "windows": 32,
+     "windows_demo": 16,
+     "windows_exec": 16,
+     "delta8": 81.9,
+     "delta32": 18.5,
+     "exec_segments": 9,
+     "shortest_exec_seg": 27,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 47,
+   "seed": 19700,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 8,
+    "to": 11,
+    "added_moves_per_side": 3
+   },
+   "hard": {
+    "item": {
+     "total": 442,
+     "demo": 221,
+     "segments": [
+      {
+       "start": 0,
+       "len": 28,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 28,
+       "len": 33,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 61,
+       "len": 30,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 91,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 122,
+       "len": 24,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 146,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 182,
+       "len": 39,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 221,
+       "len": 28,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 249,
+       "len": 33,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 282,
+       "len": 30,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 312,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 343,
+       "len": 24,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 367,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 403,
+       "len": 27,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 430,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 442,
+     "demo": 221,
+     "windows": 24,
+     "windows_demo": 12,
+     "windows_exec": 12,
+     "delta8": 63.0,
+     "delta32": 14.2,
+     "exec_segments": 7,
+     "shortest_exec_seg": 24,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 624,
+     "demo": 312,
+     "segments": [
+      {
+       "start": 0,
+       "len": 28,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 28,
+       "len": 33,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 61,
+       "len": 30,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 91,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 122,
+       "len": 24,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 146,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 182,
+       "len": 39,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 221,
+       "len": 28,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 249,
+       "len": 33,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 282,
+       "len": 30,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 312,
+       "len": 28,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 340,
+       "len": 33,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 373,
+       "len": 30,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 403,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 434,
+       "len": 24,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 458,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 494,
+       "len": 27,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 521,
+       "len": 28,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 549,
+       "len": 33,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 582,
+       "len": 30,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 612,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 624,
+     "demo": 312,
+     "windows": 36,
+     "windows_demo": 18,
+     "windows_exec": 18,
+     "delta8": 89.0,
+     "delta32": 20.1,
+     "exec_segments": 10,
+     "shortest_exec_seg": 24,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 51,
+   "seed": 20100,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 5,
+    "to": 12,
+    "added_moves_per_side": 7
+   },
+   "hard": {
+    "item": {
+     "total": 318,
+     "demo": 159,
+     "segments": [
+      {
+       "start": 0,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 40,
+       "len": 26,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 66,
+       "len": 40,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 106,
+       "len": 53,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 159,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 199,
+       "len": 26,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 225,
+       "len": 40,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 265,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 306,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 318,
+     "demo": 159,
+     "windows": 16,
+     "windows_demo": 8,
+     "windows_exec": 8,
+     "delta8": 45.3,
+     "delta32": 10.2,
+     "exec_segments": 4,
+     "shortest_exec_seg": 26,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 836,
+     "demo": 424,
+     "segments": [
+      {
+       "start": 0,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 40,
+       "len": 26,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 66,
+       "len": 40,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 106,
+       "len": 53,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 159,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 199,
+       "len": 26,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 225,
+       "len": 40,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 265,
+       "len": 53,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 358,
+       "len": 26,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 384,
+       "len": 40,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 424,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 464,
+       "len": 26,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 490,
+       "len": 40,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 530,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 571,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 611,
+       "len": 26,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 637,
+       "len": 40,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 677,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 718,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 758,
+       "len": 26,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 784,
+       "len": 40,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 824,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 836,
+     "demo": 424,
+     "windows": 49,
+     "windows_demo": 25,
+     "windows_exec": 24,
+     "delta8": 119.3,
+     "delta32": 26.9,
+     "exec_segments": 11,
+     "shortest_exec_seg": 26,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 55,
+   "seed": 20500,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 8,
+    "to": 13,
+    "added_moves_per_side": 5
+   },
+   "hard": {
+    "item": {
+     "total": 454,
+     "demo": 227,
+     "segments": [
+      {
+       "start": 0,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 31,
+       "len": 23,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 54,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 99,
+       "len": 36,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 135,
+       "len": 31,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 166,
+       "len": 27,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 193,
+       "len": 34,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 227,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 258,
+       "len": 23,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 281,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 326,
+       "len": 36,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 362,
+       "len": 31,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 393,
+       "len": 27,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 420,
+       "len": 26,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 446,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 454,
+     "demo": 227,
+     "windows": 26,
+     "windows_demo": 13,
+     "windows_exec": 13,
+     "delta8": 64.7,
+     "delta32": 14.6,
+     "exec_segments": 7,
+     "shortest_exec_seg": 23,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 786,
+     "demo": 393,
+     "segments": [
+      {
+       "start": 0,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 31,
+       "len": 23,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 54,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 99,
+       "len": 36,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 135,
+       "len": 31,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 166,
+       "len": 27,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 193,
+       "len": 34,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 227,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 258,
+       "len": 23,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 281,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 326,
+       "len": 36,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 362,
+       "len": 31,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 393,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 424,
+       "len": 23,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 447,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 492,
+       "len": 36,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 528,
+       "len": 31,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 559,
+       "len": 27,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 586,
+       "len": 26,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 612,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 643,
+       "len": 23,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 666,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 711,
+       "len": 36,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 747,
+       "len": 31,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 778,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 786,
+     "demo": 393,
+     "windows": 46,
+     "windows_demo": 23,
+     "windows_exec": 23,
+     "delta8": 112.1,
+     "delta32": 25.3,
+     "exec_segments": 12,
+     "shortest_exec_seg": 23,
+     "skip8": 9
+    }
+   }
+  },
+  {
+   "episode": 59,
+   "seed": 20900,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 7,
+    "to": 14,
+    "added_moves_per_side": 7
+   },
+   "hard": {
+    "item": {
+     "total": 380,
+     "demo": 190,
+     "segments": [
+      {
+       "start": 0,
+       "len": 37,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 37,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 72,
+       "len": 24,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 96,
+       "len": 46,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 142,
+       "len": 26,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 22,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 190,
+       "len": 37,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 227,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 262,
+       "len": 24,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 286,
+       "len": 46,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 332,
+       "len": 26,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 358,
+       "len": 14,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 372,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 380,
+     "demo": 190,
+     "windows": 20,
+     "windows_demo": 10,
+     "windows_exec": 10,
+     "delta8": 54.1,
+     "delta32": 12.2,
+     "exec_segments": 6,
+     "shortest_exec_seg": 14,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 826,
+     "demo": 417,
+     "segments": [
+      {
+       "start": 0,
+       "len": 37,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 37,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 72,
+       "len": 24,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 96,
+       "len": 46,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 142,
+       "len": 26,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 22,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 190,
+       "len": 37,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 227,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 262,
+       "len": 24,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 286,
+       "len": 46,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 332,
+       "len": 26,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 358,
+       "len": 22,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 380,
+       "len": 37,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 417,
+       "len": 37,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 454,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 489,
+       "len": 24,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 513,
+       "len": 46,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 559,
+       "len": 26,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 585,
+       "len": 14,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 599,
+       "len": 37,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 636,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 671,
+       "len": 24,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 695,
+       "len": 46,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 741,
+       "len": 26,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 767,
+       "len": 14,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 781,
+       "len": 37,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 818,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 826,
+     "demo": 417,
+     "windows": 49,
+     "windows_demo": 25,
+     "windows_exec": 24,
+     "delta8": 117.9,
+     "delta32": 26.6,
+     "exec_segments": 13,
+     "shortest_exec_seg": 14,
+     "skip8": 10
+    }
+   }
+  },
+  {
+   "episode": 63,
+   "seed": 21300,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 5,
+    "to": 10,
+    "added_moves_per_side": 5
+   },
+   "hard": {
+    "item": {
+     "total": 264,
+     "demo": 132,
+     "segments": [
+      {
+       "start": 0,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 30,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 65,
+       "len": 36,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 101,
+       "len": 31,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 132,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 162,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 197,
+       "len": 36,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 233,
+       "len": 25,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 258,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 264,
+     "demo": 132,
+     "windows": 14,
+     "windows_demo": 7,
+     "windows_exec": 7,
+     "delta8": 37.6,
+     "delta32": 8.5,
+     "exec_segments": 4,
+     "shortest_exec_seg": 25,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 582,
+     "demo": 294,
+     "segments": [
+      {
+       "start": 0,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 30,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 65,
+       "len": 36,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 101,
+       "len": 31,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 132,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 162,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 197,
+       "len": 36,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 233,
+       "len": 31,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 294,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 324,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 359,
+       "len": 36,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 395,
+       "len": 25,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 420,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 485,
+       "len": 36,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 521,
+       "len": 25,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 546,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 576,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 582,
+     "demo": 294,
+     "windows": 33,
+     "windows_demo": 17,
+     "windows_exec": 16,
+     "delta8": 83.0,
+     "delta32": 18.7,
+     "exec_segments": 9,
+     "shortest_exec_seg": 25,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 67,
+   "seed": 21700,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 8,
+    "to": 11,
+    "added_moves_per_side": 3
+   },
+   "hard": {
+    "item": {
+     "total": 500,
+     "demo": 250,
+     "segments": [
+      {
+       "start": 0,
+       "len": 34,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 34,
+       "len": 46,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 80,
+       "len": 26,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 106,
+       "len": 48,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 154,
+       "len": 23,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 177,
+       "len": 34,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 211,
+       "len": 39,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 34,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 284,
+       "len": 46,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 330,
+       "len": 26,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 356,
+       "len": 48,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 404,
+       "len": 23,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 427,
+       "len": 34,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 461,
+       "len": 31,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 492,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 500,
+     "demo": 250,
+     "windows": 28,
+     "windows_demo": 14,
+     "windows_exec": 14,
+     "delta8": 71.3,
+     "delta32": 16.1,
+     "exec_segments": 7,
+     "shortest_exec_seg": 23,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 712,
+     "demo": 356,
+     "segments": [
+      {
+       "start": 0,
+       "len": 34,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 34,
+       "len": 46,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 80,
+       "len": 26,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 106,
+       "len": 48,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 154,
+       "len": 23,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 177,
+       "len": 34,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 211,
+       "len": 39,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 250,
+       "len": 34,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 284,
+       "len": 46,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 330,
+       "len": 26,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 356,
+       "len": 34,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 390,
+       "len": 46,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 436,
+       "len": 26,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 462,
+       "len": 48,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 510,
+       "len": 23,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 533,
+       "len": 34,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 567,
+       "len": 31,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 598,
+       "len": 34,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 632,
+       "len": 46,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 678,
+       "len": 26,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 704,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 712,
+     "demo": 356,
+     "windows": 42,
+     "windows_demo": 21,
+     "windows_exec": 21,
+     "delta8": 101.6,
+     "delta32": 22.9,
+     "exec_segments": 10,
+     "shortest_exec_seg": 23,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 71,
+   "seed": 22100,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 4,
+    "to": 12,
+    "added_moves_per_side": 8
+   },
+   "hard": {
+    "item": {
+     "total": 186,
+     "demo": 93,
+     "segments": [
+      {
+       "start": 0,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 31,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 66,
+       "len": 27,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 93,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 124,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 159,
+       "len": 20,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 179,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 186,
+     "demo": 93,
+     "windows": 8,
+     "windows_demo": 4,
+     "windows_exec": 4,
+     "delta8": 26.4,
+     "delta32": 6.0,
+     "exec_segments": 3,
+     "shortest_exec_seg": 20,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 676,
+     "demo": 345,
+     "segments": [
+      {
+       "start": 0,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 31,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 66,
+       "len": 27,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 93,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 124,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 159,
+       "len": 27,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 186,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 217,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 252,
+       "len": 27,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 279,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 310,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 345,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 376,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 411,
+       "len": 20,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 431,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 462,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 497,
+       "len": 20,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 517,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 548,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 583,
+       "len": 20,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 603,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 634,
+       "len": 35,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 669,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 676,
+     "demo": 345,
+     "windows": 39,
+     "windows_demo": 20,
+     "windows_exec": 19,
+     "delta8": 96.4,
+     "delta32": 21.8,
+     "exec_segments": 11,
+     "shortest_exec_seg": 20,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 75,
+   "seed": 22500,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 7,
+    "to": 13,
+    "added_moves_per_side": 6
+   },
+   "hard": {
+    "item": {
+     "total": 372,
+     "demo": 186,
+     "segments": [
+      {
+       "start": 0,
+       "len": 37,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 37,
+       "len": 32,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 69,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 99,
+       "len": 31,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 130,
+       "len": 29,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 159,
+       "len": 27,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 186,
+       "len": 37,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 223,
+       "len": 32,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 255,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 285,
+       "len": 31,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 316,
+       "len": 29,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 345,
+       "len": 20,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 365,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 372,
+     "demo": 186,
+     "windows": 20,
+     "windows_demo": 10,
+     "windows_exec": 10,
+     "delta8": 53.0,
+     "delta32": 12.0,
+     "exec_segments": 6,
+     "shortest_exec_seg": 20,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 737,
+     "demo": 372,
+     "segments": [
+      {
+       "start": 0,
+       "len": 37,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 37,
+       "len": 32,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 69,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 99,
+       "len": 31,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 130,
+       "len": 29,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 159,
+       "len": 27,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 186,
+       "len": 37,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 223,
+       "len": 32,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 255,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 285,
+       "len": 31,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 316,
+       "len": 29,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 345,
+       "len": 27,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 372,
+       "len": 37,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 409,
+       "len": 32,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 441,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 471,
+       "len": 31,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 502,
+       "len": 29,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 531,
+       "len": 20,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 551,
+       "len": 37,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 588,
+       "len": 32,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 620,
+       "len": 30,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 31,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 681,
+       "len": 29,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 710,
+       "len": 20,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 730,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 737,
+     "demo": 372,
+     "windows": 43,
+     "windows_demo": 22,
+     "windows_exec": 21,
+     "delta8": 105.1,
+     "delta32": 23.7,
+     "exec_segments": 12,
+     "shortest_exec_seg": 20,
+     "skip8": 9
+    }
+   }
+  },
+  {
+   "episode": 79,
+   "seed": 22900,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 5,
+    "to": 14,
+    "added_moves_per_side": 9
+   },
+   "hard": {
+    "item": {
+     "total": 298,
+     "demo": 149,
+     "segments": [
+      {
+       "start": 0,
+       "len": 45,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 45,
+       "len": 33,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 78,
+       "len": 32,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 110,
+       "len": 39,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 149,
+       "len": 45,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 194,
+       "len": 33,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 227,
+       "len": 32,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 259,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 290,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 298,
+     "demo": 149,
+     "windows": 16,
+     "windows_demo": 8,
+     "windows_exec": 8,
+     "delta8": 42.4,
+     "delta32": 9.6,
+     "exec_segments": 4,
+     "shortest_exec_seg": 31,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 968,
+     "demo": 492,
+     "segments": [
+      {
+       "start": 0,
+       "len": 45,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 45,
+       "len": 33,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 78,
+       "len": 32,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 110,
+       "len": 39,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 149,
+       "len": 45,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 194,
+       "len": 33,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 227,
+       "len": 32,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 259,
+       "len": 39,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 298,
+       "len": 45,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 343,
+       "len": 33,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 376,
+       "len": 32,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 408,
+       "len": 39,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 447,
+       "len": 45,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 492,
+       "len": 45,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 537,
+       "len": 33,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 570,
+       "len": 32,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 602,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 633,
+       "len": 45,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 678,
+       "len": 33,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 711,
+       "len": 32,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 743,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 774,
+       "len": 45,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 819,
+       "len": 33,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 852,
+       "len": 32,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 884,
+       "len": 31,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 915,
+       "len": 45,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 960,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 968,
+     "demo": 492,
+     "windows": 57,
+     "windows_demo": 29,
+     "windows_exec": 28,
+     "delta8": 138.1,
+     "delta32": 31.2,
+     "exec_segments": 13,
+     "shortest_exec_seg": 31,
+     "skip8": 10
+    }
+   }
+  },
+  {
+   "episode": 83,
+   "seed": 23300,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 7,
+    "to": 10,
+    "added_moves_per_side": 3
+   },
+   "hard": {
+    "item": {
+     "total": 410,
+     "demo": 205,
+     "segments": [
+      {
+       "start": 0,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 31,
+       "len": 37,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 68,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 103,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 142,
+       "len": 41,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 183,
+       "len": 22,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 205,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 236,
+       "len": 37,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 308,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 347,
+       "len": 41,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 388,
+       "len": 14,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 402,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 410,
+     "demo": 205,
+     "windows": 22,
+     "windows_demo": 11,
+     "windows_exec": 11,
+     "delta8": 58.4,
+     "delta32": 13.2,
+     "exec_segments": 6,
+     "shortest_exec_seg": 14,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 616,
+     "demo": 308,
+     "segments": [
+      {
+       "start": 0,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 31,
+       "len": 37,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 68,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 103,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 142,
+       "len": 41,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 183,
+       "len": 22,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 205,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 236,
+       "len": 37,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 273,
+       "len": 35,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 308,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 339,
+       "len": 37,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 376,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 411,
+       "len": 39,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 41,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 491,
+       "len": 14,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 505,
+       "len": 31,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 536,
+       "len": 37,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 573,
+       "len": 35,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 608,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 616,
+     "demo": 308,
+     "windows": 36,
+     "windows_demo": 18,
+     "windows_exec": 18,
+     "delta8": 87.9,
+     "delta32": 19.8,
+     "exec_segments": 9,
+     "shortest_exec_seg": 14,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 87,
+   "seed": 23700,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 8,
+    "to": 11,
+    "added_moves_per_side": 3
+   },
+   "hard": {
+    "item": {
+     "total": 568,
+     "demo": 284,
+     "segments": [
+      {
+       "start": 0,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 40,
+       "len": 36,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 76,
+       "len": 36,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 112,
+       "len": 50,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 162,
+       "len": 52,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 214,
+       "len": 44,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 258,
+       "len": 26,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 284,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 324,
+       "len": 36,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 360,
+       "len": 36,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 396,
+       "len": 50,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 446,
+       "len": 52,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 498,
+       "len": 44,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 542,
+       "len": 14,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 556,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 568,
+     "demo": 284,
+     "windows": 32,
+     "windows_demo": 16,
+     "windows_exec": 16,
+     "delta8": 81.0,
+     "delta32": 18.3,
+     "exec_segments": 7,
+     "shortest_exec_seg": 14,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 792,
+     "demo": 396,
+     "segments": [
+      {
+       "start": 0,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 40,
+       "len": 36,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 76,
+       "len": 36,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 112,
+       "len": 50,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 162,
+       "len": 52,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 214,
+       "len": 44,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 258,
+       "len": 26,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 284,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": true
+      },
+      {
+       "start": 324,
+       "len": 36,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 360,
+       "len": 36,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 396,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 436,
+       "len": 36,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 472,
+       "len": 36,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 508,
+       "len": 50,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 558,
+       "len": 52,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 610,
+       "len": 44,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 654,
+       "len": 14,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 668,
+       "len": 40,
+       "text": "move forward-right",
+       "demo": false
+      },
+      {
+       "start": 708,
+       "len": 36,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 744,
+       "len": 36,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 780,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 792,
+     "demo": 396,
+     "windows": 46,
+     "windows_demo": 23,
+     "windows_exec": 23,
+     "delta8": 113.0,
+     "delta32": 25.5,
+     "exec_segments": 10,
+     "shortest_exec_seg": 14,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 91,
+   "seed": 24101,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 5,
+    "to": 12,
+    "added_moves_per_side": 7
+   },
+   "hard": {
+    "item": {
+     "total": 244,
+     "demo": 122,
+     "segments": [
+      {
+       "start": 0,
+       "len": 21,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 21,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 62,
+       "len": 22,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 84,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 122,
+       "len": 21,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 143,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 184,
+       "len": 22,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 206,
+       "len": 30,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 236,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 244,
+     "demo": 122,
+     "windows": 12,
+     "windows_demo": 6,
+     "windows_exec": 6,
+     "delta8": 34.7,
+     "delta32": 7.8,
+     "exec_segments": 4,
+     "shortest_exec_seg": 21,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 648,
+     "demo": 328,
+     "segments": [
+      {
+       "start": 0,
+       "len": 21,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 21,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 62,
+       "len": 22,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 84,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 122,
+       "len": 21,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 143,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 184,
+       "len": 22,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 206,
+       "len": 38,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 244,
+       "len": 21,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 265,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": true
+      },
+      {
+       "start": 306,
+       "len": 22,
+       "text": "move left",
+       "demo": true
+      },
+      {
+       "start": 328,
+       "len": 21,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 349,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 390,
+       "len": 22,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 412,
+       "len": 30,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 442,
+       "len": 21,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 463,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 504,
+       "len": 22,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 526,
+       "len": 30,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 556,
+       "len": 21,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 577,
+       "len": 41,
+       "text": "move forward-left",
+       "demo": false
+      },
+      {
+       "start": 618,
+       "len": 22,
+       "text": "move left",
+       "demo": false
+      },
+      {
+       "start": 640,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 648,
+     "demo": 328,
+     "windows": 37,
+     "windows_demo": 19,
+     "windows_exec": 18,
+     "delta8": 92.4,
+     "delta32": 20.9,
+     "exec_segments": 11,
+     "shortest_exec_seg": 21,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 95,
+   "seed": 24500,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 5,
+    "to": 13,
+    "added_moves_per_side": 8
+   },
+   "hard": {
+    "item": {
+     "total": 322,
+     "demo": 161,
+     "segments": [
+      {
+       "start": 0,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 45,
+       "len": 43,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 88,
+       "len": 40,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 128,
+       "len": 33,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 161,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 206,
+       "len": 43,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 249,
+       "len": 40,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 289,
+       "len": 27,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 316,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 322,
+     "demo": 161,
+     "windows": 18,
+     "windows_demo": 9,
+     "windows_exec": 9,
+     "delta8": 45.9,
+     "delta32": 10.4,
+     "exec_segments": 4,
+     "shortest_exec_seg": 27,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 954,
+     "demo": 483,
+     "segments": [
+      {
+       "start": 0,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 45,
+       "len": 43,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 88,
+       "len": 40,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 128,
+       "len": 33,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 161,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 206,
+       "len": 43,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 249,
+       "len": 40,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 289,
+       "len": 33,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 322,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 367,
+       "len": 43,
+       "text": "move forward",
+       "demo": true
+      },
+      {
+       "start": 410,
+       "len": 40,
+       "text": "move backward-right",
+       "demo": true
+      },
+      {
+       "start": 450,
+       "len": 33,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 483,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 528,
+       "len": 43,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 571,
+       "len": 40,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 611,
+       "len": 27,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 638,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 683,
+       "len": 43,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 726,
+       "len": 40,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 766,
+       "len": 27,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 793,
+       "len": 45,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 838,
+       "len": 43,
+       "text": "move forward",
+       "demo": false
+      },
+      {
+       "start": 881,
+       "len": 40,
+       "text": "move backward-right",
+       "demo": false
+      },
+      {
+       "start": 921,
+       "len": 27,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 948,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 954,
+     "demo": 483,
+     "windows": 57,
+     "windows_demo": 29,
+     "windows_exec": 28,
+     "delta8": 136.1,
+     "delta32": 30.7,
+     "exec_segments": 12,
+     "shortest_exec_seg": 27,
+     "skip8": 9
+    }
+   }
+  },
+  {
+   "episode": 99,
+   "seed": 24900,
+   "synthesis": {
+    "rule": "节点 [4,8] → [10,14]",
+    "from": 5,
+    "to": 14,
+    "added_moves_per_side": 9
+   },
+   "hard": {
+    "item": {
+     "total": 234,
+     "demo": 117,
+     "segments": [
+      {
+       "start": 0,
+       "len": 21,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 21,
+       "len": 30,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 51,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 87,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 117,
+       "len": 21,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 138,
+       "len": 30,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 168,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 204,
+       "len": 19,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 223,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 234,
+     "demo": 117,
+     "windows": 12,
+     "windows_demo": 6,
+     "windows_exec": 6,
+     "delta8": 33.3,
+     "delta32": 7.5,
+     "exec_segments": 4,
+     "shortest_exec_seg": 19,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 722,
+     "demo": 372,
+     "segments": [
+      {
+       "start": 0,
+       "len": 21,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 21,
+       "len": 30,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 51,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 87,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 117,
+       "len": 21,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 138,
+       "len": 30,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 204,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 234,
+       "len": 21,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 255,
+       "len": 30,
+       "text": "move backward-left",
+       "demo": true
+      },
+      {
+       "start": 285,
+       "len": 36,
+       "text": "move backward",
+       "demo": true
+      },
+      {
+       "start": 321,
+       "len": 30,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 351,
+       "len": 21,
+       "text": "move right",
+       "demo": true
+      },
+      {
+       "start": 372,
+       "len": 21,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 393,
+       "len": 30,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 459,
+       "len": 19,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 478,
+       "len": 21,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 499,
+       "len": 30,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 529,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 565,
+       "len": 19,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 584,
+       "len": 21,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 605,
+       "len": 30,
+       "text": "move backward-left",
+       "demo": false
+      },
+      {
+       "start": 635,
+       "len": 36,
+       "text": "move backward",
+       "demo": false
+      },
+      {
+       "start": 671,
+       "len": 19,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 690,
+       "len": 21,
+       "text": "move right",
+       "demo": false
+      },
+      {
+       "start": 711,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 722,
+     "demo": 372,
+     "windows": 42,
+     "windows_demo": 22,
+     "windows_exec": 20,
+     "delta8": 103.0,
+     "delta32": 23.3,
+     "exec_segments": 13,
+     "shortest_exec_seg": 19,
+     "skip8": 10
+    }
+   }
+  }
+ ]
+}

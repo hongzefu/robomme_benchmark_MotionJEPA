@@ -1,0 +1,2782 @@
+{
+ "task": "VideoUnmaskSwap",
+ "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+ "synthetic": true,
+ "records": [
+  {
+   "episode": 3,
+   "seed": 5300,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 3,
+    "to": 4,
+    "demo_from": 216,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 586,
+     "demo": 216,
+     "segments": [
+      {
+       "start": 0,
+       "len": 216,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 216,
+       "len": 117,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 333,
+       "len": 52,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 385,
+       "len": 195,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 580,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 586,
+     "demo": 216,
+     "windows": 34,
+     "windows_demo": 12,
+     "windows_exec": 22,
+     "delta8": 83.6,
+     "delta32": 18.9,
+     "exec_segments": 3,
+     "shortest_exec_seg": 52,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 634,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 117,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 381,
+       "len": 52,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 433,
+       "len": 195,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 628,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 634,
+     "demo": 264,
+     "windows": 37,
+     "windows_demo": 15,
+     "windows_exec": 22,
+     "delta8": 90.4,
+     "delta32": 20.4,
+     "exec_segments": 3,
+     "shortest_exec_seg": 52,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 7,
+   "seed": 5700,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 5,
+    "demo_from": 168,
+    "demo_to": 318
+   },
+   "hard": {
+    "item": {
+     "total": 421,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 105,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 321,
+       "len": 93,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 414,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 421,
+     "demo": 168,
+     "windows": 23,
+     "windows_demo": 9,
+     "windows_exec": 14,
+     "delta8": 60.0,
+     "delta32": 13.5,
+     "exec_segments": 3,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 571,
+     "demo": 318,
+     "segments": [
+      {
+       "start": 0,
+       "len": 318,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 105,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 471,
+       "len": 93,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 564,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 571,
+     "demo": 318,
+     "windows": 32,
+     "windows_demo": 18,
+     "windows_exec": 14,
+     "delta8": 81.4,
+     "delta32": 18.4,
+     "exec_segments": 3,
+     "shortest_exec_seg": 48,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 11,
+   "seed": 6100,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 4,
+    "demo_from": 168,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 410,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 99,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 267,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 308,
+       "len": 91,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 399,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 410,
+     "demo": 168,
+     "windows": 23,
+     "windows_demo": 9,
+     "windows_exec": 14,
+     "delta8": 58.4,
+     "delta32": 13.2,
+     "exec_segments": 3,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 506,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 99,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 404,
+       "len": 91,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 495,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 506,
+     "demo": 264,
+     "windows": 29,
+     "windows_demo": 15,
+     "windows_exec": 14,
+     "delta8": 72.1,
+     "delta32": 16.3,
+     "exec_segments": 3,
+     "shortest_exec_seg": 41,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 15,
+   "seed": 6500,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 3,
+    "to": 5,
+    "demo_from": 216,
+    "demo_to": 318
+   },
+   "hard": {
+    "item": {
+     "total": 483,
+     "demo": 216,
+     "segments": [
+      {
+       "start": 0,
+       "len": 216,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 216,
+       "len": 112,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 328,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 376,
+       "len": 100,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 476,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 483,
+     "demo": 216,
+     "windows": 27,
+     "windows_demo": 12,
+     "windows_exec": 15,
+     "delta8": 68.9,
+     "delta32": 15.5,
+     "exec_segments": 3,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 585,
+     "demo": 318,
+     "segments": [
+      {
+       "start": 0,
+       "len": 318,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 112,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 430,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 478,
+       "len": 100,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 578,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 585,
+     "demo": 318,
+     "windows": 33,
+     "windows_demo": 18,
+     "windows_exec": 15,
+     "delta8": 83.4,
+     "delta32": 18.8,
+     "exec_segments": 3,
+     "shortest_exec_seg": 48,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 19,
+   "seed": 6900,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 4,
+    "demo_from": 168,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 431,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 105,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 51,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 324,
+       "len": 96,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 420,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 431,
+     "demo": 168,
+     "windows": 24,
+     "windows_demo": 9,
+     "windows_exec": 15,
+     "delta8": 61.4,
+     "delta32": 13.9,
+     "exec_segments": 3,
+     "shortest_exec_seg": 51,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 527,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 105,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 369,
+       "len": 51,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 420,
+       "len": 96,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 516,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 527,
+     "demo": 264,
+     "windows": 30,
+     "windows_demo": 15,
+     "windows_exec": 15,
+     "delta8": 75.1,
+     "delta32": 17.0,
+     "exec_segments": 3,
+     "shortest_exec_seg": 51,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 23,
+   "seed": 7300,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 5,
+    "demo_from": 168,
+    "demo_to": 318
+   },
+   "hard": {
+    "item": {
+     "total": 437,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 105,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 51,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 324,
+       "len": 103,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 427,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 437,
+     "demo": 168,
+     "windows": 24,
+     "windows_demo": 9,
+     "windows_exec": 15,
+     "delta8": 62.3,
+     "delta32": 14.1,
+     "exec_segments": 3,
+     "shortest_exec_seg": 51,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 587,
+     "demo": 318,
+     "segments": [
+      {
+       "start": 0,
+       "len": 318,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 105,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 51,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 474,
+       "len": 103,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 577,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 587,
+     "demo": 318,
+     "windows": 33,
+     "windows_demo": 18,
+     "windows_exec": 15,
+     "delta8": 83.7,
+     "delta32": 18.9,
+     "exec_segments": 3,
+     "shortest_exec_seg": 51,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 27,
+   "seed": 7700,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 3,
+    "to": 4,
+    "demo_from": 216,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 457,
+     "demo": 216,
+     "segments": [
+      {
+       "start": 0,
+       "len": 216,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 216,
+       "len": 106,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 322,
+       "len": 47,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 369,
+       "len": 78,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 447,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 457,
+     "demo": 216,
+     "windows": 26,
+     "windows_demo": 12,
+     "windows_exec": 14,
+     "delta8": 65.1,
+     "delta32": 14.7,
+     "exec_segments": 3,
+     "shortest_exec_seg": 47,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 505,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 106,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 370,
+       "len": 47,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 417,
+       "len": 78,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 495,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 505,
+     "demo": 264,
+     "windows": 29,
+     "windows_demo": 15,
+     "windows_exec": 14,
+     "delta8": 72.0,
+     "delta32": 16.3,
+     "exec_segments": 3,
+     "shortest_exec_seg": 47,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 31,
+   "seed": 8100,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 5,
+    "demo_from": 168,
+    "demo_to": 318
+   },
+   "hard": {
+    "item": {
+     "total": 461,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 122,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 290,
+       "len": 55,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 345,
+       "len": 105,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 461,
+     "demo": 168,
+     "windows": 26,
+     "windows_demo": 9,
+     "windows_exec": 17,
+     "delta8": 65.7,
+     "delta32": 14.8,
+     "exec_segments": 3,
+     "shortest_exec_seg": 55,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 611,
+     "demo": 318,
+     "segments": [
+      {
+       "start": 0,
+       "len": 318,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 122,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 440,
+       "len": 55,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 495,
+       "len": 105,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 611,
+     "demo": 318,
+     "windows": 35,
+     "windows_demo": 18,
+     "windows_exec": 17,
+     "delta8": 87.1,
+     "delta32": 19.7,
+     "exec_segments": 3,
+     "shortest_exec_seg": 55,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 35,
+   "seed": 8500,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 4,
+    "demo_from": 168,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 427,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 102,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 270,
+       "len": 51,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 321,
+       "len": 94,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 415,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 427,
+     "demo": 168,
+     "windows": 24,
+     "windows_demo": 9,
+     "windows_exec": 15,
+     "delta8": 60.9,
+     "delta32": 13.7,
+     "exec_segments": 3,
+     "shortest_exec_seg": 51,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 523,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 102,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 366,
+       "len": 51,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 417,
+       "len": 94,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 511,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 523,
+     "demo": 264,
+     "windows": 30,
+     "windows_demo": 15,
+     "windows_exec": 15,
+     "delta8": 74.6,
+     "delta32": 16.8,
+     "exec_segments": 3,
+     "shortest_exec_seg": 51,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 39,
+   "seed": 8900,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 5,
+    "demo_from": 168,
+    "demo_to": 318
+   },
+   "hard": {
+    "item": {
+     "total": 428,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 100,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 268,
+       "len": 53,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 321,
+       "len": 99,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 420,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 428,
+     "demo": 168,
+     "windows": 24,
+     "windows_demo": 9,
+     "windows_exec": 15,
+     "delta8": 61.0,
+     "delta32": 13.8,
+     "exec_segments": 3,
+     "shortest_exec_seg": 53,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 578,
+     "demo": 318,
+     "segments": [
+      {
+       "start": 0,
+       "len": 318,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 100,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 418,
+       "len": 53,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 471,
+       "len": 99,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 570,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 578,
+     "demo": 318,
+     "windows": 33,
+     "windows_demo": 18,
+     "windows_exec": 15,
+     "delta8": 82.4,
+     "delta32": 18.6,
+     "exec_segments": 3,
+     "shortest_exec_seg": 53,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 43,
+   "seed": 9300,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 4,
+    "demo_from": 168,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 432,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 100,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 268,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 318,
+       "len": 104,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 422,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 432,
+     "demo": 168,
+     "windows": 24,
+     "windows_demo": 9,
+     "windows_exec": 15,
+     "delta8": 61.6,
+     "delta32": 13.9,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 528,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 100,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 364,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 414,
+       "len": 104,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 518,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 528,
+     "demo": 264,
+     "windows": 30,
+     "windows_demo": 15,
+     "windows_exec": 15,
+     "delta8": 75.3,
+     "delta32": 17.0,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 47,
+   "seed": 9700,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 3,
+    "to": 5,
+    "demo_from": 216,
+    "demo_to": 318
+   },
+   "hard": {
+    "item": {
+     "total": 500,
+     "demo": 216,
+     "segments": [
+      {
+       "start": 0,
+       "len": 216,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 216,
+       "len": 113,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 329,
+       "len": 52,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 381,
+       "len": 107,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 488,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 500,
+     "demo": 216,
+     "windows": 28,
+     "windows_demo": 12,
+     "windows_exec": 16,
+     "delta8": 71.3,
+     "delta32": 16.1,
+     "exec_segments": 3,
+     "shortest_exec_seg": 52,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 602,
+     "demo": 318,
+     "segments": [
+      {
+       "start": 0,
+       "len": 318,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 113,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 431,
+       "len": 52,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 483,
+       "len": 107,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 590,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 602,
+     "demo": 318,
+     "windows": 34,
+     "windows_demo": 18,
+     "windows_exec": 16,
+     "delta8": 85.9,
+     "delta32": 19.4,
+     "exec_segments": 3,
+     "shortest_exec_seg": 52,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 51,
+   "seed": 10100,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 3,
+    "to": 4,
+    "demo_from": 216,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 495,
+     "demo": 216,
+     "segments": [
+      {
+       "start": 0,
+       "len": 216,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 216,
+       "len": 127,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 343,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 393,
+       "len": 92,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 485,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 495,
+     "demo": 216,
+     "windows": 28,
+     "windows_demo": 12,
+     "windows_exec": 16,
+     "delta8": 70.6,
+     "delta32": 15.9,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 543,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 127,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 391,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 441,
+       "len": 92,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 533,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 543,
+     "demo": 264,
+     "windows": 31,
+     "windows_demo": 15,
+     "windows_exec": 16,
+     "delta8": 77.4,
+     "delta32": 17.5,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 55,
+   "seed": 10500,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 3,
+    "to": 5,
+    "demo_from": 216,
+    "demo_to": 318
+   },
+   "hard": {
+    "item": {
+     "total": 477,
+     "demo": 216,
+     "segments": [
+      {
+       "start": 0,
+       "len": 216,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 216,
+       "len": 111,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 327,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 368,
+       "len": 101,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 469,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 477,
+     "demo": 216,
+     "windows": 27,
+     "windows_demo": 12,
+     "windows_exec": 15,
+     "delta8": 68.0,
+     "delta32": 15.4,
+     "exec_segments": 3,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 579,
+     "demo": 318,
+     "segments": [
+      {
+       "start": 0,
+       "len": 318,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 111,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 429,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 470,
+       "len": 101,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 571,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 579,
+     "demo": 318,
+     "windows": 33,
+     "windows_demo": 18,
+     "windows_exec": 15,
+     "delta8": 82.6,
+     "delta32": 18.6,
+     "exec_segments": 3,
+     "shortest_exec_seg": 41,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 59,
+   "seed": 10900,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 3,
+    "to": 4,
+    "demo_from": 216,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 472,
+     "demo": 216,
+     "segments": [
+      {
+       "start": 0,
+       "len": 216,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 216,
+       "len": 103,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 319,
+       "len": 51,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 370,
+       "len": 90,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 460,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 472,
+     "demo": 216,
+     "windows": 26,
+     "windows_demo": 12,
+     "windows_exec": 14,
+     "delta8": 67.3,
+     "delta32": 15.2,
+     "exec_segments": 3,
+     "shortest_exec_seg": 51,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 520,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 103,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 367,
+       "len": 51,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 418,
+       "len": 90,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 508,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 520,
+     "demo": 264,
+     "windows": 29,
+     "windows_demo": 15,
+     "windows_exec": 14,
+     "delta8": 74.1,
+     "delta32": 16.7,
+     "exec_segments": 3,
+     "shortest_exec_seg": 51,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 63,
+   "seed": 11300,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 3,
+    "to": 5,
+    "demo_from": 216,
+    "demo_to": 318
+   },
+   "hard": {
+    "item": {
+     "total": 493,
+     "demo": 216,
+     "segments": [
+      {
+       "start": 0,
+       "len": 216,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 216,
+       "len": 121,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 337,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 387,
+       "len": 97,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 484,
+       "len": 9,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 493,
+     "demo": 216,
+     "windows": 28,
+     "windows_demo": 12,
+     "windows_exec": 16,
+     "delta8": 70.3,
+     "delta32": 15.9,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 595,
+     "demo": 318,
+     "segments": [
+      {
+       "start": 0,
+       "len": 318,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 121,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 439,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 489,
+       "len": 97,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 586,
+       "len": 9,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 595,
+     "demo": 318,
+     "windows": 34,
+     "windows_demo": 18,
+     "windows_exec": 16,
+     "delta8": 84.9,
+     "delta32": 19.2,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 67,
+   "seed": 11700,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 4,
+    "demo_from": 168,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 413,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 114,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 282,
+       "len": 47,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 329,
+       "len": 77,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 406,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 413,
+     "demo": 168,
+     "windows": 23,
+     "windows_demo": 9,
+     "windows_exec": 14,
+     "delta8": 58.9,
+     "delta32": 13.3,
+     "exec_segments": 3,
+     "shortest_exec_seg": 47,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 509,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 114,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 378,
+       "len": 47,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 425,
+       "len": 77,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 502,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 509,
+     "demo": 264,
+     "windows": 29,
+     "windows_demo": 15,
+     "windows_exec": 14,
+     "delta8": 72.6,
+     "delta32": 16.4,
+     "exec_segments": 3,
+     "shortest_exec_seg": 47,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 71,
+   "seed": 12100,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 3,
+    "to": 5,
+    "demo_from": 216,
+    "demo_to": 318
+   },
+   "hard": {
+    "item": {
+     "total": 479,
+     "demo": 216,
+     "segments": [
+      {
+       "start": 0,
+       "len": 216,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 216,
+       "len": 105,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 321,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 371,
+       "len": 96,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 467,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 479,
+     "demo": 216,
+     "windows": 27,
+     "windows_demo": 12,
+     "windows_exec": 15,
+     "delta8": 68.3,
+     "delta32": 15.4,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 581,
+     "demo": 318,
+     "segments": [
+      {
+       "start": 0,
+       "len": 318,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 105,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 473,
+       "len": 96,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 569,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 581,
+     "demo": 318,
+     "windows": 33,
+     "windows_demo": 18,
+     "windows_exec": 15,
+     "delta8": 82.9,
+     "delta32": 18.7,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 75,
+   "seed": 12500,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 4,
+    "demo_from": 168,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 433,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 109,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 277,
+       "len": 52,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 329,
+       "len": 98,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 427,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 433,
+     "demo": 168,
+     "windows": 24,
+     "windows_demo": 9,
+     "windows_exec": 15,
+     "delta8": 61.7,
+     "delta32": 13.9,
+     "exec_segments": 3,
+     "shortest_exec_seg": 52,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 529,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 109,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 373,
+       "len": 52,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 425,
+       "len": 98,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 523,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 529,
+     "demo": 264,
+     "windows": 30,
+     "windows_demo": 15,
+     "windows_exec": 15,
+     "delta8": 75.4,
+     "delta32": 17.0,
+     "exec_segments": 3,
+     "shortest_exec_seg": 52,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 79,
+   "seed": 12900,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 3,
+    "to": 5,
+    "demo_from": 216,
+    "demo_to": 318
+   },
+   "hard": {
+    "item": {
+     "total": 465,
+     "demo": 216,
+     "segments": [
+      {
+       "start": 0,
+       "len": 216,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 216,
+       "len": 106,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 322,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 370,
+       "len": 85,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 455,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 465,
+     "demo": 216,
+     "windows": 26,
+     "windows_demo": 12,
+     "windows_exec": 14,
+     "delta8": 66.3,
+     "delta32": 15.0,
+     "exec_segments": 3,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 567,
+     "demo": 318,
+     "segments": [
+      {
+       "start": 0,
+       "len": 318,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 106,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 424,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 472,
+       "len": 85,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 557,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 567,
+     "demo": 318,
+     "windows": 32,
+     "windows_demo": 18,
+     "windows_exec": 14,
+     "delta8": 80.9,
+     "delta32": 18.3,
+     "exec_segments": 3,
+     "shortest_exec_seg": 48,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 83,
+   "seed": 13300,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 3,
+    "to": 4,
+    "demo_from": 216,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 474,
+     "demo": 216,
+     "segments": [
+      {
+       "start": 0,
+       "len": 216,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 216,
+       "len": 103,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 319,
+       "len": 47,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 366,
+       "len": 101,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 467,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 474,
+     "demo": 216,
+     "windows": 27,
+     "windows_demo": 12,
+     "windows_exec": 15,
+     "delta8": 67.6,
+     "delta32": 15.3,
+     "exec_segments": 3,
+     "shortest_exec_seg": 47,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 522,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 103,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 367,
+       "len": 47,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 414,
+       "len": 101,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 515,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 522,
+     "demo": 264,
+     "windows": 30,
+     "windows_demo": 15,
+     "windows_exec": 15,
+     "delta8": 74.4,
+     "delta32": 16.8,
+     "exec_segments": 3,
+     "shortest_exec_seg": 47,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 87,
+   "seed": 13700,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 3,
+    "to": 5,
+    "demo_from": 216,
+    "demo_to": 318
+   },
+   "hard": {
+    "item": {
+     "total": 458,
+     "demo": 216,
+     "segments": [
+      {
+       "start": 0,
+       "len": 216,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 216,
+       "len": 100,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 316,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 366,
+       "len": 83,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 449,
+       "len": 9,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 458,
+     "demo": 216,
+     "windows": 26,
+     "windows_demo": 12,
+     "windows_exec": 14,
+     "delta8": 65.3,
+     "delta32": 14.7,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 560,
+     "demo": 318,
+     "segments": [
+      {
+       "start": 0,
+       "len": 318,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 100,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 418,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 468,
+       "len": 83,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 551,
+       "len": 9,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 560,
+     "demo": 318,
+     "windows": 32,
+     "windows_demo": 18,
+     "windows_exec": 14,
+     "delta8": 79.9,
+     "delta32": 18.0,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 91,
+   "seed": 14100,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 4,
+    "demo_from": 168,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 407,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 108,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 276,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 324,
+       "len": 76,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 407,
+     "demo": 168,
+     "windows": 22,
+     "windows_demo": 9,
+     "windows_exec": 13,
+     "delta8": 58.0,
+     "delta32": 13.1,
+     "exec_segments": 3,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 503,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 108,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 372,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 420,
+       "len": 76,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 496,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 503,
+     "demo": 264,
+     "windows": 28,
+     "windows_demo": 15,
+     "windows_exec": 13,
+     "delta8": 71.7,
+     "delta32": 16.2,
+     "exec_segments": 3,
+     "shortest_exec_seg": 48,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 95,
+   "seed": 14500,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 5,
+    "demo_from": 168,
+    "demo_to": 318
+   },
+   "hard": {
+    "item": {
+     "total": 427,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 108,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 276,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 326,
+       "len": 94,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 420,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 427,
+     "demo": 168,
+     "windows": 24,
+     "windows_demo": 9,
+     "windows_exec": 15,
+     "delta8": 60.9,
+     "delta32": 13.7,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 577,
+     "demo": 318,
+     "segments": [
+      {
+       "start": 0,
+       "len": 318,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 318,
+       "len": 108,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 426,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 476,
+       "len": 94,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 570,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 577,
+     "demo": 318,
+     "windows": 33,
+     "windows_demo": 18,
+     "windows_exec": 15,
+     "delta8": 82.3,
+     "delta32": 18.6,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 99,
+   "seed": 14900,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，demo static 每次 +50",
+    "from": 2,
+    "to": 4,
+    "demo_from": 168,
+    "demo_to": 264
+   },
+   "hard": {
+    "item": {
+     "total": 429,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 168,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 104,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 272,
+       "len": 47,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 319,
+       "len": 100,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 419,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 429,
+     "demo": 168,
+     "windows": 24,
+     "windows_demo": 9,
+     "windows_exec": 15,
+     "delta8": 61.1,
+     "delta32": 13.8,
+     "exec_segments": 3,
+     "shortest_exec_seg": 47,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 525,
+     "demo": 264,
+     "segments": [
+      {
+       "start": 0,
+       "len": 264,
+       "text": "static",
+       "demo": true
+      },
+      {
+       "start": 264,
+       "len": 104,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 368,
+       "len": 47,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 415,
+       "len": 100,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 515,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 525,
+     "demo": 264,
+     "windows": 30,
+     "windows_demo": 15,
+     "windows_exec": 15,
+     "delta8": 74.9,
+     "delta32": 16.9,
+     "exec_segments": 3,
+     "shortest_exec_seg": 47,
+     "skip8": 0
+    }
+   }
+  }
+ ]
+}

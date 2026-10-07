@@ -1,0 +1,4114 @@
+{
+ "task": "StopCube",
+ "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+ "synthetic": true,
+ "records": [
+  {
+   "episode": 3,
+   "seed": 2300,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 4,
+    "to_static_segments": 9,
+    "k_to": 8,
+    "final": 870
+   },
+   "hard": {
+    "item": {
+     "total": 453,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 54,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 54,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 102,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 204,
+       "len": 96,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 90,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 390,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 418,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 453,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.6,
+     "delta32": 14.6,
+     "exec_segments": 6,
+     "shortest_exec_seg": 28,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 933,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 54,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 54,
+       "len": 46,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 70,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 870,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 898,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 933,
+     "demo": 0,
+     "windows": 57,
+     "windows_demo": 0,
+     "windows_exec": 57,
+     "delta8": 133.1,
+     "delta32": 30.1,
+     "exec_segments": 11,
+     "shortest_exec_seg": 28,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 7,
+   "seed": 2700,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 4,
+    "to_static_segments": 10,
+    "k_to": 9,
+    "final": 990
+   },
+   "hard": {
+    "item": {
+     "total": 406,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 57,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 57,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 105,
+       "len": 96,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 201,
+       "len": 102,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 303,
+       "len": 30,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 333,
+       "len": 30,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 43,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 406,
+     "demo": 0,
+     "windows": 24,
+     "windows_demo": 0,
+     "windows_exec": 24,
+     "delta8": 57.9,
+     "delta32": 13.1,
+     "exec_segments": 6,
+     "shortest_exec_seg": 30,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1063,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 57,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 57,
+       "len": 43,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 90,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 990,
+       "len": 30,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1020,
+       "len": 43,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1063,
+     "demo": 0,
+     "windows": 65,
+     "windows_demo": 0,
+     "windows_exec": 65,
+     "delta8": 151.7,
+     "delta32": 34.3,
+     "exec_segments": 12,
+     "shortest_exec_seg": 30,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 11,
+   "seed": 3100,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 3,
+    "to_static_segments": 12,
+    "k_to": 10,
+    "final": 1110
+   },
+   "hard": {
+    "item": {
+     "total": 331,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 54,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 54,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 102,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 204,
+       "len": 66,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 270,
+       "len": 27,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 297,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 331,
+     "demo": 0,
+     "windows": 19,
+     "windows_demo": 0,
+     "windows_exec": 19,
+     "delta8": 47.1,
+     "delta32": 10.6,
+     "exec_segments": 5,
+     "shortest_exec_seg": 27,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1171,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 54,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 54,
+       "len": 46,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1000,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1100,
+       "len": 10,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1110,
+       "len": 27,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1137,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1171,
+     "demo": 0,
+     "windows": 72,
+     "windows_demo": 0,
+     "windows_exec": 72,
+     "delta8": 167.1,
+     "delta32": 37.7,
+     "exec_segments": 14,
+     "shortest_exec_seg": 10,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 15,
+   "seed": 3500,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 2,
+    "to_static_segments": 9,
+    "k_to": 8,
+    "final": 870
+   },
+   "hard": {
+    "item": {
+     "total": 227,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 58,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 58,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 54,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 154,
+       "len": 30,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 184,
+       "len": 43,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 227,
+     "demo": 0,
+     "windows": 13,
+     "windows_demo": 0,
+     "windows_exec": 13,
+     "delta8": 32.3,
+     "delta32": 7.3,
+     "exec_segments": 4,
+     "shortest_exec_seg": 30,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 943,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 58,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 58,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 70,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 870,
+       "len": 30,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 43,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 943,
+     "demo": 0,
+     "windows": 57,
+     "windows_demo": 0,
+     "windows_exec": 57,
+     "delta8": 134.6,
+     "delta32": 30.4,
+     "exec_segments": 11,
+     "shortest_exec_seg": 30,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 19,
+   "seed": 3900,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 4,
+    "to_static_segments": 10,
+    "k_to": 9,
+    "final": 990
+   },
+   "hard": {
+    "item": {
+     "total": 398,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 52,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 52,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 102,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 202,
+       "len": 102,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 304,
+       "len": 30,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 334,
+       "len": 27,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 361,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 398,
+     "demo": 0,
+     "windows": 23,
+     "windows_demo": 0,
+     "windows_exec": 23,
+     "delta8": 56.7,
+     "delta32": 12.8,
+     "exec_segments": 6,
+     "shortest_exec_seg": 27,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1054,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 52,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 52,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 90,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 990,
+       "len": 27,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1017,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1054,
+     "demo": 0,
+     "windows": 64,
+     "windows_demo": 0,
+     "windows_exec": 64,
+     "delta8": 150.4,
+     "delta32": 34.0,
+     "exec_segments": 12,
+     "shortest_exec_seg": 27,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 23,
+   "seed": 4300,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 3,
+    "to_static_segments": 12,
+    "k_to": 10,
+    "final": 1110
+   },
+   "hard": {
+    "item": {
+     "total": 311,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 57,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 57,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 105,
+       "len": 96,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 201,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 243,
+       "len": 30,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 273,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 311,
+     "demo": 0,
+     "windows": 18,
+     "windows_demo": 0,
+     "windows_exec": 18,
+     "delta8": 44.3,
+     "delta32": 10.0,
+     "exec_segments": 5,
+     "shortest_exec_seg": 30,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1178,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 57,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 57,
+       "len": 43,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1000,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1100,
+       "len": 10,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1110,
+       "len": 30,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1140,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1178,
+     "demo": 0,
+     "windows": 72,
+     "windows_demo": 0,
+     "windows_exec": 72,
+     "delta8": 168.1,
+     "delta32": 38.0,
+     "exec_segments": 14,
+     "shortest_exec_seg": 10,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 27,
+   "seed": 4700,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 2,
+    "to_static_segments": 9,
+    "k_to": 8,
+    "final": 870
+   },
+   "hard": {
+    "item": {
+     "total": 242,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 57,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 57,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 105,
+       "len": 78,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 183,
+       "len": 27,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 210,
+       "len": 32,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 242,
+     "demo": 0,
+     "windows": 14,
+     "windows_demo": 0,
+     "windows_exec": 14,
+     "delta8": 34.4,
+     "delta32": 7.8,
+     "exec_segments": 4,
+     "shortest_exec_seg": 27,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 929,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 57,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 57,
+       "len": 43,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 70,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 870,
+       "len": 27,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 897,
+       "len": 32,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 929,
+     "demo": 0,
+     "windows": 57,
+     "windows_demo": 0,
+     "windows_exec": 57,
+     "delta8": 132.6,
+     "delta32": 29.9,
+     "exec_segments": 11,
+     "shortest_exec_seg": 27,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 31,
+   "seed": 5100,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 3,
+    "to_static_segments": 10,
+    "k_to": 9,
+    "final": 990
+   },
+   "hard": {
+    "item": {
+     "total": 309,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 58,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 58,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 102,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 202,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 250,
+       "len": 27,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 277,
+       "len": 32,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 309,
+     "demo": 0,
+     "windows": 18,
+     "windows_demo": 0,
+     "windows_exec": 18,
+     "delta8": 44.0,
+     "delta32": 9.9,
+     "exec_segments": 5,
+     "shortest_exec_seg": 27,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1049,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 58,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 58,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 90,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 990,
+       "len": 27,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1017,
+       "len": 32,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1049,
+     "demo": 0,
+     "windows": 64,
+     "windows_demo": 0,
+     "windows_exec": 64,
+     "delta8": 149.7,
+     "delta32": 33.8,
+     "exec_segments": 12,
+     "shortest_exec_seg": 27,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 35,
+   "seed": 5500,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 2,
+    "to_static_segments": 12,
+    "k_to": 10,
+    "final": 1110
+   },
+   "hard": {
+    "item": {
+     "total": 191,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 57,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 57,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 105,
+       "len": 18,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 123,
+       "len": 30,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 153,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 191,
+     "demo": 0,
+     "windows": 10,
+     "windows_demo": 0,
+     "windows_exec": 10,
+     "delta8": 27.1,
+     "delta32": 6.1,
+     "exec_segments": 4,
+     "shortest_exec_seg": 18,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1178,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 57,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 57,
+       "len": 43,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1000,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1100,
+       "len": 10,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1110,
+       "len": 30,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1140,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1178,
+     "demo": 0,
+     "windows": 72,
+     "windows_demo": 0,
+     "windows_exec": 72,
+     "delta8": 168.1,
+     "delta32": 38.0,
+     "exec_segments": 14,
+     "shortest_exec_seg": 10,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 39,
+   "seed": 5900,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 3,
+    "to_static_segments": 9,
+    "k_to": 8,
+    "final": 870
+   },
+   "hard": {
+    "item": {
+     "total": 338,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 55,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 55,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 103,
+       "len": 102,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 205,
+       "len": 66,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 271,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 299,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 338,
+     "demo": 0,
+     "windows": 20,
+     "windows_demo": 0,
+     "windows_exec": 20,
+     "delta8": 48.1,
+     "delta32": 10.9,
+     "exec_segments": 5,
+     "shortest_exec_seg": 28,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 937,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 55,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 55,
+       "len": 45,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 70,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 870,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 898,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 937,
+     "demo": 0,
+     "windows": 57,
+     "windows_demo": 0,
+     "windows_exec": 57,
+     "delta8": 133.7,
+     "delta32": 30.2,
+     "exec_segments": 11,
+     "shortest_exec_seg": 28,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 43,
+   "seed": 6300,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 4,
+    "to_static_segments": 10,
+    "k_to": 9,
+    "final": 990
+   },
+   "hard": {
+    "item": {
+     "total": 456,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 54,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 54,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 102,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 204,
+       "len": 96,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 90,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 390,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 418,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 456,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.0,
+     "delta32": 14.7,
+     "exec_segments": 6,
+     "shortest_exec_seg": 28,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1056,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 54,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 54,
+       "len": 46,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 90,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 990,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1018,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1056,
+     "demo": 0,
+     "windows": 64,
+     "windows_demo": 0,
+     "windows_exec": 64,
+     "delta8": 150.7,
+     "delta32": 34.0,
+     "exec_segments": 12,
+     "shortest_exec_seg": 28,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 47,
+   "seed": 6700,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 1,
+    "to_static_segments": 12,
+    "k_to": 10,
+    "final": 1110
+   },
+   "hard": {
+    "item": {
+     "total": 130,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 55,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 55,
+       "len": 6,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 61,
+       "len": 29,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 90,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 130,
+     "demo": 0,
+     "windows": 7,
+     "windows_demo": 0,
+     "windows_exec": 7,
+     "delta8": 18.4,
+     "delta32": 4.2,
+     "exec_segments": 3,
+     "shortest_exec_seg": 6,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1179,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 55,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 55,
+       "len": 45,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1000,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1100,
+       "len": 10,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1110,
+       "len": 29,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1139,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1179,
+     "demo": 0,
+     "windows": 72,
+     "windows_demo": 0,
+     "windows_exec": 72,
+     "delta8": 168.3,
+     "delta32": 38.0,
+     "exec_segments": 14,
+     "shortest_exec_seg": 10,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 51,
+   "seed": 7100,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 1,
+    "to_static_segments": 9,
+    "k_to": 8,
+    "final": 870
+   },
+   "hard": {
+    "item": {
+     "total": 158,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 53,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 53,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 95,
+       "len": 27,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 122,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 158,
+     "demo": 0,
+     "windows": 8,
+     "windows_demo": 0,
+     "windows_exec": 8,
+     "delta8": 22.4,
+     "delta32": 5.1,
+     "exec_segments": 3,
+     "shortest_exec_seg": 27,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 933,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 53,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 53,
+       "len": 47,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 70,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 870,
+       "len": 27,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 897,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 933,
+     "demo": 0,
+     "windows": 57,
+     "windows_demo": 0,
+     "windows_exec": 57,
+     "delta8": 133.1,
+     "delta32": 30.1,
+     "exec_segments": 11,
+     "shortest_exec_seg": 27,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 55,
+   "seed": 7500,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 1,
+    "to_static_segments": 10,
+    "k_to": 9,
+    "final": 990
+   },
+   "hard": {
+    "item": {
+     "total": 122,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 54,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 54,
+       "len": 6,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 60,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 88,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 122,
+     "demo": 0,
+     "windows": 6,
+     "windows_demo": 0,
+     "windows_exec": 6,
+     "delta8": 17.3,
+     "delta32": 3.9,
+     "exec_segments": 3,
+     "shortest_exec_seg": 6,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1052,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 54,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 54,
+       "len": 46,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 90,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 990,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1018,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1052,
+     "demo": 0,
+     "windows": 64,
+     "windows_demo": 0,
+     "windows_exec": 64,
+     "delta8": 150.1,
+     "delta32": 33.9,
+     "exec_segments": 12,
+     "shortest_exec_seg": 28,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 59,
+   "seed": 7900,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 2,
+    "to_static_segments": 12,
+    "k_to": 10,
+    "final": 1110
+   },
+   "hard": {
+    "item": {
+     "total": 235,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 60,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 60,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 72,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 174,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 202,
+       "len": 33,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 235,
+     "demo": 0,
+     "windows": 13,
+     "windows_demo": 0,
+     "windows_exec": 13,
+     "delta8": 33.4,
+     "delta32": 7.5,
+     "exec_segments": 4,
+     "shortest_exec_seg": 28,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1171,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 60,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 60,
+       "len": 40,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1000,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1100,
+       "len": 10,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1110,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1138,
+       "len": 33,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1171,
+     "demo": 0,
+     "windows": 72,
+     "windows_demo": 0,
+     "windows_exec": 72,
+     "delta8": 167.1,
+     "delta32": 37.7,
+     "exec_segments": 14,
+     "shortest_exec_seg": 10,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 63,
+   "seed": 8300,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 3,
+    "to_static_segments": 9,
+    "k_to": 8,
+    "final": 870
+   },
+   "hard": {
+    "item": {
+     "total": 310,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 56,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 56,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 104,
+       "len": 96,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 242,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 270,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 310,
+     "demo": 0,
+     "windows": 18,
+     "windows_demo": 0,
+     "windows_exec": 18,
+     "delta8": 44.1,
+     "delta32": 10.0,
+     "exec_segments": 5,
+     "shortest_exec_seg": 28,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 938,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 56,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 56,
+       "len": 44,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 70,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 870,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 898,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 938,
+     "demo": 0,
+     "windows": 57,
+     "windows_demo": 0,
+     "windows_exec": 57,
+     "delta8": 133.9,
+     "delta32": 30.2,
+     "exec_segments": 11,
+     "shortest_exec_seg": 28,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 67,
+   "seed": 8700,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 3,
+    "to_static_segments": 10,
+    "k_to": 9,
+    "final": 990
+   },
+   "hard": {
+    "item": {
+     "total": 318,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 56,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 56,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 104,
+       "len": 96,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 54,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 254,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 282,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 318,
+     "demo": 0,
+     "windows": 18,
+     "windows_demo": 0,
+     "windows_exec": 18,
+     "delta8": 45.3,
+     "delta32": 10.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 28,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1054,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 56,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 56,
+       "len": 44,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 90,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 990,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1018,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1054,
+     "demo": 0,
+     "windows": 64,
+     "windows_demo": 0,
+     "windows_exec": 64,
+     "delta8": 150.4,
+     "delta32": 34.0,
+     "exec_segments": 12,
+     "shortest_exec_seg": 28,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 71,
+   "seed": 9100,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 4,
+    "to_static_segments": 12,
+    "k_to": 10,
+    "final": 1110
+   },
+   "hard": {
+    "item": {
+     "total": 459,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 61,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 61,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 103,
+       "len": 102,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 205,
+       "len": 96,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 301,
+       "len": 90,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 391,
+       "len": 30,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 421,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 459,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.4,
+     "delta32": 14.8,
+     "exec_segments": 6,
+     "shortest_exec_seg": 30,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1178,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 61,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 61,
+       "len": 39,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1000,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1100,
+       "len": 10,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1110,
+       "len": 30,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1140,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1178,
+     "demo": 0,
+     "windows": 72,
+     "windows_demo": 0,
+     "windows_exec": 72,
+     "delta8": 168.1,
+     "delta32": 38.0,
+     "exec_segments": 14,
+     "shortest_exec_seg": 10,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 75,
+   "seed": 9500,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 2,
+    "to_static_segments": 9,
+    "k_to": 8,
+    "final": 870
+   },
+   "hard": {
+    "item": {
+     "total": 217,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 53,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 53,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 101,
+       "len": 54,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 155,
+       "len": 27,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 182,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 217,
+     "demo": 0,
+     "windows": 12,
+     "windows_demo": 0,
+     "windows_exec": 12,
+     "delta8": 30.9,
+     "delta32": 7.0,
+     "exec_segments": 4,
+     "shortest_exec_seg": 27,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 932,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 53,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 53,
+       "len": 47,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 70,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 870,
+       "len": 27,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 897,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 932,
+     "demo": 0,
+     "windows": 57,
+     "windows_demo": 0,
+     "windows_exec": 57,
+     "delta8": 133.0,
+     "delta32": 30.0,
+     "exec_segments": 11,
+     "shortest_exec_seg": 27,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 79,
+   "seed": 9900,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 4,
+    "to_static_segments": 10,
+    "k_to": 9,
+    "final": 990
+   },
+   "hard": {
+    "item": {
+     "total": 407,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 58,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 58,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 102,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 202,
+       "len": 102,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 304,
+       "len": 30,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 334,
+       "len": 30,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 364,
+       "len": 43,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 407,
+     "demo": 0,
+     "windows": 24,
+     "windows_demo": 0,
+     "windows_exec": 24,
+     "delta8": 58.0,
+     "delta32": 13.1,
+     "exec_segments": 6,
+     "shortest_exec_seg": 30,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1063,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 58,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 58,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 90,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 990,
+       "len": 30,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1020,
+       "len": 43,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1063,
+     "demo": 0,
+     "windows": 65,
+     "windows_demo": 0,
+     "windows_exec": 65,
+     "delta8": 151.7,
+     "delta32": 34.3,
+     "exec_segments": 12,
+     "shortest_exec_seg": 30,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 83,
+   "seed": 10300,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 2,
+    "to_static_segments": 12,
+    "k_to": 10,
+    "final": 1110
+   },
+   "hard": {
+    "item": {
+     "total": 241,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 60,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 60,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 72,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 174,
+       "len": 29,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 203,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 241,
+     "demo": 0,
+     "windows": 14,
+     "windows_demo": 0,
+     "windows_exec": 14,
+     "delta8": 34.3,
+     "delta32": 7.7,
+     "exec_segments": 4,
+     "shortest_exec_seg": 29,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1177,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 60,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 60,
+       "len": 40,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1000,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1100,
+       "len": 10,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1110,
+       "len": 29,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1139,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1177,
+     "demo": 0,
+     "windows": 72,
+     "windows_demo": 0,
+     "windows_exec": 72,
+     "delta8": 168.0,
+     "delta32": 37.9,
+     "exec_segments": 14,
+     "shortest_exec_seg": 10,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 87,
+   "seed": 10700,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 2,
+    "to_static_segments": 9,
+    "k_to": 8,
+    "final": 870
+   },
+   "hard": {
+    "item": {
+     "total": 237,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 54,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 54,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 72,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 174,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 202,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 237,
+     "demo": 0,
+     "windows": 13,
+     "windows_demo": 0,
+     "windows_exec": 13,
+     "delta8": 33.7,
+     "delta32": 7.6,
+     "exec_segments": 4,
+     "shortest_exec_seg": 28,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 933,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 54,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 54,
+       "len": 46,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 70,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 870,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 898,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 933,
+     "demo": 0,
+     "windows": 57,
+     "windows_demo": 0,
+     "windows_exec": 57,
+     "delta8": 133.1,
+     "delta32": 30.1,
+     "exec_segments": 11,
+     "shortest_exec_seg": 28,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 91,
+   "seed": 11100,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 1,
+    "to_static_segments": 10,
+    "k_to": 9,
+    "final": 990
+   },
+   "hard": {
+    "item": {
+     "total": 126,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 58,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 58,
+       "len": 6,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 64,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 92,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 126,
+     "demo": 0,
+     "windows": 6,
+     "windows_demo": 0,
+     "windows_exec": 6,
+     "delta8": 17.9,
+     "delta32": 4.0,
+     "exec_segments": 3,
+     "shortest_exec_seg": 6,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1052,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 58,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 58,
+       "len": 42,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 90,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 990,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1018,
+       "len": 34,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1052,
+     "demo": 0,
+     "windows": 64,
+     "windows_demo": 0,
+     "windows_exec": 64,
+     "delta8": 150.1,
+     "delta32": 33.9,
+     "exec_segments": 12,
+     "shortest_exec_seg": 28,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 95,
+   "seed": 11500,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 3,
+    "to_static_segments": 12,
+    "k_to": 10,
+    "final": 1110
+   },
+   "hard": {
+    "item": {
+     "total": 336,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 56,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 56,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 104,
+       "len": 96,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 72,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 272,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 336,
+     "demo": 0,
+     "windows": 19,
+     "windows_demo": 0,
+     "windows_exec": 19,
+     "delta8": 47.9,
+     "delta32": 10.8,
+     "exec_segments": 5,
+     "shortest_exec_seg": 28,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1174,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 56,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 56,
+       "len": 44,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1000,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1100,
+       "len": 10,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 1110,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 1138,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1174,
+     "demo": 0,
+     "windows": 72,
+     "windows_demo": 0,
+     "windows_exec": 72,
+     "delta8": 167.6,
+     "delta32": 37.8,
+     "exec_segments": 14,
+     "shortest_exec_seg": 10,
+     "skip8": 7
+    }
+   }
+  },
+  {
+   "episode": 99,
+   "seed": 11900,
+   "synthesis": {
+    "rule": "停止序号 [2,5] → [8,10]，间隔钉 120",
+    "from_static_segments": 2,
+    "to_static_segments": 9,
+    "k_to": 8,
+    "final": 870
+   },
+   "hard": {
+    "item": {
+     "total": 211,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 54,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 54,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 102,
+       "len": 48,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 150,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 178,
+       "len": 33,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 211,
+     "demo": 0,
+     "windows": 12,
+     "windows_demo": 0,
+     "windows_exec": 12,
+     "delta8": 30.0,
+     "delta32": 6.8,
+     "exec_segments": 4,
+     "shortest_exec_seg": 28,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 931,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 54,
+       "text": "move to the top of the button to prepare",
+       "demo": false
+      },
+      {
+       "start": 54,
+       "len": 46,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 100,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 500,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 600,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 100,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 800,
+       "len": 70,
+       "text": "remain static",
+       "demo": false
+      },
+      {
+       "start": 870,
+       "len": 28,
+       "text": "press the button to stop the cube on the target",
+       "demo": false
+      },
+      {
+       "start": 898,
+       "len": 33,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 931,
+     "demo": 0,
+     "windows": 57,
+     "windows_demo": 0,
+     "windows_exec": 57,
+     "delta8": 132.9,
+     "delta32": 30.0,
+     "exec_segments": 11,
+     "shortest_exec_seg": 28,
+     "skip8": 4
+    }
+   }
+  }
+ ]
+}

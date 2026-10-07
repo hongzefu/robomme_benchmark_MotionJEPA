@@ -1,0 +1,5169 @@
+{
+ "task": "PickXtimes",
+ "rule": "次数 [4,5] → [6,7]",
+ "synthetic": true,
+ "records": [
+  {
+   "episode": 3,
+   "seed": 1300,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 814,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 119,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 119,
+       "len": 88,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 207,
+       "len": 160,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 367,
+       "len": 67,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 434,
+       "len": 70,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 504,
+       "len": 67,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 571,
+       "len": 69,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 640,
+       "len": 66,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 706,
+       "len": 64,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 770,
+       "len": 44,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 814,
+     "demo": 0,
+     "windows": 49,
+     "windows_demo": 0,
+     "windows_exec": 49,
+     "delta8": 116.1,
+     "delta32": 26.2,
+     "exec_segments": 9,
+     "shortest_exec_seg": 64,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1248,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 119,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 119,
+       "len": 88,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 207,
+       "len": 160,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 367,
+       "len": 67,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 434,
+       "len": 70,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 504,
+       "len": 67,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 571,
+       "len": 69,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 640,
+       "len": 66,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 706,
+       "len": 119,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 825,
+       "len": 88,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 913,
+       "len": 160,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 1073,
+       "len": 67,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1140,
+       "len": 64,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1204,
+       "len": 44,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1248,
+     "demo": 0,
+     "windows": 76,
+     "windows_demo": 0,
+     "windows_exec": 76,
+     "delta8": 178.1,
+     "delta32": 40.2,
+     "exec_segments": 13,
+     "shortest_exec_seg": 64,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 7,
+   "seed": 1700,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 897,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 119,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 119,
+       "len": 103,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 222,
+       "len": 76,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 298,
+       "len": 71,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 369,
+       "len": 77,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 446,
+       "len": 66,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 512,
+       "len": 76,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 588,
+       "len": 66,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 654,
+       "len": 80,
+       "text": "pick up the green cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 734,
+       "len": 67,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 801,
+       "len": 59,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 860,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 897,
+     "demo": 0,
+     "windows": 55,
+     "windows_demo": 0,
+     "windows_exec": 55,
+     "delta8": 128.0,
+     "delta32": 28.9,
+     "exec_segments": 11,
+     "shortest_exec_seg": 59,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1266,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 119,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 119,
+       "len": 103,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 222,
+       "len": 76,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 298,
+       "len": 71,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 369,
+       "len": 77,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 446,
+       "len": 66,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 512,
+       "len": 76,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 588,
+       "len": 66,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 654,
+       "len": 80,
+       "text": "pick up the green cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 734,
+       "len": 67,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 801,
+       "len": 119,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 920,
+       "len": 103,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1023,
+       "len": 76,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 1099,
+       "len": 71,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1170,
+       "len": 59,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1229,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1266,
+     "demo": 0,
+     "windows": 78,
+     "windows_demo": 0,
+     "windows_exec": 78,
+     "delta8": 180.7,
+     "delta32": 40.8,
+     "exec_segments": 15,
+     "shortest_exec_seg": 59,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 11,
+   "seed": 2100,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 822,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 108,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 108,
+       "len": 80,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 188,
+       "len": 70,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 258,
+       "len": 68,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 326,
+       "len": 69,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 395,
+       "len": 56,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 451,
+       "len": 69,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 520,
+       "len": 68,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 588,
+       "len": 69,
+       "text": "pick up the green cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 657,
+       "len": 68,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 725,
+       "len": 60,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 785,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 822,
+     "demo": 0,
+     "windows": 50,
+     "windows_demo": 0,
+     "windows_exec": 50,
+     "delta8": 117.3,
+     "delta32": 26.5,
+     "exec_segments": 11,
+     "shortest_exec_seg": 56,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1148,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 108,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 108,
+       "len": 80,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 188,
+       "len": 70,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 258,
+       "len": 68,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 326,
+       "len": 69,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 395,
+       "len": 56,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 451,
+       "len": 69,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 520,
+       "len": 68,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 588,
+       "len": 69,
+       "text": "pick up the green cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 657,
+       "len": 68,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 725,
+       "len": 108,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 833,
+       "len": 80,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 913,
+       "len": 70,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 983,
+       "len": 68,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1051,
+       "len": 60,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1111,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1148,
+     "demo": 0,
+     "windows": 70,
+     "windows_demo": 0,
+     "windows_exec": 70,
+     "delta8": 163.9,
+     "delta32": 37.0,
+     "exec_segments": 15,
+     "shortest_exec_seg": 56,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 15,
+   "seed": 2500,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 691,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 114,
+       "len": 83,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 197,
+       "len": 74,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 271,
+       "len": 55,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 326,
+       "len": 74,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 54,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 454,
+       "len": 74,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 528,
+       "len": 54,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 582,
+       "len": 69,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 651,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 691,
+     "demo": 0,
+     "windows": 42,
+     "windows_demo": 0,
+     "windows_exec": 42,
+     "delta8": 98.6,
+     "delta32": 22.3,
+     "exec_segments": 9,
+     "shortest_exec_seg": 54,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1017,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 114,
+       "len": 83,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 197,
+       "len": 74,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 271,
+       "len": 55,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 326,
+       "len": 74,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 54,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 454,
+       "len": 74,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 528,
+       "len": 54,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 582,
+       "len": 114,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 696,
+       "len": 83,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 779,
+       "len": 74,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 853,
+       "len": 55,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 908,
+       "len": 69,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 977,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1017,
+     "demo": 0,
+     "windows": 62,
+     "windows_demo": 0,
+     "windows_exec": 62,
+     "delta8": 145.1,
+     "delta32": 32.8,
+     "exec_segments": 13,
+     "shortest_exec_seg": 54,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 19,
+   "seed": 2900,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 788,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 105,
+       "len": 70,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 175,
+       "len": 74,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 249,
+       "len": 53,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 74,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 376,
+       "len": 53,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 429,
+       "len": 74,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 503,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 557,
+       "len": 74,
+       "text": "pick up the red cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 631,
+       "len": 53,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 684,
+       "len": 65,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 749,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 788,
+     "demo": 0,
+     "windows": 48,
+     "windows_demo": 0,
+     "windows_exec": 48,
+     "delta8": 112.4,
+     "delta32": 25.4,
+     "exec_segments": 11,
+     "shortest_exec_seg": 53,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1090,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 105,
+       "len": 70,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 175,
+       "len": 74,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 249,
+       "len": 53,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 74,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 376,
+       "len": 53,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 429,
+       "len": 74,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 503,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 557,
+       "len": 74,
+       "text": "pick up the red cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 631,
+       "len": 53,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 684,
+       "len": 105,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 789,
+       "len": 70,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 859,
+       "len": 74,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 933,
+       "len": 53,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 986,
+       "len": 65,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1051,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1090,
+     "demo": 0,
+     "windows": 67,
+     "windows_demo": 0,
+     "windows_exec": 67,
+     "delta8": 155.6,
+     "delta32": 35.1,
+     "exec_segments": 15,
+     "shortest_exec_seg": 53,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 23,
+   "seed": 3300,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 813,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 112,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 112,
+       "len": 83,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 195,
+       "len": 75,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 270,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 324,
+       "len": 75,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 399,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 453,
+       "len": 74,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 527,
+       "len": 52,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 579,
+       "len": 74,
+       "text": "pick up the red cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 653,
+       "len": 52,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 705,
+       "len": 69,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 774,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 813,
+     "demo": 0,
+     "windows": 49,
+     "windows_demo": 0,
+     "windows_exec": 49,
+     "delta8": 116.0,
+     "delta32": 26.2,
+     "exec_segments": 11,
+     "shortest_exec_seg": 52,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1137,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 112,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 112,
+       "len": 83,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 195,
+       "len": 75,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 270,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 324,
+       "len": 75,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 399,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 453,
+       "len": 74,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 527,
+       "len": 52,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 579,
+       "len": 74,
+       "text": "pick up the red cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 653,
+       "len": 52,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 705,
+       "len": 112,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 817,
+       "len": 83,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 900,
+       "len": 75,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 975,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1029,
+       "len": 69,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1098,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1137,
+     "demo": 0,
+     "windows": 70,
+     "windows_demo": 0,
+     "windows_exec": 70,
+     "delta8": 162.3,
+     "delta32": 36.6,
+     "exec_segments": 15,
+     "shortest_exec_seg": 52,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 27,
+   "seed": 3700,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 1025,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 108,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 108,
+       "len": 111,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 219,
+       "len": 86,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 305,
+       "len": 82,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 387,
+       "len": 86,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 473,
+       "len": 82,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 555,
+       "len": 93,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 648,
+       "len": 80,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 728,
+       "len": 98,
+       "text": "pick up the blue cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 826,
+       "len": 91,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 917,
+       "len": 72,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 989,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1025,
+     "demo": 0,
+     "windows": 63,
+     "windows_demo": 0,
+     "windows_exec": 63,
+     "delta8": 146.3,
+     "delta32": 33.0,
+     "exec_segments": 11,
+     "shortest_exec_seg": 72,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1412,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 108,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 108,
+       "len": 111,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 219,
+       "len": 86,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 305,
+       "len": 82,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 387,
+       "len": 86,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 473,
+       "len": 82,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 555,
+       "len": 93,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 648,
+       "len": 80,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 728,
+       "len": 98,
+       "text": "pick up the blue cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 826,
+       "len": 91,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 917,
+       "len": 108,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 1025,
+       "len": 111,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1136,
+       "len": 86,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 1222,
+       "len": 82,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1304,
+       "len": 72,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1376,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1412,
+     "demo": 0,
+     "windows": 87,
+     "windows_demo": 0,
+     "windows_exec": 87,
+     "delta8": 201.6,
+     "delta32": 45.5,
+     "exec_segments": 15,
+     "shortest_exec_seg": 72,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 31,
+   "seed": 4100,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 686,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 114,
+       "len": 81,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 195,
+       "len": 75,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 270,
+       "len": 54,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 324,
+       "len": 77,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 401,
+       "len": 54,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 455,
+       "len": 76,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 531,
+       "len": 54,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 585,
+       "len": 66,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 651,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 686,
+     "demo": 0,
+     "windows": 41,
+     "windows_demo": 0,
+     "windows_exec": 41,
+     "delta8": 97.9,
+     "delta32": 22.1,
+     "exec_segments": 9,
+     "shortest_exec_seg": 54,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1010,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 114,
+       "len": 81,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 195,
+       "len": 75,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 270,
+       "len": 54,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 324,
+       "len": 77,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 401,
+       "len": 54,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 455,
+       "len": 76,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 531,
+       "len": 54,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 585,
+       "len": 114,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 699,
+       "len": 81,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 780,
+       "len": 75,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 855,
+       "len": 54,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 909,
+       "len": 66,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 975,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1010,
+     "demo": 0,
+     "windows": 62,
+     "windows_demo": 0,
+     "windows_exec": 62,
+     "delta8": 144.1,
+     "delta32": 32.5,
+     "exec_segments": 13,
+     "shortest_exec_seg": 54,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 35,
+   "seed": 4500,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 706,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 104,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 104,
+       "len": 91,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 195,
+       "len": 72,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 267,
+       "len": 68,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 335,
+       "len": 70,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 405,
+       "len": 67,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 472,
+       "len": 69,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 541,
+       "len": 68,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 609,
+       "len": 59,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 668,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 706,
+     "demo": 0,
+     "windows": 43,
+     "windows_demo": 0,
+     "windows_exec": 43,
+     "delta8": 100.7,
+     "delta32": 22.7,
+     "exec_segments": 9,
+     "shortest_exec_seg": 59,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1041,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 104,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 104,
+       "len": 91,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 195,
+       "len": 72,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 267,
+       "len": 68,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 335,
+       "len": 70,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 405,
+       "len": 67,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 472,
+       "len": 69,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 541,
+       "len": 68,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 609,
+       "len": 104,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 713,
+       "len": 91,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 804,
+       "len": 72,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 876,
+       "len": 68,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 944,
+       "len": 59,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1003,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1041,
+     "demo": 0,
+     "windows": 64,
+     "windows_demo": 0,
+     "windows_exec": 64,
+     "delta8": 148.6,
+     "delta32": 33.5,
+     "exec_segments": 13,
+     "shortest_exec_seg": 59,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 39,
+   "seed": 4900,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 812,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 112,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 112,
+       "len": 76,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 188,
+       "len": 76,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 264,
+       "len": 52,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 316,
+       "len": 76,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 392,
+       "len": 54,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 446,
+       "len": 76,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 522,
+       "len": 54,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 576,
+       "len": 76,
+       "text": "pick up the green cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 652,
+       "len": 54,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 706,
+       "len": 70,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 776,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 812,
+     "demo": 0,
+     "windows": 49,
+     "windows_demo": 0,
+     "windows_exec": 49,
+     "delta8": 115.9,
+     "delta32": 26.2,
+     "exec_segments": 11,
+     "shortest_exec_seg": 52,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1128,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 112,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 112,
+       "len": 76,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 188,
+       "len": 76,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 264,
+       "len": 52,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 316,
+       "len": 76,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 392,
+       "len": 54,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 446,
+       "len": 76,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 522,
+       "len": 54,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 576,
+       "len": 76,
+       "text": "pick up the green cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 652,
+       "len": 54,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 706,
+       "len": 112,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 818,
+       "len": 76,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 894,
+       "len": 76,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 970,
+       "len": 52,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1022,
+       "len": 70,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1092,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1128,
+     "demo": 0,
+     "windows": 69,
+     "windows_demo": 0,
+     "windows_exec": 69,
+     "delta8": 161.0,
+     "delta32": 36.4,
+     "exec_segments": 15,
+     "shortest_exec_seg": 52,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 43,
+   "seed": 5300,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 797,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 101,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 101,
+       "len": 79,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 180,
+       "len": 70,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 250,
+       "len": 60,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 310,
+       "len": 70,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 380,
+       "len": 59,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 439,
+       "len": 70,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 509,
+       "len": 61,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 570,
+       "len": 70,
+       "text": "pick up the blue cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 640,
+       "len": 60,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 59,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 759,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 797,
+     "demo": 0,
+     "windows": 48,
+     "windows_demo": 0,
+     "windows_exec": 48,
+     "delta8": 113.7,
+     "delta32": 25.7,
+     "exec_segments": 11,
+     "shortest_exec_seg": 59,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1107,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 101,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 101,
+       "len": 79,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 180,
+       "len": 70,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 250,
+       "len": 60,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 310,
+       "len": 70,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 380,
+       "len": 59,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 439,
+       "len": 70,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 509,
+       "len": 61,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 570,
+       "len": 70,
+       "text": "pick up the blue cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 640,
+       "len": 60,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 101,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 801,
+       "len": 79,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 880,
+       "len": 70,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 950,
+       "len": 60,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1010,
+       "len": 59,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1069,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1107,
+     "demo": 0,
+     "windows": 68,
+     "windows_demo": 0,
+     "windows_exec": 68,
+     "delta8": 158.0,
+     "delta32": 35.7,
+     "exec_segments": 15,
+     "shortest_exec_seg": 59,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 47,
+   "seed": 5700,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 703,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 112,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 112,
+       "len": 93,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 205,
+       "len": 70,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 275,
+       "len": 66,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 341,
+       "len": 70,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 411,
+       "len": 65,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 476,
+       "len": 71,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 547,
+       "len": 66,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 613,
+       "len": 54,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 667,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 703,
+     "demo": 0,
+     "windows": 42,
+     "windows_demo": 0,
+     "windows_exec": 42,
+     "delta8": 100.3,
+     "delta32": 22.6,
+     "exec_segments": 9,
+     "shortest_exec_seg": 54,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1044,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 112,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 112,
+       "len": 93,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 205,
+       "len": 70,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 275,
+       "len": 66,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 341,
+       "len": 70,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 411,
+       "len": 65,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 476,
+       "len": 71,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 547,
+       "len": 66,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 613,
+       "len": 112,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 725,
+       "len": 93,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 818,
+       "len": 70,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 888,
+       "len": 66,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 954,
+       "len": 54,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1008,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1044,
+     "demo": 0,
+     "windows": 64,
+     "windows_demo": 0,
+     "windows_exec": 64,
+     "delta8": 149.0,
+     "delta32": 33.6,
+     "exec_segments": 13,
+     "shortest_exec_seg": 54,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 51,
+   "seed": 6100,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 692,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 103,
+       "len": 80,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 183,
+       "len": 76,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 259,
+       "len": 53,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 312,
+       "len": 75,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 387,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 441,
+       "len": 76,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 517,
+       "len": 53,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 570,
+       "len": 84,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 654,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 692,
+     "demo": 0,
+     "windows": 42,
+     "windows_demo": 0,
+     "windows_exec": 42,
+     "delta8": 98.7,
+     "delta32": 22.3,
+     "exec_segments": 9,
+     "shortest_exec_seg": 53,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1004,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 103,
+       "len": 80,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 183,
+       "len": 76,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 259,
+       "len": 53,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 312,
+       "len": 75,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 387,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 441,
+       "len": 76,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 517,
+       "len": 53,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 570,
+       "len": 103,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 673,
+       "len": 80,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 753,
+       "len": 76,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 829,
+       "len": 53,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 882,
+       "len": 84,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 966,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1004,
+     "demo": 0,
+     "windows": 61,
+     "windows_demo": 0,
+     "windows_exec": 61,
+     "delta8": 143.3,
+     "delta32": 32.4,
+     "exec_segments": 13,
+     "shortest_exec_seg": 53,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 55,
+   "seed": 6500,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 841,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 101,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 101,
+       "len": 86,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 187,
+       "len": 76,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 263,
+       "len": 60,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 323,
+       "len": 76,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 399,
+       "len": 60,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 459,
+       "len": 73,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 532,
+       "len": 71,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 603,
+       "len": 73,
+       "text": "pick up the green cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 676,
+       "len": 69,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 745,
+       "len": 57,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 802,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 841,
+     "demo": 0,
+     "windows": 51,
+     "windows_demo": 0,
+     "windows_exec": 51,
+     "delta8": 120.0,
+     "delta32": 27.1,
+     "exec_segments": 11,
+     "shortest_exec_seg": 57,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1164,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 101,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 101,
+       "len": 86,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 187,
+       "len": 76,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 263,
+       "len": 60,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 323,
+       "len": 76,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 399,
+       "len": 60,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 459,
+       "len": 73,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 532,
+       "len": 71,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 603,
+       "len": 73,
+       "text": "pick up the green cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 676,
+       "len": 69,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 745,
+       "len": 101,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 846,
+       "len": 86,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 932,
+       "len": 76,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 1008,
+       "len": 60,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1068,
+       "len": 57,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1125,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1164,
+     "demo": 0,
+     "windows": 71,
+     "windows_demo": 0,
+     "windows_exec": 71,
+     "delta8": 166.1,
+     "delta32": 37.5,
+     "exec_segments": 15,
+     "shortest_exec_seg": 57,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 59,
+   "seed": 6900,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 720,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 126,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 126,
+       "len": 89,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 215,
+       "len": 78,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 293,
+       "len": 58,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 351,
+       "len": 78,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 429,
+       "len": 58,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 487,
+       "len": 78,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 565,
+       "len": 58,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 623,
+       "len": 60,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 683,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 720,
+     "demo": 0,
+     "windows": 43,
+     "windows_demo": 0,
+     "windows_exec": 43,
+     "delta8": 102.7,
+     "delta32": 23.2,
+     "exec_segments": 9,
+     "shortest_exec_seg": 58,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1071,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 126,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 126,
+       "len": 89,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 215,
+       "len": 78,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 293,
+       "len": 58,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 351,
+       "len": 78,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 429,
+       "len": 58,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 487,
+       "len": 78,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 565,
+       "len": 58,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 623,
+       "len": 126,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 749,
+       "len": 89,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 838,
+       "len": 78,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 916,
+       "len": 58,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 974,
+       "len": 60,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1034,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1071,
+     "demo": 0,
+     "windows": 65,
+     "windows_demo": 0,
+     "windows_exec": 65,
+     "delta8": 152.9,
+     "delta32": 34.5,
+     "exec_segments": 13,
+     "shortest_exec_seg": 58,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 63,
+   "seed": 7300,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 833,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 106,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 216,
+       "len": 84,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 80,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 380,
+       "len": 86,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 466,
+       "len": 85,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 551,
+       "len": 96,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 647,
+       "len": 89,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 736,
+       "len": 55,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 791,
+       "len": 42,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 833,
+     "demo": 0,
+     "windows": 51,
+     "windows_demo": 0,
+     "windows_exec": 51,
+     "delta8": 118.9,
+     "delta32": 26.8,
+     "exec_segments": 9,
+     "shortest_exec_seg": 55,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1213,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 106,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 216,
+       "len": 84,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 80,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 380,
+       "len": 86,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 466,
+       "len": 85,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 551,
+       "len": 96,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 647,
+       "len": 89,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 736,
+       "len": 110,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 846,
+       "len": 106,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 952,
+       "len": 84,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 1036,
+       "len": 80,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1116,
+       "len": 55,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1171,
+       "len": 42,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1213,
+     "demo": 0,
+     "windows": 74,
+     "windows_demo": 0,
+     "windows_exec": 74,
+     "delta8": 173.1,
+     "delta32": 39.1,
+     "exec_segments": 13,
+     "shortest_exec_seg": 55,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 67,
+   "seed": 7700,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 890,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 139,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 139,
+       "len": 103,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 242,
+       "len": 69,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 64,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 375,
+       "len": 69,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 444,
+       "len": 64,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 508,
+       "len": 71,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 579,
+       "len": 66,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 645,
+       "len": 69,
+       "text": "pick up the blue cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 714,
+       "len": 65,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 779,
+       "len": 71,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 850,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 890,
+     "demo": 0,
+     "windows": 54,
+     "windows_demo": 0,
+     "windows_exec": 54,
+     "delta8": 127.0,
+     "delta32": 28.7,
+     "exec_segments": 11,
+     "shortest_exec_seg": 64,
+     "skip8": 5
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1265,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 139,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 139,
+       "len": 103,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 242,
+       "len": 69,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 64,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 375,
+       "len": 69,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 444,
+       "len": 64,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 508,
+       "len": 71,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 579,
+       "len": 66,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 645,
+       "len": 69,
+       "text": "pick up the blue cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 714,
+       "len": 65,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 779,
+       "len": 139,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 918,
+       "len": 103,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1021,
+       "len": 69,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 1090,
+       "len": 64,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1154,
+       "len": 71,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1225,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1265,
+     "demo": 0,
+     "windows": 78,
+     "windows_demo": 0,
+     "windows_exec": 78,
+     "delta8": 180.6,
+     "delta32": 40.8,
+     "exec_segments": 15,
+     "shortest_exec_seg": 64,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 71,
+   "seed": 8100,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 824,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 116,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 116,
+       "len": 105,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 221,
+       "len": 82,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 303,
+       "len": 74,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 377,
+       "len": 89,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 466,
+       "len": 78,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 544,
+       "len": 86,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 630,
+       "len": 83,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 713,
+       "len": 74,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 787,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 824,
+     "demo": 0,
+     "windows": 50,
+     "windows_demo": 0,
+     "windows_exec": 50,
+     "delta8": 117.6,
+     "delta32": 26.5,
+     "exec_segments": 9,
+     "shortest_exec_seg": 74,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1201,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 116,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 116,
+       "len": 105,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 221,
+       "len": 82,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 303,
+       "len": 74,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 377,
+       "len": 89,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 466,
+       "len": 78,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 544,
+       "len": 86,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 630,
+       "len": 83,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 713,
+       "len": 116,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 829,
+       "len": 105,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 934,
+       "len": 82,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 1016,
+       "len": 74,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1090,
+       "len": 74,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1164,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1201,
+     "demo": 0,
+     "windows": 74,
+     "windows_demo": 0,
+     "windows_exec": 74,
+     "delta8": 171.4,
+     "delta32": 38.7,
+     "exec_segments": 13,
+     "shortest_exec_seg": 74,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 75,
+   "seed": 8500,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 715,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 113,
+       "len": 88,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 201,
+       "len": 71,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 272,
+       "len": 66,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 338,
+       "len": 69,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 407,
+       "len": 68,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 475,
+       "len": 71,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 546,
+       "len": 65,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 611,
+       "len": 65,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 676,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 715,
+     "demo": 0,
+     "windows": 43,
+     "windows_demo": 0,
+     "windows_exec": 43,
+     "delta8": 102.0,
+     "delta32": 23.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 65,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1053,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 113,
+       "len": 88,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 201,
+       "len": 71,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 272,
+       "len": 66,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 338,
+       "len": 69,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 407,
+       "len": 68,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 475,
+       "len": 71,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 546,
+       "len": 65,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 611,
+       "len": 113,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 724,
+       "len": 88,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 812,
+       "len": 71,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 883,
+       "len": 66,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 949,
+       "len": 65,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1014,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1053,
+     "demo": 0,
+     "windows": 64,
+     "windows_demo": 0,
+     "windows_exec": 64,
+     "delta8": 150.3,
+     "delta32": 33.9,
+     "exec_segments": 13,
+     "shortest_exec_seg": 65,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 79,
+   "seed": 8900,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 696,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 111,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 111,
+       "len": 84,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 195,
+       "len": 75,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 270,
+       "len": 65,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 335,
+       "len": 75,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 410,
+       "len": 63,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 473,
+       "len": 74,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 547,
+       "len": 63,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 610,
+       "len": 49,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 659,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 696,
+     "demo": 0,
+     "windows": 42,
+     "windows_demo": 0,
+     "windows_exec": 42,
+     "delta8": 99.3,
+     "delta32": 22.4,
+     "exec_segments": 9,
+     "shortest_exec_seg": 49,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1031,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 111,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 111,
+       "len": 84,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 195,
+       "len": 75,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 270,
+       "len": 65,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 335,
+       "len": 75,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 410,
+       "len": 63,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 473,
+       "len": 74,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 547,
+       "len": 63,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 610,
+       "len": 111,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 721,
+       "len": 84,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 805,
+       "len": 75,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 880,
+       "len": 65,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 945,
+       "len": 49,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 994,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1031,
+     "demo": 0,
+     "windows": 63,
+     "windows_demo": 0,
+     "windows_exec": 63,
+     "delta8": 147.1,
+     "delta32": 33.2,
+     "exec_segments": 13,
+     "shortest_exec_seg": 49,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 83,
+   "seed": 9300,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 4,
+    "to": 6,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 723,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 117,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 117,
+       "len": 88,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 205,
+       "len": 72,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 277,
+       "len": 67,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 344,
+       "len": 70,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 414,
+       "len": 65,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 479,
+       "len": 70,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 549,
+       "len": 66,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 615,
+       "len": 69,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 684,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 723,
+     "demo": 0,
+     "windows": 44,
+     "windows_demo": 0,
+     "windows_exec": 44,
+     "delta8": 103.1,
+     "delta32": 23.3,
+     "exec_segments": 9,
+     "shortest_exec_seg": 65,
+     "skip8": 3
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1067,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 117,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 117,
+       "len": 88,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 205,
+       "len": 72,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 277,
+       "len": 67,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 344,
+       "len": 70,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 414,
+       "len": 65,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 479,
+       "len": 70,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 549,
+       "len": 66,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 615,
+       "len": 117,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 732,
+       "len": 88,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 820,
+       "len": 72,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 892,
+       "len": 67,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 959,
+       "len": 69,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1028,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1067,
+     "demo": 0,
+     "windows": 65,
+     "windows_demo": 0,
+     "windows_exec": 65,
+     "delta8": 152.3,
+     "delta32": 34.4,
+     "exec_segments": 13,
+     "shortest_exec_seg": 65,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 87,
+   "seed": 9700,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 863,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 103,
+       "len": 98,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 201,
+       "len": 74,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 275,
+       "len": 68,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 343,
+       "len": 74,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 417,
+       "len": 68,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 485,
+       "len": 74,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 559,
+       "len": 67,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 626,
+       "len": 73,
+       "text": "pick up the blue cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 699,
+       "len": 65,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 764,
+       "len": 61,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 825,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 863,
+     "demo": 0,
+     "windows": 52,
+     "windows_demo": 0,
+     "windows_exec": 52,
+     "delta8": 123.1,
+     "delta32": 27.8,
+     "exec_segments": 11,
+     "shortest_exec_seg": 61,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1206,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 103,
+       "len": 98,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 201,
+       "len": 74,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 275,
+       "len": 68,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 343,
+       "len": 74,
+       "text": "pick up the blue cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 417,
+       "len": 68,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 485,
+       "len": 74,
+       "text": "pick up the blue cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 559,
+       "len": 67,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 626,
+       "len": 73,
+       "text": "pick up the blue cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 699,
+       "len": 65,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 764,
+       "len": 103,
+       "text": "pick up the blue cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 867,
+       "len": 98,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 965,
+       "len": 74,
+       "text": "pick up the blue cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 1039,
+       "len": 68,
+       "text": "place the blue cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1107,
+       "len": 61,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1168,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1206,
+     "demo": 0,
+     "windows": 74,
+     "windows_demo": 0,
+     "windows_exec": 74,
+     "delta8": 172.1,
+     "delta32": 38.9,
+     "exec_segments": 15,
+     "shortest_exec_seg": 61,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 91,
+   "seed": 10100,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 864,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 118,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 118,
+       "len": 89,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 207,
+       "len": 72,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 279,
+       "len": 71,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 73,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 69,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 492,
+       "len": 74,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 566,
+       "len": 69,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 635,
+       "len": 73,
+       "text": "pick up the red cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 708,
+       "len": 67,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 775,
+       "len": 52,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 827,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 864,
+     "demo": 0,
+     "windows": 52,
+     "windows_demo": 0,
+     "windows_exec": 52,
+     "delta8": 123.3,
+     "delta32": 27.8,
+     "exec_segments": 11,
+     "shortest_exec_seg": 52,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1214,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 118,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 118,
+       "len": 89,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 207,
+       "len": 72,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 279,
+       "len": 71,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 350,
+       "len": 73,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 69,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 492,
+       "len": 74,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 566,
+       "len": 69,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 635,
+       "len": 73,
+       "text": "pick up the red cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 708,
+       "len": 67,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 775,
+       "len": 118,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 893,
+       "len": 89,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 982,
+       "len": 72,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 1054,
+       "len": 71,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1125,
+       "len": 52,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1177,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1214,
+     "demo": 0,
+     "windows": 74,
+     "windows_demo": 0,
+     "windows_exec": 74,
+     "delta8": 173.3,
+     "delta32": 39.1,
+     "exec_segments": 15,
+     "shortest_exec_seg": 52,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 95,
+   "seed": 10500,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 807,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 106,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 106,
+       "len": 81,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 187,
+       "len": 75,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 262,
+       "len": 55,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 317,
+       "len": 75,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 392,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 446,
+       "len": 75,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 521,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 575,
+       "len": 75,
+       "text": "pick up the red cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 704,
+       "len": 64,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 768,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 807,
+     "demo": 0,
+     "windows": 49,
+     "windows_demo": 0,
+     "windows_exec": 49,
+     "delta8": 115.1,
+     "delta32": 26.0,
+     "exec_segments": 11,
+     "shortest_exec_seg": 54,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1124,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 106,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 106,
+       "len": 81,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 187,
+       "len": 75,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 262,
+       "len": 55,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 317,
+       "len": 75,
+       "text": "pick up the red cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 392,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 446,
+       "len": 75,
+       "text": "pick up the red cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 521,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 575,
+       "len": 75,
+       "text": "pick up the red cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 54,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 704,
+       "len": 106,
+       "text": "pick up the red cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 810,
+       "len": 81,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 891,
+       "len": 75,
+       "text": "pick up the red cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 966,
+       "len": 55,
+       "text": "place the red cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1021,
+       "len": 64,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1085,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1124,
+     "demo": 0,
+     "windows": 69,
+     "windows_demo": 0,
+     "windows_exec": 69,
+     "delta8": 160.4,
+     "delta32": 36.2,
+     "exec_segments": 15,
+     "shortest_exec_seg": 54,
+     "skip8": 8
+    }
+   }
+  },
+  {
+   "episode": 99,
+   "seed": 10900,
+   "synthesis": {
+    "rule": "次数 [4,5] → [6,7]",
+    "from": 5,
+    "to": 7,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 884,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 93,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 203,
+       "len": 77,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 280,
+       "len": 66,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 346,
+       "len": 82,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 428,
+       "len": 70,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 498,
+       "len": 78,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 576,
+       "len": 69,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 645,
+       "len": 81,
+       "text": "pick up the green cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 726,
+       "len": 72,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 798,
+       "len": 48,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 846,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 884,
+     "demo": 0,
+     "windows": 54,
+     "windows_demo": 0,
+     "windows_exec": 54,
+     "delta8": 126.1,
+     "delta32": 28.5,
+     "exec_segments": 11,
+     "shortest_exec_seg": 48,
+     "skip8": 4
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1230,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 93,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 203,
+       "len": 77,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 280,
+       "len": 66,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 346,
+       "len": 82,
+       "text": "pick up the green cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 428,
+       "len": 70,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 498,
+       "len": 78,
+       "text": "pick up the green cube for the fourth time",
+       "demo": false
+      },
+      {
+       "start": 576,
+       "len": 69,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 645,
+       "len": 81,
+       "text": "pick up the green cube for the fifth time",
+       "demo": false
+      },
+      {
+       "start": 726,
+       "len": 72,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 798,
+       "len": 110,
+       "text": "pick up the green cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 908,
+       "len": 93,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1001,
+       "len": 77,
+       "text": "pick up the green cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 1078,
+       "len": 66,
+       "text": "place the green cube onto the target",
+       "demo": false
+      },
+      {
+       "start": 1144,
+       "len": 48,
+       "text": "press the button to stop",
+       "demo": false
+      },
+      {
+       "start": 1192,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1230,
+     "demo": 0,
+     "windows": 75,
+     "windows_demo": 0,
+     "windows_exec": 75,
+     "delta8": 175.6,
+     "delta32": 39.6,
+     "exec_segments": 15,
+     "shortest_exec_seg": 48,
+     "skip8": 8
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,3032 @@
+{
+ "task": "ButtonUnmaskSwap",
+ "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+ "synthetic": true,
+ "records": [
+  {
+   "episode": 3,
+   "seed": 7300,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 555,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 121,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 121,
+       "len": 97,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 218,
+       "len": 198,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 416,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 464,
+       "len": 85,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 549,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 555,
+     "demo": 0,
+     "windows": 33,
+     "windows_demo": 0,
+     "windows_exec": 33,
+     "delta8": 79.1,
+     "delta32": 17.9,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 555,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 121,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 121,
+       "len": 97,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 218,
+       "len": 198,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 416,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 464,
+       "len": 85,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 549,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 555,
+     "demo": 0,
+     "windows": 33,
+     "windows_demo": 0,
+     "windows_exec": 33,
+     "delta8": 79.1,
+     "delta32": 17.9,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 7,
+   "seed": 7700,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 451,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 116,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 116,
+       "len": 93,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 100,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 309,
+       "len": 51,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 360,
+       "len": 85,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 445,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 451,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.3,
+     "delta32": 14.5,
+     "exec_segments": 5,
+     "shortest_exec_seg": 51,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 451,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 116,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 116,
+       "len": 93,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 100,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 309,
+       "len": 51,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 360,
+       "len": 85,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 445,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 451,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.3,
+     "delta32": 14.5,
+     "exec_segments": 5,
+     "shortest_exec_seg": 51,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 11,
+   "seed": 8100,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 454,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 109,
+       "len": 94,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 203,
+       "len": 98,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 301,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 349,
+       "len": 98,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 447,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 454,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.7,
+     "delta32": 14.6,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 454,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 109,
+       "len": 94,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 203,
+       "len": 98,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 301,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 349,
+       "len": 98,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 447,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 454,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.7,
+     "delta32": 14.6,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 15,
+   "seed": 8500,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 458,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 109,
+       "len": 95,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 204,
+       "len": 118,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 322,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 87,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 458,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.3,
+     "delta32": 14.7,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 458,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 109,
+       "len": 95,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 204,
+       "len": 118,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 322,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 87,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 458,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.3,
+     "delta32": 14.7,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 19,
+   "seed": 8900,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 451,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 94,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 112,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 321,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 362,
+       "len": 79,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 441,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 451,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.3,
+     "delta32": 14.5,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 451,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 94,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 112,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 321,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 362,
+       "len": 79,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 441,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 451,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.3,
+     "delta32": 14.5,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 23,
+   "seed": 9300,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 473,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 99,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 106,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 315,
+       "len": 49,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 364,
+       "len": 98,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 462,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 473,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 67.4,
+     "delta32": 15.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 49,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 473,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 99,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 106,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 315,
+       "len": 49,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 364,
+       "len": 98,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 462,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 473,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 67.4,
+     "delta32": 15.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 49,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 27,
+   "seed": 9700,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 447,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 90,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 205,
+       "len": 95,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 348,
+       "len": 93,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 441,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 447,
+     "demo": 0,
+     "windows": 26,
+     "windows_demo": 0,
+     "windows_exec": 26,
+     "delta8": 63.7,
+     "delta32": 14.4,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 447,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 90,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 205,
+       "len": 95,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 348,
+       "len": 93,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 441,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 447,
+     "demo": 0,
+     "windows": 26,
+     "windows_demo": 0,
+     "windows_exec": 26,
+     "delta8": 63.7,
+     "delta32": 14.4,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 31,
+   "seed": 10100,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 460,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 95,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 210,
+       "len": 102,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 312,
+       "len": 51,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 86,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 449,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 460,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.6,
+     "delta32": 14.8,
+     "exec_segments": 5,
+     "shortest_exec_seg": 51,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 460,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 95,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 210,
+       "len": 102,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 312,
+       "len": 51,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 86,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 449,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 460,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.6,
+     "delta32": 14.8,
+     "exec_segments": 5,
+     "shortest_exec_seg": 51,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 35,
+   "seed": 10500,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 472,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 117,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 117,
+       "len": 96,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 213,
+       "len": 109,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 322,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 100,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 463,
+       "len": 9,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 472,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 67.3,
+     "delta32": 15.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 472,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 117,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 117,
+       "len": 96,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 213,
+       "len": 109,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 322,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 100,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 463,
+       "len": 9,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 472,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 67.3,
+     "delta32": 15.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 39,
+   "seed": 10900,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 466,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 114,
+       "len": 92,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 206,
+       "len": 113,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 319,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 360,
+       "len": 95,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 455,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 466,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 66.4,
+     "delta32": 15.0,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 466,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 114,
+       "len": 92,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 206,
+       "len": 113,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 319,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 360,
+       "len": 95,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 455,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 466,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 66.4,
+     "delta32": 15.0,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 43,
+   "seed": 11300,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 463,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 118,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 118,
+       "len": 94,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 212,
+       "len": 110,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 322,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 93,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 456,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 463,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 66.0,
+     "delta32": 14.9,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 463,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 118,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 118,
+       "len": 94,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 212,
+       "len": 110,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 322,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 93,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 456,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 463,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 66.0,
+     "delta32": 14.9,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 47,
+   "seed": 11700,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 471,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 114,
+       "len": 99,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 213,
+       "len": 107,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 320,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 370,
+       "len": 94,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 464,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 471,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 67.1,
+     "delta32": 15.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 471,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 114,
+       "len": 99,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 213,
+       "len": 107,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 320,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 370,
+       "len": 94,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 464,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 471,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 67.1,
+     "delta32": 15.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 51,
+   "seed": 12100,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 456,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 99,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 111,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 320,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 361,
+       "len": 88,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 449,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 456,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.0,
+     "delta32": 14.7,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 456,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 99,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 111,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 320,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 361,
+       "len": 88,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 449,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 456,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.0,
+     "delta32": 14.7,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 55,
+   "seed": 12500,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 451,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 114,
+       "len": 93,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 207,
+       "len": 118,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 325,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 366,
+       "len": 79,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 445,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 451,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.3,
+     "delta32": 14.5,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 451,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 114,
+       "len": 93,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 207,
+       "len": 118,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 325,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 366,
+       "len": 79,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 445,
+       "len": 6,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 451,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.3,
+     "delta32": 14.5,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 1
+    }
+   }
+  },
+  {
+   "episode": 59,
+   "seed": 12900,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 460,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 91,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 206,
+       "len": 98,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 304,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 352,
+       "len": 101,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 453,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 460,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.6,
+     "delta32": 14.8,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 460,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 91,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 206,
+       "len": 98,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 304,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 352,
+       "len": 101,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 453,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 460,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.6,
+     "delta32": 14.8,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 63,
+   "seed": 13300,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 468,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 93,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 208,
+       "len": 116,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 324,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 365,
+       "len": 93,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 458,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 468,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 66.7,
+     "delta32": 15.1,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 468,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 93,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 208,
+       "len": 116,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 324,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 365,
+       "len": 93,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 458,
+       "len": 10,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 468,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 66.7,
+     "delta32": 15.1,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 67,
+   "seed": 13700,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 485,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 97,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 212,
+       "len": 128,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 340,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 381,
+       "len": 97,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 478,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 485,
+     "demo": 0,
+     "windows": 29,
+     "windows_demo": 0,
+     "windows_exec": 29,
+     "delta8": 69.1,
+     "delta32": 15.6,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 485,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 115,
+       "len": 97,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 212,
+       "len": 128,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 340,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 381,
+       "len": 97,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 478,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 485,
+     "demo": 0,
+     "windows": 29,
+     "windows_demo": 0,
+     "windows_exec": 29,
+     "delta8": 69.1,
+     "delta32": 15.6,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 71,
+   "seed": 14100,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 479,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 113,
+       "len": 92,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 205,
+       "len": 108,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 313,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 361,
+       "len": 106,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 467,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 479,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 68.3,
+     "delta32": 15.4,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 479,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 113,
+       "len": 92,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 205,
+       "len": 108,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 313,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 361,
+       "len": 106,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 467,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 479,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 68.3,
+     "delta32": 15.4,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 75,
+   "seed": 14500,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 461,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 109,
+       "len": 94,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 203,
+       "len": 99,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 352,
+       "len": 97,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 449,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 461,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.7,
+     "delta32": 14.8,
+     "exec_segments": 5,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 461,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 109,
+       "len": 94,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 203,
+       "len": 99,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 302,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 352,
+       "len": 97,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 449,
+       "len": 12,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 461,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 65.7,
+     "delta32": 14.8,
+     "exec_segments": 5,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 79,
+   "seed": 14900,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 473,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 99,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 123,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 332,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 373,
+       "len": 93,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 466,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 473,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 67.4,
+     "delta32": 15.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 473,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 99,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 123,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 332,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 373,
+       "len": 93,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 466,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 473,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 67.4,
+     "delta32": 15.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 83,
+   "seed": 15300,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 450,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 109,
+       "len": 99,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 208,
+       "len": 105,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 313,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 80,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 443,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 450,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.1,
+     "delta32": 14.5,
+     "exec_segments": 5,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 450,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 109,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 109,
+       "len": 99,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 208,
+       "len": 105,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 313,
+       "len": 50,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 363,
+       "len": 80,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 443,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 450,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.1,
+     "delta32": 14.5,
+     "exec_segments": 5,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 87,
+   "seed": 15700,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 443,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 118,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 118,
+       "len": 96,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 214,
+       "len": 97,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 359,
+       "len": 77,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 436,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 443,
+     "demo": 0,
+     "windows": 26,
+     "windows_demo": 0,
+     "windows_exec": 26,
+     "delta8": 63.1,
+     "delta32": 14.3,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 443,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 118,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 118,
+       "len": 96,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 214,
+       "len": 97,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 359,
+       "len": 77,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 436,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 443,
+     "demo": 0,
+     "windows": 26,
+     "windows_demo": 0,
+     "windows_exec": 26,
+     "delta8": 63.1,
+     "delta32": 14.3,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 91,
+   "seed": 16100,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 464,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 90,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 115,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 315,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 356,
+       "len": 97,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 453,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 464,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 66.1,
+     "delta32": 14.9,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 464,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 110,
+       "len": 90,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 200,
+       "len": 115,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 315,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 356,
+       "len": 97,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 453,
+       "len": 11,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 464,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 66.1,
+     "delta32": 14.9,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 95,
+   "seed": 16500,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 479,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 121,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 121,
+       "len": 88,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 118,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 327,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 375,
+       "len": 97,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 472,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 479,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 68.3,
+     "delta32": 15.4,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 479,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 121,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 121,
+       "len": 88,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 209,
+       "len": 118,
+       "text": "pick up the container that hides the red cube",
+       "demo": false
+      },
+      {
+       "start": 327,
+       "len": 48,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 375,
+       "len": 97,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 472,
+       "len": 7,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 479,
+     "demo": 0,
+     "windows": 28,
+     "windows_demo": 0,
+     "windows_exec": 28,
+     "delta8": 68.3,
+     "delta32": 15.4,
+     "exec_segments": 5,
+     "shortest_exec_seg": 48,
+     "skip8": 0
+    }
+   }
+  },
+  {
+   "episode": 99,
+   "seed": 16900,
+   "synthesis": {
+    "rule": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变",
+    "from": null,
+    "to": null
+   },
+   "hard": {
+    "item": {
+     "total": 453,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 117,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 117,
+       "len": 94,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 211,
+       "len": 114,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 325,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 366,
+       "len": 79,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 445,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 453,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.6,
+     "delta32": 14.6,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 453,
+     "demo": 0,
+     "segments": [
+      {
+       "start": 0,
+       "len": 117,
+       "text": "press the first button",
+       "demo": false
+      },
+      {
+       "start": 117,
+       "len": 94,
+       "text": "press the second button",
+       "demo": false
+      },
+      {
+       "start": 211,
+       "len": 114,
+       "text": "pick up the container that hides the green cube",
+       "demo": false
+      },
+      {
+       "start": 325,
+       "len": 41,
+       "text": "put down the container",
+       "demo": false
+      },
+      {
+       "start": 366,
+       "len": 79,
+       "text": "pick up the container that hides the blue cube",
+       "demo": false
+      },
+      {
+       "start": 445,
+       "len": 8,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 453,
+     "demo": 0,
+     "windows": 27,
+     "windows_demo": 0,
+     "windows_exec": 27,
+     "delta8": 64.6,
+     "delta32": 14.6,
+     "exec_segments": 5,
+     "shortest_exec_seg": 41,
+     "skip8": 1
+    }
+   }
+  }
+ ]
+}

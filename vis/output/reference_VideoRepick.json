@@ -1,0 +1,4365 @@
+{
+ "task": "VideoRepick",
+ "rule": "重抓 [1,3] → [4,5]",
+ "synthetic": true,
+ "records": [
+  {
+   "episode": 3,
+   "seed": 9301,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 3,
+    "to": 4,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 1027,
+     "demo": 214,
+     "segments": [
+      {
+       "start": 0,
+       "len": 142,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 142,
+       "len": 72,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 214,
+       "len": 142,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 356,
+       "len": 83,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 439,
+       "len": 98,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 537,
+       "len": 85,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 622,
+       "len": 216,
+       "text": "pick up the correct cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 838,
+       "len": 94,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 932,
+       "len": 53,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 985,
+       "len": 42,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1027,
+     "demo": 214,
+     "windows": 61,
+     "windows_demo": 12,
+     "windows_exec": 49,
+     "delta8": 146.6,
+     "delta32": 33.1,
+     "exec_segments": 7,
+     "shortest_exec_seg": 53,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1252,
+     "demo": 214,
+     "segments": [
+      {
+       "start": 0,
+       "len": 142,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 142,
+       "len": 72,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 214,
+       "len": 142,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 356,
+       "len": 83,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 439,
+       "len": 98,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 537,
+       "len": 85,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 622,
+       "len": 216,
+       "text": "pick up the correct cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 838,
+       "len": 94,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 932,
+       "len": 142,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 1074,
+       "len": 83,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 1157,
+       "len": 53,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 1210,
+       "len": 42,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1252,
+     "demo": 214,
+     "windows": 75,
+     "windows_demo": 12,
+     "windows_exec": 63,
+     "delta8": 178.7,
+     "delta32": 40.4,
+     "exec_segments": 9,
+     "shortest_exec_seg": 53,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 7,
+   "seed": 9700,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 3,
+    "to": 5,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 657,
+     "demo": 159,
+     "segments": [
+      {
+       "start": 0,
+       "len": 104,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 104,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 159,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 263,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 313,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 383,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 433,
+       "len": 71,
+       "text": "pick up the correct cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 504,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 554,
+       "len": 63,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 617,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 657,
+     "demo": 159,
+     "windows": 38,
+     "windows_demo": 8,
+     "windows_exec": 30,
+     "delta8": 93.7,
+     "delta32": 21.2,
+     "exec_segments": 7,
+     "shortest_exec_seg": 50,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 931,
+     "demo": 159,
+     "segments": [
+      {
+       "start": 0,
+       "len": 104,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 104,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 159,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 263,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 313,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 383,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 433,
+       "len": 71,
+       "text": "pick up the correct cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 504,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 554,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 658,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 708,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 778,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 828,
+       "len": 63,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 891,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 931,
+     "demo": 159,
+     "windows": 55,
+     "windows_demo": 8,
+     "windows_exec": 47,
+     "delta8": 132.9,
+     "delta32": 30.0,
+     "exec_segments": 11,
+     "shortest_exec_seg": 50,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 11,
+   "seed": 10102,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 1,
+    "to": 4,
+    "added_pairs": 3
+   },
+   "hard": {
+    "item": {
+     "total": 434,
+     "demo": 162,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 113,
+       "len": 49,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 162,
+       "len": 112,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 274,
+       "len": 59,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 333,
+       "len": 60,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 393,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 434,
+     "demo": 162,
+     "windows": 24,
+     "windows_demo": 9,
+     "windows_exec": 15,
+     "delta8": 61.9,
+     "delta32": 14.0,
+     "exec_segments": 3,
+     "shortest_exec_seg": 59,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 947,
+     "demo": 162,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 113,
+       "len": 49,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 162,
+       "len": 112,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 274,
+       "len": 59,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 333,
+       "len": 112,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 445,
+       "len": 59,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 504,
+       "len": 112,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 616,
+       "len": 59,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 675,
+       "len": 112,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 787,
+       "len": 59,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 846,
+       "len": 60,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 906,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 947,
+     "demo": 162,
+     "windows": 57,
+     "windows_demo": 9,
+     "windows_exec": 48,
+     "delta8": 135.1,
+     "delta32": 30.5,
+     "exec_segments": 9,
+     "shortest_exec_seg": 59,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 15,
+   "seed": 10500,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 1,
+    "to": 5,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 461,
+     "demo": 177,
+     "segments": [
+      {
+       "start": 0,
+       "len": 121,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 121,
+       "len": 56,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 177,
+       "len": 119,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 296,
+       "len": 65,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 361,
+       "len": 60,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 421,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 461,
+     "demo": 177,
+     "windows": 26,
+     "windows_demo": 10,
+     "windows_exec": 16,
+     "delta8": 65.7,
+     "delta32": 14.8,
+     "exec_segments": 3,
+     "shortest_exec_seg": 60,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1197,
+     "demo": 177,
+     "segments": [
+      {
+       "start": 0,
+       "len": 121,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 121,
+       "len": 56,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 177,
+       "len": 119,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 296,
+       "len": 65,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 361,
+       "len": 119,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 480,
+       "len": 65,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 545,
+       "len": 119,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 664,
+       "len": 65,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 729,
+       "len": 119,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 848,
+       "len": 65,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 913,
+       "len": 119,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 1032,
+       "len": 65,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 1097,
+       "len": 60,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 1157,
+       "len": 40,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1197,
+     "demo": 177,
+     "windows": 72,
+     "windows_demo": 10,
+     "windows_exec": 62,
+     "delta8": 170.9,
+     "delta32": 38.6,
+     "exec_segments": 11,
+     "shortest_exec_seg": 60,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 19,
+   "seed": 10902,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 2,
+    "to": 4,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 533,
+     "demo": 155,
+     "segments": [
+      {
+       "start": 0,
+       "len": 104,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 104,
+       "len": 51,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 155,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 259,
+       "len": 52,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 381,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 431,
+       "len": 61,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 492,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 533,
+     "demo": 155,
+     "windows": 30,
+     "windows_demo": 8,
+     "windows_exec": 22,
+     "delta8": 76.0,
+     "delta32": 17.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 50,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 809,
+     "demo": 155,
+     "segments": [
+      {
+       "start": 0,
+       "len": 104,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 104,
+       "len": 51,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 155,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 259,
+       "len": 52,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 311,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 381,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 431,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 535,
+       "len": 52,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 587,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 657,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 707,
+       "len": 61,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 768,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 809,
+     "demo": 155,
+     "windows": 47,
+     "windows_demo": 8,
+     "windows_exec": 39,
+     "delta8": 115.4,
+     "delta32": 26.1,
+     "exec_segments": 9,
+     "shortest_exec_seg": 50,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 23,
+   "seed": 11300,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 2,
+    "to": 5,
+    "added_pairs": 3
+   },
+   "hard": {
+    "item": {
+     "total": 565,
+     "demo": 169,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 114,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 169,
+       "len": 114,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 283,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 337,
+       "len": 72,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 409,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 463,
+       "len": 65,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 528,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 565,
+     "demo": 169,
+     "windows": 32,
+     "windows_demo": 9,
+     "windows_exec": 23,
+     "delta8": 80.6,
+     "delta32": 18.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 54,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1027,
+     "demo": 169,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 114,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 169,
+       "len": 114,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 283,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 337,
+       "len": 72,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 409,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 463,
+       "len": 114,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 577,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 631,
+       "len": 72,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 703,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 757,
+       "len": 114,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 871,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 925,
+       "len": 65,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 990,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1027,
+     "demo": 169,
+     "windows": 61,
+     "windows_demo": 9,
+     "windows_exec": 52,
+     "delta8": 146.6,
+     "delta32": 33.1,
+     "exec_segments": 11,
+     "shortest_exec_seg": 54,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 27,
+   "seed": 11700,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 1,
+    "to": 4,
+    "added_pairs": 3
+   },
+   "hard": {
+    "item": {
+     "total": 426,
+     "demo": 159,
+     "segments": [
+      {
+       "start": 0,
+       "len": 104,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 104,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 159,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 263,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 313,
+       "len": 72,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 385,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 426,
+     "demo": 159,
+     "windows": 23,
+     "windows_demo": 8,
+     "windows_exec": 15,
+     "delta8": 60.7,
+     "delta32": 13.7,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 888,
+     "demo": 159,
+     "segments": [
+      {
+       "start": 0,
+       "len": 104,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 104,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 159,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 263,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 313,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 417,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 467,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 571,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 621,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 725,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 775,
+       "len": 72,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 847,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 888,
+     "demo": 159,
+     "windows": 52,
+     "windows_demo": 8,
+     "windows_exec": 44,
+     "delta8": 126.7,
+     "delta32": 28.6,
+     "exec_segments": 9,
+     "shortest_exec_seg": 50,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 31,
+   "seed": 12100,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 3,
+    "to": 5,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 644,
+     "demo": 157,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 102,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 157,
+       "len": 102,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 259,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 309,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 379,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 429,
+       "len": 69,
+       "text": "pick up the correct cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 498,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 548,
+       "len": 61,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 609,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 644,
+     "demo": 157,
+     "windows": 37,
+     "windows_demo": 8,
+     "windows_exec": 29,
+     "delta8": 91.9,
+     "delta32": 20.7,
+     "exec_segments": 7,
+     "shortest_exec_seg": 50,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 916,
+     "demo": 157,
+     "segments": [
+      {
+       "start": 0,
+       "len": 102,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 102,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 157,
+       "len": 102,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 259,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 309,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 379,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 429,
+       "len": 69,
+       "text": "pick up the correct cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 498,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 548,
+       "len": 102,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 650,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 700,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 770,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 820,
+       "len": 61,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 881,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 916,
+     "demo": 157,
+     "windows": 54,
+     "windows_demo": 8,
+     "windows_exec": 46,
+     "delta8": 130.7,
+     "delta32": 29.5,
+     "exec_segments": 11,
+     "shortest_exec_seg": 50,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 35,
+   "seed": 12501,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 2,
+    "to": 4,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 640,
+     "demo": 196,
+     "segments": [
+      {
+       "start": 0,
+       "len": 130,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 130,
+       "len": 66,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 196,
+       "len": 133,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 329,
+       "len": 69,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 398,
+       "len": 90,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 488,
+       "len": 73,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 561,
+       "len": 44,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 605,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 640,
+     "demo": 196,
+     "windows": 37,
+     "windows_demo": 11,
+     "windows_exec": 26,
+     "delta8": 91.3,
+     "delta32": 20.6,
+     "exec_segments": 5,
+     "shortest_exec_seg": 44,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1005,
+     "demo": 196,
+     "segments": [
+      {
+       "start": 0,
+       "len": 130,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 130,
+       "len": 66,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 196,
+       "len": 133,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 329,
+       "len": 69,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 398,
+       "len": 90,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 488,
+       "len": 73,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 561,
+       "len": 133,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 694,
+       "len": 69,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 763,
+       "len": 90,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 853,
+       "len": 73,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 926,
+       "len": 44,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 970,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1005,
+     "demo": 196,
+     "windows": 60,
+     "windows_demo": 11,
+     "windows_exec": 49,
+     "delta8": 143.4,
+     "delta32": 32.4,
+     "exec_segments": 9,
+     "shortest_exec_seg": 44,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 39,
+   "seed": 12900,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 1,
+    "to": 5,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 445,
+     "demo": 158,
+     "segments": [
+      {
+       "start": 0,
+       "len": 107,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 107,
+       "len": 51,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 158,
+       "len": 114,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 272,
+       "len": 63,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 335,
+       "len": 71,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 406,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 445,
+     "demo": 158,
+     "windows": 24,
+     "windows_demo": 8,
+     "windows_exec": 16,
+     "delta8": 63.4,
+     "delta32": 14.3,
+     "exec_segments": 3,
+     "shortest_exec_seg": 63,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1153,
+     "demo": 158,
+     "segments": [
+      {
+       "start": 0,
+       "len": 107,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 107,
+       "len": 51,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 158,
+       "len": 114,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 272,
+       "len": 63,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 335,
+       "len": 114,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 449,
+       "len": 63,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 512,
+       "len": 114,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 626,
+       "len": 63,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 689,
+       "len": 114,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 803,
+       "len": 63,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 866,
+       "len": 114,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 980,
+       "len": 63,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 1043,
+       "len": 71,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 1114,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1153,
+     "demo": 158,
+     "windows": 69,
+     "windows_demo": 8,
+     "windows_exec": 61,
+     "delta8": 164.6,
+     "delta32": 37.2,
+     "exec_segments": 11,
+     "shortest_exec_seg": 63,
+     "skip8": 5
+    }
+   }
+  },
+  {
+   "episode": 43,
+   "seed": 13300,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 2,
+    "to": 4,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 574,
+     "demo": 170,
+     "segments": [
+      {
+       "start": 0,
+       "len": 116,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 116,
+       "len": 54,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 170,
+       "len": 115,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 285,
+       "len": 63,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 348,
+       "len": 72,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 420,
+       "len": 60,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 480,
+       "len": 57,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 537,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 574,
+     "demo": 170,
+     "windows": 33,
+     "windows_demo": 9,
+     "windows_exec": 24,
+     "delta8": 81.9,
+     "delta32": 18.5,
+     "exec_segments": 5,
+     "shortest_exec_seg": 57,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 884,
+     "demo": 170,
+     "segments": [
+      {
+       "start": 0,
+       "len": 116,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 116,
+       "len": 54,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 170,
+       "len": 115,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 285,
+       "len": 63,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 348,
+       "len": 72,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 420,
+       "len": 60,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 480,
+       "len": 115,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 595,
+       "len": 63,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 658,
+       "len": 72,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 730,
+       "len": 60,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 790,
+       "len": 57,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 847,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 884,
+     "demo": 170,
+     "windows": 52,
+     "windows_demo": 9,
+     "windows_exec": 43,
+     "delta8": 126.1,
+     "delta32": 28.5,
+     "exec_segments": 9,
+     "shortest_exec_seg": 57,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 47,
+   "seed": 13700,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 1,
+    "to": 5,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 405,
+     "demo": 149,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 105,
+       "len": 44,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 149,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 253,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 303,
+       "len": 67,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 370,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 405,
+     "demo": 149,
+     "windows": 22,
+     "windows_demo": 8,
+     "windows_exec": 14,
+     "delta8": 57.7,
+     "delta32": 13.0,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1021,
+     "demo": 149,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 105,
+       "len": 44,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 149,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 253,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 303,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 407,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 457,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 561,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 611,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 715,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 765,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 869,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 919,
+       "len": 67,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 986,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1021,
+     "demo": 149,
+     "windows": 61,
+     "windows_demo": 8,
+     "windows_exec": 53,
+     "delta8": 145.7,
+     "delta32": 32.9,
+     "exec_segments": 11,
+     "shortest_exec_seg": 50,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 51,
+   "seed": 14101,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 2,
+    "to": 4,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 536,
+     "demo": 161,
+     "segments": [
+      {
+       "start": 0,
+       "len": 106,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 106,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 161,
+       "len": 106,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 267,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 317,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 387,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 437,
+       "len": 62,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 499,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 536,
+     "demo": 161,
+     "windows": 31,
+     "windows_demo": 9,
+     "windows_exec": 22,
+     "delta8": 76.4,
+     "delta32": 17.3,
+     "exec_segments": 5,
+     "shortest_exec_seg": 50,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 812,
+     "demo": 161,
+     "segments": [
+      {
+       "start": 0,
+       "len": 106,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 106,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 161,
+       "len": 106,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 267,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 317,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 387,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 437,
+       "len": 106,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 543,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 593,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 663,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 713,
+       "len": 62,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 775,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 812,
+     "demo": 161,
+     "windows": 48,
+     "windows_demo": 9,
+     "windows_exec": 39,
+     "delta8": 115.9,
+     "delta32": 26.2,
+     "exec_segments": 9,
+     "shortest_exec_seg": 50,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 55,
+   "seed": 14500,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 1,
+    "to": 5,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 445,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 115,
+       "len": 53,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 121,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 289,
+       "len": 58,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 347,
+       "len": 59,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 406,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 445,
+     "demo": 168,
+     "windows": 25,
+     "windows_demo": 9,
+     "windows_exec": 16,
+     "delta8": 63.4,
+     "delta32": 14.3,
+     "exec_segments": 3,
+     "shortest_exec_seg": 58,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1161,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 115,
+       "len": 53,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 121,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 289,
+       "len": 58,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 347,
+       "len": 121,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 468,
+       "len": 58,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 526,
+       "len": 121,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 647,
+       "len": 58,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 705,
+       "len": 121,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 826,
+       "len": 58,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 884,
+       "len": 121,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 1005,
+       "len": 58,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 1063,
+       "len": 59,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 1122,
+       "len": 39,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1161,
+     "demo": 168,
+     "windows": 70,
+     "windows_demo": 9,
+     "windows_exec": 61,
+     "delta8": 165.7,
+     "delta32": 37.4,
+     "exec_segments": 11,
+     "shortest_exec_seg": 58,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 59,
+   "seed": 14900,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 1,
+    "to": 4,
+    "added_pairs": 3
+   },
+   "hard": {
+    "item": {
+     "total": 411,
+     "demo": 158,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 103,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 158,
+       "len": 102,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 260,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 310,
+       "len": 64,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 374,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 411,
+     "demo": 158,
+     "windows": 22,
+     "windows_demo": 8,
+     "windows_exec": 14,
+     "delta8": 58.6,
+     "delta32": 13.2,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 867,
+     "demo": 158,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 103,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 158,
+       "len": 102,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 260,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 310,
+       "len": 102,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 412,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 462,
+       "len": 102,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 564,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 614,
+       "len": 102,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 716,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 766,
+       "len": 64,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 830,
+       "len": 37,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 867,
+     "demo": 158,
+     "windows": 51,
+     "windows_demo": 8,
+     "windows_exec": 43,
+     "delta8": 123.7,
+     "delta32": 27.9,
+     "exec_segments": 9,
+     "shortest_exec_seg": 50,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 63,
+   "seed": 15300,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 2,
+    "to": 5,
+    "added_pairs": 3
+   },
+   "hard": {
+    "item": {
+     "total": 529,
+     "demo": 147,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 103,
+       "len": 44,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 147,
+       "len": 103,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 73,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 373,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 68,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 491,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 529,
+     "demo": 147,
+     "windows": 30,
+     "windows_demo": 8,
+     "windows_exec": 22,
+     "delta8": 75.4,
+     "delta32": 17.0,
+     "exec_segments": 5,
+     "shortest_exec_seg": 50,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 958,
+     "demo": 147,
+     "segments": [
+      {
+       "start": 0,
+       "len": 103,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 103,
+       "len": 44,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 147,
+       "len": 103,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 250,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 300,
+       "len": 73,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 373,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 103,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 526,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 576,
+       "len": 73,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 649,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 699,
+       "len": 103,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 802,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 852,
+       "len": 68,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 920,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 958,
+     "demo": 147,
+     "windows": 57,
+     "windows_demo": 8,
+     "windows_exec": 49,
+     "delta8": 136.7,
+     "delta32": 30.9,
+     "exec_segments": 11,
+     "shortest_exec_seg": 50,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 67,
+   "seed": 15700,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 2,
+    "to": 4,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 552,
+     "demo": 156,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 110,
+       "len": 46,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 156,
+       "len": 109,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 265,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 315,
+       "len": 71,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 386,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 436,
+       "len": 73,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 509,
+       "len": 43,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 552,
+     "demo": 156,
+     "windows": 31,
+     "windows_demo": 8,
+     "windows_exec": 23,
+     "delta8": 78.7,
+     "delta32": 17.8,
+     "exec_segments": 5,
+     "shortest_exec_seg": 50,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 832,
+     "demo": 156,
+     "segments": [
+      {
+       "start": 0,
+       "len": 110,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 110,
+       "len": 46,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 156,
+       "len": 109,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 265,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 315,
+       "len": 71,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 386,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 436,
+       "len": 109,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 545,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 595,
+       "len": 71,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 666,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 716,
+       "len": 73,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 789,
+       "len": 43,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 832,
+     "demo": 156,
+     "windows": 49,
+     "windows_demo": 8,
+     "windows_exec": 41,
+     "delta8": 118.7,
+     "delta32": 26.8,
+     "exec_segments": 9,
+     "shortest_exec_seg": 50,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 71,
+   "seed": 16100,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 2,
+    "to": 5,
+    "added_pairs": 3
+   },
+   "hard": {
+    "item": {
+     "total": 543,
+     "demo": 169,
+     "segments": [
+      {
+       "start": 0,
+       "len": 111,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 111,
+       "len": 58,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 169,
+       "len": 110,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 279,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 333,
+       "len": 73,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 406,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 460,
+       "len": 47,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 507,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 543,
+     "demo": 169,
+     "windows": 31,
+     "windows_demo": 9,
+     "windows_exec": 22,
+     "delta8": 77.4,
+     "delta32": 17.5,
+     "exec_segments": 5,
+     "shortest_exec_seg": 47,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 998,
+     "demo": 169,
+     "segments": [
+      {
+       "start": 0,
+       "len": 111,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 111,
+       "len": 58,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 169,
+       "len": 110,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 279,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 333,
+       "len": 73,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 406,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 460,
+       "len": 110,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 570,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 624,
+       "len": 73,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 697,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 751,
+       "len": 110,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 861,
+       "len": 54,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 915,
+       "len": 47,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 962,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 998,
+     "demo": 169,
+     "windows": 59,
+     "windows_demo": 9,
+     "windows_exec": 50,
+     "delta8": 142.4,
+     "delta32": 32.2,
+     "exec_segments": 11,
+     "shortest_exec_seg": 47,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 75,
+   "seed": 16501,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 2,
+    "to": 4,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 581,
+     "demo": 173,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 115,
+       "len": 58,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 173,
+       "len": 115,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 288,
+       "len": 56,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 344,
+       "len": 72,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 416,
+       "len": 64,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 480,
+       "len": 66,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 546,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 581,
+     "demo": 173,
+     "windows": 33,
+     "windows_demo": 9,
+     "windows_exec": 24,
+     "delta8": 82.9,
+     "delta32": 18.7,
+     "exec_segments": 5,
+     "shortest_exec_seg": 56,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 888,
+     "demo": 173,
+     "segments": [
+      {
+       "start": 0,
+       "len": 115,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 115,
+       "len": 58,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 173,
+       "len": 115,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 288,
+       "len": 56,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 344,
+       "len": 72,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 416,
+       "len": 64,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 480,
+       "len": 115,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 595,
+       "len": 56,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 651,
+       "len": 72,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 723,
+       "len": 64,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 787,
+       "len": 66,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 853,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 888,
+     "demo": 173,
+     "windows": 52,
+     "windows_demo": 9,
+     "windows_exec": 43,
+     "delta8": 126.7,
+     "delta32": 28.6,
+     "exec_segments": 9,
+     "shortest_exec_seg": 56,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 79,
+   "seed": 16900,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 3,
+    "to": 5,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 892,
+     "demo": 208,
+     "segments": [
+      {
+       "start": 0,
+       "len": 140,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 140,
+       "len": 68,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 208,
+       "len": 137,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 345,
+       "len": 78,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 97,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 520,
+       "len": 82,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 602,
+       "len": 103,
+       "text": "pick up the correct cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 705,
+       "len": 90,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 795,
+       "len": 56,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 851,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 892,
+     "demo": 208,
+     "windows": 52,
+     "windows_demo": 11,
+     "windows_exec": 41,
+     "delta8": 127.3,
+     "delta32": 28.7,
+     "exec_segments": 7,
+     "shortest_exec_seg": 56,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1286,
+     "demo": 208,
+     "segments": [
+      {
+       "start": 0,
+       "len": 140,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 140,
+       "len": 68,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 208,
+       "len": 137,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 345,
+       "len": 78,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 423,
+       "len": 97,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 520,
+       "len": 82,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 602,
+       "len": 103,
+       "text": "pick up the correct cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 705,
+       "len": 90,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 795,
+       "len": 137,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 932,
+       "len": 78,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 1010,
+       "len": 97,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 1107,
+       "len": 82,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 1189,
+       "len": 56,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 1245,
+       "len": 41,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1286,
+     "demo": 208,
+     "windows": 77,
+     "windows_demo": 11,
+     "windows_exec": 66,
+     "delta8": 183.6,
+     "delta32": 41.5,
+     "exec_segments": 11,
+     "shortest_exec_seg": 56,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 83,
+   "seed": 17300,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 2,
+    "to": 4,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 530,
+     "demo": 152,
+     "segments": [
+      {
+       "start": 0,
+       "len": 106,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 106,
+       "len": 46,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 152,
+       "len": 102,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 254,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 304,
+       "len": 71,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 375,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 425,
+       "len": 69,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 494,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 530,
+     "demo": 152,
+     "windows": 30,
+     "windows_demo": 8,
+     "windows_exec": 22,
+     "delta8": 75.6,
+     "delta32": 17.1,
+     "exec_segments": 5,
+     "shortest_exec_seg": 50,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 803,
+     "demo": 152,
+     "segments": [
+      {
+       "start": 0,
+       "len": 106,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 106,
+       "len": 46,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 152,
+       "len": 102,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 254,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 304,
+       "len": 71,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 375,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 425,
+       "len": 102,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 527,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 577,
+       "len": 71,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 648,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 698,
+       "len": 69,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 767,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 803,
+     "demo": 152,
+     "windows": 47,
+     "windows_demo": 8,
+     "windows_exec": 39,
+     "delta8": 114.6,
+     "delta32": 25.9,
+     "exec_segments": 9,
+     "shortest_exec_seg": 50,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 87,
+   "seed": 17700,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 2,
+    "to": 5,
+    "added_pairs": 3
+   },
+   "hard": {
+    "item": {
+     "total": 564,
+     "demo": 164,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 114,
+       "len": 50,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 164,
+       "len": 113,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 277,
+       "len": 55,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 332,
+       "len": 80,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 412,
+       "len": 55,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 467,
+       "len": 59,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 526,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 564,
+     "demo": 164,
+     "windows": 32,
+     "windows_demo": 9,
+     "windows_exec": 23,
+     "delta8": 80.4,
+     "delta32": 18.2,
+     "exec_segments": 5,
+     "shortest_exec_seg": 55,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1035,
+     "demo": 164,
+     "segments": [
+      {
+       "start": 0,
+       "len": 114,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 114,
+       "len": 50,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 164,
+       "len": 113,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 277,
+       "len": 55,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 332,
+       "len": 80,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 412,
+       "len": 55,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 467,
+       "len": 113,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 580,
+       "len": 55,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 635,
+       "len": 80,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 715,
+       "len": 55,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 770,
+       "len": 113,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 883,
+       "len": 55,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 938,
+       "len": 59,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 997,
+       "len": 38,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1035,
+     "demo": 164,
+     "windows": 62,
+     "windows_demo": 9,
+     "windows_exec": 53,
+     "delta8": 147.7,
+     "delta32": 33.4,
+     "exec_segments": 11,
+     "shortest_exec_seg": 55,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 91,
+   "seed": 18100,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 2,
+    "to": 4,
+    "added_pairs": 2
+   },
+   "hard": {
+    "item": {
+     "total": 556,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 113,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 112,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 280,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 330,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 71,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 521,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 556,
+     "demo": 168,
+     "windows": 32,
+     "windows_demo": 9,
+     "windows_exec": 23,
+     "delta8": 79.3,
+     "delta32": 17.9,
+     "exec_segments": 5,
+     "shortest_exec_seg": 50,
+     "skip8": 1
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 838,
+     "demo": 168,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 113,
+       "len": 55,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 168,
+       "len": 112,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 280,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 330,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 400,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 450,
+       "len": 112,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 562,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 612,
+       "len": 70,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 682,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 732,
+       "len": 71,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 803,
+       "len": 35,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 838,
+     "demo": 168,
+     "windows": 49,
+     "windows_demo": 9,
+     "windows_exec": 40,
+     "delta8": 119.6,
+     "delta32": 27.0,
+     "exec_segments": 9,
+     "shortest_exec_seg": 50,
+     "skip8": 4
+    }
+   }
+  },
+  {
+   "episode": 95,
+   "seed": 18500,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 1,
+    "to": 5,
+    "added_pairs": 4
+   },
+   "hard": {
+    "item": {
+     "total": 408,
+     "demo": 149,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 105,
+       "len": 44,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 149,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 253,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 303,
+       "len": 69,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 372,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 408,
+     "demo": 149,
+     "windows": 23,
+     "windows_demo": 8,
+     "windows_exec": 15,
+     "delta8": 58.1,
+     "delta32": 13.1,
+     "exec_segments": 3,
+     "shortest_exec_seg": 50,
+     "skip8": 0
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 1024,
+     "demo": 149,
+     "segments": [
+      {
+       "start": 0,
+       "len": 105,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 105,
+       "len": 44,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 149,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 253,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 303,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 407,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 457,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 561,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 611,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 715,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 765,
+       "len": 104,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 869,
+       "len": 50,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 919,
+       "len": 69,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 988,
+       "len": 36,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 1024,
+     "demo": 149,
+     "windows": 61,
+     "windows_demo": 8,
+     "windows_exec": 53,
+     "delta8": 146.1,
+     "delta32": 33.0,
+     "exec_segments": 11,
+     "shortest_exec_seg": 50,
+     "skip8": 6
+    }
+   }
+  },
+  {
+   "episode": 99,
+   "seed": 18900,
+   "synthesis": {
+    "rule": "重抓 [1,3] → [4,5]",
+    "from": 3,
+    "to": 4,
+    "added_pairs": 1
+   },
+   "hard": {
+    "item": {
+     "total": 711,
+     "demo": 174,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 113,
+       "len": 61,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 174,
+       "len": 113,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 287,
+       "len": 56,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 343,
+       "len": 74,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 417,
+       "len": 56,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 473,
+       "len": 74,
+       "text": "pick up the correct cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 547,
+       "len": 56,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 603,
+       "len": 65,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 668,
+       "len": 43,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 711,
+     "demo": 174,
+     "windows": 41,
+     "windows_demo": 9,
+     "windows_exec": 32,
+     "delta8": 101.4,
+     "delta32": 22.9,
+     "exec_segments": 7,
+     "shortest_exec_seg": 56,
+     "skip8": 2
+    }
+   },
+   "xhard1": {
+    "item": {
+     "total": 880,
+     "demo": 174,
+     "segments": [
+      {
+       "start": 0,
+       "len": 113,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 113,
+       "len": 61,
+       "text": "drop the cube on the table",
+       "demo": true
+      },
+      {
+       "start": 174,
+       "len": 113,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 287,
+       "len": 56,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 343,
+       "len": 74,
+       "text": "pick up the correct cube for the second time",
+       "demo": false
+      },
+      {
+       "start": 417,
+       "len": 56,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 473,
+       "len": 74,
+       "text": "pick up the correct cube for the third time",
+       "demo": false
+      },
+      {
+       "start": 547,
+       "len": 56,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 603,
+       "len": 113,
+       "text": "pick up the correct cube for the first time",
+       "demo": false
+      },
+      {
+       "start": 716,
+       "len": 56,
+       "text": "put it down",
+       "demo": false
+      },
+      {
+       "start": 772,
+       "len": 65,
+       "text": "press the button to finish",
+       "demo": false
+      },
+      {
+       "start": 837,
+       "len": 43,
+       "text": "All tasks completed",
+       "demo": false
+      }
+     ]
+    },
+    "stats": {
+     "T": 880,
+     "demo": 174,
+     "windows": 52,
+     "windows_demo": 9,
+     "windows_exec": 43,
+     "delta8": 125.6,
+     "delta32": 28.4,
+     "exec_segments": 9,
+     "shortest_exec_seg": 56,
+     "skip8": 4
+    }
+   }
+  }
+ ]
+}

@@ -290,25 +290,25 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 | 超出目标区 | BinFill、PickXtimes、VideoPlaceOrder | 1120～1300 | 68～78 | 官方 hard 本来就在 900 附近，「必须比 hard 更难」优先于「对齐 900」；区间下沿取 hard 上沿，和 newtask-v2 的分档习惯一致（hard 4–7 → xhard 8–10） |
 | 够不到目标区 | VideoUnmaskSwap、ButtonUnmaskSwap | 520～560 | 约 31 | 结构性短，swap 加到 5 次也只有这么长，但 8 帧硬性判据仍满足 |
 
-### 开工前先画一张合成参考数轴（用户 2026-10-06 提议）
+### 合成参考数轴（已做，独立于本计划，见根目录 `vis/`）
 
-上面的 T 与窗口数都是线性外推。在跑任何仿真之前，可以用**官方 hard 的现成数据**合成一版参考：`/data/hongzefu/data_0226/` 里每个任务 25 条 hard episode 都带 `is_subgoal_boundary` 与 `simple_subgoal`，能切出每个子任务段的实际长度。把每个任务的「重复单元」按 xhard1 的次数复制粘贴（复制该 episode 自己的段，循环取），拼成一条合成时间轴，再按 `scripts/patternlock-routestick-params/plot_sampling_windows.py` 的口径（demo/exec 分段、stride-16 不跨段窗口、8/32 帧帧路）把原 hard 与合成 xhard 并排画出来。它和真实 xhard 的差别只在段长的随机波动与 planner 的路径差异，作为参考足够；真实 smoke 出来后再画一版实测对照。
+上面的 T 与窗口数是线性外推。用户 2026-10-06 提议用**官方 hard 的现成数据**按 subgoal 段复制粘贴合成一版 xhard1 参考数轴，并要求「不作为任务内部的内容，直接实现，单独在根目录有一个文件夹 vis」。已实现：[`vis/synthesize_reference_timeline.py`](vis/synthesize_reference_timeline.py) 读 `/data/hongzefu/data_0226/` 每任务 25 条 hard episode，按 [`vis/README.md`](vis/README.md) 的复制规则拼出合成时间轴，按 `plot_sampling_windows.py` 口径出图到 `vis/output/<Task>.png`，汇总表在 [`vis/output/reference_summary.md`](vis/output/reference_summary.md)。合成中位 T 与本节外推值的对账（2026-10-06 实跑，11 任务 275 条，`XHARD_REF=INFO tasks=11 episodes=275 synthetic=1`）：
 
-| 环境 | 复制的单元（取自同一条 hard episode 的段） | 复制规则 |
-|---|---|---|
-| PickXtimes | [拿起 cube → 放到 target] 一对 | 对数从 N 补到 N+2（4→6、5→7） |
-| StopCube | remain static 段 | 按 k∈[8,10]、间隔 120 重算：static 检查点每 100 步一段，到 120·k−60 止；移到按钮上方与按按钮段原样 |
-| SwingXtimes | [到右侧 → 到左侧] 一对 | 对数从 3 补到 7 或 8（按 seed 交替） |
-| BinFill | [拿起 {色} cube → 投箱] 一对 | 对数从 T 补到 5 或 6（同色循环复制） |
-| VideoUnmaskSwap | demo static 段 | 每多 1 次 swap 延长 50 步：S 从 [2,3] 到 [4,5] 即 +100 或 +150 |
-| ButtonUnmaskSwap | 无独立 demo 段，交换与按钮并行 | 时长基本不变，只标注交换结束步 264/314 与按钮完成步的先后 |
-| VideoRepick | 执行段 [拿起正确 cube → 放下] 一对 | 对数从 N 补到 4 或 5 |
-| VideoPlaceOrder | demo 段 [拿起 → 放到目标] 一对 | 对数补到 4 |
-| PickHighlight | [拿起高亮 cube → 放回桌面] 一对 | 对数从 3 补到 5 |
-| PatternLock | demo 与 exec 各一条 move 段 | 两侧各从 L−1 补到 L′−1，L′∈[10,14]（按 seed 轮） |
-| RouteStick | demo 与 exec 各一条 50 步的 move 段 | 两侧各从 S 补到 S′∈[8,10] |
+| 任务 | 外推 T | 合成 T（中位） | 外推窗 | 合成窗（中位） | 合成最少漏段8 |
+|---|---:|---:|---:|---:|---:|
+| PickXtimes | 1120 | 1128 | 68 | 69 | 6 |
+| StopCube | 1020 | 1054 | 62 | 64 | 4 |
+| SwingXtimes | 840 | 833 | 50 | 51 | 10 |
+| BinFill | 1140 | 1109 | 69 | 68 | 4 |
+| VideoUnmaskSwap | 560 | 560 | 31 | 32 | **0** |
+| ButtonUnmaskSwap | 520 | 461（合成不变） | 31 | 27 | **0** |
+| VideoRepick | 935 | 947 | 56 | 57 | 4 |
+| VideoPlaceOrder | 1300 | 1154 | 78 | 69 | 1 |
+| PickHighlight | 850 | 855 | 51 | 52 | 3 |
+| PatternLock | 810 | 737 | 49 | 43 | 6 |
+| RouteStick | 900 | 900 | 53 | 54 | 5 |
 
-产出：`docs/xhard-doc/reference-timeline/`（合成脚本、每任务 JSON、每任务一张图：最短/中位/最长各一条，原 hard 与合成 xhard 并排）与一张汇总表（T、窗、Δ8、最短段、skip8 的合成值 vs 本节外推值）。图上标明「合成参考，非实跑」。这一步只读 `/data/hongzefu/data_0226/`、不跑仿真、不改源码，按 `AGENTS.md` 第 2 条属开工前允许的只读核实，可在用户点头后立即做。
+两处提示：**两个 Swap 任务合成后有 episode 的 8 帧帧路一段都不漏**（它们执行段只有 3～5 段、每段 50～100 帧，Δ8 约 65～80 不足以跨过「拿起容器」段），硬性判据 1 对这两个任务不一定成立，实施前要用户决定是接受还是剔除；VideoPlaceOrder 与 PatternLock 的合成值低于外推（前者 hard 里已有不少 P=4 的 episode、后者 demo 段 move 更短），外推偏乐观。合成与真实的差别只在段长随机波动与 planner 路径，真实 smoke 出来后在 `vis/` 再加一版实测对照。
 
 ### 配置对比：每个任务 xhard1 相对官方 hard 把哪个量提高到多少
 
@@ -390,7 +390,6 @@ T 与窗口数按官方 hard 中位加每个子任务平均段长线性外推（
 | 阶段 | 内容 | 判据 |
 |---|---|---|
 | 0 | 用户说「开工」 | — |
-| 0.5（开工前即可） | 合成参考数轴：用官方 hard 数据按四节的复制规则拼出 xhard1 参考时间轴并出图（只读数据、不跑仿真） | `docs/xhard-doc/reference-timeline/` 落盘；汇总表给出合成 T / 窗 / Δ8 / skip8 与外推值的差 |
 | 1 | 六项前置验证：① `spec` 拦截最小 smoke（临时子类，不落盘）；② PatternLock `length` [10,14] 在 5×5 的接受率（只读复现拒绝采样 1000 个 seed）；③ ButtonUnmaskSwap swap=5 时交换结束步（314）与两次按钮完成步的先后；④ BinFill 目标 6 个时生成成功率（临时 `_load_scene` 统计 25 个 hard seed）；⑤ VideoRepick super 后改写 `num_repeats` 后 reset 重建 task_list 读到新值；⑥ VideoPlaceOrder `current_task_specialflag(s)` 命名不一致是否影响 hard swap | 六项各出一行结论写进第二部分八节；①⑤ 为 PASS 才进步骤 2 |
 | 2 | 主会话 S0：`src/robomme_xhard/{__init__,base,jobs}.py`、`envs/__init__.py` 骨架 + `README.md`，commit `2.33` | `XHARD_BASELINE_EQ=PASS`（此时 `make_name` 对无 xhard 卡片恒等） |
 | 3 | 同一消息派 S1、S2、S3、S4（`isolation: "worktree"` + `model: "opus"`） | 各自验收命令 passed（第二部分二节） |
@@ -535,7 +534,6 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 
 ## 四、runbook（主会话）
 
-0. **合成参考数轴**（步骤 0.5，开工前即可做）：临时脚本放 `docs/xhard-doc/reference-timeline/synthesize_reference_timeline.py`，输入 `/data/hongzefu/data_0226/record_dataset_<Task>.h5` 与 `src/robomme/env_metadata/train/`（只取 h5 里存在的 hard episode），切段口径同留档 4.1（`is_subgoal_boundary` 起点、段名取 `simple_subgoal`、demo 与尾段都算段），按第一部分四节的复制规则生成合成段序列，输出每任务 `reference_<Task>.json`（每条：原段表、合成段表、T、demo 长度、stride-16 窗、Δ8、最短执行段、skip8）与汇总 `reference_summary.md`；画图复用 `plot_sampling_windows.py` 的分层口径（段底色、subgoal 块、三行堆叠窗口、32/8 帧帧路），对每任务取合成 T 的最短/中位/最长三条，与对应原 hard 并排，标题注「合成参考，非实跑」。命令 `uv run --no-sync python docs/xhard-doc/reference-timeline/synthesize_reference_timeline.py --h5-dir /data/hongzefu/data_0226 --metadata-dir src/robomme/env_metadata/train --out docs/xhard-doc/reference-timeline`，判定行 `XHARD_REF=INFO tasks=11 episodes=425 synthetic=1`。不写入 `/data/hongzefu/data_0226/`（P3）。
 1. **前置验证**（步骤 1，六项，只读或 ≤5 分钟）：①⑤ 用临时脚本在 scratchpad 里定义一个最小子类（不落仓库）`gym.make` 一次（GPU 0，单进程），打印 `unwrapped.spec.id`、`spec.entry_point`、改写后 reset 的 `task_list` 长度；② `uv run --no-sync python -c` 复现 PatternLock 拒绝采样（只 import `find_path_0_to_8`，1000 个 seed，统计 [10,14] 命中率与平均尝试次数）；③ 读 ButtonUnmaskSwap 源码算 S=5 的交换结束步 314 与 `solve_button` 两次的步数（留档 4.3：按钮段均值约 104×2）；④ 临时脚本对 25 个 BinFill hard seed 跑子类 `_load_scene`（需渲染栈，GPU 0，单进程，不录像），统计每色实际数 ≥ 目标数的比例；⑥ grep `current_task_specialflag` 在 VideoPlaceOrder 的全部读写点。六项结论各一行写进八节。
 2. **S0 → 派发 → 合并**：按二节；每次合并 `git merge --no-ff <TIP sha> -F <scratchpad 消息文件>`，subject 按 `2.<n>` 递增，body 按第 11 条六项。
 3. **smoke**（步骤 5，每任务一条命令、串行、GPU 0）：
