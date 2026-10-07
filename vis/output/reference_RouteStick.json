@@ -87,7 +87,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 500,
+     "timesteps": 500,
      "demo": 250,
      "windows": 28,
      "windows_demo": 14,
@@ -213,7 +213,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 800,
+     "timesteps": 800,
      "demo": 400,
      "windows": 46,
      "windows_demo": 23,
@@ -313,7 +313,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 500,
+     "timesteps": 500,
      "demo": 250,
      "windows": 28,
      "windows_demo": 14,
@@ -451,7 +451,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 900,
+     "timesteps": 900,
      "demo": 450,
      "windows": 54,
      "windows_demo": 27,
@@ -539,7 +539,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 400,
+     "timesteps": 400,
      "demo": 200,
      "windows": 22,
      "windows_demo": 11,
@@ -689,7 +689,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 993,
+     "timesteps": 993,
      "demo": 500,
      "windows": 59,
      "windows_demo": 30,
@@ -813,7 +813,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 700,
+     "timesteps": 700,
      "demo": 350,
      "windows": 40,
      "windows_demo": 20,
@@ -939,7 +939,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 800,
+     "timesteps": 800,
      "demo": 400,
      "windows": 46,
      "windows_demo": 23,
@@ -1027,7 +1027,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 400,
+     "timesteps": 400,
      "demo": 200,
      "windows": 22,
      "windows_demo": 11,
@@ -1165,7 +1165,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 893,
+     "timesteps": 893,
      "demo": 450,
      "windows": 53,
      "windows_demo": 27,
@@ -1289,7 +1289,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 700,
+     "timesteps": 700,
      "demo": 350,
      "windows": 40,
      "windows_demo": 20,
@@ -1439,7 +1439,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 1000,
+     "timesteps": 1000,
      "demo": 500,
      "windows": 60,
      "windows_demo": 30,
@@ -1563,7 +1563,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 700,
+     "timesteps": 700,
      "demo": 350,
      "windows": 40,
      "windows_demo": 20,
@@ -1689,7 +1689,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 800,
+     "timesteps": 800,
      "demo": 400,
      "windows": 46,
      "windows_demo": 23,
@@ -1777,7 +1777,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 400,
+     "timesteps": 400,
      "demo": 200,
      "windows": 22,
      "windows_demo": 11,
@@ -1915,7 +1915,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 893,
+     "timesteps": 893,
      "demo": 450,
      "windows": 53,
      "windows_demo": 27,
@@ -2039,7 +2039,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 700,
+     "timesteps": 700,
      "demo": 350,
      "windows": 40,
      "windows_demo": 20,
@@ -2189,7 +2189,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 1000,
+     "timesteps": 1000,
      "demo": 500,
      "windows": 60,
      "windows_demo": 30,
@@ -2289,7 +2289,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 500,
+     "timesteps": 500,
      "demo": 250,
      "windows": 28,
      "windows_demo": 14,
@@ -2415,7 +2415,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 800,
+     "timesteps": 800,
      "demo": 400,
      "windows": 46,
      "windows_demo": 23,
@@ -2527,7 +2527,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 600,
+     "timesteps": 600,
      "demo": 300,
      "windows": 34,
      "windows_demo": 17,
@@ -2665,7 +2665,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 900,
+     "timesteps": 900,
      "demo": 450,
      "windows": 54,
      "windows_demo": 27,
@@ -2765,7 +2765,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 500,
+     "timesteps": 500,
      "demo": 250,
      "windows": 28,
      "windows_demo": 14,
@@ -2915,7 +2915,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 993,
+     "timesteps": 993,
      "demo": 500,
      "windows": 59,
      "windows_demo": 30,
@@ -3015,7 +3015,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 500,
+     "timesteps": 500,
      "demo": 250,
      "windows": 28,
      "windows_demo": 14,
@@ -3141,7 +3141,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 800,
+     "timesteps": 800,
      "demo": 400,
      "windows": 46,
      "windows_demo": 23,
@@ -3265,7 +3265,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 700,
+     "timesteps": 700,
      "demo": 350,
      "windows": 40,
      "windows_demo": 20,
@@ -3403,7 +3403,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 900,
+     "timesteps": 900,
      "demo": 450,
      "windows": 54,
      "windows_demo": 27,
@@ -3515,7 +3515,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 600,
+     "timesteps": 600,
      "demo": 300,
      "windows": 34,
      "windows_demo": 17,
@@ -3665,7 +3665,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 1000,
+     "timesteps": 1000,
      "demo": 500,
      "windows": 60,
      "windows_demo": 30,
@@ -3765,7 +3765,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 500,
+     "timesteps": 500,
      "demo": 250,
      "windows": 28,
      "windows_demo": 14,
@@ -3891,7 +3891,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 800,
+     "timesteps": 800,
      "demo": 400,
      "windows": 46,
      "windows_demo": 23,
@@ -4015,7 +4015,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 700,
+     "timesteps": 700,
      "demo": 350,
      "windows": 40,
      "windows_demo": 20,
@@ -4153,7 +4153,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 900,
+     "timesteps": 900,
      "demo": 450,
      "windows": 54,
      "windows_demo": 27,
@@ -4265,7 +4265,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 600,
+     "timesteps": 600,
      "demo": 300,
      "windows": 34,
      "windows_demo": 17,
@@ -4415,7 +4415,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 1000,
+     "timesteps": 1000,
      "demo": 500,
      "windows": 60,
      "windows_demo": 30,
@@ -4503,7 +4503,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 400,
+     "timesteps": 400,
      "demo": 200,
      "windows": 22,
      "windows_demo": 11,
@@ -4629,7 +4629,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 793,
+     "timesteps": 793,
      "demo": 400,
      "windows": 46,
      "windows_demo": 23,
@@ -4753,7 +4753,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 700,
+     "timesteps": 700,
      "demo": 350,
      "windows": 40,
      "windows_demo": 20,
@@ -4891,7 +4891,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 900,
+     "timesteps": 900,
      "demo": 450,
      "windows": 54,
      "windows_demo": 27,
@@ -5003,7 +5003,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 600,
+     "timesteps": 600,
      "demo": 300,
      "windows": 34,
      "windows_demo": 17,
@@ -5153,7 +5153,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 1000,
+     "timesteps": 1000,
      "demo": 500,
      "windows": 60,
      "windows_demo": 30,
@@ -5265,7 +5265,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 600,
+     "timesteps": 600,
      "demo": 300,
      "windows": 34,
      "windows_demo": 17,
@@ -5391,7 +5391,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 800,
+     "timesteps": 800,
      "demo": 400,
      "windows": 46,
      "windows_demo": 23,
@@ -5479,7 +5479,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 400,
+     "timesteps": 400,
      "demo": 200,
      "windows": 22,
      "windows_demo": 11,
@@ -5617,7 +5617,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 893,
+     "timesteps": 893,
      "demo": 450,
      "windows": 53,
      "windows_demo": 27,
@@ -5717,7 +5717,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 500,
+     "timesteps": 500,
      "demo": 250,
      "windows": 28,
      "windows_demo": 14,
@@ -5867,7 +5867,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 993,
+     "timesteps": 993,
      "demo": 500,
      "windows": 59,
      "windows_demo": 30,
@@ -5955,7 +5955,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 400,
+     "timesteps": 400,
      "demo": 200,
      "windows": 22,
      "windows_demo": 11,
@@ -6081,7 +6081,7 @@
     },
     "swaps": [],
     "stats": {
-     "T": 793,
+     "timesteps": 793,
      "demo": 400,
      "windows": 46,
      "windows_demo": 23,

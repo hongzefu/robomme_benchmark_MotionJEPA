@@ -1,17 +1,15 @@
 {
  "task": "VideoPlaceButton",
- "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
+ "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
  "synthetic": true,
  "records": [
   {
    "episode": 3,
    "seed": 10301,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -100,7 +98,7 @@
      ]
     ],
     "stats": {
-     "T": 1041,
+     "timesteps": 1041,
      "demo": 759,
      "windows": 62,
      "windows_demo": 46,
@@ -117,8 +115,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1708,
-     "demo": 1426,
+     "total": 1041,
+     "demo": 759,
      "segments": [
       {
        "start": 0,
@@ -134,96 +132,60 @@
       },
       {
        "start": 213,
-       "len": 93,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 306,
-       "len": 86,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 392,
        "len": 80,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 472,
-       "len": 119,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 591,
-       "len": 94,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 685,
+       "start": 293,
        "len": 93,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 778,
+       "start": 386,
        "len": 86,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 864,
+       "start": 472,
        "len": 73,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 937,
+       "start": 545,
        "len": 102,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1039,
-       "len": 73,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1112,
-       "len": 102,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1214,
+       "start": 647,
        "len": 52,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1266,
-       "len": 160,
+       "start": 699,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1426,
+       "start": 759,
        "len": 194,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1620,
+       "start": 953,
        "len": 70,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1690,
+       "start": 1023,
        "len": 18,
        "text": "All tasks completed",
        "demo": false
@@ -232,35 +194,25 @@
     },
     "swaps": [
      [
-      1266,
-      1316,
-      ""
-     ],
-     [
-      1316,
-      1366,
-      ""
-     ],
-     [
-      1366,
-      1416,
+      699,
+      749,
       ""
      ]
     ],
     "stats": {
-     "T": 1708,
-     "demo": 1426,
-     "windows": 104,
-     "windows_demo": 88,
+     "timesteps": 1041,
+     "demo": 759,
+     "windows": 62,
+     "windows_demo": 46,
      "windows_exec": 16,
-     "delta8": 243.9,
-     "delta32": 55.1,
+     "delta8": 148.6,
+     "delta32": 33.5,
      "exec_segments": 2,
      "shortest_exec_seg": 70,
      "exec_skip8": 1,
-     "swap_events": 3,
-     "swap_skip8": 3,
-     "skip8_total": 4
+     "swap_events": 1,
+     "swap_skip8": 0,
+     "skip8_total": 1
     }
    }
   },
@@ -268,11 +220,9 @@
    "episode": 7,
    "seed": 10701,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -361,7 +311,7 @@
      ]
     ],
     "stats": {
-     "T": 958,
+     "timesteps": 958,
      "demo": 750,
      "windows": 56,
      "windows_demo": 45,
@@ -378,8 +328,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1619,
-     "demo": 1411,
+     "total": 958,
+     "demo": 750,
      "segments": [
       {
        "start": 0,
@@ -395,96 +345,60 @@
       },
       {
        "start": 216,
-       "len": 79,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 295,
-       "len": 109,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 404,
        "len": 74,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 478,
-       "len": 118,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 596,
-       "len": 98,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 694,
+       "start": 290,
        "len": 79,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 773,
+       "start": 369,
        "len": 109,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 882,
+       "start": 478,
        "len": 75,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 957,
+       "start": 553,
        "len": 82,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1039,
-       "len": 75,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1114,
-       "len": 82,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1196,
+       "start": 635,
        "len": 55,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1251,
-       "len": 160,
+       "start": 690,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1411,
+       "start": 750,
        "len": 114,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1525,
+       "start": 864,
        "len": 80,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1605,
+       "start": 944,
        "len": 14,
        "text": "All tasks completed",
        "demo": false
@@ -493,35 +407,25 @@
     },
     "swaps": [
      [
-      1251,
-      1301,
-      ""
-     ],
-     [
-      1301,
-      1351,
-      ""
-     ],
-     [
-      1351,
-      1401,
+      690,
+      740,
       ""
      ]
     ],
     "stats": {
-     "T": 1619,
-     "demo": 1411,
-     "windows": 98,
-     "windows_demo": 87,
+     "timesteps": 958,
+     "demo": 750,
+     "windows": 56,
+     "windows_demo": 45,
      "windows_exec": 11,
-     "delta8": 231.1,
-     "delta32": 52.2,
+     "delta8": 136.7,
+     "delta32": 30.9,
      "exec_segments": 2,
      "shortest_exec_seg": 80,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -529,11 +433,9 @@
    "episode": 11,
    "seed": 11100,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -622,7 +524,7 @@
      ]
     ],
     "stats": {
-     "T": 946,
+     "timesteps": 946,
      "demo": 734,
      "windows": 56,
      "windows_demo": 44,
@@ -639,8 +541,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1579,
-     "demo": 1367,
+     "total": 946,
+     "demo": 734,
      "segments": [
       {
        "start": 0,
@@ -656,96 +558,60 @@
       },
       {
        "start": 187,
-       "len": 101,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 288,
-       "len": 96,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 384,
        "len": 85,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 469,
-       "len": 107,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 576,
-       "len": 80,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 656,
+       "start": 272,
        "len": 101,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 757,
+       "start": 373,
        "len": 96,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 853,
+       "start": 469,
        "len": 70,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 923,
+       "start": 539,
        "len": 79,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1002,
-       "len": 70,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1072,
-       "len": 79,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1151,
+       "start": 618,
        "len": 56,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1207,
-       "len": 160,
+       "start": 674,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1367,
+       "start": 734,
        "len": 113,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1480,
+       "start": 847,
        "len": 85,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1565,
+       "start": 932,
        "len": 14,
        "text": "All tasks completed",
        "demo": false
@@ -754,35 +620,25 @@
     },
     "swaps": [
      [
-      1207,
-      1257,
-      ""
-     ],
-     [
-      1257,
-      1307,
-      ""
-     ],
-     [
-      1307,
-      1357,
+      674,
+      724,
       ""
      ]
     ],
     "stats": {
-     "T": 1579,
-     "demo": 1367,
-     "windows": 96,
-     "windows_demo": 84,
+     "timesteps": 946,
+     "demo": 734,
+     "windows": 56,
+     "windows_demo": 44,
      "windows_exec": 12,
-     "delta8": 225.4,
-     "delta32": 50.9,
+     "delta8": 135.0,
+     "delta32": 30.5,
      "exec_segments": 2,
      "shortest_exec_seg": 85,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 0,
+     "skip8_total": 1
     }
    }
   },
@@ -790,11 +646,9 @@
    "episode": 15,
    "seed": 11500,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -883,7 +737,7 @@
      ]
     ],
     "stats": {
-     "T": 969,
+     "timesteps": 969,
      "demo": 776,
      "windows": 58,
      "windows_demo": 47,
@@ -900,8 +754,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1630,
-     "demo": 1437,
+     "total": 969,
+     "demo": 776,
      "segments": [
       {
        "start": 0,
@@ -917,96 +771,60 @@
       },
       {
        "start": 211,
-       "len": 111,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 322,
-       "len": 89,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 411,
        "len": 97,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 508,
-       "len": 121,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 629,
-       "len": 90,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 719,
+       "start": 308,
        "len": 111,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 830,
+       "start": 419,
        "len": 89,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 919,
+       "start": 508,
        "len": 71,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 990,
+       "start": 579,
        "len": 79,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1069,
-       "len": 71,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1140,
-       "len": 79,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1219,
+       "start": 658,
        "len": 58,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1277,
-       "len": 160,
+       "start": 716,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1437,
+       "start": 776,
        "len": 113,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1550,
+       "start": 889,
        "len": 64,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1614,
+       "start": 953,
        "len": 16,
        "text": "All tasks completed",
        "demo": false
@@ -1015,35 +833,25 @@
     },
     "swaps": [
      [
-      1277,
-      1327,
-      ""
-     ],
-     [
-      1327,
-      1377,
-      ""
-     ],
-     [
-      1377,
-      1427,
+      716,
+      766,
       ""
      ]
     ],
     "stats": {
-     "T": 1630,
-     "demo": 1437,
-     "windows": 99,
-     "windows_demo": 88,
+     "timesteps": 969,
+     "demo": 776,
+     "windows": 58,
+     "windows_demo": 47,
      "windows_exec": 11,
-     "delta8": 232.7,
-     "delta32": 52.5,
+     "delta8": 138.3,
+     "delta32": 31.2,
      "exec_segments": 2,
      "shortest_exec_seg": 64,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -1051,11 +859,9 @@
    "episode": 19,
    "seed": 11900,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -1144,7 +950,7 @@
      ]
     ],
     "stats": {
-     "T": 900,
+     "timesteps": 900,
      "demo": 703,
      "windows": 53,
      "windows_demo": 42,
@@ -1161,8 +967,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1508,
-     "demo": 1311,
+     "total": 900,
+     "demo": 703,
      "segments": [
       {
        "start": 0,
@@ -1178,96 +984,60 @@
       },
       {
        "start": 180,
-       "len": 95,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 275,
-       "len": 82,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 357,
        "len": 80,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 437,
-       "len": 108,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 545,
-       "len": 72,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 617,
+       "start": 260,
        "len": 95,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 712,
+       "start": 355,
        "len": 82,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 794,
+       "start": 437,
        "len": 70,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 864,
+       "start": 507,
        "len": 81,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 945,
-       "len": 70,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1015,
-       "len": 81,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1096,
+       "start": 588,
        "len": 55,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1151,
-       "len": 160,
+       "start": 643,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1311,
+       "start": 703,
        "len": 116,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1427,
+       "start": 819,
        "len": 68,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1495,
+       "start": 887,
        "len": 13,
        "text": "All tasks completed",
        "demo": false
@@ -1276,35 +1046,25 @@
     },
     "swaps": [
      [
-      1151,
-      1201,
-      ""
-     ],
-     [
-      1201,
-      1251,
-      ""
-     ],
-     [
-      1251,
-      1301,
+      643,
+      693,
       ""
      ]
     ],
     "stats": {
-     "T": 1508,
-     "demo": 1311,
-     "windows": 91,
-     "windows_demo": 80,
+     "timesteps": 900,
+     "demo": 703,
+     "windows": 53,
+     "windows_demo": 42,
      "windows_exec": 11,
-     "delta8": 215.3,
-     "delta32": 48.6,
+     "delta8": 128.4,
+     "delta32": 29.0,
      "exec_segments": 2,
      "shortest_exec_seg": 68,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -1312,11 +1072,9 @@
    "episode": 23,
    "seed": 12300,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -1405,7 +1163,7 @@
      ]
     ],
     "stats": {
-     "T": 987,
+     "timesteps": 987,
      "demo": 778,
      "windows": 59,
      "windows_demo": 47,
@@ -1422,8 +1180,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1648,
-     "demo": 1439,
+     "total": 987,
+     "demo": 778,
      "segments": [
       {
        "start": 0,
@@ -1439,96 +1197,60 @@
       },
       {
        "start": 182,
-       "len": 101,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 283,
-       "len": 89,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 372,
        "len": 95,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 467,
-       "len": 105,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 572,
-       "len": 77,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 649,
+       "start": 277,
        "len": 101,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 750,
+       "start": 378,
        "len": 89,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 839,
+       "start": 467,
        "len": 72,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 911,
+       "start": 539,
        "len": 117,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1028,
-       "len": 72,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1100,
-       "len": 117,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1217,
+       "start": 656,
        "len": 62,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1279,
-       "len": 160,
+       "start": 718,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1439,
+       "start": 778,
        "len": 117,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1556,
+       "start": 895,
        "len": 74,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1630,
+       "start": 969,
        "len": 18,
        "text": "All tasks completed",
        "demo": false
@@ -1537,35 +1259,25 @@
     },
     "swaps": [
      [
-      1279,
-      1329,
-      ""
-     ],
-     [
-      1329,
-      1379,
-      ""
-     ],
-     [
-      1379,
-      1429,
+      718,
+      768,
       ""
      ]
     ],
     "stats": {
-     "T": 1648,
-     "demo": 1439,
-     "windows": 100,
-     "windows_demo": 88,
+     "timesteps": 987,
+     "demo": 778,
+     "windows": 59,
+     "windows_demo": 47,
      "windows_exec": 12,
-     "delta8": 235.3,
-     "delta32": 53.1,
+     "delta8": 140.9,
+     "delta32": 31.8,
      "exec_segments": 2,
      "shortest_exec_seg": 74,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -1573,11 +1285,9 @@
    "episode": 27,
    "seed": 12701,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -1666,7 +1376,7 @@
      ]
     ],
     "stats": {
-     "T": 1002,
+     "timesteps": 1002,
      "demo": 803,
      "windows": 60,
      "windows_demo": 49,
@@ -1683,8 +1393,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1693,
-     "demo": 1494,
+     "total": 1002,
+     "demo": 803,
      "segments": [
       {
        "start": 0,
@@ -1700,96 +1410,60 @@
       },
       {
        "start": 211,
-       "len": 113,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 324,
-       "len": 99,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 423,
        "len": 100,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 523,
-       "len": 107,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 630,
-       "len": 104,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 734,
+       "start": 311,
        "len": 113,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 847,
+       "start": 424,
        "len": 99,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 946,
+       "start": 523,
        "len": 68,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 1014,
+       "start": 591,
        "len": 100,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1114,
-       "len": 68,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1182,
-       "len": 100,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1282,
+       "start": 691,
        "len": 52,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1334,
-       "len": 160,
+       "start": 743,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1494,
+       "start": 803,
        "len": 115,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1609,
+       "start": 918,
        "len": 66,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1675,
+       "start": 984,
        "len": 18,
        "text": "All tasks completed",
        "demo": false
@@ -1798,35 +1472,25 @@
     },
     "swaps": [
      [
-      1334,
-      1384,
-      ""
-     ],
-     [
-      1384,
-      1434,
-      ""
-     ],
-     [
-      1434,
-      1484,
+      743,
+      793,
       ""
      ]
     ],
     "stats": {
-     "T": 1693,
-     "demo": 1494,
-     "windows": 103,
-     "windows_demo": 92,
+     "timesteps": 1002,
+     "demo": 803,
+     "windows": 60,
+     "windows_demo": 49,
      "windows_exec": 11,
-     "delta8": 241.7,
-     "delta32": 54.6,
+     "delta8": 143.0,
+     "delta32": 32.3,
      "exec_segments": 2,
      "shortest_exec_seg": 66,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -1834,11 +1498,9 @@
    "episode": 31,
    "seed": 13100,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -1927,7 +1589,7 @@
      ]
     ],
     "stats": {
-     "T": 944,
+     "timesteps": 944,
      "demo": 740,
      "windows": 56,
      "windows_demo": 45,
@@ -1944,8 +1606,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1580,
-     "demo": 1376,
+     "total": 944,
+     "demo": 740,
      "segments": [
       {
        "start": 0,
@@ -1961,96 +1623,60 @@
       },
       {
        "start": 192,
-       "len": 91,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 283,
-       "len": 91,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 374,
        "len": 81,
        "text": "press the button",
        "demo": true
       },
       {
+       "start": 273,
+       "len": 91,
+       "text": "pick up the cube",
+       "demo": true
+      },
+      {
+       "start": 364,
+       "len": 91,
+       "text": "drop the cube onto target",
+       "demo": true
+      },
+      {
        "start": 455,
-       "len": 113,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 568,
-       "len": 79,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 647,
-       "len": 91,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 738,
-       "len": 91,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 829,
        "len": 70,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 899,
+       "start": 525,
        "len": 92,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 991,
-       "len": 70,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1061,
-       "len": 92,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1153,
+       "start": 617,
        "len": 63,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1216,
-       "len": 160,
+       "start": 680,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1376,
+       "start": 740,
        "len": 118,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1494,
+       "start": 858,
        "len": 73,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1567,
+       "start": 931,
        "len": 13,
        "text": "All tasks completed",
        "demo": false
@@ -2059,35 +1685,25 @@
     },
     "swaps": [
      [
-      1216,
-      1266,
-      ""
-     ],
-     [
-      1266,
-      1316,
-      ""
-     ],
-     [
-      1316,
-      1366,
+      680,
+      730,
       ""
      ]
     ],
     "stats": {
-     "T": 1580,
-     "demo": 1376,
-     "windows": 95,
-     "windows_demo": 84,
+     "timesteps": 944,
+     "demo": 740,
+     "windows": 56,
+     "windows_demo": 45,
      "windows_exec": 11,
-     "delta8": 225.6,
-     "delta32": 50.9,
+     "delta8": 134.7,
+     "delta32": 30.4,
      "exec_segments": 2,
      "shortest_exec_seg": 73,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -2095,11 +1711,9 @@
    "episode": 35,
    "seed": 13500,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -2188,7 +1802,7 @@
      ]
     ],
     "stats": {
-     "T": 976,
+     "timesteps": 976,
      "demo": 781,
      "windows": 58,
      "windows_demo": 47,
@@ -2205,8 +1819,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1637,
-     "demo": 1442,
+     "total": 976,
+     "demo": 781,
      "segments": [
       {
        "start": 0,
@@ -2222,96 +1836,60 @@
       },
       {
        "start": 200,
-       "len": 119,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 319,
-       "len": 83,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 402,
        "len": 105,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 507,
-       "len": 113,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 620,
-       "len": 87,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 707,
+       "start": 305,
        "len": 119,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 826,
+       "start": 424,
        "len": 83,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 909,
+       "start": 507,
        "len": 71,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 980,
+       "start": 578,
        "len": 88,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1068,
-       "len": 71,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1139,
-       "len": 88,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1227,
+       "start": 666,
        "len": 55,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1282,
-       "len": 160,
+       "start": 721,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1442,
+       "start": 781,
        "len": 113,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1555,
+       "start": 894,
        "len": 69,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1624,
+       "start": 963,
        "len": 13,
        "text": "All tasks completed",
        "demo": false
@@ -2320,35 +1898,25 @@
     },
     "swaps": [
      [
-      1282,
-      1332,
-      ""
-     ],
-     [
-      1332,
-      1382,
-      ""
-     ],
-     [
-      1382,
-      1432,
+      721,
+      771,
       ""
      ]
     ],
     "stats": {
-     "T": 1637,
-     "demo": 1442,
-     "windows": 100,
-     "windows_demo": 89,
+     "timesteps": 976,
+     "demo": 781,
+     "windows": 58,
+     "windows_demo": 47,
      "windows_exec": 11,
-     "delta8": 233.7,
-     "delta32": 52.8,
+     "delta8": 139.3,
+     "delta32": 31.5,
      "exec_segments": 2,
      "shortest_exec_seg": 69,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -2356,11 +1924,9 @@
    "episode": 39,
    "seed": 13901,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -2449,7 +2015,7 @@
      ]
     ],
     "stats": {
-     "T": 935,
+     "timesteps": 935,
      "demo": 742,
      "windows": 56,
      "windows_demo": 45,
@@ -2466,8 +2032,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1579,
-     "demo": 1386,
+     "total": 935,
+     "demo": 742,
      "segments": [
       {
        "start": 0,
@@ -2483,96 +2049,60 @@
       },
       {
        "start": 213,
-       "len": 89,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 302,
-       "len": 86,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 388,
        "len": 85,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 473,
-       "len": 118,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 591,
-       "len": 95,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 686,
+       "start": 298,
        "len": 89,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 775,
+       "start": 387,
        "len": 86,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 861,
+       "start": 473,
        "len": 74,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 935,
+       "start": 547,
        "len": 82,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1017,
-       "len": 74,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1091,
-       "len": 82,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1173,
+       "start": 629,
        "len": 53,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1226,
-       "len": 160,
+       "start": 682,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1386,
+       "start": 742,
        "len": 116,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1502,
+       "start": 858,
        "len": 63,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1565,
+       "start": 921,
        "len": 14,
        "text": "All tasks completed",
        "demo": false
@@ -2581,35 +2111,25 @@
     },
     "swaps": [
      [
-      1226,
-      1276,
-      ""
-     ],
-     [
-      1276,
-      1326,
-      ""
-     ],
-     [
-      1326,
-      1376,
+      682,
+      732,
       ""
      ]
     ],
     "stats": {
-     "T": 1579,
-     "demo": 1386,
-     "windows": 96,
-     "windows_demo": 85,
+     "timesteps": 935,
+     "demo": 742,
+     "windows": 56,
+     "windows_demo": 45,
      "windows_exec": 11,
-     "delta8": 225.4,
-     "delta32": 50.9,
+     "delta8": 133.4,
+     "delta32": 30.1,
      "exec_segments": 2,
      "shortest_exec_seg": 63,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -2617,11 +2137,9 @@
    "episode": 43,
    "seed": 14300,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -2710,7 +2228,7 @@
      ]
     ],
     "stats": {
-     "T": 955,
+     "timesteps": 955,
      "demo": 752,
      "windows": 56,
      "windows_demo": 45,
@@ -2727,8 +2245,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1612,
-     "demo": 1409,
+     "total": 955,
+     "demo": 752,
      "segments": [
       {
        "start": 0,
@@ -2744,96 +2262,60 @@
       },
       {
        "start": 203,
-       "len": 85,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 288,
-       "len": 104,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 392,
        "len": 70,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 462,
-       "len": 120,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 582,
-       "len": 83,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 665,
+       "start": 273,
        "len": 85,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 750,
+       "start": 358,
        "len": 104,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 854,
+       "start": 462,
        "len": 74,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 928,
+       "start": 536,
        "len": 91,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1019,
-       "len": 74,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1093,
-       "len": 91,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1184,
+       "start": 627,
        "len": 65,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1249,
-       "len": 160,
+       "start": 692,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1409,
+       "start": 752,
        "len": 114,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1523,
+       "start": 866,
        "len": 70,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1593,
+       "start": 936,
        "len": 19,
        "text": "All tasks completed",
        "demo": false
@@ -2842,35 +2324,25 @@
     },
     "swaps": [
      [
-      1249,
-      1299,
-      ""
-     ],
-     [
-      1299,
-      1349,
-      ""
-     ],
-     [
-      1349,
-      1399,
+      692,
+      742,
       ""
      ]
     ],
     "stats": {
-     "T": 1612,
-     "demo": 1409,
-     "windows": 98,
-     "windows_demo": 87,
+     "timesteps": 955,
+     "demo": 752,
+     "windows": 56,
+     "windows_demo": 45,
      "windows_exec": 11,
-     "delta8": 230.1,
-     "delta32": 52.0,
+     "delta8": 136.3,
+     "delta32": 30.8,
      "exec_segments": 2,
      "shortest_exec_seg": 70,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -2878,11 +2350,9 @@
    "episode": 47,
    "seed": 14700,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -2971,7 +2441,7 @@
      ]
     ],
     "stats": {
-     "T": 955,
+     "timesteps": 955,
      "demo": 743,
      "windows": 57,
      "windows_demo": 45,
@@ -2988,8 +2458,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1588,
-     "demo": 1376,
+     "total": 955,
+     "demo": 743,
      "segments": [
       {
        "start": 0,
@@ -3005,96 +2475,60 @@
       },
       {
        "start": 198,
-       "len": 104,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 302,
-       "len": 81,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 383,
        "len": 95,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 478,
-       "len": 112,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 590,
-       "len": 86,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 676,
+       "start": 293,
        "len": 104,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 780,
+       "start": 397,
        "len": 81,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 861,
+       "start": 478,
        "len": 71,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 932,
+       "start": 549,
        "len": 79,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1011,
-       "len": 71,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1082,
-       "len": 79,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1161,
+       "start": 628,
        "len": 55,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1216,
-       "len": 160,
+       "start": 683,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1376,
+       "start": 743,
        "len": 118,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1494,
+       "start": 861,
        "len": 74,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1568,
+       "start": 935,
        "len": 20,
        "text": "All tasks completed",
        "demo": false
@@ -3103,35 +2537,25 @@
     },
     "swaps": [
      [
-      1216,
-      1266,
-      ""
-     ],
-     [
-      1266,
-      1316,
-      ""
-     ],
-     [
-      1316,
-      1366,
+      683,
+      733,
       ""
      ]
     ],
     "stats": {
-     "T": 1588,
-     "demo": 1376,
-     "windows": 96,
-     "windows_demo": 84,
+     "timesteps": 955,
+     "demo": 743,
+     "windows": 57,
+     "windows_demo": 45,
      "windows_exec": 12,
-     "delta8": 226.7,
-     "delta32": 51.2,
+     "delta8": 136.3,
+     "delta32": 30.8,
      "exec_segments": 2,
      "shortest_exec_seg": 74,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -3139,11 +2563,9 @@
    "episode": 51,
    "seed": 15100,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -3232,7 +2654,7 @@
      ]
     ],
     "stats": {
-     "T": 968,
+     "timesteps": 968,
      "demo": 767,
      "windows": 57,
      "windows_demo": 46,
@@ -3249,8 +2671,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1632,
-     "demo": 1431,
+     "total": 968,
+     "demo": 767,
      "segments": [
       {
        "start": 0,
@@ -3266,96 +2688,60 @@
       },
       {
        "start": 213,
-       "len": 95,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 308,
-       "len": 103,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 411,
        "len": 85,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 496,
-       "len": 113,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 609,
-       "len": 100,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 709,
+       "start": 298,
        "len": 95,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 804,
+       "start": 393,
        "len": 103,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 907,
+       "start": 496,
        "len": 71,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 978,
+       "start": 567,
        "len": 82,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1060,
-       "len": 71,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1131,
-       "len": 82,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1213,
+       "start": 649,
        "len": 58,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1271,
-       "len": 160,
+       "start": 707,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1431,
+       "start": 767,
        "len": 113,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1544,
+       "start": 880,
        "len": 75,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1619,
+       "start": 955,
        "len": 13,
        "text": "All tasks completed",
        "demo": false
@@ -3364,35 +2750,25 @@
     },
     "swaps": [
      [
-      1271,
-      1321,
-      ""
-     ],
-     [
-      1321,
-      1371,
-      ""
-     ],
-     [
-      1371,
-      1421,
+      707,
+      757,
       ""
      ]
     ],
     "stats": {
-     "T": 1632,
-     "demo": 1431,
-     "windows": 99,
-     "windows_demo": 88,
+     "timesteps": 968,
+     "demo": 767,
+     "windows": 57,
+     "windows_demo": 46,
      "windows_exec": 11,
-     "delta8": 233.0,
-     "delta32": 52.6,
+     "delta8": 138.1,
+     "delta32": 31.2,
      "exec_segments": 2,
      "shortest_exec_seg": 75,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -3400,11 +2776,9 @@
    "episode": 55,
    "seed": 15500,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -3493,7 +2867,7 @@
      ]
     ],
     "stats": {
-     "T": 961,
+     "timesteps": 961,
      "demo": 757,
      "windows": 57,
      "windows_demo": 46,
@@ -3510,8 +2884,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1618,
-     "demo": 1414,
+     "total": 961,
+     "demo": 757,
      "segments": [
       {
        "start": 0,
@@ -3527,96 +2901,60 @@
       },
       {
        "start": 216,
-       "len": 88,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 304,
-       "len": 100,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 404,
        "len": 83,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 487,
-       "len": 114,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 601,
-       "len": 102,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 703,
+       "start": 299,
        "len": 88,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 791,
+       "start": 387,
        "len": 100,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 891,
+       "start": 487,
        "len": 71,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 962,
+       "start": 558,
        "len": 82,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1044,
-       "len": 71,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1115,
-       "len": 82,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1197,
+       "start": 640,
        "len": 57,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1254,
-       "len": 160,
+       "start": 697,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1414,
+       "start": 757,
        "len": 113,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1527,
+       "start": 870,
        "len": 73,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1600,
+       "start": 943,
        "len": 18,
        "text": "All tasks completed",
        "demo": false
@@ -3625,35 +2963,25 @@
     },
     "swaps": [
      [
-      1254,
-      1304,
-      ""
-     ],
-     [
-      1304,
-      1354,
-      ""
-     ],
-     [
-      1354,
-      1404,
+      697,
+      747,
       ""
      ]
     ],
     "stats": {
-     "T": 1618,
-     "demo": 1414,
-     "windows": 98,
-     "windows_demo": 87,
+     "timesteps": 961,
+     "demo": 757,
+     "windows": 57,
+     "windows_demo": 46,
      "windows_exec": 11,
-     "delta8": 231.0,
-     "delta32": 52.2,
+     "delta8": 137.1,
+     "delta32": 31.0,
      "exec_segments": 2,
      "shortest_exec_seg": 73,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -3661,11 +2989,9 @@
    "episode": 59,
    "seed": 15900,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -3754,7 +3080,7 @@
      ]
     ],
     "stats": {
-     "T": 985,
+     "timesteps": 985,
      "demo": 769,
      "windows": 59,
      "windows_demo": 47,
@@ -3771,8 +3097,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1642,
-     "demo": 1426,
+     "total": 985,
+     "demo": 769,
      "segments": [
       {
        "start": 0,
@@ -3788,96 +3114,60 @@
       },
       {
        "start": 215,
-       "len": 100,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 315,
-       "len": 70,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 385,
        "len": 90,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 475,
-       "len": 115,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 590,
-       "len": 100,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 690,
+       "start": 305,
        "len": 100,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 790,
+       "start": 405,
        "len": 70,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 860,
+       "start": 475,
        "len": 68,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 928,
+       "start": 543,
        "len": 104,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1032,
-       "len": 68,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1100,
-       "len": 104,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1204,
+       "start": 647,
        "len": 62,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1266,
-       "len": 160,
+       "start": 709,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1426,
+       "start": 769,
        "len": 118,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1544,
+       "start": 887,
        "len": 83,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1627,
+       "start": 970,
        "len": 15,
        "text": "All tasks completed",
        "demo": false
@@ -3886,35 +3176,25 @@
     },
     "swaps": [
      [
-      1266,
-      1316,
-      ""
-     ],
-     [
-      1316,
-      1366,
-      ""
-     ],
-     [
-      1366,
-      1416,
+      709,
+      759,
       ""
      ]
     ],
     "stats": {
-     "T": 1642,
-     "demo": 1426,
-     "windows": 100,
-     "windows_demo": 88,
+     "timesteps": 985,
+     "demo": 769,
+     "windows": 59,
+     "windows_demo": 47,
      "windows_exec": 12,
-     "delta8": 234.4,
-     "delta32": 52.9,
+     "delta8": 140.6,
+     "delta32": 31.7,
      "exec_segments": 2,
      "shortest_exec_seg": 83,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -3922,11 +3202,9 @@
    "episode": 63,
    "seed": 16300,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -4015,7 +3293,7 @@
      ]
     ],
     "stats": {
-     "T": 951,
+     "timesteps": 951,
      "demo": 743,
      "windows": 56,
      "windows_demo": 45,
@@ -4032,8 +3310,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1592,
-     "demo": 1384,
+     "total": 951,
+     "demo": 743,
      "segments": [
       {
        "start": 0,
@@ -4049,96 +3327,60 @@
       },
       {
        "start": 191,
-       "len": 95,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 286,
-       "len": 101,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 387,
        "len": 85,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 472,
-       "len": 113,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 585,
-       "len": 78,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 663,
+       "start": 276,
        "len": 95,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 758,
+       "start": 371,
        "len": 101,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 859,
+       "start": 472,
        "len": 74,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 933,
+       "start": 546,
        "len": 80,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1013,
-       "len": 74,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1087,
-       "len": 80,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1167,
+       "start": 626,
        "len": 57,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1224,
-       "len": 160,
+       "start": 683,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1384,
+       "start": 743,
        "len": 117,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1501,
+       "start": 860,
        "len": 72,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1573,
+       "start": 932,
        "len": 19,
        "text": "All tasks completed",
        "demo": false
@@ -4147,35 +3389,25 @@
     },
     "swaps": [
      [
-      1224,
-      1274,
-      ""
-     ],
-     [
-      1274,
-      1324,
-      ""
-     ],
-     [
-      1324,
-      1374,
+      683,
+      733,
       ""
      ]
     ],
     "stats": {
-     "T": 1592,
-     "demo": 1384,
-     "windows": 96,
-     "windows_demo": 85,
+     "timesteps": 951,
+     "demo": 743,
+     "windows": 56,
+     "windows_demo": 45,
      "windows_exec": 11,
-     "delta8": 227.3,
-     "delta32": 51.3,
+     "delta8": 135.7,
+     "delta32": 30.6,
      "exec_segments": 2,
      "shortest_exec_seg": 72,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -4183,11 +3415,9 @@
    "episode": 67,
    "seed": 16700,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -4276,7 +3506,7 @@
      ]
     ],
     "stats": {
-     "T": 966,
+     "timesteps": 966,
      "demo": 762,
      "windows": 57,
      "windows_demo": 46,
@@ -4293,8 +3523,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1615,
-     "demo": 1411,
+     "total": 966,
+     "demo": 762,
      "segments": [
       {
        "start": 0,
@@ -4310,96 +3540,60 @@
       },
       {
        "start": 205,
-       "len": 97,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 302,
-       "len": 78,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 380,
        "len": 95,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 475,
-       "len": 113,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 588,
-       "len": 92,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 680,
+       "start": 300,
        "len": 97,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 777,
+       "start": 397,
        "len": 78,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 855,
+       "start": 475,
        "len": 76,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 931,
+       "start": 551,
        "len": 93,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1024,
-       "len": 76,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1100,
-       "len": 93,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1193,
+       "start": 644,
        "len": 58,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1251,
-       "len": 160,
+       "start": 702,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1411,
+       "start": 762,
        "len": 115,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1526,
+       "start": 877,
        "len": 76,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1602,
+       "start": 953,
        "len": 13,
        "text": "All tasks completed",
        "demo": false
@@ -4408,35 +3602,25 @@
     },
     "swaps": [
      [
-      1251,
-      1301,
-      ""
-     ],
-     [
-      1301,
-      1351,
-      ""
-     ],
-     [
-      1351,
-      1401,
+      702,
+      752,
       ""
      ]
     ],
     "stats": {
-     "T": 1615,
-     "demo": 1411,
-     "windows": 98,
-     "windows_demo": 87,
+     "timesteps": 966,
+     "demo": 762,
+     "windows": 57,
+     "windows_demo": 46,
      "windows_exec": 11,
-     "delta8": 230.6,
-     "delta32": 52.1,
+     "delta8": 137.9,
+     "delta32": 31.1,
      "exec_segments": 2,
      "shortest_exec_seg": 76,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -4444,11 +3628,9 @@
    "episode": 71,
    "seed": 17100,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -4537,7 +3719,7 @@
      ]
     ],
     "stats": {
-     "T": 1018,
+     "timesteps": 1018,
      "demo": 818,
      "windows": 61,
      "windows_demo": 50,
@@ -4554,8 +3736,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1718,
-     "demo": 1518,
+     "total": 1018,
+     "demo": 818,
      "segments": [
       {
        "start": 0,
@@ -4571,96 +3753,60 @@
       },
       {
        "start": 223,
-       "len": 107,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 330,
-       "len": 94,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 424,
        "len": 95,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 519,
-       "len": 114,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 633,
-       "len": 109,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 742,
+       "start": 318,
        "len": 107,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 849,
+       "start": 425,
        "len": 94,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 943,
+       "start": 519,
        "len": 67,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 1010,
+       "start": 586,
        "len": 109,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1119,
-       "len": 67,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1186,
-       "len": 109,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1295,
+       "start": 695,
        "len": 63,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1358,
-       "len": 160,
+       "start": 758,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1518,
+       "start": 818,
        "len": 117,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1635,
+       "start": 935,
        "len": 70,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1705,
+       "start": 1005,
        "len": 13,
        "text": "All tasks completed",
        "demo": false
@@ -4669,35 +3815,25 @@
     },
     "swaps": [
      [
-      1358,
-      1408,
-      ""
-     ],
-     [
-      1408,
-      1458,
-      ""
-     ],
-     [
-      1458,
-      1508,
+      758,
+      808,
       ""
      ]
     ],
     "stats": {
-     "T": 1718,
-     "demo": 1518,
-     "windows": 104,
-     "windows_demo": 93,
+     "timesteps": 1018,
+     "demo": 818,
+     "windows": 61,
+     "windows_demo": 50,
      "windows_exec": 11,
-     "delta8": 245.3,
-     "delta32": 55.4,
+     "delta8": 145.3,
+     "delta32": 32.8,
      "exec_segments": 2,
      "shortest_exec_seg": 70,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -4705,11 +3841,9 @@
    "episode": 75,
    "seed": 17501,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -4798,7 +3932,7 @@
      ]
     ],
     "stats": {
-     "T": 1011,
+     "timesteps": 1011,
      "demo": 801,
      "windows": 61,
      "windows_demo": 49,
@@ -4815,8 +3949,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1692,
-     "demo": 1482,
+     "total": 1011,
+     "demo": 801,
      "segments": [
       {
        "start": 0,
@@ -4832,96 +3966,60 @@
       },
       {
        "start": 206,
-       "len": 112,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 318,
-       "len": 96,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 414,
        "len": 98,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 512,
-       "len": 110,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 622,
-       "len": 96,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 718,
+       "start": 304,
        "len": 112,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 830,
+       "start": 416,
        "len": 96,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 926,
+       "start": 512,
        "len": 68,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 994,
+       "start": 580,
        "len": 99,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1093,
-       "len": 68,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1161,
-       "len": 99,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1260,
+       "start": 679,
        "len": 62,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1322,
-       "len": 160,
+       "start": 741,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1482,
+       "start": 801,
        "len": 113,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1595,
+       "start": 914,
        "len": 83,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1678,
+       "start": 997,
        "len": 14,
        "text": "All tasks completed",
        "demo": false
@@ -4930,35 +4028,25 @@
     },
     "swaps": [
      [
-      1322,
-      1372,
-      ""
-     ],
-     [
-      1372,
-      1422,
-      ""
-     ],
-     [
-      1422,
-      1472,
+      741,
+      791,
       ""
      ]
     ],
     "stats": {
-     "T": 1692,
-     "demo": 1482,
-     "windows": 103,
-     "windows_demo": 91,
+     "timesteps": 1011,
+     "demo": 801,
+     "windows": 61,
+     "windows_demo": 49,
      "windows_exec": 12,
-     "delta8": 241.6,
-     "delta32": 54.5,
+     "delta8": 144.3,
+     "delta32": 32.6,
      "exec_segments": 2,
      "shortest_exec_seg": 83,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -4966,11 +4054,9 @@
    "episode": 79,
    "seed": 17900,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -5059,7 +4145,7 @@
      ]
     ],
     "stats": {
-     "T": 908,
+     "timesteps": 908,
      "demo": 713,
      "windows": 54,
      "windows_demo": 43,
@@ -5076,8 +4162,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1534,
-     "demo": 1339,
+     "total": 908,
+     "demo": 713,
      "segments": [
       {
        "start": 0,
@@ -5093,96 +4179,60 @@
       },
       {
        "start": 195,
-       "len": 92,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 287,
-       "len": 90,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 377,
        "len": 75,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 452,
-       "len": 114,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 566,
-       "len": 81,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 647,
+       "start": 270,
        "len": 92,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 739,
+       "start": 362,
        "len": 90,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 829,
+       "start": 452,
        "len": 71,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 900,
+       "start": 523,
        "len": 78,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 978,
-       "len": 71,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1049,
-       "len": 78,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1127,
+       "start": 601,
        "len": 52,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1179,
-       "len": 160,
+       "start": 653,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1339,
+       "start": 713,
        "len": 114,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1453,
+       "start": 827,
        "len": 69,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1522,
+       "start": 896,
        "len": 12,
        "text": "All tasks completed",
        "demo": false
@@ -5191,35 +4241,25 @@
     },
     "swaps": [
      [
-      1179,
-      1229,
-      ""
-     ],
-     [
-      1229,
-      1279,
-      ""
-     ],
-     [
-      1279,
-      1329,
+      653,
+      703,
       ""
      ]
     ],
     "stats": {
-     "T": 1534,
-     "demo": 1339,
-     "windows": 93,
-     "windows_demo": 82,
+     "timesteps": 908,
+     "demo": 713,
+     "windows": 54,
+     "windows_demo": 43,
      "windows_exec": 11,
-     "delta8": 219.0,
-     "delta32": 49.5,
+     "delta8": 129.6,
+     "delta32": 29.3,
      "exec_segments": 2,
      "shortest_exec_seg": 69,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -5227,11 +4267,9 @@
    "episode": 83,
    "seed": 18301,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -5320,7 +4358,7 @@
      ]
     ],
     "stats": {
-     "T": 996,
+     "timesteps": 996,
      "demo": 801,
      "windows": 60,
      "windows_demo": 49,
@@ -5337,8 +4375,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1679,
-     "demo": 1484,
+     "total": 996,
+     "demo": 801,
      "segments": [
       {
        "start": 0,
@@ -5354,96 +4392,60 @@
       },
       {
        "start": 236,
-       "len": 116,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 352,
-       "len": 82,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 434,
        "len": 103,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 537,
-       "len": 118,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 655,
-       "len": 118,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 773,
+       "start": 339,
        "len": 116,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 889,
+       "start": 455,
        "len": 82,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 971,
+       "start": 537,
        "len": 70,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 1041,
+       "start": 607,
        "len": 79,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1120,
-       "len": 70,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1190,
-       "len": 79,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1269,
+       "start": 686,
        "len": 55,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1324,
-       "len": 160,
+       "start": 741,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1484,
+       "start": 801,
        "len": 114,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1598,
+       "start": 915,
        "len": 65,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1663,
+       "start": 980,
        "len": 16,
        "text": "All tasks completed",
        "demo": false
@@ -5452,35 +4454,25 @@
     },
     "swaps": [
      [
-      1324,
-      1374,
-      ""
-     ],
-     [
-      1374,
-      1424,
-      ""
-     ],
-     [
-      1424,
-      1474,
+      741,
+      791,
       ""
      ]
     ],
     "stats": {
-     "T": 1679,
-     "demo": 1484,
-     "windows": 102,
-     "windows_demo": 91,
+     "timesteps": 996,
+     "demo": 801,
+     "windows": 60,
+     "windows_demo": 49,
      "windows_exec": 11,
-     "delta8": 239.7,
-     "delta32": 54.1,
+     "delta8": 142.1,
+     "delta32": 32.1,
      "exec_segments": 2,
      "shortest_exec_seg": 65,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -5488,11 +4480,9 @@
    "episode": 87,
    "seed": 18700,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -5581,7 +4571,7 @@
      ]
     ],
     "stats": {
-     "T": 912,
+     "timesteps": 912,
      "demo": 712,
      "windows": 54,
      "windows_demo": 43,
@@ -5598,8 +4588,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1531,
-     "demo": 1331,
+     "total": 912,
+     "demo": 712,
      "segments": [
       {
        "start": 0,
@@ -5615,96 +4605,60 @@
       },
       {
        "start": 180,
-       "len": 85,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 265,
-       "len": 84,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 349,
        "len": 75,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 424,
-       "len": 110,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 534,
-       "len": 70,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 604,
+       "start": 255,
        "len": 85,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 689,
+       "start": 340,
        "len": 84,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 773,
+       "start": 424,
        "len": 69,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 842,
+       "start": 493,
        "len": 101,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 943,
-       "len": 69,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1012,
-       "len": 101,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1113,
+       "start": 594,
        "len": 58,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1171,
-       "len": 160,
+       "start": 652,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1331,
+       "start": 712,
        "len": 114,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1445,
+       "start": 826,
        "len": 69,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1514,
+       "start": 895,
        "len": 17,
        "text": "All tasks completed",
        "demo": false
@@ -5713,35 +4667,25 @@
     },
     "swaps": [
      [
-      1171,
-      1221,
-      ""
-     ],
-     [
-      1221,
-      1271,
-      ""
-     ],
-     [
-      1271,
-      1321,
+      652,
+      702,
       ""
      ]
     ],
     "stats": {
-     "T": 1531,
-     "demo": 1331,
-     "windows": 93,
-     "windows_demo": 82,
+     "timesteps": 912,
+     "demo": 712,
+     "windows": 54,
+     "windows_demo": 43,
      "windows_exec": 11,
-     "delta8": 218.6,
-     "delta32": 49.4,
+     "delta8": 130.1,
+     "delta32": 29.4,
      "exec_segments": 2,
      "shortest_exec_seg": 69,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -5749,11 +4693,9 @@
    "episode": 91,
    "seed": 19100,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -5842,7 +4784,7 @@
      ]
     ],
     "stats": {
-     "T": 1000,
+     "timesteps": 1000,
      "demo": 798,
      "windows": 59,
      "windows_demo": 48,
@@ -5859,8 +4801,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1681,
-     "demo": 1479,
+     "total": 1000,
+     "demo": 798,
      "segments": [
       {
        "start": 0,
@@ -5876,96 +4818,60 @@
       },
       {
        "start": 206,
-       "len": 111,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 317,
-       "len": 90,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 407,
        "len": 99,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 506,
-       "len": 112,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 618,
-       "len": 94,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 712,
+       "start": 305,
        "len": 111,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 823,
+       "start": 416,
        "len": 90,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 913,
+       "start": 506,
        "len": 79,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 992,
+       "start": 585,
        "len": 95,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1087,
-       "len": 79,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1166,
-       "len": 95,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1261,
+       "start": 680,
        "len": 58,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1319,
-       "len": 160,
+       "start": 738,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1479,
+       "start": 798,
        "len": 113,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1592,
+       "start": 911,
        "len": 71,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1663,
+       "start": 982,
        "len": 18,
        "text": "All tasks completed",
        "demo": false
@@ -5974,35 +4880,25 @@
     },
     "swaps": [
      [
-      1319,
-      1369,
-      ""
-     ],
-     [
-      1369,
-      1419,
-      ""
-     ],
-     [
-      1419,
-      1469,
+      738,
+      788,
       ""
      ]
     ],
     "stats": {
-     "T": 1681,
-     "demo": 1479,
-     "windows": 102,
-     "windows_demo": 91,
+     "timesteps": 1000,
+     "demo": 798,
+     "windows": 59,
+     "windows_demo": 48,
      "windows_exec": 11,
-     "delta8": 240.0,
-     "delta32": 54.2,
+     "delta8": 142.7,
+     "delta32": 32.2,
      "exec_segments": 2,
      "shortest_exec_seg": 71,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -6010,11 +4906,9 @@
    "episode": 95,
    "seed": 19500,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -6103,7 +4997,7 @@
      ]
     ],
     "stats": {
-     "T": 953,
+     "timesteps": 953,
      "demo": 744,
      "windows": 57,
      "windows_demo": 45,
@@ -6120,8 +5014,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1591,
-     "demo": 1382,
+     "total": 953,
+     "demo": 744,
      "segments": [
       {
        "start": 0,
@@ -6137,96 +5031,60 @@
       },
       {
        "start": 200,
-       "len": 96,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 296,
-       "len": 77,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 373,
        "len": 94,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 467,
-       "len": 107,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 574,
-       "len": 93,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 667,
+       "start": 294,
        "len": 96,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 763,
+       "start": 390,
        "len": 77,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 840,
+       "start": 467,
        "len": 68,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 908,
+       "start": 535,
        "len": 97,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1005,
-       "len": 68,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1073,
-       "len": 97,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1170,
+       "start": 632,
        "len": 52,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1222,
-       "len": 160,
+       "start": 684,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1382,
+       "start": 744,
        "len": 115,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1497,
+       "start": 859,
        "len": 80,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1577,
+       "start": 939,
        "len": 14,
        "text": "All tasks completed",
        "demo": false
@@ -6235,35 +5093,25 @@
     },
     "swaps": [
      [
-      1222,
-      1272,
-      ""
-     ],
-     [
-      1272,
-      1322,
-      ""
-     ],
-     [
-      1322,
-      1372,
+      684,
+      734,
       ""
      ]
     ],
     "stats": {
-     "T": 1591,
-     "demo": 1382,
-     "windows": 97,
-     "windows_demo": 85,
+     "timesteps": 953,
+     "demo": 744,
+     "windows": 57,
+     "windows_demo": 45,
      "windows_exec": 12,
-     "delta8": 227.1,
-     "delta32": 51.3,
+     "delta8": 136.0,
+     "delta32": 30.7,
      "exec_segments": 2,
      "shortest_exec_seg": 80,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   },
@@ -6271,11 +5119,9 @@
    "episode": 99,
    "seed": 19900,
    "synthesis": {
-    "rule": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次",
-    "from": 2,
-    "to": 4,
-    "cubes": 2,
-    "swaps": 3
+    "rule": "不加档，按原 hard 配置重生成（swap 1 次）",
+    "from": null,
+    "to": null
    },
    "hard": {
     "item": {
@@ -6364,7 +5210,7 @@
      ]
     ],
     "stats": {
-     "T": 958,
+     "timesteps": 958,
      "demo": 755,
      "windows": 57,
      "windows_demo": 46,
@@ -6381,8 +5227,8 @@
    },
    "xhard1": {
     "item": {
-     "total": 1598,
-     "demo": 1395,
+     "total": 958,
+     "demo": 755,
      "segments": [
       {
        "start": 0,
@@ -6398,96 +5244,60 @@
       },
       {
        "start": 194,
-       "len": 101,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 295,
-       "len": 92,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 387,
        "len": 99,
        "text": "press the button",
        "demo": true
       },
       {
-       "start": 486,
-       "len": 112,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 598,
-       "len": 82,
-       "text": "drop the cube onto target",
-       "demo": true
-      },
-      {
-       "start": 680,
+       "start": 293,
        "len": 101,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 781,
+       "start": 394,
        "len": 92,
        "text": "drop the cube onto target",
        "demo": true
       },
       {
-       "start": 873,
+       "start": 486,
        "len": 71,
        "text": "pick up the cube",
        "demo": true
       },
       {
-       "start": 944,
+       "start": 557,
        "len": 82,
-       "text": "put the cube back to its original position",
+       "text": "drop the cube onto table",
        "demo": true
       },
       {
-       "start": 1026,
-       "len": 71,
-       "text": "pick up the cube",
-       "demo": true
-      },
-      {
-       "start": 1097,
-       "len": 82,
-       "text": "put the cube back to its original position",
-       "demo": true
-      },
-      {
-       "start": 1179,
+       "start": 639,
        "len": 56,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1235,
-       "len": 160,
+       "start": 695,
+       "len": 60,
        "text": "static",
        "demo": true
       },
       {
-       "start": 1395,
+       "start": 755,
        "len": 116,
        "text": "pick up the cube",
        "demo": false
       },
       {
-       "start": 1511,
+       "start": 871,
        "len": 69,
        "text": "place the cube onto the correct target",
        "demo": false
       },
       {
-       "start": 1580,
+       "start": 940,
        "len": 18,
        "text": "All tasks completed",
        "demo": false
@@ -6496,35 +5306,25 @@
     },
     "swaps": [
      [
-      1235,
-      1285,
-      ""
-     ],
-     [
-      1285,
-      1335,
-      ""
-     ],
-     [
-      1335,
-      1385,
+      695,
+      745,
       ""
      ]
     ],
     "stats": {
-     "T": 1598,
-     "demo": 1395,
-     "windows": 97,
-     "windows_demo": 86,
+     "timesteps": 958,
+     "demo": 755,
+     "windows": 57,
+     "windows_demo": 46,
      "windows_exec": 11,
-     "delta8": 228.1,
-     "delta32": 51.5,
+     "delta8": 136.7,
+     "delta32": 30.9,
      "exec_segments": 2,
      "shortest_exec_seg": 69,
-     "exec_skip8": 2,
-     "swap_events": 3,
-     "swap_skip8": 2,
-     "skip8_total": 4
+     "exec_skip8": 1,
+     "swap_events": 1,
+     "swap_skip8": 1,
+     "skip8_total": 2
     }
    }
   }

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>xhard1 数轴对比</title>
+<link rel="icon" href="data:,">
+<style>
+  :root { --ink:#14181A; --ink2:#48534F; --ink3:#7B8783; --line:#E3E8E6; --bg:#FAFBFA; --card:#FFFFFF; --accent:#3E7FA8; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:"Noto Sans CJK SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif; font-size:14px; }
+  header { position:sticky; top:0; z-index:5; background:rgba(250,251,250,.96); border-bottom:1px solid var(--line); padding:10px 16px; display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; }
+  header h1 { font-size:17px; margin:0; }
+  .seg { display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .seg button { border:0; background:#fff; padding:6px 14px; font:inherit; cursor:pointer; color:var(--ink2); }
+  .seg button.on { background:var(--accent); color:#fff; }
+  nav a { color:var(--accent); text-decoration:none; margin-right:12px; white-space:nowrap; }
+  main { padding:12px 16px 40px; max-width:1800px; margin:0 auto; }
+  .intro { color:var(--ink2); line-height:1.7; margin:4px 0 14px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:0 0 18px; }
+  section h2 { font-size:16px; margin:0 0 8px; }
+  .note { color:var(--ink2); margin:4px 0 8px; }
+  table { border-collapse:collapse; margin:4px 0 10px; font-variant-numeric:tabular-nums; }
+  th, td { border:1px solid var(--line); padding:4px 10px; text-align:right; }
+  th { background:#F3F6F4; font-weight:600; }
+  td.l, th.l { text-align:left; }
+  .scroll { overflow-x:auto; }
+  svg text { font-family:inherit; }
+  .legend { display:flex; flex-wrap:wrap; gap:6px 16px; color:var(--ink2); font-size:12.5px; margin-top:6px; }
+  .legend i { display:inline-block; width:18px; height:10px; vertical-align:middle; margin-right:5px; border-radius:2px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>xhard1 数轴：原版 vs 新版，按 V2 参照分组</h1>
+  <div class="seg" id="band">
+    <button data-b="min">最短</button><button data-b="med" class="on">中位</button><button data-b="max">最长</button>
+  </div>
+  <nav id="nav"></nav>
+</header>
+<main>
+  <p class="intro" id="intro"></p>
+  <div id="groups"></div>
+  <div class="legend" id="legend"></div>
+</main>
+<script>
+const DATA = /*__DATA__*/null;
+const C = DATA.color, SW = DATA.swap_colors, WIN = DATA.win, STRIDE = DATA.stride;
+const NS = "http://www.w3.org/2000/svg";
+let band = "med";
+
+function el(tag, attrs, parent, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text !== undefined) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const winStarts = L => { const o = []; for (let f = 0; f < Math.max(0, L - (WIN - 1)); f += STRIDE) o.push(f); return o; };
+const framePath = (T, n) => Array.from({length: n}, (_, i) => Math.floor(i * (T - 1) / (n - 1) + 0.5));
+const phases = r => r.demo ? [[0, r.demo, "demo"], [r.demo, r.total - r.demo, "exec"]] : [[0, r.total, "exec"]];
+
+const LEFT = 250, RIGHT = 200, ROW = 78, HEAD = 26;
+
+function drawTrack(svg, r, y, sx, axisW) {
+  const g = el("g", {}, svg);
+  for (const [s, L, k] of phases(r)) {
+    el("rect", {x: sx(s), y: y + 3, width: sx(s + L) - sx(s), height: ROW - 8, fill: C[k], "fill-opacity": .09}, g);
+    el("line", {x1: sx(s), x2: sx(s), y1: y + 3, y2: y + ROW - 5, stroke: C[k], "stroke-opacity": .7}, g);
+  }
+  r.swaps.forEach(([a, b, lab], k) => {
+    const col = SW[k % SW.length];
+    const rc = el("rect", {x: sx(a), y: y + 3, width: Math.max(1, sx(b) - sx(a)), height: ROW - 8, fill: r.swap_ok ? col : "none",
+      "fill-opacity": .18, stroke: col, "stroke-width": .8, "stroke-dasharray": r.swap_ok ? "" : "4 3"}, g);
+    el("title", {}, rc, `第 ${k + 1} 次 swap：${a}–${b}${lab ? "（" + lab + "）" : ""}`);
+    const txt = `换${k + 1}${lab ? " " + lab : ""}`;
+    el("text", {x: (sx(a) + sx(b)) / 2, y: y + 12, "text-anchor": "middle", "font-size": 10, fill: col, "font-weight": 700},
+       g, (sx(b) - sx(a)) > txt.length * 7 ? txt : String(k + 1));
+  });
+  // 32 帧帧路（紫竖线）与 8 帧帧路（红点）
+  for (const f of framePath(r.total, DATA.budgets[0]))
+    el("line", {x1: sx(f), x2: sx(f), y1: y + 15, y2: y + 23, stroke: C.f32, "stroke-width": 1}, g);
+  for (const f of framePath(r.total, DATA.budgets[1]))
+    el("circle", {cx: sx(f), cy: y + 28, r: 3, fill: C.f8}, g);
+  // 窗口：demo 蓝 / exec 绿，三行堆叠
+  for (const [s, L, k] of phases(r)) {
+    const st = winStarts(L);
+    if (!st.length) { el("rect", {x: sx(s), y: y + 35, width: Math.max(2, sx(s + L) - sx(s)), height: 14, fill: "none", stroke: C.empty, "stroke-dasharray": "4 3"}, g); continue; }
+    st.forEach((f, i) => el("rect", {x: sx(s + f), y: y + 46 - (i % 3) * 6, width: sx(s + f + WIN - 1) - sx(s + f), height: 4.5,
+      fill: C[k], "fill-opacity": .9, stroke: "#fff", "stroke-width": .4}, g));
+  }
+  // subgoal 分段
+  r.segs.forEach(([s, L, lab, full], i) => {
+    const w = sx(s + L) - sx(s);
+    const rc = el("rect", {x: sx(s), y: y + 54, width: w, height: 17, fill: i % 2 ? C.sg_b : C.sg_a, stroke: C.sg_line, "stroke-width": .5}, g);
+    el("title", {}, rc, `${full}\n${s}–${s + L}（${L} timestep）`);
+    const shown = w >= lab.length * 11 + 4 ? lab : (w >= 14 ? lab[0] : "");
+    if (shown) el("text", {x: sx(s) + w / 2, y: y + 66.5, "text-anchor": "middle", "font-size": 10.5, fill: C.ink2, "pointer-events": "none"}, g, shown);
+  });
+}
+
+function rightText(svg, r, x, y) {
+  const [d, e] = r.windows;
+  const lines = [`timestep ${r.total}`, `窗口 ${d}+${e}=${d + e}`, `Δ32 ${((r.total - 1) / 31).toFixed(1)} · Δ8 ${((r.total - 1) / 7).toFixed(1)}`];
+  lines.forEach((t, i) => el("text", {x, y: y + 22 + i * 17, "font-size": 12.5, fill: C.ink2}, svg, t));
+}
+
+function leftText(svg, lines, y, color) {
+  lines.forEach((t, i) => el("text", {x: LEFT - 10, y: y + 20 + i * 17, "text-anchor": "end", "font-size": i ? 12 : 13,
+    "font-weight": i ? 400 : 700, fill: i ? C.ink3 : (color || C.ink)}, svg, t));
+}
+
+function renderGroup(gr, host) {
+  host.innerHTML = "";
+  const rows = [];
+  rows.push({kind: "head", text: `V2 参照：${gr.key}（${gr.v2.run} 实跑，n=${gr.v2.n}）`});
+  rows.push({kind: "row", r: gr.v2.bands[band], left: [`V2 ${gr.key}`, `ep${gr.v2.bands[band].episode} · seed ${gr.v2.bands[band].seed}`, gr.v2.bands[band].extra], color: "#6b4f9e"});
+  for (const it of gr.items) {
+    rows.push({kind: "head", text: `${it.no} ${it.task} — ${it.rule} — 新版中位 ÷ V2 中位 = ${it.ratio.toFixed(2)}`});
+    rows.push({kind: "row", r: it.hard.bands[band], left: [`${it.no} ${it.task} 原版`, `官方 hard · ep${it.hard.bands[band].episode} · seed ${it.hard.bands[band].seed}`], color: C.ink2});
+    rows.push({kind: "row", r: it.xhard1.bands[band], left: [`${it.no} ${it.task} 新版`, `xhard1 合成 · ep${it.xhard1.bands[band].episode} · seed ${it.xhard1.bands[band].seed}`], color: "#2f6f4f"});
+  }
+  // 横轴在组内对三档固定，切换最短/中位/最长不改比例尺
+  let xmax = 0;
+  for (const b of ["min", "med", "max"]) {
+    xmax = Math.max(xmax, gr.v2.bands[b].total);
+    for (const it of gr.items) xmax = Math.max(xmax, it.hard.bands[b].total, it.xhard1.bands[b].total);
+  }
+  xmax = Math.ceil(xmax / 100) * 100;
+  const axisW = 1250, width = LEFT + axisW + RIGHT;
+  const height = rows.reduce((h, x) => h + (x.kind === "head" ? HEAD : ROW), 0) + 34;
+  const svg = el("svg", {viewBox: `0 0 ${width} ${height}`, width: width, height: height}, host);
+  const sx = v => LEFT + v / xmax * axisW;
+  const step = xmax <= 1200 ? 100 : 200;
+  const top = 4;
+  for (let t = 0; t <= xmax; t += step) {
+    el("line", {x1: sx(t), x2: sx(t), y1: top, y2: height - 30, stroke: "#EEF2F0"}, svg);
+    el("text", {x: sx(t), y: height - 14, "text-anchor": "middle", "font-size": 11.5, fill: C.ink3}, svg, t);
+  }
+  el("text", {x: LEFT + axisW / 2, y: height - 1, "text-anchor": "middle", "font-size": 12, fill: C.ink2}, svg, "timestep");
+  let y = top;
+  for (const x of rows) {
+    if (x.kind === "head") {
+      el("rect", {x: LEFT, y: y + 3, width: axisW, height: HEAD - 6, fill: "#F0F3F1"}, svg);
+      el("text", {x: LEFT + 6, y: y + 18, "font-size": 12.5, "font-weight": 700, fill: C.ink}, svg, x.text);
+      y += HEAD; continue;
+    }
+    drawTrack(svg, x.r, y, sx, axisW);
+    leftText(svg, x.left.filter(Boolean), y, x.color);
+    rightText(svg, x.r, LEFT + axisW + 10, y);
+    el("line", {x1: 0, x2: width, y1: y + ROW, y2: y + ROW, stroke: "#EBF0EE"}, svg);
+    y += ROW;
+  }
+}
+
+function build() {
+  const nav = document.getElementById("nav"), wrap = document.getElementById("groups");
+  document.getElementById("intro").innerHTML =
+    "按计划 <code>1006-xhard12-env-plan.md</code> 第一部分四节长度对比表的「对比的 V2 参照」分组；组内任务按 robomme.github.io 四类与官网编号排（4.1 MoveCube、4.2 InsertPeg 不纳入，无图）。" +
+    "<b>原版</b> = 官方 hard 实测（<code>/data/hongzefu/data_0226</code>，每任务 25 条）；<b>新版</b> = xhard1 合成参考（按 subgoal 段复制粘贴，非实跑），VideoPlaceButton、VideoPlaceOrder 不加档，新版与原版相同；" +
+    "<b>V2</b> = origin/newtask-v2 的 20260911-contract-v3-07 实跑（每组 ep0–29，已剔除慢条）。顶部切换最短 / 中位 / 最长，每条轨迹各自按 timestep 数取对应那一条；组内横轴固定，可直接比长短。" +
+    "倍数 = 新版中位 ÷ V2 交付集中位（与计划表同口径）。";
+  DATA.groups.forEach((gr, gi) => {
+    const a = document.createElement("a"); a.href = "#g" + gi; a.textContent = gr.title.replace("参照 ", ""); nav.appendChild(a);
+    const sec = document.createElement("section"); sec.id = "g" + gi;
+    let tbl = `<h2>${gr.title}</h2>` + (gr.note ? `<p class="note">${gr.note}</p>` : "") +
+      `<table><tr><th>编号</th><th class="l">任务</th><th>原版中位 timestep</th><th>新版中位 timestep</th><th>V2 交付集中位 timestep</th><th>timestep 倍数（新版 ÷ V2）</th></tr>`;
+    for (const it of gr.items) tbl += `<tr><td>${it.no}</td><td class="l">${it.task}</td><td>${it.hard.median}</td><td>${it.xhard1.median}</td><td>${gr.v2_median}</td><td><b>${it.ratio.toFixed(2)}</b></td></tr>`;
+    tbl += `</table><div class="scroll"></div>`;
+    sec.innerHTML = tbl; wrap.appendChild(sec);
+    gr._host = sec.querySelector(".scroll");
+  });
+  document.getElementById("legend").innerHTML = [
+    [C.demo, "demo 段窗口 [f, f+32]"], [C.exec, "exec 段窗口（stride 16，堆 3 行）"], [C.f32, "32 帧帧路（竖线）"], [C.f8, "8 帧帧路（圆点）"],
+    [C.sg_a, "subgoal 分段（悬停看全文与 timestep）"], ...SW.map((c, k) => [c, `第 ${k + 1} 次 swap`])
+  ].map(([c, t]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
+  renderAll();
+}
+function renderAll() { for (const gr of DATA.groups) renderGroup(gr, gr._host); }
+document.querySelectorAll("#band button").forEach(b => b.onclick = () => {
+  band = b.dataset.b;
+  document.querySelectorAll("#band button").forEach(x => x.classList.toggle("on", x === b));
+  renderAll();
+});
+build();
+</script>
+</body>
+</html>

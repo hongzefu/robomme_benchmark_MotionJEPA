@@ -7,7 +7,7 @@
   * ``scripts/injection-before-2d/plot_injection_before_2d.py``：``SWAP_COLORS``、``use_cjk_font``；
   * ``scripts/injection-before-2d/plot_sampling_windows.py``：画图常量、``COLOR``、``_label_for``、``_right_text``、
     ``draw_track``、``_draw_board``。
-以上函数体与常量逐字不动；本仓库只在文件末尾追加 ``EXTRA_RULES``（V2 没有的 12 个任务的中文短标），
+以上函数体与常量逐字不动（例外：2026-10-07 用户「不要用这种你自己定义的 用timestep！全程」，`_right_text` 的 `T=` 改为 `timestep=`、横轴标题改为 `timestep`）；本仓库只在文件末尾追加 ``EXTRA_RULES``（V2 没有的 12 个任务的中文短标），
 由 ``short_label`` 之前插入的一行 ``_RULES.extend(EXTRA_RULES)`` 生效（V2 规则优先匹配）。
 2026-10-07 用户原话：「然后恢复v2的图片数轴」。
 """
@@ -182,7 +182,7 @@ def _label_for(row: dict[str, Any], task: str, difficulty: str, band: str | None
 def _right_text(row: dict[str, Any]) -> str:
     d, e = window_counts(row)
     d32, d8 = deltas(row["total"])
-    t = f"T={row['total']}" + (f"（2×{row['original_total']}）" if row.get("simulated_demo") else "")
+    t = f"timestep={row['total']}" + (f"（2×{row['original_total']}）" if row.get("simulated_demo") else "")
     tokens = f"窗口 {d}+{e}={d + e}" + ("（无 motion token）" if d + e == 0 else "")
     return f"{t}\n{tokens}\nΔ32={d32:.1f} · Δ8={d8:.1f}"
 
@@ -263,7 +263,7 @@ def _draw_board(items: list[tuple[str, Any]], xmax: float, title: str, out: Path
     step = 100 if xmax <= 1200 else 200
     ax.set_xticks(range(0, int(xmax) + 1, step))
     ax.tick_params(axis="x", labelsize=9, colors=COLOR["ink3"])
-    ax.set_xlabel("帧（timestep）", fontsize=10, color=COLOR["ink2"])
+    ax.set_xlabel("timestep", fontsize=10, color=COLOR["ink2"])
     ax.xaxis.grid(True, color="#EBF0EE", linewidth=0.6)
     ax.set_axisbelow(True)
     for spine in ("top", "right", "left"):

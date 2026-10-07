@@ -347,7 +347,7 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 
 2026-10-07 用户「然后恢复v2的图片数轴」，选定「vis 改用 V2 画法并嵌入计划」。画法逐字搬自 origin/newtask-v2 的 `scripts/injection-before-2d/plot_sampling_windows.py`（`70bc2ce0`，搬运件 `vis/v2_plot.py`）。每行从下到上依次是：subgoal 分段（中文短标）、33 帧 stride-16 窗口（demo 蓝、exec 绿，三行堆叠）、8 帧红点、32 帧紫线。每次 swap 画一条半透明竖带（第 1～5 次紫、橙、青、玫红、棕）。右栏写 timestep 数、窗口 d+e=n、Δ32、Δ8（图上沿用 V2 画法标作 `T`）。swap 在 h5 里没有标签，整段都是 `static`，时刻按调度推出：VideoUnmaskSwap / ButtonUnmaskSwap 第 k 次为 `[64+50(k−1), 64+50k]`；两个 Place 任务从最后一个 demo static 段起点起，每 50 timestep 一次。
 
-xhard1 合成参考总览：14 任务各取最短、中位、最长三条，全局横轴，非实跑。⚠ 3.3、3.4 两任务的合成图与 `reference_summary.md` 里的合成列仍是 2026-10-07 撤回前的「2 块 + 回原位 + swap 3」方案，现方案以图中**上行官方 hard** 与汇总表的 hard 列为准；`vis/` 是否按新方案重画另行决定。
+xhard1 合成参考总览：14 任务各取最短、中位、最长三条，全局横轴，非实跑。3.3、3.4 两任务不加档，图中新版与原版相同（2026-10-07 已按新口径重画）。交互网页见 `vis/build_site.py`（按对比的 V2 参照分组，原版 / 新版 / V2 三种轨迹，默认中位、可切最短 / 最长），本机以 tmux `xh-vis-web` 托管在 http://sled-aspen.eecs.umich.edu:8090/ 。
 
 ![xhard1 合成参考数轴总览](vis/output/overview.png)
 
@@ -596,7 +596,7 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 5. VideoRepick 改写 `num_repeats` 依赖「reset 重跑 `_initialize_episode`」，已核实源码，前置验证 ⑤ 再实证一次。
 6. `make_vec` 路径未验证（本仓库不走）。
 7. `XHard2` 档只预留名字，不写数。
-9. Place 两任务的长度引自官方 hard 实测（留档 4.2 节），本仓库代码按同 seed 重生成是否逐条等长未验，由 `XHARD_PLACE_ORIG` 记录；`vis/` 里两任务的合成图仍是撤回前方案，未重画。
+9. Place 两任务的长度引自官方 hard 实测（留档 4.2 节），本仓库代码按同 seed 重生成是否逐条等长未验，由 `XHARD_PLACE_ORIG` 记录。
 10. Unmask 两任务 pick 3 的长度参考 V9 xhard2（带 4 个干扰容器）实测均值 475 / 526 timestep，本轮不加干扰，预计略短。
 8. 实测数轴图用 `vis/v2_plot.py`，不改 `scripts/patternlock-routestick-params/`。
 11. swap 漏段的时刻是按调度推出来的，不是 h5 标签；Place 两任务的闩锁步靠关节静止法反解，V2 在 VideoRepick 上实测与像素法差 ≤1 timestep，Place 任务尚未实测。

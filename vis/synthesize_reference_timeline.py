@@ -7,11 +7,11 @@ Unmask 系 h5 只有 ep0–99 所以也是 25 条）。每个任务的「重复�
 
 出图用 V2 画法（同目录 v2_plot.py，逐字搬自 origin/newtask-v2 的 injection-before-2d 数轴脚本）：
 demo / exec 底色、subgoal 分段、stride-16 不跨段的 33 帧窗口（3 行堆叠）、32 帧与 8 帧帧路、
-每次 swap 一条半透明竖带。每任务一张 <Task>.png：按合成 T 取最短 / 中位 / 最长三条，
+每次 swap 一条半透明竖带。每任务一张 <Task>.png：按合成 timestep 数取最短 / 中位 / 最长三条，
 每条画两行——上行官方 hard 原样、下行 xhard1 合成；另出 overview.png：14 任务各三条 xhard1，共用全局横轴。
 
 漏段口径（2026-10-07 用户「v2有一个swap的标注 也作为subgoal 你也要考虑这个问题 swap采不到也不行」，
-追问后定「每次 swap 算一段」）：skip8_total = 执行段（不含尾段）漏采数 + 每次 swap 事件（50 帧）漏采数。
+追问后定「每次 swap 算一段」）：skip8_total = 执行段（不含尾段）漏采数 + 每次 swap 事件（50 timestep）漏采数。
 
 用法：
   uv run --no-sync python vis/synthesize_reference_timeline.py \
@@ -60,10 +60,10 @@ RULES: dict[str, dict[str, Any]] = {
                          "note": "swap [2,3] → [4,5]，交换与按钮并行、时长基本不变（swap 次数 h5 里读不到，按序号轮流估）"},
     "VideoUnmask": {"kind": "unmask_pick3", "note": "pick 2 → 3（追加「放下 → 抓第三个容器」）"},
     "ButtonUnmask": {"kind": "unmask_pick3", "note": "pick 2 → 3（追加「放下 → 抓第三个容器」）"},
-    "VideoPlaceButton": {"kind": "place_two_cubes", "before": 2, "after": 2, "swaps": 3,
-                         "note": "1 块放 2 次 → 2 块各按钮前后放 1 次（共 4 次）+ 各回原位 + swap 3 次"},
-    "VideoPlaceOrder": {"kind": "place_two_cubes", "visits": 5, "swaps": 3,
-                        "note": "1 块放 [2,4] 次 → 2 块共访问 5 次（2+3）+ 各回原位 + swap 3 次"},
+    # 2026-10-07 用户「改计划 两个任务用 --xhard 按原 hard 配置重新生成」：Place 两任务不加档，新版 = 原版。
+    # 撤回前的「2 块 + 回原位 + swap 3」规则保留为 place_two_cubes 分支（不再被引用）。
+    "VideoPlaceButton": {"kind": "unchanged", "swaps": 1, "note": "不加档，按原 hard 配置重生成（swap 1 次）"},
+    "VideoPlaceOrder": {"kind": "unchanged", "swaps": 1, "note": "不加档，按原 hard 配置重生成（swap 1 次）"},
 }
 
 # 任务排列顺序：按 https://robomme.github.io/ 的四类与类内顺序（AGENTS.md P6）。
@@ -76,12 +76,12 @@ SUITE_ORDER = [
 ]
 assert set(RULES) <= set(SUITE_ORDER)
 
-# 计划第一部分四节的外推值（中位 T / 窗），用来和合成值对账
+# 计划第一部分四节的外推值（中位 timestep 数 / 窗；Place 两任务不加档，取官方 hard 中位），用来和合成值对账
 PLAN_EXTRAPOLATION = {
     "PickXtimes": (1120, 68), "StopCube": (1020, 62), "SwingXtimes": (840, 50), "BinFill": (1140, 69),
     "VideoUnmaskSwap": (560, 31), "ButtonUnmaskSwap": (520, 31), "VideoRepick": (935, 56),
-    "VideoPlaceOrder": (1800, 110), "PickHighlight": (850, 51), "PatternLock": (810, 49), "RouteStick": (900, 53),
-    "VideoUnmask": (480, 26), "ButtonUnmask": (525, 30), "VideoPlaceButton": (1550, 92),
+    "VideoPlaceOrder": (1115, 67), "PickHighlight": (850, 51), "PatternLock": (810, 49), "RouteStick": (900, 53),
+    "VideoUnmask": (480, 26), "ButtonUnmask": (525, 30), "VideoPlaceButton": (961, 57),
 }
 
 
@@ -290,7 +290,7 @@ def swap_events(task: str, tier: str, item: dict[str, Any], how: dict[str, Any],
         statics = [x for x in item["segments"] if x["demo"] and x["text"] == "static"]
         if not statics:
             return []
-        n = 1 if tier == "hard" or how.get("to") is None else rule["swaps"]
+        n = 1 if tier == "hard" or how.get("to") is None else rule.get("swaps", 1)
         base, note = statics[-1]["start"], ""
     else:
         return []
@@ -311,7 +311,7 @@ def stats(item: dict[str, Any], swaps: list[list[Any]]) -> dict[str, Any]:
     swap_skip8 = _missed([(a, b) for a, b, _ in swaps], frames8)
     shortest = min((s["len"] for s in exec_segs), default=0)
     return {
-        "T": total, "demo": demo, "windows": windows_demo + windows_exec,
+        "timesteps": total, "demo": demo, "windows": windows_demo + windows_exec,
         "windows_demo": windows_demo, "windows_exec": windows_exec,
         "delta8": round((total - 1) / 7, 1), "delta32": round((total - 1) / 31, 1),
         "exec_segments": len(exec_segs), "shortest_exec_seg": shortest,
@@ -332,7 +332,7 @@ def plot_pair_rows(task: str, rows: list[tuple[str, dict[str, Any], dict[str, An
     xmax = max(max(h["item"]["total"], x["item"]["total"]) for _, h, x in rows)
     items: list[tuple[Any, ...]] = []
     for band, hard, synth in rows:
-        items.append(("header", f"{band}（按合成 T）· ep{hard['episode']} · seed {hard['seed']} · "
+        items.append(("header", f"{band}（按合成 timestep 数）· ep{hard['episode']} · seed {hard['seed']} · "
                                 f"漏段8 hard {hard['stats']['exec_skip8']}+swap {hard['stats']['swap_skip8']} → "
                                 f"xhard1 {synth['stats']['exec_skip8']}+swap {synth['stats']['swap_skip8']}"))
         items.append(("row", v2_plot._label_for(v2_row(hard), task, "官方 hard"), v2_row(hard), False))
@@ -401,7 +401,7 @@ def main(argv=None) -> int:
             json.dumps({"task": task, "rule": RULES[task]["note"], "synthetic": True, "records": records},
                        ensure_ascii=False, indent=1), encoding="utf-8")
 
-        by_t = sorted(records, key=lambda r: r["xhard1"]["stats"]["T"])
+        by_t = sorted(records, key=lambda r: r["xhard1"]["stats"]["timesteps"])
         picks = [("最短", by_t[0]), ("中位", by_t[len(by_t) // 2]), ("最长", by_t[-1])]
         rows = [(label, {**r["hard"], "episode": r["episode"], "seed": r["seed"]},
                  {**r["xhard1"], "episode": r["episode"], "seed": r["seed"]}) for label, r in picks]
@@ -413,7 +413,7 @@ def main(argv=None) -> int:
             return min(vals), median_int(vals), max(vals), round(statistics.mean(vals), 2)
 
         plan_t, plan_w = PLAN_EXTRAPOLATION[task]
-        h_t, x_t = agg("hard", "T"), agg("xhard1", "T")
+        h_t, x_t = agg("hard", "timesteps"), agg("xhard1", "timesteps")
         h_w, x_w = agg("hard", "windows"), agg("xhard1", "windows")
         h_s, x_s = agg("hard", "skip8_total"), agg("xhard1", "skip8_total")
         x_e, x_w8 = agg("xhard1", "exec_skip8"), agg("xhard1", "swap_skip8")
@@ -432,32 +432,32 @@ def main(argv=None) -> int:
             swap_rows.append(f"| {task} | {sw_h[0]}–{sw_h[2]} → {sw_x[0]}–{sw_x[2]} | {agg('hard', 'swap_skip8')[3]} → {x_w8[3]}（最少 {x_w8[0]}） | "
                              f"{h_s[0]} → {x_s[0]} | {zero_hard}/{len(records)} → {zero_x}/{len(records)} |")
             swap_min[task] = x_s[0]
-        print(f"XHARD_REF_TASK=INFO task={task} episodes={len(records)} T_hard_med={h_t[1]} T_synth_med={x_t[1]} "
-              f"plan_T={plan_t} windows_synth_med={x_w[1]} plan_windows={plan_w} "
+        print(f"XHARD_REF_TASK=INFO task={task} episodes={len(records)} timesteps_hard_med={h_t[1]} timesteps_synth_med={x_t[1]} "
+              f"plan_timesteps={plan_t} windows_synth_med={x_w[1]} plan_windows={plan_w} "
               f"exec_skip8_min={x_e[0]} swap_skip8_min={x_w8[0]} skip8_total_min={x_s[0]}")
 
     summary = [
         "# xhard1 合成参考数轴：汇总",
         "",
         "合成方法：官方 hard 每条 episode 按 subgoal 段切开，把「重复单元」按 xhard1 取值复制粘贴（复制同一条 episode 自己的段，循环取），其余段原样；**非实跑**。"
-        "T 单位 timestep；窗 = demo 窗 + exec 窗（33 帧、stride 16、不跨段）；Δ8 = (T−1)/7；最短段 = 执行段里最短一段；"
-        "8 帧帧路 = V2 的 `floor(i·(T−1)/7 + 0.5)`；执行段漏 = 帧路没有点落入的执行段数（不含 demo 与尾段）；swap 漏 = 帧路没有点落入的 swap 事件数（每次 swap 50 帧算一段，2026-10-07 用户定）；合计漏 = 两者之和。"
+        "长度单位 timestep；窗 = demo 窗 + exec 窗（33 帧、stride 16、不跨段）；Δ8 = (timestep 数−1)/7；最短段 = 执行段里最短一段；"
+        "8 帧帧路 = V2 的 `floor(i·(timestep 数−1)/7 + 0.5)`；执行段漏 = 帧路没有点落入的执行段数（不含 demo 与尾段）；swap 漏 = 帧路没有点落入的 swap 事件数（每次 swap 50 timestep 算一段，2026-10-07 用户定）；合计漏 = 两者之和。"
         "「外推」列是 `1006-xhard12-env-plan.md` 第一部分四节的线性外推中位值。",
         "",
-        "| 任务 | n | hard T（最短/中位/最长） | 合成 T（最短/中位/最长） | 外推 T | hard 窗（中位） | 合成窗（最短/中位/最长） | 外推窗 | 合成 Δ8（中位） | 合成最短段（中位） | 合成执行段漏（均值） | 合成 swap 漏（均值） | hard 合计漏（均值） | 合成合计漏（均值） | 0 漏条数 hard → 合成 |",
+        "| 任务 | n | hard timestep 数（最短/中位/最长） | 合成 timestep 数（最短/中位/最长） | 外推 timestep 数 | hard 窗（中位） | 合成窗（最短/中位/最长） | 外推窗 | 合成 Δ8（中位） | 合成最短段（中位） | 合成执行段漏（均值） | 合成 swap 漏（均值） | hard 合计漏（均值） | 合成合计漏（均值） | 0 漏条数 hard → 合成 |",
         "|---|---:|---|---|---:|---:|---|---:|---:|---:|---|---|---|---|---|",
         *summary_rows,
         "",
         "## 有 swap 的四个任务",
         "",
         "swap 事件时刻：VideoUnmaskSwap / ButtonUnmaskSwap 按调度常量 `[64+50(k−1), 64+50k]`（ButtonUnmaskSwap 从第 0 步起算、与按钮并行，次数 h5 读不到，按 episode 序号轮流估）；"
-        "VideoPlaceButton / VideoPlaceOrder 从最后一个 demo static 段起点每 50 帧一次（真实 h5 里闩锁步可能晚十几帧）。",
+        "VideoPlaceButton / VideoPlaceOrder 从最后一个 demo static 段起点每 50 timestep 一次（真实 h5 里闩锁步可能晚十几 timestep）。",
         "",
         "| 任务 | swap 次数 hard → xhard1 | swap 漏均值 hard → xhard1 | 合计漏最少 hard → xhard1 | 0 漏条数 hard → xhard1 |",
         "|---|---|---|---|---|",
         *swap_rows,
         "",
-        "各任务复制规则见 `vis/synthesize_reference_timeline.py` 的 `RULES`；逐条数据见同目录 `reference_<Task>.json`；图见 `<Task>.png`（每任务按合成 T 取最短 / 中位 / 最长三条，每条上行官方 hard、下行 xhard1 合成，竖带为 swap）与 `overview.png`（V2 画法总览）；V2 实测原图见 `../v2/windows_overview.png`。",
+        "各任务复制规则见 `vis/synthesize_reference_timeline.py` 的 `RULES`；逐条数据见同目录 `reference_<Task>.json`；图见 `<Task>.png`（每任务按合成 timestep 数取最短 / 中位 / 最长三条，每条上行官方 hard、下行 xhard1 合成，竖带为 swap）与 `overview.png`（V2 画法总览）；V2 实测原图见 `../v2/windows_overview.png`。",
     ]
     (out_dir / "reference_summary.md").write_text("\n".join(summary) + "\n", encoding="utf-8")
     plot_overview(per_task, out_dir / "overview.png")
