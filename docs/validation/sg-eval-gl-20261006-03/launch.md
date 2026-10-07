@@ -46,8 +46,9 @@
 ## ⑥ 硬件、会话与 JobID 清单
 
 - GL 占位 job（全局 ≤4 卡）：`63188714`（gl1518）、`63188715`（gl1503）、`63188716`（gl1527）、`63188719`（gl1525），各 1 × A40，48 h（起跑时剩约 26 h，到期前约 2 h 提交接替）。
-- GL 登录节点 `gl-login3` tmux：`p3-smoke-framesamp`、`p3-smoke-smvla`、`p3-smoke-pp`、`p3-smoke-qwenvl`（smoke）；正式会话起跑时补记。
-- 本机 tmux：`p3-smoke-memer`、`p3-smoke-memer-new2`、`p3-smoke-memer-orig`、`p3-build-exec`（均已结束）；正式 `p3-local-new`（卡 0）、`p3-local-orig`（卡 1）。
+- GL 登录节点 `gl-login3` tmux：`p3-smoke-framesamp`、`p3-smoke-smvla`、`p3-smoke-pp`、`p3-smoke-qwenvl`（smoke，均已结束）；正式 worker `p3-worker-14`（job 63188714，2026-10-06 21:25:46 起）、`p3-worker-16`（63188716，21:27:22）、`p3-worker-19`（63188719，21:29:56）、`p3-worker-15`（63188715，21:32 起），各经 `launch_seat.sh` 在占位 job 内跑 `seat_worker.sh`，从 `$R/queue/pending` 按文件名领取 `10/11-smvla`、`20/21-pp`、`30/31-framesamp`、`40/41-qwenvl`、`50/51-memer`（每模型过其 smoke 才入队）；日志 `$R/logs/p3-worker-NN.log`、`$R/logs/tasks/<任务>.log`。
+- 本机 tmux：`p3-smoke-memer`、`p3-smoke-memer-new2`、`p3-smoke-memer-orig`、`p3-build-exec`（均已结束）；正式 `p3-local-new`（卡 0）、`p3-local-orig`（卡 1），2026-10-06 21:23:46 起，HEAD `a692d9d4`，日志 `artifacts/sg-evaluation/sg-eval-gl-20261006-03/compare/side-{new,orig}.log`。
+- GL smoke（`0816c0a9` 执行副本，BinFill_xhard1_16400000，seed 7）：FrameSamp+Modulation fail 565 步；PonderPounce timeout 1800 步（自身循环退出，`cap_hit=False` 合法）；GroundSG+QwenVL success 1450 步；SimpleMemVLA timeout 1800 步（`cap_hit=True`，第 1801 步进环境前被拒）；四者 `effective_cap=1800 policy_seed=7 server_seed=7`、`OFFICIAL_MEDIA=PASS videos=1`、`LANG_IO=PASS server_text_empty=0`（`--require-server-text`）、`TRACE_ARRAYS=PASS`。
 
 ## ⑦ 起跑前 smoke 与闸门（已过）
 
