@@ -48,6 +48,25 @@ Astra 自己写的 ``identity.json``、``decisions.jsonl``、``actions.npy``、`
   局数硬上限 2：局清单超过 2 局起跑前拒绝，且每局开跑前在守卫预留文件里跨 RUN 登记。
 - 子命令 ``media-inputs``：为 ``run_astra.sh`` 收尾时调用的 ``official_media_check.py`` 写本局的身份清单行与
   账本行（Astra 没有 ``env_client`` 账本，``accepted_attempt_id`` 由 key 与尝试号确定）。
+
+第三阶段（1006-rename-official-names-and-stage3-eval-plan.md 第二部分一、八.3、八.11；接口见
+``docs/plans/1006-stage3-interface-freeze.md`` 2.1、2.2、四、五节，R5）：
+
+- 1800 步：``ood ↔ 1800``、``strict_cap=1``；``hard-verify ↔ 1300`` 非 strict 不变。strict 时 ``TracedEnv.step`` 在
+  计数与动作追加**之前**检查：已执行 ``effective_cap`` 步再调用即不进真实 ``env.step``、置 ``cap_hit``、抛
+  ``StepCapReached``（与 ``env_client.EnvSession`` 同义），trace 不多落一行，收尾按 ``timeout``。Astra 自己的循环本来就
+  只走 ``max_steps`` 步，此守卫是入口自己的硬上限。``recorder_meta``、trace header（若 ``TraceWriter`` 支持）／end 行与
+  ``result.json`` 记实际 ``strict_cap``／``effective_cap``／``cap_hit``。
+- 模型 seed：``check``／``run`` 必须给 ``--policy-seed <非负整数>``，缺失即 ``RUN_BLOCKED reason=policy_seed``（退出 3）；
+  ``run_astra.sh`` 把它作为 VLA 服务的 ``--seed``（替代上游固定 42）。云端 planner／monitor 无 seed 接口：只在 trace、
+  ``result.json``、来源清单里记 ``policy_seed`` 与 ``cloud_seed=null``，不伪造。
+- 语言账本（``trace_writer.LanguageLog``，R6 提供；不存在时不记、不报错）：每局 ``<trace 同目录>/language.jsonl``。
+  planner（含第二按钮复审）每次请求一个调用：``prompt.txt`` 全文与附图引用在交给发送方**之前**落盘，回复原文、
+  ``parsed``（校验后子目标或复审布尔）、``fallback=continue_last``；传输重试（429）每次另开一个调用并记
+  ``transport_attempt``。monitor 每次一个调用：system、user（10 张图引用）、回复 ``true/false``，也在推理前落盘。
+  VLA 每个推理步一个 ``action_model`` 调用（``prompt``／``grounded_subgoal`` 字段原文），执行步 ``log_step`` 带
+  ``source_call_id``／``chunk_index``。``prompts/*.md`` 与 ``index.json`` 的 sha256 写进局目录 ``provenance.json``。
+- ``arrays.npz`` 改走 ``trace_writer.merge_write_npz``（R6 提供；不存在时保持旧的 ``np.savez``）。
 """
 from __future__ import annotations
 
@@ -67,7 +86,15 @@ REPO_ROOT = HERE.parents[1]
 REPO_SRC = REPO_ROOT / "src"
 
 #: 新侧只接受这两个数据集；与启动命令的 ``--max-steps`` 做配对一致性检查（不是按档查表，数值由启动命令给）
-DATASET_STEP_PAIRING = {"hard-verify": 1300, "ood": 1600}
+DATASET_STEP_PAIRING = {"hard-verify": 1300, "ood": 1800}
+#: 冻结说明 2.1：ood 为 strict（第 1801 次 step 在进入真实环境前被拒），hard-verify 不变（截断靠底层环境）
+DATASET_STRICT_CAP = {"hard-verify": False, "ood": True}
+#: 上游 ``api_client.ResponsesClient`` 请求体里固定的输出上限（规划与复审共用；只用于语言账本 params）
+PLANNER_MAX_OUTPUT_TOKENS = 2048
+#: 上游 ``runner.Monitor`` 的 ``RequestConfig(max_tokens=8, temperature=0)``（只用于语言账本 params）
+MONITOR_PARAMS = {"temperature": 0, "max_tokens": 8}
+#: 来源清单 provenance.json 的文件名（局目录 ``<key>.a1/`` 下）
+PROVENANCE_FILE = "provenance.json"
 #: ``main()`` 第⑤项：错误信息以这三个前缀开头的局，单次即停整个分片
 PLANNER_STOP_PREFIXES = ("Planner API", "Pilot planner-call", "Planner bridge failed")
 #: ``main()`` 第④项：非规划类 error 连续累计到此数即停
@@ -97,6 +124,11 @@ class AstraStop(RuntimeError):
     def __init__(self, reason: str, message: str) -> None:
         super().__init__(message)
         self.reason = reason
+
+
+class StepCapReached(RuntimeError):
+    """strict cap：已执行 ``effective_cap`` 步后再调用 ``step``，不进入真实环境（与 ``env_client.StepCapReached`` 同义）。
+    继承 ``RuntimeError``：Astra ``runner.episode`` 的 ``except Exception`` 接住它，本驱动收尾时改记 ``timeout``。"""
 
 
 # ── 路径与上游模块 ─────────────────────────────────────────────────────────
@@ -170,6 +202,21 @@ def check_pairing(dataset: str, max_steps: int) -> None:
         raise ValueError(f"RUN_BLOCKED reason=dataset dataset={dataset!r}（只接受 {sorted(DATASET_STEP_PAIRING)}）")
     if int(max_steps) != expected:
         raise ValueError(f"RUN_BLOCKED reason=step_cap_pairing dataset={dataset} max_steps={max_steps}（应为 {expected}）")
+
+
+def check_policy_seed(value) -> int:
+    """冻结说明 2.2：``--policy-seed`` 必填、非负整数；缺失或非法即 ``RUN_BLOCKED reason=policy_seed``（不回落旧默认 42）。"""
+    if value is None or isinstance(value, bool):
+        raise ValueError("RUN_BLOCKED reason=policy_seed 必须显式给 --policy-seed <非负整数>（不回落任何旧默认值）")
+    if isinstance(value, int):
+        seed = value
+    elif isinstance(value, str) and value.strip().isdigit():
+        seed = int(value.strip())
+    else:
+        raise ValueError(f"RUN_BLOCKED reason=policy_seed policy_seed={value!r} 须为非负整数")
+    if seed < 0:
+        raise ValueError(f"RUN_BLOCKED reason=policy_seed policy_seed={value!r} 须为非负整数")
+    return seed
 
 
 def validate_cases(document: dict, tasks: list[str]) -> list[dict]:
@@ -259,9 +306,16 @@ class TraceContext:
     """一局的共享状态：当前步号与子目标（VLA 请求里的 ``grounded_subgoal``）、C8 三分计数、原动作、录制器。
 
     ``open_recorder``：无参可调用，首次 reset 时由 ``TracedEnv`` 调用一次建录制器（``run_one`` 注入）；
-    为 ``None`` 时不录（只供只测轨迹的单元测试）。"""
+    为 ``None`` 时不录（只供只测轨迹的单元测试）。
 
-    def __init__(self, writer, open_recorder: Callable | None = None) -> None:
+    第三阶段：``effective_cap``／``strict_cap``（strict 时 ``TracedEnv.step`` 在计数前拒第 cap+1 步，置 ``cap_hit``）；
+    ``lang``：``trace_writer.LanguageLog`` 实例或 ``None``（不记语言账本）；``source_call_id``／``chunk_index``：
+    当前动作块来自哪次 ``action_model`` 调用、下一步是块内第几个动作；``action_params``／``monitor_params``：
+    语言账本 ``open_call`` 的 ``params``。"""
+
+    def __init__(self, writer, open_recorder: Callable | None = None, *, effective_cap: int | None = None,
+                 strict_cap: bool = False, lang=None, action_params: dict | None = None,
+                 monitor_params: dict | None = None) -> None:
         self.writer = writer
         self.t = 0
         self.subgoal: str | None = None
@@ -271,11 +325,37 @@ class TraceContext:
         self.actions: list = []  # 每个执行步实际交给环境的动作（原 dtype／shape／bytes）
         self.recorder = None
         self._open_recorder = open_recorder
+        self.effective_cap = None if effective_cap is None else int(effective_cap)
+        self.strict_cap = bool(strict_cap)
+        self.cap_hit = False
+        self.lang = lang
+        self.source_call_id: str | None = None
+        self.chunk_index = 0
+        self.action_params = dict(action_params or {})
+        self.monitor_params = dict(monitor_params or {})
+        self._sha_cache: dict = {}
 
     def ensure_recorder(self):
         if self.recorder is None and self._open_recorder is not None:
             self.recorder = self._open_recorder()
         return self.recorder
+
+    def frame_sha(self, phase: str, idx: int, frames) -> str | None:
+        """Astra ``frames``／``demo`` 列表第 ``idx`` 帧的原像素 sha256（与 trace 的 ``front_sha256`` 同算法），按帧缓存。"""
+        import trace_writer as tw  # noqa: PLC0415
+        key = (phase, int(idx))
+        if key not in self._sha_cache:
+            self._sha_cache[key] = tw.image_sha256(frames[idx]) if 0 <= idx < len(frames) else None
+        return self._sha_cache[key]
+
+    def step_link(self) -> dict:
+        """执行步关联（冻结说明五）：开了语言账本时给 ``log_step`` 的 ``source_call_id``／``chunk_index``，否则空
+        （不传时 step 行键集合与旧格式逐字节相同）。每取一次块内序号加一。"""
+        if self.lang is None:
+            return {}
+        link = {"source_call_id": self.source_call_id, "chunk_index": self.chunk_index}
+        self.chunk_index += 1
+        return link
 
 
 def _pack_state(obs, i: int = -1):
@@ -295,7 +375,10 @@ class TracedEnv:
     """包住 builder 给的环境：reset 记演示段（C2），step 记执行后的画面、状态、动作与终止标志（C4、C8）。
 
     录制器只用 ``add_frames``／``add_array``：演示段全部帧（含初始帧）与每个有效观测步的最后一帧各进一次，
-    故两路流的帧数 = ``frames_recorded`` = 演示帧数 + 1 + 有效观测步数。"""
+    故两路流的帧数 = ``frames_recorded`` = 演示帧数 + 1 + 有效观测步数。
+
+    strict cap（ood）：守卫在计数与动作追加**之前**——已执行 ``effective_cap`` 步再调用即不进真实环境、不记录器、
+    不落 trace 行，置 ``cap_hit`` 并抛 ``StepCapReached``。"""
 
     def __init__(self, inner, ctx: TraceContext) -> None:
         self._inner = inner
@@ -324,23 +407,32 @@ class TracedEnv:
     def step(self, action):
         import numpy as np  # noqa: PLC0415
         ctx = self._ctx
+        if ctx.strict_cap and ctx.effective_cap is not None and ctx.attempted >= ctx.effective_cap:
+            ctx.cap_hit = True
+            rec = ctx.recorder
+            if rec is not None and hasattr(rec, "add_event"):
+                rec.add_event({"kind": "step_cap_reached", "step": ctx.attempted, "cap": ctx.effective_cap})
+            print(f"ASTRA_STEP_CAP exec_steps={ctx.attempted} cap={ctx.effective_cap} rejected_step={ctx.attempted + 1}",
+                  flush=True)
+            raise StepCapReached(f"STEP_CAP exec_steps={ctx.attempted} cap={ctx.effective_cap}")
         rec = ctx.ensure_recorder()
         ctx.attempted += 1
         ctx.t = n = ctx.attempted
         a = np.array(action, copy=True)
         ctx.actions.append(a)
+        link = ctx.step_link()
         if rec is not None:
             rec.add_array("exec_action", a, step=n - 1)
         try:
             out = self._inner.step(action)
         except BaseException as exc:
             ctx.writer.log_missing_step(step=n, action=a, reason=f"env_step_exception:{type(exc).__name__}",
-                                        subgoal=ctx.subgoal)
+                                        subgoal=ctx.subgoal, **link)
             raise
         obs, reward, terminated, truncated, info = out
         status = info.get("status") if isinstance(info, dict) else None
         if obs is None or not obs.get("front_rgb_list") or not obs.get("wrist_rgb_list"):
-            ctx.writer.log_missing_step(step=n, action=a, reason="obs_none", subgoal=ctx.subgoal)
+            ctx.writer.log_missing_step(step=n, action=a, reason="obs_none", subgoal=ctx.subgoal, **link)
             return out
         front = np.asarray(obs["front_rgb_list"][-1], dtype=np.uint8)
         wrist = np.asarray(obs["wrist_rgb_list"][-1], dtype=np.uint8)
@@ -351,7 +443,7 @@ class TracedEnv:
             rec.add_array("gripper_state", np.asarray(obs["gripper_state_list"][-1]), step=n - 1)
         ctx.observed += 1
         ctx.writer.log_step(step=n, front=front, wrist=wrist, state=_pack_state(obs), action=a, subgoal=ctx.subgoal,
-                            terminated=terminated, truncated=truncated, status=status)
+                            terminated=terminated, truncated=truncated, status=status, **link)
         return out
 
     def close(self):
@@ -375,8 +467,168 @@ class TracedBuilder:
         return self._inner.resolve_episode(episode)
 
 
+# ── 语言账本（冻结说明五；LanguageLog 由 R6 的 trace_writer 提供） ─────────────
+
+#: 附图变换描述：无损 PNG（规划／监视的单帧附件）、``core.sheets`` 拼图（JPEG q92）、websocket 原数组（VLA）
+PNG_TRANSFORM = {"resize": None, "crop": None, "layout": None, "encode": "png"}
+SHEET_TRANSFORM = {"resize": None, "crop": None, "layout": "core.sheets 4x4 grid, 256x280 cell, frame label",
+                   "encode": "jpeg q92"}
+RAW_TRANSFORM = {"resize": None, "crop": None, "layout": None, "encode": "msgpack_numpy"}
+#: Astra 拼图每页帧数（``core.sheets``）
+SHEET_PAGE = 16
+
+
+def language_log_cls():
+    """可选探测：``trace_writer.LanguageLog``（R6）；不存在时返回 ``None``（不记语言账本、不报错）。"""
+    import trace_writer as tw  # noqa: PLC0415
+    return getattr(tw, "LanguageLog", None)
+
+
+def _image_ref(slot: int, ref: str, phase: str, frame_idx, cam: str, raw_sha: str | None, *, transform: dict,
+               sources: list | None = None, encoded: Path | None = None) -> dict:
+    """附图引用（不存图片本身）：单帧的 ``sources`` 为它自己；拼图给有序来源帧列表、``frame_idx=None``。"""
+    if sources is None:
+        sources = [{"phase": phase, "frame_idx": frame_idx, "cam": cam, "raw_sha256": raw_sha}]
+    enc = file_sha256(encoded) if encoded is not None and Path(encoded).is_file() else None
+    return {"slot": slot, "ref": ref, "phase": phase, "frame_idx": frame_idx, "cam": cam, "raw_sha256": raw_sha,
+            "sources": sources, "transform": dict(transform), "encoded_sha256": enc}
+
+
+def _sheet_sources(ctx: TraceContext, phase: str, indices: list, frames) -> list:
+    return [{"phase": phase, "frame_idx": int(i), "cam": "front", "raw_sha256": ctx.frame_sha(phase, int(i), frames)}
+            for i in indices]
+
+
+def planner_images(ctx: TraceContext, out: Path, request: dict, frames, demo, *, wrist=None,
+                   command_start: int | None = None) -> list:
+    """按 ``request.json`` 的 ``images`` 顺序给规划／复审请求的附图引用。
+
+    exec 帧号 = Astra ``frames`` 下标（0 = reset 后初始帧，即 trace demo 段末帧；k = 第 k 步执行后，即 trace step k）；
+    demo 帧号 = 演示段下标。拼图页 p 覆盖下标列表的第 ``16p`` 至 ``16p+15`` 个。"""
+    now = len(frames) - 1
+    memory = [int(i) for i in request.get("memory_frame_ids") or []]
+    demo_idx = list(range(len(demo or [])))
+    images = []
+    for slot, name in enumerate(request.get("images") or []):
+        path = out / name
+        if name == "current.png":
+            images.append(_image_ref(slot, "current", "exec", now, "front", ctx.frame_sha("exec", now, frames),
+                                     transform=PNG_TRANSFORM, encoded=path))
+        elif name == "execution_start.png":
+            images.append(_image_ref(slot, "keyframe", "exec", 0, "front", ctx.frame_sha("exec", 0, frames),
+                                     transform=PNG_TRANSFORM, encoded=path))
+        elif name == "command_start.png" and command_start is not None:
+            images.append(_image_ref(slot, "command_start", "exec", int(command_start), "front",
+                                     ctx.frame_sha("exec", int(command_start), frames), transform=PNG_TRANSFORM,
+                                     encoded=path))
+        elif name == "current_wrist.png":
+            import trace_writer as tw  # noqa: PLC0415
+            images.append(_image_ref(slot, "wrist", "exec", now, "wrist",
+                                     tw.image_sha256(wrist) if wrist is not None else None,
+                                     transform=PNG_TRANSFORM, encoded=path))
+        elif name.startswith(("demo_", "memory_")):
+            phase, ref = ("demo", "demo_sheet") if name.startswith("demo_") else ("exec", "memory_sheet")
+            page = int(Path(name).stem.split("_")[1])
+            pool = demo_idx if phase == "demo" else memory
+            src_frames = demo if phase == "demo" else frames
+            idx = pool[page * SHEET_PAGE:(page + 1) * SHEET_PAGE]
+            images.append(_image_ref(slot, ref, phase, None, "front", None, transform=SHEET_TRANSFORM,
+                                     sources=_sheet_sources(ctx, phase, idx, src_frames), encoded=path))
+        else:  # 未知附件：只记文件哈希，不猜来源
+            images.append(_image_ref(slot, None, "exec", None, "front", None, transform=PNG_TRANSFORM, sources=[],
+                                     encoded=path))
+    return images
+
+
+class PlannerLanguageCall:
+    """一次规划（或第二按钮复审）请求的语言账本记录器。
+
+    ``wrap(responder)`` 返回给 Astra ``Planner`` 用的发送方：Planner 写完 ``prompt.txt``／``request.json``／附图后调用它，
+    它**先**开调用、写 ``in`` 消息（prompt 全文 + 附图引用）落盘，再交给真实发送方；发送方若支持
+    ``transport_hook``（本文件的 ``GuardedResponsesClient``），每次传输重试（attempt ≥ 1）把上一个调用记 ``error``、
+    另开一个 ``transport_attempt=k`` 的调用并重写 ``in`` 消息。``finish`` 在 Planner 返回或抛错后写回复原文与收尾。"""
+
+    def __init__(self, ctx: TraceContext, image_fn: Callable[[Path, dict], list], kind: str) -> None:
+        self.ctx = ctx
+        self.image_fn = image_fn
+        self.kind = kind
+        self.call_id: str | None = None
+        self.out: Path | None = None
+        self.prompt: str | None = None
+        self.images: list | None = None
+        self.params: dict | None = None
+        self.step = ctx.t
+
+    def _open(self, transport_attempt: int) -> None:
+        lang = self.ctx.lang
+        self.call_id = lang.open_call("planner", self.step, params=self.params, transport_attempt=transport_attempt)
+        lang.message(self.call_id, dir="in", role="user", text=self.prompt, images=self.images)
+
+    def wrap(self, inner: Callable) -> Callable:
+        def responder(out):
+            out = Path(out)
+            self.out = out
+            request = json.loads((out / "request.json").read_text())
+            self.prompt = (out / "prompt.txt").read_text()
+            self.images = self.image_fn(out, request)
+            self.params = {"temperature": None, "max_tokens": PLANNER_MAX_OUTPUT_TOKENS,
+                           "model_id": request.get("model"), "adapter_sha": None, "effort": request.get("effort"),
+                           "kind": request.get("kind", self.kind), "request_id": out.name, "cloud_seed": None,
+                           "policy_seed": self.ctx.action_params.get("policy_seed")}
+            self._open(0)  # 发送前落盘
+            has_hook = hasattr(inner, "transport_hook")
+            if has_hook:
+                previous = inner.transport_hook
+                inner.transport_hook = self.transport
+            try:
+                return inner(out)
+            finally:
+                if has_hook:
+                    inner.transport_hook = previous
+        return responder
+
+    def transport(self, out, attempt: int) -> None:
+        """``GuardedResponsesClient._send`` 每次传输尝试前调用；attempt 0 即 ``wrap`` 已开的那个调用。"""
+        if int(attempt) == 0 or self.call_id is None:
+            return
+        self.ctx.lang.close_call(self.call_id, status="error")
+        self._open(int(attempt))
+
+    def finish(self, *, parsed=None, fallback=None, failed: bool = False) -> None:
+        if self.call_id is None:
+            return
+        lang = self.ctx.lang
+        response = None
+        if self.out is not None and (self.out / "response.json").is_file():
+            try:
+                response = json.loads((self.out / "response.json").read_text())
+            except ValueError:
+                response = None
+        replied = bool(response) and response.get("status") == "ok"
+        if replied:
+            lang.message(self.call_id, dir="out", role="assistant", text=response.get("text"))
+            if failed and fallback is None:  # 有回复但不合约定（如复审不是 true/false）
+                fallback = "model_response_error"
+        lang.close_call(self.call_id, status="reply" if replied else "error", parsed=parsed, fallback=fallback)
+        self.call_id = None
+
+
+def _monitor_images(ctx: TraceContext, ids, frames, command_start: int, wrist) -> list:
+    """监视器 10 张图（``input_contract.build_input`` 顺序）：最近 8 帧、本条命令起点帧、当前腕部帧。"""
+    import trace_writer as tw  # noqa: PLC0415
+    images = [_image_ref(slot, "recent", "exec", int(fid), "front", ctx.frame_sha("exec", int(fid), frames),
+                         transform=PNG_TRANSFORM) for slot, fid in enumerate(ids or [])]
+    images.append(_image_ref(len(images), "command_start", "exec", int(command_start), "front",
+                             ctx.frame_sha("exec", int(command_start), frames), transform=PNG_TRANSFORM))
+    images.append(_image_ref(len(images), "wrist", "exec", len(frames) - 1, "wrist",
+                             tw.image_sha256(wrist) if wrist is not None else None, transform=PNG_TRANSFORM))
+    return images
+
+
 class TracedClient:
-    """包住 VLA websocket 客户端：记每次 ``infer`` 的规范化请求与完整动作块。"""
+    """包住 VLA websocket 客户端：记每次 ``infer`` 的规范化请求与完整动作块；开了语言账本时每次 ``infer`` 记一个
+    ``action_model`` 调用（``in``：``prompt``／``grounded_subgoal``／``simple_subgoal`` 字段原文与两张当前帧引用，
+    发送前落盘；Astra 的 VLA 服务无审计回包，``server_final_text=None``）。"""
 
     def __init__(self, inner, ctx: TraceContext) -> None:
         self._inner = inner
@@ -386,11 +638,35 @@ class TracedClient:
         self._ctx.writer.log_request("vla_reset", b"", step=self._ctx.t)
         return self._inner.reset()
 
+    def _open_lang(self, element) -> str | None:
+        ctx = self._ctx
+        if ctx.lang is None:
+            return None
+        import trace_writer as tw  # noqa: PLC0415
+        call_id = ctx.lang.open_call("action_model", ctx.t, params=dict(ctx.action_params))
+        fields = {k: element.get(k) for k in ("prompt", "grounded_subgoal", "simple_subgoal") if k in element}
+        images = [_image_ref(0, "current", "exec", ctx.t, "front", tw.image_sha256(element.get("observation/image")),
+                             transform=RAW_TRANSFORM),
+                  _image_ref(1, "wrist", "exec", ctx.t, "wrist",
+                             tw.image_sha256(element.get("observation/wrist_image")), transform=RAW_TRANSFORM)]
+        ctx.lang.message(call_id, dir="in", role="fields", text=fields, images=images)
+        return call_id
+
     def infer(self, element):
-        self._ctx.subgoal = element.get("grounded_subgoal")
-        self._ctx.writer.log_request("vla_infer", _canonical(element), step=self._ctx.t)
-        out = self._inner.infer(element)
-        self._ctx.writer.log_response(out.get("actions"), step=self._ctx.t)
+        ctx = self._ctx
+        ctx.subgoal = element.get("grounded_subgoal")
+        call_id = self._open_lang(element)
+        ctx.source_call_id, ctx.chunk_index = call_id, 0
+        ctx.writer.log_request("vla_infer", _canonical(element), step=ctx.t)
+        try:
+            out = self._inner.infer(element)
+        except BaseException:
+            if call_id is not None:
+                ctx.lang.close_call(call_id, status="error")
+            raise
+        if call_id is not None:
+            ctx.lang.close_call(call_id, status="reply", server_final_text=None, server_truncated=None)
+        ctx.writer.log_response(out.get("actions"), step=ctx.t)
         return out
 
 
@@ -405,7 +681,8 @@ def _spool_payload(out: Path) -> bytes:
 
 
 class TracedPlanner:
-    """包住 Astra ``Planner``：每次规划／复审请求按 spool 目录内容记一行 request。"""
+    """包住 Astra ``Planner``：每次规划／复审请求按 spool 目录内容记一行 request；开了语言账本时临时把
+    ``Planner.responder`` 换成 ``PlannerLanguageCall.wrap`` 的发送方（调用结束即还原）。"""
 
     def __init__(self, inner, ctx: TraceContext) -> None:
         self._inner = inner
@@ -416,13 +693,39 @@ class TracedPlanner:
         if (out / "request.json").is_file():
             self._ctx.writer.log_request(name, _spool_payload(out), step=self._ctx.t)
 
-    def predict(self, *a, **k):
-        result = self._inner.predict(*a, **k)
+    def _call(self, method: str, image_fn: Callable, parse: Callable, a, k):
+        ctx = self._ctx
+        fn = getattr(self._inner, method)
+        responder = getattr(self._inner, "responder", None)
+        if ctx.lang is None or responder is None:
+            return fn(*a, **k)
+        call = PlannerLanguageCall(ctx, image_fn, method)
+        self._inner.responder = call.wrap(responder)
+        try:
+            result = fn(*a, **k)
+        except BaseException:
+            call.finish(failed=True)
+            raise
+        finally:
+            self._inner.responder = responder
+        parsed, fallback = parse(result)
+        call.finish(parsed=parsed, fallback=fallback)
+        return result
+
+    def predict(self, task, goal, frames, demo, memory, completed, issued, episode, t):
+        a = (task, goal, frames, demo, memory, completed, issued, episode, t)
+        result = self._call(
+            "predict", lambda out, req: planner_images(self._ctx, out, req, frames, demo),
+            lambda r: (r[0], None if r[0] is not None else "continue_last"), a, {})
         self._log("planner", result[1])
         return result
 
-    def review_second_button(self, *a, **k):
-        result = self._inner.review_second_button(*a, **k)
+    def review_second_button(self, goal, frames, wrist, subgoal, command_start, completed, issued, episode, t):
+        a = (goal, frames, wrist, subgoal, command_start, completed, issued, episode, t)
+        result = self._call(
+            "review_second_button",
+            lambda out, req: planner_images(self._ctx, out, req, frames, [], wrist=wrist, command_start=command_start),
+            lambda r: (r[0], None), a, {})
         self._log("planner_review", result[1])
         return result
 
@@ -431,14 +734,59 @@ class TracedPlanner:
 
 
 class TracedMonitor:
-    """包住监视器：记 ``input.json``（去掉图片路径，换成各图 sha256）。"""
+    """包住监视器：记 ``input.json``（去掉图片路径，换成各图 sha256）。开了语言账本时每次 ``predict`` 记一个
+    ``monitor`` 调用：推理**之前**按上游 ``input_contract.from_observations`` 落 system、user（10 张图引用），
+    之后写回复原文（``response.json`` 的 ``text``）与 ``parsed`` 布尔。"""
 
     def __init__(self, inner, ctx: TraceContext) -> None:
         self._inner = inner
         self._ctx = ctx
 
+    def _open_lang(self, task, goal, subgoal, frames, command_start, wrist) -> str | None:
+        ctx = self._ctx
+        if ctx.lang is None:
+            return None
+        try:
+            import input_contract  # noqa: PLC0415  Astra 的监视器输入契约（与 Monitor.predict 第一行同一函数）
+            sample, ids = input_contract.from_observations(task, goal, subgoal, frames, command_start, wrist)
+            system, user = sample["messages"][0]["content"], sample["messages"][1]["content"]
+        except Exception:  # noqa: BLE001 构造失败时上游 predict 也会同样失败；仍先落一条可读的输入
+            ids, system = None, None
+            user = json.dumps({"task": task, "goal": goal, "subgoal": subgoal, "command_start": command_start},
+                              ensure_ascii=False)
+        call_id = ctx.lang.open_call("monitor", ctx.t, params=dict(ctx.monitor_params))
+        ctx.lang.message(call_id, dir="in", role="system", text=system)
+        images = _monitor_images(ctx, ids, frames, command_start, wrist) if ids is not None else []
+        ctx.lang.message(call_id, dir="in", role="user", text=user, images=images)
+        return call_id
+
+    def _close_lang(self, call_id: str, out: Path, pred, failed: bool) -> None:
+        lang = self._ctx.lang
+        text = None
+        response = Path(out) / "response.json"
+        if response.is_file():
+            try:
+                text = json.loads(response.read_text()).get("text")
+            except ValueError:
+                text = None
+        if text is not None:
+            lang.message(call_id, dir="out", role="assistant", text=text)
+        if failed:
+            lang.close_call(call_id, status="reply" if text is not None else "error", parsed=None,
+                            fallback="model_response_error" if text is not None else None)
+        else:
+            lang.close_call(call_id, status="reply", parsed=pred)
+
     def predict(self, task, goal, subgoal, frames, command_start, wrist, out):
-        result = self._inner.predict(task, goal, subgoal, frames, command_start, wrist, out)
+        call_id = self._open_lang(task, goal, subgoal, frames, command_start, wrist)
+        try:
+            result = self._inner.predict(task, goal, subgoal, frames, command_start, wrist, out)
+        except BaseException:
+            if call_id is not None:
+                self._close_lang(call_id, out, None, failed=True)
+            raise
+        if call_id is not None:
+            self._close_lang(call_id, out, result[0], failed=False)
         sample_path = Path(out) / "input.json"
         if sample_path.is_file():
             sample = json.loads(sample_path.read_text())
@@ -474,11 +822,18 @@ def recorder_meta(args, task: str, ep: int, identity: dict, key: str, media_dir:
             "candidate": identity.get("candidate"), "spec_sha256": identity.get("spec_sha256"),
             "source_episode": identity.get("source_episode"), "identity": ident_full, "builder_episode": int(ep),
             "dataset": args.dataset, "policy": "astra", "policy_variant": "astra", "route": ROUTE,
-            "strict_cap": False, "cond": None, "seat": None, "host": socket.gethostname(), "attempt": ATTEMPT,
-            "attempt_no": ATTEMPT, "canary": False, "gpu_name": None, "gpu_uuid": None, "git_commit": None,
-            "git_dirty": None, "max_steps": int(args.max_steps), "effective_max_steps": int(args.max_steps),
+            "strict_cap": strict_cap_of(args.dataset), "cond": None, "seat": None, "host": socket.gethostname(),
+            "attempt": ATTEMPT, "attempt_no": ATTEMPT, "canary": False, "gpu_name": None, "gpu_uuid": None,
+            "git_commit": None, "git_dirty": None, "max_steps": int(args.max_steps),
+            "effective_max_steps": int(args.max_steps), "effective_cap": int(args.max_steps),
+            "policy_seed": getattr(args, "policy_seed", None), "cloud_seed": None,
             "rec_dir": str(media_dir), "attempt_id": uuid.uuid4().hex, "resolved_identity": dict(identity),
             "env": None, "never_degrade": True, "baseline": False}
+
+
+def strict_cap_of(dataset: str) -> bool:
+    """冻结说明 2.1：ood 为 strict，hard-verify 不是；未知数据集按非 strict（配对检查早已拒绝）。"""
+    return bool(DATASET_STRICT_CAP.get(dataset, False))
 
 
 def default_recorder_factory(media_dir: Path, meta: dict):
@@ -507,11 +862,39 @@ def stage_raw_media(media_dir: Path, ep_dir: Path) -> list[str]:
 
 
 def write_exec_actions(path: Path, actions: list) -> None:
-    """C4：每个执行步的原动作写 ``exec_action__%05d``（0 起步序号）；一旦写就每步都有键。"""
+    """C4：每个执行步的原动作写 ``exec_action__%05d``（0 起步序号）；一旦写就每步都有键。
+
+    冻结说明四.4：``arrays.npz`` 唯一允许的写法是 ``trace_writer.merge_write_npz``（与 ``TraceWriter.close`` 收集的同键
+    逐项核对后合并、原子替换）；该函数不存在（R6 未合入）时保持旧的 ``np.savez``。"""
     import numpy as np  # noqa: PLC0415
+    import trace_writer as tw  # noqa: PLC0415
     if not actions:
         return
-    np.savez(path, **{f"exec_action__{i:05d}": a for i, a in enumerate(actions)})
+    mapping = {f"exec_action__{i:05d}": a for i, a in enumerate(actions)}
+    merge = getattr(tw, "merge_write_npz", None)
+    if merge is not None:
+        merge(Path(path), mapping)
+    else:
+        np.savez(path, **mapping)
+
+
+def prompt_digests(champ: Path) -> dict[str, str]:
+    """``prompts/*.md`` 与 ``prompts/index.json`` 的 sha256（键为相对 ``examples/champ`` 的路径）。"""
+    prompts = Path(champ) / "prompts"
+    files = sorted(prompts.glob("*.md")) + ([prompts / "index.json"] if (prompts / "index.json").is_file() else [])
+    return {str(p.relative_to(champ)): file_sha256(p) for p in files}
+
+
+def write_provenance(path: Path, *, astra, args, key: str, strict_cap: bool, language: bool) -> dict:
+    """局目录来源清单：Astra 源码与 prompts 的 sha256、模型 seed（云端无 seed 接口，``cloud_seed=null``）、实际 cap。"""
+    doc = {"route": ROUTE, "key": key, "attempt": ATTEMPT, "dataset": args.dataset,
+           "policy_seed": getattr(args, "policy_seed", None), "server_seed": getattr(args, "policy_seed", None),
+           "cloud_seed": None, "cloud_seed_note": "planner/monitor cloud API has no seed interface; not fabricated",
+           "effective_cap": int(args.max_steps), "strict_cap": bool(strict_cap),
+           "astra_root": str(getattr(astra, "root", "")), "astra_sources": source_digests(astra.champ),
+           "prompts": prompt_digests(astra.champ), "language_log": "language.jsonl" if language else None}
+    Path(path).write_text(json.dumps(doc, indent=2, ensure_ascii=False, sort_keys=True) + "\n")
+    return doc
 
 
 def stop_file(output: Path) -> Path:
@@ -551,6 +934,7 @@ def run_cases(args, deps: SimpleNamespace) -> dict:
     cases = validate_cases(document, astra.core.TASKS)
     args.dataset = document["dataset"]
     check_pairing(args.dataset, args.max_steps)
+    args.policy_seed = check_policy_seed(getattr(args, "policy_seed", None))
     gate = getattr(deps, "episode_gate", None)
     if gate is not None:
         check_episode_cap(cases)
@@ -617,12 +1001,28 @@ def run_one(args, task, ep, identity, builder, monitor, planner, client, astra, 
     media_dir = a_dir / "media"
     a_dir.mkdir(parents=True, exist_ok=False)
     trace_dir = Path(args.trace_root) / task / f"ep{ep:03d}" / tag if getattr(args, "trace_root", None) else a_dir
+    policy_seed = getattr(args, "policy_seed", None)
+    strict = strict_cap_of(args.dataset)
     trace_identity = {"task": task, "dataset": args.dataset, **identity, "builder_episode": int(ep), "key": key,
-                      "attempt": ATTEMPT}
-    writer = tw.TraceWriter(trace_dir / "trace.jsonl", route=ROUTE, identity=trace_identity, max_steps=args.max_steps)
+                      "attempt": ATTEMPT, "policy_seed": policy_seed}
+    trace_dir.mkdir(parents=True, exist_ok=True)
+    header_extra = _supported_kwargs(tw.TraceWriter, policy_seed=policy_seed, effective_cap=int(args.max_steps),
+                                     strict_cap=strict)
+    writer = tw.TraceWriter(trace_dir / "trace.jsonl", route=ROUTE, identity=trace_identity, max_steps=args.max_steps,
+                            **header_extra)
+    lang_cls = language_log_cls()
+    lang = lang_cls(trace_dir / "language.jsonl") if lang_cls is not None else None
+    write_provenance(a_dir / PROVENANCE_FILE, astra=astra, args=args, key=key, strict_cap=strict,
+                     language=lang is not None)
     meta = recorder_meta(args, task, ep, identity, key, media_dir)
     factory = recorder_factory or default_recorder_factory
-    ctx = TraceContext(writer, open_recorder=lambda: _open_media(factory, media_dir, meta))
+    ctx = TraceContext(writer, open_recorder=lambda: _open_media(factory, media_dir, meta),
+                       effective_cap=int(args.max_steps), strict_cap=strict, lang=lang,
+                       action_params={"temperature": None, "max_tokens": None, "model_id": "mme_vla_suite",
+                                      "adapter_sha": None, "checkpoint": str(args.vla_checkpoint),
+                                      "policy_seed": policy_seed},
+                       monitor_params={**MONITOR_PARAMS, "model_id": getattr(args, "monitor_base", None),
+                                       "adapter": str(args.monitor_adapter), "adapter_sha": None})
     result: dict | None = None
     driver_error: BaseException | None = None
     try:
@@ -636,9 +1036,21 @@ def run_one(args, task, ep, identity, builder, monitor, planner, client, astra, 
         _finish_one(args, ep_dir, a_dir, trace_dir, media_dir, key, ctx, writer, result, driver_error)
 
 
+def _supported_kwargs(fn: Callable, **candidates) -> dict:
+    """可选探测：只把 ``fn`` 签名里显式声明的关键字传过去（R6 的 ``TraceWriter`` 新增 header 字段前后都能跑）。"""
+    import inspect  # noqa: PLC0415
+    try:
+        params = inspect.signature(fn).parameters
+    except (TypeError, ValueError):
+        return {}
+    return {k: v for k, v in candidates.items() if k in params}
+
+
 def _finish_one(args, ep_dir: Path, a_dir: Path, trace_dir: Path, media_dir: Path, key: str, ctx: TraceContext,
                 writer, result: dict | None, driver_error: BaseException | None) -> None:
     terminal = terminal_of(result) if driver_error is None else "error"
+    if ctx.cap_hit and driver_error is None:  # strict cap 拒第 cap+1 步：Astra 记的 error 改为 timeout（冻结说明 2.1）
+        terminal = "timeout"
     has_demo = ctx.demo_frames is not None
     no_frame = not has_demo
     demo_frames = ctx.demo_frames if has_demo else 0
@@ -655,9 +1067,13 @@ def _finish_one(args, ep_dir: Path, a_dir: Path, trace_dir: Path, media_dir: Pat
         except Exception as exc:  # noqa: BLE001 录制收尾失败只记原因，原始块留在 media/，成绩照常收尾
             rec_verify, rec_error = "ERROR", f"{type(exc).__name__}: {exc}"[:800]
     write_exec_actions(trace_dir / "arrays.npz", ctx.actions)
-    extra = {}
+    if ctx.lang is not None:
+        ctx.lang.close()  # 仍未关闭的调用补 cancelled
+    extra = {"policy_seed": getattr(args, "policy_seed", None), "cloud_seed": None, "strict_cap": ctx.strict_cap,
+             "effective_cap": ctx.effective_cap, "cap_hit": ctx.cap_hit,
+             "language": "language.jsonl" if ctx.lang is not None else None, "provenance": PROVENANCE_FILE}
     if result is not None:
-        extra = {k: result.get(k) for k in ("planner_calls", "monitor_calls", "review_calls", "error")}
+        extra.update({k: result.get(k) for k in ("planner_calls", "monitor_calls", "review_calls", "error")})
     if driver_error is not None:
         extra["driver_exception"] = f"{type(driver_error).__name__}: {driver_error}"[:800]
     if no_frame and terminal != "error":  # 理论上不会发生：没 reset 却正常结束；按 error 记，避免假终态
@@ -668,10 +1084,13 @@ def _finish_one(args, ep_dir: Path, a_dir: Path, trace_dir: Path, media_dir: Pat
                  **extra)
     if result is not None:
         rel = lambda p: os.path.relpath(p, ep_dir)  # noqa: E731
+        if ctx.cap_hit and driver_error is None:
+            result["status"] = "timeout"  # run_cases 第④项不把 strict cap 计为基础设施错误
         result.update(route=ROUTE, key=key, attempt=ATTEMPT, episode_dir=a_dir.name, media_dir=rel(media_dir),
                       trace=rel(trace_dir / "trace.jsonl"), exec_steps=ctx.attempted, steps_observed=ctx.observed,
                       frames_recorded=frames_recorded, demo_frames=demo_frames, terminal_reason=terminal,
-                      recorder_verify=rec_verify)
+                      recorder_verify=rec_verify, policy_seed=getattr(args, "policy_seed", None), cloud_seed=None,
+                      strict_cap=ctx.strict_cap, effective_cap=ctx.effective_cap, cap_hit=ctx.cap_hit)
         if (ep_dir / "result.json").is_file():
             from core import atomic_json  # noqa: PLC0415  Astra 的原子写（与它写 result.json 同一函数）
             atomic_json(ep_dir / "result.json", result)
@@ -849,6 +1268,10 @@ def guarded_client_class(api_client):
         return _GUARDED_CLASSES[base]
 
     class GuardedResponsesClient(base):
+        #: 语言账本的传输尝试回调 ``(out, attempt)``（``PlannerLanguageCall.transport``）；``None`` 时不调用。
+        #: 只记录、不改变发送与费用守卫的任何判断。
+        transport_hook = None
+
         def __init__(self, key, gate: CostGate, *, sleep: Callable[[float], None] = time.sleep,
                      monotonic: Callable[[], float] = time.monotonic) -> None:
             super().__init__(key)
@@ -892,6 +1315,8 @@ def guarded_client_class(api_client):
             out = Path(out)
             rid = out.name
             for attempt in range(9):
+                if self.transport_hook is not None:  # 语言账本：每次传输尝试的输入在过闸与发送之前落盘
+                    self.transport_hook(out, attempt)
                 self._gate_before_send(request, out, rid)
                 self.next_request_at = self._monotonic() + SEND_INTERVAL_S
                 self.gate.mark(rid, "sent")
@@ -992,7 +1417,9 @@ def build_parser() -> argparse.ArgumentParser:
         q.add_argument("--cases", required=True)
         q.add_argument("--vla-checkpoint", required=True)
         q.add_argument("--monitor-adapter", required=True)
-        q.add_argument("--max-steps", type=int, required=True, help="步数只来自启动命令：hard-verify 1300，ood 1600")
+        q.add_argument("--max-steps", type=int, required=True, help="步数只来自启动命令：hard-verify 1300，ood 1800")
+        q.add_argument("--policy-seed", default=None,
+                       help="模型 seed（必填，非负整数；VLA 服务 --seed 同值；云端 planner／monitor 无 seed 接口，只记录）")
         q.add_argument("--port", type=int, default=18762)
         q.add_argument("--astra-root", default=None)
 
@@ -1064,6 +1491,7 @@ def cmd_check(args) -> int:
     document = json.loads(Path(args.cases).read_text())
     cases = validate_cases(document, astra.core.TASKS)
     check_pairing(document["dataset"], args.max_steps)
+    args.policy_seed = check_policy_seed(args.policy_seed)
     check_episode_cap(cases)
     if args.guard_state:
         gate = CostGate(args.guard_state)
@@ -1078,8 +1506,9 @@ def cmd_check(args) -> int:
             verify_identity(builder, case)
     with socket.socket() as sock:  # 端口探测：与 run.sh 相同的 bind 检查
         sock.bind(("0.0.0.0", int(args.port)))
-    print(f"ASTRA_CHECK=PASS dataset={document['dataset']} max_steps={args.max_steps} cases={len(cases)} port={args.port}",
-          flush=True)
+    print(f"ASTRA_CHECK=PASS dataset={document['dataset']} max_steps={args.max_steps} "
+          f"strict_cap={int(strict_cap_of(document['dataset']))} policy_seed={args.policy_seed} cases={len(cases)} "
+          f"port={args.port}", flush=True)
     return 0
 
 
@@ -1091,8 +1520,6 @@ def main(argv: list[str] | None = None, deps_factory: Callable | None = None) ->
         print(f"ASTRA_SUMMARY dataset={summary['dataset']} expected={summary['expected']} "
               + " ".join(f"{k}={v}" for k, v in summary["counts"].items()), flush=True)
         return 0
-    if args.cmd == "check":
-        return cmd_check(args)
     if args.cmd == "media-inputs":
         manifest, ledger = media_inputs(Path(args.episode_dir))
         for path, rows in ((args.manifest, [manifest]), (args.ledger, ledger)):
@@ -1103,6 +1530,14 @@ def main(argv: list[str] | None = None, deps_factory: Callable | None = None) ->
         print(f"ASTRA_MEDIA_INPUTS key={acc['key']} attempt_no={acc['attempt_no']} dir={acc['episode_dir']} "
               f"dataset={acc['dataset']}", flush=True)
         return 0
+    if args.cmd in ("check", "run"):  # 冻结说明 2.2：在加载任何上游模块、建任何目录之前拒绝
+        try:
+            args.policy_seed = check_policy_seed(args.policy_seed)
+        except ValueError as exc:
+            print(str(exc), file=sys.stderr, flush=True)
+            return 3
+    if args.cmd == "check":
+        return cmd_check(args)
     astra = bootstrap(astra_root(args.astra_root))
     if args.cmd == "prepare":
         out = Path(args.output)
@@ -1118,6 +1553,7 @@ def main(argv: list[str] | None = None, deps_factory: Callable | None = None) ->
     assert_env_sources()
     if args.monitor_base is None:
         args.monitor_base = astra.runner.BASE
+    print(f"ASTRA_POLICY_SEED policy_seed={args.policy_seed} server_seed={args.policy_seed} cloud_seed=null", flush=True)
     deps = deps_factory(astra, args.port) if deps_factory else default_deps(astra, args.port, args.guard_state)
     run_cases(args, deps)
     return 0

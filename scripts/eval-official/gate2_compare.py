@@ -59,6 +59,18 @@ header 的 ``identity`` 三元组找，同一身份多份时按 ``identity.attem
   ``local_rows``，都没有计 ``unknown_rows``；``--orig-format v75`` 时原侧（E0 历史文件）不核来源。输出
   ``GATE2_PROVENANCE=PASS|FAIL local_rows=<n> unknown_rows=<n>``。``GATE2_INPUTS`` 或 ``GATE2_PROVENANCE`` 任一
   FAIL，判定行为 ``GATE2=INVALID reason=inputs|cross_machine``。
+- 来源主机模式（1006 计划八.10 第 6 条、冻结说明第九节）：``--expect-host <name>`` 时不再按 GL 判，逐行核两侧
+  ``node``（缺则 ``host``）的短主机名都等于给定主机（不区分大小写，``sled-vail.x.y`` 与 ``sled-vail`` 等同），异主机计
+  ``foreign_rows``、缺字段计 ``unknown_rows``，输出 ``GATE2_PROVENANCE=PASS|FAIL mode=host expect_host=<name>
+  foreign_rows=<n> unknown_rows=<n>``，FAIL 时 ``GATE2=INVALID reason=cross_machine``；不给时保持上面的 GL 模式原检查。
+  给 ``--expect-host`` 即启用扩展模式。
+- 语言账本逐次比（1006 计划八.11）：扩展模式下读两侧轨迹同目录的 ``language.jsonl``（``trace_writer.LanguageLog`` 行：
+  ``call_open``／``message``／``call_close``／``reuse``），调用序号按 ``call_open`` 出现顺序（0 起），按
+  ``(调用序号, message_index)`` 对齐有序消息全集（不按四字段去重），逐次比 ``text``（另比 ``dir``／``role``）；不同或只一侧有的
+  消息按 ``dir`` 计入 ``prompt_diff``（``in``）或 ``reply_diff``（``out``）。``GATE2`` 行在 ``other_terminal`` 后追加
+  ``prompt_diff=<n> reply_diff=<n>``（没有任何一对两侧都有 ``language.jsonl`` 时为 ``NA``；只一侧有的对数 >0 时另追加
+  ``lang_missing=<n>``），并在 ``GATE2`` 行之前多一行 ``GATE2_LANG_FIRST_DIFF``，给出第一处不同的身份、调用序号、消息序号与
+  两侧文字片段（以第一个不同字符为中心截取）。
 - 补集合核对：``--orig-supplement <本轮补跑结果 jsonl>...`` 与 ``--manifest`` 同给时，旧原侧（``--orig-results``）的
   最终身份集合与补跑身份集合按身份比：补跑必须恰等于「清单 − 旧原侧」，不凭条数；输出
   ``GATE2_SUPPLEMENT=PASS|FAIL old=<n> supplement=<n> expected=<n> missing=<n> extra=<n> overlap=<n>``，FAIL 时
@@ -86,8 +98,8 @@ header 的 ``identity`` 三元组找，同一身份多份时按 ``identity.attem
 
     GATE2=INFO|INCOMPLETE|INVALID policy=<p> compared=<n> same_terminal=<n> s2f=<n> f2s=<n> sr_orig=<x> sr_new=<y>
           sr_diff_pp=<d> mcnemar_p=<p> not_observed=<n> identical_trace=<n> missing=<n> duplicate=<n>
-          missing_trace=<n> bad_trace=<n> matrix=ss:..,sf:..,…,tt:.. other_terminal=<n> [server_epoch_first=<n>]
-          [expect_total=<n>] [reason=…] [site=…]
+          missing_trace=<n> bad_trace=<n> matrix=ss:..,sf:..,…,tt:.. other_terminal=<n> prompt_diff=<n|NA>
+          reply_diff=<n|NA> [lang_missing=<n>] [server_epoch_first=<n>] [expect_total=<n>] [reason=…] [site=…]
 
 另有一行 ``GATE2_PROJ policy=<p> action=<same>/<diff>/<not_observed> obs=… state=… logic=… text=… stop=…
 episodes_diff=action:<n>,obs:<n>,…``。
@@ -488,6 +500,95 @@ def node_of(row: dict) -> str | None:
 
 def is_gl_node(name: str) -> bool:
     return bool(GL_NODE_RE.match(name.strip().lower().split(".")[0]))
+
+
+def short_host(name: str) -> str:
+    return str(name).strip().lower().split(".")[0]
+
+
+def host_matches(name: str, expect: str) -> bool:
+    """``--expect-host``：短主机名相同即同一台机器（``sled-vail.x.y`` 与 ``sled-vail`` 等同）。"""
+    return bool(short_host(expect)) and short_host(name) == short_host(expect)
+
+
+# ── 语言账本逐次比（1006 计划八.11）──────────────────────────────────────────
+
+LANG_FILE = "language.jsonl"
+SNIPPET = 40
+
+
+def read_language(trace_path: Path | None) -> list[dict] | None:
+    """轨迹同目录的 ``language.jsonl``；不存在返回 None，坏行记 ``{"kind": "_bad"}``。"""
+    if trace_path is None:
+        return None
+    p = Path(trace_path).parent / LANG_FILE
+    if not p.is_file():
+        return None
+    rows: list[dict] = []
+    for line in p.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            r = json.loads(line)
+        except ValueError:
+            rows.append({"kind": "_bad"})
+            continue
+        rows.append(r if isinstance(r, dict) else {"kind": "_bad"})
+    return rows
+
+
+def language_messages(rows: list[dict]) -> dict[tuple, dict]:
+    """``{(调用序号, message_index): message 行}``；调用序号按 ``call_open`` 出现顺序（0 起），悬空消息的序号为 -1。"""
+    order: dict[Any, int] = {}
+    for r in rows:
+        if r.get("kind") == "call_open" and r.get("call_id") not in order:
+            order[r.get("call_id")] = len(order)
+    out: dict[tuple, dict] = {}
+    for r in rows:
+        if r.get("kind") == "message":
+            mi = r.get("message_index")
+            key = (order.get(r.get("call_id"), -1), mi if isinstance(mi, int) else -1)
+            while key in out:  # 同键重复消息不去重：顺延到同调用内的新序号，按缺一侧计差异
+                key = (key[0], key[1] + 100000)
+            out[key] = r
+    return out
+
+
+def _text_str(t: Any) -> str:
+    return t if isinstance(t, str) else json.dumps(t, ensure_ascii=False, sort_keys=True)
+
+
+def text_snippets(a: Any, b: Any, width: int = SNIPPET) -> tuple[str, str, int]:
+    """两段文字以第一个不同字符为中心各截一段；返回 (原侧片段, 新侧片段, 第一个不同字符下标)。"""
+    sa, sb = ("" if a is None else _text_str(a)), ("" if b is None else _text_str(b))
+    i = 0
+    while i < min(len(sa), len(sb)) and sa[i] == sb[i]:
+        i += 1
+    lo = max(0, i - width // 2)
+    return sa[lo:lo + width], sb[lo:lo + width], i
+
+
+def compare_language(la: list[dict], lb: list[dict]) -> dict:
+    """两侧语言账本按 ``(调用序号, message_index)`` 对齐逐次比 ``text``（另比 ``dir``／``role``）。"""
+    ma, mb = language_messages(la), language_messages(lb)
+    prompt = reply = 0
+    first = None
+    for k in sorted(set(ma) | set(mb)):
+        a, b = ma.get(k), mb.get(k)
+        if a is not None and b is not None and a.get("text") == b.get("text") and a.get("dir") == b.get("dir") \
+                and a.get("role") == b.get("role"):
+            continue
+        d = (a or b).get("dir")
+        if d == "out":
+            reply += 1
+        else:
+            prompt += 1
+        if first is None:
+            oa, ob, at = text_snippets(a.get("text") if a else None, b.get("text") if b else None)
+            first = {"call": k[0], "message_index": k[1], "dir": d, "role": (a or b).get("role"),
+                     "orig": oa if a else None, "new": ob if b else None, "at": at,
+                     "orig_present": a is not None, "new_present": b is not None}
+    return {"prompt_diff": prompt, "reply_diff": reply, "messages": len(set(ma) | set(mb)), "first": first}
 
 
 def _key_of(row: dict) -> str | None:
@@ -895,7 +996,7 @@ def compare_ext(orig_rows: list[dict], new_rows: list[dict], orig_traces: str | 
                 expect_total: int | None = None, manifest: list[tuple] | None = None,
                 new_ledger: dict | None = None, new_attempts: dict | None = None, orig_attempts: dict | None = None,
                 orig_supplement: list[dict] | None = None, orig_format: str = "default",
-                noise_runs: list[list[dict]] | None = None) -> dict:
+                noise_runs: list[list[dict]] | None = None, expect_host: str | None = None) -> dict:
     """第二阶段扩展比较（见模块说明）；返回 ``{"summary", "table", "inputs", "provenance", "supplement", "noise"}``。"""
     v75 = orig_format == "v75"
     old_orig = list(orig_rows)
@@ -916,7 +1017,9 @@ def compare_ext(orig_rows: list[dict], new_rows: list[dict], orig_traces: str | 
     proj_tot = {d: {"same": 0, "diff": 0, "not_observed": 0} for d in PROJ_DIMS}
     ep_diff = Counter()
     binding_mismatch = missing_trace = bad_trace = identical = same_term = same_sub = 0
-    local_rows = unknown_rows = 0
+    local_rows = unknown_rows = foreign_rows = 0
+    lang_pairs = lang_missing = prompt_diff = reply_diff = 0
+    lang_first = None
     for k in both:
         ro, rn = of[k], nf[k]
         row = {"task": k[0], "source_episode": k[1], "seed": k[2],
@@ -930,6 +1033,8 @@ def compare_ext(orig_rows: list[dict], new_rows: list[dict], orig_traces: str | 
             nd = node_of(side_row)
             if nd is None:
                 unknown_rows += 1
+            elif expect_host is not None:
+                foreign_rows += not host_matches(nd, expect_host)
             elif not is_gl_node(nd):
                 local_rows += 1
         po = pn = None
@@ -944,6 +1049,19 @@ def compare_ext(orig_rows: list[dict], new_rows: list[dict], orig_traces: str | 
                 row[f"{side}_trace_binding"] = b_
         to = tw.read_trace(po) if po and bo is None else None
         tn = tw.read_trace(pn) if pn and bn is None else None
+        lo = read_language(po) if po and bo is None else None
+        ln = read_language(pn) if pn and bn is None else None
+        if lo is not None and ln is not None:
+            lc = compare_language(lo, ln)
+            lang_pairs += 1
+            prompt_diff += lc["prompt_diff"]
+            reply_diff += lc["reply_diff"]
+            row.update(prompt_diff=lc["prompt_diff"], reply_diff=lc["reply_diff"], lang_first_diff=lc["first"])
+            if lc["first"] is not None and lang_first is None:
+                lang_first = {"task": k[0], "source_episode": k[1], "seed": k[2], **lc["first"]}
+        elif (lo is None) != (ln is None):
+            lang_missing += 1
+            row["lang_missing"] = "orig" if lo is None else "new"
         if mode == "astra":
             so, sn = _subtasks(ro, to), _subtasks(rn, tn)
             row.update(orig_subtasks=so, new_subtasks=sn, same_subtasks=(so is not None and so == sn))
@@ -978,7 +1096,10 @@ def compare_ext(orig_rows: list[dict], new_rows: list[dict], orig_traces: str | 
                                "duplicate": len(dup), "duplicates": [list(x) for x in dup],
                                "identical_trace": identical, "missing_trace": missing_trace, "bad_trace": bad_trace,
                                "projection": proj_tot, "episodes_diff": {d: ep_diff.get(d, 0) for d in PROJ_DIMS},
-                               "not_observed": sum(proj_tot[d]["not_observed"] for d in PROJ_DIMS), **stats}
+                               "not_observed": sum(proj_tot[d]["not_observed"] for d in PROJ_DIMS), **stats,
+                               "lang_pairs": lang_pairs, "lang_missing": lang_missing,
+                               "prompt_diff": prompt_diff if lang_pairs else None,
+                               "reply_diff": reply_diff if lang_pairs else None, "lang_first_diff": lang_first}
     if mode == "astra":
         summary["same_subtasks"] = same_sub
     if groundsg:
@@ -1000,8 +1121,13 @@ def compare_ext(orig_rows: list[dict], new_rows: list[dict], orig_traces: str | 
                   "trace_binding_mismatch": binding_mismatch}
         inputs["verdict"] = "PASS" if all(inputs[x] == 0 for x in ("missing", "extra", "unaccepted", "ambiguous",
                                                                     "trace_binding_mismatch")) else "FAIL"
-    provenance = {"local_rows": local_rows, "unknown_rows": unknown_rows,
-                  "verdict": "PASS" if local_rows == 0 and unknown_rows == 0 else "FAIL"}
+    if expect_host is not None:
+        provenance = {"mode": "host", "expect_host": expect_host, "foreign_rows": foreign_rows,
+                      "unknown_rows": unknown_rows,
+                      "verdict": "PASS" if foreign_rows == 0 and unknown_rows == 0 else "FAIL"}
+    else:
+        provenance = {"local_rows": local_rows, "unknown_rows": unknown_rows,
+                      "verdict": "PASS" if local_rows == 0 and unknown_rows == 0 else "FAIL"}
     supplement = None
     if orig_supplement is not None and manifest is not None:
         supplement = supplement_check(old_orig, orig_supplement, manifest)
@@ -1046,7 +1172,11 @@ def ext_lines(res: dict, policy: str, site: str | None = None) -> list[str]:
                    f"unaccepted={i['unaccepted']} ambiguous={i['ambiguous']} "
                    f"trace_binding_mismatch={i['trace_binding_mismatch']}")
     p = res["provenance"]
-    out.append(f"GATE2_PROVENANCE={p['verdict']} local_rows={p['local_rows']} unknown_rows={p['unknown_rows']}")
+    if p.get("mode") == "host":
+        out.append(f"GATE2_PROVENANCE={p['verdict']} mode=host expect_host={p['expect_host']} "
+                   f"foreign_rows={p['foreign_rows']} unknown_rows={p['unknown_rows']}")
+    else:
+        out.append(f"GATE2_PROVENANCE={p['verdict']} local_rows={p['local_rows']} unknown_rows={p['unknown_rows']}")
     sp = res.get("supplement")
     if sp is not None:
         out.append(f"GATE2_SUPPLEMENT={sp['verdict']} old={sp['old']} supplement={sp['supplement']} "
@@ -1062,13 +1192,23 @@ def ext_lines(res: dict, policy: str, site: str | None = None) -> list[str]:
         out.append(f"GATE2_NOISE=INFO policy={policy} pair={n['pair']} compared={n['compared']} s2f={n['s2f']} "
                    f"f2s={n['f2s']} flips={n['flips']} sr_a={_f4(n['sr_orig'])} sr_b={_f4(n['sr_new'])} "
                    f"missing={n['missing']} note=descriptive_history")
+    lf = s.get("lang_first_diff")
+    if lf is not None:
+        out.append(f"GATE2_LANG_FIRST_DIFF policy={policy} task={lf['task']} source_episode={lf['source_episode']} "
+                   f"seed={lf['seed']} call={lf['call']} message_index={lf['message_index']} dir={lf['dir']} "
+                   f"role={lf['role']} at={lf['at']} orig={json.dumps(lf['orig'], ensure_ascii=False)} "
+                   f"new={json.dumps(lf['new'], ensure_ascii=False)}")
     parts = [f"GATE2={s['verdict']}", f"policy={policy}", f"compared={s['compared']}",
              f"same_terminal={s['same_terminal']}", f"s2f={s['s2f']}", f"f2s={s['f2s']}",
              f"sr_orig={_f4(s['sr_orig'])}", f"sr_new={_f4(s['sr_new'])}", f"sr_diff_pp={s['sr_diff_pp']:.2f}",
              f"mcnemar_p={s['mcnemar_p']:.4g}", f"not_observed={s['not_observed']}",
              f"identical_trace={s['identical_trace']}", f"missing={s['missing']}", f"duplicate={s['duplicate']}",
              f"missing_trace={s['missing_trace']}", f"bad_trace={s['bad_trace']}",
-             f"matrix={_matrix_str(s['matrix'])}", f"other_terminal={s['other_terminal']}"]
+             f"matrix={_matrix_str(s['matrix'])}", f"other_terminal={s['other_terminal']}",
+             f"prompt_diff={'NA' if s.get('prompt_diff') is None else s['prompt_diff']}",
+             f"reply_diff={'NA' if s.get('reply_diff') is None else s['reply_diff']}"]
+    if s.get("lang_missing"):
+        parts.append(f"lang_missing={s['lang_missing']}")
     if s["mode"] == "astra":
         parts.append(f"mode=astra same_subtasks={s['same_subtasks']}")
     if "server_epoch_first" in s:
@@ -1122,13 +1262,15 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--orig-format", choices=["default", "v75"], default=None, help="v75：原侧读 E0 逐局文件")
     g.add_argument("--v75-input-manifest", default=None, help=f"E0 sha256 清单，默认 {DEFAULT_V75_MANIFEST}")
     g.add_argument("--noise-runs", nargs="+", default=None, help="O1 O2（文件或目录）：输出三对两方向翻转（需 --orig-format v75）")
+    g.add_argument("--expect-host", default=None,
+                   help="来源主机模式：两侧每行 node／host 的短主机名都必须等于它（如 sled-vail 本机对拍）；不给时按 GL 判")
     return ap
 
 
 def _extended(args) -> bool:
     return any(getattr(args, a) is not None for a in ("manifest", "new_ledger", "new_attempts", "orig_attempts",
                                                        "orig_supplement", "orig_format", "v75_input_manifest",
-                                                       "noise_runs"))
+                                                       "noise_runs", "expect_host"))
 
 
 def main_ext(args) -> int:
@@ -1160,7 +1302,7 @@ def main_ext(args) -> int:
         new_attempts=read_attempt_map(args.new_attempts) if args.new_attempts else None,
         orig_attempts=read_attempt_map(args.orig_attempts) if args.orig_attempts else None,
         orig_supplement=read_rows(args.orig_supplement) if args.orig_supplement else None,
-        orig_format="v75" if v75 else "default", noise_runs=noise)
+        orig_format="v75" if v75 else "default", noise_runs=noise, expect_host=args.expect_host)
     lines = ext_lines(res, args.policy, args.site)
     res["summary"].update(policy=args.policy, site=args.site, line=lines[-1], lines=lines, input_sha=sha_checked)
     if args.out_json:

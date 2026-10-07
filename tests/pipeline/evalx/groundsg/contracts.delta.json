@@ -20,7 +20,8 @@
       "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_strict_cap_stops_before_env_and_reports_timeout",
       "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_unknown_is_error_and_does_not_stop_seat",
       "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_trace_location_fallbacks",
-      "tests/pipeline/evalx/groundsg/test_groundsg_websocket.py::test_real_websocket_clients_match"
+      "tests/pipeline/evalx/groundsg/test_groundsg_websocket.py::test_real_websocket_clients_match",
+      "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_orig_side_keeps_official_video_and_counts"
     ],
     "resource": "cpu",
     "mutants": [],
@@ -68,6 +69,68 @@
       "tests/pipeline/evalx/groundsg/test_groundsg_orig_runner.py::test_cli_rejects_bad_input_with_exit_3",
       "tests/pipeline/evalx/groundsg/test_groundsg_orig_runner.py::test_raw_frames_format_and_missing_steps",
       "tests/pipeline/evalx/groundsg/test_groundsg_orig_runner.py::test_server_unreachable_aborts_shard"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C13-GSG-04",
+    "domain": "C13",
+    "source": [
+      "scripts/eval-official/official_defs.py",
+      "scripts/eval-official/groundsg_client.py",
+      "scripts/eval-official/official_hard_runner.py"
+    ],
+    "symbol": "official_defs：VARIANT_MEMER、load_memer_model／patch_memer_class（MemER 兼容层 MEMER_COMPAT_SOURCE、MEMER_COMPAT_SHA256、MemERResponseError）、make_args(model_seed=, memer_adapter_path=)、assert_one_predictor、build_predictor、seed_everything；groundsg_client／official_hard_runner 的 MemER 装配与 policy_seed 贯通",
+    "oracle": "真实摘取的官方 Qwen3VLModelMemER（套兼容层与官方原文两份）配假 PtEngine（FakeSwift 逐次脚本回复，不读权重）；提醒句、温度 0.7、日志 retry 行、隔一张取帧下标、关键帧合并结果（3、5、20 → 5、20）全部手写；compat=False 的官方原文做 B 情形与 1／≥15 帧的逐字节对照",
+    "positive": "MEMER_COMPAT=PASS cases=8 fingerprint=<MEMER_COMPAT_SHA256>：A 首次空关键帧取出子目标、B 记忆非空合法回复与官方原函数返回值／记忆／日志字节相同、C1／D1 坏坏好采用第三次、C2 坏坏坏沿用上一次（fallback=last_valid）、D2 坏坏坏抛 MemERResponseError、E 缺键走重问、F 不足 15 帧隔一张取到第 1 张；第二、三次请求 user 末尾追加提醒句且 temperature=0.7、附图与首问相同、日志 retry=1,2；MEMER_WIRING=PASS predictor=MemERSubgoalPredictor（只摘 MemER 类、引擎参数取官方原文、Args 恰 use_memer、日志归档、临时区清空）；policy_seed 0／7／42 两侧都进 Args.model_seed，QwenVL／MemER 构造前 seed_everything（random／numpy／torch 实测重置）",
+    "negative": "坏回复 [1,2] 越界、[0]、负数、bool、1.0、缺键、非字符串、空串、非列表、非对象、换算失败：update_history_subgoals 抛异常且关键帧／历史／执行帧不变（官方原文对 [1,2] 先写第 1 张再越界）；官方原文在 A、E、空记忆合并、5／14 帧时抛 IndexError；上游类缺被补方法时补丁 KeyError；三预测器互斥（含 memer+oracle、memer+gemini）、adapter 误配八种、model_seed 缺／负／bool／非整数一律拒；MemER 三次坏且无上一次 → status=error、error_kind=model_response_error、infra=false、同上下文下一局照常；引擎抛异常时 memer-tmp 照样清空",
+    "boundaries": "不加载真实 Qwen3-VL 与 adapter（MEMER_SMOKE 在真实资产上另验）；重问开随机采样（temperature=0.7）使重问结果不可逐位复现，成绩表注明；短帧时附图张数少于官方",
+    "nodeids": [
+      "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_memer_compat_cases",
+      "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_atomic_validation_rejects_without_touching_state",
+      "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_conversion_failure_is_atomic",
+      "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_bad_then_good_retry_keeps_first_request_memory_and_images",
+      "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_merge_empty_memory_and_regression",
+      "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_patch_refuses_changed_upstream",
+      "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_memer_wiring",
+      "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_memer_model_response_error_is_named_error_and_cleans_up",
+      "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_engine_exception_cleans_memer_tmp",
+      "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_policy_seed_reaches_args_and_seed_everything"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C13-GSG-05",
+    "domain": "C13",
+    "source": [
+      "scripts/eval-official/groundsg_client.py",
+      "scripts/eval-official/official_hard_runner.py",
+      "scripts/eval-official/run_official_hard.sh"
+    ],
+    "symbol": "groundsg_client：LangTap／install_language／open_language_log／TracingClient 审计键 pop／EpisodeTap source_call_id；official_hard_runner：OrigBudget（reserve／claim_reset／claim_retry／commit／release、route、token）、run_shard(budget=)、main 参数核对；run_official_hard.sh：check_stage3_args、build_runner_cmd 转发",
+    "oracle": "LanguageLog 按接口冻结说明第五节签名手写严格替身（关键字名错即 TypeError）；动作服务替身回包带冻结格式的 _sgeval_audit；共享账本按冻结说明三写假账本（调用顺序记账、token 幂等）；期望调用序列、retry、温度、reuse 步号、route／token 字符串全部手写",
+    "positive": "MemER 坏坏好：subgoal_model 三次 retry=0,1,2、前两次 parsed=None、第三次 parsed 为换算后子目标、重问 user 原文带提醒句、附图 recent frame_idx=0、demo[0:2]；last_valid 与 model_response_error 两种 fallback；QwenVL keep_period 复用记 reuse（16、32 步）；Oracle 动作字段 subgoal_source=oracle；action_model 记任务／符号两路通道与 server_final_text、截断；每个执行步 source_call_id 指向动作调用、chunk_index 连续、附图哈希都在轨迹帧哈希里、无悬空调用；原侧同格式；原侧账本 reserve(first)→claim_reset(build)→claim_reset(reset)→commit，第 2 次尝试 claim_retry→reserve(recovery)，同 token 续跑不多记；route groundsg/<variant>/seed<n>/orig",
+    "negative": "没有 LanguageLog 时 step 行仍是旧 9 键、不写 language.jsonl；审计键无论有无账本都在交给官方代码前 pop；重试名额被拒不预约、不建局目录、记 budget_retry_denied；轨迹额度不足停片 budget_blocked；没建环境就失败 release；驱动缺 policy_seed／任一预算参数／MemER adapter 配错／max_steps≠1300 退出 3（参数核对先于导入）；启动器缺 --policy-seed 或预算参数 RUN_BLOCKED 退出 3、不建状态目录",
+    "boundaries": "LanguageLog 与 budget_ledger 新签名分别由 R6、R3 提供，本条用替身按冻结说明验调用；真实 budget_ledger 的 token 幂等与首试保留额度由 R3 测；服务端 seed 与 variant_pairing 的 MemER 放行在 run_seat.sh（R3）",
+    "nodeids": [
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_memer_language_log_retries_and_audit",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_memer_language_log_fallback_and_named_error",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_qwenvl_reuse_and_oracle_source",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_orig_side_writes_language_log",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_audit_key_popped_without_language_log",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_step_rows_unchanged_without_language_log",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_orig_budget_call_sequence_first_try",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_orig_budget_retry_is_idempotent_by_token",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_orig_budget_retry_denied_and_exhausted",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_orig_budget_releases_when_never_built",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_orig_budget_route_carries_variant_and_seed",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_runner_cli_blocks_before_any_import",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_run_official_hard_requires_stage3_args",
+      "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_build_runner_cmd_forwards_memer_seed_and_budget"
     ],
     "resource": "cpu",
     "mutants": [],

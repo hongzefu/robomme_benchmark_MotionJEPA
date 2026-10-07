@@ -29,16 +29,28 @@
 # 视频帧数口径：PonderPounce 原侧 = video_history 帧数 + 1 个初始帧 + 已执行步数 − 缺画面步数（frames.json 的 count）；
 #   GroundSG 原侧 = 外围委托记录的帧数（演示帧 + 已执行步数，以驱动写的 frames.json 为准）。转码前后帧数相等才算 ok。
 #
+# 第三阶段（1006-rename-official-names-and-stage3-eval-plan.md 八.3、八.10 第 3、8 条；接口冻结说明 2.2～2.4、三）：
+#   --policy-seed <n> 必填（缺失或非非负整数 RUN_BLOCKED reason=policy_seed、退出 3）；预算五参数
+#   --budget-ledger --trajectory-cap --shared-infra-cap --expired-cap --planned-first-tries 必填（缺任一
+#   RUN_BLOCKED reason=budget_args、退出 3，不回落 budget_ledger.py 常量默认值），groundsg 原样转发给
+#   official_hard_runner.py（驱动经共享账本 reserve／claim_reset／claim_retry／commit／release，route
+#   groundsg/<variant>/seed<n>/orig）；驱动退出 5（轨迹预算不足）即 RUN_BLOCKED reason=budget、本席退出 5。
+#   变体放行 ground-sg-memer（--memer-adapter <dir>，与 --qwenvl-groundsg-adapter 互斥；配对核对由 run_seat.sh 的
+#   variant_pairing 负责）。服务端的模型种子由 run_seat.sh 的 build_server_cmd 读 POLICY_SEED（R3）。
+#
 # 用法：
 #   bash run_official_hard.sh --run-name R --seat NN --repo <执行副本> --stage <NFS 运行根> --shard <shard-NN.json> \
-#     --policy {groundsg,pp} --dataset hard-verify --max-steps 1300 --infra-retry-budget N \
-#     [--groundsg-variant {ground-sg-oracle,ground-sg-qwenvl}] [--qwenvl-groundsg-adapter D] \
+#     --policy {groundsg,pp} --dataset hard-verify --max-steps 1300 --infra-retry-budget N --policy-seed N \
+#     --budget-ledger L --trajectory-cap N --shared-infra-cap N --expired-cap N --planned-first-tries N \
+#     [--groundsg-variant {ground-sg-oracle,ground-sg-qwenvl,ground-sg-memer}] \
+#     [--qwenvl-groundsg-adapter D | --memer-adapter D] \
 #     [--groundsg-ckpt D --openpi-data-home D --tokenizer-sha256 H] [--pp-ckpt D] \
 #     [--gpu 0] [--cpus 0-3] [--media-root D] [--local-root D] [--limit N] [--episode-wall S] [--sync-interval S]
 # 判定行：OFFICIAL_SEAT_DONE seat=NN policy=<label> outcome=pass|fail|aborted rc=<rc> …；SEAT_REC_SYNC=PASS|FAIL …
 #   transcoded=<n> frame_mismatch=<n> transcode_fail=<n>；末行 EXIT_CODE=<rc>。
-# 退出码：0 全部身份有非 infra 结果行且同步 PASS；2 参数错误；3 RUN_BLOCKED（配对、预检、导入断言）；4 基础设施用尽；
-#   6 仍有身份无终态（重试额度或 2 次尝试用尽）；7 只有同步 FAIL；中断 130/143（HUP 129）。
+# 退出码：0 全部身份有非 infra 结果行且同步 PASS；2 参数错误；3 RUN_BLOCKED（配对、预检、导入断言、policy_seed、
+#   budget_args）；4 基础设施用尽；5 轨迹预算不足；6 仍有身份无终态（重试额度或 2 次尝试用尽）；7 只有同步 FAIL；
+#   中断 130/143（HUP 129）。
 # 解释器：驱动用 SGEVAL_CLIENT_PY（客户端扩展环境），服务用 MME_VLA_PY／PP_PY（同 run_seat.sh）；本脚本内小工具用 BENCH_PY。
 set -uo pipefail
 export PYTHONUNBUFFERED=1
@@ -51,12 +63,35 @@ source "$HERE/run_seat.sh"
 RUN_NAME="" ; SEAT="" ; STAGE="" ; MEDIA_ROOT="" ; SHARD="" ; POLICY="" ; LOCAL_ROOT="" ; SYNC_INTERVAL=120
 GPU=0 ; CPUS="" ; LIMIT=0 ; INFRA_RETRY_BUDGET="" ; DATASET="" ; MAX_STEPS="" ; STRICT_CAP=0
 RUNNER_PID="" ; FINALIZED=0 ; RUN_OUT="" ; ORIG_STATE="" ; PUB_ROOT="" ; LABEL="" ; PORT=""
+# 第三阶段：模型种子、MemER adapter 与预算五参数（全部必填项在 parse_official_args 里核对）
+POLICY_SEED="${POLICY_SEED:-}" ; MEMER_ADAPTER="${MEMER_ADAPTER:-}" ; BUDGET_LEDGER="" ; TRAJECTORY_CAP=""
+SHARED_INFRA_CAP="" ; EXPIRED_CAP="" ; PLANNED_FIRST_TRIES=""
 
 official_die2() {
   echo "$1" >&2
   echo "OFFICIAL_SEAT_DONE seat=${SEAT:-?} policy=${POLICY:-?} outcome=fail rc=2 reason=bad_args"
   echo "EXIT_CODE=2"
   exit 2
+}
+
+official_block3() {  # $1 = reason；$2 = 说明。必填项缺失（policy_seed／budget_args）：RUN_BLOCKED、退出 3
+  echo "RUN_BLOCKED reason=$1 $2"
+  echo "OFFICIAL_SEAT_DONE seat=${SEAT:-?} policy=${POLICY:-?} outcome=fail rc=3 reason=$1"
+  echo "EXIT_CODE=3"
+  exit 3
+}
+
+check_stage3_args() {  # 第三阶段必填项：policy_seed 与预算五参数（不回落任何默认值）
+  [[ "$POLICY_SEED" =~ ^[0-9]+$ ]] || official_block3 policy_seed "value=${POLICY_SEED:-unset}（--policy-seed 必填，非负整数）"
+  local miss=() n v
+  for n in BUDGET_LEDGER TRAJECTORY_CAP SHARED_INFRA_CAP EXPIRED_CAP PLANNED_FIRST_TRIES; do
+    v="${!n}"
+    if [[ -z "$v" ]]; then miss+=("$n")
+    elif [[ "$n" != BUDGET_LEDGER && ! "$v" =~ ^[0-9]+$ ]]; then miss+=("$n=$v")
+    fi
+  done
+  (( ${#miss[@]} == 0 )) || official_block3 budget_args "missing=${miss[*]}"
+  return 0
 }
 
 parse_official_args() {
@@ -74,6 +109,13 @@ parse_official_args() {
       --strict-cap) STRICT_CAP=1; shift;;
       --groundsg-variant) GROUNDSG_VARIANT="$2"; shift 2;;
       --qwenvl-groundsg-adapter) QWENVL_ADAPTER="$2"; shift 2;;
+      --memer-adapter) MEMER_ADAPTER="$2"; shift 2;;
+      --policy-seed) POLICY_SEED="$2"; shift 2;;
+      --budget-ledger) BUDGET_LEDGER="$2"; shift 2;;
+      --trajectory-cap) TRAJECTORY_CAP="$2"; shift 2;;
+      --shared-infra-cap) SHARED_INFRA_CAP="$2"; shift 2;;
+      --expired-cap) EXPIRED_CAP="$2"; shift 2;;
+      --planned-first-tries) PLANNED_FIRST_TRIES="$2"; shift 2;;
       --groundsg-ckpt) GROUNDSG_CKPT="$2"; shift 2;;
       --pp-ckpt) PP_CKPT="$2"; shift 2;;
       --openpi-data-home) OPENPI_HOME="$2"; shift 2;;
@@ -98,6 +140,7 @@ parse_official_args() {
   [[ "$LIMIT" =~ ^[0-9]+$ && "$SYNC_INTERVAL" =~ ^[0-9]+$ ]] || official_die2 "--limit／--sync-interval 须为非负整数"
   [[ -z "$MAX_STEPS" || "$MAX_STEPS" =~ ^[0-9]+$ ]] || official_die2 "--max-steps 须为非负整数"
   [[ -z "$WALL_ALL" || "$WALL_ALL" =~ ^[0-9]+$ ]] || official_die2 "--episode-wall 须为非负整数秒"
+  check_stage3_args
   if [[ "$POLICY" == "groundsg" ]]; then
     [[ -n "$OPENPI_HOME" && -n "$TOKENIZER_SHA" ]] || official_die2 "跑 groundsg 须给 --openpi-data-home --tokenizer-sha256"
   else
@@ -131,6 +174,14 @@ build_runner_cmd() {  # $1 = 尝试号；$2 = 逗号分隔 key；$3 = 端口 →
   if [[ "$POLICY" == "groundsg" ]]; then
     RUN_ARGV+=(--variant "$GROUNDSG_VARIANT")
     [[ -n "$QWENVL_ADAPTER" ]] && RUN_ARGV+=(--qwenvl-groundsg-adapter "$QWENVL_ADAPTER")
+    [[ -n "${MEMER_ADAPTER:-}" ]] && RUN_ARGV+=(--memer-adapter "$MEMER_ADAPTER")
+    # 第三阶段：模型种子与预算五参数原样转发（有值才加；必填核对在 parse_official_args）
+    [[ -n "${POLICY_SEED:-}" ]] && RUN_ARGV+=(--policy-seed "$POLICY_SEED")
+    [[ -n "${BUDGET_LEDGER:-}" ]] && RUN_ARGV+=(--budget-ledger "$BUDGET_LEDGER")
+    [[ -n "${TRAJECTORY_CAP:-}" ]] && RUN_ARGV+=(--trajectory-cap "$TRAJECTORY_CAP")
+    [[ -n "${SHARED_INFRA_CAP:-}" ]] && RUN_ARGV+=(--shared-infra-cap "$SHARED_INFRA_CAP")
+    [[ -n "${EXPIRED_CAP:-}" ]] && RUN_ARGV+=(--expired-cap "$EXPIRED_CAP")
+    [[ -n "${PLANNED_FIRST_TRIES:-}" ]] && RUN_ARGV+=(--planned-first-tries "$PLANNED_FIRST_TRIES")
   fi
   return 0
 }
@@ -326,7 +377,8 @@ orig_loop() {  # 分轮调度；返回 0 完成（含 missing 由调用方判）
       2) server_restarts=$((server_restarts + 1))
          echo "ORIG_SERVER_UNREACHABLE policy=$LABEL restarts=$server_restarts"
          (( server_restarts > MAX_SERVER_RESTARTS )) && { echo "INFRA_EXHAUSTED policy=$LABEL side=orig server_restarts=$server_restarts"; return 4; };;
-      3) echo "RUN_BLOCKED reason=official_runner policy=$LABEL（驱动退出 3：分片或导入断言）"; return 3;;
+      3) echo "RUN_BLOCKED reason=official_runner policy=$LABEL（驱动退出 3：分片、导入断言或账本配置）"; return 3;;
+      5) echo "RUN_BLOCKED reason=budget policy=$LABEL（驱动退出 5：共享账本轨迹额度不足）"; return 5;;
       *) runner_fails=$((runner_fails + 1))
          (( runner_fails > MAX_CLIENT_RESTARTS )) && { echo "INFRA_EXHAUSTED policy=$LABEL side=orig runner_fails=$runner_fails"; return 4; };;
     esac
@@ -384,6 +436,8 @@ official_entry() {
   : > "$OUT/.v8-pgids"
   echo "OFFICIAL_SEAT_START run_name=$RUN_NAME seat=$SEAT idx=$SEAT_IDX gpu=$GPU cpus=${CPUS:-all} policy=$POLICY label=$LABEL \
 dataset=${DATASET:-unset} max_steps=${MAX_STEPS:-unset} strict_cap=$STRICT_CAP variant=${GROUNDSG_VARIANT:-none} \
+policy_seed=$POLICY_SEED memer_adapter=${MEMER_ADAPTER:-none} budget_ledger=$BUDGET_LEDGER trajectory_cap=$TRAJECTORY_CAP \
+shared_infra_cap=$SHARED_INFRA_CAP expired_cap=$EXPIRED_CAP planned_first_tries=$PLANNED_FIRST_TRIES \
 runner=$(runner_script_of "$POLICY") repo=$REPO git=$(git -C "$REPO" rev-parse HEAD 2>/dev/null) state=$ORIG_STATE \
 local=$RUN_OUT publish=$PUB_ROOT infra_retry_budget=$INFRA_RETRY_BUDGET limit=$LIMIT client_py_ext=$SGEVAL_CLIENT_PY \
 pp_py=$PP_PY no_proxy=127.0.0.1,localhost hf_home=${HF_HOME:-unset} host=$(hostname) $(date -Is)"

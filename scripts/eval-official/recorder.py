@@ -40,6 +40,24 @@ _LAST_LEVEL = 0  # 本进程上一次判定的降级档位（用于只在档位�
 _FFMPEG_CACHE: dict[str, Any] = {}
 
 
+def _trace_writer():
+    """同目录 ``trace_writer``（``merge_write_npz`` 的唯一实现）：已导入则复用，否则按文件路径加载。"""
+    mod = sys.modules.get("trace_writer")
+    if mod is not None and hasattr(mod, "merge_write_npz"):
+        return mod
+    import importlib.util
+
+    # 已注册的同名模块缺该函数（旧副本）时另起私有名加载，不顶替别人已导入的模块
+    name = "trace_writer" if mod is None else "_recorder_trace_writer"
+    if name in sys.modules:
+        return sys.modules[name]
+    spec = importlib.util.spec_from_file_location(name, Path(__file__).resolve().parent / "trace_writer.py")
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
 def dumps(obj: Any) -> str:
     """全项目统一的 jsonl 行格式。"""
     return json.dumps(obj, sort_keys=True, ensure_ascii=False, default=_json_default)
@@ -424,7 +442,11 @@ class EpisodeRecorder:
             with open(self.out_dir / f"frames-{st.name}.jsonl", "w", encoding="utf-8") as fh:
                 for rec in st.records:
                     fh.write(dumps(rec) + "\n")
-        self._write_arrays()
+        try:
+            self._write_arrays()
+        except Exception as e:  # noqa: BLE001 数组写盘失败（含与 trace 同键不一致）：不抛，记 FAIL
+            errors.append(f"arrays: {type(e).__name__}: {e}"[:800])
+            ok = False
         with self._lock:
             self._events_fh.close()
         nbytes = sum(p.stat().st_size for p in self.out_dir.glob("*.mkv"))
@@ -656,7 +678,9 @@ class EpisodeRecorder:
         if not items:
             return
         payload = {f"{name}__{k:05d}": a for name, k, _s, a in items}
-        np.savez(self.out_dir / "arrays.npz", **payload)
+        # 第三阶段（冻结说明四.4）：唯一写法 merge_write_npz，与同目录 trace 的收尾先后任意都不互相覆盖；
+        # 同键不一致抛 ArraysConflict，由 close() 记进 errors（RECORDER_VERIFY=FAIL）
+        _trace_writer().merge_write_npz(self.out_dir / "arrays.npz", payload)
         with open(self.out_dir / "arrays-index.jsonl", "w", encoding="utf-8") as fh:
             for name, k, step, a in items:
                 fh.write(dumps({"key": f"{name}__{k:05d}", "name": name, "k": k, "step": step,

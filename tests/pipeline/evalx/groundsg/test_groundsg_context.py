@@ -14,6 +14,8 @@ import groundsg_fakes as F
 OFFICIAL_ENV = {"IMAGE_MAX_TOKEN_NUM": "256", "VIDEO_MAX_TOKEN_NUM": "64", "FPS_MAX_FRAMES": "10"}
 QWEN_ENV = {"USE_HF": "1", "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"}
 OTHER_PREDICTORS = ("GeminiSubgoalPredictor", "MemERSubgoalPredictor", "NullSubgoalPredictor")
+ALL_PREDICTORS = ("GeminiSubgoalPredictor", "QwenVLSubgoalPredictor", "MemERSubgoalPredictor", "OracleSubgoalPredictor",
+                  "NullSubgoalPredictor")
 
 
 @pytest.fixture
@@ -86,16 +88,39 @@ def test_variants_are_mutually_exclusive(tmp_path, clean_env):
     defs = od.load_groundsg(F.ORACLE, with_env_runner=False, ws_module=od.ws_shim(lambda h, p: None))
     Args = defs["Args"]
     for kw in ({"use_oracle": True, "use_qwenvl": True}, {"use_oracle": False, "use_qwenvl": False},
-               {"use_oracle": True, "use_gemini": True}, {"use_qwenvl": True, "use_memer": True}):
-        args = Args(subgoal_type="grounded_subgoal", **kw)
+               {"use_oracle": True, "use_gemini": True}, {"use_qwenvl": True, "use_memer": True},
+               {"use_oracle": True, "use_memer": True}, {"use_memer": True, "use_gemini": True},
+               {"use_oracle": True, "use_qwenvl": True, "use_memer": True}):
+        args = Args(subgoal_type="grounded_subgoal", model_seed=7, **kw)
         with pytest.raises(AssertionError):
             od.build_predictor(defs, args, tmp_path)
-    with pytest.raises(ValueError):
-        od.make_args(defs, variant=F.QWENVL, host="h", port=1, max_steps=10, adapter_path=None)
+    # adapter 误配（接口冻结说明 2.3：QwenVL 只给 QwenVL adapter，MemER 只给 MemER adapter，Oracle 都不给）
+    bad_pairs = [(F.QWENVL, None, None), (F.QWENVL, F.ADAPTER, F.MEMER_ADAPTER), (F.QWENVL, None, F.MEMER_ADAPTER),
+                 (F.MEMER, None, None), (F.MEMER, F.ADAPTER, None), (F.MEMER, F.ADAPTER, F.MEMER_ADAPTER),
+                 (F.ORACLE, F.ADAPTER, None), (F.ORACLE, None, F.MEMER_ADAPTER)]
+    for variant, qa, ma in bad_pairs:
+        with pytest.raises(ValueError):
+            od.make_args(defs, variant=variant, host="h", port=1, max_steps=10, model_seed=7, adapter_path=qa,
+                         memer_adapter_path=ma)
+    # 模型种子必给：缺、负数、bool、非整数一律拒
+    for seed in (None, -1, True, "x", 1.5):
+        with pytest.raises(ValueError):
+            od.make_args(defs, variant=F.ORACLE, host="h", port=1, max_steps=10, model_seed=seed)
+    with pytest.raises(TypeError):
+        od.make_args(defs, variant=F.ORACLE, host="h", port=1, max_steps=10)
     mc = F.groundsg_client()
     for bad in (None, "ground-sg-gemini"):
         with pytest.raises(ValueError):
             mc.make_policy_context(dict(F.seat_info(F.ORACLE, 60, tmp_path), groundsg_variant=bad))
+    for bad_seed in (None, -3, "abc"):
+        with pytest.raises(ValueError, match="RUN_BLOCKED reason=policy_seed"):
+            mc.make_policy_context(dict(F.seat_info(F.ORACLE, 60, tmp_path), policy_seed=bad_seed))
+    # MemER 变体缺 memer_adapter_path、或误带 QwenVL adapter：在加载任何模型之前就拒
+    swift = F.FakeSwift()
+    for extra in ({"memer_adapter_path": None}, {"qwenvl_groundSG_adapter_path": F.ADAPTER}):
+        with pytest.raises(ValueError):
+            mc.make_policy_context(dict(F.seat_info(F.MEMER, 60, tmp_path), **extra), qwen_extra=swift.names)
+    assert swift.engines == []
 
 
 def test_run_episode_rejects_mismatched_context(tmp_path, clean_env):
@@ -135,7 +160,10 @@ def test_policy_context_built_once_per_seat(tmp_path, clean_env):
 
     def make(seat_info):
         calls["make"] += 1
-        return mc.make_policy_context(seat_info, client_factory=lambda h, p, ep: F.FakeClient(server),
+        # policy_seed 由 R3 的 SeatRunner.seat_info 提供（接口冻结说明 2.5）：来自 run 的 --policy-seed，不在这里补
+        info = dict(seat_info)
+        assert info["policy_seed"] == F.POLICY_SEED
+        return mc.make_policy_context(info, client_factory=lambda h, p, ep: F.FakeClient(server),
                                       qwen_extra=swift.names)
 
     def run_episode(session, identity, conn_info, recorder):
@@ -151,7 +179,8 @@ def test_policy_context_built_once_per_seat(tmp_path, clean_env):
         "run", "--policy", "groundsg", "--identities", "unused.json", "--dataset", "hard-verify", "--max-steps", "1300",
         "--groundsg-variant", F.QWENVL, "--qwenvl-groundsg-adapter", F.ADAPTER, "--trace-root", str(tmp_path / "trace"),
         "--cond", "N", "--seat", "00", "--port", "18120", "--out", str(tmp_path / "out"), "--first-extra-s", "0",
-        "--ledger", str(tmp_path / "ledger.jsonl"), "--reset-budget", "10", "--infra-retry-budget", "0"])
+        "--ledger", str(tmp_path / "ledger.jsonl"), "--reset-budget", "10", "--infra-retry-budget", "0",
+        "--policy-seed", str(F.POLICY_SEED)])
     runner = ec.SeatRunner(args, policy_mod=mod,
                            builder_factory=lambda task, dataset, ms: _HybridBuilder(task, dataset, ms, world))
     rows = []

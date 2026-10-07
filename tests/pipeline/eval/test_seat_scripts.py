@@ -21,6 +21,13 @@ results.epochs.jsonl）；``run_eval_gl.sh`` 的就地转码（帧数核对、�
 时 pp 服务以绝对路径起 ``pp_server_wrap.py``、外壳缺失 ``RUN_BLOCKED``。重绘器在这些用例里换成桩
 （``STUB_RENDERER``，按 S2a 约定的 ``--source raw`` CLI 读原始帧出视频与 ``render.json``）；真实重绘器的逐帧正确性由
 S2a 的 ``test_sgx_render_official_video.py`` 负责。
+
+第三阶段（1006 计划 R3；接口冻结说明二、三、八节）：ood 的启动约定改为 ``--max-steps 1800 --strict-cap``；``--policy-seed``
+与五个预算参数必填（缺失 ``RUN_BLOCKED reason=policy_seed``／``reason=budget_args``、不起任何进程），种子原样进服务 argv
+（smvla ``--policy-seed``、pp ``--args.seed``、MME-VLA 走 ``policy_server_wrap.py --seed=``）与客户端 argv；``--reset-budget``
+可不给（客户端只计量）；重启计数持久化到 ``<ledger-dir>/<label>.recovery.json``、续跑沿用。原侧驱动
+``run_official_hard.sh``（R2 管）经 ``source run_seat.sh`` 复用 ``build_server_cmd``，种子取全局 ``POLICY_SEED``：本文件
+给原侧用例的环境里设 ``POLICY_SEED=7``（R2 合入后由其 ``--policy-seed`` 设定）。
 """
 from __future__ import annotations
 
@@ -89,7 +96,7 @@ case "$1" in
   -m) if [[ "$2" == ponderpounce.eval.robomme_server ]]; then shift 2; exec "{sys.executable}" "{ENGINE}" server "$@"; fi
       exec "{sys.executable}" "$@";;
   *pp_server_wrap.py) echo "$1" >> "{tmp_path}/pp-wrap-argv0.txt"; shift; exec "{sys.executable}" "{ENGINE}" server "$@";;
-  *smvla_server.py|*serve_policy.py) shift; exec "{sys.executable}" "{ENGINE}" server "$@";;
+  *smvla_server.py|*serve_policy.py|*policy_server_wrap.py) shift; exec "{sys.executable}" "{ENGINE}" server "$@";;
   *env_client.py) shift; exec "{sys.executable}" "{ENGINE}" client "$@";;
   *pp_official_runner.py|*official_hard_runner.py) shift; exec "{sys.executable}" "{ENGINE}" runner "$@";;
   *) exec "{sys.executable}" "$@";;
@@ -115,7 +122,8 @@ esac
     env.update(PATH=f"{bin_dir}:{env['PATH']}", BENCH_PY=str(fakepy), SMVLA_PY=str(fakepy), SMVLA_CKPT=str(ckpt),
                SGEVAL_CLIENT_PY=str(fakepy), PP_PY=str(fakepy),
                SEAT_POLL_S="0.2", SEAT_READY_POLL_S="0.1", FAKE_LOG=str(tmp_path / "fake.jsonl"),
-               FAKE_STATE=str(tmp_path / "client-count"), FAKE_SERVER_MODE="ok", FAKE_CLIENT_CODES="0")
+               FAKE_STATE=str(tmp_path / "client-count"), FAKE_SERVER_MODE="ok", FAKE_CLIENT_CODES="0",
+               POLICY_SEED="7")  # 只供以库方式 source run_seat.sh 的原侧驱动；run_seat.sh／run_eval_gl.sh 直接执行时不继承
     yield {"tmp": tmp_path, "fakepy": fakepy, "env": env, "shard": shard, "idents": idents, "ckpt": ckpt,
            "pp_ckpt": pp_ckpt, "shard0": shard0, "hard0": hard0, "idx": _free_seat_idx()}
     # 测试侧兜底：无论生产收尾是否生效，本用例起过的假进程一律收干净
@@ -124,9 +132,14 @@ esac
     assert left == [], f"teardown 后仍有存活进程 {left}"
 
 
-def _seat_cmd(rig, *extra, out=None, policies="smvla", dataset="ood", max_steps=None, strict=None, ledger=True):
+BUDGET_CAPS = ("--trajectory-cap", "870", "--shared-infra-cap", "50", "--expired-cap", "50",
+               "--planned-first-tries", "821")
+
+
+def _seat_cmd(rig, *extra, out=None, policies="smvla", dataset="ood", max_steps=None, strict=None, ledger=True,
+              seed="7", budget=True, reset_budget="10"):
     out = out or rig["tmp"] / "out"
-    max_steps = max_steps or (1300 if dataset == "hard-verify" else 1600)
+    max_steps = max_steps or (1300 if dataset == "hard-verify" else 1800)
     strict = (dataset == "ood") if strict is None else strict
     cmd = ["bash", str(EO / "run_seat.sh"), "--seat", "T", "--seat-idx", str(rig["idx"]), "--gpu", "0",
            "--cond", "C", "--out", str(out), "--identities", str(rig["shard"]), "--policies", policies,
@@ -134,7 +147,13 @@ def _seat_cmd(rig, *extra, out=None, policies="smvla", dataset="ood", max_steps=
     if strict:
         cmd.append("--strict-cap")
     if ledger:
-        cmd += ["--ledger-dir", str(out / "ledger"), "--reset-budget", "10", "--infra-retry-budget", "2"]
+        cmd += ["--ledger-dir", str(out / "ledger"), "--infra-retry-budget", "2"]
+        if reset_budget is not None:
+            cmd += ["--reset-budget", reset_budget]
+    if seed is not None:
+        cmd += ["--policy-seed", seed]
+    if budget:
+        cmd += ["--budget-ledger", str(rig["tmp"] / "budget" / "budget-ledger.jsonl"), *BUDGET_CAPS]
     return cmd + list(extra)
 
 
@@ -263,12 +282,12 @@ def test_normal_run_and_first_extra_only_on_fresh_server(rig):
     rc, out = _run(_seat_cmd(rig), rig["env"])
     assert rc == 0, out
     assert out.rstrip().splitlines()[-1] == "EXIT_CODE=0"
-    assert "STEP_CAP_PAIRING=PASS dataset=ood max_steps=1600 strict_cap=1" in out
+    assert "STEP_CAP_PAIRING=PASS dataset=ood max_steps=1800 strict_cap=1" in out
     assert "SERVER_READY policy=smvla" in out and "SERVER_STOPPED" in out
     assert "SEAT_DONE policy=smvla cond=C seat=T done=2 errors=0 infra=0" in out
     (c,) = _events(rig, "client", "start")
     assert c["first_extra_s"] == "600" and c["wall_s"] == "30"
-    assert c["v8"] is False and c["dataset"] == "ood" and c["max_steps"] == "1600" and c["strict_cap"] is True
+    assert c["v8"] is False and c["dataset"] == "ood" and c["max_steps"] == "1800" and c["strict_cap"] is True
     assert c["ledger"].endswith("/ledger/smvla.ledger.jsonl")
     (s,) = _events(rig, "server", "start")
     assert s["port"] == 18000 + 100 * rig["idx"]
@@ -385,9 +404,9 @@ def test_framesamp_modul_and_groundsg_require_tokenizer_args(rig, pol):
     assert _events(rig) == []
 
 
-@pytest.mark.parametrize("dataset,max_steps,strict", [("hard-verify", 1600, False), ("hard-verify", 1300, True),
-                                                       ("ood", 1300, True), ("ood", 1600, False),
-                                                       ("bogus", 1600, True)])
+@pytest.mark.parametrize("dataset,max_steps,strict", [("hard-verify", 1800, False), ("hard-verify", 1300, True),
+                                                       ("ood", 1300, True), ("ood", 1800, False),
+                                                       ("ood", 1600, True), ("bogus", 1800, True)])
 def test_step_cap_pairing_blocks_before_any_process(rig, dataset, max_steps, strict):
     rc, out = _run(_seat_cmd(rig, dataset=dataset, max_steps=max_steps, strict=strict), rig["env"])
     assert rc == 3 and "RUN_BLOCKED reason=step_cap_pairing" in out, out
@@ -421,11 +440,11 @@ def test_pp_route_health_ready_and_epochs(rig):
     cmd = _seat_cmd(rig, "--pp-ckpt", str(rig["pp_ckpt"]), policies="pp", dataset="hard-verify")
     rc, out = _run(cmd, rig["env"])
     assert rc == 0, out
-    assert "PP_PREFLIGHT=PASS" in out and "SERVER_CONFIG=INFO policy=pp health=200 seed=0" in out
+    assert "PP_PREFLIGHT=PASS" in out and "SERVER_CONFIG=INFO policy=pp health=200 seed=7" in out
     (s,) = _events(rig, "server", "start")
     assert s["port"] == 18000 + 100 * rig["idx"] + 30
     argv = s["argv"]
-    assert argv[argv.index("--args.seed") + 1] == "0"
+    assert argv[argv.index("--args.seed") + 1] == "7"
     assert argv[argv.index("--args.checkpoint_path") + 1] == str(rig["pp_ckpt"])
     assert argv[argv.index("--args.device") + 1] == "cuda:0"
     (c,) = _events(rig, "client", "start")
@@ -656,10 +675,11 @@ def gl_repo(rig):
     _reap(rig["tmp"])  # 各脚本的 .v8-pgids 落在运行根里，同样由 _recorded_pids 收集
 
 
-def _gl_cmd(rig, repo, stage, seat, *extra, dataset="ood", max_steps=1600, strict=True):
+def _gl_cmd(rig, repo, stage, seat, *extra, dataset="ood", max_steps=1800, strict=True):
     cmd = ["bash", str(repo / "scripts" / "eval-official" / "run_eval_gl.sh"), "--run-name", "R", "--seat", seat,
            "--repo", str(repo), "--stage", str(stage), "--shard", str(rig["shard"]), "--policies", "smvla",
            "--smvla-ckpt", str(rig["ckpt"]), "--reset-budget", "10", "--infra-retry-budget", "2",
+           "--policy-seed", "7", "--budget-ledger", str(stage / "budget-ledger.jsonl"), *BUDGET_CAPS,
            "--sync-interval", "1", "--local-root", str(rig["tmp"] / "local"), "--episode-wall-smvla", "30",
            "--dataset", dataset, "--max-steps", str(max_steps)]
     if strict:
@@ -794,7 +814,9 @@ def test_pp_server_wrap_starts_by_absolute_path(rig, gl_repo):
     assert argv0 == [str(gl_repo / "scripts" / "eval-official" / "pp_server_wrap.py")]
     (s,) = _events(rig, "server", "start")
     argv = s["argv"]
-    assert argv[argv.index("--args.seed") + 1] == "0" and argv[argv.index("--args.checkpoint_path") + 1] == str(rig["pp_ckpt"])
+    assert argv[argv.index("--args.seed") + 1] == "7" and argv[argv.index("--args.checkpoint_path") + 1] == str(rig["pp_ckpt"])
+    port = s["port"]
+    assert f"--sgeval-metadata-out={rig['tmp'] / 'out' / 'pp' / f'server-metadata-{port}.json'}" in argv  # 外壳写服务元数据
 
 
 def test_pp_server_wrap_missing_blocks(rig, gl_repo):
@@ -808,10 +830,12 @@ def test_pp_server_wrap_missing_blocks(rig, gl_repo):
 
 
 def _official_cmd(rig, repo, stage, seat, *extra, budget=1):
+    # 第三阶段：run_official_hard.sh 对 pp 原侧同样要求 --policy-seed 与五个预算参数（不转发给 pp 驱动，见 F）
     return ["bash", str(repo / "scripts" / "eval-official" / "run_official_hard.sh"), "--run-name", "R", "--seat", seat,
             "--repo", str(repo), "--stage", str(stage), "--shard", str(rig["shard0"]), "--policy", "pp",
             "--pp-ckpt", str(rig["pp_ckpt"]), "--dataset", "hard-verify", "--max-steps", "1300",
             "--infra-retry-budget", str(budget), "--sync-interval", "1", "--local-root", str(rig["tmp"] / "local"),
+            "--policy-seed", "7", "--budget-ledger", str(rig["tmp"] / "budget" / "budget-ledger.jsonl"), *BUDGET_CAPS,
             *extra]
 
 
@@ -853,12 +877,16 @@ def test_official_retry_budget_zero_leaves_missing(rig, gl_repo):
 
 
 def test_pair_seat_runs_orig_then_new_on_released_gpu(rig, gl_repo):
+    """先原侧后新侧，两侧都 rc=0；第三阶段起 --policy-seed 与五个预算参数经 pair_seat.sh 原样转发给两侧（MERGE-1
+    补转发后换回原断言，另核新侧客户端 argv 里的种子与账本参数）。"""
     seat = f"{rig['idx']:02d}"
     stage = rig["tmp"] / "stage"
+    ledger = rig["tmp"] / "budget" / "budget-ledger.jsonl"
     cmd = ["bash", str(gl_repo / "scripts" / "eval-official" / "pair_seat.sh"), "--run-name", "R", "--seat", seat,
            "--repo", str(gl_repo), "--stage", str(stage), "--shard", str(rig["shard0"]), "--policy", "pp",
            "--pp-ckpt", str(rig["pp_ckpt"]), "--reset-budget", "10", "--infra-retry-budget", "2",
-           "--orig-infra-retry-budget", "1", "--sync-interval", "1", "--local-root", str(rig["tmp"] / "local")]
+           "--orig-infra-retry-budget", "1", "--sync-interval", "1", "--local-root", str(rig["tmp"] / "local"),
+           "--policy-seed", "7", "--budget-ledger", str(ledger), *BUDGET_CAPS]
     rc, out = _run(cmd, rig["env"], timeout=120)
     assert rc == 0, out
     assert f"PAIR_SEAT_DONE seat={seat} policy=pp orig_rc=0 new_rc=0 rc=0 outcome=pass" in out
@@ -872,11 +900,64 @@ def test_pair_seat_runs_orig_then_new_on_released_gpu(rig, gl_repo):
     orig_term = next(t for t in terms if t["pid"] == servers[0]["pid"])
     assert orig_term["t"] < servers[1]["t"]
     assert (client[0]["dataset"], client[0]["max_steps"], client[0]["strict_cap"]) == ("hard-verify", "1300", False)
+    # 种子与预算参数：两侧服务都带 --args.seed 7，新侧客户端拿到种子与五个预算参数
+    assert all(srv["argv"][srv["argv"].index("--args.seed") + 1] == "7" for srv in servers)
+    argv = client[0]["argv"]
+    opt = lambda k: argv[argv.index(k) + 1] if k in argv else None  # noqa: E731
+    assert opt("--policy-seed") == "7" and opt("--budget-ledger") == str(ledger)
+    assert [opt(k) for k in BUDGET_CAPS[::2]] == list(BUDGET_CAPS[1::2])
     for side in ("orig", "new"):
         pub = stage / "media" / "pp" / "hard-verify" / side
         assert sorted(p.name for p in pub.iterdir() if not p.name.startswith(".")) == \
             sorted(f"{r['key']}.a1" for r in rig["hard0"])
         assert all((pub / f"{r['key']}.a1" / "episode.mp4").is_file() for r in rig["hard0"])
+
+
+# ---------------------------------------------------------------- 第三阶段：种子、预算参数、重启计数持久化
+
+
+@pytest.mark.parametrize("drop,reason", [("seed", "policy_seed"), ("budget", "budget_args")])
+def test_seed_or_budget_args_missing_blocks_before_any_process(rig, drop, reason):
+    kw = {"seed": None} if drop == "seed" else {"budget": False}
+    rc, out = _run(_seat_cmd(rig, **kw), rig["env"])
+    assert rc == 3 and f"RUN_BLOCKED reason={reason}" in out, out
+    assert out.rstrip().splitlines()[-1] == "EXIT_CODE=3"
+    assert _events(rig) == []
+
+
+@pytest.mark.parametrize("seed", ["0", "7", "42"])
+def test_seed_and_budget_forwarded_to_server_and_client(rig, seed):
+    """种子原样进服务 argv（smvla --policy-seed）与客户端 argv；五个预算参数原样转发；不给 --reset-budget 时客户端
+    也不带（只计量）；客户端拿到服务元数据路径（server_seed 反查）。"""
+    rc, out = _run(_seat_cmd(rig, seed=seed, reset_budget=None), rig["env"])
+    assert rc == 0, out
+    assert f"POLICY_SEED_CHECK=PASS policy_seed={seed}" in out and "BUDGET_ARGS=PASS" in out
+    assert "reset_budget=meter_only" in out
+    (srv,) = _events(rig, "server", "start")
+    assert srv["argv"][srv["argv"].index("--policy-seed") + 1] == seed
+    meta = srv["argv"][srv["argv"].index("--metadata_out") + 1]
+    assert meta == str(rig["tmp"] / "out" / "smvla" / f"server-metadata-{srv['port']}.json")
+    (c,) = _events(rig, "client", "start")
+    argv = c["argv"]
+    opt = lambda k: argv[argv.index(k) + 1] if k in argv else None  # noqa: E731
+    assert opt("--policy-seed") == seed and opt("--server-metadata") == meta and "--reset-budget" not in argv
+    assert opt("--budget-ledger") == str(rig["tmp"] / "budget" / "budget-ledger.jsonl")
+    assert [opt(k) for k in BUDGET_CAPS[::2]] == list(BUDGET_CAPS[1::2])
+
+
+def test_restart_counters_persist_across_runs(rig):
+    """客户端重启计数写进 <ledger-dir>/<label>.recovery.json；同一运行组再跑时读回沿用、不清零。"""
+    rig["env"]["FAKE_CLIENT_CODES"] = "75,0"
+    rc, out = _run(_seat_cmd(rig), rig["env"])
+    assert rc == 0, out
+    rec = rig["tmp"] / "out" / "ledger" / "smvla.recovery.json"
+    assert json.loads(rec.read_text()) == {"client_restarts": 1, "server_restarts": 0, "noprog_restarts": 0}
+    assert "RECOVERY_STATE label=smvla client_restarts=0 server_restarts=0 noprog_restarts=0" in out
+    (rig["tmp"] / "client-count").unlink()
+    rc2, out2 = _run(_seat_cmd(rig), rig["env"])
+    assert rc2 == 0, out2
+    assert "RECOVERY_STATE label=smvla client_restarts=1 server_restarts=0 noprog_restarts=0" in out2
+    assert json.loads(rec.read_text())["client_restarts"] == 2
 
 
 # ---------------------------------------------------------------- 测试侧兜底本身

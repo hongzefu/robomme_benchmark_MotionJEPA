@@ -66,6 +66,9 @@ TAMPERS = ("action", "request", "order")
 H = W = 256  # 与真实环境同尺寸（官方录像器在小图上拼字条会尺寸不一致）
 DEMO = 3
 CHUNK = 20
+#: groundsg 席位信息的模型种子（第三阶段 make_policy_context 必填，接口冻结说明 2.2／2.5；本轮真实运行只传 7）。
+#: 两侧都给：改名前／第二阶段的 make_policy_context 不读该键，行为不受影响
+POLICY_SEED = 7
 
 
 # ── 公共：规范化与哈希 ────────────────────────────────────────────────────────
@@ -215,13 +218,19 @@ def _load(root: Path, name: str):
     return mod
 
 
+#: 本工具自用的 official_defs 模块名：**不**占用 ``sys.modules["official_defs"]``——被比较检出里的客户端按
+#: ``load_sibling("official_defs")`` 取「已加载则复用」，占了会让 base 侧用上本工具（candidate）的 official_defs
+#: （第三阶段 make_args 必填 model_seed，base 侧随之崩溃），两侧就不再是各用各的代码
+_TOOL_DEFS = "_client_replay_tool_official_defs"
+
+
 def official_defs():
     """本工具同目录的 ``official_defs.py``（官方名与 ``LEGACY_*`` 别名表；不从被比较的检出里取）。"""
-    mod = sys.modules.get("official_defs")
+    mod = sys.modules.get(_TOOL_DEFS)
     if mod is None:
-        spec = importlib.util.spec_from_file_location("official_defs", Path(__file__).resolve().parent / "official_defs.py")
+        spec = importlib.util.spec_from_file_location(_TOOL_DEFS, Path(__file__).resolve().parent / "official_defs.py")
         mod = importlib.util.module_from_spec(spec)
-        sys.modules["official_defs"] = mod
+        sys.modules[_TOOL_DEFS] = mod
         spec.loader.exec_module(mod)
     return mod
 
@@ -274,7 +283,7 @@ def run_route(root: Path, route: str, scen: dict, tamper: str | None, tmp: Path,
         mod = _load(root, iface["gsg_module"])
         vkey = iface["variant_key"]
         ctx = mod.make_policy_context({vkey: "ground-sg-oracle", "port": 1, "max_steps": scen["max_steps"],
-                                       "out": str(tmp)})
+                                       "out": str(tmp), "policy_seed": POLICY_SEED})
         conn_info.update({"policy_context": ctx, vkey: "ground-sg-oracle"})
         res = mod.run_episode(sess, ident, conn_info, rec)
     elif route == "smvla":

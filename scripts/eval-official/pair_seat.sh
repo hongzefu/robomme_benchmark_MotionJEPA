@@ -11,11 +11,14 @@
 #   （基础设施或额度用尽）或被信号终止（>128）时打印 CHAIN_STOP 并不跑新侧（剩余分片由主会话重分）。第二档差异不停链。
 # 用法：
 #   bash pair_seat.sh --run-name R --seat NN --repo <执行副本> --stage <NFS 运行根> --shard <shard-NN.json> \
-#     --policy {groundsg,pp} [--groundsg-variant V] [--qwenvl-groundsg-adapter D] \
+#     --policy {groundsg,pp} [--groundsg-variant V] [--qwenvl-groundsg-adapter D] [--memer-adapter D] \
 #     [--groundsg-ckpt D --openpi-data-home D --tokenizer-sha256 H] [--pp-ckpt D] \
+#     --policy-seed N --budget-ledger P --trajectory-cap N --shared-infra-cap N --expired-cap N --planned-first-tries N \
 #     --reset-budget N --infra-retry-budget N --orig-infra-retry-budget N \
 #     [--cond C] [--media-root D] [--local-root D] [--limit N] [--episode-wall S] [--sync-interval S] [--release-wait S] [--gpu N]
 #   数据集与步数在本脚本里固定为 hard-verify／1300（不带 --strict-cap），起跑先过 step_cap_pairing。
+#   第三阶段（接口冻结说明 2.2／2.3／2.4）：--policy-seed、五个预算参数与 --memer-adapter 本脚本不核对、不取默认值，
+#   给了就原样转发给两侧（原侧 run_official_hard.sh、新侧 run_eval_gl.sh）；缺失时由两侧各自 RUN_BLOCKED（退出 3）。
 # 判定行：PAIR_SEAT_DONE seat=NN policy=<label> orig_rc=… new_rc=… rc=… outcome=pass|fail|aborted；末行 EXIT_CODE=。
 # 退出码：两侧都 0 为 0；任一侧为 4／5／信号时取它（显存未释放记 4）；否则取首个非零的一侧 rc；中断 130/143（HUP 129）。
 set -uo pipefail
@@ -28,6 +31,7 @@ source "$HERE/run_seat.sh"
 RUN_NAME="" ; SEAT="" ; STAGE="" ; SHARD="" ; POLICY="" ; MEDIA_ROOT="" ; LOCAL_ROOT="" ; COND="SGEVAL"
 NEW_RESET_BUDGET="" ; NEW_INFRA_BUDGET="" ; ORIG_INFRA_BUDGET="" ; P_LIMIT=0 ; P_WALL="" ; P_SYNC="" ; RELEASE_WAIT=120
 CHILD_PID="" ; ORIG_RC="" ; NEW_RC="" ; PAIR_DONE=0
+P_POLICY_SEED="" ; P_MEMER_ADAPTER="" ; P_BUDGET=()  # 第三阶段：只转发（P_ 前缀，不与 run_seat.sh 的同名全局混用）
 
 pair_die2() {
   echo "$1" >&2
@@ -46,6 +50,9 @@ while [[ $# -gt 0 ]]; do
     --policy) POLICY="$2"; shift 2;;
     --groundsg-variant) GROUNDSG_VARIANT="$2"; shift 2;;
     --qwenvl-groundsg-adapter) QWENVL_ADAPTER="$2"; shift 2;;
+    --memer-adapter) P_MEMER_ADAPTER="$2"; shift 2;;
+    --policy-seed) P_POLICY_SEED="$2"; shift 2;;
+    --budget-ledger|--trajectory-cap|--shared-infra-cap|--expired-cap|--planned-first-tries) P_BUDGET+=("$1" "$2"); shift 2;;
     --groundsg-ckpt) GROUNDSG_CKPT="$2"; shift 2;;
     --pp-ckpt) PP_CKPT="$2"; shift 2;;
     --openpi-data-home) OPENPI_HOME="$2"; shift 2;;
@@ -86,6 +93,9 @@ common=(--run-name "$RUN_NAME" --seat "$SEAT" --repo "$REPO" --stage "$STAGE" --
 [[ -n "$P_SYNC" ]] && common+=(--sync-interval "$P_SYNC")
 # 卡号缺省 0（GL 占位 job 内只见一张卡）；本机多卡并行时显式给物理卡号，两侧同卡
 common+=(--gpu "${P_GPU:-0}")
+# 第三阶段：模型种子与预算五参数两侧共用（同一共享账本）；有值才加
+[[ -n "$P_POLICY_SEED" ]] && common+=(--policy-seed "$P_POLICY_SEED")
+common+=("${P_BUDGET[@]}")
 model=()
 if [[ "$POLICY" == "groundsg" ]]; then
   model=(--groundsg-variant "$GROUNDSG_VARIANT" --groundsg-ckpt "$GROUNDSG_CKPT" --openpi-data-home "$OPENPI_HOME" --tokenizer-sha256 "$TOKENIZER_SHA")
@@ -93,6 +103,8 @@ if [[ "$POLICY" == "groundsg" ]]; then
 else
   model=(--pp-ckpt "$PP_CKPT")
 fi
+# MemER adapter 原样转发（pp 误给时由两侧 variant_pairing 拒跑，不在这里吞掉）
+[[ -n "$P_MEMER_ADAPTER" ]] && model+=(--memer-adapter "$P_MEMER_ADAPTER")
 ORIG_CMD=(bash "$HERE/run_official_hard.sh" "${common[@]}" --policy "$POLICY" "${model[@]}" --infra-retry-budget "$ORIG_INFRA_BUDGET")
 NEW_CMD=(bash "$HERE/run_eval_gl.sh" "${common[@]}" --policies "$POLICY" "${model[@]}" --cond "$COND"
          --reset-budget "$NEW_RESET_BUDGET" --infra-retry-budget "$NEW_INFRA_BUDGET")

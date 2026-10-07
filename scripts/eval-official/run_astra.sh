@@ -18,11 +18,18 @@
 #   局目录 = <RUN>/results/<task>/ep<NNN>/<key>.a1（轨迹、arrays.npz、原始帧同目录）。
 #   runner 退出后（无论成败）逐局收尾；中断后可用 --finish 对已有 RUN 重入收尾。
 #
+# 第三阶段（1006-rename-official-names-and-stage3-eval-plan.md；docs/plans/1006-stage3-interface-freeze.md 2.1、2.2，R5）：
+# - 模型 seed：--policy-seed <非负整数> 必填（缺失或非法即 RUN_BLOCKED reason=policy_seed，退出 3，在建 RUN 与起任何
+#   服务之前）；VLA 服务的 --seed 用它替代上游固定的 42；check／run 原样转发。云端 planner／monitor 无 seed 接口，
+#   只由 runner 在 trace／结果／provenance 里记 policy_seed 与 cloud_seed=null。服务起后写
+#   $RUN/server-metadata-$PORT.json（policy_seed、argv、pid），供验收反查实际服务种子。
+# - 步数：ood ↔ 1800（strict，第 1801 步不进真实环境）、hard-verify ↔ 1300（不变），由 runner 的配对检查把关。
+#
 # 用法：
 #   VLA_PYTHON=… SIM_PYTHON=… VLA_CHECKPOINT=…/symbolic-grounded-subgoal/79999 \
 #   MONITOR_BASE=… MONITOR_ADAPTER=… MAX_STEPS=1300 OPENAI_API_KEY=… ASTRA_GUARD_STATE=… \
 #   [VLA_GPU=0 MONITOR_GPU=1 PORT=18762 ASTRA_ROOT=… BENCH_PY=… TOOL_PY=…] \
-#   bash scripts/eval-official/run_astra.sh CASES.json <根>/group_0/<新 RUN 目录>
+#   bash scripts/eval-official/run_astra.sh --policy-seed 7 CASES.json <根>/group_0/<新 RUN 目录>
 #   SIM_PYTHON=… [BENCH_PY=… TOOL_PY=…] bash scripts/eval-official/run_astra.sh --finish <已有 RUN 目录>
 # CASES.json 由 astra_hard_runner.py prepare 生成（dataset 为 hard-verify 或 ood）。
 # RUN 目录的上一层必须叫 group_0 或 group_1：STOP.json 停机口（费用守卫写、Astra 读）就在那一层。
@@ -121,6 +128,26 @@ finish_run() {  # $1 = RUN；逐局收尾，打印汇总行；任一局失败返
   (( fail == 0 )) || return 5
 }
 
+# 选项只认 --policy-seed <n>／--policy-seed=<n>（可放在任意位置）；其余按位置参数原样保留。
+POLICY_SEED=""
+POLICY_SEED_GIVEN=0
+positional=()
+while (( $# )); do
+  case "$1" in
+    --policy-seed)
+      if (( $# < 2 )); then
+        echo "RUN_BLOCKED reason=policy_seed --policy-seed 缺值" >&2
+        exit 3
+      fi
+      POLICY_SEED="$2"; POLICY_SEED_GIVEN=1; shift 2 ;;
+    --policy-seed=*)
+      POLICY_SEED="${1#--policy-seed=}"; POLICY_SEED_GIVEN=1; shift ;;
+    *)
+      positional+=("$1"); shift ;;
+  esac
+done
+set -- "${positional[@]+"${positional[@]}"}"
+
 if [[ "${1:-}" == "--finish" ]]; then
   if [[ $# != 2 ]]; then
     echo 'Usage: bash scripts/eval-official/run_astra.sh --finish <existing RUN directory>' >&2
@@ -138,15 +165,20 @@ if [[ "${1:-}" == "--finish" ]]; then
 fi
 
 if [[ $# != 2 ]]; then
-  echo 'Usage: bash scripts/eval-official/run_astra.sh CASES.json <root>/group_0/NEW_RUN_DIRECTORY' >&2
+  echo 'Usage: bash scripts/eval-official/run_astra.sh --policy-seed <n> CASES.json <root>/group_0/NEW_RUN_DIRECTORY' >&2
   exit 2
+fi
+# 冻结说明 2.2：模型 seed 必填、非负整数，不回落任何旧默认值（上游固定 42）；在任何副作用之前拒绝
+if (( POLICY_SEED_GIVEN == 0 )) || [[ ! "$POLICY_SEED" =~ ^[0-9]+$ ]]; then
+  echo "RUN_BLOCKED reason=policy_seed policy_seed=${POLICY_SEED:-<unset>}（必须显式给 --policy-seed <非负整数>）" >&2
+  exit 3
 fi
 : "${VLA_PYTHON:?Set VLA_PYTHON to the VLA environment Python}"
 : "${SIM_PYTHON:?Set SIM_PYTHON to the simulator/monitor environment Python}"
 : "${VLA_CHECKPOINT:?Set VLA_CHECKPOINT to symbolic-grounded-subgoal/79999}"
 : "${MONITOR_BASE:?Set MONITOR_BASE to the downloaded Qwen3-VL-4B-Instruct directory}"
 : "${MONITOR_ADAPTER:?Set MONITOR_ADAPTER to the released checkpoint-2246 directory}"
-: "${MAX_STEPS:?Set MAX_STEPS from the launch command (hard-verify 1300, ood 1600)}"
+: "${MAX_STEPS:?Set MAX_STEPS from the launch command (hard-verify 1300, ood 1800)}"
 : "${OPENAI_API_KEY:?Supply your own API credential through OPENAI_API_KEY}"
 if [[ -n "${ASTRA_ROOT:-}" ]]; then
   ASTRA=$ASTRA_ROOT
@@ -189,11 +221,11 @@ export NO_PROXY=127.0.0.1,localhost no_proxy=127.0.0.1,localhost
 # 端口可绑定；打印 robomme_hard.__file__ 与 robomme.__file__（必须都在本仓库 src 下）
 "$SIM_PYTHON" "$RUNNER" check --cases "$CASES" --vla-checkpoint "$VLA_CHECKPOINT" \
   --monitor-adapter "$MONITOR_ADAPTER" --max-steps "$MAX_STEPS" --port "$PORT" --astra-root "$ASTRA" \
-  --guard-state "$ASTRA_GUARD_STATE"
+  --guard-state "$ASTRA_GUARD_STATE" --policy-seed "$POLICY_SEED"
 mkdir -p -- "$(dirname -- "$RUN")"
 mkdir -- "$RUN"
 cp -- "$CASES" "$RUN/cases.json"
-echo "RUN_INPUTS bench_py=$BENCH_PY tool_py=$TOOL_PY sim_python=$SIM_PYTHON vla_python=$VLA_PYTHON guard_state=$ASTRA_GUARD_STATE" \
+echo "RUN_INPUTS bench_py=$BENCH_PY tool_py=$TOOL_PY sim_python=$SIM_PYTHON vla_python=$VLA_PYTHON guard_state=$ASTRA_GUARD_STATE policy_seed=$POLICY_SEED cloud_seed=null" \
   | tee "$RUN/run-inputs.txt"
 for component in vla simulator; do
   if [[ "$component" == vla ]]; then interpreter="$VLA_PYTHON"; else interpreter="$SIM_PYTHON"; fi
@@ -208,8 +240,9 @@ git -C "$REPO" submodule status > "$RUN/submodules.txt" || true
 git -C "$ASTRA" rev-parse HEAD > "$RUN/astra-commit.txt" || true
 cd "$ASTRA"
 # VLA 进程不需要规划接口的密钥（照抄上游 run.sh 同位置注释，译为中文）。
+# 第三阶段：--seed 由上游固定的 42 改为 --policy-seed 的值，其余参数照抄。
 env -u OPENAI_API_KEY CUDA_VISIBLE_DEVICES="$VLA_GPU" "$VLA_PYTHON" scripts/serve_policy.py \
-  --port="$PORT" --seed=42 policy:checkpoint --policy.config=mme_vla_suite \
+  --port="$PORT" --seed="$POLICY_SEED" policy:checkpoint --policy.config=mme_vla_suite \
   --policy.dir="$VLA_CHECKPOINT" > "$RUN/vla.log" 2>&1 &
 vla_pid=$!
 cleanup() {
@@ -222,6 +255,17 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
+# 服务元数据（冻结说明 2.2）：实际服务种子与启动参数，供验收反查（不只看目录名）
+"$SIM_PYTHON" - "$RUN/server-metadata-$PORT.json" "$POLICY_SEED" "$vla_pid" "$PORT" "$VLA_PYTHON" \
+  scripts/serve_policy.py --port="$PORT" --seed="$POLICY_SEED" policy:checkpoint --policy.config=mme_vla_suite \
+  --policy.dir="$VLA_CHECKPOINT" <<'PYMETA'
+import json, sys
+path, seed, pid, port, *argv = sys.argv[1:]
+with open(path, "w") as fh:
+    json.dump({"policy_seed": int(seed), "cloud_seed": None, "pid": int(pid), "port": int(port), "argv": argv},
+              fh, indent=2)
+    fh.write("\n")
+PYMETA
 "$SIM_PYTHON" - "$vla_pid" "$PORT" <<'PY'
 import os,socket,sys,time
 for _ in range(180):
@@ -237,7 +281,7 @@ CUDA_VISIBLE_DEVICES="$MONITOR_GPU" "$SIM_PYTHON" -u "$RUNNER" run \
   --port "$PORT" --vla-checkpoint "$VLA_CHECKPOINT" \
   --monitor-base "$MONITOR_BASE" --monitor-adapter "$MONITOR_ADAPTER" \
   --max-steps "$MAX_STEPS" --astra-root "$ASTRA" --guard-state "$ASTRA_GUARD_STATE" \
-  > "$RUN/runner.log" 2>&1 || rc=$?
+  --policy-seed "$POLICY_SEED" > "$RUN/runner.log" 2>&1 || rc=$?
 "$SIM_PYTHON" "$RUNNER" summarize --cases "$RUN/cases.json" \
   --results "$RUN/results" --output "$RUN/summary.json" || true
 # VLA 不再需要：先停掉再做 CPU 收尾（重绘、转码、验收），不占卡

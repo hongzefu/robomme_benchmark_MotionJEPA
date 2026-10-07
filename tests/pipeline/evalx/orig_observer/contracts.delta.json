@@ -29,5 +29,24 @@
     "resource": "cpu；部分启动器用例标 slow",
     "mutants": [],
     "status": "verified"
+  },
+  {
+    "id": "C13-ORIG-ARRAYS-MERGE",
+    "domain": "C13",
+    "source": [
+      "scripts/eval-official/orig_observer/step_arrays.py"
+    ],
+    "symbol": "step_arrays.StepArrays.save 委托 trace_writer.merge_write_npz（接口冻结说明四.4），缺该函数时保持旧写法",
+    "oracle": "sys.modules['trace_writer'] 装替身模块（有／无 merge_write_npz）；期望键、dtype、字节手写",
+    "positive": "有 merge_write_npz 时 save 只调它一次（路径、键 exec_action__%05d、原 dtype 与字节），自己不写盘；空数组不调",
+    "negative": "没有 merge_write_npz 时仍按旧写法原子写 arrays.npz（numpy 读回键、dtype、字节一致，无残留临时文件）",
+    "boundaries": "merge_write_npz 的合并与冲突语义由 R6 测",
+    "nodeids": [
+      "tests/pipeline/evalx/orig_observer/test_step_arrays_merge.py::test_save_delegates_to_merge_write_npz",
+      "tests/pipeline/evalx/orig_observer/test_step_arrays_merge.py::test_save_keeps_old_write_when_merge_missing"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
   }
 ]

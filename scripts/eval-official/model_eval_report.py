@@ -25,6 +25,16 @@
 
 ``PARTIAL`` 表示有集合覆盖不全或有重复／冲突，报告照样写出（不阻塞）；未给上限时 ``EVAL_BUDGET=NA``。
 
+第三阶段矩阵（1006 计划第二部分八.6、四节第 7 步；只在任一集合写了 ``policy_seed`` 或给了 ``--policy-seed`` 时输出）：
+每个集合是一个组合（模型 × 变体 × 数据集 × 入口），集合的 ``policy_seed`` 缺省取 ``--policy-seed``；集合内每条最终行的
+``policy_seed`` 必须等于它（缺字段也算不符，不把历史缺字段补成已证种子），计 ``seed_mismatch``。按种子各出一行::
+
+    STAGE3_MATRIX=PASS|FAIL policy_seed=<s> combinations=<n> unique_terminal=<n> incomplete=<n> seed_mismatch=<n>
+        duplicate_combination=<n>
+
+``unique_terminal``：各组合里恰有一条最终行、终态为 success／fail／timeout／error 的身份数之和。PASS 要求组合数 > 0、
+每个组合完整（同 ``complete``）、``seed_mismatch == 0``、同一种子下组合标签不重复。任一行 FAIL 时退出码 1。
+
 用法::
 
     python scripts/eval-official/model_eval_report.py --sets sets.json [--gate2 g.json ...] \
@@ -100,8 +110,9 @@ def _rate(succ: int, n: int) -> float | None:
     return round(succ / n, 4) if n else None
 
 
-def summarize_set(spec: dict) -> dict:
+def summarize_set(spec: dict, policy_seed: int | None = None) -> dict:
     defs = official_defs()
+    seed = spec.get("policy_seed", policy_seed)
     spec = {**spec, "policy": defs.canonical_policy(spec["policy"]), "dataset": defs.canonical_dataset(spec["dataset"])}
     files = _paths(list(spec.get("results") or []))
     rows = [r for p in files for r in _jsonl(p)]
@@ -136,6 +147,11 @@ def summarize_set(spec: dict) -> dict:
         by_tier[str(k[1])][0] += ok
         by_tier[str(k[1])][1] += 1
     n = len(chosen)
+    seed_mismatch = 0
+    if seed is not None:
+        seed_mismatch = sum(1 for v in finals.values() for r in v if r.get("policy_seed") != seed)
+    unique_terminal = sum(1 for v in finals.values()
+                          if len(v) == 1 and v[0].get("status") in ("success", "fail", "timeout", "error"))
     complete = missing == 0 and extra == 0 and conflicting == 0 and duplicate == 0 and bool(files) and \
         (expect is None or n == int(expect))
     return {
@@ -147,6 +163,7 @@ def summarize_set(spec: dict) -> dict:
         "by_task": {t: {"success": s, "n": m, "rate": _rate(s, m)} for t, (s, m) in sorted(by_task.items())},
         "by_tier": {t: {"success": s, "n": m, "rate": _rate(s, m)} for t, (s, m) in sorted(by_tier.items())},
         "attempts": attempts, "resets": resets,
+        "policy_seed": seed, "seed_mismatch": seed_mismatch, "unique_terminal": unique_terminal,
     }
 
 
@@ -168,9 +185,29 @@ def read_gate2(paths: list[str]) -> list[dict]:
     return out
 
 
+def stage3_matrix(summaries: list[dict]) -> list[dict]:
+    """按 ``policy_seed`` 分组的第三阶段矩阵判定（见模块说明）；没有任何种子信息返回空表。"""
+    groups: dict = defaultdict(list)
+    for s in summaries:
+        groups[s["policy_seed"]].append(s)
+    out = []
+    for seed, lst in sorted(groups.items(), key=lambda kv: str(kv[0])):
+        labels = Counter(s["label"] for s in lst)
+        res = {"policy_seed": seed, "combinations": len(lst),
+               "unique_terminal": sum(s["unique_terminal"] for s in lst),
+               "incomplete": sum(1 for s in lst if not s["complete"]),
+               "seed_mismatch": sum(s["seed_mismatch"] for s in lst),
+               "duplicate_combination": sum(n - 1 for n in labels.values() if n > 1),
+               "labels": [s["label"] for s in lst]}
+        res["verdict"] = "PASS" if (seed is not None and res["combinations"] > 0 and res["incomplete"] == 0
+                                    and res["seed_mismatch"] == 0 and res["duplicate_combination"] == 0) else "FAIL"
+        out.append(res)
+    return out
+
+
 def build_report(sets: list[dict], *, gate2: list[str] = (), ledgers: list[str] = (), max_attempts: int | None = None,
-                 max_resets: int | None = None) -> dict:
-    summaries = [summarize_set(s) for s in sets]
+                 max_resets: int | None = None, policy_seed: int | None = None) -> dict:
+    summaries = [summarize_set(s, policy_seed) for s in sets]
     g2 = read_gate2(list(gate2))
     if ledgers:
         led = read_ledgers(list(ledgers))
@@ -188,6 +225,8 @@ def build_report(sets: list[dict], *, gate2: list[str] = (), ledgers: list[str] 
            "verdict": "PASS" if summaries and incomplete == 0 else "PARTIAL",
            "complete": len(summaries) - incomplete, "incomplete": incomplete,
            "episodes": sum(s["covered"] for s in summaries)}
+    if policy_seed is not None or any("policy_seed" in s for s in sets):
+        rep["stage3"] = stage3_matrix(summaries)
     return rep
 
 
@@ -200,16 +239,28 @@ def verdict_lines(rep: dict) -> list[str]:
     else:
         l2 = (f"EVAL_BUDGET={b['verdict']} attempts={b['attempts']}<={b['max_attempts']} "
               f"resets={b['resets']}<={b['max_resets']} source={b['source']}")
-    return [l1, l2]
+    out = [l1, l2]
+    for m in rep.get("stage3") or []:
+        out.append(f"STAGE3_MATRIX={m['verdict']} policy_seed={'NA' if m['policy_seed'] is None else m['policy_seed']} "
+                   f"combinations={m['combinations']} unique_terminal={m['unique_terminal']} "
+                   f"incomplete={m['incomplete']} seed_mismatch={m['seed_mismatch']} "
+                   f"duplicate_combination={m['duplicate_combination']}")
+    return out
 
 
 def to_markdown(rep: dict) -> str:
-    L = ["# 四模型评估总报告", "", "## 覆盖与成功率", "",
-         "| 集合 | 期望 | 覆盖 | 缺失 | 多余 | 重复 | 冲突 | 成功 | 成功率 | 终态分布 |",
-         "|---|---|---|---|---|---|---|---|---|---|"]
+    stage3 = rep.get("stage3")
+    L = ["# 四模型评估总报告", "", "## 覆盖与成功率", ""]
+    if stage3:
+        L += ["| 集合 | 模型种子 | 期望 | 覆盖 | 缺失 | 多余 | 重复 | 冲突 | 成功 | 成功率 | 终态分布 |",
+              "|---|---|---|---|---|---|---|---|---|---|---|"]
+    else:
+        L += ["| 集合 | 期望 | 覆盖 | 缺失 | 多余 | 重复 | 冲突 | 成功 | 成功率 | 终态分布 |",
+              "|---|---|---|---|---|---|---|---|---|---|"]
     for s in rep["sets"]:
         dist = "，".join(f"{k}:{v}" for k, v in s["status"].items())
-        L.append(f"| {s['label']} | {s['expect_total']} | {s['covered']} | {s['missing']} | {s['extra']} | "
+        seed_cell = f" {s['policy_seed']} |" if stage3 else ""
+        L.append(f"| {s['label']} |{seed_cell} {s['expect_total']} | {s['covered']} | {s['missing']} | {s['extra']} | "
                  f"{s['duplicate']} | {s['conflicting']} | {s['success']} | {s['success_rate']} | {dist} |")
     for s in rep["sets"]:
         L += ["", f"### {s['label']}：按档", "", "| 档 | 成功 | 局数 | 成功率 |", "|---|---|---|---|"]
@@ -238,6 +289,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--max-resets", type=int, default=None)
     ap.add_argument("--out-json", default=None)
     ap.add_argument("--out-md", default=None)
+    ap.add_argument("--policy-seed", type=int, default=None,
+                    help="第三阶段矩阵：集合未写 policy_seed 时的缺省种子；给出即输出 STAGE3_MATRIX 行")
     return ap
 
 
@@ -246,7 +299,7 @@ def main(argv: list[str] | None = None) -> int:
     cfg = json.loads(Path(args.sets).read_text(encoding="utf-8"))
     sets = cfg["sets"] if isinstance(cfg, dict) else cfg
     rep = build_report(sets, gate2=args.gate2, ledgers=args.ledger, max_attempts=args.max_attempts,
-                       max_resets=args.max_resets)
+                       max_resets=args.max_resets, policy_seed=args.policy_seed)
     lines = verdict_lines(rep)
     rep["lines"] = lines
     if args.out_json:
@@ -257,7 +310,8 @@ def main(argv: list[str] | None = None) -> int:
         Path(args.out_md).write_text(to_markdown(rep), encoding="utf-8")
     for line in lines:
         print(line, flush=True)
-    return 1 if rep["budget"]["verdict"] == "FAIL" else 0
+    stage3_fail = any(m["verdict"] != "PASS" for m in rep.get("stage3") or [])
+    return 1 if rep["budget"]["verdict"] == "FAIL" or stage3_fail else 0
 
 
 if __name__ == "__main__":

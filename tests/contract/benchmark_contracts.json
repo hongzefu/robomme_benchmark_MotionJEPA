@@ -6411,7 +6411,8 @@
       "nodeids": [
         "tests/pipeline/evalx/report/test_sgx_model_eval_report.py::test_coverage_rates_by_task_and_tier",
         "tests/pipeline/evalx/report/test_sgx_model_eval_report.py::test_duplicate_conflict_and_manifest",
-        "tests/pipeline/evalx/report/test_sgx_model_eval_report.py::test_gate2_merge_budget_from_ledger_and_cli"
+        "tests/pipeline/evalx/report/test_sgx_model_eval_report.py::test_gate2_merge_budget_from_ledger_and_cli",
+        "tests/pipeline/evalx/report/test_sgx_model_eval_report.py::test_stage3_matrix_by_policy_seed"
       ],
       "resource": "cpu",
       "mutants": [],
@@ -6485,7 +6486,8 @@
         "tests/pipeline/evalx/report/test_sgx_video_check.py::test_pass_layout_and_frame_formula",
         "tests/pipeline/evalx/report/test_sgx_video_check.py::test_each_failure_kind_counted",
         "tests/pipeline/evalx/report/test_sgx_video_check.py::test_duplicate_rows_and_rules",
-        "tests/pipeline/evalx/report/test_sgx_video_check.py::test_real_ffmpeg_h264_decode_and_counts"
+        "tests/pipeline/evalx/report/test_sgx_video_check.py::test_real_ffmpeg_h264_decode_and_counts",
+        "tests/pipeline/evalx/report/test_sgx_video_check.py::test_no_frame_error_counted_separately_and_policy_seed"
       ],
       "resource": "cpu",
       "mutants": [],
@@ -6516,7 +6518,8 @@
         "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_strict_cap_stops_before_env_and_reports_timeout",
         "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_unknown_is_error_and_does_not_stop_seat",
         "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_trace_location_fallbacks",
-        "tests/pipeline/evalx/groundsg/test_groundsg_websocket.py::test_real_websocket_clients_match"
+        "tests/pipeline/evalx/groundsg/test_groundsg_websocket.py::test_real_websocket_clients_match",
+        "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_orig_side_keeps_official_video_and_counts"
       ],
       "resource": "cpu",
       "mutants": [],
@@ -6700,7 +6703,8 @@
         "tests/pipeline/eval/test_client_replay_eq.py::test_compare_zero_events_fails",
         "tests/pipeline/eval/test_client_replay_eq.py::test_compare_missing_scenario_fails",
         "tests/pipeline/eval/test_client_replay_eq.py::test_side_interface_official_and_legacy",
-        "tests/pipeline/eval/test_client_replay_eq.py::test_workers_do_not_write_bytecode_into_checkouts"
+        "tests/pipeline/eval/test_client_replay_eq.py::test_workers_do_not_write_bytecode_into_checkouts",
+        "tests/pipeline/eval/test_client_replay_eq.py::test_tool_official_defs_does_not_shadow_checkout_module"
       ],
       "resource": "cpu",
       "mutants": [],
@@ -6792,6 +6796,362 @@
       "resource": "cpu（client-env 子进程）",
       "mutants": [],
       "status": "verified"
+    },
+    {
+      "id": "C13-R3-STAGE3",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/env_client.py",
+        "scripts/eval-official/budget_ledger.py",
+        "scripts/eval-official/run_seat.sh",
+        "scripts/eval-official/run_eval_gl.sh",
+        "scripts/eval-official/smvla_server.py",
+        "scripts/eval-official/policy_server_wrap.py"
+      ],
+      "symbol": "EnvSession.step（strict cap）/ SeatRunner.run_one / run_identities / entry_blockers / BudgetLedger.reserve,claim_retry,lease,_load,_append / run_seat.sh::step_cap_pairing,variant_pairing,policy_seed_check,budget_args_check,build_server_cmd,build_client_cmd,progress_idle,recovery_load / policy_server_wrap.run,AuditedPolicy,install_tokenizer_spy / SMVLAPolicyHost.infer,new_episode",
+      "oracle": "手写期望：ood 1800 strict 边界、0／7／42 三个种子逐路线的服务与客户端 argv、870／50／50／821 下的预约与领取序列、三处期限的结果行与账本行、审计开关两侧回包字节",
+      "positive": "EVAL_CAP=PASS（第 1800 次进环境、第 1801 次不进、hard-verify 不 strict、effective_cap 落结果行与 progress）；POLICY_SEEDS=PASS（四类服务命令、客户端、seat_info、结果行 policy_seed／server_seed、路线 seed<n>）；BUDGET_ENFORCEMENT=PASS；DEADLINES=PASS（infra_reason=deadline_<phase>、退出 75、重试成功）；OBS_EQ=PASS（审计开关两侧除审计键外逐字节相同、RNG 与推理次数相同）",
+      "negative": "坏行即拒、config 不一致拒、同 token 不重复扣、第 50 次恢复因首试保留被拒、lease 被占与缺预算参数 RUN_BLOCKED、缺 --policy-seed RUN_BLOCKED、MemER 变体与 adapter 错配 RUN_BLOCKED reason=variant_pairing、多推理一次的坏外壳被查出、同签名重写 progress 不算进展",
+      "boundaries": "纯 CPU：假环境、假模型、假 sentencepiece；不加载权重、不起真实服务；PonderPounce 外壳的审计对照在 tests/pipeline/evalx/pp/test_pp_server_wrap.py（PP_AUDIT_OBS_EQ）",
+      "nodeids": [
+        "tests/pipeline/eval/test_stage3_entry_budget.py"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/eval/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-ASTRA-STAGE3",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/astra_hard_runner.py",
+        "scripts/eval-official/run_astra.sh"
+      ],
+      "symbol": "astra_hard_runner.{DATASET_STEP_PAIRING,DATASET_STRICT_CAP,check_policy_seed,TracedEnv.step,TracedPlanner,PlannerLanguageCall,TracedMonitor,TracedClient,write_exec_actions,write_provenance,GuardedResponsesClient.transport_hook} + run_astra.sh --policy-seed",
+      "oracle": "手写期望：ood↔1800 strict、hard-verify↔1300 非 strict（冻结说明 2.1）；--policy-seed 必填非负整数、缺失 RUN_BLOCKED reason=policy_seed 退出 3（2.2）；VLA 服务 argv 含 --seed=<n>；language.jsonl 行结构按冻结说明第五节；planner 输入原文 = spool prompt.txt 全文，monitor system = 上游 input_contract.NORMAL",
+      "positive": "ood 第 1800 步进真实环境、第 1801 步不进且 trace 不多一行、cap_hit=true；Astra 循环越界时本局记 timeout、arrays 恰 1800 键、照常 PILOT_FINISHED；seed 0／7／42 进服务命令、服务元数据、trace identity／end、result.json、provenance、录制器 meta，cloud_seed=null；两局语言账本 planner／monitor／action_model 三类齐全、附图引用全部可在 trace 解析、执行步全部可追溯、非模板回复 fallback=continue_last；429 重试另开 transport_attempt=1 的调用；判定行 EVAL_CAP=PASS route=astra max_steps=1800 rejected_step=1801、POLICY_SEEDS=PASS route=astra seeds=0,7,42、ASTRA_LANG_IO=PASS … unresolved_steps=0 open_calls=0 image_ref_unresolved=0",
+      "negative": "runner check／run 与 run_cases 缺 seed 在建任何目录前拒绝；启动器缺 seed、空值、非整数、负数退出 3 且不建 RUN、不起服务；假 planner 发送时抛异常：输入已先落盘、调用 status=error",
+      "boundaries": "hard-verify 第 1301 次 step 照常进底层环境；LanguageLog／merge_write_npz 不存在（R6 未合入）时不记账本、保持 np.savez；费用守卫与两局硬守卫既有用例不变",
+      "nodeids": [
+        "tests/pipeline/evalx/astra/test_astra_stage3.py::test_ood_strict_cap_step_1800_runs_and_1801_never_reaches_env",
+        "tests/pipeline/evalx/astra/test_astra_stage3.py::test_hard_verify_is_not_strict",
+        "tests/pipeline/evalx/astra/test_astra_stage3.py::test_strict_cap_overrun_finishes_as_timeout",
+        "tests/pipeline/evalx/astra/test_astra_stage3.py::test_policy_seed_missing_or_bad_blocks",
+        "tests/pipeline/evalx/astra/test_astra_stage3.py::test_policy_seed_required_before_side_effects",
+        "tests/pipeline/evalx/astra/test_astra_stage3.py::test_launcher_policy_seed_missing_or_bad_exits_3",
+        "tests/pipeline/evalx/astra/test_astra_stage3.py::test_policy_seeds_service_command_and_trace",
+        "tests/pipeline/evalx/astra/test_astra_stage3.py::test_language_log_planner_monitor_action",
+        "tests/pipeline/evalx/astra/test_astra_stage3.py::test_language_input_persisted_before_send_failure",
+        "tests/pipeline/evalx/astra/test_astra_stage3.py::test_transport_retry_opens_new_call_with_attempt",
+        "tests/pipeline/evalx/astra/test_astra_stage3.py::test_write_exec_actions_uses_merge_write_npz_when_present"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/evalx/astra/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-GSG-04",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/official_defs.py",
+        "scripts/eval-official/groundsg_client.py",
+        "scripts/eval-official/official_hard_runner.py"
+      ],
+      "symbol": "official_defs：VARIANT_MEMER、load_memer_model／patch_memer_class（MemER 兼容层 MEMER_COMPAT_SOURCE、MEMER_COMPAT_SHA256、MemERResponseError）、make_args(model_seed=, memer_adapter_path=)、assert_one_predictor、build_predictor、seed_everything；groundsg_client／official_hard_runner 的 MemER 装配与 policy_seed 贯通",
+      "oracle": "真实摘取的官方 Qwen3VLModelMemER（套兼容层与官方原文两份）配假 PtEngine（FakeSwift 逐次脚本回复，不读权重）；提醒句、温度 0.7、日志 retry 行、隔一张取帧下标、关键帧合并结果（3、5、20 → 5、20）全部手写；compat=False 的官方原文做 B 情形与 1／≥15 帧的逐字节对照",
+      "positive": "MEMER_COMPAT=PASS cases=8 fingerprint=<MEMER_COMPAT_SHA256>：A 首次空关键帧取出子目标、B 记忆非空合法回复与官方原函数返回值／记忆／日志字节相同、C1／D1 坏坏好采用第三次、C2 坏坏坏沿用上一次（fallback=last_valid）、D2 坏坏坏抛 MemERResponseError、E 缺键走重问、F 不足 15 帧隔一张取到第 1 张；第二、三次请求 user 末尾追加提醒句且 temperature=0.7、附图与首问相同、日志 retry=1,2；MEMER_WIRING=PASS predictor=MemERSubgoalPredictor（只摘 MemER 类、引擎参数取官方原文、Args 恰 use_memer、日志归档、临时区清空）；policy_seed 0／7／42 两侧都进 Args.model_seed，QwenVL／MemER 构造前 seed_everything（random／numpy／torch 实测重置）",
+      "negative": "坏回复 [1,2] 越界、[0]、负数、bool、1.0、缺键、非字符串、空串、非列表、非对象、换算失败：update_history_subgoals 抛异常且关键帧／历史／执行帧不变（官方原文对 [1,2] 先写第 1 张再越界）；官方原文在 A、E、空记忆合并、5／14 帧时抛 IndexError；上游类缺被补方法时补丁 KeyError；三预测器互斥（含 memer+oracle、memer+gemini）、adapter 误配八种、model_seed 缺／负／bool／非整数一律拒；MemER 三次坏且无上一次 → status=error、error_kind=model_response_error、infra=false、同上下文下一局照常；引擎抛异常时 memer-tmp 照样清空",
+      "boundaries": "不加载真实 Qwen3-VL 与 adapter（MEMER_SMOKE 在真实资产上另验）；重问开随机采样（temperature=0.7）使重问结果不可逐位复现，成绩表注明；短帧时附图张数少于官方",
+      "nodeids": [
+        "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_memer_compat_cases",
+        "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_atomic_validation_rejects_without_touching_state",
+        "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_conversion_failure_is_atomic",
+        "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_bad_then_good_retry_keeps_first_request_memory_and_images",
+        "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_merge_empty_memory_and_regression",
+        "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_patch_refuses_changed_upstream",
+        "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_memer_wiring",
+        "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_memer_model_response_error_is_named_error_and_cleans_up",
+        "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_engine_exception_cleans_memer_tmp",
+        "tests/pipeline/evalx/groundsg/test_groundsg_memer.py::test_policy_seed_reaches_args_and_seed_everything"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/evalx/groundsg/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-GSG-05",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/groundsg_client.py",
+        "scripts/eval-official/official_hard_runner.py",
+        "scripts/eval-official/run_official_hard.sh"
+      ],
+      "symbol": "groundsg_client：LangTap／install_language／open_language_log／TracingClient 审计键 pop／EpisodeTap source_call_id；official_hard_runner：OrigBudget（reserve／claim_reset／claim_retry／commit／release、route、token）、run_shard(budget=)、main 参数核对；run_official_hard.sh：check_stage3_args、build_runner_cmd 转发",
+      "oracle": "LanguageLog 按接口冻结说明第五节签名手写严格替身（关键字名错即 TypeError）；动作服务替身回包带冻结格式的 _sgeval_audit；共享账本按冻结说明三写假账本（调用顺序记账、token 幂等）；期望调用序列、retry、温度、reuse 步号、route／token 字符串全部手写",
+      "positive": "MemER 坏坏好：subgoal_model 三次 retry=0,1,2、前两次 parsed=None、第三次 parsed 为换算后子目标、重问 user 原文带提醒句、附图 recent frame_idx=0、demo[0:2]；last_valid 与 model_response_error 两种 fallback；QwenVL keep_period 复用记 reuse（16、32 步）；Oracle 动作字段 subgoal_source=oracle；action_model 记任务／符号两路通道与 server_final_text、截断；每个执行步 source_call_id 指向动作调用、chunk_index 连续、附图哈希都在轨迹帧哈希里、无悬空调用；原侧同格式；原侧账本 reserve(first)→claim_reset(build)→claim_reset(reset)→commit，第 2 次尝试 claim_retry→reserve(recovery)，同 token 续跑不多记；route groundsg/<variant>/seed<n>/orig",
+      "negative": "没有 LanguageLog 时 step 行仍是旧 9 键、不写 language.jsonl；审计键无论有无账本都在交给官方代码前 pop；重试名额被拒不预约、不建局目录、记 budget_retry_denied；轨迹额度不足停片 budget_blocked；没建环境就失败 release；驱动缺 policy_seed／任一预算参数／MemER adapter 配错／max_steps≠1300 退出 3（参数核对先于导入）；启动器缺 --policy-seed 或预算参数 RUN_BLOCKED 退出 3、不建状态目录",
+      "boundaries": "LanguageLog 与 budget_ledger 新签名分别由 R6、R3 提供，本条用替身按冻结说明验调用；真实 budget_ledger 的 token 幂等与首试保留额度由 R3 测；服务端 seed 与 variant_pairing 的 MemER 放行在 run_seat.sh（R3）",
+      "nodeids": [
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_memer_language_log_retries_and_audit",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_memer_language_log_fallback_and_named_error",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_qwenvl_reuse_and_oracle_source",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_orig_side_writes_language_log",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_audit_key_popped_without_language_log",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_step_rows_unchanged_without_language_log",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_orig_budget_call_sequence_first_try",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_orig_budget_retry_is_idempotent_by_token",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_orig_budget_retry_denied_and_exhausted",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_orig_budget_releases_when_never_built",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_orig_budget_route_carries_variant_and_seed",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_runner_cli_blocks_before_any_import",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_run_official_hard_requires_stage3_args",
+        "tests/pipeline/evalx/groundsg/test_groundsg_stage3_wiring.py::test_build_runner_cmd_forwards_memer_seed_and_budget"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/evalx/groundsg/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-ORIG-ARRAYS-MERGE",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/orig_observer/step_arrays.py"
+      ],
+      "symbol": "step_arrays.StepArrays.save 委托 trace_writer.merge_write_npz（接口冻结说明四.4），缺该函数时保持旧写法",
+      "oracle": "sys.modules['trace_writer'] 装替身模块（有／无 merge_write_npz）；期望键、dtype、字节手写",
+      "positive": "有 merge_write_npz 时 save 只调它一次（路径、键 exec_action__%05d、原 dtype 与字节），自己不写盘；空数组不调",
+      "negative": "没有 merge_write_npz 时仍按旧写法原子写 arrays.npz（numpy 读回键、dtype、字节一致，无残留临时文件）",
+      "boundaries": "merge_write_npz 的合并与冲突语义由 R6 测",
+      "nodeids": [
+        "tests/pipeline/evalx/orig_observer/test_step_arrays_merge.py::test_save_delegates_to_merge_write_npz",
+        "tests/pipeline/evalx/orig_observer/test_step_arrays_merge.py::test_save_keeps_old_write_when_merge_missing"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/evalx/orig_observer/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-SG-VIDEO-LAYOUT",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/publish_videos.py",
+        "scripts/eval-official/render_official_video.py"
+      ],
+      "symbol": "publish_videos.run / plan_episode / name_terminal / read_index / write_index / place / main（--verify、--mode link|copy、--accept-from、--expect-total）",
+      "oracle": "1006 计划八.7 与接口冻结说明第六节：上游 mme-vla 布局 <run 根>/<model_id>/seed<policy_seed>/[oracle|qwenvl|memer/]videos/<task>_ep<N>_<success|fail|timeout>_<task_goal>_<tier>.mp4；夹具手写运行根、账本、局目录，期望文件名与索引列手写",
+      "positive": "success／fail／strict-cap（trace terminal_reason=error、status=timeout）三局发布为三态命名、默认硬链接、局目录原位不动；index.tsv 11 列逐项等于手写；重复发布同名同 sha 幂等（published=0 reused=3、索引字节不变）；--verify PASS；hard-verify 用源局号、copy 模式；超长 task_goal 截断加哈希 ≤255 字节；86 个身份全无帧 → videos=0 no_frame_error=86 accepted=86 PASS（用户裁决的具名例外、单列）",
+      "negative": "infra a1＋accepted a2 只发 a2；同名异 sha → conflict、不覆盖；--verify 发现已发布文件被篡改、目录里有 _error_ 命名或索引外文件 → FAIL；有帧的 error 局 → error_named=1 FAIL；trace／sidecar 种子不符 → seed_mismatch、一处都没写 → seed_unproven；--expect-total 不符 → FAIL；groundsg 不给变体或其他模型给变体 → 参数错误",
+      "boundaries": "不解码视频（解码与帧数归 official_media_check）；无帧 error 局只进索引不出视频；原侧无 AttemptLedger 时用 --accept-from results",
+      "nodeids": [
+        "tests/pipeline/evalx/report/test_sgx_publish_videos.py::test_publish_layout_three_terminals_index_and_idempotent",
+        "tests/pipeline/evalx/report/test_sgx_publish_videos.py::test_only_accepted_attempt_is_published",
+        "tests/pipeline/evalx/report/test_sgx_publish_videos.py::test_same_name_different_sha_fails_and_verify_catches_tamper",
+        "tests/pipeline/evalx/report/test_sgx_publish_videos.py::test_all_86_identities_no_frame",
+        "tests/pipeline/evalx/report/test_sgx_publish_videos.py::test_error_with_frames_is_error_named_and_not_published",
+        "tests/pipeline/evalx/report/test_sgx_publish_videos.py::test_policy_seed_mismatch_and_unproven",
+        "tests/pipeline/evalx/report/test_sgx_publish_videos.py::test_hard_verify_source_episode_copy_mode_and_no_variant",
+        "tests/pipeline/evalx/report/test_sgx_publish_videos.py::test_verify_rejects_error_named_and_extra_files",
+        "tests/pipeline/evalx/report/test_sgx_publish_videos.py::test_long_goal_truncated_with_hash"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "note": "R7（1006 第三阶段）写成；R7 worktree 内 pytest 被宿主拦截未能执行，待主会话合并后跑通再改 verified。",
+      "merge_note": "MERGE-1：R7 三条由 planned 转 verified——主会话已实跑 R7 定向测试 223 passed、新测试含 slow 56 passed（合并前审查）；MERGE-1 整合后复跑核心短测与 slow 通过。增量文件保留 planned 作来源记录。",
+      "merged_from": [
+        "tests/pipeline/evalx/report/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-SG-LANG-IO",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/lang_io_check.py"
+      ],
+      "symbol": "lang_io_check.check_episode / check / frame_sets / image_refs / memer_log_counts / main（--root、--require-server-text、--expect-system）",
+      "oracle": "1006 计划八.11「验收」与接口冻结说明第五节的 LanguageLog 行格式；夹具手写 trace 与 language.jsonl，期望计数手写",
+      "positive": "两局各 4 个执行步、2 次动作模型调用、1 次子目标调用 → LANG_IO=PASS 全部计数为 0；reuse 行使无 source_call_id 的步可追溯；MemER 归档日志请求／回复数与账本一致时通过；无外壳路线不要求 server_final_text",
+      "negative": "改 system（与多数不同或不等于 --expect-system 哈希）、交换消息顺序、同一步多一次动作模型调用、缺回复、缺 call_close、引用错 attempt（图引用哈希对不上）、server_final_text 为空、retry 跳号或与 MemER 日志次数不符、执行步无来源或指向之后的调用、缺 language.jsonl 均 FAIL",
+      "boundaries": "只读；帧哈希只核是哪一帧，不核像素；extra_calls 只在 trace 有 response 行时核",
+      "nodeids": [
+        "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_pass_two_episodes",
+        "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_changed_system_fails",
+        "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_swapped_message_order_fails",
+        "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_extra_call_in_same_step_fails",
+        "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_missing_reply_and_dangling_call_fail",
+        "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_language_from_wrong_attempt_fails",
+        "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_empty_server_final_text_fails",
+        "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_memer_retry_count_against_archived_log",
+        "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_unresolved_step_reuse_and_missing_language",
+        "tests/pipeline/evalx/report/test_sgx_lang_io_check.py::test_system_grouped_by_route_mixed_root"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "note": "R7（1006 第三阶段）写成；R7 worktree 内 pytest 被宿主拦截未能执行，待主会话合并后跑通再改 verified。",
+      "merge_note": "MERGE-1：R7 三条由 planned 转 verified——主会话已实跑 R7 定向测试 223 passed、新测试含 slow 56 passed（合并前审查）；MERGE-1 整合后复跑核心短测与 slow 通过。增量文件保留 planned 作来源记录。",
+      "merged_from": [
+        "tests/pipeline/evalx/report/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-SG-GATE2-HOST-LANG",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/gate2_compare.py"
+      ],
+      "symbol": "gate2_compare.compare_ext(expect_host=) / host_matches / read_language / language_messages / compare_language / text_snippets / ext_lines（--expect-host）",
+      "oracle": "1006 计划八.10 第 6 条、八.11 与冻结说明第九节；两侧轨迹由 TraceWriter 写出，language.jsonl 手写，期望计数与片段手写",
+      "positive": "两侧同一主机（长短主机名等同）→ GATE2_PROVENANCE=PASS mode=host；语言账本相同 → prompt_diff=0 reply_diff=0；两侧都没有 language.jsonl → prompt_diff=NA reply_diff=NA",
+      "negative": "一侧异主机、一侧缺主机 → GATE2_PROVENANCE=FAIL foreign_rows=1 unknown_rows=1、GATE2=INVALID reason=cross_machine；不给 --expect-host 时 GL 模式原检查不变；user 文字与回复不同 → prompt_diff／reply_diff 计数并输出 GATE2_LANG_FIRST_DIFF 两侧片段；只一侧多一次调用计 prompt_diff、只一侧有账本计 lang_missing",
+      "boundaries": "默认（非扩展）模式输出与此前逐字节相同（见 test_gate2_inputs 的 BASE 对照）",
+      "nodeids": [
+        "tests/pipeline/evalx/report/test_sgx_gate2_lang_host.py::test_expect_host_same_machine_passes_and_lang_identical",
+        "tests/pipeline/evalx/report/test_sgx_gate2_lang_host.py::test_expect_host_cross_machine_invalid",
+        "tests/pipeline/evalx/report/test_sgx_gate2_lang_host.py::test_language_prompt_and_reply_diff_with_first_snippet",
+        "tests/pipeline/evalx/report/test_sgx_gate2_lang_host.py::test_language_extra_call_and_missing_files"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "note": "R7（1006 第三阶段）写成；R7 worktree 内 pytest 被宿主拦截未能执行，待主会话合并后跑通再改 verified。",
+      "merge_note": "MERGE-1：R7 三条由 planned 转 verified——主会话已实跑 R7 定向测试 223 passed、新测试含 slow 56 passed（合并前审查）；MERGE-1 整合后复跑核心短测与 slow 通过。增量文件保留 planned 作来源记录。",
+      "merged_from": [
+        "tests/pipeline/evalx/report/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-SG-TRACE-ARRAYS",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/trace_writer.py",
+        "scripts/eval-official/recorder.py",
+        "scripts/eval-official/trace_arrays_check.py"
+      ],
+      "symbol": "trace_writer.merge_write_npz / ArraysConflict / TraceWriter(arrays_path, collect_arrays, policy_seed, effective_cap) / log_step(source_call_id, chunk_index)；recorder.EpisodeRecorder._write_arrays；trace_arrays_check.check / main",
+      "oracle": "冻结说明（docs/plans/1006-stage3-interface-freeze.md）第四节字段约定；数组期望用 hashlib 对原始字节直接算，夹具手写步序与缺观测步",
+      "positive": "每个 attempted 步有 exec_action__%05d（键号 step−1）、有状态的观测步有 exec_state__%05d，end.arrays 摘要逐项等于手算；同键同值合并、录像器与 trace 同目录任意关闭顺序都得到完整并集；header／end 在给出时带 policy_seed、effective_cap，step 行带 source_call_id／chunk_index；检查器对合规局出 TRACE_ARRAYS=PASS",
+      "negative": "同键 dtype／shape／字节不一致抛 ArraysConflict 且原文件一个字节不变；写到一半失败旧文件原样、不留 .tmp；检查器对 float32／float64 混用、数组只在录像器分目录、观测步缺状态、缺观测步补零、改 1 bit、空目录均判 FAIL",
+      "boundaries": "缺观测步不补零（记 missing_state_steps）；不传新参数时 step 行仍是旧 9 键；collect_arrays=False 不写数组也不写 end.arrays；extra_action_keys 只报不判",
+      "nodeids": [
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_merge_write_npz_merges_consistent_keys",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_merge_write_npz_conflict_raises_and_leaves_file_untouched",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_merge_write_npz_is_atomic_when_write_fails",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_trace_writer_collects_actions_and_states_without_zero_fill",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_trace_writer_seed_cap_and_call_links",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_recorder_and_trace_same_dir_any_close_order",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_recorder_conflicting_same_key_raises",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_check_positive_and_fixture_verdict_line",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_check_negative_float32_float64_mixed",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_check_negative_split_dir_arrays_only_in_recorder_dir",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_check_negative_observed_state_missing_and_zero_fill",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_check_negative_tampered_bytes",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_check_empty_root_fails"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/evalx/trace/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-SG-LANGUAGE-LOG",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/trace_writer.py"
+      ],
+      "symbol": "trace_writer.LanguageLog.open_call / message / close_call / reuse / close；read_language；audit_channel_messages",
+      "oracle": "冻结说明第五节的方法与行 schema（字段名与顺序）逐字手写",
+      "positive": "call_open／message／call_close／reuse 四种行的键与顺序等于冻结说明；message_index 在调用内从 0 递增；文字 ensure_ascii=False 原样；numpy token id 转列表",
+      "negative": "dir=in 消息写后未关文件即可从磁盘读到（发送前落盘）；close() 给悬空调用补 status=cancelled 且幂等；收尾后再写抛 RuntimeError；向已关闭调用写消息、未知 model、复用不存在的调用均 ValueError",
+      "boundaries": "不存图片本身，只记引用；call_id 只在一局内唯一",
+      "nodeids": [
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_language_log_open_message_close_schema",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_language_log_in_message_is_on_disk_before_send",
+        "tests/pipeline/evalx/trace/test_trace_arrays_language.py::test_language_log_close_cancels_open_calls_and_rejects_late_writes"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/evalx/trace/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-SG-CLIENT-LANGUAGE",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/smvla_client.py",
+        "scripts/eval-official/framesamp_modul_client.py",
+        "scripts/eval-official/pp_client.py"
+      ],
+      "symbol": "smvla_client.run_episode / PolicyTrace.lang_* / begin_chunk；framesamp_modul_client.TracedClient.infer / RecordingClient._roundtrip；pp_client.TracedConnection.act / _log_generation / _run_episode_async",
+      "oracle": "计划八.11「一局里各路线会有什么记录」手写期望；假服务分带与不带 _sgeval_audit 两种跑同一局",
+      "positive": "带与不带审计键时交给环境的动作字节、发给服务的请求与服务收到的内容完全相同（OBS_EQ 雏形）；FrameSamp+Modulation 每个推理步一个 action_model 调用（fields 原文 + 两张当前帧引用可在 trace 里解析、逐通道分词、server_final_text）；SimpleMemVLA 每次决策 in（任务目标）+ out（子任务原文）；PonderPounce 每个观测一个 action_model 调用，pp_generation 另开 subgoal_model 调用（transition 记换算后子目标，nontransition 显式记无文字输出）；执行步 source_call_id／chunk_index 指向来源调用",
+      "negative": "缺审计键时 server_final_text 记 None 不报错；PonderPounce 断线重发时首次调用记 error、重发调用 transport_attempt=1；审计键不进 trace",
+      "boundaries": "pp_generation 的键（context／text／reasoning／subgoal_raw／kind／committed）由 R3 外壳提供，缺键记 None；第二阶段开关关时 PonderPounce 不记语言账本、不收完整数组（与 BASE 逐字节相同）",
+      "nodeids": [
+        "tests/pipeline/evalx/trace/test_client_language_audit.py::test_smvla_audit_does_not_change_actions_and_language_rows",
+        "tests/pipeline/evalx/trace/test_client_language_audit.py::test_framesamp_audit_does_not_change_actions_and_language_rows",
+        "tests/pipeline/evalx/trace/test_client_language_audit.py::test_pp_audit_does_not_change_actions_and_language_rows",
+        "tests/pipeline/evalx/trace/test_client_language_audit.py::test_pp_act_failure_closes_call_with_error_and_retries_get_transport_attempt"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/evalx/trace/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-MERGE1-CROSS",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/trace_writer.py",
+        "scripts/eval-official/orig_observer/step_arrays.py",
+        "scripts/eval-official/astra_hard_runner.py",
+        "scripts/eval-official/budget_ledger.py",
+        "scripts/eval-official/official_hard_runner.py",
+        "scripts/eval-official/env_client.py",
+        "scripts/eval-official/pp_server_wrap.py",
+        "scripts/eval-official/pp_client.py",
+        "scripts/eval-official/policy_server_wrap.py"
+      ],
+      "symbol": "merge_write_npz（目录锁超时 MERGE_LOCK_TIMEOUT_S）× StepArrays.save × write_exec_actions × TraceWriter.close；OrigBudget＋open_budget_ledger × AttemptLedger＋budget_caps × BudgetLedger；pp_server_wrap._S2Watch／_audit_block／generation_blocks × pp_client.TracedConnection._log_generation；policy_server_wrap.build_audit × trace_writer.audit_channel_messages",
+      "oracle": "接口冻结说明三、四、五节；两边都用真实代码（不用替身对接），期望键集合、计数与文字在用例里手写",
+      "positive": "R2／R5 数组写法与 TraceWriter.close 任意先后都得到 exec_action 与 exec_state 的并集、end.arrays 无 error；原侧与新侧同开一个真实共享账本：同 config 不拒、恰一行 config、首试／恢复／重试计数手算一致、同 token 续跑同 rid 不写新行；pp 外壳审计键进客户端语言账本后 S2 transition 块有子目标原文、换算后子目标、reasoning、kind、committed、params，nontransition 显式无文字；S1 通道 token_ids／mask 原样、text_reconstructed 记进 call_close.parsed；MME-VLA 外壳通道逐字段落行",
+      "negative": "目录锁被占超过 MERGE_LOCK_TIMEOUT_S 抛 TimeoutError、TraceWriter.close 记 end.arrays.error 且不写文件；恢复额度用满再预约被拒（reserved_for_first_tries／recovery_cap）；换一组 config 参数打开同一账本抛 BudgetConfigMismatch",
+      "boundaries": "PonderPounce 父类服务与 build_pi0_prompt 用桩（外壳自身代码真实执行）；不起网络、不起仿真、不加载模型",
+      "nodeids": [
+        "tests/pipeline/evalx/trace/test_merge1_cross_block.py::test_step_arrays_and_trace_writer_any_order_keep_states",
+        "tests/pipeline/evalx/trace/test_merge1_cross_block.py::test_astra_write_exec_actions_and_trace_writer_any_order_keep_states",
+        "tests/pipeline/evalx/trace/test_merge1_cross_block.py::test_merge_write_npz_lock_timeout_recorded_in_end_arrays",
+        "tests/pipeline/evalx/trace/test_merge1_cross_block.py::test_orig_and_new_side_share_one_real_budget_ledger",
+        "tests/pipeline/evalx/trace/test_merge1_cross_block.py::test_pp_server_wrap_generation_and_text_flag_reach_language_log",
+        "tests/pipeline/evalx/trace/test_merge1_cross_block.py::test_policy_server_wrap_channels_land_in_language_log"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/evalx/trace/contracts.delta.json"
+      ]
     }
   ],
   "files": {
@@ -7676,6 +8036,19 @@
     ],
     "scripts/eval-official/pp_server_wrap.py": [
       "C13-PP-SERVER-WRAP"
+    ],
+    "scripts/eval-official/publish_videos.py": [
+      "C13-SG-VIDEO-LAYOUT"
+    ],
+    "scripts/eval-official/lang_io_check.py": [
+      "C13-SG-LANG-IO"
+    ],
+    "scripts/eval-official/trace_arrays_check.py": [
+      "C13-SG-TRACE-ARRAYS"
+    ],
+    "scripts/eval-official/policy_server_wrap.py": [
+      "C13-R3-STAGE3",
+      "C13-MERGE1-CROSS"
     ]
   },
   "exempt": {
@@ -7819,6 +8192,10 @@
     "scripts/parity/official/scripts/data-generation/generate_dataset.py": "官方生成编排逐字节 vendor 副本，C18-VENDOR 核字节。",
     "scripts/parity/official/scripts/data-generation/validate_generated_dataset_contract.py": "官方生成编排逐字节 vendor 副本，C18-VENDOR 核字节。",
     "scripts/parity/official/scripts/data-generation/write_generation_report.py": "官方生成编排逐字节 vendor 副本，C18-VENDOR 核字节。",
-    "scripts/parity/official/SOURCE.json": "vendor 来源清单（导入提交与文件 sha256）。"
+    "scripts/parity/official/SOURCE.json": "vendor 来源清单（导入提交与文件 sha256）。",
+    "scripts/eval-official/publish_videos.py": "第三阶段媒体发布索引（R7，冻结说明六）。",
+    "scripts/eval-official/lang_io_check.py": "第三阶段语言账本验收检查器（R7，冻结说明五）。",
+    "scripts/eval-official/trace_arrays_check.py": "第三阶段完整数组检查器（R6，冻结说明四.5）。",
+    "scripts/eval-official/policy_server_wrap.py": "MME-VLA 服务外壳：--seed、服务元数据、回包审计键（R3，冻结说明 2.2／五）。"
   }
 }

@@ -361,7 +361,8 @@ def test_dataset_hard0_lines_pass_without_spec_and_skip_cap(tmp_path, capsys, mo
     rc, lines, rep = _ds_report(tmp_path, capsys, [a, b], "hard-verify", ["perceptual-framesamp-modul"], "--videos", str(tmp_path / "videos"))
     cov, rp, vid = (_lines_of(lines, n, "perceptual-framesamp-modul") for n in ("EVAL_COVERAGE", "EVAL_REPORT", "EVAL_VIDEOS"))
     assert cov == {"": "PASS", "dataset": "hard-verify", "policy": "perceptual-framesamp-modul", "expected": "2", "missing": "0", "extra": "0",
-                   "duplicate": "0", "conflicting_terminal": "0", "error_final": "0"}
+                   "duplicate": "0", "conflicting_terminal": "0", "error_final": "0", "no_frame_error": "0",
+                   "policy_seed": "NA"}
     assert rp[""] == "PASS" and rp["exec_over_cap"] == "skip" and rp["count_mismatch"] == "0"
     assert vid[""] == "PASS" and vid["expected"] == "2" and vid["videos"] == "2" and vid["decode_fail"] == "0"
     assert rc == 0 and rep["cap"] is None and rep["dataset"] == "hard-verify"
@@ -438,3 +439,103 @@ def test_dataset_requires_expect_total(tmp_path):
     er = F.eval_report()
     with pytest.raises(SystemExit):
         er.main(["--manifest", "m", "--stage", "s", "--out", str(tmp_path), "--dataset", "hard-verify"])
+
+
+# ---------------------------------------------------------------- 1006 第三阶段：真实 1800 上限、模型种子、无帧 error 单列
+
+
+def _ood_rows(tmp_path, cap_values, *, seed=7, trace_max=None, **kw):
+    """ood 两个身份：结果行写 max_steps／effective_max_steps／effective_cap（取 cap_values），rec 目录写 trace header。"""
+    idents = [_ident(0), _ident(1)]
+    st = Stage(tmp_path / "stage")
+    for i, ident in enumerate(idents):
+        row = st.accepted(ident, f"a{i}", "success", dataset="ood", policy_seed=seed, **cap_values, **kw)
+        if trace_max is not None:
+            Path(row["rec_dir"], "trace.jsonl").write_text(
+                json.dumps({"kind": "header", "max_steps": trace_max, "identity": {"key": ident["key"]}}) + "\n"
+                + json.dumps({"kind": "end", "status": "success"}) + "\n", encoding="utf-8")
+    return idents
+
+
+def test_dataset_cap_1800_rejects_old_1600_rows(tmp_path, capsys):
+    """--cap 1800：仍按 1600 截断的旧路线（结果行 max_steps=1600）不能误过；1800 的行通过；trace header 不符也拦。"""
+    idents = _ood_rows(tmp_path, {"max_steps": 1600, "effective_max_steps": 1600})
+    rc, lines, rep = _ds_report(tmp_path, capsys, idents, "ood", [POL], "--cap", "1800", "--policy-seed", "7")
+    rp = _lines_of(lines, "EVAL_REPORT", POL)
+    print(next(x for x in lines if x.startswith("EVAL_REPORT=")))
+    assert rp[""] == "FAIL" and rp["cap"] == "1800" and rp["cap_mismatch"] == "2" and rp["exec_over_cap"] == "0"
+    assert rp["policy_seed"] == "7" and rc == 1
+    assert any("result.max_steps=1600" in p for x in rep["cap_mismatch_detail"] for p in x["problems"])
+
+    ok = tmp_path / "ok"
+    idents = _ood_rows(ok, {"max_steps": 1800, "effective_max_steps": 1800, "effective_cap": 1800}, trace_max=1800)
+    _, lines, _ = _ds_report(ok, capsys, idents, "ood", [POL], "--cap", "1800", "--policy-seed", "7")
+    rp = _lines_of(lines, "EVAL_REPORT", POL)
+    print(next(x for x in lines if x.startswith("EVAL_REPORT=")))
+    assert rp[""] == "PASS" and rp["cap_mismatch"] == "0" and rp["policy_seed"] == "7"
+
+    bad_trace = tmp_path / "bad_trace"
+    idents = _ood_rows(bad_trace, {"max_steps": 1800}, trace_max=1600)
+    _, lines, rep = _ds_report(bad_trace, capsys, idents, "ood", [POL], "--cap", "1800")
+    rp = _lines_of(lines, "EVAL_REPORT", POL)
+    assert rp[""] == "FAIL" and rp["cap_mismatch"] == "2"
+    assert any("trace.header.max_steps=1600" in p for x in rep["cap_mismatch_detail"] for p in x["problems"])
+
+    absent = tmp_path / "absent"
+    idents = _ood_rows(absent, {})
+    _, lines, rep = _ds_report(absent, capsys, idents, "ood", [POL], "--cap", "1800")
+    assert _lines_of(lines, "EVAL_REPORT", POL)["cap_mismatch"] == "2"  # 一个上限字段都没写也不算过
+
+
+def test_dataset_policy_seed_grouping(tmp_path, capsys):
+    """--policy-seed 7：结果行缺 policy_seed 或为别的种子计 count_mismatch；不给时混了两个种子计 policy_seed_mixed。"""
+    idents = _ood_rows(tmp_path, {"max_steps": 1800}, seed=None)
+    _, lines, rep = _ds_report(tmp_path, capsys, idents, "ood", [POL], "--cap", "1800", "--policy-seed", "7")
+    rp = _lines_of(lines, "EVAL_REPORT", POL)
+    assert rp[""] == "FAIL" and rp["count_mismatch"] == "2" and rp["policy_seed"] == "7"
+    assert any("policy_seed=None != --policy-seed 7" in x for x in rep["count_mismatch_detail"])
+    mixed = tmp_path / "mixed"
+    a, b = _ident(0), _ident(1)
+    st = Stage(mixed / "stage")
+    st.accepted(a, "a0", "success", dataset="ood", policy_seed=7, max_steps=1800)
+    st.accepted(b, "a1", "success", dataset="ood", policy_seed=42, max_steps=1800)
+    _, lines, rep = _ds_report(mixed, capsys, [a, b], "ood", [POL], "--cap", "1800")
+    rp = _lines_of(lines, "EVAL_REPORT", POL)
+    assert rp[""] == "FAIL" and rp["policy_seed"] == "NA"
+    assert any("policy_seed_mixed" in x for x in rep["count_mismatch_detail"])
+
+
+def test_dataset_no_frame_error_reported_separately(tmp_path, capsys, monkeypatch):
+    """无帧 error 例外：accepted = videos + no_frame_error，EVAL_COVERAGE 不因它 FAIL；有帧的错误终局没视频照常 missing。"""
+    er = F.eval_report()
+    monkeypatch.setattr(er, "count_media_frames", lambda path, videos: 5)
+    a, b, c = _hard0(0), _hard0(1), _hard0(2)
+    st = Stage(tmp_path / "stage")
+    st.accepted(a, "a1", "success", dataset="hard-verify", policy_seed=7)
+    st.accepted(b, "b1", "error", dataset="hard-verify", policy_seed=7, error="reset_failed", media=False)
+    _videos(tmp_path / "videos", POL, "hard-verify", [a])
+    nf = tmp_path / "videos" / POL / "hard-verify" / "new" / f"{b['key']}.a1"
+    nf.mkdir(parents=True)
+    (nf / "trace.jsonl").write_text(json.dumps({"kind": "header"}) + "\n"
+                                    + json.dumps({"kind": "end", "status": "error", "no_frame": True,
+                                                  "frames_recorded": 0}) + "\n", encoding="utf-8")
+    rc, lines, _ = _ds_report(tmp_path, capsys, [a, b], "hard-verify", [POL], "--videos", str(tmp_path / "videos"),
+                              "--policy-seed", "7")
+    cov, vid = _lines_of(lines, "EVAL_COVERAGE", POL), _lines_of(lines, "EVAL_VIDEOS", POL)
+    for x in lines:
+        if x.startswith(("EVAL_COVERAGE=", "EVAL_VIDEOS=")):
+            print(x)
+    assert cov[""] == "PASS" and cov["error_final"] == "1" and cov["no_frame_error"] == "1"
+    assert (vid[""], vid["accepted"], vid["videos"], vid["no_frame_error"]) == ("PASS", "2", "1", "1") and rc == 0
+
+    # 有帧（frames_recorded=9）的错误终局没视频：不是无帧例外 → missing、两行 FAIL
+    st.accepted(c, "c1", "error", dataset="hard-verify", policy_seed=7, error="policy_crash", media=False)
+    wf = tmp_path / "videos" / POL / "hard-verify" / "new" / f"{c['key']}.a1"
+    wf.mkdir(parents=True)
+    (wf / "trace.jsonl").write_text(json.dumps({"kind": "header"}) + "\n"
+                                    + json.dumps({"kind": "end", "status": "error", "frames_recorded": 9}) + "\n",
+                                    encoding="utf-8")
+    rc, lines, _ = _ds_report(tmp_path, capsys, [a, b, c], "hard-verify", [POL], "--videos", str(tmp_path / "videos"))
+    cov, vid = _lines_of(lines, "EVAL_COVERAGE", POL), _lines_of(lines, "EVAL_VIDEOS", POL)
+    assert cov[""] == "FAIL" and cov["error_final"] == "2" and cov["no_frame_error"] == "1"
+    assert vid[""] == "FAIL" and vid["missing"] == "1" and vid["accepted"] == "2" and rc == 1

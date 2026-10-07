@@ -413,3 +413,47 @@ def test_key_option_for_dir_without_key(tmp_path, repo_root):
     assert side["episode_tag"] == f"{key}.a1" and side["episode_id"] == "3a1"
     with pytest.raises(SystemExit):
         mod.main([str(ep), str(ep.parent), "--key", key])
+
+
+# ── 1006 第三阶段：strict-cap 局命名 timeout、render.json 记 policy_seed ─────────────────────────
+
+
+def test_strict_cap_named_timeout_and_policy_seed_parsed(tmp_path):
+    mod = _module()
+    rows = _rows(demo=0, steps=2, max_steps=2, terminal="error", status="timeout")  # 旧口径：terminal_reason=error
+    rows[0]["policy_seed"] = 7
+    rows[0]["identity"]["policy_seed"] = 7
+    rows[-1]["cap_hit"] = True
+    trace = _trace(tmp_path, rows)
+    assert trace.terminal_reason == "error" and trace.named_terminal == "timeout"
+    assert trace.policy_seed == 7 and trace.cap_hit is True
+    assert _trace(tmp_path, _rows(steps=2)).policy_seed is None  # 旧轨迹没有种子：记 None，不补
+    bad = _rows(steps=2)
+    bad[-1]["cap_hit"] = True  # success 局不可能 strict-cap 命中
+    with pytest.raises(ValueError, match="cap_hit"):
+        _trace(tmp_path, bad)
+    bad = _rows(steps=2)
+    bad[0]["policy_seed"], bad[0]["identity"]["policy_seed"] = 7, 42
+    with pytest.raises(ValueError, match="policy_seed"):
+        _trace(tmp_path, bad)
+    bad = _rows(steps=2)
+    bad[0]["policy_seed"] = -1
+    with pytest.raises(ValueError, match="policy_seed"):
+        _trace(tmp_path, bad)
+
+
+@pytest.mark.slow
+def test_strict_cap_render_file_named_timeout(tmp_path, repo_root):
+    _need_ffmpeg()
+    ep = fx.write_episode(tmp_path, "strict_cap")
+    path = ep.dir / "trace.jsonl"
+    rows = [json.loads(x) for x in path.read_text().splitlines()]
+    rows[0]["policy_seed"] = 7
+    rows[-1]["terminal_reason"] = "error"  # 旧口径的 strict-cap 超时局
+    rows[-1]["cap_hit"] = True
+    path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    result = _render(ep.dir, repo_root, source="raw")
+    assert "_timeout_" in result["safe_name"] and "_error_" not in result["safe_name"]
+    side = json.loads((ep.dir / "official/render.json").read_text())
+    assert side["terminal_reason"] == "timeout" and side["trace_terminal_reason"] == "error"
+    assert side["policy_seed"] == 7 and side["cap_hit"] is True

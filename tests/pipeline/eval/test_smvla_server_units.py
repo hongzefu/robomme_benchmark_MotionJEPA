@@ -306,13 +306,15 @@ def test_main_parses_serve_args(monkeypatch):
         monkeypatch.setenv(k, v)
     got = {}
     monkeypatch.setattr(srv, "cmd_serve", lambda a: got.setdefault("a", a) and 7)
-    assert srv.main(["serve", "--port", "4321", "--warmup", "--det"]) == 7
+    assert srv.main(["serve", "--port", "4321", "--warmup", "--det", "--policy-seed", "42"]) == 7
     a = got["a"]
-    assert (a.port, a.host, a.warmup, a.det, a.expect_config_sha, a.metadata_out) == \
-        (4321, "127.0.0.1", True, True, None, None)
+    assert (a.port, a.host, a.warmup, a.det, a.expect_config_sha, a.metadata_out, a.policy_seed) == \
+        (4321, "127.0.0.1", True, True, None, None, 42)
     assert a.ckpt == str(srv.DEFAULT_CKPT)
     with pytest.raises(SystemExit):  # --port 必填
-        srv.main(["serve"])
+        srv.main(["serve", "--policy-seed", "7"])
+    with pytest.raises(SystemExit):  # 第三阶段：--policy-seed 必填，不回落旧常量 0
+        srv.main(["serve", "--port", "4321"])
 
 
 class _HostStub:
@@ -320,8 +322,9 @@ class _HostStub:
 
     instances: list = []
 
-    def __init__(self, ckpt):
+    def __init__(self, ckpt, *, policy_seed):
         self.ckpt = ckpt
+        self.policy_seed = policy_seed
         self.load_s = 1.25
         self.warmups = 0
         self.metadata = {"ckpt_config_sha256": "ab" * 32, "versions": {"torch": "x"}, "gpu_name": None}
@@ -334,7 +337,7 @@ class _HostStub:
 
 def _serve_args(tmp_path, **kw):
     base = dict(ckpt=str(tmp_path / "ckpt"), host="127.0.0.1", port=1, warmup=False, expect_config_sha=None,
-                metadata_out=None, det=False)
+                metadata_out=None, det=False, policy_seed=7)
     base.update(kw)
     return argparse.Namespace(**base)
 
@@ -359,3 +362,6 @@ def test_cmd_serve_config_sha_gate_and_metadata(monkeypatch, tmp_path, capsys):
     written = json.loads(meta.read_text())
     assert written["det"] is False and written["ckpt_config_sha256"] == "ab" * 32
     assert "startup_s" in host.metadata and "startup_s" not in written  # 启动耗时在落盘之后才补
+    # 第三阶段：服务元数据带 policy_seed／argv／pid／port（客户端据此反查结果行 server_seed）
+    assert written["policy_seed"] == 7 and host.policy_seed == 7 and isinstance(written["argv"], list)
+    assert written["port"] == 1 and isinstance(written["pid"], int)

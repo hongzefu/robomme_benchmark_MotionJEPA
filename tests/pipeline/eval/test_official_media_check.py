@@ -314,3 +314,66 @@ def test_sidecar_frames_accepts_groundsg_provenance_dict():
     bad = {"frames": {"decoded": 391, "expected": 392, "frames_recorded": 392}}
     assert isinstance(m.sidecar_frames(bad), str) and "inconsistent" in m.sidecar_frames(bad)
     assert m.sidecar_frames({"frames": {"basis": "x"}}) == "frames_dict_without_counts"
+
+
+# ── 1006 第三阶段：accepted = videos + no_frame_error、strict-cap 命名、模型种子 ─────────────────
+
+
+def test_accepted_equals_videos_plus_no_frame(world):
+    rc, out, v = _check(world)
+    print(next(x for x in out.splitlines() if x.startswith("OFFICIAL_MEDIA=")))
+    m = v["OFFICIAL_MEDIA"]
+    assert rc == 0 and (m["videos"], m["no_frame_error"], m["accepted"], m["total"]) == ("3", "1", "4", "4"), out
+
+
+def test_all_86_identities_no_frame_reported_separately(tmp_path):
+    """86 个身份全是无帧 error：按用户裁决保留例外、单列，videos=0、no_frame_error=86、accepted=86，不计 fail。"""
+    root = tmp_path / "media"
+    root.mkdir()
+    for k in range(86):
+        _no_frame_episode(root, k)
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps([_manifest_row(k) for k in range(86)]), encoding="utf-8")
+    ledger = _ledger(tmp_path / "pp.ledger.jsonl", {_ident(k)["key"]: 1 for k in range(86)})
+    rc, out = _run("--manifest", manifest, "--ledger", ledger, "--root", root, "--dataset", DATASET, "--route", ROUTE)
+    line = next(x for x in out.splitlines() if x.startswith("OFFICIAL_MEDIA="))
+    print(line)
+    m = _verdicts(out)["OFFICIAL_MEDIA"]
+    assert rc == 0 and (m[""], m["total"], m["fail"], m["videos"], m["no_frame_error"], m["accepted"]) == \
+        ("PASS", "86", "0", "0", "86", "86"), out
+
+
+def test_strict_cap_error_name_rejected(world):
+    """strict-cap 命中（end.cap_hit）或 status=timeout 的局视频名带 _error_：旧口径，计 terminal_name 失败。"""
+    def old_name(w):
+        d = w["eps"][0]
+        ident = _ident(0)
+        rows = [{"kind": "header", "schema": "sgeval-trace/1", "route": ROUTE, "identity": ident, "max_steps": 1800},
+                {"kind": "end", "status": "timeout", "terminal_reason": "error", "cap_hit": True, "exec_steps": 2,
+                 "demo_frames": 1, "frames_recorded": 4}]
+        (d / "trace.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+        v = _video(w, 0)
+        v.rename(v.with_name(f"official-rerender__PickXtimes_ep0a1_error_goal_xhard0.mp4"))
+    out = _mutate_and_expect(world, old_name, fail=1)
+    rows = [json.loads(x) for x in (world["root"] / "official-media.jsonl").read_text().splitlines()]
+    bad = next(r for r in rows if r["key"] == _ident(0)["key"])
+    assert any(r.startswith("terminal_name:error_named") for r in bad["reasons"]), out
+
+
+def test_policy_seed_checked(world):
+    rc, out, v = _check(world, "--policy-seed", "7")
+    # 4 个局（含无帧 error 局：trace header 同样要有种子）都缺 policy_seed → 全部 fail
+    assert rc == 1 and v["OFFICIAL_MEDIA"]["fail"] == "4" and v["OFFICIAL_MEDIA"]["policy_seed"] == "7", out
+    for k in (0, 1, 2, 3):  # trace 补上种子 7 后通过；sidecar 写成 42 则拒
+        d = world["eps"][k]
+        rows = [json.loads(x) for x in (d / "trace.jsonl").read_text().splitlines()]
+        rows[0]["policy_seed"] = 7
+        (d / "trace.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+    rc, out, v = _check(world, "--policy-seed", "7")
+    assert rc == 0 and v["OFFICIAL_MEDIA"][""] == "PASS", out
+    side = _off(world, 0) / "render.json"
+    s = json.loads(side.read_text())
+    s["policy_seed"] = 42
+    side.write_text(json.dumps(s))
+    rc, out, v = _check(world, "--policy-seed", "7")
+    assert rc == 1 and v["OFFICIAL_MEDIA"]["fail"] == "1", out

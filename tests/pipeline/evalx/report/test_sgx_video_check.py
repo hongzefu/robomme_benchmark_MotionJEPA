@@ -66,7 +66,8 @@ def test_pass_layout_and_frame_formula(tmp_path, capsys):
     rc, line = _run(tmp_path, [_row(1), _row(2, exec_steps=6), infra, _row(3, attempt=2, exec_steps=0, demo=7)],
                     capsys=capsys)
     assert rc == 0 and line == ("VIDEO_SAVED=PASS route=groundsg-oracle-new episodes=3 missing=0 decode_fail=0 "
-                                "frame_mismatch=0 raw_left=0 bytes=72 codec_bad=0 multi_mp4=0 key_mismatch=0")
+                                "frame_mismatch=0 raw_left=0 bytes=72 no_frame_error=0 videos=3 accepted=3 "
+                                "codec_bad=0 multi_mp4=0 key_mismatch=0")
 
 
 def test_each_failure_kind_counted(tmp_path, capsys):
@@ -163,3 +164,25 @@ def test_real_ffmpeg_h264_decode_and_counts(tmp_path, capsys):
     line = capsys.readouterr().out.strip().splitlines()[-1]
     assert rc == 0 and line.startswith("VIDEO_SAVED=PASS route=real episodes=1 missing=0 decode_fail=0 frame_mismatch=0 "
                                        "raw_left=0 bytes=")
+
+
+def test_no_frame_error_counted_separately_and_policy_seed(tmp_path, capsys):
+    """无帧 error 局（trace 末行 no_frame）不计 missing、单列 no_frame_error，accepted = videos + no_frame_error；
+    有帧的 error 局没有 mp4 照常 missing；--policy-seed 时行内种子不符计 policy_seed_mismatch。"""
+    root = tmp_path / "root"
+    _ep(root, 1)
+    nf = root / "groundsg-ground-sg-oracle" / "hard-verify" / "new" / "VideoUnmask_xhard0_2.a1"
+    nf.mkdir(parents=True)
+    (nf / "trace.jsonl").write_text('{"kind": "header"}\n{"kind": "end", "status": "error", "no_frame": true, '
+                                    '"frames_recorded": 0}\n')
+    rows = [_row(1, policy_seed=7), _row(2, status="error", policy_seed=7)]
+    rc, line = _run(tmp_path, rows, "--policy-seed", "7", capsys=capsys)
+    print(line)
+    assert rc == 0 and ("missing=0 " in line and " no_frame_error=1 videos=1 accepted=2 policy_seed=7 "
+                        "policy_seed_mismatch=0 " in line)
+    (nf / "trace.jsonl").write_text('{"kind": "header"}\n{"kind": "end", "status": "error", "frames_recorded": 6}\n')
+    rc, line = _run(tmp_path, rows, capsys=capsys)
+    assert rc == 1 and "missing=1 " in line and " no_frame_error=0 videos=1 accepted=1 " in line
+    rows = [_row(1, policy_seed=42), _row(2, status="error", policy_seed=7, no_frame=True)]
+    rc, line = _run(tmp_path, rows, "--policy-seed", "7", capsys=capsys)
+    assert rc == 1 and "policy_seed_mismatch=1 " in line and " no_frame_error=1 " in line

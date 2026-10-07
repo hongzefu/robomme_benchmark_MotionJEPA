@@ -148,3 +148,14 @@ def test_workers_do_not_write_bytecode_into_checkouts(cre, monkeypatch, tmp_path
     out = cre._run_side(tmp_path, "smvla", tmp_path, None, sys.executable)
     assert "worker_failed" in out
     assert seen["env"]["PYTHONDONTWRITEBYTECODE"] == "1" and "PYTHONPATH" not in seen["env"]
+
+
+def test_tool_official_defs_does_not_shadow_checkout_module(cre, monkeypatch):
+    """回放工具自用的 official_defs 不占 ``sys.modules["official_defs"]``：被比较检出里的客户端按 ``load_sibling``
+    「已加载则复用」取 official_defs，占了 base 侧就会用上本工具（candidate）的版本（MERGE-1 实测：第三阶段
+    make_args 必填 model_seed，base 侧 groundsg-oracle 三个场景全部崩溃）。"""
+    monkeypatch.delitem(sys.modules, "official_defs", raising=False)
+    monkeypatch.delitem(sys.modules, cre._TOOL_DEFS, raising=False)
+    mod = cre.official_defs()
+    assert mod.__name__ == cre._TOOL_DEFS and "official_defs" not in sys.modules
+    assert cre.side_interface(REPO)["name"] == "official" and "official_defs" not in sys.modules

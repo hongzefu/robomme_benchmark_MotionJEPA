@@ -39,6 +39,27 @@ tier=="xhard0"、candidate 与 spec_sha256 为 null、source_episode 为整数�
 原子领取（跨原侧／新侧、跨席位、重启换节点不刷新），中断分 ``infra`` 与 ``expired``（有 Slurm 到期证据）分别计数，
 两者都占每身份 ``V8_MAX_ATTEMPTS`` 名额。
 
+第三阶段（1006 计划第二部分八.9、八.10 第 4／5 条；接口冻结说明第二、三、七、八节）：
+
+* ``--policy-seed <n>`` 必填（CLI 缺失即 ``RUN_BLOCKED reason=policy_seed``、退出 3），进 ``seat_info``、结果行
+  ``policy_seed``，共享账本路线 ``<policy_label>/seed<n>/new``（GroundSG 为 ``groundsg/<variant>/seed<n>/new``）；
+  结果行 ``server_seed`` 从服务元数据 ``server-metadata-<port>.json`` 的 ``policy_seed`` 反查（``--server-metadata``）。
+* GroundSG 第三个变体 ``ground-sg-memer`` 与 ``--memer-adapter <dir>`` 配对；``ground-sg-qwenvl`` 只配
+  ``--qwenvl-groundsg-adapter``；错配或目录不存在 ``RUN_BLOCKED reason=variant_pairing``。
+* 预算参数 ``--budget-ledger --trajectory-cap --shared-infra-cap --expired-cap --planned-first-tries`` 在 CLI 必填（缺
+  任一 ``RUN_BLOCKED reason=budget_args``，不回落 ``budget_ledger.py`` 常量默认值）；``--reset-budget`` 改为可选：不给时
+  只计量（``reset_claim`` 照写、共享账本照记），不抛 ``ResetBudgetExhausted``。打开账本先核坏行与 config（不符
+  ``RUN_BLOCKED reason=ledger_corrupt|budget_config``），读取待跑身份之前取分片排他 lease（拿不到
+  ``RUN_BLOCKED reason=lease_held``）；每次尝试的 ``claim_retry``／``reserve``／``attempt_start`` 共用同一 token
+  ``<route>|<key>|a<attempt_no>``（结果行 ``budget_token``），首试 ``kind_of_try=first``、重试 ``recovery``。
+* 执行期限：``--context-deadline-s``（策略上下文加载）、``--first-infer-deadline-s``（本局第一次 ``step`` 之前）、
+  ``--media-deadline-s``（录制器收尾）各有绝对期限，超期写本局结果 ``status=error infra=true
+  infra_reason=deadline_<phase>``、打印 ``DEADLINE_EXCEEDED`` 并以 75 退出（run_seat.sh 重起客户端）。
+  ``progress.json`` 记 ``phase``（``context_load／first_infer／episode／media_finalize／done／finished``）、
+  ``identity``、``step``、``t``，只在这些量变化时更新，run_seat.sh 据此判无进展。
+* 结果行与 progress 记 ``effective_cap``（``--strict-cap`` 时为 ``--max-steps``，否则 null）；ood 的启动约定改为
+  ``--max-steps 1800 --strict-cap``（第 1800 次 step 照常进环境，第 1801 次在进入环境前被拒）。
+
 本目录只挂在 ``sys.path`` 末尾（防止同目录模块遮蔽标准库），同目录模块按文件路径加载。
 """
 from __future__ import annotations
@@ -56,6 +77,7 @@ import inspect  # noqa: E402
 import json  # noqa: E402
 import os  # noqa: E402
 import random  # noqa: E402
+import re  # noqa: E402
 import socket  # noqa: E402
 import subprocess  # noqa: E402
 import threading  # noqa: E402
@@ -79,8 +101,21 @@ POLICIES = ("perceptual-framesamp-modul", "smvla", "groundsg", "pp")
 #: 策略标签 → 同目录策略模块名（按 load_sibling(POLICY_MODULES[policy]) 加载）
 POLICY_MODULES = {"perceptual-framesamp-modul": "framesamp_modul_client", "smvla": "smvla_client",
                   "groundsg": "groundsg_client", "pp": "pp_client"}
-#: GroundSG 两个子目标来源变体
-GROUNDSG_VARIANTS = ("ground-sg-oracle", "ground-sg-qwenvl")
+#: GroundSG 三个子目标来源变体（第三阶段加 MemER）
+GROUNDSG_VARIANTS = ("ground-sg-oracle", "ground-sg-qwenvl", "ground-sg-memer")
+#: 变体 → 必须且只能给的 adapter 参数（argparse dest, CLI 名）；oracle 两者都不许给
+VARIANT_ADAPTERS = {"ground-sg-qwenvl": ("qwenvl_groundsg_adapter", "--qwenvl-groundsg-adapter"),
+                    "ground-sg-memer": ("memer_adapter", "--memer-adapter")}
+#: 第三阶段 CLI 必填的预算参数（argparse dest, CLI 名）；缺任一即 RUN_BLOCKED reason=budget_args
+BUDGET_ARGS = (("budget_ledger", "--budget-ledger"), ("trajectory_cap", "--trajectory-cap"),
+               ("shared_infra_cap", "--shared-infra-cap"), ("expired_cap", "--expired-cap"),
+               ("planned_first_tries", "--planned-first-tries"))
+#: progress.json 的具名阶段（接口冻结说明第八节）
+PHASES = ("context_load", "first_infer", "episode", "media_finalize", "done", "finished")
+#: 执行期限缺省值（秒）：上下文加载、首推、媒体收尾
+DEFAULT_CONTEXT_DEADLINE_S = 1800.0
+DEFAULT_FIRST_INFER_DEADLINE_S = 1800.0
+DEFAULT_MEDIA_DEADLINE_S = 1200.0
 EXIT_BLOCKED = 3
 EXIT_BUDGET = 5
 EXIT_INCOMPLETE = 6
@@ -209,8 +244,10 @@ class EnvSession:
     def __init__(self, task: str, builder_episode: int, *, max_steps: int | None = None, recorder=None, builder=None,
                  progress_cb: Callable[[int], None] | None = None, progress_every: int = 16,
                  step_cap: int | None = None, claim_reset: Callable[[str], None] | None = None,
-                 dataset: str = OOD, budget_claim: Any = _UNSET):
+                 dataset: str = OOD, budget_claim: Any = _UNSET, first_step_cb: Callable[[], None] | None = None):
         self.task = task
+        # 第三阶段：本局第一次调用 step（策略首推完成、拿到第一个动作）时调用一次，用于结束 first_infer 期限
+        self.first_step_cb = first_step_cb
         # S8：budget_claim(what) 在本地额度领到后再记进共享预算账本（只告警、不拦）；缺省（_UNSET）或 None 时不记
         self.budget_claim = None if budget_claim is _UNSET else budget_claim
         self.builder_episode = int(builder_episode)
@@ -315,6 +352,9 @@ class EnvSession:
         第 ``step_cap`` 步及之前环境报的终态照常返回。"""
         import numpy as np
 
+        if self.first_step_cb is not None:
+            cb, self.first_step_cb = self.first_step_cb, None
+            cb()
         if self.step_cap is not None and self.steps >= self.step_cap:
             self.cap_hit = True
             self._rec.add_event({"kind": "step_cap_reached", "step": self.steps, "cap": self.step_cap})
@@ -578,15 +618,16 @@ def _int_or_none(v: Any) -> int | None:
         return None
 
 
-def _open_shared(shared: Any):
+def _open_shared(shared: Any, caps: dict | None = None):
     """S8 门控：``_UNSET`` → 取环境变量 ``SGEVAL_BUDGET_LEDGER``（空即关闭）；None／空串 → 关闭；路径 → 打开
-    ``budget_ledger.BudgetLedger``；其他对象（已打开的账本，单测注入）原样返回。"""
+    ``budget_ledger.BudgetLedger``（第三阶段 ``caps`` 给出 config 四参数时一并传入）；其他对象（已打开的账本，单测注入）
+    原样返回。"""
     if shared is _UNSET:
         shared = os.environ.get(ENV_BUDGET_LEDGER) or None
     if shared is None or shared == "":
         return None
     if isinstance(shared, (str, Path)):
-        return load_sibling("budget_ledger").BudgetLedger(shared)
+        return load_sibling("budget_ledger").BudgetLedger(shared, **(caps or {}))
     return shared
 
 
@@ -616,16 +657,17 @@ class AttemptLedger:
     """
 
     def __init__(self, path: Path | str, *, seat: str, policy: str, shared: Any = _UNSET, route: Any = _UNSET,
-                 expired_jobs: Any = _UNSET):
+                 expired_jobs: Any = _UNSET, caps: dict | None = None):
         self.path = Path(path)
         self.seat = str(seat)
         self.policy = str(policy)
-        self.shared = _open_shared(shared)
+        self.shared = _open_shared(shared, caps)
         self.route = f"{self.policy}/new" if route is _UNSET or route is None else str(route)
         self._expired_jobs = expired_jobs
         self.last_t: dict[str, float] = {}  # attempt_id -> 该尝试最后一行的时间（到期判定用）
         self.reset_budget: int | None = None
         self.infra_retry_budget: int | None = None
+        self._reset_metering = False  # start(reset_budget=None)：只计量、不拦（未 start 时仍按 BASE 视额度为 0）
         self.reset_claims = 0
         self.budget_hist_max: int | None = None
         self.starts: dict[str, list[dict]] = {}  # key -> attempt_start 行（含作废）
@@ -644,7 +686,8 @@ class AttemptLedger:
         if kind == "reset_claim":
             self.reset_claims += 1
         elif kind == "budget":
-            self.budget_hist_max = max(self.budget_hist_max or 0, int(row["reset_budget"]))
+            if row.get("reset_budget") is not None:  # 第三阶段只计量模式写 null，不参与额度提升比较
+                self.budget_hist_max = max(self.budget_hist_max or 0, int(row["reset_budget"]))
         elif kind == "budget_raise":
             self.budget_hist_max = max(self.budget_hist_max or 0, int(row["to"]))
         elif kind == "attempt_start":
@@ -665,19 +708,29 @@ class AttemptLedger:
             self._apply(row)
         return row
 
-    # 进程启动：记预算；命令行额度大于账本历史最大值即记一次提升
-    def start(self, reset_budget: int, infra_retry_budget: int, *, reason: str = "cli_reset_budget") -> None:
-        reset_budget, infra_retry_budget = int(reset_budget), int(infra_retry_budget)
+    # 进程启动：记预算；命令行额度大于账本历史最大值即记一次提升。reset_budget=None：只计量（第三阶段缺省）
+    def start(self, reset_budget: int | None, infra_retry_budget: int, *, reason: str = "cli_reset_budget") -> None:
+        reset_budget = None if reset_budget is None else int(reset_budget)
+        infra_retry_budget = int(infra_retry_budget)
         prev = self.budget_hist_max
-        if prev is not None and reset_budget > prev:
+        if prev is not None and reset_budget is not None and reset_budget > prev:
             self.append({"kind": "budget_raise", "from": prev, "to": reset_budget, "reason": reason})
             print(f"RESET_BUDGET_RAISE from={prev} to={reset_budget} reason={reason}", flush=True)
         self.append({"kind": "budget", "reset_budget": reset_budget, "infra_retry_budget": infra_retry_budget,
                      "pid": os.getpid(), "host": socket.gethostname()})
         self.reset_budget, self.infra_retry_budget = reset_budget, infra_retry_budget
+        self._reset_metering = reset_budget is None
 
     # 计数
-    def reset_left(self) -> int:
+    @property
+    def reset_enforced(self) -> bool:
+        """start 时给了 reset 额度才按额度硬拦；start(None)（第三阶段不给 --reset-budget）只计量。"""
+        return not self._reset_metering
+
+    def reset_left(self) -> float:
+        """剩余 reset 额度；只计量模式恒为 inf（不拦）。"""
+        if not self.reset_enforced:
+            return float("inf")
         return int(self.reset_budget or 0) - self.reset_claims
 
     def attempts_total(self, key: str) -> int:
@@ -719,13 +772,15 @@ class AttemptLedger:
                 out[it if it in INTERRUPTS else "infra"] += 1
         return out
 
-    def allow_retry(self, key: str) -> bool:
+    def allow_retry(self, key: str, *, token: str | None = None) -> bool:
         """是否可以对 key 再开一次重试。非共享模式即 BASE 的本地额度判断；共享模式向共享账本原子领一个名额
-        （infra 或 expired，按上一尝试的中断分类），并发争抢最后一个名额只有一方成功。"""
+        （infra 或 expired，按上一尝试的中断分类），并发争抢最后一个名额只有一方成功。``token`` 与随后该尝试的
+        reserve／attempt_start 同一个：崩溃后续跑以同一 token 再领时幂等返回 True、不重复扣额。"""
         if self.shared is None:
             return self.infra_retries_left() > 0
+        kw = {"token": token} if token else {}
         return bool(self.shared.claim_retry(route=self.route, key=key, interrupt=self.retry_interrupt(key),
-                                            seat=self.seat, policy=self.policy))
+                                            seat=self.seat, policy=self.policy, **kw))
 
     def expired_jobs(self) -> set[str]:
         """Slurm 到期作业号集合：构造参数 ``expired_jobs`` 优先，否则读环境变量 ``SGEVAL_EXPIRED_JOBS`` 指向的文件。"""
@@ -797,7 +852,7 @@ class AttemptLedger:
     # 写入
     def claim_reset(self, *, key: str, attempt_id: str, attempt_no: int, what: str, canary: bool = False) -> None:
         with self._lock:
-            if self.reset_claims >= int(self.reset_budget or 0):
+            if self.reset_enforced and self.reset_claims >= int(self.reset_budget or 0):
                 raise ResetBudgetExhausted(f"reset 额度耗尽 claims={self.reset_claims} budget={self.reset_budget}")
             row = {"t": time.time(), "seat": self.seat, "policy": self.policy, "kind": "reset_claim", "key": key,
                    "attempt_id": attempt_id, "attempt_no": attempt_no, "what": what, "canary": bool(canary),
@@ -846,11 +901,18 @@ class AttemptLedger:
 # ── 常驻客户端 ──────────────────────────────────────────────────────────────
 
 
+def policy_seed_of(args) -> int | None:
+    """``--policy-seed``（未给为 None）。"""
+    v = getattr(args, "policy_seed", None)
+    return None if v is None else int(v)
+
+
 def policy_route(args) -> str:
-    """C1 新侧路线名：``groundsg/<variant>/new``，其余 ``<policy>/new``（S8 共享账本按它区分身份）。"""
-    if args.policy == "groundsg":
-        return f"groundsg/{getattr(args, 'groundsg_variant', None)}/new"
-    return f"{args.policy}/new"
+    """共享账本路线名（接口冻结说明第三节第 2 条）：``<policy_label>/seed<policy_seed>/new``，GroundSG 为
+    ``groundsg/<variant>/seed<policy_seed>/new``；未给 ``--policy-seed``（进程内单测）时沿用旧式 ``<policy>/new``。"""
+    seed = policy_seed_of(args)
+    head = f"groundsg/{getattr(args, 'groundsg_variant', None)}" if args.policy == "groundsg" else args.policy
+    return f"{head}/new" if seed is None else f"{head}/seed{seed}/new"
 
 
 def policy_variant_of(args) -> str | None:
@@ -858,8 +920,30 @@ def policy_variant_of(args) -> str | None:
     return getattr(args, "groundsg_variant", None) if args.policy == "groundsg" else None
 
 
+def variant_problems(args, *, check_dirs: bool = False) -> list[str]:
+    """GroundSG 变体与 adapter 的配对核对：qwenvl 必须且只能给 --qwenvl-groundsg-adapter，memer 必须且只能给
+    --memer-adapter，oracle 两者都不许给；``check_dirs`` 时再核 adapter 目录存在。"""
+    bad = []
+    variant = getattr(args, "groundsg_variant", None)
+    if args.policy == "groundsg":
+        if variant not in GROUNDSG_VARIANTS:
+            bad.append(f"--policy groundsg 必须给 --groundsg-variant {'／'.join(GROUNDSG_VARIANTS)}")
+    elif variant is not None:
+        bad.append("--groundsg-variant 只能与 --policy groundsg 同用")
+    for v, (dest, flag) in VARIANT_ADAPTERS.items():
+        given = getattr(args, dest, None)
+        if variant == v and not given:
+            bad.append(f"--groundsg-variant {v} 必须给 {flag}")
+        if given and variant != v:
+            bad.append(f"{flag} 只能与 --groundsg-variant {v} 同用")
+        if check_dirs and given and variant == v and not Path(given).is_dir():
+            bad.append(f"{flag} 目录不存在：{given}")
+    return bad
+
+
 def check_run_args(args, *, need_identities: bool = False) -> str | None:
-    """``run`` 的参数组合核对；不符返回说明（cmd_run 打印 RUN_BLOCKED reason=args 并以 3 退出）。"""
+    """``run`` 的参数组合核对；不符返回说明（cmd_run 打印 RUN_BLOCKED reason=args 并以 3 退出）。第三阶段起
+    ``--reset-budget`` 可选（不给只计量）；``--policy-seed``／预算参数／变体配对的 CLI 拦截见 ``entry_blockers``。"""
     bad = []
     if getattr(args, "dataset", None) not in DATASETS:
         bad.append(f"--dataset 必须是 {'／'.join(DATASETS)} 之一（现为 {getattr(args, 'dataset', None)!r}）")
@@ -867,24 +951,51 @@ def check_run_args(args, *, need_identities: bool = False) -> str | None:
     if not _is_int(ms) or ms <= 0:
         bad.append(f"--max-steps 必须是正整数（现为 {ms!r}）")
     miss = [n for n, v in (("--ledger", getattr(args, "ledger", None)),
-                           ("--reset-budget", getattr(args, "reset_budget", None)),
                            ("--infra-retry-budget", getattr(args, "infra_retry_budget", None)),
                            *((("--identities", getattr(args, "identities", None)),) if need_identities else ()))
             if v is None]
     if miss:
         bad.append(f"必须给 {' '.join(miss)}")
-    variant = getattr(args, "groundsg_variant", None)
-    adapter = getattr(args, "qwenvl_groundsg_adapter", None)
-    if args.policy == "groundsg":
-        if variant not in GROUNDSG_VARIANTS:
-            bad.append(f"--policy groundsg 必须给 --groundsg-variant {'／'.join(GROUNDSG_VARIANTS)}")
-    elif variant is not None:
-        bad.append("--groundsg-variant 只能与 --policy groundsg 同用")
-    if variant == "ground-sg-qwenvl" and not adapter:
-        bad.append("--groundsg-variant ground-sg-qwenvl 必须给 --qwenvl-groundsg-adapter")
-    if adapter and variant != "ground-sg-qwenvl":
-        bad.append("--qwenvl-groundsg-adapter 只能与 --groundsg-variant ground-sg-qwenvl 同用")
+    bad += variant_problems(args)
     return "; ".join(bad) or None
+
+
+def entry_blockers(args) -> tuple[str, str] | None:
+    """CLI ``run`` 入口的具名拦截（接口冻结说明 2.2／2.3／2.4）：依次核 ``--policy-seed``（必填、非负整数）、五个预算
+    参数（必填，不回落常量默认）、GroundSG 变体与 adapter 配对（含目录存在）。返回 (reason, detail) 或 None。"""
+    seed = getattr(args, "policy_seed", None)
+    if seed is None or not _is_int(seed) or seed < 0:
+        return "policy_seed", f"--policy-seed 必填且为非负整数（现为 {seed!r}）"
+    miss = [flag for dest, flag in BUDGET_ARGS if getattr(args, dest, None) in (None, "")]
+    if miss:
+        return "budget_args", f"必须给 {' '.join(miss)}（不回落 budget_ledger.py 常量默认值）"
+    neg = [flag for dest, flag in BUDGET_ARGS[1:] if getattr(args, dest) < 0]
+    if neg:
+        return "budget_args", f"{' '.join(neg)} 须为非负整数"
+    vp = variant_problems(args, check_dirs=True)
+    if vp:
+        return "variant_pairing", "; ".join(vp)
+    return None
+
+
+def _arg_or(args, name: str, default: Any) -> Any:
+    v = getattr(args, name, None)
+    return default if v is None else v
+
+
+def budget_caps(args) -> dict | None:
+    """``--trajectory-cap --shared-infra-cap --expired-cap --planned-first-tries`` 全部给出时的构造参数；否则 None
+    （进程内单测与旧调用沿用 budget_ledger 缺省）。"""
+    vals = {dest: getattr(args, dest, None) for dest, _ in BUDGET_ARGS[1:]}
+    if any(v is None for v in vals.values()):
+        return None
+    return {k: int(v) for k, v in vals.items()}
+
+
+def shard_id_of(route: str, identities: Any, seat: Any) -> str:
+    """分片排他 lease 的 shard_id：路线 + 身份清单文件名（无清单时用席位名），非 [A-Za-z0-9._-] 一律换成 ``_``。"""
+    stem = Path(str(identities)).stem if identities else f"seat-{seat}"
+    return re.sub(r"[^A-Za-z0-9._-]+", "_", f"{route}--{stem}")
 
 
 class SeatRunner:
@@ -925,19 +1036,35 @@ class SeatRunner:
         self.trace_root = Path(trace_root) if trace_root else None
         self._policy_context: Any = None
         self._policy_context_ready = False
-        # S8：--budget-ledger 显式打开共享预算；不给时由 AttemptLedger 按环境变量 SGEVAL_BUDGET_LEDGER 门控
+        # 第三阶段：模型种子、实际步数上限、执行期限（缺省见常量）；_hard_exit 只供单测替换（生产为 os._exit）
+        self.policy_seed = policy_seed_of(args)
+        self.effective_cap = self.max_steps if self.strict_cap else None
+        self.context_deadline_s = float(_arg_or(args, "context_deadline_s", DEFAULT_CONTEXT_DEADLINE_S))
+        self.first_infer_deadline_s = float(_arg_or(args, "first_infer_deadline_s", DEFAULT_FIRST_INFER_DEADLINE_S))
+        self.media_deadline_s = float(_arg_or(args, "media_deadline_s", DEFAULT_MEDIA_DEADLINE_S))
+        self._hard_exit: Callable[[int], Any] = os._exit
+        self._phase = "context_load"
+        self._lease_cm = None
+        # S8：--budget-ledger 显式打开共享预算（第三阶段带 config 四参数）；不给时由 AttemptLedger 按环境变量
+        # SGEVAL_BUDGET_LEDGER 门控
         shared_kw = {"shared": args.budget_ledger} if getattr(args, "budget_ledger", None) else {}
         self.ledger = AttemptLedger(args.ledger, seat=args.seat, policy=args.policy, route=policy_route(args),
-                                    **shared_kw)
-        self.ledger.start(args.reset_budget, args.infra_retry_budget,
+                                    caps=budget_caps(args), **shared_kw)
+        self.ledger.start(getattr(args, "reset_budget", None), args.infra_retry_budget,
                           reason=getattr(args, "budget_raise_reason", None) or "cli_reset_budget")
 
-    # 进度心跳：原子替换写 progress.json
-    def progress(self, step: int = 0, **extra) -> None:
+    # 进度：原子替换写 progress.json。只在阶段、身份或步数变化时调用（不做定时心跳），run_seat.sh 据此判无进展
+    def progress(self, step: int = 0, *, phase: str | None = None, **extra) -> None:
+        if phase is not None:
+            if phase not in PHASES:
+                raise ValueError(f"phase={phase!r} 不是 {PHASES} 之一")
+            self._phase = phase
         cur = self._current or {}
         doc = {"pid": os.getpid(), "host": socket.gethostname(), "seat": self.args.seat, "policy": self.args.policy,
-               "cond": self.args.cond, "dataset": self.dataset, "key": cur.get("key"), "step": step, "t": time.time(),
-               "episodes_done": self.episodes_done, **extra}
+               "cond": self.args.cond, "dataset": self.dataset, "key": cur.get("key"), "identity": cur.get("key"),
+               "attempt_no": cur.get("attempt_no"), "phase": self._phase, "step": step, "t": time.time(),
+               "episodes_done": self.episodes_done, "effective_cap": self.effective_cap,
+               "policy_seed": self.policy_seed, **extra}
         tmp = self.progress_path.with_suffix(".json.tmp")
         tmp.write_text(dumps(doc), encoding="utf-8")
         os.replace(tmp, self.progress_path)
@@ -979,13 +1106,31 @@ class SeatRunner:
         return kw
 
     def seat_info(self) -> dict:
-        """交给 ``make_policy_context`` 的席位信息（只读）。"""
+        """交给 ``make_policy_context`` 的席位信息（只读、只在进程内传，不落盘）；第三阶段加 ``policy_seed``、
+        ``memer_adapter_path``、``budget_ledger``、``effective_cap``（接口冻结说明 2.5）。"""
         a = self.args
         return {"policy": a.policy, "seat": a.seat, "host": a.host, "port": a.port, "dataset": self.dataset,
                 "max_steps": self.max_steps, "strict_cap": self.strict_cap,
                 "groundsg_variant": getattr(a, "groundsg_variant", None),
                 "qwenvl_groundSG_adapter_path": getattr(a, "qwenvl_groundsg_adapter", None),
+                "memer_adapter_path": getattr(a, "memer_adapter", None),
+                "policy_seed": self.policy_seed,
+                "budget_ledger": getattr(a, "budget_ledger", None),
+                "effective_cap": self.effective_cap,
                 "trace_root": str(self.trace_root) if self.trace_root else None, "out": str(self.out)}
+
+    def server_metadata_path(self) -> Path:
+        """服务元数据：``--server-metadata`` 优先，否则 ``<out>/server-metadata-<port>.json``。"""
+        p = getattr(self.args, "server_metadata", None)
+        return Path(p) if p else self.out / f"server-metadata-{self.args.port}.json"
+
+    def server_seed(self) -> int | None:
+        """结果行 ``server_seed``：从服务启动时写的元数据反查 ``policy_seed``；读不到为 null（不伪造）。"""
+        try:
+            v = json.loads(self.server_metadata_path().read_text(encoding="utf-8")).get("policy_seed")
+        except (OSError, ValueError, AttributeError):
+            return None
+        return v if _is_int(v) else None
 
     def policy_context(self) -> Any:
         """整席只建一次的策略上下文（进程内对象）。"""
@@ -996,7 +1141,8 @@ class SeatRunner:
         return self._policy_context
 
     def close(self) -> None:
-        """席位收尾：策略定义了 ``close_policy_context`` 就调一次（上下文从未建过则不调）。"""
+        """席位收尾：策略定义了 ``close_policy_context`` 就调一次（上下文从未建过则不调）；释放分片 lease。"""
+        self._release_lease()
         if self._policy_context_ready:
             fn = getattr(self.policy_mod, "close_policy_context", None)
             if callable(fn):
@@ -1015,6 +1161,8 @@ class SeatRunner:
                 "source_episode": ident.get("source_episode"), "identity": ident_full,
                 "builder_episode": int(ident["builder_episode"]), "dataset": self.dataset,
                 "policy": self.args.policy, "policy_variant": policy_variant_of(self.args),
+                "policy_seed": self.policy_seed, "effective_cap": self.effective_cap,
+                "server_seed": self.server_seed(), "budget_token": None, "error_kind": None,
                 "strict_cap": self.strict_cap, "cond": self.args.cond, "seat": self.args.seat,
                 "host": socket.gethostname(), "attempt": attempt, "attempt_no": attempt, "canary": False,
                 "gpu_name": self.proc_info.get("gpu_name"), "gpu_uuid": self.proc_info.get("gpu_uuid"),
@@ -1043,8 +1191,7 @@ class SeatRunner:
         attempt_id = uuid.uuid4().hex
         record.update(attempt_id=attempt_id, exec_steps=0, client_steps=None, chunks=None, hard_bound=None,
                       cap_hit=False, demo_frames=None, reset_calls=0, late=False)
-        self._current = {"key": key, "t0": time.time()}
-        self.progress(0, phase="start")
+        self._current = {"key": key, "t0": time.time(), "attempt_no": attempt}
         bad, resolved, builder = self._check(ident)
         if bad:
             record.update(status="error", task_success=False, steps=0, error=f"IDENTITY_MISMATCH {bad}",
@@ -1052,15 +1199,24 @@ class SeatRunner:
             append_result(self.results_path, record)
             print(f"RUN_BLOCKED reason=identity key={key} dataset={self.dataset} detail={bad}", flush=True)
             raise SystemExit(EXIT_BLOCKED)
-        policy_context = self.policy_context()
-        if self.ledger.reset_left() <= 0:  # 开局前就没有额度：不开尝试、不写结果，直接停
+        if self.ledger.reset_left() <= 0:  # 只在给了 --reset-budget 时可能：开局前就没有额度，不开尝试、直接停
             self._budget_stop(key)
-        rid = self._reserve(key, attempt_id, attempt)  # S8：共享模式下先预约轨迹（不足即停，不进入 attempt）
-        shared_extra = {} if rid is None else {"budget_rid": rid,
+        # 第三阶段：同一 token 贯穿 claim_retry（run_identities_v8）／reserve／attempt_start，崩溃续跑幂等
+        token = self.attempt_token(key, attempt) if self.ledger.shared is not None else None
+        record["budget_token"] = token
+        rid = self._reserve(key, attempt_id, attempt, token=token, retry=retry)  # 共享模式先预约轨迹（不足即停）
+        shared_extra = {} if rid is None else {"budget_rid": rid, "token": token,
                                                 **({"interrupt": self.ledger.retry_interrupt(key)} if retry else {})}
         self.ledger.attempt_start(key=key, attempt_id=attempt_id, attempt_no=attempt, retry=retry,
                                   task=ident["task"], tier=ident["tier"], dataset=self.dataset,
                                   builder_episode=int(ident["builder_episode"]), **shared_extra)
+        state: dict[str, Any] = {"finished": False, "session": None, "rid": rid}
+        # 上下文加载（整席一次）：绝对期限，超期以 infra_reason=deadline_context_load 结束本局
+        if not self._policy_context_ready:
+            self.progress(0, phase="context_load")
+        policy_context = self._run_phase(state, "context_load", self.context_deadline_s, record, self.policy_context)
+        if state.get("deadline_record") is not None:  # 期限处理已写结果（生产里进程已退出，只有单测走到这里）
+            return state["deadline_record"]
 
         def claim_reset(what, _k=key, _a=attempt_id, _n=attempt):
             self.ledger.claim_reset(key=_k, attempt_id=_a, attempt_no=_n, what=what)
@@ -1075,10 +1231,16 @@ class SeatRunner:
             self._settle(rid, record)
             self._print_done(record)
             return record
+        first_timer: list = []
+
+        def on_first_step():  # 首推完成（拿到第一个动作）：结束 first_infer 期限，进入 episode 阶段
+            self._end_phase(state, "first_infer", first_timer)
+            self.progress(0, phase="episode")
         session = EnvSession(ident["task"], int(ident["builder_episode"]), max_steps=eff, recorder=recorder,
                              builder=builder, progress_cb=lambda s: self.progress(s),
                              step_cap=eff if self.strict_cap else None, claim_reset=claim_reset,
-                             dataset=self.dataset, **self._budget_kw(rid))
+                             dataset=self.dataset, first_step_cb=on_first_step, **self._budget_kw(rid))
+        state["session"] = session
         # conn_info：除 policy_context（进程内对象）外都是可序列化的标量；trace_dir 为本局轨迹目录（不预先建，
         # 由写轨迹的一方建），未给 --trace-root 时为 null
         trace_dir = self.trace_root / tag if self.trace_root is not None else None
@@ -1086,13 +1248,14 @@ class SeatRunner:
                      "seat": self.args.seat, "dataset": self.dataset, "strict_cap": self.strict_cap,
                      "groundsg_variant": getattr(self.args, "groundsg_variant", None),
                      "qwenvl_groundSG_adapter_path": getattr(self.args, "qwenvl_groundsg_adapter", None),
+                     "memer_adapter_path": getattr(self.args, "memer_adapter", None),
+                     "policy_seed": self.policy_seed, "effective_cap": self.effective_cap,
                      "trace_root": str(self.trace_root) if self.trace_root is not None else None,
                      "trace_dir": str(trace_dir) if trace_dir is not None else None,
                      "episode_tag": tag, "rec_dir": str(rec_dir), "policy_context": policy_context}
         policy_kw = self.policy_kwargs(eff)
         limit = self.args.episode_wall_s + (self.args.first_extra_s if self.episodes_done == 0 else 0)
         # first_extra_s 只给「server 刚（重）起后的第一局」：由 run_seat.sh 在 server 新起时传 600，客户端单独重起时传 0
-        state = {"finished": False, "session": session}
         timer = None
         if limit > 0:
             timer = threading.Timer(limit, self._on_wall_timeout, args=(record, limit, state))
@@ -1100,6 +1263,8 @@ class SeatRunner:
             timer.start()
         t0 = time.perf_counter()
         first_build = not self._built_once
+        self.progress(0, phase="first_infer")
+        first_timer.append(self._arm(state, "first_infer", self.first_infer_deadline_s, record))
         try:
             try:
                 session.build()
@@ -1111,21 +1276,30 @@ class SeatRunner:
             else:
                 res = self.policy_mod.run_episode(session, ident, conn_info, recorder, **policy_kw)
         finally:
+            self._end_phase(state, "first_infer", first_timer)
             with self._lock:
                 state["finished"] = True
             if timer is not None:
                 timer.cancel()
+        if state.get("deadline_record") is not None:
+            return state["deadline_record"]
         try:
             session.close()
         except Exception as e:  # noqa: BLE001
             res.setdefault("close_error", repr(e))
         wall = time.perf_counter() - t0
-        try:
-            rsum = recorder.close({"status": res.get("status"), "steps": res.get("steps"),
+        self.progress(session.steps, phase="media_finalize")
+
+        def close_recorder():
+            return recorder.close({"status": res.get("status"), "steps": res.get("steps"),
                                    "exec_steps": session.steps, "cap_hit": session.cap_hit})
+        try:
+            rsum = self._run_phase(state, "media_finalize", self.media_deadline_s, dict(record, **res), close_recorder)
         except Exception as e:  # noqa: BLE001 收尾失败（如磁盘满）= 基础设施故障
             rsum = {"RECORDER_VERIFY": "ERROR", "error": f"{type(e).__name__}: {e}"[:800]}
             res.update(infra=True, infra_reason="recorder_close")
+        if state.get("deadline_record") is not None:
+            return state["deadline_record"]
         if "RecorderError" in str(res.get("error") or "") or "RecorderError" in str(res.get("env_exception") or ""):
             res.update(infra=True, infra_reason="recorder")
         timing = {"episode_wall_s": wall, "first_build_in_process": first_build, "env": dict(session.timing),
@@ -1146,6 +1320,56 @@ class SeatRunner:
             self._budget_stop(key)
         return record
 
+    # ── 第三阶段：幂等 token 与执行期限 ─────────────────────────────────
+    def attempt_token(self, key: str, attempt_no: int) -> str:
+        """幂等 token ``<route>|<key>|a<attempt_no>``（与 budget_ledger.make_token 同式）。"""
+        return f"{self.ledger.route}|{key}|a{int(attempt_no)}"
+
+    def _arm(self, state: dict, phase: str, limit: float, record: dict):
+        """给某阶段挂绝对期限（limit<=0 不挂）；返回计时器。"""
+        if not limit or limit <= 0:
+            return None
+        t = threading.Timer(limit, self._on_deadline, args=(phase, limit, record, state))
+        t.daemon = True
+        t.start()
+        return t
+
+    def _end_phase(self, state: dict, phase: str, timers: list) -> None:
+        with self._lock:
+            state[f"{phase}_done"] = True
+        for t in timers:
+            if t is not None:
+                t.cancel()
+        timers.clear()
+
+    def _run_phase(self, state: dict, phase: str, limit: float, record: dict, fn: Callable[[], Any]) -> Any:
+        """在绝对期限下执行 fn（主线程照常阻塞；期限到由计时器线程写结果并退出进程）。"""
+        timers = [self._arm(state, phase, limit, record)]
+        try:
+            return fn()
+        finally:
+            self._end_phase(state, phase, timers)
+
+    def _on_deadline(self, phase: str, limit: float, record: dict, state: dict) -> None:
+        """期限到：本局记 ``status=error infra=true infra_reason=deadline_<phase>``（attempt_end 照写、共享预算收尾），
+        打印 ``DEADLINE_EXCEEDED`` 后以 75 退出（与单局墙钟同一退出码，run_seat.sh 重起客户端）。"""
+        with self._lock:
+            if state.get(f"{phase}_done") or state.get("deadline_record") is not None:
+                return
+            sess = state.get("session")
+            rec = dict(record, status="error", task_success=False, steps=None, infra=True,
+                       infra_reason=f"deadline_{phase}", error=f"DEADLINE phase={phase} limit_s={limit:.0f}",
+                       exec_steps=getattr(sess, "steps", 0), reset_calls=getattr(sess, "reset_calls", 0),
+                       cap_hit=getattr(sess, "cap_hit", False),
+                       demo_frames=(getattr(sess, "timing", None) or {}).get("demo_frames"))
+            state["deadline_record"] = rec
+            self._finish(rec)
+            self._settle(state.get("rid"), rec)
+        print(f"DEADLINE_EXCEEDED phase={phase} policy={self.args.policy} key={key_of(record)} limit_s={limit:.0f}",
+              flush=True)
+        sys.stdout.flush()
+        self._hard_exit(EXIT_WALL)
+
     def _classify(self, record: dict, session: EnvSession, res: dict) -> None:
         """执行段步数以环境侧计数为准；客户端自报另记。额度耗尽与步数到顶（仅 --strict-cap）的分类覆盖客户端的记法。"""
         record.update(exec_steps=session.steps, client_steps=res.get("steps"), cap_hit=session.cap_hit,
@@ -1164,21 +1388,24 @@ class SeatRunner:
                               error=f"STEP_CAP exec_steps={session.steps} cap={self.max_steps} 未成功，按 timeout 计")
 
     # ── S8 共享预算（非共享模式下全部为空操作） ─────────────────────────
-    def _reserve(self, key: str, attempt_id: str, attempt: int) -> str | None:
-        """向共享账本预约一条轨迹（reset 计量 NEW_SIDE_RESETS_PER_ATTEMPT）；不足打印 RUN_BLOCKED reason=budget 并以
-        退出码 5 停止（attempt_start 尚未写，不进入 attempt）。非共享模式返回 None。"""
+    def _reserve(self, key: str, attempt_id: str, attempt: int, *, token: str | None = None,
+                 retry: bool = False) -> str | None:
+        """向共享账本预约一条轨迹（reset 计量 NEW_SIDE_RESETS_PER_ATTEMPT；首试 ``kind_of_try=first``、重试
+        ``recovery``；同一 token 幂等）；不足打印 RUN_BLOCKED reason=budget 并以退出码 5 停止（attempt_start 尚未写，
+        不进入 attempt）。非共享模式返回 None。"""
         shared = self.ledger.shared
         if shared is None:
             return None
+        kw = {"token": token, "kind_of_try": "recovery" if retry else "first"} if token else {}
         try:
             return shared.reserve(resets=NEW_SIDE_RESETS_PER_ATTEMPT, route=self.ledger.route, key=key,
                                   attempt_id=attempt_id, attempt_no=attempt, seat=self.args.seat,
-                                  policy=self.args.policy, astra=False)
+                                  policy=self.args.policy, astra=False, **kw)
         except Exception as e:  # noqa: BLE001 budget_ledger.BudgetExhausted（可能来自另一份模块副本，按属性识别）
             if not getattr(e, "budget_exhausted", False):
                 raise
-            print(f"RUN_BLOCKED reason=budget policy={self.args.policy} seat={self.args.seat} key={key} detail={e}",
-                  flush=True)
+            print(f"RUN_BLOCKED reason=budget policy={self.args.policy} seat={self.args.seat} key={key} "
+                  f"budget_reason={getattr(e, 'reason', None)} detail={e}", flush=True)
             raise SystemExit(EXIT_BUDGET) from e
 
     def _budget_kw(self, rid: str | None) -> dict:
@@ -1231,9 +1458,38 @@ class SeatRunner:
 
     # ── 身份清单来源 ────────────────────────────────────────────────────────
     def run_identities(self, rows: list[dict]) -> int:
-        """跑一份身份清单；返回退出码（0 全部有权威终态；6 仍有身份无 accept）。"""
-        self.policy_context()  # 整席只建一次，先于第一局
+        """跑一份身份清单；返回退出码（0 全部有权威终态；6 仍有身份无 accept）。共享模式先核账本（坏行、config），
+        再在读取待跑身份之前取分片排他 lease（拿不到即 RUN_BLOCKED reason=lease_held、退出 3）；策略上下文改在第一局
+        开局时于 context_load 期限下加载（整席仍只建一次）。"""
+        self._open_shared_budget()
         return self.run_identities_v8(rows)
+
+    def _open_shared_budget(self) -> None:
+        shared = self.ledger.shared
+        if shared is None:
+            return
+        bl = load_sibling("budget_ledger")
+        try:
+            if hasattr(shared, "check"):
+                shared.check()
+            if self._lease_cm is None and hasattr(shared, "lease"):
+                sid = shard_id_of(self.ledger.route, getattr(self.args, "identities", None), self.args.seat)
+                cm = shared.lease(sid)
+                cm.__enter__()
+                self._lease_cm = cm
+                print(f"BUDGET_LEASE shard={sid} pid={os.getpid()}", flush=True)
+        except Exception as e:  # noqa: BLE001 账本类可能来自另一份模块副本，按类名识别
+            reason = {"LeaseHeld": "lease_held", "LedgerCorrupt": "ledger_corrupt",
+                      "BudgetConfigMismatch": "budget_config"}.get(type(e).__name__)
+            if reason is None and not isinstance(e, (bl.LeaseHeld, bl.LedgerCorrupt, bl.BudgetConfigMismatch)):
+                raise
+            print(f"RUN_BLOCKED reason={reason} policy={self.args.policy} seat={self.args.seat} detail={e}", flush=True)
+            raise SystemExit(EXIT_BLOCKED) from e
+
+    def _release_lease(self) -> None:
+        cm, self._lease_cm = self._lease_cm, None
+        if cm is not None:
+            cm.__exit__(None, None, None)
 
     def recover_dangling(self) -> int:
         """账本里有 attempt_start 无 attempt_end 的尝试（进程被杀、写账本前崩溃）：结果行里找得到同 attempt_id 的
@@ -1290,12 +1546,14 @@ class SeatRunner:
             if k in led.accepted or led.last_end_final(k) or used >= V8_MAX_ATTEMPTS:
                 continue
             retry = used >= 1
-            if retry and not led.allow_retry(k):
+            attempt_no = led.attempts_total(k) + 1
+            token = self.attempt_token(k, attempt_no) if led.shared is not None else None
+            if retry and not led.allow_retry(k, token=token):
                 skip_budget += 1
                 print(f"INFRA_RETRY_BUDGET_EXHAUSTED policy={self.args.policy} key={k} "
                       f"used={led.infra_retries_used()} budget={led.infra_retry_budget}", flush=True)
                 continue
-            rec = self.run_one(ident, attempt=led.attempts_total(k) + 1, retry=retry)
+            rec = self.run_one(ident, attempt=attempt_no, retry=retry)
             if rec.get("status") == "error" and rec.get("infra") and led.attempts_used(k) < V8_MAX_ATTEMPTS:
                 pending.insert(0, ident)  # 原身份立即重试一次（额度在下一轮判断）
         if skip_budget:
@@ -1332,7 +1590,14 @@ def load_identities(args) -> list[dict]:
 def cmd_run(args) -> int:
     bad = check_run_args(args, need_identities=True)
     if bad:
+        vp = variant_problems(args)
+        if vp:  # 变体／adapter 错配先打具名原因（接口冻结说明 2.3），再打通用参数行
+            print(f"RUN_BLOCKED reason=variant_pairing detail={'; '.join(vp)}", flush=True)
         print(f"RUN_BLOCKED reason=args detail={bad}", flush=True)
+        return EXIT_BLOCKED
+    blk = entry_blockers(args)
+    if blk:
+        print(f"RUN_BLOCKED reason={blk[0]} detail={blk[1]}", flush=True)
         return EXIT_BLOCKED
     t_proc = time.perf_counter()
     init = timed_imports()
@@ -1347,6 +1612,7 @@ def cmd_run(args) -> int:
     init["process_ready_s"] = time.perf_counter() - t_proc
     print(f"CLIENT_READY policy={args.policy} variant={policy_variant_of(args)} seat={args.seat} cond={args.cond} "
           f"dataset={args.dataset} max_steps={args.max_steps} strict_cap={int(bool(args.strict_cap))} "
+          f"policy_seed={args.policy_seed} route={policy_route(args)} "
           f"host={socket.gethostname()} gpu={proc.get('gpu_name')} sapien={proc['env']['sapien']} "
           f"torch={proc['env']['torch']} robomme_hard={proc['env']['robomme_hard_file']} "
           f"git={proc['git_commit'][:12]} dirty={proc['git_dirty']} init_s={init['process_ready_s']:.1f}", flush=True)
@@ -1371,13 +1637,25 @@ def build_parser() -> argparse.ArgumentParser:
                    help="策略标签；模块按 POLICY_MODULES 映射加载")
     p.add_argument("--identities", required=True, help="身份清单：eval_manifest.py 产出的 shard-NN.json")
     p.add_argument("--dataset", required=True, choices=list(DATASETS),
-                   help="身份模式与 builder 数据集；ood 配 --max-steps 1600 --strict-cap，hard-verify 配 --max-steps 1300")
+                   help="身份模式与 builder 数据集；ood 配 --max-steps 1800 --strict-cap，hard-verify 配 --max-steps 1300")
     p.add_argument("--max-steps", type=int, required=True, help="步数上限（无默认值，由入口按数据集给出）")
     p.add_argument("--strict-cap", action="store_true",
                    help="执行满 --max-steps 步仍未成功即停（第 max_steps+1 步不进环境，记 timeout、cap_hit=true）")
     p.add_argument("--groundsg-variant", default=None, choices=list(GROUNDSG_VARIANTS), help="--policy groundsg 必填：子目标来源")
     p.add_argument("--qwenvl-groundsg-adapter", default=None,
                    help="--groundsg-variant ground-sg-qwenvl 必填：QwenVL 子目标预测器的 adapter 目录")
+    p.add_argument("--memer-adapter", default=None,
+                   help="--groundsg-variant ground-sg-memer 必填：MemER 子目标预测器的 adapter 目录")
+    p.add_argument("--policy-seed", type=int, default=None,
+                   help="模型种子（必填，非负整数；缺失 RUN_BLOCKED reason=policy_seed）；进 seat_info、结果行与账本路线")
+    p.add_argument("--server-metadata", default=None,
+                   help="服务元数据 JSON（server-metadata-<port>.json，含 policy_seed）；缺省 <out>/server-metadata-<port>.json")
+    p.add_argument("--context-deadline-s", type=float, default=DEFAULT_CONTEXT_DEADLINE_S,
+                   help="策略上下文加载的绝对期限（秒，0=不限）；超期 infra_reason=deadline_context_load、退出 75")
+    p.add_argument("--first-infer-deadline-s", type=float, default=DEFAULT_FIRST_INFER_DEADLINE_S,
+                   help="本局开始到第一次 step 的绝对期限（秒，0=不限）；超期 infra_reason=deadline_first_infer、退出 75")
+    p.add_argument("--media-deadline-s", type=float, default=DEFAULT_MEDIA_DEADLINE_S,
+                   help="录制器收尾的绝对期限（秒，0=不限）；超期 infra_reason=deadline_media_finalize、退出 75")
     p.add_argument("--trace-root", default=None, help="每局轨迹根目录；本局目录为 <trace-root>/<key>.a<attempt>")
     p.add_argument("--cond", required=True, help="条件代号，如 E1／N")
     p.add_argument("--seat", required=True)
@@ -1395,16 +1673,21 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--never-degrade", action="store_true")
     p.add_argument("--baseline", action="store_true")
     p.add_argument("--rec-root", default=None, help="录像目录根（默认 <out>/rec）；录像目录名 <key>.a<attempt_no>")
-    led = p.add_argument_group("持久账本（契约 C2；两个数据集都必填，缺任一即 RUN_BLOCKED）")
+    led = p.add_argument_group("持久账本（契约 C2；--ledger／--infra-retry-budget 与五个预算参数必填，缺任一即 RUN_BLOCKED）")
     led.add_argument("--ledger", default=None, help="持久尝试账本 JSONL（追加写、fsync）")
-    led.add_argument("--reset-budget", type=int, default=None, help="本账本可领的底层 reset 额度（build 与 reset 各算一次）")
+    led.add_argument("--reset-budget", type=int, default=None,
+                     help="可选：本账本可领的底层 reset 额度（build 与 reset 各算一次），给了才硬拦；不给只计量")
     led.add_argument("--infra-retry-budget", type=int, default=None,
                      help="本账本可用的基础设施重试局数（每身份至多重试 1 次；额度按模型共享，由主会话切给各席）")
     led.add_argument("--budget-raise-reason", default=None,
                      help="--reset-budget 大于账本历史最大值时写进 budget_raise 行与 RESET_BUDGET_RAISE 的原因（默认 cli_reset_budget）")
     led.add_argument("--budget-ledger", default=None,
-                     help="S8 共享预算账本（budget_ledger.py 格式）；给出即打开共享模式（也可用环境变量 "
-                          "SGEVAL_BUDGET_LEDGER），不给且环境变量为空时行为与 BASE 相同")
+                     help="共享预算账本（budget_ledger.py 格式）；CLI 必填（进程内 SeatRunner 不给时仍按环境变量 "
+                          "SGEVAL_BUDGET_LEDGER 门控）")
+    led.add_argument("--trajectory-cap", type=int, default=None, help="共享账本轨迹硬上限（CLI 必填，与 config 行比对）")
+    led.add_argument("--shared-infra-cap", type=int, default=None, help="共享 infra 重试上限（CLI 必填）")
+    led.add_argument("--expired-cap", type=int, default=None, help="到期接续上限（CLI 必填）")
+    led.add_argument("--planned-first-tries", type=int, default=None, help="计划首试数（首试保留额度；CLI 必填）")
     p.set_defaults(func=cmd_run)
     return ap
 

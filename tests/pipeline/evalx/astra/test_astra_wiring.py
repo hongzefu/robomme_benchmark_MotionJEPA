@@ -176,8 +176,16 @@ def test_astra_wiring_xhard0(tmp_path, monkeypatch):
             assert (a_dir / f"{stream}.mkv").is_file() and not (a_dir / "media" / f"{stream}.mkv").exists()
             assert _jsonl_rows(a_dir / f"frames-{stream}.jsonl") == end["frames_recorded"]
         with np.load(a_dir / "arrays.npz") as arr:
-            assert sorted(arr.files) == [f"exec_action__{i:05d}" for i in range(40)]
+            # 原动作键（write_exec_actions）照旧每步一键；冻结说明四.3 起 TraceWriter 另收观测步状态 exec_state__*
+            assert sorted(k for k in arr.files if k.startswith("exec_action__")) == \
+                [f"exec_action__{i:05d}" for i in range(40)]
+            assert sorted(k for k in arr.files if k.startswith("exec_state__")) == \
+                [f"exec_state__{i:05d}" for i in range(40)]
+            assert len(arr.files) == 80
             assert arr["exec_action__00000"].dtype == np.float32 and arr["exec_action__00000"].shape == (8,)
+        assert end["arrays"]["path"] == "arrays.npz" and "error" not in end["arrays"]
+        assert end["arrays"]["action_keys"] == 40 and end["arrays"]["state_keys"] == 40
+        assert end["arrays"]["missing_state_steps"] == []
         meta = json.loads((a_dir / "media" / "meta.json").read_text())
         assert meta["never_degrade"] is True and meta["level"] == 0 and meta["key"] == key
         assert meta["builder_episode"] == 0 and meta["attempt"] == 1 and meta["dataset"] == "hard-verify"
@@ -197,29 +205,35 @@ def test_astra_wiring_xhard0(tmp_path, monkeypatch):
 
 
 def test_v9_connectivity_runs_exactly_1600_steps(tmp_path, monkeypatch):
-    """V9 连通局：ood + 1600；环境永不结束时循环恰好执行 1600 步后记 timeout（C3：不再写 loop_exit）。"""
+    """OOD（原 V9）连通局：第三阶段起 ood ↔ 1800（strict）；环境永不结束时循环恰好执行 1800 步后记 timeout
+    （C3：不再写 loop_exit），Astra 自己的循环在 cap 处停、strict 守卫不触发（``cap_hit=False``）。
+
+    函数名里的 1600 是历史名：它登记在总表 ``tests/contract/benchmark_contracts.json`` 的 C13-ASTRA-WIRING 条目里，
+    改名须主会话同步总表，故本轮保留原名、只改内容。"""
     net = NetCounter().install(monkeypatch)
     with astra_session() as (mod, astra):
         cls = recording_builder_cls(lambda b, ep: FakeEnv(terminal_step=None))
         doc = mod.prepare_cases(cls, "ood", ["VideoUnmask"], tier="xhard1", index=0)
         cls.constructed.clear()
         cases = write_cases(tmp_path / "cases.json", doc)
-        args = make_args(tmp_path, cases, max_steps=1600)
+        args = make_args(tmp_path, cases, max_steps=1800)
         monkeypatch.setattr(astra.runner.imageio, "get_writer", lambda *a, **k: _NullWriter())
         deps = make_deps(astra, cls, monitor=FakeMonitor(), vla=FakeVLA(), responder=FakeResponder(astra.champ),
                          check_calls=[])
         out = mod.run_cases(args, deps)
     assert cls.constructed == [{"env_id": "VideoUnmask", "dataset": "ood", "action_space": "joint_angle",
-                                "gui_render": False, "max_steps": 1600}]
+                                "gui_render": False, "max_steps": 1800}]
     (result,) = out["results"]
-    assert result["status"] == "timeout" and result["steps"] == 1600 and result["exec_steps"] == 1600
+    assert result["status"] == "timeout" and result["steps"] == 1800 and result["exec_steps"] == 1800
+    assert result["strict_cap"] is True and result["effective_cap"] == 1800 and result["cap_hit"] is False
     episode = doc["cases"][0]["episode"]
     assert cls.make_calls[0]["episode"] == episode
     a_dir = _episode_dir(Path(args.output), "VideoUnmask", episode)
     rows = _trace(a_dir / "trace.jsonl")
     end = rows[-1]
-    assert end["exec_steps"] == 1600 and end["terminal_reason"] == end["status"] == "timeout"
-    assert end["frames_recorded"] == 3 + 1 + 1600 and end["omitted_timeout_frames"] == 0
+    assert end["exec_steps"] == 1800 and end["terminal_reason"] == end["status"] == "timeout"
+    assert end["frames_recorded"] == 3 + 1 + 1800 and end["omitted_timeout_frames"] == 0
+    assert end["strict_cap"] is True and end["effective_cap"] == 1800 and end["cap_hit"] is False
     ident = rows[0]["identity"]
     assert ident["tier"] == "xhard1" and ident["builder_episode"] == episode and ident.get("source_episode") is None
     assert a_dir.name == f"VideoUnmask_xhard1_{ident['seed']}.a1"
@@ -282,7 +296,14 @@ def test_missing_observation_step_counts(tmp_path, monkeypatch, mode):
     assert last["missing_reason"] == ("env_step_exception:RuntimeError" if mode == "raise" else "obs_none")
     assert _jsonl_rows(a_dir / "frames-front.jsonl") == end["frames_recorded"]
     with np.load(a_dir / "arrays.npz") as arr:
-        assert sorted(arr.files) == [f"exec_action__{i:05d}" for i in range(5)]
+        # 动作每个 attempted 步都有键；第 5 步无观测：不补零状态，记入 end.arrays.missing_state_steps（冻结说明四.3）
+        assert sorted(k for k in arr.files if k.startswith("exec_action__")) == \
+            [f"exec_action__{i:05d}" for i in range(5)]
+        assert sorted(k for k in arr.files if k.startswith("exec_state__")) == \
+            [f"exec_state__{i:05d}" for i in range(4)]
+        assert len(arr.files) == 9
+    assert end["arrays"]["action_keys"] == 5 and end["arrays"]["state_keys"] == 4
+    assert end["arrays"]["missing_state_steps"] == [5] and "error" not in end["arrays"]
 
 
 def test_env_build_failure_is_no_frame_error(tmp_path, monkeypatch):
@@ -357,7 +378,7 @@ def test_key_mapping_dir_trace_and_official_episode_id(tmp_path, monkeypatch):
 
 # ── 第一阶段拒绝用例（口径不变） ────────────────────────────────────────
 
-@pytest.mark.parametrize("dataset,max_steps", [("hard-verify", 1600), ("ood", 1300)])
+@pytest.mark.parametrize("dataset,max_steps", [("hard-verify", 1600), ("ood", 1300), ("ood", 1600)])
 def test_step_cap_pairing_blocks_before_any_side_effect(tmp_path, dataset, max_steps):
     with astra_session() as (mod, astra):
         cls = recording_builder_cls()
@@ -930,8 +951,12 @@ def test_launcher_static_order_and_explicit_interpreters():
     text = SCRIPT.read_text()
     assert 'BENCH_PY="${BENCH_PY:-$SIM_PYTHON}"' in text and 'TOOL_PY="${TOOL_PY:-$BENCH_PY}"' in text
     assert "export BENCH_PY TOOL_PY" in text
-    main = text[text.index('if [[ $# != 2 ]]; then\n  echo \'Usage: bash scripts/eval-official/run_astra.sh CASES'):]
+    main = text[text.index('if [[ $# != 2 ]]; then\n  echo \'Usage: bash scripts/eval-official/run_astra.sh '
+                           '--policy-seed <n> CASES'):]
+    i_seed = main.index("RUN_BLOCKED reason=policy_seed")
     i_guard = main.index(': "${ASTRA_GUARD_STATE:?')
+    assert i_seed < i_guard, "模型 seed 缺失须在任何副作用之前拒绝"
+    assert main.count('--policy-seed "$POLICY_SEED"') == 2, "check 与 run 都转发模型 seed"
     i_source = main.index("source_media_lib || exit $?")
     i_check = main.index(" check --cases ")
     i_vla = main.index("scripts/serve_policy.py")
