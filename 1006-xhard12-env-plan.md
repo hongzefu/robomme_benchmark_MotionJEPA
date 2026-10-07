@@ -274,34 +274,93 @@ PickHighlight 是先把全部方块随机排序再切片，改 pickup 不动随�
 
 ## 四、16 个任务逐一怎么改、哪些不改
 
-T 与窗口数按官方 hard 中位加每个子任务平均段长线性外推（留档 4.2、4.3 节，公式见第二部分八节）；Δ8 = (T−1)/7，8 帧帧路相邻采样点的间隔，大于某类执行段的平均长度就意味着那类段会被整段漏掉；「母布局」指同一 seed 下场景是否逐项不变。按 env_code 顺序列全部 16 个。
+### 目标：每条 episode 要做到多长
 
-| # | 任务 | hard 条数 | 纳入 | 改的键 / 方法 | hard → xhard | 预计 T（中位） | 预计窗 | Δ8 对最短执行段 | 母布局 | 改法与理由 |
-|---:|---|---:|---|---|---|---|---|---|---|---|
-| 1 | PickXtimes | 25 | ✔ | `number_min/max` | 4/5 → 6/7 | 812 → 约 1120 | 49 → 约 68 | 160 > 70（放到 target），必漏 | 不变 | 换字典；`__init__` 用局部 generator 读 configs 抽 `num_repeats`，同宽平移抽到的次数恒 +2；序数词上限 10 |
-| 2 | StopCube | 25 | ✔ | `stop_time`、`move_interval` | [2,5] → [8,10]；间隔 {60,80,120} 随机 → 钉 120 | 309 → 900–1140 | 18 → 54–69 | 128–163 > 100（remain static），必漏 | 不变（随机消耗量不变） | 无 `configs`，重写 `_initialize_episode`（照原顺序抽 interval → move_interval → stop_time → rotation，只覆盖两个值）与 `step()`（`range(5)` → `range(self.stop_time)`，否则方块只走 5 趟、k>5 必失败）。改两个量的原因：只改 `stop_time` 时 `move_interval` 抽到 60 的三分之一 episode 只有 450–570 帧，Δ8 64–81 小于 100 帧的 static 段，8 帧漏不掉 |
-| 3 | SwingXtimes | 25 | ✔ | `number_min/max` | 3/3 → 7/8 | 488 → 约 840 | 29 → 约 50 | 120 > 40（摆到一侧），必漏 | 不变 | 换字典；`max_swings = num_repeats*2` 自动派生；单值变双值不多消耗随机数 |
-| 4 | BinFill | 25 | ✔ | `put_in_numbers` | [3,5] → [5,6] | 868 → 约 1140 | 53 → 约 69 | 162 > 71（投箱），必漏 | **变**（目标数进分配循环，方块坐标与颜色顺序偏移） | 换字典 + 子类 `_load_scene` 后置校验：父类把方块生成失败吞成 debug 日志，某色实际数 < 目标数时 `_initialize_episode` 会 IndexError，子类调 super 后核对数量、不足即抛 `SceneGenerationError` 让生成器记 task 失败。`spawn_cubes` [10,12] ≥ 6 不必改；本来就在 900 附近，加到 1140 是「必须比 hard 更难」优先于「对齐 900」的取舍 |
-| 5 | VideoUnmaskSwap | 100 | ✔ | `swap_min/max` + 重写 `_refresh_swap_schedule` | [2,3] → [4,5] | 457 → 约 560 | 26 → 约 31 | 80 > 49（放下）、> 50（每次 swap），漏 | 不变（只在末尾追加交换） | 换字典不够：父类 `_refresh_swap_schedule` 只有 1/2/3 三个分支无 else，swap≥4 时 `swap_schedule` 不存在、`step()` AttributeError；子类补第 4、5 次（各 50 步接在 64+150、64+200 起），第 4、5 对的第一个容器按 `swap_indices[(k-1) % 3]` 取、第二个运行时取最近，与父类机制一致；`step()` 本身按 `len(swap_schedule)` 泛化遍历，不必重写。demo 段 `static_steps = swap_schedule[-1][3]` 自动变长到 264/314。天生短，加到 5 次也只有 560 帧、31 窗，和 newtask-v2 的同档一样短 |
-| 6 | VideoUnmask | 100 | ✘ | — | — | 329 | 18 | — | — | **不纳入**：hard `{'bin':15,'pick':2}`，`pick` 在代码里只当 `>1` 的开关用（模板 static → pick → put down → pick，4 条到顶）；`bin` 已是 15。要加难度得新写「pick 第三个」的任务逻辑，不是改参数 |
-| 7 | ButtonUnmaskSwap | 100 | ✔ | `swap_min/max` + 重写 `_refresh_swap_schedule` | [2,3] → [4,5] | 461 → 约 520（待验） | 27 → 约 31 | 74 > 46（放下），漏 | 不变 | 同 VideoUnmaskSwap（盖回起点 64 而非 32×2）。**待验**：swap=5 时交换到第 314 步才结束，而两次按钮约 221 步完成，抓容器时交换可能还没结束；前置验证 ③ 不过则需加 hold（不再是只改参数，另批）或剔除 |
-| 8 | ButtonUnmask | 100 | ✘ | — | — | 373 | 22 | — | — | **不纳入**：configs 同 VideoUnmask，`pick` 只是 `>1` 开关，模板 press → pick → put down → pick 已到顶；`__init__` 的 `num_repeats = randint(1,6)` 抽了没用 |
-| 9 | VideoRepick | 25 | ✔ | `num_repeats` | [1,3] → [4,5] | 543 → 约 935 | 31 → 约 56 | 134 > 58（放下），必漏 | 不变（15 块 cluster 与目标逐项不变） | 次数写死在 `__init__` 的 `randint(1,4)`，不读 configs；hard 的 `swap_min/max` 为 0 且 hard 分支不支持交换（改 swap 会 AttributeError），所以只能改 `num_repeats`。子类重写 `__init__`：调完 super 后用独立 generator（`manual_seed(seed)`）抽 `randint(4,6)` 覆盖 `self.num_repeats`，不动 `self.generator` 的随机流；生成器随后 `reset()` 重跑 `_initialize_episode` 用新值重建任务清单（已核实 reset 不重跑 `_load_scene`，而 hard 的 `_load_scene` 不依赖 `num_repeats`）；前置验证 ⑤ 实证 |
-| 10 | VideoPlaceButton | 25 | ✘ | — | — | 961 | 57 | — | — | **不纳入**：hard `{'color':3,'additional_place':False,'swap':True,'targets':4}`，没有数值型次数键；目标点循环写死 `range(4)`；`additional_place` 只是 before/after 二选一加 2 条，且会多抽 2 个随机数让 before/after 重抽。T 本来就 961、57 窗，8 帧已漏 1 段 |
-| 11 | VideoPlaceOrder | 25 | ✔（可剔除） | `num_targets_to_pick` | [2,4] → 固定 4 | 1115 → 约 1300 | 67 → 约 78 | 185 > 全部，必漏 | 目标子集不变（同一排列前缀），正确序号与按钮插入位变 | 抽取写在 `_load_scene`：`num_targets_to_pick = randint(2, len(targets)+1)`，子类复制函数体只把这一行改成 `randint(4, 5)`（消耗量不变）。改动很弱：4 本来就在 hard 区间里、上限被 4 个目标点卡死；另有源码缺陷 `evaluate` 写 `current_task_specialflags`、`step` 读 `current_task_specialflag`，前置验证 ⑥ 有影响即剔除（总量变 400） |
-| 12 | PickHighlight | 25 | ✔ | `pickup` | 3 → 5 | 539 → 约 850 | 32 → 约 51 | 121 > 55（放回桌面），必漏 | 不变（目标是原排列的前缀） | 换字典；`_load_scene` 先 `randperm(len(all_cubes))` 再 `[:pickup]`，改 pickup 不动随机流；`step()` 已有 `min(pickup, len(targets))` 保护；`spawn` 6 不改。不取 6 是因为 6/6 全高亮让「记住哪些被高亮」失去意义 |
-| 13 | InsertPeg | 25 | ✘ | — | — | 464 | 26 | — | — | **不纳入**：无 `configs`，源码完全不读 difficulty，hard 只是一组 seed；固定 6 条（演示抓插 → reset → 执行抓插）。加难度等于新写任务 |
-| 14 | MoveCube | 25 | ✘ | — | — | 416 | 23 | — | — | **不纳入**：无 `configs`，不读 difficulty；`_initialize_episode` 用 `randint(3)` 三选一（peg_push / gripper_push / grasp_putdown），task_list 在 `evaluate()` 里构建，没有次数旋钮 |
-| 15 | PatternLock | 25 | ✔ | `length` | [4,8] → [10,14] | 324 → 约 810（666–960） | 18 → 约 49 | 116 > 25–40（每步 move），必漏 | 网格不变，路径变 | 换字典；`length` 是 `_load_scene` 里拒绝采样的过滤条件（最多 1000 次，不中就静默用最后一条，长度可能落在区间外），所以接受率要先验（前置验证 ②），过低改 [9,13]；不改 `grid`（网格变了母布局全变） |
-| 16 | RouteStick | 25 | ✔ | `length` | [4,7] → [8,10] | 500 → 800–1000 | 28 → 46–60 | 114–143 > 50（每步），必漏 | 障碍与颜色不变，路线前缀保留，方向序列变 | 换字典；和 newtask-v2 的 xhard 取值相同（T = 100·S）；`backtrack: True` 沿用；子类的 `configs` 整体替换时保留三档（`_load_scene` 用 `configs.get(..., config_easy)` 回退） |
+三条原则，优先级从高到低：
 
-**纳入 11 个，共 425 条母样本**（9 × 25 + 2 × 100）；**不纳入 5 个**（VideoUnmask、ButtonUnmask、VideoPlaceButton、InsertPeg、MoveCube），共同点是「hard 已到顶或源码根本不读难度」，给它们加难度要新增任务逻辑、不再是「少改参数」。
+1. **硬性：8 帧等距采样必须漏掉至少一类执行段。** 8 帧帧路相邻采样点间隔 Δ8 = (T−1)/7，要大于该任务执行段里最短一类子任务的平均段长（官方 hard 实测，留档 4.3 节）。例如 BinFill 投箱段平均 71 帧，Δ8 要超过 71；StopCube 的 remain static 段 100 帧，Δ8 要超过 100。
+2. **目标：对齐 newtask-v2 的 xhard 档，T 约 900 帧、stride-16 motion 窗口约 50～60 个。** 这是用户定的「token 数对齐上次训练」的落实方式。
+3. **不为 32 帧单独拉长。** 官方 hard 下 32 帧帧路在 16 个任务上一段都不漏，要漏得 T 超 1500，不追求。
+
+实际落点分三档：
+
+| 落点 | 任务 | 预计 T | 预计窗 | 说明 |
+|---|---|---|---|---|
+| 落在目标区 | SwingXtimes、PickHighlight、PatternLock、RouteStick、VideoRepick、StopCube | 810～1140 | 49～69 | 符合 900 / 50～60 |
+| 超出目标区 | BinFill、PickXtimes、VideoPlaceOrder | 1120～1300 | 68～78 | 官方 hard 本来就在 900 附近，「必须比 hard 更难」优先于「对齐 900」；区间下沿取 hard 上沿，和 newtask-v2 的分档习惯一致（hard 4–7 → xhard 8–10） |
+| 够不到目标区 | VideoUnmaskSwap、ButtonUnmaskSwap | 520～560 | 约 31 | 结构性短，swap 加到 5 次也只有这么长，但 8 帧硬性判据仍满足 |
+
+### 开工前先画一张合成参考数轴（用户 2026-10-06 提议）
+
+上面的 T 与窗口数都是线性外推。在跑任何仿真之前，可以用**官方 hard 的现成数据**合成一版参考：`/data/hongzefu/data_0226/` 里每个任务 25 条 hard episode 都带 `is_subgoal_boundary` 与 `simple_subgoal`，能切出每个子任务段的实际长度。把每个任务的「重复单元」按 xhard1 的次数复制粘贴（复制该 episode 自己的段，循环取），拼成一条合成时间轴，再按 `scripts/patternlock-routestick-params/plot_sampling_windows.py` 的口径（demo/exec 分段、stride-16 不跨段窗口、8/32 帧帧路）把原 hard 与合成 xhard 并排画出来。它和真实 xhard 的差别只在段长的随机波动与 planner 的路径差异，作为参考足够；真实 smoke 出来后再画一版实测对照。
+
+| 环境 | 复制的单元（取自同一条 hard episode 的段） | 复制规则 |
+|---|---|---|
+| PickXtimes | [拿起 cube → 放到 target] 一对 | 对数从 N 补到 N+2（4→6、5→7） |
+| StopCube | remain static 段 | 按 k∈[8,10]、间隔 120 重算：static 检查点每 100 步一段，到 120·k−60 止；移到按钮上方与按按钮段原样 |
+| SwingXtimes | [到右侧 → 到左侧] 一对 | 对数从 3 补到 7 或 8（按 seed 交替） |
+| BinFill | [拿起 {色} cube → 投箱] 一对 | 对数从 T 补到 5 或 6（同色循环复制） |
+| VideoUnmaskSwap | demo static 段 | 每多 1 次 swap 延长 50 步：S 从 [2,3] 到 [4,5] 即 +100 或 +150 |
+| ButtonUnmaskSwap | 无独立 demo 段，交换与按钮并行 | 时长基本不变，只标注交换结束步 264/314 与按钮完成步的先后 |
+| VideoRepick | 执行段 [拿起正确 cube → 放下] 一对 | 对数从 N 补到 4 或 5 |
+| VideoPlaceOrder | demo 段 [拿起 → 放到目标] 一对 | 对数补到 4 |
+| PickHighlight | [拿起高亮 cube → 放回桌面] 一对 | 对数从 3 补到 5 |
+| PatternLock | demo 与 exec 各一条 move 段 | 两侧各从 L−1 补到 L′−1，L′∈[10,14]（按 seed 轮） |
+| RouteStick | demo 与 exec 各一条 50 步的 move 段 | 两侧各从 S 补到 S′∈[8,10] |
+
+产出：`docs/xhard-doc/reference-timeline/`（合成脚本、每任务 JSON、每任务一张图：最短/中位/最长各一条，原 hard 与合成 xhard 并排）与一张汇总表（T、窗、Δ8、最短段、skip8 的合成值 vs 本节外推值）。图上标明「合成参考，非实跑」。这一步只读 `/data/hongzefu/data_0226/`、不跑仿真、不改源码，按 `AGENTS.md` 第 2 条属开工前允许的只读核实，可在用户点头后立即做。
+
+### 配置对比：每个任务 xhard1 相对官方 hard 把哪个量提高到多少
+
+写法与 benchmark 仓库 `scripts/README.md`「五档配置对比」一致：列「官方 hard → xhard1」，`[a,b]` 为整数均匀区间；只写任务层面的量，不写实现。本轮只定 xhard1 一档，xhard2 先留名字不定数。按 env_code 顺序列全部 16 个。
+
+| # | 环境 | 梯度维度 | 官方 hard | xhard1 | 难度怎么提升（任务层面） |
+|---:|---|---|---|---|---|
+| 1 | PickXtimes | 抓放次数 | [4,5] | [6,7] | 同一块 cube 多抓放 2 次再按钮；要数的次数更多、更晚才能按钮 |
+| 2 | StopCube | 停止序号 / 方块往返间隔 | [2,5] / 60、80、120 随机 | [8,10] / 钉 120 | 方块往返 8～10 趟才按钮，每趟固定 120 步；要盯着数到更后面的一趟，等待段更长 |
+| 3 | SwingXtimes | 左右摆动轮数 | 3 | [7,8] | 握着 cube 左右摆 7～8 轮才放下按钮；重复动作更多 |
+| 4 | BinFill | 投入 bin 的总块数（库存 [10,12] 不变） | [3,5] | [5,6] | 要从同一堆方块里按颜色多投 1～3 块；每色各自计数、总次数更多 |
+| 5 | VideoUnmaskSwap | 演示段容器交换次数 / pick | [2,3] / 2 | [4,5] / 2 | 演示里容器被交换 4～5 次才让抓；要跟踪更长的交换序列才知道 cube 在哪 |
+| 6 | VideoUnmask | 干扰容器 / pick | 15 / 2 | **不改** | 官方 hard 已是 15 个容器、抓 2 次，pick 在任务里只是「抓不抓第二个」的开关，没有可以再往上提的量 |
+| 7 | ButtonUnmaskSwap | 按钮后容器交换次数 / pick | [2,3] / 2 | [4,5] / 2 | 按两次按钮期间容器交换 4～5 次；同 VideoUnmaskSwap，但交换与按钮同时进行，交换结束是否晚于按钮完成待验 |
+| 8 | ButtonUnmask | 干扰容器 / pick | 15 / 2 | **不改** | 同 VideoUnmask，hard 已到顶 |
+| 9 | VideoRepick | 执行段重复抓放次数（15 块 cluster 不变） | [1,3] | [4,5] | 看完演示后要把同一块正确的 cube 反复抓放 4～5 次；重复动作更多、更晚才按钮 |
+| 10 | VideoPlaceButton | 放台方式 | before / after 二选一 | **不改** | 只有「先放还是后放」两种，没有次数型的量；要加难度得新设计任务 |
+| 11 | VideoPlaceOrder | 演示里放到目标点的个数 | [2,4] | 固定 4 | 演示把 cube 依次放到 4 个目标点（上限），执行时要记住正确序号；改动弱，可剔除 |
+| 12 | PickHighlight | 要抓的高亮块数（总块 6 不变） | 3 | 5 | 6 块里高亮 5 块，要记住并逐个抓起 5 块；不取 6 是因为全高亮就不用记了 |
+| 13 | InsertPeg | 不加档 | 官方 hard | **不改** | 任务固定「演示抓插 → 执行抓插」，源码不读难度，没有量可调 |
+| 14 | MoveCube | 不加档 | 官方 hard | **不改** | 三种推 / 勾 / 抓放方式随机三选一，没有次数型的量 |
+| 15 | PatternLock | 图案节点数（5×5 网格） | [4,8] | [10,14] | 演示画一条 10～14 个节点的路径，执行时要原样画出来；路径更长、更难记 |
+| 16 | RouteStick | 路线段数（执行段 = 50·L 步） | [4,7] | [8,10] | 演示绕障碍走 8～10 段，执行时原样走一遍；和 newtask-v2 的 xhard 相同 |
+
+**纳入 11 个**（#1 2 3 4 5 7 9 11 12 15 16），**不纳入 5 个**（VideoUnmask、ButtonUnmask、VideoPlaceButton、InsertPeg、MoveCube），不纳入的共同点是「官方 hard 已到顶或任务本身没有次数型的量」，加难度要新设计任务、不再是「少改参数」。
+
+### 预计长度与母样本
+
+T 与窗口数按官方 hard 中位加每个子任务平均段长线性外推（公式与依据见第二部分八节），开工后每任务 3 个 seed smoke 出实测值对账。「母布局」指同一 seed 下场景是否逐项不变。
+
+| # | 环境 | hard 条数 | 预计 T（hard → xhard1，中位） | 预计窗 | Δ8 对最短执行段 | 8 帧漏段 | 母布局 |
+|---:|---|---:|---|---|---|---|---|
+| 1 | PickXtimes | 25 | 812 → 约 1120 | 49 → 约 68 | 160 > 70（放到 target） | 必漏 | 不变 |
+| 2 | StopCube | 25 | 309 → 900～1140 | 18 → 54～69 | 128～163 > 100（remain static） | 必漏 | 不变 |
+| 3 | SwingXtimes | 25 | 488 → 约 840 | 29 → 约 50 | 120 > 40（摆到一侧） | 必漏 | 不变 |
+| 4 | BinFill | 25 | 868 → 约 1140 | 53 → 约 69 | 162 > 71（投箱） | 必漏 | **变**（方块坐标与颜色顺序随目标数偏移） |
+| 5 | VideoUnmaskSwap | 100 | 457 → 约 560 | 26 → 约 31 | 80 > 49（放下） | 漏 | 不变 |
+| 7 | ButtonUnmaskSwap | 100 | 461 → 约 520（待验） | 27 → 约 31 | 74 > 46（放下） | 漏 | 不变 |
+| 9 | VideoRepick | 25 | 543 → 约 935 | 31 → 约 56 | 134 > 58（放下） | 必漏 | 不变 |
+| 11 | VideoPlaceOrder | 25 | 1115 → 约 1300 | 67 → 约 78 | 185 > 全部 | 必漏 | 目标子集不变，正确序号与按钮位变 |
+| 12 | PickHighlight | 25 | 539 → 约 850 | 32 → 约 51 | 121 > 55（放回桌面） | 必漏 | 不变 |
+| 15 | PatternLock | 25 | 324 → 约 810（666～960） | 18 → 约 49 | 116 > 25～40（每步） | 必漏 | 网格不变，路径变 |
+| 16 | RouteStick | 25 | 500 → 800～1000 | 28 → 46～60 | 114～143 > 50（每步） | 必漏 | 障碍与颜色不变，路线方向变 |
 
 几点说明：
 
-- **BinFill 与 PickXtimes 本来就在 900 附近**，再加次数会到 1100 以上、约 70 窗，超出 50–60 的目标。这是「必须比 hard 更难」和「长度对齐 900」之间的取舍，选了前者，且区间下沿取 hard 上沿（和 newtask-v2 的分档习惯一致：hard 4–7 → xhard 8–10）。要压回 900 只能让区间和 hard 重叠（如 BinFill [4,5]），那就不像新档了。
-- **两个 Swap 任务天生短**，加到 5 次 swap 也只有约 560 帧、31 窗。它们各有 100 条 hard seed，是总量的主力（200/425），长度上不去是结构问题，不是参数问题。
-- **预计成功率会低于 hard**：原 hard seed 里 BinFill 11 条、VideoPlaceOrder 12 条、SwingXtimes 5 条、VideoRepick 6 条、PatternLock 1 条是重试后才成功的；xhard 不换 seed，这些任务更容易失败，失败即缺条、不补。
+- **StopCube 改两个量**：只提停止序号时，往返间隔抽到 60 的三分之一 episode 只有 450～570 帧，Δ8 小于 100 帧的 static 段，8 帧漏不掉；把间隔钉在 120 才满足硬性判据。
+- **两个 Swap 任务天生短**，各有 100 条 hard seed，是总量主力（200/425），长度上不去是结构问题。
+- **预计成功率低于 hard**：官方 hard seed 里 BinFill 11 条、VideoPlaceOrder 12 条、SwingXtimes 5 条、VideoRepick 6 条、PatternLock 1 条是换过 seed 才成功的；xhard 不换 seed，这些任务更容易失败，失败即缺条、不补。
+- **待验三项**：PatternLock [10,14] 在 5×5 网格的可行性（过低改 [9,13]）；ButtonUnmaskSwap 5 次交换是否在两次按钮之前结束；BinFill 投 6 块时方块生成成功率。都在六节步骤 1。
+
+### 总量
 
 | 任务 | 条数 | 预计 T | 预计帧数 | 预计 stride-16 窗 |
 |---|---:|---:|---:|---:|
@@ -310,14 +369,14 @@ T 与窗口数按官方 hard 中位加每个子任务平均段长线性外推（
 | StopCube / VideoRepick / VideoPlaceOrder | 25 × 3 | 1020 / 935 / 1300 | 81,375 | 4,850 |
 | **合计** | **425** | | **约 33.1 万** | **约 19,600** |
 
-对照上次训练：stride-1 chunk 约 31 万（上次 796,001，约四成）；stride-16 窗约 1.96 万（上次 69,716）。缺口已按口径 ⑦ 接受，补齐路径是 9 个 25 条的任务各加约 75 条新 seed，另议。
+对照上次训练：stride-1 chunk 约 31 万（上次 796,001，约四成）；stride-16 窗约 1.96 万（上次 69,716）。缺口已按口径 ⑦ 接受，补齐路径是 9 个 25 条的任务各加约 75 条新 seed，另议。每个任务在代码里怎么改（换哪个字典键、重写哪个方法）见第二部分一节与八节。
 
 ## 五、验收
 
 | 查什么 | 怎么查 | 过了说明什么 | 判定行 |
 |---|---|---|---|
 | 身份牌改回原名 | `gym.make("PickHighlightXHard1", ...)` 后断言 `unwrapped.spec.id == "PickHighlight"`、外层 `spec.id` 同、`spec.entry_point` 不变（需渲染栈，主检出跑） | 四个 wrapper 的 stick/语言/VQA/无夹爪分支全按原任务走 | `XHARD_SPEC=PASS tasks=11 id_mismatch=0 entry_point_changed=0` |
-| 子类只改目标键 | 对 11 个子类比 `configs` 与父类：easy/medium 逐键相等，hard 只有四节表的键不同 | 「沿用 Hard 全部配置只改一两个参数」字面成立 | `XHARD_CONFIGS=PASS tasks=11 unexpected_diff=0` |
+| 子类只改目标键 | 对 11 个子类比 `configs` 与父类：easy/medium 逐键相等，hard 只有第二部分一节表所列的键不同 | 「沿用 Hard 全部配置只改一两个参数」字面成立 | `XHARD_CONFIGS=PASS tasks=11 unexpected_diff=0` |
 | 卡片来自 train hard 记录 | `jobs_from_metadata` 结果条数 = 各任务 hard 条数（25/100），seed 与 json 逐条相等，attempt 全 0，difficulty 全 hard | 口径 ② 成立 | `XHARD_JOBS=PASS source=train tasks=11 jobs=425 seed_unchanged=425` |
 | 原路径逐字节不变 | 不传 `--xhard` 时：`_args` 解析结果、造出的 jobs、`make_name(job)` 与 `BASE` 版本逐项相等；互斥参数组合报错 | 开关关闭态零行为变化 | `XHARD_BASELINE_EQ=PASS jobs_diff=0 names_diff=0 mutex_errors=5` |
 | 受保护目录零 diff | `git diff --quiet <BASE> HEAD -- src/robomme/ pyproject.toml` | P1、R5 守住 | `PROTECTED=PASS` |
@@ -331,12 +390,13 @@ T 与窗口数按官方 hard 中位加每个子任务平均段长线性外推（
 | 阶段 | 内容 | 判据 |
 |---|---|---|
 | 0 | 用户说「开工」 | — |
+| 0.5（开工前即可） | 合成参考数轴：用官方 hard 数据按四节的复制规则拼出 xhard1 参考时间轴并出图（只读数据、不跑仿真） | `docs/xhard-doc/reference-timeline/` 落盘；汇总表给出合成 T / 窗 / Δ8 / skip8 与外推值的差 |
 | 1 | 六项前置验证：① `spec` 拦截最小 smoke（临时子类，不落盘）；② PatternLock `length` [10,14] 在 5×5 的接受率（只读复现拒绝采样 1000 个 seed）；③ ButtonUnmaskSwap swap=5 时交换结束步（314）与两次按钮完成步的先后；④ BinFill 目标 6 个时生成成功率（临时 `_load_scene` 统计 25 个 hard seed）；⑤ VideoRepick super 后改写 `num_repeats` 后 reset 重建 task_list 读到新值；⑥ VideoPlaceOrder `current_task_specialflag(s)` 命名不一致是否影响 hard swap | 六项各出一行结论写进第二部分八节；①⑤ 为 PASS 才进步骤 2 |
 | 2 | 主会话 S0：`src/robomme_xhard/{__init__,base,jobs}.py`、`envs/__init__.py` 骨架 + `README.md`，commit `2.33` | `XHARD_BASELINE_EQ=PASS`（此时 `make_name` 对无 xhard 卡片恒等） |
 | 3 | 同一消息派 S1、S2、S3、S4（`isolation: "worktree"` + `model: "opus"`） | 各自验收命令 passed（第二部分二节） |
 | 4 | 合并顺序 S1 → S2 → S3 → S4：合并前审查 → `--no-ff` 合并 → 合并后审查 → push | `PRE_MERGE_REVIEW=PASS`、`POST_MERGE_REVIEW=PASS`、`PROTECTED=PASS` |
 | 5 | 主检出跑 `XHARD_SPEC`（11 子类）与每任务 3 seed smoke，出对账表 | `XHARD_SPEC=PASS`、`XHARD_SMOKE`、`XHARD_LENGTH`、`XHARD_SKIP8` |
-| 6 | 把对账表交用户审阅取值（可改四节表的数或剔除 VideoPlaceOrder）；用户再说「开工」后全量 425 条 | `XHARD_FULL=INFO` |
+| 6 | 把对账表交用户审阅取值（可改第一部分四节的数或剔除 VideoPlaceOrder）；用户再说「开工」后全量 425 条 | `XHARD_FULL=INFO` |
 | 7 | 数轴图（每任务最短/中位/最长各一条，与原 hard 并排）、`docs/xhard-doc/<档案名>/` 留档、commit、push | `result.md` 落盘 |
 
 ## 七、子代理分工与合并（简述）
@@ -356,7 +416,7 @@ T 与窗口数按官方 hard 中位加每个子任务平均段长线性外推（
 - **R5** 不改 `pyproject.toml`、`uv.lock`（editable `.pth` 指向整个 `src/`，新包天然可 import；wheel 不含新包写进盲区）。
 - **R6** worktree 内子代理只跑 ≤5 分钟 CPU 测试，不 `gym.make`、不起生成；GPU 验收归合并后主会话。
 - **R7** 全量生成前须用户审阅步骤 5 对账表并再次说「开工」；smoke 每任务 3 条不扩（P5）。
-- **R8** 子类只许改第一部分四节表列出的键 / 方法；其它键、其它方法、其它任务一律不碰，顺手修不算获准（P1 逐个批准）。
+- **R8** 子类只许改第二部分一节表列出的键 / 方法；其它键、其它方法、其它任务一律不碰，顺手修不算获准（P1 逐个批准）。
 - **R9** 输出目录独立：派生档一律写 `artifacts/xhard/<档名>-<日期>/`，不与原 hard 混放（HDF5 文件名与原 hard 同名 `BinFill_ep3_seed4301.h5`，靠目录区分；`setup/difficulty` 仍是 hard）。
 
 ## 一、逐文件改动清单
@@ -436,7 +496,7 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 4. `_run_jobs`：失败分支 `elif job.xhard is None and job.attempt + 1 < max_attempts: pending.append(job.bump(...))`，xhard 卡片直接 `exhausted.append(result)`；池损坏分支 `pending.appendleft(job if job.xhard else job.bump(...))`。`_pool_init` 与 `_worker`：`import robomme.robomme_env` 之后加 `import robomme_xhard  # noqa: F401`；`_worker` 的 `gym.make(job.task, **kwargs)` 改 `gym.make(robomme_xhard.make_name(job), **kwargs)`。
 
 **测试 `tests/lightweight/test_robomme_xhard.py`（S4，CPU，不 `gym.make`，不标 gpu）**：
-- `test_configs_only_target_keys_differ`：对 11 个子类，`configs["easy"]`/`["medium"]` 与父类相等；`configs["hard"]` 与 `config_hard` 的差集键 == 第一部分四节表所列键。
+- `test_configs_only_target_keys_differ`：对 11 个子类，`configs["easy"]`/`["medium"]` 与父类相等；`configs["hard"]` 与 `config_hard` 的差集键 == 第二部分一节表所列键。
 - `test_make_name`：无 xhard 返回原名；`xhard1` → `<Task>XHard1`。
 - `test_jobs_from_metadata_train_hard`：对 11 任务条数 == {25,100}，seed 与 json 一致，attempt 全 0，difficulty 全 hard，排序稳定。
 - `test_mutex_args`：5 组互斥参数各 `SystemExit`。
@@ -451,7 +511,7 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 | 子任务 | 目标 | 可写文件集合 | 禁触路径 | 接口契约与依赖 | 合并顺序 | 验收命令与判定行（worktree 内） | 资源 | 共享文件归属 |
 |---|---|---|---|---|---|---|---|---|
 | S0 | 新包骨架 | `src/robomme_xhard/{__init__,base,jobs}.py`、`envs/__init__.py`（空）、`README.md` | R1、R5 | `XHardMixin.robomme_base_id`；`make_name(job)`；`jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls)` | 派发前 | 主会话自做：`uv run --no-sync python -c "from robomme_xhard.jobs import make_name, jobs_from_metadata"` | CPU | 主会话 |
-| S1 | 换字典组 6 子类 | `src/robomme_xhard/envs/{pick_xtimes,swing_xtimes,pick_highlight,pattern_lock,route_stick,bin_fill}.py` | `src/robomme/**`、`envs/__init__.py`、其它 envs 文件 | 继承 `XHardMixin` + 父类；`robomme_base_id`；只改第一部分四节表的键；BinFill 后置校验抛 `SceneGenerationError` | 1 | `python -m pytest tests/lightweight/test_robomme_xhard.py -k "configs or register" -q`（S4 合入前用 S1 自带的最小断言脚本 `python -c` 逐类比 configs） | CPU | 无 |
+| S1 | 换字典组 6 子类 | `src/robomme_xhard/envs/{pick_xtimes,swing_xtimes,pick_highlight,pattern_lock,route_stick,bin_fill}.py` | `src/robomme/**`、`envs/__init__.py`、其它 envs 文件 | 继承 `XHardMixin` + 父类；`robomme_base_id`；只改第二部分一节表所列的键；BinFill 后置校验抛 `SceneGenerationError` | 1 | `python -m pytest tests/lightweight/test_robomme_xhard.py -k "configs or register" -q`（S4 合入前用 S1 自带的最小断言脚本 `python -c` 逐类比 configs） | CPU | 无 |
 | S2 | 重写方法组 5 子类 | `src/robomme_xhard/envs/{video_unmask_swap,button_unmask_swap,stop_cube,video_repick,video_place_order}.py` | 同上 | 同上；重写方法只许表一所列；复制父类函数体时逐字相同、只改指定行 | 2 | 同上 `-k configs`；另附 `git diff` 可读的「父类原文 vs 子类改行」对照写进交回 | CPU | 无 |
 | S3 | 生成器开关 | `scripts/data-generation-newSeed/generate_dataset_newseed.py` | `src/**`、`seed_layout.py`、`pyproject.toml` | `EpisodeJob.xhard`；`--xhard`/`--source-split` 与互斥；两处不 bump；worker 内 import；`make_name` | 3 | `python -m pytest tests/lightweight/test_seed_layout.py -q` + `python scripts/data-generation-newSeed/generate_dataset_newseed.py --help`（含 `--xhard`）+ 自带 `python -c` 断言不传 `--xhard` 时 jobs 与 BASE 相等 | CPU | 无 |
 | S4 | 轻量测试 | `tests/lightweight/test_robomme_xhard.py`、`tests/lightweight/test_robomme_xhard_spec.py` | `src/**`、`scripts/**` | 按一节用例清单；spec 测试标 `gpu, slow` | 4 | `python -m pytest tests/lightweight/test_robomme_xhard.py -q` passed（基于合入 S1–S3 后的分支） | CPU | 无 |
@@ -475,6 +535,7 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 
 ## 四、runbook（主会话）
 
+0. **合成参考数轴**（步骤 0.5，开工前即可做）：临时脚本放 `docs/xhard-doc/reference-timeline/synthesize_reference_timeline.py`，输入 `/data/hongzefu/data_0226/record_dataset_<Task>.h5` 与 `src/robomme/env_metadata/train/`（只取 h5 里存在的 hard episode），切段口径同留档 4.1（`is_subgoal_boundary` 起点、段名取 `simple_subgoal`、demo 与尾段都算段），按第一部分四节的复制规则生成合成段序列，输出每任务 `reference_<Task>.json`（每条：原段表、合成段表、T、demo 长度、stride-16 窗、Δ8、最短执行段、skip8）与汇总 `reference_summary.md`；画图复用 `plot_sampling_windows.py` 的分层口径（段底色、subgoal 块、三行堆叠窗口、32/8 帧帧路），对每任务取合成 T 的最短/中位/最长三条，与对应原 hard 并排，标题注「合成参考，非实跑」。命令 `uv run --no-sync python docs/xhard-doc/reference-timeline/synthesize_reference_timeline.py --h5-dir /data/hongzefu/data_0226 --metadata-dir src/robomme/env_metadata/train --out docs/xhard-doc/reference-timeline`，判定行 `XHARD_REF=INFO tasks=11 episodes=425 synthetic=1`。不写入 `/data/hongzefu/data_0226/`（P3）。
 1. **前置验证**（步骤 1，六项，只读或 ≤5 分钟）：①⑤ 用临时脚本在 scratchpad 里定义一个最小子类（不落仓库）`gym.make` 一次（GPU 0，单进程），打印 `unwrapped.spec.id`、`spec.entry_point`、改写后 reset 的 `task_list` 长度；② `uv run --no-sync python -c` 复现 PatternLock 拒绝采样（只 import `find_path_0_to_8`，1000 个 seed，统计 [10,14] 命中率与平均尝试次数）；③ 读 ButtonUnmaskSwap 源码算 S=5 的交换结束步 314 与 `solve_button` 两次的步数（留档 4.3：按钮段均值约 104×2）；④ 临时脚本对 25 个 BinFill hard seed 跑子类 `_load_scene`（需渲染栈，GPU 0，单进程，不录像），统计每色实际数 ≥ 目标数的比例；⑥ grep `current_task_specialflag` 在 VideoPlaceOrder 的全部读写点。六项结论各一行写进八节。
 2. **S0 → 派发 → 合并**：按二节；每次合并 `git merge --no-ff <TIP sha> -F <scratchpad 消息文件>`，subject 按 `2.<n>` 递增，body 按第 11 条六项。
 3. **smoke**（步骤 5，每任务一条命令、串行、GPU 0）：
