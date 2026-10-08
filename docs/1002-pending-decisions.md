@@ -3,6 +3,7 @@
 本文件汇总 2026-09-28 以来尚未由用户拍板的全部事项。每条写明来源、现状（判定行原文）、证据位置、可选处置与对应命令或改动点，处理时不需要再检索。用户裁决后在该条末尾追加「**裁决**：<日期> <原话>」，不删原文。
 
 - 取数时间：2026-10-02 约 20:30 EDT，分支 `newtaskRelease-taskV9`，HEAD `59e5474e`（12.336）。站点进程、磁盘余量等会变化，处理前请复核。
+- 2026-10-08 增补 T 类：三档（生成对拍／hard0／OOD）对拍与评估现状留档，取数 HEAD `16f44ba2`（12.539）。
 - 路径约定：不带前缀的路径相对仓库根 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`；`artifacts/` 不进 git，只在 sled-vail 本机有。NFS 根为 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu`。
 - 本清单只记录，不执行任何处置；所有事项都**不阻断**已交付的 V9 数据集（V9 交付闸门全部 PASS）。
 
@@ -10,10 +11,10 @@
 
 | 编号 | 事项 | 来源 | 建议 |
 |---|---|---|---|
-| A1 | V9 新 80 局二次生成对拍 `PARITY_H_H2=FAIL` | 10-02 V9 | 先定 A5 容差口径，再决定 (a) 记录在案或 (b)(c) |
-| A2 | V7 二次生成对拍 FAIL（InsertPeg/8），当时「暂时不管」 | 09-29 V7 | 结案 |
-| A3 | V7.5 评估 MME 相对标准 `inside=no` | 09-30 V7.5 | 接受 |
-| A4 | V8 xhard0 两入口评估 MME 18 局成败相反（只出 INFO） | 10-01 V8 | 认可「不判回归」 |
+| A1 | V9 新 80 局二次生成对拍 `PARITY_H_H2=FAIL` | 10-02 V9 | **结案**（10-08 用户：噪声可接受） |
+| A2 | V7 二次生成对拍 FAIL（InsertPeg/8），当时「暂时不管」 | 09-29 V7 | **结案**（10-08 用户：噪声可接受） |
+| A3 | V7.5 评估 MME 相对标准 `inside=no` | 09-30 V7.5 | **结案**（10-08 用户：噪声可接受） |
+| A4 | V8 xhard0 两入口评估 MME 18 局成败相反（只出 INFO） | 10-01 V8 | **结案**（10-08 用户：噪声可接受） |
 | A5 | 对拍容差阈值从未经用户审核 | 09-28 拆包 | 审核；可用 V8 1070 对重新标定 |
 | A6 | 权重核对 `V8_EVAL_ASSETS=FAIL` 被放行 | 10-02 V8 评估 | 核对脚本收进仓库并与建锁过滤一致 |
 | B1 | V9 站点缺 MoveCube 区域变化注记 | 10-02 V9 | 补注记 |
@@ -46,6 +47,9 @@
 | P1 | 所有模型评估链路直接保留或产出官方版式视频 | 10-05 两阶段视频计划 | 第二阶段单独开工，逐模型改造 |
 | P2 | 第一、二、三档重新评估的资源与累计预算 | 10-05 两阶段视频计划 | 第二阶段开工前一次性明确预算与席位 |
 | P3 | Turbo 上既有第三档 Oracle 视频是否另做重绘 | 10-05 两阶段视频计划 | 本轮只处理本机存量，异地重绘另定 |
+| T1 | 第一档：生成对拍现状 | 10-08 整理 | **结案**（10-08 用户：噪声可接受） |
+| T2 | 第二档：hard0 原侧 vs 新侧对拍现状 | 10-08 整理 | **结案**（10-08 用户：噪声可接受） |
+| T3 | 第三档：OOD 评估结果与遗留 6 项 | 10-08 整理 | 待定 |
 
 ---
 
@@ -108,6 +112,7 @@ PARITY_REFERENCE=INFO pair=H:H2 tier=v9 first_divergence_n=7 first_divergence_me
 - **(c) 先审核容差（A5）再重判**：不动生成。若改为只数非 noise 的超容差局，V9 只剩 h2_fail 一项。
 
 **2026-10-03 补记**：用户原话「我现在不能够再去改和 Main branch TestHard 一致的数据集了……就必须保持完全一致」，选项 (b) 因数据冻结作废。V9 交付集 16 任务 × 50 局 = 800 局的完整对拍事实（782 局逐字节可复现、17 局轨迹分叉、1 局第二次生成失败）与逐局明细见 [`1003-generation-parity-reproducibility.md`](1003-generation-parity-reproducibility.md)。是否正式结案仍待用户裁决。
+- **裁决**：2026-10-08 用户「用户觉得生成和0都OK了就是噪声在可接受范围内。」 结案（见 T 类）。
 
 ### A2 V7 二次生成对拍 FAIL（2026-09-29，暂缓中）
 
@@ -117,6 +122,7 @@ PARITY_REFERENCE=INFO pair=H:H2 tier=v9 first_divergence_n=7 first_divergence_me
 - 用户 2026-09-29 原话：「1暂时不管 2暂时不管 3同意递补 4 没看懂详细讲」，即暂不处理，交付集不动，保留 H2 本地副本。
 - 待定：是否正式结案。V7 交付已被 V8、V9 取代，建议结案。
 - **现状更正（2026-10-03 资源清理）**：上面「保留 H2 本地副本」已不成立——V7 H2 实体 09-29 已删，V7 gen1（1100 局）与 P 侧拉回缓存在 2026-10-03 按 `1003-resource-cleanup-plan.md` 口径 2 删除；比对记录 `newtask-v7/parity/compare`、`newtask-v7/logs/cmp-h2.log` 原地保留（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
+- **裁决**：2026-10-08 用户「用户觉得生成和0都OK了就是噪声在可接受范围内。」 结案（见 T 类）。
 
 ### A3 V7.5 评估 MME 相对标准 inside=no（2026-09-30 跑完，10-01 晚再问，未定）
 
@@ -148,6 +154,7 @@ POLICY_REPLAY=INFO cond=P1 policy=mme det=on mode=restart n=5 bitwise=5/5 max_ab
 **可选处置**：接受（认定为 MME 非确定性带来的 1 局级差异）／不接受（需追加样本或换判据口径，另立计划）。
 
 - **2026-10-03 资源清理**：按用户「xhard0也都要保留」，`artifacts/v7.5eval` 除 `venvs/` 外全部原地保留（官方路线三份检出删除，重跑需从 origin 取回并重建 venv）；本条判定仍待用户裁决（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
+- **裁决**：2026-10-08 用户「用户觉得生成和0都OK了就是噪声在可接受范围内。」 结案（见 T 类）。
 
 ### A4 V8 xhard0 两入口评估 MME 18 局成败相反（2026-10-01，只出 INFO、从未判定）
 
@@ -190,6 +197,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 **可选处置**：认可「不判回归」（xhard0 环境的正确性已由两次 `XHARD0_RESET_PARITY=PASS det_diff=0` 证明）／要求进一步诊断。
 
 - **2026-10-03 资源清理**：xhard0 两份 h5、V7 xhard0 评估录像、`v8eval-xhard0` 等全部保留；`robomme_benchmark-v8eval` 克隆删除（HEAD 已在 `origin/newtaskRelease-taskV8`）。本条判定仍待用户裁决（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
+- **裁决**：2026-10-08 用户「用户觉得生成和0都OK了就是噪声在可接受范围内。」 结案（见 T 类）。
 
 ### A5 对拍容差阈值从未经用户审核（2026-09-28 定，一直沿用到 V9）
 
@@ -524,3 +532,59 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 ### P3 Turbo 存量是否重绘
 
 本轮媒体根只在 `artifacts/sg-evaluation/sg-eval-gl-20261004-01/local-g3/`。Turbo 的视频与正式结果继续原地保留；是否另开纯 CPU 转码、是否搬运由后续任务明确，本轮不扩展到该副本。
+
+---
+
+## T 类：三档对拍与评估现状（2026-10-08 整理，留档）
+
+本节按用户 2026-10-08 要求，把 10-02 以来的对拍与评估按三档整理留档：一、生成对拍；二、hard0（`hard-verify`，xhard0 档，`16 任务 × 12 局 = 192`）；三、OOD（V9 新值档）。取数：HEAD `16f44ba2`（12.539），评估链路冻结点 `0816c0a9`（12.524），其后只合入 FIX-2（`eval_report.py` 检查器）、FIX-3（`pp_server_wrap.py`／`pp_client.py` 记 S2 输入全文）、FIX-4（`env_client.py` 分片锁名）。
+
+**裁决（第一、二档）**：2026-10-08 用户「用户觉得生成和0都OK了就是噪声在可接受范围内。」——生成对拍与 hard0 对拍的差异均认定为可接受噪声；A1、A2、A3、A4 据此结案（各条末尾已追加）。第三档 OOD 的遗留仍待定。
+
+### T1 第一档：生成对拍
+
+| 时间 | 对象 | 规模 | 结果 |
+|---|---|---|---|
+| 10-02 | V9 新增局二次生成（H:H2） | 2 格（MoveCube、InsertPeg xhard4）共 80 局 | `PARITY_H_H2=FAIL`：byte_equal 72、noise 7、h2_fail 1（MoveCube 候选 66），超容差 7 > 5% 硬线 4（见 A1） |
+| 10-03 | V9 交付全集汇总 | 16 任务 × 50 局 = 800 | 782 逐字节可复现、17 分叉、1 第二次失败；数据冻结（[`1003-generation-parity-reproducibility.md`](1003-generation-parity-reproducibility.md)） |
+| 10-04 维护后回归 | V9 ／ xhard0 | 43 格 × 3 = 129 ／ 16 任务 × 3 = 48 | xhard0 PASS；V9 1 局 env_changed，用户裁决登记环境敏感局后 `GEN_REGRESS=PASS`（见 D7） |
+| 10-04 第一档（sg-eval-gl-20261004-01） | 同上 | 129 ／ 48 | GL：V9 match 127、jitter 2，xhard0 48/48；本机新旧码：BinFill xhard1 16400000 新码生成失败（闸门判抖动） |
+| 10-06 第一档（sg-eval-gl-20261006-02，`b869a3df`） | 同上 | 129 ／ 48 | 首跑 1 局翻转（InsertPeg xhard4 23300100），新旧码各 4 局定性为噪声，`GEN_REGRESS=PASS` |
+
+- **裁决**：2026-10-08 认定为可接受噪声（见本节开头）。
+- 留档事实（未另行裁决）：12.519 R1 改名动过 `src/robomme_hard/env_record_wrapper/hard_builder.py`、`hard_specs.py`（只改名不改行为），之后未重跑生成回归；A5 容差文件 `scripts/configs/hard-parity-tolerances.json` 未改动。
+
+### T2 第二档：hard0 原侧 vs 新侧（接线正确性，均为 `GATE2=INFO` 差异报告）
+
+| 轮次 | 模型 | 成功率 原侧 → 新侧 | 终态相同 | 逐步 |
+|---|---|---|---|---|
+| 10-06 GL（`0bfcc076`／`80a402cc`） | SimpleMemVLA | 73.4% → 73.4% | 192/192 | 五维 192 局逐步逐位一致 |
+| 同上 | PonderPounce | 41.7% → 41.7% | 192/192 | 执行动作 192 局逐步一致 |
+| 同上 | GroundSG+Oracle | 75.0% → 75.0% | 188/192（翻转 2／2） | 144 局全一致，48 局同一服务进程第 0 步分叉 |
+| 同上 | GroundSG+QwenVL | 22.9% → 24.0% | 177/192（翻转 3／5） | 86 局全一致 |
+| 同上 | FrameSamp+Modulation | 25.5% → 27.1% | 174/192（翻转 7／10；官方自重跑带宽 7～19） | 59 局动作逐步一致 |
+| 10-07 本机（现行冻结 `0816c0a9`） | GroundSG+MemER | 20.8% → 29.2% | 41/48（16 任务 × 3 局，用户裁决缩减） | 48 局全部分叉，首差为子目标坐标 `(203,629)` vs `(203,625)` |
+| 10-06 本机 | 3-tier Astra | 1 局 smoke success 282 步 | — | 0.3043 美元，第 2 局额度未用 |
+| 10-04（本机／GL） | Oracle／PonderPounce／QwenVL | 本机 72.9→72.4、42.7→42.7、24.5→25.0；GL 75.0→75.0 | 本机 189／192／176，GL 192／96／37 | 本机 QwenVL 逐步 141/192（GL 37/37 一致），未定性 |
+| 10-01 V8 两入口 | FrameSamp+Modulation／SimpleMemVLA | 48→50 ／ 141→141 | status_diff 18 ／ 0 | 见 A4 |
+| 09-30 V7.5 | FrameSamp+Modulation 相对官方 | — | `RELATIVE_ACCEPT=INFO inside=no` | 见 A3 |
+
+- **裁决**：2026-10-08 认定为可接受噪声（见本节开头）。
+- 留档事实（未另行裁决）：现行冻结代码上只对拍过 MemER；其余五模型的对拍跑在冻结前代码上，FIX-3 之后的 PonderPounce 未与原侧对拍。
+
+### T3 第三档：OOD（V9 新值档）——待定
+
+| 轮次 | 口径 | 结果（成功／局数） |
+|---|---|---|
+| 10-02 v9-two-policy-gl10-20261002-01 | 16 任务 × 50 = 800 局，1600 步 | SimpleMemVLA 178/800（22.3%），FrameSamp+Modulation 39/800（4.9%） |
+| 10-04 sg-eval-gl-20261004-01 | 800 局 | GroundSG+Oracle 423/800（52.9%）；PonderPounce 仅分片 0：67/400（16.8%）；QwenVL 9 局即中止；本机 Oracle 复刻 51.75%（不计正式） |
+| 10-06 sg-eval-gl-20261006-02 | 800 局，用户叫停 | GroundSG+Oracle 已定终态 542（成功 270），QwenVL 163（成功 15），其余三模型未开始 |
+| **10-07 sg-eval-gl-20261006-03（现行）** | 43 格 × 2 局 = 86 局／模型，1800 步，模型 seed 7，`STAGE3_MATRIX=PASS` | SimpleMemVLA 19/86，PonderPounce 15/86（r2 重跑），GroundSG+QwenVL 13/86，GroundSG+MemER 5/86，FrameSamp+Modulation 3/86；8084 站附 GroundSG+Oracle 38/86（10-04 轮 1600 步，仅参考） |
+
+待用户定：
+1. 10-06 中止的每模型 800 局口径放弃还是续跑（GL `queue/held-gate3/` 留 36 个待领 + 7 个中断任务）；已出的部分结果如何使用。
+2. 10-04 轮 PonderPounce 上下文超限那 1 局计分：按失败计，或单列「模型容量超限」不进分母。
+3. 86 局／模型的分母是否扩大。
+4. PonderPounce r2 重跑沿用首跑幂等 token、账本未新增 reserve（实际约 618/870）；下次重跑是否改 token 前缀。
+5. 中间产物：NFS `sgeval-20261004/` 约 11.9 GB、本机 `local-g1` 171 GB、10-06 轮 `$R2/media/`（含 PonderPounce 原始帧约 5.3 GB）删不删。
+6. 4 个 5 天 GL 占位 job（63431430～63431433）下一步用途；8083、8084 站点留多久。
