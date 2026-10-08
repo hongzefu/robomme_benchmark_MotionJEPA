@@ -65,18 +65,22 @@ robomme_hard_eval/
 ├── third_party/robomme_benchmark          ← submodule，钉 benchmark 仓 40 位 sha
 ├── third_party/{mme-vla, SimpleMemVLA, PonderPounce, Astra-on-RoboMME}   ← 四个 gitlink 原样
 ├── src/robomme_hard_eval/
-│   ├── policy.py       Policy = load_policy(model, policy_seed)   ← 常驻：加载权重／起服务一次，跨局复用；with 语句退出才 stop()
-│   ├── episode.py      run_episode(policy, dataset, episode, out_dir) -> EpisodeResult   ← 单局：reset → 循环 policy.act(obs) → step；不加载任何东西
+│   ├── policy.py       Policy = load_policy(model, policy_seed)   ← 常驻：加载权重／起服务、编译缓存、首推理预热全在这里一次做完，跨局复用；with 语句退出才 stop()
+│   ├── episode.py      run_episode(policy, dataset, episode, out_dir) -> EpisodeResult   ← 单局：第一句 policy.reset() → 建环境 → 循环 policy.act(obs) → step；不加载任何东西
 │   ├── models/         每模型一个 Policy 实现：load() / new_episode(goal) / act(obs) / close()；framesamp_modul、groundsg、smvla、pp、astra、dummy
 │   ├── record.py       原始帧（AV1）+ actions.npz + trace.jsonl 落 raw/；官方版式视频落 videos/
 │   └── report.py       results.jsonl → log.json
 ├── scripts/run_local.py    对外：本机单卡，`with load_policy(...) as p: for ep in ...: run_episode(p, ...)`；可只跑一局；自带 dummy 与 GroundSG+Oracle 示例
-├── scripts/gl/             对内：占位 job 内按席位分片，每席位起一个 Policy 后循环调 run_episode；预算账本、重试、服务挂掉重起 Policy、NFS 发布
+├── scripts/gl/             对内：占位 job 内每席位起一个 Policy，循环从共享动态队列领局调 run_episode（不再静态分片）；预算账本、重试、服务挂掉重起 Policy、NFS 发布
 ├── scripts/render_expert_demos.py   从 V9 h5 离线渲染专家演示两版视频
 ├── tests/、docs/validation/（六个评估留档目录 + legacy-names.md）、pyproject.toml、规则三件
 ```
 
 - 为什么分两层：模型加载动辄几十秒到几分钟（服务进程、权重、编译缓存），一局才十几秒，按局加载不可接受；现有席位脚本就是「起一次 server、常驻客户端跑完全部局」，新接口把这件事收进 `Policy` 对象，`run_episode` 只管一局。
+- 速度口径（2026-10-08 裁决，用户原话「编译预热都在里面做完 做完了之后一定要做一次reset 就是在runepisode开头做一次reset」）：按 [`docs/plans/0929-eval-reload-cost-plan.md`](docs/plans/0929-eval-reload-cost-plan.md) 与 [`docs/plans/0929-eval-throughput-plan.md`](docs/plans/0929-eval-throughput-plan.md) 的实测，常驻本身只省 1～4%（SimpleMemVLA 每段加载约 275 s、占 3.6%；逐步推理占 68%；每局环境重建加仿真占 32%，seed 是 `gym.make` 构造参数、演示段在线执行，不可免），真正的提速在接口外的调度层。因此定死三条：
+  1. **编译与预热全在 `load_policy` 里一次做完**：JAX 类策略把持久编译缓存目录落 `<STORE_ROOT>` 下按 GPU 型号分目录（缓存键含 GPU 型号，A40 与 RTX 6000 Ada 不通用），加载后做一次首推理预热；`OMP_NUM_THREADS=1` 随 Policy 启动口径一起设（不设时预处理 8 ms 变 288 ms）。
+  2. **`run_episode` 的第一句必须是 `policy.reset()`**：清缓冲、重设种子，预热留下的状态绝不带进正式局；之后才建环境、跑这一局。对应现 `client.reset()`／`reseed()`，一致性只承诺到「行为一致」层级（RRT* 1 s 墙钟预算本就不逐位复现）。
+  3. **循环体消费共享动态队列，不做静态分片**：v7 静态 LPT 分片单轮片间 100～147 min，动态队列每轮省 12～14%，加席位才线性有效；单局异常只杀该局、Policy 活着领下一局，CUDA／JAX 状态坏掉才 `close()` 再 `load()` 重建并记基础设施重试（次数上限写死）；每局产物按身份幂等落盘，中断后从队列断点续跑不重消耗预算；server 型 Policy 必带 `trap cleanup EXIT`（本机刚清掉一个跑了 3 天 19 小时的 `serve_policy.py` 孤儿）。
 - 现有 `scripts/eval-official/` 的 55 文件按职责拆进上面四块：四个 `*_client.py` 与三个服务外壳进 `models/`（每个模型的 `Policy.load()` 就是起它的 server 并连上），`env_client.py` 的环境链进 `episode.py`，预算、看门狗、NFS 发布进 `scripts/gl/`；`recorder.py`、`trace_writer.py` 并进 `record.py`；`render_official_video.py` 保留为官方版式渲染器（经 `importlib` 调官方 `RolloutRecorder`，不复制不改写）；`official_hard_runner.py` 等原侧对照工具与 `orig_observer/` 一并带走。
 - 「fork 所有 repo 都在这个仓接」：四个模型仓以 submodule 锁 gitlink；改模型代码只在各自 fork 分支，benchmark 仓永远不含模型代码。
 - 数据集限制：`run_episode` 的 `dataset` 只接受 `hard-verify`／`ood`，步数配对 1300／1800 写死在函数里，不再由 CLI 传。`policy_seed` 属于 `Policy`（加载时定），不属于局。
@@ -175,13 +179,13 @@ expert_demos/<数据集>/
 | 路径 | 动作 | 来源 |
 |---|---|---|
 | `.gitmodules`、`third_party/*` 五个 gitlink | 新增 | benchmark 仓 sha + 现 `.gitmodules` 四条 |
-| `src/robomme_hard_eval/policy.py` | 新写 | `class Policy`：`load()`（起 server／加载权重，只一次）、`new_episode(task_goal)`（每局开头清上下文，对应现 `client.reset()`／`reseed()`）、`act(obs) -> action`、`close()`；`load_policy(model: str, policy_seed: int) -> Policy` 工厂；上下文管理器退出即 `close()` |
-| `src/robomme_hard_eval/episode.py` | 新写 | 抽自 `env_client.py::EnvSession` + 图 4a 环境链；签名 `run_episode(policy: Policy, dataset: str, episode: int, out_dir: Path) -> EpisodeResult`；内部固定 `DATASET_MAX_STEPS = {"hard-verify": 1300, "ood": 1800}`，`ood` strict-cap；函数内只调 `policy.new_episode()` 与 `policy.act()`，绝不调 `load()` |
+| `src/robomme_hard_eval/policy.py` | 新写 | `class Policy`：`load()`（起 server／加载权重、编译缓存、首推理预热，只一次；`OMP_NUM_THREADS=1`）、`reset()`（清缓冲、重设种子，对应现 `client.reset()`／`reseed()`；`run_episode` 第一句必调）、`new_episode(task_goal)`（每局开头给目标）、`act(obs) -> action`、`close()`；`load_policy(model: str, policy_seed: int) -> Policy` 工厂；上下文管理器退出即 `close()` |
+| `src/robomme_hard_eval/episode.py` | 新写 | 抽自 `env_client.py::EnvSession` + 图 4a 环境链；签名 `run_episode(policy: Policy, dataset: str, episode: int, out_dir: Path) -> EpisodeResult`；内部固定 `DATASET_MAX_STEPS = {"hard-verify": 1300, "ood": 1800}`，`ood` strict-cap；函数第一句 `policy.reset()`，随后只调 `policy.new_episode()` 与 `policy.act()`，绝不调 `load()` |
 | `src/robomme_hard_eval/models/{framesamp_modul,groundsg,smvla,pp,astra,dummy}.py` | 新写 | 每个是一个 `Policy` 子类：`load()` 抽自三个服务外壳（起 server 进程 + 就绪探测），`act()` 抽自四个 `*_client.py` 的 websocket 收发 |
 | `src/robomme_hard_eval/record.py` | 新写 | 合并 `recorder.py`、`trace_writer.py`；写 `raw/` 四文件（AV1 参数 R8）与 `result.json`；视频经 `render_official_video.py` 的官方渲染路径直出 `videos/` |
 | `src/robomme_hard_eval/report.py` | 新写 | `results.jsonl` → `log.json`（16 任务 + `total_success_rate`） |
 | `scripts/run_local.py` | 新写 | 参数 `--model --dataset --seed [--episodes a:b]`；主体 `with load_policy(model, seed) as p: for ep in range: run_episode(p, dataset, ep, out)`；`--model dummy` 与 `--model groundsg-oracle` 可直接跑 |
-| `scripts/gl/{run_eval_gl.sh,run_seat.sh,seat_media_lib.sh,budget_ledger.py,publish.py}` | 平移改造 | 每席位起一个 `Policy` 后循环调 `run_episode`；server 挂掉由看门狗 `close()` 再 `load()`；预算、NFS 发布保留 |
+| `scripts/gl/{run_eval_gl.sh,run_seat.sh,seat_media_lib.sh,budget_ledger.py,publish.py}` | 平移改造 | 每席位起一个 `Policy` 后从共享动态队列领局循环调 `run_episode`（不再静态分片）；单局异常不连坐 Policy，server 挂掉由看门狗 `close()` 再 `load()`、记基础设施重试；每局产物按身份幂等落盘可续跑；预算、NFS 发布保留 |
 | `scripts/orig/{official_hard_runner.py,run_official_hard.sh,official_defs.py,pp_official_runner.py,pair_seat.sh,orig_observer/}` | 平移 | 原侧对照，不改语义 |
 | `scripts/render_official_video.py`、`official_media_check.py`、`gate2_compare.py`、`model_eval_report.py` | 平移 | 路径字符串改 |
 | `scripts/render_expert_demos.py` | 新写 | 读 V9 h5 → 无字红框版（`evaluation.py` 的 VideoRecorder 版式）+ 官方版式带字版 |
