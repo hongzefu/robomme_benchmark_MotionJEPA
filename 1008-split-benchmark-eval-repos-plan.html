@@ -113,15 +113,16 @@ eval 仓 hongzefu/robomme_hard_eval
 <td>删除</td>
 </tr>
 <tr>
-<td><code>hard_specs.py::XHARD0_IN_TEST_HARD</code>（环境变量 <code>ROBOMME_HARD_XHARD0_IN_TEST_HARD</code>）</td>
-<td>删除，<code>ood</code> 永远只有 xhard1～5 的 800 局</td>
+<td><code>hard_specs.py::XHARD0_IN_TEST_HARD</code>（环境变量 <code>ROBOMME_HARD_XHARD0_IN_TEST_HARD</code>）及其两处引用 <code>hard_specs.py::xhard0_prefix</code>、<code>hard_builder.py::__init__</code> 的 ood 分支</td>
+<td>删除，<code>ood</code> 永远只有 xhard1～5 的 800 局；<code>xhard0_prefix()</code> 恒为 0</td>
 </tr>
 <tr>
-<td><code>hard_specs.py::SPECS_ROOT_ENV</code>、<code>_override_cells</code></td>
-<td>删除，只读包内规格</td>
+<td><code>hard_specs.py::SPECS_ROOT_ENV</code> 与 <code>specs_root()</code> 的环境变量分支；<code>hard_builder.py::_override_cells</code>、<code>_root_specs</code> 的覆盖根分支、<code>BenchmarkEnvBuilder.__init__</code> 的 <code>specs_root</code> 参数</td>
+<td>删除，只读包内规格（2026-10-08 两轮子代理审计：<code>_override_cells</code> 实际在 <code>hard_builder.py</code>，只删环境变量不删参数时包外规格根仍可读）</td>
 </tr>
 </tbody>
 </table>
+<p>生成「能力」与生成「工具」要分开说：16 个环境类本身就是生成器——<code>gym.make(task, seed=s)</code> 不传 <code>native_episode_spec</code> 时 <code>SpecRecorder</code> 进 export 模式，按 seed 现场抽样并记录规格，换 seed 即新局；回放模式下抽样代码照样执行、取值被冻结规格覆盖。这与官方仓一致，是环境的固有属性，不删也删不掉。本方案清掉的是「工具」：三个生成目录、train 元数据、builder 与 specs 的生成侧入口，以及上面两行的覆盖根与开关；闸门见 §五 <code>BENCH_NO_GEN</code>。</p>
 <p>入口 <code>scripts/evaluation_ood.py</code> 与官方 <code>evaluation.py</code> 保持只差 3 处单行 + 1 段（<code>DATASET_MAX_STEPS = {"hard-verify": 1300, "ood": 1800}</code>）。</p>
 <div class="figs"><section><h3 id="fig2">图 2　改完后的 benchmark 新仓</h3><p>建议名 <code>hongzefu/robomme_benchmark_hard</code>，git 历史直接接在官方 <code>RoboMME/robomme_benchmark</code> main@016ac1c4 之后；官方文件字节不动，只新增两个目录、两个平铺的 ood 入口文件与三个规则文件。</p><svg viewBox="0 0 1150 462" width="100%" role="img"><rect x="587.6" y="8" width="16" height="14" rx="2" fill="#14753c"/><text x="609.6" y="20" font-size="12" fill="currentColor">我们新增</text><rect x="677.6" y="8" width="16" height="14" rx="2" fill="#8fc7a3"/><text x="699.6" y="20" font-size="12" fill="currentColor">官方原文件，字节不动</text><rect x="839.6" y="8" width="16" height="14" rx="2" fill="#d9921c"/><text x="861.6" y="20" font-size="12" fill="currentColor">两仓各自重写/修改</text><rect x="984.8" y="8" width="16" height="14" rx="2" fill="#2e9d5b"/><text x="1006.8" y="20" font-size="12" fill="currentColor">进 benchmark 新仓</text><text x="12" y="40" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="600" fill="currentColor">hongzefu/robomme_benchmark_hard（建议名）</text><text x="34" y="63" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="600" fill="currentColor">src/</text><rect x="56" y="74" width="16" height="14" rx="2" fill="#8fc7a3"/><text x="80" y="86" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">robomme/</text><text x="158.48000000000002" y="86" font-size="12.5" fill="var(--mut)">官方，字节不动</text><rect x="56" y="97" width="16" height="14" rx="2" fill="#14753c"/><text x="80" y="109" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">robomme_hard/</text><text x="198.78" y="109" font-size="12.5" fill="var(--mut)">新增目录 1（73−4=69 文件）</text><rect x="78" y="120" width="16" height="14" rx="2" fill="#14753c"/><text x="102" y="132" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">robomme_env/</text><text x="212.72" y="132" font-size="12.5" fill="var(--mut)">16 环境类 + utils/</text><rect x="78" y="143" width="16" height="14" rx="2" fill="#14753c"/><text x="102" y="155" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">env_record_wrapper/</text><text x="269.14" y="155" font-size="12.5" fill="var(--mut)">含 hard_builder.py</text><rect x="78" y="166" width="16" height="14" rx="2" fill="#14753c"/><text x="102" y="178" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">env_metadata/ood/xhard1～5/</text><text x="330.5" y="178" font-size="12.5" fill="var(--mut)">specs.jsonl ×5</text><text x="34" y="201" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="600" fill="currentColor">scripts/</text><rect x="56" y="212" width="16" height="14" rx="2" fill="#8fc7a3"/><text x="80" y="224" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">dataset_replay.py、evaluation.py、run_example.py</text><text x="474.64000000000004" y="224" font-size="12.5" fill="var(--mut)">官方</text><rect x="56" y="235" width="16" height="14" rx="2" fill="#14753c"/><text x="80" y="247" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">evaluation_ood.py</text><text x="222" y="247" font-size="12.5" fill="var(--mut)">新增文件，与官方三入口平铺（原 evaluation_hard.py）</text><rect x="56" y="258" width="16" height="14" rx="2" fill="#14753c"/><text x="80" y="270" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">README_ood.md</text><text x="190" y="270" font-size="12.5" fill="var(--mut)">新增文件，入口说明（局数乘式与 diff）</text><rect x="34" y="281" width="16" height="14" rx="2" fill="#8fc7a3"/><text x="58" y="293" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">challenge_interface/</text><text x="233.20000000000002" y="293" font-size="12.5" fill="var(--mut)">官方</text><rect x="34" y="304" width="16" height="14" rx="2" fill="#8fc7a3"/><text x="58" y="316" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">doc/、assets/、Dockerfile、LICENSE</text><text x="336.68" y="316" font-size="12.5" fill="var(--mut)">官方</text><rect x="34" y="327" width="16" height="14" rx="2" fill="#d9921c"/><text x="58" y="339" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">readme.md</text><text x="144.54000000000002" y="339" font-size="12.5" fill="var(--mut)">多一节 Hard evaluation</text><rect x="34" y="350" width="16" height="14" rx="2" fill="#d9921c"/><text x="58" y="362" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">pyproject.toml、uv.lock</text><text x="254.26000000000002" y="362" font-size="12.5" fill="var(--mut)">wheel 多一行</text><rect x="34" y="373" width="16" height="14" rx="2" fill="#d9921c"/><text x="58" y="385" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">.gitignore</text><text x="152.60000000000002" y="385" font-size="12.5" fill="var(--mut)">多 13 行</text><rect x="34" y="396" width="16" height="14" rx="2" fill="#2e9d5b"/><text x="58" y="408" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">tests/robomme_hard/</text><text x="225.14000000000001" y="408" font-size="12.5" fill="var(--mut)">新增目录 2</text><rect x="34" y="419" width="16" height="14" rx="2" fill="#2e9d5b"/><text x="58" y="431" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="currentColor">AGENTS.md、CLAUDE.md、greatlakes.md</text><text x="347.86" y="431" font-size="12.5" fill="var(--mut)">新增 3 个文件</text><rect x="660" y="50" width="470" height="232" rx="8" fill="#fff8e6" stroke="#d9921c"/><text x="674" y="76" font-size="13" font-weight="700" font-family="inherit" fill="currentColor">相对官方 main@016ac1c4 的全部差异（无 D）</text><text x="674" y="100" font-size="13" font-weight="400" font-family="ui-monospace,monospace" fill="currentColor">A  src/robomme_hard/**</text><text x="674" y="124" font-size="13" font-weight="400" font-family="ui-monospace,monospace" fill="currentColor">A  scripts/evaluation_ood.py、scripts/README_ood.md</text><text x="674" y="148" font-size="13" font-weight="400" font-family="ui-monospace,monospace" fill="currentColor">A  tests/robomme_hard/**</text><text x="674" y="172" font-size="13" font-weight="400" font-family="ui-monospace,monospace" fill="currentColor">A  AGENTS.md／CLAUDE.md／greatlakes.md</text><text x="674" y="196" font-size="13" font-weight="400" font-family="ui-monospace,monospace" fill="currentColor">M  pyproject.toml（wheel 多一行 src/robomme_hard）</text><text x="674" y="220" font-size="13" font-weight="400" font-family="ui-monospace,monospace" fill="currentColor">M  uv.lock</text><text x="674" y="244" font-size="13" font-weight="400" font-family="ui-monospace,monospace" fill="currentColor">M  readme.md（多一节 Hard evaluation）</text><text x="674" y="268" font-size="13" font-weight="400" font-family="ui-monospace,monospace" fill="currentColor">M  .gitignore（多 13 行 runs/ 与媒体文件）</text></svg></section></div>
 <h2 id="eval-policy">三、eval 仓：常驻 Policy、单局函数、两个入口</h2>
@@ -254,6 +255,10 @@ expert_demos/&lt;数据集&gt;/
 <td><code>diff scripts/evaluation.py scripts/evaluation_ood.py</code></td>
 </tr>
 <tr>
+<td><code>BENCH_NO_GEN=PASS hits=0</code></td>
+<td>新仓 <code>src/robomme_hard</code>、<code>scripts/</code>、<code>tests/</code> 对 <code>from_v4_specs|v4_episodes|HARD_TRAIN_TASKS|XHARD0_IN_TEST_HARD|SPECS_ROOT_ENV|_override_cells|specs_root=|ROBOMME_HARD_|injection-dev|scripts/parity|freeze_specs|generate_h5|env_metadata/train</code> 的 <code>grep -rn</code> 零命中；<code>UPSTREAM.json</code> 不含 <code>scripts/parity</code> 条目</td>
+</tr>
+<tr>
 <td><code>BENCH_SMOKE=PASS resets=2</code></td>
 <td><code>DummyModel</code>、MoveCube、两数据集各 1 局（2 次 reset）</td>
 </tr>
@@ -358,12 +363,12 @@ expert_demos/&lt;数据集&gt;/
 <tr>
 <td><code>src/robomme_hard/env_record_wrapper/hard_builder.py</code></td>
 <td>裁剪</td>
-<td>删 <code>HARD_TRAIN_TASKS</code>、train 分支、<code>from_v4_specs</code>、<code>v4_episodes</code>；<code>_ALLOWED_DATASETS = {OOD, HARD_VERIFY}</code>；「先以 <code>dataset="test"</code> 过父类校验再改回」的 shim 保留；<code>_ood_entries</code> 的 xhard0 入参固定空列表</td>
+<td>删 <code>HARD_TRAIN_TASKS</code>、train 分支、<code>from_v4_specs</code>、<code>v4_episodes</code>；<code>_ALLOWED_DATASETS = {OOD, HARD_VERIFY}</code>；删 <code>_override_cells</code>、<code>_root_specs</code> 的覆盖根分支与 <code>__init__</code> 的 <code>specs_root</code> 参数（ood 只读 <code>PACKAGED_SPECS_ROOT</code>）；<code>_xhard0_entries</code> docstring 去掉对 <code>scripts/configs/xhard0/xhard0_manifest.json</code> 的引用；「先以 <code>dataset="test"</code> 过父类校验再改回」的 shim 保留；<code>_ood_entries</code> 的 xhard0 入参固定空列表</td>
 </tr>
 <tr>
 <td><code>src/robomme_hard/env_record_wrapper/hard_specs.py</code></td>
 <td>裁剪</td>
-<td>删 <code>XHARD0_IN_TEST_HARD</code>、<code>SPECS_ROOT_ENV</code>、<code>_override_cells</code>、<code>resolve_cell_table</code> 覆盖分支</td>
+<td>删 <code>XHARD0_IN_TEST_HARD</code>（含 <code>xhard0_prefix</code> 的引用）、<code>SPECS_ROOT_ENV</code> 与 <code>specs_root()</code> 的环境变量分支、<code>resolve_cell_table</code> 覆盖分支；生成侧 seed 公式 <code>seed_for</code>／<code>V8_SEED_OFFSETS</code> 与 <code>identity_sha256</code>／<code>delivery_sha256</code> 保留——<code>load_specs</code> 校验规格时要重算它们；文件头与 <code>:52</code>、<code>:78</code> 指向 <code>scripts/parity/v4_specs.py</code>、<code>scripts/injection-dev/</code> 的注释改掉</td>
 </tr>
 <tr>
 <td><code>src/robomme_hard/env_metadata/train/*.json</code></td>
@@ -373,7 +378,12 @@ expert_demos/&lt;数据集&gt;/
 <tr>
 <td><code>src/robomme_hard/README.md</code></td>
 <td>重写</td>
-<td>包结构、两个数据集、逐文件复制／借用表</td>
+<td>包结构、两个数据集、逐文件复制／借用表；删去第 134 行起的 <code>injection-dev</code> 生产命令段（<code>freeze_specs.py</code>／<code>generate_h5.py</code>），生产链路只留一句「见归档 tag」</td>
+</tr>
+<tr>
+<td><code>src/robomme_hard/UPSTREAM.json</code></td>
+<td>裁剪</td>
+<td>删 4 条指向 <code>scripts/parity/official/scripts/data-generation/*</code> 的哈希条目（新仓无这些文件，留着即悬空）</td>
 </tr>
 <tr>
 <td><code>scripts/evaluation_ood.py</code> + <code>scripts/README_ood.md</code></td>
@@ -383,7 +393,7 @@ expert_demos/&lt;数据集&gt;/
 <tr>
 <td><code>tests/robomme_hard/**</code></td>
 <td>搬入裁剪</td>
-<td>来自 <code>tests/{unit/hard,unit/robomme,unit/wrappers,unit/common,contract,static,sim,_support}</code>；删断言 train 元数据、开关、规格根、<code>upstream_guard</code> 的用例</td>
+<td>来自 <code>tests/{unit/hard,unit/robomme,unit/wrappers,unit/common,contract,static,sim,_support}</code>；删断言 train 元数据、开关、规格根、<code>upstream_guard</code> 的用例；<code>tests/contract/test_gate_set.py</code>、<code>test_v9_subset_specs.py</code> 依赖被删的 <code>scripts/parity/gate_set.py</code>、<code>scripts/injection-dev/v9_subset_specs.py</code>，整文件不搬；<code>tests/contract/packaged_specs.sha256</code> 随 <code>tests/robomme_hard/contract/</code> 搬入，作 <code>BENCH_SPECS_SHA</code> 的新仓基准</td>
 </tr>
 <tr>
 <td><code>pyproject.toml</code>、<code>uv.lock</code>、<code>.gitignore</code>、<code>readme.md</code></td>
@@ -456,6 +466,11 @@ expert_demos/&lt;数据集&gt;/
 <td><code>scripts/render_official_video.py</code>、<code>official_media_check.py</code>、<code>gate2_compare.py</code>、<code>model_eval_report.py</code></td>
 <td>平移</td>
 <td>路径字符串改</td>
+</tr>
+<tr>
+<td>图 1 标「随 eval 仓」的 4 个 <code>scripts/injection-dev/</code> 文件</td>
+<td>三进一不进</td>
+<td><code>eval_video_mover.py</code> → <code>scripts/gl/eval_video_mover.py</code>（<code>eval_report.py</code> 现按 <code>parents[1]/"injection-dev"</code> 相对路径运行时加载它，改为包内 import）；<code>export_eval_identities.py</code> → <code>scripts/export_eval_identities.py</code>（只经 builder 枚举 ood 局，纯只读）；<code>site_build.py</code> → <code>scripts/site/site_build.py</code>；<strong><code>seed_layout.py</code> 不进</strong>——它是生成侧 seed 公式，<code>hard_specs.py::seed_for</code> 已含同一公式，评估侧按需 import 后者。<code>eval_manifest.py</code>、<code>eval_report.py</code> 现按 <code>parents[2]/"src"/"robomme_hard"</code> 文件路径加载 <code>hard_specs.py</code>，拆仓后改为 <code>import robomme_hard.env_record_wrapper.hard_specs</code>。<code>run_eval_gl.sh</code>、<code>seat_media_lib.sh</code> 对 <code>injection-dev/site/eval_transcode.py</code> 只是注释提及、无运行时依赖，注释改掉即可</td>
 </tr>
 <tr>
 <td><code>scripts/render_expert_demos.py</code></td>
@@ -594,6 +609,10 @@ git -C /data/hongzefu/robomme_benchmark_MotionJEPANewTask tag archive-newtask-v9
 <tr>
 <td>三个子 venv 与 <code>openpi-client</code> 指向子模块路径</td>
 <td>README 第一步 <code>git submodule update --init --recursive</code>（<code>mme-vla</code> 检出约 7 GB）</td>
+</tr>
+<tr>
+<td>2026-10-08 用 Haiku 与 Sonnet 各三个只读子代理（提示词相同）审计「生成路径／清空方式／残留」，两轮主结论一致，合并后补进本方案的六处：<code>_override_cells</code> 位置与 <code>specs_root</code> 参数、<code>XHARD0_IN_TEST_HARD</code> 两处引用、<code>UPSTREAM.json</code> 悬空条目、<code>README.md</code> 生产命令段、两个依赖被删脚本的测试、4 个 <code>injection-dev</code> 文件落点与 <code>seed_layout.py</code> 不进；新增判定行 <code>BENCH_NO_GEN</code>。两轮都没核的：utils 死函数清单、<code>VideoRepick</code> 的全局 <code>np.random.seed</code>（环境固有行为，不属本方案）</td>
+<td>开工前 S1 按 <code>BENCH_NO_GEN</code> 的 grep 列表逐项清；utils 不动</td>
 </tr>
 <tr>
 <td>盲区：<code>tests/contract</code> 里涉及 train 元数据与开关的用例数未逐条数；<code>EVAL_TESTS</code> 基线用例数未统计；<code>render_expert_demos.py</code> 读 h5 的帧与 <code>is_video_demo</code> 标志字段名待在 S4 前核</td>
