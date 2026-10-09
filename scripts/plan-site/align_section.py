@@ -184,7 +184,15 @@ def load_v2() -> dict[str, dict[str, Any]]:
             # 假 demo：前一遍整段不算 subgoal（strict_stats 已按 demo 剔除）；另给纯执行口径
             st["exec_only"] = med["original_total"]
             st["exec_only_median"] = int(statistics.median(r["original_total"] for r in recs))
-        out[key] = {"episode": med["episode"], "seed": med["seed"], "item": item, "swaps": swaps, "stats": st, "run": data["rollout_run_id"]}
+        # V2 参照对 V2 自己原档的倍数：参照是 xhard 时对同任务 hard（VideoRepick 没有 hard，对 medium）；参照本身是 hard 时对纯执行
+        if diff == "hard":
+            base_name, base_median = "hard 纯执行", st.get("exec_only_median", st["median_all"])
+        else:
+            base_key = f"{task}/hard" if f"{task}/hard" in data["groups"] else f"{task}/medium"
+            base = [r for r in data["groups"][base_key] if (task, base_key.split("/")[1], r["episode"]) not in excluded]
+            base_name, base_median = base_key.split("/")[1], int(statistics.median(r["total"] for r in base))
+        out[key] = {"episode": med["episode"], "seed": med["seed"], "item": item, "swaps": swaps, "stats": st, "run": data["rollout_run_id"],
+                    "base_name": base_name, "base_median": base_median}
     return out
 
 
@@ -279,7 +287,8 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
         xmax = (xmax + 99) // 100 * 100
         parts.append(f'<h3 id="p1-g{gi}">四.{gi} {E(g["name"])}：V2 {E(g["ref"])} ← V3 {E("、".join(g["tasks"]))}</h3>\n')
         parts.append(f"<p><b>V2 参照</b>　中位 timestep {B(rs['median_all'])} · 窗 {B(rs['windows'])} · 8 帧漏 {B(rs['miss'])}"
-                     + (f" · 纯执行 {B(rs['exec_only_median'])}" if "exec_only_median" in rs else "") + "</p>\n")
+                     + (f" · 纯执行 {B(rs['exec_only_median'])}" if "exec_only_median" in rs else "")
+                     + f"　对 V2 自己的 {E(ref['base_name'])}（{ref['base_median']}）倍数 {B(_ratio(rs['median_all'], ref['base_median']))}</p>\n")
         key = f"v2-{g['id']}"
         boards[key] = {"title": f"V2 {g['ref']} 中位条", "sub": "", "xmax": xmax, "items": [_row(ref, [f"V2 {g['ref']}", "中位条", f"ep{ref['episode']} · seed {ref['seed']}"])]}
         parts.append(_fig(key, f"V2 {g['ref']}　{g['ref_cfg'].split('：', 1)[1]}", ""))
@@ -324,7 +333,7 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
                      f"<td>{B(ns['miss'])} {'PASS' if ns['miss'] >= 1 else 'FAIL'}</td></tr>\n")
     parts.append("</tbody></table>\n")
 
-    payload = {"boards": boards, "win": v2_plot.WIN, "stride": v2_plot.STRIDE, "budgets": list(v2_plot.BUDGETS),
+    payload = {"simple": True, "boards": boards, "win": v2_plot.WIN, "stride": v2_plot.STRIDE, "budgets": list(v2_plot.BUDGETS),
                "swap_colors": v2_plot.SWAP_COLORS, "color": v2_plot.COLOR}
     data = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     js = (pathlib.Path(__file__).with_name("timeline_board.js")).read_text(encoding="utf-8")

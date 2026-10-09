@@ -5,7 +5,8 @@
   if (!DATA) return;
   const C = DATA.color, SW = DATA.swap_colors, WIN = DATA.win, STRIDE = DATA.stride;
   const NS = "http://www.w3.org/2000/svg";
-  const LEFT = 230, AXIS = 1240, RIGHT = 190, ROW = 78, HEAD = 28;
+  const SIMPLE = !!DATA.simple;  // 简化模式：不画 32 帧帧路与窗口堆叠
+  const LEFT = 230, AXIS = 1240, RIGHT = 190, ROW = SIMPLE ? 56 : 78, HEAD = 28;
 
   function el(tag, attrs, parent, text) {
     const e = document.createElementNS(NS, tag);
@@ -34,14 +35,14 @@
          g, (sx(b) - sx(a)) > txt.length * 7 ? txt : String(k + 1));
     });
     // 32 帧帧路（紫竖线）与 8 帧帧路（红点）
-    for (const f of framePath(r.total, DATA.budgets[0]))
+    if (!SIMPLE) for (const f of framePath(r.total, DATA.budgets[0]))
       el("line", {x1: sx(f), x2: sx(f), y1: y + 15, y2: y + 23, stroke: C.f32, "stroke-width": 1}, g);
     for (const f of framePath(r.total, DATA.budgets[1])) {
-      const c = el("circle", {cx: sx(f), cy: y + 28, r: 3, fill: C.f8}, g);
+      const c = el("circle", {cx: sx(f), cy: y + (SIMPLE ? 20 : 28), r: SIMPLE ? 4 : 3, fill: C.f8}, g);
       el("title", {}, c, `8 帧帧路 timestep ${f}`);
     }
     // 窗口：demo 蓝 / exec 绿，三行堆叠；段短于窗口时画虚线空框
-    for (const [s, L, k] of phases(r)) {
+    if (!SIMPLE) for (const [s, L, k] of phases(r)) {
       const st = winStarts(L);
       if (!st.length) { el("rect", {x: sx(s), y: y + 35, width: Math.max(2, sx(s + L) - sx(s)), height: 14, fill: "none", stroke: C.empty, "stroke-dasharray": "4 3"}, g); continue; }
       st.forEach((f, i) => el("rect", {x: sx(s + f), y: y + 46 - (i % 3) * 6, width: sx(s + f + WIN - 1) - sx(s + f), height: 4.5,
@@ -50,10 +51,10 @@
     // subgoal 分段（悬停看英文全文与起止 timestep）
     r.segs.forEach(([s, L, lab, full], i) => {
       const w = sx(s + L) - sx(s);
-      const rc = el("rect", {x: sx(s), y: y + 54, width: w, height: 17, fill: i % 2 ? C.sg_b : C.sg_a, stroke: C.sg_line, "stroke-width": .5}, g);
+      const rc = el("rect", {x: sx(s), y: y + (SIMPLE ? 30 : 54), width: w, height: 17, fill: i % 2 ? C.sg_b : C.sg_a, stroke: C.sg_line, "stroke-width": .5}, g);
       el("title", {}, rc, `${full}\n${s}–${s + L}（${L} timestep）`);
       const shown = w >= lab.length * 11 + 4 ? lab : (w >= 14 ? lab[0] : "");
-      if (shown) el("text", {x: sx(s) + w / 2, y: y + 66.5, "text-anchor": "middle", "font-size": 10.5, fill: C.ink2, "pointer-events": "none"}, g, shown);
+      if (shown) el("text", {x: sx(s) + w / 2, y: y + (SIMPLE ? 42.5 : 66.5), "text-anchor": "middle", "font-size": 10.5, fill: C.ink2, "pointer-events": "none"}, g, shown);
     });
   }
 
@@ -83,8 +84,8 @@
       x.left.forEach((t, i) => el("text", {x: LEFT - 10, y: y + 16 + i * 15, "text-anchor": "end", "font-size": i === 0 ? 12.5 : 11.5,
         "font-weight": i === 0 ? 700 : 400, fill: i === 0 ? C.ink : C.ink3}, svg, t));
       const [d, e] = r.windows;
-      const right = [`timestep ${r.total}${r.orig ? `（2×${r.orig}）` : ""}`, `窗口 ${d}+${e}=${d + e}`,
-        `Δ32 ${((r.total - 1) / 31).toFixed(1)} · Δ8 ${((r.total - 1) / 7).toFixed(1)}`];
+      const right = SIMPLE ? [`timestep ${r.total}`, `窗 ${d + e}`]
+        : [`timestep ${r.total}${r.orig ? `（2×${r.orig}）` : ""}`, `窗口 ${d}+${e}=${d + e}`, `Δ32 ${((r.total - 1) / 31).toFixed(1)} · Δ8 ${((r.total - 1) / 7).toFixed(1)}`];
       right.forEach((t, i) => el("text", {x: LEFT + AXIS + 10, y: y + 22 + i * 16, "font-size": i === 0 ? 12.5 : 11.5,
         "font-weight": i === 0 ? 700 : 400, fill: i === 0 ? C.ink : C.ink2}, svg, t));
       el("line", {x1: 0, x2: width, y1: y + ROW, y2: y + ROW, stroke: "#EBF0EE"}, svg);
@@ -93,7 +94,8 @@
   }
 
   function legend() {
-    const items = [[C.demo, "demo 段窗口 [f, f+32]"], [C.exec, "exec 段窗口（stride 16，堆 3 行）"], [C.f32, "32 帧帧路（竖线）"],
+    const items = SIMPLE ? [[C.demo, "demo"], [C.exec, "执行"], [C.f8, "8 帧采样点"], [C.sg_a, "subgoal"], [SW[0], "swap"]]
+      : [[C.demo, "demo 段窗口 [f, f+32]"], [C.exec, "exec 段窗口（stride 16，堆 3 行）"], [C.f32, "32 帧帧路（竖线）"],
       [C.f8, "8 帧帧路（圆点）"], [C.sg_a, "subgoal 分段（悬停看全文与 timestep）"], ...SW.map((c, k) => [c, `第 ${k + 1} 次 swap`])];
     return items.map(([c, t]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
   }
