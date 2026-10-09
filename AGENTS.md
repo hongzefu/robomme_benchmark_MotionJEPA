@@ -31,7 +31,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 **冲突即停**（正本第 0 条）：判定输出与上表不符（主机名不是 `sled-vail`、NFS 不存在、出现第二套 GPU 等），一律停下把原始输出交用户裁决，不得自行套用。本仓库目前只有这一个环境列；出现其他机器时先补判据表再开工。
 
-<!-- AGENTMETARULES:BEGIN common-agents src=46cae19816190288ede5395b788241a3a8554c52 blob=9467e9c746bc445da46596c7b7ffeb783b068536 -->
+<!-- AGENTMETARULES:BEGIN common-agents src=9ec0a8ce90c97dd98e358048ca7d858062564fb4 blob=9467e9c746bc445da46596c7b7ffeb783b068536 -->
 
 ## 强制规则（最高优先级）
 
@@ -366,7 +366,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 | `<COMMIT_SUBJECT_STYLE>` | commit subject 体例 | 第 11 条 |
 | `<PLAN_EXEMPLAR>` | 计划密度标杆文档 | 第 2 条 |
 
-<!-- AGENTMETARULES:END common-agents src=46cae19816190288ede5395b788241a3a8554c52 blob=9467e9c746bc445da46596c7b7ffeb783b068536 -->
+<!-- AGENTMETARULES:END common-agents src=9ec0a8ce90c97dd98e358048ca7d858062564fb4 blob=9467e9c746bc445da46596c7b7ffeb783b068536 -->
 
 ## 项目专属规则
 
@@ -438,7 +438,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 ## 规则来源与未采用清单
 
-- 通用规则 = 上方标记块，当前正本 commit `46cae19`，与标记行 `src=` 一致（2026-10-08 同步两项：`CLAUDE.md` 子代理模型改三档——探索类一律 haiku（不够多派几个 haiku）、审查类一律 sonnet、制定计划与写代码一律 opus，fable 仍禁止；第 2 条开工令放宽为「完整计划呈现后、用户不提修改而直接说『同意』即开工，提出修改则改完再同意」（用户原话见正本两处）；2026-10-06 同步两项：第 2 条计划密度标杆改为本仓库 `docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md` 第一部分、所有仓库统一（用户原话「所有的密度的标杆都改成这个」）；第 26 条 Codex 子项新增「Aspen 固定为 GPT-5.6 家族」（用户直接改正本）；2026-10-04 同步「运行型子代理」——已批准计划的分配表可列运行型子任务，由 Opus 子代理启动长任务并交接，监听、预算与清理仍归主会话；2026-10-04 同步第 2 条「开工必须由用户明确、无歧义地说『开工』，其他任何事件或措辞都不是开工条件」；2026-10-03 同步「上传 HF 的文件必须读回校验，校验在 greatlakes 纯 CPU job 里做」——第 15 条加子项，`greatlakes.md` 新增「HF 上传校验 job」一节：standard 分区、直接 sbatch 跑完即退，是只用 spgpu 与一律占位 job 两条的唯一长期例外；2026-10-03 同步子代理超时统计——超过 15 分钟的 Claude Code 子代理由 SubagentStop hook 按项目（`docs/subagent-stats/over-15min.jsonl`）与全局各落一份，第 11、19 条补该统计文件的例外；2026-10-02 同步子代理模型口径——改代码的写入型子代理用 opus，探索、审查、合并等其余子代理一律 sonnet，并带入第 23 条网页链接写完整域名；2026-10-01 同步「计划执行模式」——执行已批准计划时改代码交给 worktree 隔离的写入型子代理、`sub/` 前缀 commit、`--no-ff` 合并与两次审查，第 2 条加子代理分配表、第 11 条加 `sub/` 例外；2026-09-27 同步第 2 条「两部分结构硬性格式」加强；2026-09-26 同步高频GPU查询教训；此前本文件的强制规则 1–13 是 2026-08-18 自 MotionJEPA 移植、2026-09-09 拆分后的旧版）。
+- 通用规则 = 上方标记块，当前正本 commit `9ec0a8c`，与标记行 `src=` 一致（2026-10-08 同步正本 9ec0a8c：Workflow 并发闸门与子代理同时运行上限一律设为 64，每台机器 `~/.claude/settings.json` 与本仓库项目级 `.claude/settings.json` 两处落地（用户原话「同意你需要更改这个AgentMetaRoth和每个仓库的这个设置就是每次都要设置成这样」）；2026-10-08 同步两项：`CLAUDE.md` 子代理模型改三档——探索类一律 haiku（不够多派几个 haiku）、审查类一律 sonnet、制定计划与写代码一律 opus，fable 仍禁止；第 2 条开工令放宽为「完整计划呈现后、用户不提修改而直接说『同意』即开工，提出修改则改完再同意」（用户原话见正本两处）；2026-10-06 同步两项：第 2 条计划密度标杆改为本仓库 `docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md` 第一部分、所有仓库统一（用户原话「所有的密度的标杆都改成这个」）；第 26 条 Codex 子项新增「Aspen 固定为 GPT-5.6 家族」（用户直接改正本）；2026-10-04 同步「运行型子代理」——已批准计划的分配表可列运行型子任务，由 Opus 子代理启动长任务并交接，监听、预算与清理仍归主会话；2026-10-04 同步第 2 条「开工必须由用户明确、无歧义地说『开工』，其他任何事件或措辞都不是开工条件」；2026-10-03 同步「上传 HF 的文件必须读回校验，校验在 greatlakes 纯 CPU job 里做」——第 15 条加子项，`greatlakes.md` 新增「HF 上传校验 job」一节：standard 分区、直接 sbatch 跑完即退，是只用 spgpu 与一律占位 job 两条的唯一长期例外；2026-10-03 同步子代理超时统计——超过 15 分钟的 Claude Code 子代理由 SubagentStop hook 按项目（`docs/subagent-stats/over-15min.jsonl`）与全局各落一份，第 11、19 条补该统计文件的例外；2026-10-02 同步子代理模型口径——改代码的写入型子代理用 opus，探索、审查、合并等其余子代理一律 sonnet，并带入第 23 条网页链接写完整域名；2026-10-01 同步「计划执行模式」——执行已批准计划时改代码交给 worktree 隔离的写入型子代理、`sub/` 前缀 commit、`--no-ff` 合并与两次审查，第 2 条加子代理分配表、第 11 条加 `sub/` 例外；2026-09-27 同步第 2 条「两部分结构硬性格式」加强；2026-09-26 同步高频GPU查询教训；此前本文件的强制规则 1–13 是 2026-08-18 自 MotionJEPA 移植、2026-09-09 拆分后的旧版）。
 - 未采用的正本条目及原因：第 10 条（训练超参落点）、第 12 条（训练 / 评估留档）、第 18 条（训练链路一致性）——本仓库无训练链路；第 13 条（数据集构建 Beta 体例）——本仓库生成留档走 `docs/validation/`，不打 Beta commit；第 24 条（submodule / vendoring）——本仓库以 `scripts/parity/` 的隔离官方源码树（`--official-root`）与 AST 钉死 `scripts/` 不依赖 `tests/` 为准。
 - 旧条号对照（`docs/ledger/` 历史账本沿用旧号）：旧 1 → 正本第 1 条；旧 2 → 第 3 条；旧 3 → 第 4 条（覆盖）；旧 4 → 第 7 条；旧 5 → 第 9 条；旧 6 → 第 5 条；旧 7 → 第 11 条（覆盖）；旧 8 → 第 14 条（覆盖）；旧 9 → 第 20 条；旧 10 → 第 2 条；旧 11 → P2 / 第 21 条；旧 12 → P1；旧 13 → 第 26 条；旧 14（2026-09-26 Codex 会话新增的 reset 对拍 / rollout 生成限制）→ P3。
 - Claude Code 独有机制见同目录 `CLAUDE.md`（标记块 `common-claude`）；集群规约见 `greatlakes.md`（标记块 `common-greatlakes`）与 `docs/greatlakes.md`（本仓库实测记录）。两份文件冲突时以本文件为准。
