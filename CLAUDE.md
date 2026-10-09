@@ -4,7 +4,7 @@
 
 @AGENTS.md
 
-<!-- AGENTMETARULES:BEGIN common-claude src=132a4940e3931072994c47cd5f61703afb16daef blob=02091f45fc14bcee110949d692d21014aef1106f -->
+<!-- AGENTMETARULES:BEGIN common-claude src=9ec0a8ce90c97dd98e358048ca7d858062564fb4 blob=4f7b37f977e573bab11fb3dd4472c58d1ff2df74 -->
 
 ## 规则来源与优先级
 
@@ -20,26 +20,28 @@
 ### Agent 工具子代理：一个时间点放一批、用完即弃、默认只读（2026-09-26 重写）
 
 - **直接并行调用完全 OK，同一决策点一次性发出**：同一轮决策下互相独立的子任务，直接用 Agent 工具并行派发，在同一条消息里发出全部 Agent 调用（每个都按本块末尾的模型规则显式写 `model`）。派子代理**不适用**下文 Workflow 的逐次审批：启动本身不需要用户批准、不阻塞主会话——交互式会话默认开启 fork 模式，子代理一律在后台并发运行；子代理内部触发的工具权限提示仍回到主会话由用户处理。
-- **数量不设上限，只受宿主限制**：规则层不设数量上限。宿主默认同时运行上限 20 个（`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`，ultracode 会话不受此限；会话内累计派发数不限），满额时报 `Concurrent subagent limit reached`，不重试，等已派出的返回再发下一批；嵌套默认最多 3 层。「多开近乎免费」只指**等待时间**——总耗时由最慢的一个决定；**用量不免费**：子代理的请求计入与主会话相同的用量额度，多开成倍消耗。因此不设上限只在已获准的任务范围内成立：不以此为由扩大范围或重复派发（`AGENTS.md` 第 2 条）。
+- **数量不设上限，只受宿主限制**：规则层不设数量上限。宿主同时运行上限由 `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` 决定，**本规则要求设为 64**（宿主默认 20，设法见下文 Workflow 一节「并发上限必须设为 64」；ultracode 会话不受此限；会话内累计派发数不限），满额时报 `Concurrent subagent limit reached`，不重试，等已派出的返回再发下一批；嵌套默认最多 3 层。「多开近乎免费」只指**等待时间**——总耗时由最慢的一个决定；**用量不免费**：子代理的请求计入与主会话相同的用量额度，多开成倍消耗。因此不设上限只在已获准的任务范围内成立：不以此为由扩大范围或重复派发（`AGENTS.md` 第 2 条）。
 - **反驳同一条不得并行多个 agent（2026-09-03 新增）**：对抗验证 / 反驳类 workflow 里，**同一条 finding（同一条质疑、同一个待验证结论）只能派一个 agent 去反驳**，禁止对同一条并行派多个 agent 交叉反驳，也禁止同一条反复多轮反驳。不同 finding 之间照旧并行、不设数量上限（上条）。理由：反驳同一条的多个 agent 输入完全相同、彼此看不到对方产出，结论高度重复，只增成本不增信息；更糟的是会在综合阶段制造「多数票」假象——同一条被三个 agent 各自确认，读起来像三份独立证据，实际只是同一份推理被复制了三遍。
 - **串行依赖不并行**：后一个 agent 的输入依赖前一个的结果时保持串行，不为凑并行强行拆分——串行依赖本质上需要成倍等待时间，并行化不了。
 - **一次性、用完即弃**：子代理交回一份结果即视为结束，下一个决策点需要时重新派一批；不维持长期存活的子代理，不在子代理之间建立通讯、分工或互相等待。`SendMessage` 只用于续接同一个被中断、只差一小步、或在计划执行模式下合并前审查 FAIL 后需按 findings 续改的子代理（实测续接会回到原 worktree）（Explore / Plan 是一次性的、不返回 agent ID，无法续接），不用来搭建 Codex 式的持久代理网络。
-- **计划执行之外，绝大多数只读，改代码由主会话自己做**：子代理默认只做检索、调研、核对、审查、出方案。优先用只读内置代理 Explore / Plan（宿主对其禁用 Write / Edit）；其他子代理必须在提示里写明「只读：不改任何文件、不跑有副作用的命令」——后台子代理的内置工具集仍保留 `Edit` / `Write` / `NotebookEdit` / `Bash`，只读靠提示约束，不是宿主保证。需要改代码时由主会话依据子代理的结论亲自改。**例外**：执行已批准的 markdown 计划时，改代码默认按下一块「计划执行模式」交给 worktree 隔离的写入型子代理。
+- **计划执行之外，绝大多数只读，改代码由主会话自己做**：子代理默认只做检索、调研、核对、审查、出方案。优先用只读内置代理 Explore（`haiku`）／ Plan（`opus`）（宿主对其禁用 Write / Edit）；其他子代理必须在提示里写明「只读：不改任何文件、不跑有副作用的命令」——后台子代理的内置工具集仍保留 `Edit` / `Write` / `NotebookEdit` / `Bash`，只读靠提示约束，不是宿主保证。需要改代码时由主会话依据子代理的结论亲自改。**例外**：执行已批准的 markdown 计划时，改代码默认按下一块「计划执行模式」交给 worktree 隔离的写入型子代理。
 - **确需改文件的子代理，边界必须清晰**（计划外的临时写入，仅限大批量、可按文件切开的机械改动；计划内的写入按「计划执行模式」）：
   1. 派发前给每个子代理列出可写文件集合与禁止触碰的路径，各集合互不重叠、同一文件只有一个写者。子代理默认与主会话共用同一工作目录，彼此的改动立即可见；不得改集合外的文件，不回滚他人改动。
   2. 计划外写入需要真正隔离时也可用 `isolation: "worktree"`。worktree 默认从**默认分支**（通常 `main`）分出而不是当前 HEAD——子代理要基于当前分支的在途工作时须先在 settings 设 `worktree.baseRef: "head"`，否则看不到这些改动；有改动的 worktree 留在磁盘上、不会自动合回，由主会话核对后合并。
   3. 共用工作目录的子代理不 commit、不 push；worktree 隔离的子代理按「计划执行模式」只在自己的分支 commit、同样不 push。主会话整合前逐个核对各子代理交回的改动文件清单与主检出 `git status --short`，发现越界、重叠或他人在途改动即停（暂存与提交按 `AGENTS.md` 第 11 条）。
-- **模型规则（2026-08-06 更新，按启动方式分两条）**：
-  - **用 Agent 工具 launch 单个 subagent：只有改代码的写入型子代理与启动长任务的运行型子代理用 `model: "opus"`**（计划执行模式的写入型子代理、计划外确需改文件的子代理、运行型子代理、解冲突的整合子代理）；**其余一律 `model: "sonnet"`**——Explore / Plan、调研、检索、核对、合并前审查等一切只读子代理（2026-10-02 用户原话：「修改代码的只用OPUS但是其他情况下都用Sonnet探索和合并都用sonet」）。
-  - **Workflow 脚本里调 `agent()`：默认且仅允许 `model: "sonnet"`。唯一例外**：workflow 收尾的总结/综合 agent、或负责制定计划（plan）的 agent，可用 `model: "opus"`，但**单次 workflow 内（按 workflow 计，不是按完整任务计——一个任务跑多个 workflow 时每个 workflow 各自计数）**累计使用 opus 不得超过 3 次。
-  - 两条通用：禁止 haiku、fable 及一切白名单外模型；当前宿主或用户指令另有规定时从其规定。
+- **模型规则（2026-10-08 更新，按子代理职责分三档；此前 2026-08-06／2026-10-02 的两档口径作废）**：
+  - **探索类一律 `model: "haiku"`**：Explore、检索与定位文件／符号、调研、从日志抽判定行与错误行、核对路径／链接／文件是否存在、大扇出的小片段汇总（如二十份日志各派一个）。一个 Haiku 覆盖不全时**多派几个 Haiku**（按目录、关键词、文件分片），不升档到 Sonnet。Haiku 的「没找到／不存在」是薄证据：据此做决定前主会话自己 `grep` 一次或再派一批 Haiku 分片复核；正向发现主会话打开文件核实即可。
+  - **审查类一律 `model: "sonnet"`**：合并前审查、对抗验证／反驳、代码与文档评审、commit 前缀与 body 合规核对、综合汇总与收尾总结。
+  - **制定计划与写代码一律 `model: "opus"`**：Plan 子代理（制定实施方案），计划执行模式的写入型子代理、计划外确需改文件的子代理、运行型子代理、解冲突的整合子代理。
+  - **Workflow 脚本里调 `agent()` 按同一张表**：探索步骤 `haiku`，审查步骤 `sonnet`（默认档），制定计划与收尾综合可用 `opus`，但**单次 workflow 内（按 workflow 计，不是按完整任务计——一个任务跑多个 workflow 时每个 workflow 各自计数）**累计使用 opus 不得超过 3 次。
+  - 通用：禁止 fable 及一切白名单外模型；Haiku 子代理与其他只读子代理一样不得写文件、不得再派子代理；当前宿主或用户指令另有规定时从其规定。用户原话（2026-10-08）：「把所有探索类的都用hig库来解决。用Hcool来解决然后如果不够的话可以多spawn几个审查用Sonnet然后制定计划用Opus。所有写代码的、写计划的都用Opus所有审查的都用Solid这样可以码。」（语音转写，「hig库」「Hcool」即 Haiku，「Solid」即 Sonnet。）
 - **`model` 参数不得省略**：省略时会静默继承主会话模型（主会话常是 fable），同样算违规——每次派 agent 都必须显式写 `model`。
 
 ### 计划执行模式：worktree 隔离的写入型子代理 + `sub/` 前缀 commit + `--no-ff` 合并 + 两次审查（2026-10-01 新增，当日在 benchmark 仓库实测定稿）
 
-- **触发与边界**：用户已批准的 markdown 计划（经 `ExitPlanMode` 批准，或用户明示按某份计划执行）进入实施时，**改代码默认交给写入型子代理，越积极越好**；前提是任务边界清晰可分——计划第二部分「子代理分配表」（`AGENTS.md` 第 2 条）里各子任务的可写文件集合互不重叠、共享文件只有一个 owner。切不开的部分由主会话自己改并在表里写「主会话自做」及理由。非计划执行的改动沿用上一块默认。分配表经批准即为写入型子代理的派发授权，表外不派；只读子代理照旧不需批准。第 21 条受保护目录的文件不进可写集合；`uv.lock`、`pyproject.toml`、子模块 gitlink 一律归主会话。本模式只走 Agent 工具，不走 Workflow（`agent()` 只许 sonnet）。用户原话（2026-10-01）：「尽可能积极地调用sub-agent来完成代码的修改你要做到任务清晰可分并且每次Merge都必须要有很清晰的再次审查然后不允许Sabagent直接在主仓库上改。」
+- **触发与边界**：用户已批准的 markdown 计划（经 `ExitPlanMode` 批准，或用户明示按某份计划执行）进入实施时，**改代码默认交给写入型子代理，越积极越好**；前提是任务边界清晰可分——计划第二部分「子代理分配表」（`AGENTS.md` 第 2 条）里各子任务的可写文件集合互不重叠、共享文件只有一个 owner。切不开的部分由主会话自己改并在表里写「主会话自做」及理由。非计划执行的改动沿用上一块默认。分配表经批准即为写入型子代理的派发授权，表外不派；只读子代理照旧不需批准。第 21 条受保护目录的文件不进可写集合；`uv.lock`、`pyproject.toml`、子模块 gitlink 一律归主会话。本模式只走 Agent 工具，不走 Workflow（`agent()` 不派写入型）。用户原话（2026-10-01）：「尽可能积极地调用sub-agent来完成代码的修改你要做到任务清晰可分并且每次Merge都必须要有很清晰的再次审查然后不允许Sabagent直接在主仓库上改。」
 - **派发前核对**（任一不满足不得派写入型子代理）：① `~/.claude/settings.json` 的 `worktree.baseRef` 为 `"head"`——不设则 worktree 从 `origin/HEAD` 分出、看不到当前分支（实测基点差 10 个大版本），设后对当前会话即时生效；② 主检出 `git status --short --ignore-submodules=dirty -- . ':!docs/subagent-stats'` 为空（排除下文「子代理超时统计」的追加文件）——有他人在途改动时不派、不清理，仿第 19 条三选一交用户；主会话自己的前置改动先 commit；记 `BASE=$(git rev-parse HEAD)` 进分配表；③ `git check-ignore -q .claude/worktrees/probe` 成功；④ `git worktree list` 存档，此前已存在的 worktree 一律不动。
-- **派发**：每个写入型子代理 `isolation: "worktree"` + `model: "opus"`（opus 仅限写入型与下一块的运行型，审查与探索用 sonnet）；同一决策点一批发出，串行依赖不并行。宿主实测只拦三类：`Edit`/`Write`/`NotebookEdit` 写主检出路径、`git -C`/`GIT_DIR` 重定向到主检出、一条 Bash 里多条 git 或循环（命令形状检查）；**不拦 Bash 用绝对路径写主检出**（实测 `echo >> <主检出>/文件` 落地成功），所以提示里必须禁止写主检出任何路径，合并前主会话再查一次主检出。提示固定要素：子任务编号与目标、可写文件集合、禁触路径、验收命令与判定行（含环境取法）、「代码库里不只你一个在改：不碰集合外文件、不回滚他人改动、不改验收命令与判据文件」、commit 规约、交回格式、「每条 git 命令单独一次 Bash」、「不得再派子代理、不得起超过 5 分钟的任务」。worktree 落 `.claude/worktrees/agent-<id>/`、分支 `worktree-agent-<id>`，完成通知自带 `worktreePath` / `worktreeBranch`。
+- **派发**：每个写入型子代理 `isolation: "worktree"` + `model: "opus"`（opus 限写入型、运行型与制定计划；审查用 sonnet，探索用 haiku）；同一决策点一批发出，串行依赖不并行。宿主实测只拦三类：`Edit`/`Write`/`NotebookEdit` 写主检出路径、`git -C`/`GIT_DIR` 重定向到主检出、一条 Bash 里多条 git 或循环（命令形状检查）；**不拦 Bash 用绝对路径写主检出**（实测 `echo >> <主检出>/文件` 落地成功），所以提示里必须禁止写主检出任何路径，合并前主会话再查一次主检出。提示固定要素：子任务编号与目标、可写文件集合、禁触路径、验收命令与判定行（含环境取法）、「代码库里不只你一个在改：不碰集合外文件、不回滚他人改动、不改验收命令与判据文件」、commit 规约、交回格式、「每条 git 命令单独一次 Bash」、「不得再派子代理、不得起超过 5 分钟的任务」。worktree 落 `.claude/worktrees/agent-<id>/`、分支 `worktree-agent-<id>`，完成通知自带 `worktreePath` / `worktreeBranch`。
 - **子代理在 worktree 内的纪律**：只在自己的 worktree 工作。**每个 commit subject 固定前缀 `sub/<子任务编号>: `**，后接中文描述（如 `sub/S1-A: PickXtimes 常量改 6／7／8`），body 简式三项：目标、改动文件、验证命令与判定行；可多次 commit，**全部原样保留**（用户 2026-10-01：「子代理的comm都要加上前缀。你来规定一个固定的前缀。还是尽可能保留子代理里的每一个commit信息。」）。禁止 push、禁止 checkout／merge／rebase 到工作分支、禁止 `--amend`／`reset --hard` 改掉已交回审查的 commit、禁止写入凭据／日志／大文件。交回：worktree 路径、分支名、`BASE`、HEAD sha、`git diff --name-only BASE..HEAD`、`git log --oneline BASE..HEAD`、验收原始输出与判定行、未解决事项、「未派生子代理、未 push」声明。
 - **worktree 环境陷阱**：worktree 是干净检出——没有 `.venv`、没有 `<STORE_ROOT>`、子模块目录为空；editable 安装的 `.pth` 指向主检出 `src`，借主检出 venv 跑测试会 import 到主检出代码。分配表写明环境取法，子代理先打印 `<包>.__file__` 核实指向 worktree，各项目 `CLAUDE.md` 写固定取法（benchmark 实测：`UV_PROJECT_ENVIRONMENT=<主 .venv> PYTHONPATH=<worktree>/src uv run --no-sync …`，`uv` 不会在 worktree 建 venv）。worktree 内验收只跑 ≤5 分钟的 CPU 轻量测试；GPU、性能、需要 `<STORE_ROOT>` 产物的验收留给合并后主会话串行跑（多个 worktree 子代理同时跑 GPU 会互抢，分配表标明资源占用）；不在 worktree 里建 `artifacts` symlink。
 - **合并前审查（第一次）**：主会话 ① 主检出 `git status --short --ignore-submodules=dirty` 无非预期改动；② `git diff --name-only <BASE>..<TIP>` 逐项 ⊆ 可写集合，越界即 `SCOPE=FAIL`；③ 在该 worktree 内复跑验收命令（审查子代理是纯审计不跑验收，第 22 条）；④ 派**一个**只读审查子代理（`model: "sonnet"`，不加 `isolation`），钉死 `REVIEW_BASE` / `REVIEW_TIP` 两个完整 sha，只许 `git diff <sha>..<sha>`、`git log <sha>..<sha>`、`git show <sha>:<path>`：计划条目是否完成、有无偷改集合外、接口契约是否守住、前缀与 body 是否合规、有无凭据／日志／大文件，输出 `PRE_MERGE_REVIEW=PASS|FAIL base=<sha> tip=<sha> files=<n> commits=<n> findings=<n>`。同一分支一轮只派一个审查者（「反驳同一条不得并行」）；FAIL → 不合并，findings 用 `SendMessage` 交回原子代理续改，第二轮只复核上轮 findings 与 `<旧 TIP>..<新 TIP>` 增量；两轮仍 FAIL 交用户。写入方与审查方不得是同一代理。
@@ -61,8 +63,15 @@
 ### Workflow
 
 - **逐次审批**：**每次生成 workflow 前，必须先把方案（要做什么、分几个 phase、规模多大、用什么模型）交用户审批，获准后才能调 Workflow 工具。** 除此之外的一切 workflow 开启条件（`ultracode` 关键字、用户原话是否说过「用 workflow」、任务规模是否够大、fan-out 数量刻度等）**一律作废**，不再作为自行启动的依据。已明确批准的同一方案直接执行，不重复询问；计划文件里写明并经 `ExitPlanMode` 批准的 workflow 方案视同已审批。
-- `agent()` 的模型按上一块「模型规则」第二条执行。
-- **不设置任何额外并发限制**：`parallel()` / `pipeline()` 按需传入完整条目即可，不要为控制并发人为拆批、加节流或降低单批数量——Workflow 工具自身已有并发上限（`min(16, cpu核数-2)`），脚本层面不必也不应该叠加限制。
+- `agent()` 的模型按上一块「模型规则」第四条执行。
+- **不设置任何额外并发限制**：`parallel()` / `pipeline()` 按需传入完整条目即可，不要为控制并发人为拆批、加节流或降低单批数量——Workflow 工具自身已有并发上限（按下条设为 64），脚本层面不必也不应该叠加限制。
+- **并发上限必须设为 64（2026-10-08 新增）**：宿主默认 Workflow 并发闸门为 `Math.min(16, Math.max(2, CPU核数-2))`、Agent 工具子代理同时运行上限为 20，一律改为 64。两处落地、缺一不可：① 每台机器的全局 `~/.claude/settings.json` 的 `env` 段；② 每个接入本正本的仓库（含正本本身）提交一份项目级 `.claude/settings.json`，内容只有这一段 `env`，换机器、新 clone 也自动生效。写法：
+
+  ```json
+  { "env": { "CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS": "64", "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "64" } }
+  ```
+
+  只对之后新开的会话生效。核实：开 `--debug-file` 的会话跑一次 workflow，日志应出现 `workflow: concurrent agent gate = 64 (CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS)`。Claude Code 2.1.283 源码实测：`CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS` 校验范围 1～256；单个 workflow 累计 `agent()` 调用上限 1000，不可改。2026-10-08 在 sled-vail（32 核）用无头会话跑 60 个 haiku `agent()` 各等 30 秒，按转录首末时间戳算 `PEAK_CONCURRENCY=60`，60 个在 1.3 s 内全部起跑、总墙钟 47.9 s。无头会话（`claude -p`）跑 workflow 须显式 `--allowedTools "Workflow"`，否则权限模式降回 `default`、Workflow 被直接拒。设高上限不改变用量计费：并发越高额度消耗越快，也不扩大授权范围（`AGENTS.md` 第 2 条）。用户原话（2026-10-08）：「claude workflow强制并行最多16个 按照cpu count这个能破除吗」「设成 64 写进 settings.json」「SUBAGENTS 也调到 64」「同意你需要更改这个AgentMetaRoth和每个仓库的这个设置就是每次都要设置成这样」。
 - **最终输出层一律中文（`AGENTS.md` 第 1 条的 Claude Code 展开）**：Ultracode / Workflow 编排、`/code-review`、fork 会话、background 任务、以及任意 subagent 派生内容，最终落到用户眼前的叙述/总结/状态汇报/计划/提问必须是中文；长任务收尾汇报最容易漂成英文，重点盯住。**Workflow 的 `log()` 进度叙述、phase/agent 的 `label`、给用户看的 narrator 行用中文。** Workflow 内部（`agent()` 派发的 subagent）默认允许用英文工作，但每条 `agent()` prompt 末尾必须附加固定提示词，要求该 subagent 在返回结果开头标注"[内部产出，英文]"并提醒消费方："以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。"
 
 ### 子代理超时统计：超过 15 分钟自动落盘（2026-10-03 新增）
@@ -107,7 +116,7 @@
 - 宿主明确指定的计划文件属于工具管理文件，不作为仓库数据或实验产物，不能借此把缓存、权重或日志写到 `<STORE_ROOT>` 之外；仅在宿主明确允许时写入。
 - plan mode 期间除该计划文件外一律只读：不改代码、不改配置、不 commit、不跑任何有副作用的命令。**在只读阶段把事实核实清楚**——仓库的坑（如 editable 指向、安装顺序、源码来源、已知缺陷）都是只读就能查清的，带着未经核实的假设进入实施阶段代价远高于多花几分钟查证。
 
-<!-- AGENTMETARULES:END common-claude src=132a4940e3931072994c47cd5f61703afb16daef blob=02091f45fc14bcee110949d692d21014aef1106f -->
+<!-- AGENTMETARULES:END common-claude src=9ec0a8ce90c97dd98e358048ca7d858062564fb4 blob=4f7b37f977e573bab11fb3dd4472c58d1ff2df74 -->
 
 ## 项目专属补充
 
@@ -116,4 +125,4 @@
 - **plan mode 只读核实清单**：`git diff --quiet HEAD -- src/robomme/` 零 diff（P1）；`uv run --no-sync python -c "import robomme,sys;print(robomme.__file__)"` 指向本仓库 `src/`；`ls -1 src/` 只含 `robomme` 与已在计划里登记的新包；`artifacts/` 不进 git（`git check-ignore -q artifacts/probe`）；`grep -c '^# 第一部分\|^# 第二部分' <计划>` 等于 2；`~/.ssh/config` 仍无集群别名。
 - **计划执行模式的 worktree 环境取法**（标记块「worktree 环境陷阱」）：worktree 没有 `.venv`，借主检出 venv 并把 worktree 的 `src` 置前：`UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=<worktree>/src uv run --no-sync python -m pytest <定向测试> -q`；子代理先打印 `python -c "import robomme;print(robomme.__file__)"` 确认落在 `<worktree>/src/`（主检出 editable `.pth` 指向主检出 `src`，不置前会 import 到主检出代码）。worktree 内只跑 CPU 轻量测试；`gym.make` 类验收留给合并后主会话在主检出串行跑。
 - **运行型子代理**：本仓库长任务只有本机 tmux 生成（会话名前缀 `xh-`），命令原文照计划分配表；监听、预算与 `tmux kill-session` 归主会话。
-- Agent 工具子代理与 Workflow 的用法以标记块为准（只读子代理 `model: "sonnet"`，写入型与运行型 `model: "opus"`；Workflow 逐次审批），本仓库无额外约定。
+- Agent 工具子代理与 Workflow 的用法以标记块为准（探索 `model: "haiku"`、审查 `model: "sonnet"`、制定计划与写入型／运行型 `model: "opus"`；Workflow 逐次审批），本仓库无额外约定。
