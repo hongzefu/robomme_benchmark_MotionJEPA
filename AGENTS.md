@@ -34,7 +34,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 **冲突即停**（正本第 0 条）：判定输出与上表不符（主机名不是 `sled-aspen`、NFS 不存在、出现第二套 GPU、`~/.ssh/config` 出现集群别名等），一律停下把原始输出交用户裁决，不得自行套用，也不得按「多数判据像 A」推断。本仓库目前只有这一个环境列；换到其他机器（如 sled-vail）时先补判据表再开工。
 
-<!-- AGENTMETARULES:BEGIN common-agents src=a5302d0e3955664667e82e38be98670f9e9008cb blob=e6e9b59ad85357510652ad8f17cda9df914b19dd -->
+<!-- AGENTMETARULES:BEGIN common-agents src=464c1b6f8e4e948eb8222392c60aa8129ac4dda3 blob=e6e9b59ad85357510652ad8f17cda9df914b19dd -->
 
 ## 强制规则（最高优先级）
 
@@ -370,7 +370,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 | `<COMMIT_SUBJECT_STYLE>` | commit subject 体例 | 第 11 条 |
 | `<PLAN_EXEMPLAR>` | 计划密度标杆文档 | 第 2 条 |
 
-<!-- AGENTMETARULES:END common-agents src=a5302d0e3955664667e82e38be98670f9e9008cb blob=e6e9b59ad85357510652ad8f17cda9df914b19dd -->
+<!-- AGENTMETARULES:END common-agents src=464c1b6f8e4e948eb8222392c60aa8129ac4dda3 blob=e6e9b59ad85357510652ad8f17cda9df914b19dd -->
 
 ## 项目专属规则（P1…Pn）
 
@@ -431,6 +431,6 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 ## 规则来源与未采用清单
 
-- 通用规则 = 上方标记块，正本 commit 见标记行 `src=`（2026-10-06 首次接入；此前本文件的强制规则 1–10 是 2026-08-18 自 MotionJEPA 移植的旧版，已随账本归档）。2026-10-08 回流到 `9ec0a8c`（子代理模型三档、开工令放宽、并发上限 64），并提交项目级 `.claude/settings.json`（与正本逐字相同，只含并发上限 `env`）；同日再回流到 `a5302d0`（根目录计划一律 HTML）。
+- 通用规则 = 上方标记块，正本 commit 见标记行 `src=`（2026-10-06 首次接入；此前本文件的强制规则 1–10 是 2026-08-18 自 MotionJEPA 移植的旧版，已随账本归档）。2026-10-08 回流到 `9ec0a8c`（子代理模型三档、开工令放宽、并发上限 64），并提交项目级 `.claude/settings.json`（与正本逐字相同，只含并发上限 `env`）；同日再回流到 `a5302d0`（根目录计划一律 HTML），再回流到 `464c1b6`（合并远端两条：新机器开工时检查全局并发上限、`worktree.baseRef="head"` 并入项目级 `.claude/settings.json`，本仓库该文件已同步为与正本逐字相同）。
 - 未采用的正本条目及原因：第 6 条（run_name）、第 10 条（训练超参落点）、第 12 条（训练 / 评估留档）、第 16 条（GPU 利用率判读）、第 17 条（长诊断 run 留档）、第 18 条（训练链路一致性）——本仓库无训练 / 评估链路；第 8 条集群分支与第 15 条集群校验分支——本环境无集群访问；第 23 条（server + client / job array 形态）——本仓库生成器是本机进程池，无服务形态，但其中「给用户的网页链接写完整域名 `sled-aspen.eecs.umich.edu`」一句照常适用。第 13 条（数据集构建留档）**采用**，新档全量生成按其 Beta 锚点与两段式留档。
 - Claude Code 独有机制见同目录 `CLAUDE.md`（标记块 `common-claude`）；本仓库无 `greatlakes.md`。两份文件冲突时以本文件为准。
