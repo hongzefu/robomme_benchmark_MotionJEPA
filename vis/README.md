@@ -19,7 +19,7 @@ uv run --no-sync python vis/synthesize_reference_timeline.py --h5-dir /data/hong
 - 统计：T、demo 长度、窗 = demo 窗 + exec 窗、Δ8 = (T−1)/7、最短执行段；8 帧帧路用 V2 的 `floor(i·(T−1)/7 + 0.5)`（2026-10-07 起，此前是 Python 银行家舍入）。`exec_skip8` = 帧路没有点落入的执行段数（不含 demo 与尾段）；`swap_skip8` = 帧路没有点落入的 swap 事件数；`skip8_total` = 两者之和，是「8 帧必漏」判据用的数。
 - Unmask 系任务的 h5 只有 ep0–99，因此也只有 25 条 hard。
 
-## 复制规则（`RULES`，取值与 `1006-xhard12-env-plan.md` 第一部分四节一致）
+## 复制规则（`RULES`，取值与 `1006-xhard12-env-plan.html` 第一部分四节一致）
 
 表格、汇总、总览图里的任务一律按 [robomme.github.io](https://robomme.github.io/) 的四类顺序排列（计数 → 永久性 → 参考 → 模仿，类内按官网编号；`SUITE_ORDER`，`AGENTS.md` P6）。
 

@@ -34,7 +34,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 **冲突即停**（正本第 0 条）：判定输出与上表不符（主机名不是 `sled-aspen`、NFS 不存在、出现第二套 GPU、`~/.ssh/config` 出现集群别名等），一律停下把原始输出交用户裁决，不得自行套用，也不得按「多数判据像 A」推断。本仓库目前只有这一个环境列；换到其他机器（如 sled-vail）时先补判据表再开工。
 
-<!-- AGENTMETARULES:BEGIN common-agents src=9ec0a8ce90c97dd98e358048ca7d858062564fb4 blob=9467e9c746bc445da46596c7b7ffeb783b068536 -->
+<!-- AGENTMETARULES:BEGIN common-agents src=a5302d0e3955664667e82e38be98670f9e9008cb blob=e6e9b59ad85357510652ad8f17cda9df914b19dd -->
 
 ## 强制规则（最高优先级）
 
@@ -61,6 +61,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
    - **两部分结构是硬性格式，不因「精简版」「重写版」「v2」「已做过的不再赘述」而豁免（2026-09-27 新增）**：只要计划涉及任何代码、配置、数据或训练链路改动，正文必须恰好含两个一级标题 `# 第一部分（给人看）` 与 `# 第二部分（技术细节，供 agent 追踪）`，各自按上面两条的结构展开；不得写成单篇平铺，不得用「§一～§八」之类自拟章节代替二分，也不得把两部分合并进同一节再声明「前半给人看、后半技术细节」。用户要求「简略」「只写最新版本」时，减的是篇幅与历史决策，**不减这两个标题与各自的骨架**（第一部分至少含总览／已定口径、机制、验收表、步骤表，含代码或配置改动时另含子代理分工与合并（简述）；第二部分至少含红线、逐文件改动清单、子代理分配表（含代码或配置改动时）、闸门、runbook、风险、盲区、留档纪律）。交付前自检 `grep -c '^# 第一部分\|^# 第二部分' <计划>` 必须等于 2，不等于 2 不得交付。实测踩坑：2026-09-27 benchmark 仓库把已按两部分写好的 §〇′ 方案改写成「精简定稿版」时写成了单篇八节，被用户当场指出「依旧是两段 第一部分 第二部分 为什么没有遵守规则」。
    - **子代理分工与合并必须写进计划（2026-10-01 新增）**：计划涉及代码或配置改动、且执行宿主支持子代理时——**第一部分**加一小节「子代理分工与合并（简述）」，几句话讲清拆成哪几块、每块管哪些文件、按什么顺序合回工作分支、每次合并前后分别审什么，写给人看、不堆命令；**第二部分**加「子代理分配表」，列「子任务编号 / 目标 / 可写文件集合 / 禁触路径 / 接口契约与依赖 / 合并顺序 / 验收命令与判定行（在哪里、以什么环境跑） / 资源占用（GPU、端口、run_name、tmux 前缀） / 共享文件归属裁决」；切不开的部分也要列，写「主会话自做」及理由；受保护目录（第 21 条）的文件不进可写集合。该表经批准即构成写入型子代理的派发授权，表外子任务不派。需要由子代理启动长任务时（Claude Code 的运行型子代理，2026-10-04 新增，见 `CLAUDE.md`「运行型子代理」），同一张表另列运行型子任务：完整命令原文、运行位置、tmux 会话名或 JobID、日志路径、起跑成功的判据；表内写明才派，监听、预算账本与清理仍归主会话。执行机制按各宿主自己的规则（Claude Code：`CLAUDE.md`「计划执行模式」；Codex：第 26 条），本条只定计划里要写什么。用户原话（2026-10-01，语音转写）：「最好是查看这个任务这个任务本身最好就已经好了撒贝镇的分配。在第二部分就是任务的markdown的第二部分最好已经设计好怎么去分配这个SubAgent。」「在第一部份中减数怎么去分配。怎么去合并。简单的叙述让用户稍微能看懂」。
    - **计划文件命名（2026-09-16，美国东部时间，用户确认）**：根目录计划统一命名为 `MMDD-<主题>-plan.md`，使用四位创建日期替代 `v1-`、`v2-`、`v5.0-` 等版本前缀；`8frame` 等主题信息保留。新计划以 `America/New_York` 的创建日期为准，执行 `TZ=America/New_York date +%m%d` 取值，例如东部时间 9 月 16 日新建的计划均以 `0916-` 开头。后续修订不改变日期前缀；同日计划通过主题区分，禁止覆盖已有计划。历史文件迁移沿用首次新增 Git 提交自身时区所记录的月日，不按当前时区重新换算，也不使用最后修改时间。
+   - **根目录计划一律用 HTML，不再用 Markdown（2026-10-08 新增）**：用户要求落在仓库根目录的计划文件一律写成单文件 HTML（`MMDD-<主题>-plan.html`，命名规则同上条、只换扩展名），不再生成 `.md` 计划；已有的 `.md` 计划按用户指令转成同名 `.html` 后删除 `.md`，并按下条维护引用。HTML 须自包含：样式内联，图用内联 SVG 或相对路径引用仓库内已有图片，不引外部脚本与字体；正文结构、两部分骨架与细节密度照旧，两个一级标题写成 `<h1>第一部分（给人看）</h1>` 与 `<h1>第二部分（技术细节，供 agent 追踪）</h1>`，交付前自检改为 `grep -c '<h1[^>]*>第一部分\|<h1[^>]*>第二部分' <计划>` 等于 2。需要画图的机制（步骤总览、数据链路、继承关系、子代理分工与合并顺序等）用图而不是 ASCII 块，画图子代理按宿主的「写代码」档模型（Claude Code 为 `opus`），可按图并行多派。plan mode 下宿主指定的 `~/.claude/plans/<slug>.md` 是工具管理文件，不受本条约束；用户要的根目录计划交付物才是 HTML。用户原话（2026-10-08，语音转写）：「弃用markd作为计划的形式。改为HTML。把这个Markdn全部转换成HTML然后删除然后必要的情况下画图可以多生成几个sub-agent来转换。然后尽可能画图的一定要用OPUS」「以后落在用户说要落在根目录的这个计划都使用HTML而不再使用markdn」。
    - **计划改名的引用维护**：同步更新现行 Markdown 链接、普通引用、源码注释/docstring 和配置注释中的完整文件名；保留历史用户原话、固定提交描述、原始记录与明确只读的源码快照，归档中的导航链接更新到现位置。不得顺带修改正文版本含义、commit 编号、分支名、run_name 或训练产物路径。
    - **开工令 = 完整计划呈现后、用户不改而直接认可（2026-10-04 新增，2026-10-08 修订）**：开工的前提是 agent 已把**完整计划**呈现给用户（plan mode 的计划文件，或正文里完整写出的方案）。① 用户对该计划**不提任何修改**、直接说「同意」「开工」「可以」或 `ExitPlanMode` 批准等无歧义的认可，即为开工令，允许开始改代码、下载、提交作业、运行；② 用户对计划**提出任何修改**（哪怕一处），必须先改完计划、再次完整呈现、再取得用户同意后才算开工，不得一边改计划一边动手；③ 没有完整计划在前的「同意」「放行」「都按推荐」「可以直接跑」、预算获批、资源到位（占位 job 排到、卡到手、下载完成）都不是开工令；不得在计划里设计「某条件满足即视为开工」的自动触发；拿不准时只问一句「是否开工」，不自行推断。用户原话（2026-10-08，语音转写）：「同一开工等类似的都是都是可以的就是说你每次都要呈现完完整的计划然后用户对于这个计划不做修改只直接说同意的都可以开工但是如果用户对这个计划有任何的修改都要修改完了再让用户同意。」「这个也写入md」。2026-10-04 的原口径（只认「开工」二字）据此放宽，其余约束不变：开工令只覆盖它所指的那份计划与范围，不延伸到后续计划。开工前允许的只有：只读核实、改计划文件、以及用户单独点名要做的事。实测踩坑：2026-10-04 benchmark 仓库把「都同意……都可以直接跑……尽可能的早点开始占用卡」读成立即开工并提交了 9 个占位 job，被用户叫停（「不要现在开始计划！！！」）。用户原话（2026-10-04）：「所有的开工都是要我明确确认无歧义的说开工。任何其他都不能作为开工条件 这个写入agentmetarules」。
    - 是否进入或退出计划模式、能否写计划文件，以当前宿主指令为准；上述格式要求不授予实施或执行命令的权限。
@@ -369,7 +370,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 | `<COMMIT_SUBJECT_STYLE>` | commit subject 体例 | 第 11 条 |
 | `<PLAN_EXEMPLAR>` | 计划密度标杆文档 | 第 2 条 |
 
-<!-- AGENTMETARULES:END common-agents src=9ec0a8ce90c97dd98e358048ca7d858062564fb4 blob=9467e9c746bc445da46596c7b7ffeb783b068536 -->
+<!-- AGENTMETARULES:END common-agents src=a5302d0e3955664667e82e38be98670f9e9008cb blob=e6e9b59ad85357510652ad8f17cda9df914b19dd -->
 
 ## 项目专属规则（P1…Pn）
 
@@ -397,7 +398,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 ## 对正本的覆盖项（按正本条号；未列出的条目按正本执行）
 
 - **覆盖第 1 条（历史英文化遗留）**：豁免清单只有 `tests/lightweight/test_no_patch_report_debug_environment.py`（源自已删除的 `scripts/data-generation-v2-noPatch/` 英文化目录），既有英文内容保持原样；其余新增 / 修改内容一律中文。
-- **覆盖第 2 条（计划密度标杆与命名）**：`<PLAN_EXEMPLAR>` = benchmark 仓库 [`docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md`](https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/newtaskRelease-taskV9/docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md) 的第一部分（正本 2026-10-06 统一口径；本机没有该仓库的检出，核对时从 GitHub 读）。根目录计划按 `MMDD-<主题>-plan.md` 命名；既有 `NEWTASK_V2_PLAN.md` 沿用现名。本仓库现行计划 [`1006-xhard12-env-plan.md`](1006-xhard12-env-plan.md)，其留档 [`1006-xhard12-prev-training-and-task-plan.md`](1006-xhard12-prev-training-and-task-plan.md)。
+- **覆盖第 2 条（计划密度标杆与命名）**：`<PLAN_EXEMPLAR>` = benchmark 仓库 [`docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md`](https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/newtaskRelease-taskV9/docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md) 的第一部分（正本 2026-10-06 统一口径；本机没有该仓库的检出，核对时从 GitHub 读）。根目录计划按 `MMDD-<主题>-plan.html` 命名、一律写成单文件 HTML（正本第 2 条 2026-10-08 子项；用户原话「弃用markd作为计划的形式。改为HTML」「以后落在用户说要落在根目录的这个计划都使用HTML而不再使用markdn」）；既有 `NEWTASK_V2_PLAN.md` 沿用现名。本仓库现行计划 [`1006-xhard12-env-plan.html`](1006-xhard12-env-plan.html)（2026-10-08 由同名 `.md` 转换，`.md` 已删除），其留档 [`1006-xhard12-prev-training-and-task-plan.md`](1006-xhard12-prev-training-and-task-plan.md)。
 - **覆盖第 4 条（核心短测）**：无需数据集的核心短测 `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q`（pytest 在 `pyproject.toml` 的 `dev` extra 里，`.venv` 没有时先 `uv sync --extra dev`，2026-10-06 实测只增 pytest/pluggy/iniconfig 三包；`gpu` marker 无自动 skip，靠 `-m` 排除；`tests/lightweight/` 里真正 `gym.make` 的只有 `test_TaskGoalI_isList.py`，标 `slow, gpu`）；需要环境 / 渲染栈的条件测试 `uv run --no-sync python -m pytest tests/lightweight/ -m gpu -q` 与 `uv run --no-sync python -m pytest tests/dataset/ -q`；只改某条生成链路时至少跑该链路的定向单测（如改 seed 公式 → `tests/lightweight/test_seed_layout.py`）；涉及实跑生成一律先做「单任务、单 episode、单 worker」smoke。
 - **覆盖第 8 条（集群）**：本环境无集群访问（见第 0 条判据表），按正本第 8 条「无集群访问的环境」执行：不提交 Slurm、不 ssh 集群、不跑提交器；一切生成与测试在本机。第 15 条「HF 上传校验不在本机做」的集群分支不适用，若有 HF 上传则在本机校验并在汇报里写明原因。
 - **覆盖第 11 条（commit 体例与 push）**：`<COMMIT_SUBJECT_STYLE>` = `<大版本>.<小版本>[.<修订>] <中文描述>`（如 `2.31 写入上次训练参照与 xhard 逐任务高层方案`），从 `git log` 最近一次接续；commit 后立即 `git push`（正本口径，分支 upstream 为 `origin/newtask-v3-MotionJepa1006`）。
@@ -424,12 +425,12 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 ## 项目 scope（未来工作，不代表当前实施授权）
 
-- 仓库总体目标：为 MotionJEPA 全任务训练产出训练数据——在官方 16 任务的 hard 母样本（同一 seed）上派生更难、更长的 xhard 档，使 8 帧等距采样必然遗漏 subgoal、每条 episode 的 stride-16 motion 窗口数对齐 newtask-v2 xhard（约 50–60 窗，T 约 900）。方案见 `1006-xhard12-env-plan.md`，上次训练的参照与官方 hard 档统计见 `1006-xhard12-prev-training-and-task-plan.md`。
+- 仓库总体目标：为 MotionJEPA 全任务训练产出训练数据——在官方 16 任务的 hard 母样本（同一 seed）上派生更难、更长的 xhard 档，使 8 帧等距采样必然遗漏 subgoal、每条 episode 的 stride-16 motion 窗口数对齐 newtask-v2 xhard（约 50–60 窗，T 约 900）。方案见 `1006-xhard12-env-plan.html`，上次训练的参照与官方 hard 档统计见 `1006-xhard12-prev-training-and-task-plan.md`。
 - 当前分支 `newtask-v3-MotionJepa1006`：以 `3a5951a8`（2.24）为生成代码起点，源码核查锚点 `13905997`（2.25）；生成器为 `scripts/data-generation-newSeed/generate_dataset_newseed.py`，seed 公式唯一定义在同目录 `seed_layout.py`。
 - 明确弃用、勿从历史翻出：`scripts/data-generation-v2-noPatch/`（已删除）；2026-07 的三阶段「恢复生成脚本」任务已完成并归档在账本；origin/newtask-v2 的 `--binfill-demo`（P4）；`NEWTASK_V2_PLAN.md` 只作历史参考，不是当前计划。
 
 ## 规则来源与未采用清单
 
-- 通用规则 = 上方标记块，正本 commit 见标记行 `src=`（2026-10-06 首次接入；此前本文件的强制规则 1–10 是 2026-08-18 自 MotionJEPA 移植的旧版，已随账本归档）。2026-10-08 回流到 `9ec0a8c`（子代理模型三档、开工令放宽、并发上限 64），并提交项目级 `.claude/settings.json`（与正本逐字相同，只含并发上限 `env`）。
+- 通用规则 = 上方标记块，正本 commit 见标记行 `src=`（2026-10-06 首次接入；此前本文件的强制规则 1–10 是 2026-08-18 自 MotionJEPA 移植的旧版，已随账本归档）。2026-10-08 回流到 `9ec0a8c`（子代理模型三档、开工令放宽、并发上限 64），并提交项目级 `.claude/settings.json`（与正本逐字相同，只含并发上限 `env`）；同日再回流到 `a5302d0`（根目录计划一律 HTML）。
 - 未采用的正本条目及原因：第 6 条（run_name）、第 10 条（训练超参落点）、第 12 条（训练 / 评估留档）、第 16 条（GPU 利用率判读）、第 17 条（长诊断 run 留档）、第 18 条（训练链路一致性）——本仓库无训练 / 评估链路；第 8 条集群分支与第 15 条集群校验分支——本环境无集群访问；第 23 条（server + client / job array 形态）——本仓库生成器是本机进程池，无服务形态，但其中「给用户的网页链接写完整域名 `sled-aspen.eecs.umich.edu`」一句照常适用。第 13 条（数据集构建留档）**采用**，新档全量生成按其 Beta 锚点与两段式留档。
 - Claude Code 独有机制见同目录 `CLAUDE.md`（标记块 `common-claude`）；本仓库无 `greatlakes.md`。两份文件冲突时以本文件为准。

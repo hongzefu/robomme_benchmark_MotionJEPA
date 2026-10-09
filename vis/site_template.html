@@ -161,7 +161,7 @@ function renderGroup(gr, host) {
 function build() {
   const nav = document.getElementById("nav"), wrap = document.getElementById("groups");
   document.getElementById("intro").innerHTML =
-    "按计划 <code>1006-xhard12-env-plan.md</code> 第一部分四节长度对比表的「对比的 V2 参照」分组；组内任务按 robomme.github.io 四类与官网编号排（4.1 MoveCube、4.2 InsertPeg 不纳入，无图）。" +
+    "按计划 <code>1006-xhard12-env-plan.html</code> 第一部分四节长度对比表的「对比的 V2 参照」分组；组内任务按 robomme.github.io 四类与官网编号排（4.1 MoveCube、4.2 InsertPeg 不纳入，无图）。" +
     "<b>原版</b> = 官方 hard 实测（<code>/data/hongzefu/data_0226</code>，每任务 25 条）；<b>新版</b> = xhard1 合成参考（按 subgoal 段复制粘贴，非实跑），VideoPlaceButton、VideoPlaceOrder 不加档，新版与原版相同；" +
     "<b>V2</b> = origin/newtask-v2 的 20260911-contract-v3-07 实跑（每组 ep0–29，已剔除慢条）。顶部切换最短 / 中位 / 最长，每条轨迹各自按 timestep 数取对应那一条；组内横轴固定，可直接比长短。" +
     "倍数 = 新版中位 ÷ V2 交付集中位（与计划表同口径）。";

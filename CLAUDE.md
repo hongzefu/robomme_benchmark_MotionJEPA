@@ -4,7 +4,7 @@
 
 @AGENTS.md
 
-<!-- AGENTMETARULES:BEGIN common-claude src=9ec0a8ce90c97dd98e358048ca7d858062564fb4 blob=4f7b37f977e573bab11fb3dd4472c58d1ff2df74 -->
+<!-- AGENTMETARULES:BEGIN common-claude src=a5302d0e3955664667e82e38be98670f9e9008cb blob=dd07e3933cb19ae83ad9991e0cf4220cb962bc11 -->
 
 ## 规则来源与优先级
 
@@ -112,17 +112,17 @@
 
 - **请求计划批准只能走 `ExitPlanMode`**，不得在正文里问「这个计划行不行 / 要不要开始」，也不得用 `AskUserQuestion` 问批准。`AskUserQuestion` 只用于澄清需求或在多个方案间取舍。
 - `AGENTS.md` 第 2 条「遇到范围、实现方式或破坏性操作存在歧义必须先询问用户」在 plan mode 下的落地方式是：**在 `ExitPlanMode` 之前用 `AskUserQuestion` 问清，不得带着歧义退出 plan mode。**
-- 计划正文写进 harness 指定的计划文件（`~/.claude/plans/<slug>.md`）；结构（两部分 / 纯文档例外）与细节密度一律按 `AGENTS.md` 第 2 条，本文件不复述。只写推荐方案，不罗列所有备选。
+- 计划正文写进 harness 指定的计划文件（`~/.claude/plans/<slug>.md`）；结构（两部分 / 纯文档例外）与细节密度一律按 `AGENTS.md` 第 2 条，本文件不复述。只写推荐方案，不罗列所有备选。用户要求落在仓库根目录的计划交付物按 `AGENTS.md` 第 2 条写成单文件 HTML（不再写 `.md`），图由 `opus` 画图子代理按图并行出内联 SVG。
 - 宿主明确指定的计划文件属于工具管理文件，不作为仓库数据或实验产物，不能借此把缓存、权重或日志写到 `<STORE_ROOT>` 之外；仅在宿主明确允许时写入。
 - plan mode 期间除该计划文件外一律只读：不改代码、不改配置、不 commit、不跑任何有副作用的命令。**在只读阶段把事实核实清楚**——仓库的坑（如 editable 指向、安装顺序、源码来源、已知缺陷）都是只读就能查清的，带着未经核实的假设进入实施阶段代价远高于多花几分钟查证。
 
-<!-- AGENTMETARULES:END common-claude src=9ec0a8ce90c97dd98e358048ca7d858062564fb4 blob=4f7b37f977e573bab11fb3dd4472c58d1ff2df74 -->
+<!-- AGENTMETARULES:END common-claude src=a5302d0e3955664667e82e38be98670f9e9008cb blob=dd07e3933cb19ae83ad9991e0cf4220cb962bc11 -->
 
 ## 项目专属补充
 
 - **Monitor 过滤词表补充**（标记块 Monitor 一节）：生成器 `generate_dataset_newseed.py` 的完成行 `succeeded with seed`、`EXIT_CODE=`；缺陷特征行 `failed`、`进程池已损坏`、`ERROR:`、`Traceback`、`BrokenProcessPool`、`svulkan2`、`out of memory`、`NO RECORD`（录像器阶段跳过）。一份日志挂一个 Monitor，每级管道行缓冲。
 - **Skill 调用**：本机 sled-aspen **无集群访问**（`AGENTS.md` 第 0 条判据表），不调 `greatlakes-usage`，不查任何 Slurm 账户占用。
-- **plan mode 只读核实清单**：`git diff --quiet HEAD -- src/robomme/` 零 diff（P1）；`uv run --no-sync python -c "import robomme,sys;print(robomme.__file__)"` 指向本仓库 `src/`；`ls -1 src/` 只含 `robomme` 与已在计划里登记的新包；`artifacts/` 不进 git（`git check-ignore -q artifacts/probe`）；`grep -c '^# 第一部分\|^# 第二部分' <计划>` 等于 2；`~/.ssh/config` 仍无集群别名。
+- **plan mode 只读核实清单**：`git diff --quiet HEAD -- src/robomme/` 零 diff（P1）；`uv run --no-sync python -c "import robomme,sys;print(robomme.__file__)"` 指向本仓库 `src/`；`ls -1 src/` 只含 `robomme` 与已在计划里登记的新包；`artifacts/` 不进 git（`git check-ignore -q artifacts/probe`）；`grep -c '<h1[^>]*>第一部分\|<h1[^>]*>第二部分' <计划.html>` 等于 2（计划为 HTML）；`~/.ssh/config` 仍无集群别名。
 - **计划执行模式的 worktree 环境取法**（标记块「worktree 环境陷阱」）：worktree 没有 `.venv`，借主检出 venv 并把 worktree 的 `src` 置前：`UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=<worktree>/src uv run --no-sync python -m pytest <定向测试> -q`；子代理先打印 `python -c "import robomme;print(robomme.__file__)"` 确认落在 `<worktree>/src/`（主检出 editable `.pth` 指向主检出 `src`，不置前会 import 到主检出代码）。worktree 内只跑 CPU 轻量测试；`gym.make` 类验收留给合并后主会话在主检出串行跑。
 - **运行型子代理**：本仓库长任务只有本机 tmux 生成（会话名前缀 `xh-`），命令原文照计划分配表；监听、预算与 `tmux kill-session` 归主会话。
 - Agent 工具子代理与 Workflow 的用法以标记块为准（探索 `model: "haiku"`、审查 `model: "sonnet"`、制定计划与写入型／运行型 `model: "opus"`；Workflow 逐次审批），本仓库无额外约定。

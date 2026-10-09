@@ -8,7 +8,7 @@
     VideoPlaceButton / VideoPlaceOrder 不加档，新版 = 原版）；
   * V2 参照：v2/windows_timeline.json（origin/newtask-v2 的 scripts/injection-before-2d/windows_timeline.json 原样拷贝，
     20260911-contract-v3-07 一次实跑、每组 ep0–29 的成功条，已去掉 excluded_slow 慢条）。
-分组与倍数口径同 1006-xhard12-env-plan.md 第一部分四节长度对比表；倍数 = 新版中位 ÷ V2 交付集中位（表中数），
+分组与倍数口径同 1006-xhard12-env-plan.html 第一部分四节长度对比表；倍数 = 新版中位 ÷ V2 交付集中位（表中数），
 网页里 V2 那一行画的是 07 实跑的代表条，与交付集中位相差在几十 timestep 以内。
 
 每条轨迹独立按 timestep 数排序取最短 / 中位（下标 n//2）/ 最长，与 v2_plot.representatives 同规则。
