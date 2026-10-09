@@ -380,9 +380,9 @@ section.grp p { margin:4px 0; }
 .task table.rot { margin:0 0 2px; font-size:.86em; }
 .task table.rot th, .task table.rot td { padding:2px 6px; line-height:1.3; }
 .task .big { font-size:1.15em; }
-figure.tl { margin:2px 0 4px; padding:2px 6px; width:fit-content; max-width:100%; }
+figure.tl { margin:2px 0 6px; padding:2px 6px; width:100%; box-sizing:border-box; }
 figure.tl .tl-title:empty, figure.tl .tl-sub:empty, figure.tl .tl-legend:empty { display:none; }
-figure.tl svg { min-width:0 !important; max-width:900px; }
+figure.tl svg { min-width:0 !important; width:100%; display:block; }
 figure.tl { margin:14px 0; border:1px solid var(--border); border-radius:8px; padding:10px 14px; }
 figure.tl .tl-title { font-weight:700; font-size:1.0em; }
 figure.tl .tl-sub { color:var(--muted); font-size:.86em; margin:3px 0 6px; }
