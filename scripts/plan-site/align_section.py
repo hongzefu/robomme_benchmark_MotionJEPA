@@ -323,7 +323,7 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
             verdict = "PASS" if ns["miss"] >= 1 else "FAIL"
             missed = "、".join(_short(l) for l in ns["missed_labels"]) + ("、swap" if ns["miss_swaps"] else "")
             parts.append(f'<div class="task" data-group="{g["id"]}" data-task="{t}">\n<h4 id="p1-t-{t.lower()}">{WEB_ID[t]} {E(t)}<span class="mean">旋钮 = {E(MEANING[t])}　<code>{E(k["key"])}</code></span></h4>\n')
-            parts.append('<table class="rot"><thead><tr><th></th><th>旋钮取值</th><th>中位 timestep</th><th>窗</th><th>对 V2 倍数</th><th>对 hard 倍数</th><th>8 帧漏</th></tr></thead><tbody>\n')
+            parts.append(f'<table class="rot"><thead><tr><th></th><th>旋钮取值</th><th>中位 timestep</th><th>窗</th><th>对 V2 {E(g["ref"].replace("/", " "))}（{target}）倍数</th><th>对 {E(t)} hard（{hs["median_all"]}）倍数</th><th>8 帧漏</th></tr></thead><tbody>\n')
             parts.append(f"<tr><td>hard</td><td>{E(k['hard'])}</td><td>{hs['median_all']}</td><td>{hs['windows_median_all']}</td><td>{_ratio(hs['median_all'], target)}</td><td>1.00</td><td>{hs['miss']} / {hs['units'] + hs['swaps']}</td></tr>\n")
             parts.append(f"<tr><td>现计划</td><td>{B(E(k['plan']))}</td><td>{B(ns['median_all'])}</td><td>{B(ns['windows_median_all'])}</td><td>{B(_ratio(ns['median_all'], target))}</td><td>{B(_ratio(ns['median_all'], hs['median_all']))}</td>"
                          f"<td>{B(ns['miss'])} / {ns['units'] + ns['swaps']}" + (f"　漏：{E(missed)}" if missed else "") + f"　{B(verdict)}</td></tr>\n")
@@ -338,7 +338,7 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
         parts.append("</section>\n")
     parts.append('<h3 id="p1-g5">四.5 不纳入：4.1 MoveCube、4.2 InsertPeg</h3>\n')
     parts.append('<h3 id="p1-g6">四.6 总表（只列上面勾选的任务）</h3>\n')
-    parts.append("<table id=\"total\"><thead><tr><th>编号</th><th>任务</th><th>旋钮含义</th><th>hard → 现计划 → 建议</th><th>中位 timestep hard → 现计划</th><th>窗 hard → 现计划</th><th>对 V2</th><th>对 hard</th><th>8 帧漏</th></tr></thead><tbody>\n")
+    parts.append("<table id=\"total\"><thead><tr><th>编号</th><th>任务</th><th>旋钮含义</th><th>hard → 现计划 → 建议</th><th>中位 timestep hard → 现计划</th><th>窗 hard → 现计划</th><th>对 V2 参照倍数</th><th>对本任务 hard 倍数</th><th>8 帧漏</th></tr></thead><tbody>\n")
     for t in WEB_ID:
         if t not in KNOB:
             continue
@@ -348,7 +348,7 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
         has = p.get("n_mid") is not None
         parts.append(f'<tr data-task="{t}"><td>{WEB_ID[t]}</td><td>{t}</td><td>{E(MEANING[t])}</td><td>{E(k["hard"])} → {E(k["plan"])}' + (f" → <b>{E(p['text'])}</b>" if has else "") + "</td>"
                      f"<td>{hs['median_all']} → {B(ns['median_all'])}</td><td>{hs['windows_median_all']} → {ns['windows_median_all']}</td>"
-                     f"<td>{B(_ratio(ns['median_all'], s['target']))}</td><td>{B(_ratio(ns['median_all'], hs['median_all']))}</td>"
+                     f"<td>{B(_ratio(ns['median_all'], s['target']))}<br><span class=\"muted\">对 V2 {E(s['ref'].replace('/', ' '))} {s['target']}</span></td><td>{B(_ratio(ns['median_all'], hs['median_all']))}<br><span class=\"muted\">对 hard {hs['median_all']}</span></td>"
                      f"<td>{B(ns['miss'])} {'PASS' if ns['miss'] >= 1 else 'FAIL'}</td></tr>\n")
     parts.append("</tbody></table>\n")
     parts.append("<script>\n" + PICK_JS + "</script>\n")
