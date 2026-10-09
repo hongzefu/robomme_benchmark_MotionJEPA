@@ -182,6 +182,10 @@ def load_v2() -> dict[str, dict[str, Any]]:
         st = strict_stats("V2/" + task, item, swaps)
         st["n"] = len(recs)
         st["median_all"] = int(statistics.median(r["total"] for r in recs))
+        wins = [sum(v2_plot.window_counts({"demo": r["demo"], "total": r["total"]})) for r in recs]
+        st["windows_median_all"] = int(statistics.median(wins))
+        st["sum_timesteps"] = sum(r["total"] for r in recs)
+        st["sum_windows"] = sum(wins)
         if med.get("simulated_demo"):
             # 假 demo：前一遍整段不算 subgoal（strict_stats 已按 demo 剔除）；另给纯执行口径
             st["exec_only"] = med["original_total"]
@@ -280,6 +284,16 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
     parts.append('<h2 id="p1-_4">三、对齐原则（两条）</h2>\n<ol class="lead">\n'
                  "<li><b>旋钮只调长度</b>：中位 timestep 拉到配对的 V2 参照，同时报对 V2、对本任务 hard 两个倍数。</li>\n"
                  "<li><b>长度定了再验</b>：8 帧采样在中位条上至少漏一个 subgoal（拿起加放下算一个，每次 swap 算一个）。</li>\n</ol>\n")
+    run = next(iter(v2.values()))["run"]
+    parts.append(f"<p><b>V2 四个参照任务</b>（实跑 {E(run)}，剔除慢条；中位与合计都按 timestep 计，窗 = stride-16 motion 窗）</p>\n"
+                 "<table><thead><tr><th>V2 参照</th><th>条数</th><th>中位 timestep</th><th>中位窗</th><th>总计 timestep</th><th>总计窗</th></tr></thead><tbody>\n")
+    for g in GROUPS:
+        rs = v2[g["ref"]]["stats"]
+        parts.append(f"<tr><td>{E(g['ref'])}</td><td>{rs['n']}</td><td>{B(rs['median_all'])}</td><td>{B(rs['windows_median_all'])}</td><td>{B(rs['sum_timesteps'])}</td><td>{B(rs['sum_windows'])}</td></tr>\n")
+    tot_t = sum(v2[g["ref"]]["stats"]["sum_timesteps"] for g in GROUPS)
+    tot_w = sum(v2[g["ref"]]["stats"]["sum_windows"] for g in GROUPS)
+    tot_n = sum(v2[g["ref"]]["stats"]["n"] for g in GROUPS)
+    parts.append(f"<tr><td>合计</td><td>{tot_n}</td><td>—</td><td>—</td><td>{B(tot_t)}</td><td>{B(tot_w)}</td></tr>\n</tbody></table>\n")
     parts.append('<h2 id="p1-_5">四、分组讨论</h2>\n')
     # 选择面板：每组一个总勾选，组内每个任务一个勾选；总表只列勾选的任务
     parts.append('<div class="pick">')
