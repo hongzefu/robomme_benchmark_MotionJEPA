@@ -112,6 +112,8 @@ KNOB: dict[str, dict[str, Any]] = {
                         "bind": "同 VideoPlaceButton；demo 约 917"},
 }
 
+MEANING = {'BinFill': '要投进 bin 的方块总数（按颜色分配，从桌上 10–12 块里挑）', 'PickXtimes': '同一块 cube 拿起再放到 target 的次数，做完按按钮', 'SwingXtimes': '拿着 cube 在左右两个 target 上方来回摆动的次数', 'StopCube': '方块来回往返到第几次时按按钮停住；间隔 = 每次往返的步数', 'PatternLock': '要按的按钮路径节点数，demo 先演示一遍再照做', 'RouteStick': '绕杆走到目标的段数，demo 先演示一遍再照做', 'VideoUnmask': '要依次抓起查看的容器个数', 'ButtonUnmask': '要依次抓起查看的容器个数', 'VideoUnmaskSwap': 'demo 视频里容器被交换的次数', 'ButtonUnmaskSwap': '容器被交换的次数（与按按钮同时发生）', 'PickHighlight': '要依次拿起再放回桌面的高亮方块个数', 'VideoRepick': 'demo 视频里方块被交换的次数（3 块 cube 分支）', 'VideoPlaceButton': '不改，按原 hard 配置重生成', 'VideoPlaceOrder': '不改，按原 hard 配置重生成'}
+
 PRINCIPLES = [
     ("叫法", "上一版数据集叫 <b>V2</b>（origin/newtask-v2 交付集，20260912-contract-v3-10），本仓库这版叫 <b>V3</b>。V3 只有一档，不再出现档位名。",
      "你给我定确定一个说法就是说V2和V3 v3只有xhard1不用再提了"),
@@ -279,13 +281,19 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
                  "<li><b>旋钮只调长度</b>：中位 timestep 拉到配对的 V2 参照，同时报对 V2、对本任务 hard 两个倍数。</li>\n"
                  "<li><b>长度定了再验</b>：8 帧采样在中位条上至少漏一个 subgoal（拿起加放下算一个，每次 swap 算一个）。</li>\n</ol>\n")
     parts.append('<h2 id="p1-_5">四、分组讨论</h2>\n')
+    # 选择面板：每组一个总勾选，组内每个任务一个勾选；总表只列勾选的任务
+    parts.append('<div class="pick">')
+    for gi, g in enumerate(GROUPS, 1):
+        parts.append(f'<div class="pick-g"><label><input type="checkbox" class="pick-grp" data-group="{g["id"]}" checked> <b>四.{gi} {E(g["name"])}</b></label>'
+                     + "".join(f'<label><input type="checkbox" class="pick-task" data-group="{g["id"]}" data-task="{t}" checked> {WEB_ID[t]} {E(t)}</label>' for t in g["tasks"]) + "</div>")
+    parts.append("</div>\n")
     for gi, g in enumerate(GROUPS, 1):
         ref = v2[g["ref"]]
         rs = ref["stats"]
         target = rs["median_all"]
         xmax = max([ref["item"]["total"]] + [v3[t]["new_rec"]["item"]["total"] for t in g["tasks"]])
         xmax = (xmax + 99) // 100 * 100
-        parts.append(f'<h3 id="p1-g{gi}">四.{gi} {E(g["name"])}：V2 {E(g["ref"])} ← V3 {E("、".join(g["tasks"]))}</h3>\n')
+        parts.append(f'<section class="grp" data-group="{g["id"]}">\n<h3 id="p1-g{gi}">四.{gi} {E(g["name"])}：V2 {E(g["ref"])} ← V3 {E("、".join(g["tasks"]))}</h3>\n')
         parts.append(f"<p><b>V2 参照</b>　中位 timestep {B(rs['median_all'])} · 窗 {B(rs['windows'])} · 8 帧漏 {B(rs['miss'])}"
                      + (f"　对 V2 自己的 {E(ref['base_name'])}（{ref['base_median']}）倍数 {B(_ratio(rs['median_all'], ref['base_median']))}" if ref["base_median"] else "") + "</p>\n")
         key = f"v2-{g['id']}"
@@ -296,40 +304,40 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
             k = KNOB[t]
             hs, ns = x["hard"], x["new"]
             prop = propose(t, x, target)
-            alt = None
-            summary[t] = {"group": g["name"], "ref": g["ref"], "target": target, "hard": hs, "new": ns, "prop": prop, "alt": alt}
+            summary[t] = {"group": g["name"], "ref": g["ref"], "target": target, "hard": hs, "new": ns, "prop": prop, "alt": None}
             has = prop.get("n_mid") is not None
             verdict = "PASS" if ns["miss"] >= 1 else "FAIL"
             missed = "、".join(_short(l) for l in ns["missed_labels"]) + ("、swap" if ns["miss_swaps"] else "")
-            parts.append(f'<h4 id="p1-t-{t.lower()}">{WEB_ID[t]} {E(t)}</h4>\n<table class="kv"><tbody>\n')
-            parts.append(f"<tr><td>旋钮</td><td><code>{E(k['key'])}</code>　hard {E(k['hard'])} → 现计划 {B(E(k['plan']))}" + (f" → 建议 {B(E(prop['text']))}" if has else "") + "</td></tr>\n")
-            parts.append(f"<tr><td>中位 timestep / 窗</td><td>hard {hs['median_all']} / {hs['windows_median_all']} → 现计划 {B(ns['median_all'])} / {B(ns['windows_median_all'])}" + (f" → 建议估 {B(prop['est'])}" if has else "") + "</td></tr>\n")
-            parts.append(f"<tr><td>对 V2 倍数</td><td>现计划 {B(_ratio(ns['median_all'], target))}" + (f" → 建议 {B(_ratio(prop['est'], target))}" if has else "") + "</td></tr>\n")
-            parts.append(f"<tr><td>对 hard 倍数</td><td>现计划 {B(_ratio(ns['median_all'], hs['median_all']))}" + (f" → 建议 {B(_ratio(prop['est'], hs['median_all']))}" if has else "") + "</td></tr>\n")
-            parts.append(f"<tr><td>8 帧漏</td><td>{B(ns['miss'])} / {ns['units'] + ns['swaps']}" + (f"　漏：{E(missed)}" if missed else "") + f"　{B(verdict)}</td></tr>\n")
+            parts.append(f'<div class="task" data-group="{g["id"]}" data-task="{t}">\n<h4 id="p1-t-{t.lower()}">{WEB_ID[t]} {E(t)}<span class="mean">旋钮 = {E(MEANING[t])}　<code>{E(k["key"])}</code></span></h4>\n')
+            parts.append('<table class="rot"><thead><tr><th></th><th>旋钮取值</th><th>中位 timestep</th><th>窗</th><th>对 V2 倍数</th><th>对 hard 倍数</th><th>8 帧漏</th></tr></thead><tbody>\n')
+            parts.append(f"<tr><td>hard</td><td>{E(k['hard'])}</td><td>{hs['median_all']}</td><td>{hs['windows_median_all']}</td><td>{_ratio(hs['median_all'], target)}</td><td>1.00</td><td>{hs['miss']} / {hs['units'] + hs['swaps']}</td></tr>\n")
+            parts.append(f"<tr><td>现计划</td><td>{B(E(k['plan']))}</td><td>{B(ns['median_all'])}</td><td>{B(ns['windows_median_all'])}</td><td>{B(_ratio(ns['median_all'], target))}</td><td>{B(_ratio(ns['median_all'], hs['median_all']))}</td>"
+                         f"<td>{B(ns['miss'])} / {ns['units'] + ns['swaps']}" + (f"　漏：{E(missed)}" if missed else "") + f"　{B(verdict)}</td></tr>\n")
+            if has:
+                parts.append(f"<tr><td>建议</td><td>{B(E(prop['text']))}</td><td>{B(prop['est'])}（估）</td><td>{round((prop['est'] - 32) / 16)}（估）</td><td>{B(_ratio(prop['est'], target))}</td><td>{B(_ratio(prop['est'], hs['median_all']))}</td><td>待合成</td></tr>\n")
             parts.append("</tbody></table>\n")
             nr = x["new_rec"]
             key = f"v3-{t}"
             boards[key] = {"title": f"V3 {t} 中位条", "sub": "", "xmax": xmax,
                            "items": [_row(nr, [f"V3 {t}", f"现计划 {k['plan']}", f"ep{nr['episode']} · seed {nr['seed']}", "合成"])]}
-            parts.append(_fig(key, f"V3 {t}　现计划 {k['plan']}", ""))
+            parts.append(_fig(key, "", "") + "</div>\n")
+        parts.append("</section>\n")
     parts.append('<h3 id="p1-g5">四.5 不纳入：4.1 MoveCube、4.2 InsertPeg</h3>\n')
-    parts.append('<h3 id="p1-g6">四.6 全任务总表</h3>\n')
-    parts.append("<table><thead><tr><th>编号</th><th>任务</th><th>旋钮 hard → 现计划 → 建议</th><th>中位 timestep hard → 现计划</th><th>窗 hard → 现计划</th><th>对 V2</th><th>对 hard</th><th>8 帧漏</th></tr></thead><tbody>\n")
+    parts.append('<h3 id="p1-g6">四.6 总表（只列上面勾选的任务）</h3>\n')
+    parts.append("<table id=\"total\"><thead><tr><th>编号</th><th>任务</th><th>旋钮含义</th><th>hard → 现计划 → 建议</th><th>中位 timestep hard → 现计划</th><th>窗 hard → 现计划</th><th>对 V2</th><th>对 hard</th><th>8 帧漏</th></tr></thead><tbody>\n")
     for t in WEB_ID:
         if t not in KNOB:
-            parts.append(f"<tr><td>{WEB_ID[t]}</td><td>{t}</td><td>不纳入</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>\n")
             continue
         s = summary[t]
-        hs, ns, p, alt = s["hard"], s["new"], s["prop"], s["alt"]
+        hs, ns, p = s["hard"], s["new"], s["prop"]
         k = KNOB[t]
         has = p.get("n_mid") is not None
-        rv = B(_ratio(ns["median_all"], s["target"]))
-        parts.append(f"<tr><td>{WEB_ID[t]}</td><td>{t}</td><td>{E(k['hard'])} → {E(k['plan'])}" + (f" → <b>{E(p['text'])}</b>" if has else "") + "</td>"
+        parts.append(f'<tr data-task="{t}"><td>{WEB_ID[t]}</td><td>{t}</td><td>{E(MEANING[t])}</td><td>{E(k["hard"])} → {E(k["plan"])}' + (f" → <b>{E(p['text'])}</b>" if has else "") + "</td>"
                      f"<td>{hs['median_all']} → {B(ns['median_all'])}</td><td>{hs['windows_median_all']} → {ns['windows_median_all']}</td>"
-                     f"<td>{rv}</td><td>{B(_ratio(ns['median_all'], hs['median_all']))}</td>"
+                     f"<td>{B(_ratio(ns['median_all'], s['target']))}</td><td>{B(_ratio(ns['median_all'], hs['median_all']))}</td>"
                      f"<td>{B(ns['miss'])} {'PASS' if ns['miss'] >= 1 else 'FAIL'}</td></tr>\n")
     parts.append("</tbody></table>\n")
+    parts.append("<script>\n" + PICK_JS + "</script>\n")
 
     payload = {"simple": True, "boards": boards, "win": v2_plot.WIN, "stride": v2_plot.STRIDE, "budgets": list(v2_plot.BUDGETS),
                "swap_colors": v2_plot.SWAP_COLORS, "color": v2_plot.COLOR}
@@ -339,7 +347,42 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
     return "".join(parts), boards, summary
 
 
+PICK_JS = """
+(function () {
+  const grp = document.querySelectorAll('.pick-grp'), tsk = document.querySelectorAll('.pick-task');
+  function apply() {
+    const on = {};
+    tsk.forEach(c => { on[c.dataset.task] = c.checked; });
+    document.querySelectorAll('.task[data-task]').forEach(d => { d.style.display = on[d.dataset.task] ? '' : 'none'; });
+    document.querySelectorAll('#total tr[data-task]').forEach(r => { r.style.display = on[r.dataset.task] ? '' : 'none'; });
+    document.querySelectorAll('section.grp').forEach(sec => {
+      const any = [...tsk].some(c => c.dataset.group === sec.dataset.group && c.checked);
+      sec.style.display = any ? '' : 'none';
+    });
+    grp.forEach(g => { const mine = [...tsk].filter(c => c.dataset.group === g.dataset.group);
+      g.checked = mine.every(c => c.checked); g.indeterminate = !g.checked && mine.some(c => c.checked); });
+  }
+  grp.forEach(g => g.addEventListener('change', () => { tsk.forEach(c => { if (c.dataset.group === g.dataset.group) c.checked = g.checked; }); apply(); }));
+  tsk.forEach(c => c.addEventListener('change', apply));
+  apply();
+})();
+"""
+
 CSS = """
+.pick { display:flex; flex-wrap:wrap; gap:10px 22px; border:1px solid var(--border); border-radius:8px; padding:10px 14px; margin:10px 0 16px; }
+.pick-g { display:flex; flex-direction:column; gap:3px; }
+.pick label { cursor:pointer; white-space:nowrap; }
+table.rot td:first-child { font-weight:700; white-space:nowrap; }
+section.grp h3 { margin:12px 0 2px; font-size:1.1em; }
+section.grp p { margin:4px 0; }
+.task h4 { margin:6px 0 2px; font-size:1.0em; }
+.task h4 .mean { font-weight:400; font-size:.9em; color:var(--muted); margin-left:14px; }
+.task table.rot { margin:0 0 2px; font-size:.86em; }
+.task table.rot th, .task table.rot td { padding:2px 6px; line-height:1.3; }
+.task .big { font-size:1.15em; }
+figure.tl { margin:2px 0 4px; padding:2px 6px; width:fit-content; max-width:100%; }
+figure.tl .tl-title:empty, figure.tl .tl-sub:empty, figure.tl .tl-legend:empty { display:none; }
+figure.tl svg { min-width:0 !important; max-width:900px; }
 figure.tl { margin:14px 0; border:1px solid var(--border); border-radius:8px; padding:10px 14px; }
 figure.tl .tl-title { font-weight:700; font-size:1.0em; }
 figure.tl .tl-sub { color:var(--muted); font-size:.86em; margin:3px 0 6px; }

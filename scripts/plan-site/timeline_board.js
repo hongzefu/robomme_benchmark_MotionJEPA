@@ -61,17 +61,17 @@
   function drawBoard(host, bd) {
     host.innerHTML = "";
     const width = LEFT + AXIS + RIGHT;
-    const height = bd.items.reduce((h, x) => h + (x.kind === "head" ? HEAD : ROW), 0) + 34;
+    const height = bd.items.reduce((h, x) => h + (x.kind === "head" ? HEAD : ROW), 0) + (SIMPLE ? 18 : 34);
     const svg = el("svg", {viewBox: `0 0 ${width} ${height}`, width: "100%", preserveAspectRatio: "xMinYMin meet",
       style: `display:block;min-width:${SIMPLE ? 900 : 1100}px;font-family:inherit`, role: "img", "aria-label": bd.title}, host);
     const sx = v => LEFT + v / bd.xmax * AXIS;
     const step = bd.xmax <= 1200 ? 100 : 200;
     const top = 4;
     for (let t = 0; t <= bd.xmax; t += step) {
-      el("line", {x1: sx(t), x2: sx(t), y1: top, y2: height - 30, stroke: "#EEF2F0"}, svg);
-      el("text", {x: sx(t), y: height - 14, "text-anchor": "middle", "font-size": 11.5, fill: C.ink3}, svg, t);
+      el("line", {x1: sx(t), x2: sx(t), y1: top, y2: height - (SIMPLE ? 14 : 30), stroke: "#EEF2F0"}, svg);
+      el("text", {x: sx(t), y: height - (SIMPLE ? 2 : 14), "text-anchor": "middle", "font-size": 11.5, fill: C.ink3}, svg, t);
     }
-    el("text", {x: LEFT + AXIS / 2, y: height - 1, "text-anchor": "middle", "font-size": 12, fill: C.ink2}, svg, "timestep");
+    if (!SIMPLE) el("text", {x: LEFT + AXIS / 2, y: height - 1, "text-anchor": "middle", "font-size": 12, fill: C.ink2}, svg, "timestep");
     let y = top;
     for (const x of bd.items) {
       if (x.kind === "head") {
