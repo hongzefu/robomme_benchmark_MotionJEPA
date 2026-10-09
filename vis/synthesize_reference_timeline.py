@@ -1,7 +1,7 @@
 """合成 xhard1 参考数轴：用官方 hard 数据按 subgoal 段「复制粘贴」拼出 xhard1 的参考时间轴并出图。
 
 不跑仿真、不改源码，只读 /data/hongzefu/data_0226/ 里 16 任务的 hard episode（每任务 25 条，
-Unmask 系 h5 只有 ep0–99 所以也是 25 条）。每个任务的「重复单元」按 1006-xhard12-env-plan.html
+Unmask 系 h5 只有 ep0–99 所以也是 25 条；VideoRepick 的母样本是 medium 25 条，见 RULES["VideoRepick"]）。每个任务的「重复单元」按 1006-xhard12-env-plan.html
 第一部分四节的 xhard1 取值复制若干份（复制的是同一条 episode 自己的段，循环取），其余段原样保留，
 拼成一条合成时间轴。合成结果与真实 xhard 的差别只在段长的随机波动与 planner 路径差异，作为参考。
 
@@ -48,8 +48,10 @@ RULES: dict[str, dict[str, Any]] = {
                     "place": r"^move to the top of the left-side target", "target": [7, 8], "note": "摆动 3 → [7,8]"},
     "BinFill": {"kind": "pairs_exec", "pick": r"^pick up the \w+ \w+ cube$", "place": r"^put it into the bin$",
                 "target": [5, 6], "note": "投入 [3,5] → [5,6]"},
-    "VideoRepick": {"kind": "pairs_exec", "pick": r"^pick up the correct cube for the \w+ time$",
-                    "place": r"^put it down$", "target": [4, 5], "note": "重抓 [1,3] → [4,5]"},
+    # 2026-10-08 用户「VideoRepick 应该还是按照和上一版本 V2 一样的都是通过 Medium 来改」：母样本改取官方 medium
+    # （3 块 cube、swap [2,3]），只把 swap 改到 [4,5]，与 V2 VideoRepick xhard 同口径；重抓次数 num_repeats 不动。
+    "VideoRepick": {"kind": "repick_medium_swap", "source": "medium", "target": [4, 5],
+                    "note": "母样本 medium（3 块 cube）；swap [2,3] → [4,5]，demo 每多一次 swap 多一段 static（约 54）"},
     "PickHighlight": {"kind": "pairs_exec_lastpick", "pick": r"^pick up the \w+ highlighted cube",
                       "place": r"^place the cube onto the table$", "target": [5], "note": "高亮块 3 → 5"},
     "PatternLock": {"kind": "moves_both", "move": r"^move ", "target": [10, 11, 12, 13, 14], "note": "节点 [4,8] → [10,14]"},
@@ -219,6 +221,18 @@ def synthesize(task: str, episode: int, segments: list[dict[str, Any]]) -> tuple
         meta.update({"from": s_from, "to": s_to, "demo_from": demo_len, "demo_to": new_demo})
         return segs, meta
 
+    if kind == "repick_medium_swap":
+        # 官方 medium demo：pick → drop → static(20 步等待，约 60) → static×swap_times（每次约 54）；执行段原样。
+        statics = [i for i, s in enumerate(segs) if s["demo"] and s["text"] == "static"]
+        s_from = len(statics) - 1
+        s_to = pick_variant(rule["target"], episode)
+        add = max(0, s_to - s_from)
+        if statics and add:
+            last = statics[-1]
+            segs = segs[: last + 1] + [dict(segs[last]) for _ in range(add)] + segs[last + 1:]
+        meta.update({"from": s_from, "to": s_to, "added_statics": add})
+        return segs, meta
+
     if kind == "unmask_pick3":
         # 官方：[static|press] → pick bin_0 → put down → pick bin_1 → 尾段；合成：在尾段前追加 [put down → pick]（复制已有的那对）
         put = next((i for i, x in enumerate(segs) if x["text"] == "put down the container"), None)
@@ -286,6 +300,12 @@ def swap_events(task: str, tier: str, item: dict[str, Any], how: dict[str, Any],
         n, base, note = how["from"] if tier == "hard" else how["to"], SWAP_START, ""
     elif task == "ButtonUnmaskSwap":
         n, base, note = pick_variant(rule["swap_hard" if tier == "hard" else "swap_xhard1"], episode), SWAP_START, "估"
+    elif task == "VideoRepick":
+        # 源码 _refresh_swap_schedule(start_step)：第一个 swap static 段起点起每 50 步一次
+        statics = [x for x in item["segments"] if x["demo"] and x["text"] == "static"]
+        if len(statics) < 2:
+            return []
+        n, base, note = (how["from"] if tier == "hard" else how["to"]), statics[1]["start"], ""
     elif task in ("VideoPlaceButton", "VideoPlaceOrder"):
         statics = [x for x in item["segments"] if x["demo"] and x["text"] == "static"]
         if not statics:
@@ -377,7 +397,8 @@ def main(argv=None) -> int:
 
     for task in tasks:
         meta = json.loads((Path(args.metadata_dir) / f"record_dataset_{task}_metadata.json").read_text(encoding="utf-8"))
-        hard = {r["episode"]: r["seed"] for r in meta["records"] if r["difficulty"] == "hard"}
+        source = RULES[task].get("source", "hard")  # 母样本难度：VideoRepick 取 medium，其余 hard
+        hard = {r["episode"]: r["seed"] for r in meta["records"] if r["difficulty"] == source}
         records = []
         with h5py.File(Path(args.h5_dir) / f"record_dataset_{task}.h5", "r") as handle:
             for episode in sorted(hard):

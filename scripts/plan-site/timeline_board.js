@@ -1,5 +1,5 @@
-// 数轴总览的浏览器内渲染（替代 matplotlib PNG）：画法同 vis/v2_plot.py::draw_track 与 vis/site_template.html::drawTrack。
-// 数据由 scripts/plan-site/timeline_boards.py 内联为 window.TL_DATA；页面里每个 <div class="tl-board" data-board="<键>"> 画一张。
+// 数轴的浏览器内渲染（替代 matplotlib PNG）：画法同 vis/v2_plot.py::draw_track 与 vis/site_template.html::drawTrack。
+// 数据由 scripts/plan-site/align_section.py 内联进根计划为 window.TL_DATA；页面里每个 <div class="tl-board" data-board="<键>"> 画一张（一图一轴）。
 (function () {
   const DATA = window.TL_DATA;
   if (!DATA) return;
