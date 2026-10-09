@@ -62,14 +62,14 @@ MERGE_NOTE = {
 
 # 四个配对组（用户 2026-10-08 确认）。ref = V2 组键；tasks 按官网顺序（AGENTS.md P6）。
 GROUPS = [
-    {"id": "g1", "name": "计数组", "ref": "BinFill/hard", "tasks": ["BinFill", "PickXtimes", "SwingXtimes"],
+    {"id": "g1", "name": "对 V2 BinFill hard", "ref": "BinFill/hard", "tasks": ["BinFill", "PickXtimes", "SwingXtimes"],
      "ref_cfg": "V2 BinFill hard：3 色、生成 8–10 块、投入 3–5 块；h5 把成品轨迹重复两遍，前一遍标 is_video_demo=True（假 demo，V3 已弃用，AGENTS.md P4）",
      "ref_note": ""},
-    {"id": "g2", "name": "序列组", "ref": "RouteStick/xhard", "tasks": ["StopCube", "PatternLock", "RouteStick"],
+    {"id": "g2", "name": "对 V2 RouteStick xhard", "ref": "RouteStick/xhard", "tasks": ["StopCube", "PatternLock", "RouteStick"],
      "ref_cfg": "V2 RouteStick xhard：length 8–10、可折返；demo 与执行各 50·L 步，T = 100·L", "ref_note": ""},
-    {"id": "g3", "name": "容器组", "ref": "VideoUnmaskSwap/xhard", "tasks": ["VideoUnmask", "ButtonUnmask", "VideoUnmaskSwap", "ButtonUnmaskSwap"],
+    {"id": "g3", "name": "对 V2 VideoUnmaskSwap xhard", "ref": "VideoUnmaskSwap/xhard", "tasks": ["VideoUnmask", "ButtonUnmask", "VideoUnmaskSwap", "ButtonUnmaskSwap"],
      "ref_cfg": "V2 VideoUnmaskSwap xhard：4 容器、swap 4–5、pick 2；demo = 6·ceil((64+50n)/6)，n=4/5 → 264/318", "ref_note": ""},
-    {"id": "g4", "name": "参考组", "ref": "VideoRepick/xhard", "tasks": ["PickHighlight", "VideoRepick", "VideoPlaceButton", "VideoPlaceOrder"],
+    {"id": "g4", "name": "对 V2 VideoRepick xhard", "ref": "VideoRepick/xhard", "tasks": ["PickHighlight", "VideoRepick", "VideoPlaceButton", "VideoPlaceOrder"],
      "ref_cfg": "V2 VideoRepick xhard：3 块 cube（easy/medium 分支）、swap 4–5、重抓 1–3 次；demo = 拿起 + 放下 + static(20) + swap×static(54)", "ref_note": ""},
 ]
 WEB_ID = {"BinFill": "1.1", "PickXtimes": "1.2", "SwingXtimes": "1.3", "StopCube": "1.4",
@@ -293,7 +293,7 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
         target = rs["median_all"]
         xmax = max([ref["item"]["total"]] + [v3[t]["new_rec"]["item"]["total"] for t in g["tasks"]])
         xmax = (xmax + 99) // 100 * 100
-        parts.append(f'<section class="grp" data-group="{g["id"]}">\n<h3 id="p1-g{gi}">四.{gi} {E(g["name"])}：V2 {E(g["ref"])} ← V3 {E("、".join(g["tasks"]))}</h3>\n')
+        parts.append(f'<section class="grp" data-group="{g["id"]}">\n<h3 id="p1-g{gi}">四.{gi} {E(g["name"])}：{E("、".join(WEB_ID[t] + " " + t for t in g["tasks"]))}</h3>\n')
         parts.append(f"<p><b>V2 参照</b>　中位 timestep {B(rs['median_all'])} · 窗 {B(rs['windows'])} · 8 帧漏 {B(rs['miss'])}"
                      + (f"　对 V2 自己的 {E(ref['base_name'])}（{ref['base_median']}）倍数 {B(_ratio(rs['median_all'], ref['base_median']))}" if ref["base_median"] else "") + "</p>\n")
         key = f"v2-{g['id']}"
