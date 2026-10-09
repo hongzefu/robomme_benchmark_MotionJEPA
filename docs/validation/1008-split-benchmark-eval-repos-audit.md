@@ -2,7 +2,7 @@
 
 > **审计锚点：`AUDIT_BASE=108c468f40bf8f445b766734806dcc31cd3f201b`。**
 >
-> 审计对象：[1008-split-benchmark-eval-repos-plan.html](../../1008-split-benchmark-eval-repos-plan.html)。本报告只依据该提交及其祖先提交；外部模型源码只依据该提交记录的 gitlink。所有源码引用采用文件与函数、类、配置键等稳定锚点，不依赖当前文件行号。
+> 审计对象：[1008-split-benchmark-eval-repos-plan.html](../plans/1008-split-benchmark-eval-repos-plan.html)。本报告只依据该提交及其祖先提交；外部模型源码只依据该提交记录的 gitlink。所有源码引用采用文件与函数、类、配置键等稳定锚点，不依赖当前文件行号。
 >
 > 用户选择排除 `third_party/SimpleMemVLA` 的在途改动。审计未运行仓库脚本、测试、仿真、模型推理、编码实验或集群作业。报告中的失败链是静态推导；已有编码数字和历史实验结果注明其来源，不能当成本轮重测。
 >
