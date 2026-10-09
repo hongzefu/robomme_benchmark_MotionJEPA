@@ -65,3 +65,4 @@ uv run --no-sync python vis/synthesize_reference_timeline.py --h5-dir /data/hong
 - 顶部切换最短 / 中位 / 最长（默认中位），每条轨迹各自按 timestep 数取对应那一条；组内横轴对三档固定。
 - `v2/windows_timeline.json` 是 origin/newtask-v2 `scripts/injection-before-2d/windows_timeline.json` 的原样拷贝（20260911-contract-v3-07 实跑，每组 ep0–29），网页剔除其中 `excluded_slow` 的慢条。
 - 托管：本机 tmux 会话 `xh-vis-web`（`python -m http.server 8090 --bind 0.0.0.0 --directory artifacts/vis-site`，日志 `artifacts/logs/xh-vis-web.log`），地址 http://sled-aspen.eecs.umich.edu:8090/ 。
+- 计划网页：`uv run --no-sync python scripts/plan-site/build_plan_site.py` 把根目录 `1006-xhard12-env-plan.html` 拆成四页（首页 / 接口怎么改 / 逐环境与长度对齐 / 技术细节）输出到 `artifacts/plan-site/`；本机 tmux 会话 `xh-plan-web`（`python -m http.server 8092 --bind 0.0.0.0 --directory artifacts/plan-site`，日志 `artifacts/logs/xh-plan-web.log`），地址 http://sled-aspen.eecs.umich.edu:8092/ 。计划改动后重跑生成脚本即可，服务不用重启。
