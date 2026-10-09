@@ -64,7 +64,7 @@ MERGE_NOTE = {
 GROUPS = [
     {"id": "g1", "name": "计数组", "ref": "BinFill/hard", "tasks": ["BinFill", "PickXtimes", "SwingXtimes"],
      "ref_cfg": "V2 BinFill hard：3 色、生成 8–10 块、投入 3–5 块；h5 把成品轨迹重复两遍，前一遍标 is_video_demo=True（假 demo，V3 已弃用，AGENTS.md P4）",
-     "ref_note": "V2 这组的中位 1658 含假 demo 那一遍；去掉假 demo 的纯执行中位是 829。下面每个任务给两个倍数：对 1658 与对 829。"},
+     "ref_note": ""},
     {"id": "g2", "name": "序列组", "ref": "RouteStick/xhard", "tasks": ["StopCube", "PatternLock", "RouteStick"],
      "ref_cfg": "V2 RouteStick xhard：length 8–10、可折返；demo 与执行各 50·L 步，T = 100·L", "ref_note": ""},
     {"id": "g3", "name": "容器组", "ref": "VideoUnmaskSwap/xhard", "tasks": ["VideoUnmask", "ButtonUnmask", "VideoUnmaskSwap", "ButtonUnmaskSwap"],
@@ -186,7 +186,7 @@ def load_v2() -> dict[str, dict[str, Any]]:
             st["exec_only_median"] = int(statistics.median(r["original_total"] for r in recs))
         # V2 参照对 V2 自己原档的倍数：参照是 xhard 时对同任务 hard（VideoRepick 没有 hard，对 medium）；参照本身是 hard 时对纯执行
         if diff == "hard":
-            base_name, base_median = "hard 纯执行", st.get("exec_only_median", st["median_all"])
+            base_name, base_median = "", 0  # 参照本身就是 hard，不另报
         else:
             base_key = f"{task}/hard" if f"{task}/hard" in data["groups"] else f"{task}/medium"
             base = [r for r in data["groups"][base_key] if (task, base_key.split("/")[1], r["episode"]) not in excluded]
@@ -287,8 +287,7 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
         xmax = (xmax + 99) // 100 * 100
         parts.append(f'<h3 id="p1-g{gi}">四.{gi} {E(g["name"])}：V2 {E(g["ref"])} ← V3 {E("、".join(g["tasks"]))}</h3>\n')
         parts.append(f"<p><b>V2 参照</b>　中位 timestep {B(rs['median_all'])} · 窗 {B(rs['windows'])} · 8 帧漏 {B(rs['miss'])}"
-                     + (f" · 纯执行 {B(rs['exec_only_median'])}" if "exec_only_median" in rs else "")
-                     + f"　对 V2 自己的 {E(ref['base_name'])}（{ref['base_median']}）倍数 {B(_ratio(rs['median_all'], ref['base_median']))}</p>\n")
+                     + (f"　对 V2 自己的 {E(ref['base_name'])}（{ref['base_median']}）倍数 {B(_ratio(rs['median_all'], ref['base_median']))}" if ref["base_median"] else "") + "</p>\n")
         key = f"v2-{g['id']}"
         boards[key] = {"title": f"V2 {g['ref']} 中位条", "sub": "", "xmax": xmax, "items": [_row(ref, [f"V2 {g['ref']}", "中位条", f"ep{ref['episode']} · seed {ref['seed']}"])]}
         parts.append(_fig(key, f"V2 {g['ref']}　{g['ref_cfg'].split('：', 1)[1]}", ""))
@@ -297,7 +296,7 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
             k = KNOB[t]
             hs, ns = x["hard"], x["new"]
             prop = propose(t, x, target)
-            alt = propose(t, x, rs["exec_only_median"]) if "exec_only_median" in rs else None
+            alt = None
             summary[t] = {"group": g["name"], "ref": g["ref"], "target": target, "hard": hs, "new": ns, "prop": prop, "alt": alt}
             has = prop.get("n_mid") is not None
             verdict = "PASS" if ns["miss"] >= 1 else "FAIL"
@@ -305,8 +304,7 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
             parts.append(f'<h4 id="p1-t-{t.lower()}">{WEB_ID[t]} {E(t)}</h4>\n<table class="kv"><tbody>\n')
             parts.append(f"<tr><td>旋钮</td><td><code>{E(k['key'])}</code>　hard {E(k['hard'])} → 现计划 {B(E(k['plan']))}" + (f" → 建议 {B(E(prop['text']))}" if has else "") + "</td></tr>\n")
             parts.append(f"<tr><td>中位 timestep / 窗</td><td>hard {hs['median_all']} / {hs['windows_median_all']} → 现计划 {B(ns['median_all'])} / {B(ns['windows_median_all'])}" + (f" → 建议估 {B(prop['est'])}" if has else "") + "</td></tr>\n")
-            parts.append(f"<tr><td>对 V2 倍数</td><td>现计划 {B(_ratio(ns['median_all'], target))}" + (f" → 建议 {B(_ratio(prop['est'], target))}" if has else "") +
-                         (f"　对纯执行 {B(_ratio(ns['median_all'], rs['exec_only_median']))}" if alt else "") + "</td></tr>\n")
+            parts.append(f"<tr><td>对 V2 倍数</td><td>现计划 {B(_ratio(ns['median_all'], target))}" + (f" → 建议 {B(_ratio(prop['est'], target))}" if has else "") + "</td></tr>\n")
             parts.append(f"<tr><td>对 hard 倍数</td><td>现计划 {B(_ratio(ns['median_all'], hs['median_all']))}" + (f" → 建议 {B(_ratio(prop['est'], hs['median_all']))}" if has else "") + "</td></tr>\n")
             parts.append(f"<tr><td>8 帧漏</td><td>{B(ns['miss'])} / {ns['units'] + ns['swaps']}" + (f"　漏：{E(missed)}" if missed else "") + f"　{B(verdict)}</td></tr>\n")
             parts.append("</tbody></table>\n")
@@ -326,7 +324,7 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
         hs, ns, p, alt = s["hard"], s["new"], s["prop"], s["alt"]
         k = KNOB[t]
         has = p.get("n_mid") is not None
-        rv = B(_ratio(ns["median_all"], s["target"])) + (f"（纯执行 {_ratio(ns['median_all'], v2[s['ref']]['stats']['exec_only_median'])}）" if alt else "")
+        rv = B(_ratio(ns["median_all"], s["target"]))
         parts.append(f"<tr><td>{WEB_ID[t]}</td><td>{t}</td><td>{E(k['hard'])} → {E(k['plan'])}" + (f" → <b>{E(p['text'])}</b>" if has else "") + "</td>"
                      f"<td>{hs['median_all']} → {B(ns['median_all'])}</td><td>{hs['windows_median_all']} → {ns['windows_median_all']}</td>"
                      f"<td>{rv}</td><td>{B(_ratio(ns['median_all'], hs['median_all']))}</td>"
