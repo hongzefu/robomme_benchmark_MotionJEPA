@@ -256,23 +256,21 @@ def _ratio(a: int, b: int) -> str:
     return f"{a / b:.2f}"
 
 
+def _short(text: str) -> str:
+    return v2_plot.short_label(text.split(" → ")[0])[0]
+
+
 def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], dict[str, Any]]:
     boards: dict[str, Any] = {}
     summary: dict[str, Any] = {}
     parts: list[str] = []
     E = html.escape
+    B = lambda x: f'<span class="big">{x}</span>'  # noqa: E731
 
-    # ---- 三、对齐原则（两条，2026-10-08 用户定）
     parts.append('<h2 id="p1-_4">三、对齐原则（两条）</h2>\n<ol class="lead">\n'
-                 "<li><b>旋钮只调长度</b>：把每个任务的中位 timestep 拉到配对的 V2 参照中位附近，timestep 就是 motion 窗数；每个任务同时报两个倍数——对 V2 参照、对本任务 hard 母样本。</li>\n"
-                 "<li><b>长度定了再验一下</b>：8 帧等距采样在中位条上至少漏一个 subgoal；拿起加放下算一个，每次 swap 算一个。</li>\n</ol>\n")
-    parts.append("<p class=\"muted\">配对（用户确认）：计数组对 V2 BinFill hard，序列组对 V2 RouteStick xhard，容器组对 V2 VideoUnmaskSwap xhard，参考组对 V2 VideoRepick xhard。"
-                 "subgoal 合并：" + "；".join(f"{E(t)} " + ("每段一个" if MERGE[t] is None else "「" + E(MERGE[t][0].strip('^')) + "」+「" + E(MERGE[t][1].strip('^')) + "」合一") for t in KNOB) + "。</p>\n")
-
-    # ---- 四、分组讨论
+                 "<li><b>旋钮只调长度</b>：中位 timestep 拉到配对的 V2 参照，同时报对 V2、对本任务 hard 两个倍数。</li>\n"
+                 "<li><b>长度定了再验</b>：8 帧采样在中位条上至少漏一个 subgoal（拿起加放下算一个，每次 swap 算一个）。</li>\n</ol>\n")
     parts.append('<h2 id="p1-_5">四、分组讨论</h2>\n')
-    parts.append("<p class=\"muted\">一图一轴，组内同刻度。V2 为实跑中位条；V3 为按 subgoal 段复制粘贴的合成中位条（非实跑）。「现计划」是 10-07 取值（第二部分仍按它写），「建议」是拉到 V2 参照所需的取值，待拍板。</p>\n")
-    fig_n = 0
     for gi, g in enumerate(GROUPS, 1):
         ref = v2[g["ref"]]
         rs = ref["stats"]
@@ -280,12 +278,11 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
         xmax = max([ref["item"]["total"]] + [v3[t]["new_rec"]["item"]["total"] for t in g["tasks"]])
         xmax = (xmax + 99) // 100 * 100
         parts.append(f'<h3 id="p1-g{gi}">四.{gi} {E(g["name"])}：V2 {E(g["ref"])} ← V3 {E("、".join(g["tasks"]))}</h3>\n')
-        parts.append(f"<p><b>V2 参照</b>：{E(g['ref_cfg'])}。中位 timestep <b>{rs['median_all']}</b>、窗 {rs['windows']}，8 帧漏 {rs['miss']}。"
-                     + (f" 中位 1658 含假 demo 一遍，纯执行中位 {rs['exec_only_median']}，下面两个都报。" if "exec_only_median" in rs else "") + "</p>\n")
+        parts.append(f"<p><b>V2 参照</b>　中位 timestep {B(rs['median_all'])} · 窗 {B(rs['windows'])} · 8 帧漏 {B(rs['miss'])}"
+                     + (f" · 纯执行 {B(rs['exec_only_median'])}" if "exec_only_median" in rs else "") + "</p>\n")
         key = f"v2-{g['id']}"
         boards[key] = {"title": f"V2 {g['ref']} 中位条", "sub": "", "xmax": xmax, "items": [_row(ref, [f"V2 {g['ref']}", "中位条", f"ep{ref['episode']} · seed {ref['seed']}"])]}
-        parts.append(_fig(key, f"图 V2-{gi}　V2 {g['ref']} 中位条", f"横轴 0–{xmax}"))
-        fig_n += 1
+        parts.append(_fig(key, f"V2 {g['ref']}　{g['ref_cfg'].split('：', 1)[1]}", ""))
         for t in g["tasks"]:
             x = v3[t]
             k = KNOB[t]
@@ -295,25 +292,23 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
             summary[t] = {"group": g["name"], "ref": g["ref"], "target": target, "hard": hs, "new": ns, "prop": prop, "alt": alt}
             has = prop.get("n_mid") is not None
             verdict = "PASS" if ns["miss"] >= 1 else "FAIL"
-            parts.append(f'<h4 id="p1-t-{t.lower()}">{WEB_ID[t]} {E(t)}</h4>\n<table><tbody>\n')
-            parts.append(f"<tr><td>旋钮</td><td><code>{E(k['key'])}</code>：母样本 {E(k['hard'])} → 现计划 {E(k['plan'])}" + (f" → 建议 <b>{E(prop['text'])}</b>" if has else "") + "</td></tr>\n")
-            parts.append(f"<tr><td>中位 timestep / 窗</td><td>hard {hs['median_all']} / {hs['windows_median_all']} → 现计划 <b>{ns['median_all']}</b> / {ns['windows_median_all']}" + (f" → 建议估 {prop['est']}" if has else "") + "</td></tr>\n")
-            parts.append(f"<tr><td>对 V2 参照倍数</td><td>现计划 {_ratio(ns['median_all'], target)}" + (f" → 建议 {_ratio(prop['est'], target)}" if has else "") +
-                         (f"；对纯执行 {rs['exec_only_median']}：{_ratio(ns['median_all'], rs['exec_only_median'])}（对齐它的取值 {E(alt['text'])}）" if alt and alt.get("n_mid") is not None else "") + "</td></tr>\n")
-            parts.append(f"<tr><td>对本任务 hard 倍数</td><td>现计划 {_ratio(ns['median_all'], hs['median_all'])}" + (f" → 建议 {_ratio(prop['est'], hs['median_all'])}" if has else "") + "</td></tr>\n")
-            parts.append(f"<tr><td>8 帧漏（中位条）</td><td>{ns['miss_units']} 个 subgoal" + (f" + {ns['miss_swaps']} 次 swap" if ns["swaps"] else "") + f"（共 {ns['units']} 个" + (f"、swap {ns['swaps']} 次" if ns["swaps"] else "") + f"）→ <b>{verdict}</b></td></tr>\n")
+            missed = "、".join(_short(l) for l in ns["missed_labels"]) + ("、swap" if ns["miss_swaps"] else "")
+            parts.append(f'<h4 id="p1-t-{t.lower()}">{WEB_ID[t]} {E(t)}</h4>\n<table class="kv"><tbody>\n')
+            parts.append(f"<tr><td>旋钮</td><td><code>{E(k['key'])}</code>　hard {E(k['hard'])} → 现计划 {B(E(k['plan']))}" + (f" → 建议 {B(E(prop['text']))}" if has else "") + "</td></tr>\n")
+            parts.append(f"<tr><td>中位 timestep / 窗</td><td>hard {hs['median_all']} / {hs['windows_median_all']} → 现计划 {B(ns['median_all'])} / {B(ns['windows_median_all'])}" + (f" → 建议估 {B(prop['est'])}" if has else "") + "</td></tr>\n")
+            parts.append(f"<tr><td>对 V2 倍数</td><td>现计划 {B(_ratio(ns['median_all'], target))}" + (f" → 建议 {B(_ratio(prop['est'], target))}" if has else "") +
+                         (f"　对纯执行 {B(_ratio(ns['median_all'], rs['exec_only_median']))}" if alt else "") + "</td></tr>\n")
+            parts.append(f"<tr><td>对 hard 倍数</td><td>现计划 {B(_ratio(ns['median_all'], hs['median_all']))}" + (f" → 建议 {B(_ratio(prop['est'], hs['median_all']))}" if has else "") + "</td></tr>\n")
+            parts.append(f"<tr><td>8 帧漏</td><td>{B(ns['miss'])} / {ns['units'] + ns['swaps']}" + (f"　漏：{E(missed)}" if missed else "") + f"　{B(verdict)}</td></tr>\n")
             parts.append("</tbody></table>\n")
             nr = x["new_rec"]
             key = f"v3-{t}"
             boards[key] = {"title": f"V3 {t} 中位条", "sub": "", "xmax": xmax,
                            "items": [_row(nr, [f"V3 {t}", f"现计划 {k['plan']}", f"ep{nr['episode']} · seed {nr['seed']}", "合成"])]}
-            parts.append(_fig(key, f"图 V3-{WEB_ID[t]}　V3 {t} 中位条（现计划 {k['plan']}）", f"横轴 0–{xmax}，与图 V2-{gi} 同刻度"))
-            fig_n += 1
-    parts.append('<h3 id="p1-g5">四.5 不纳入：4.1 MoveCube、4.2 InsertPeg</h3>\n<p>没有次数型的量，不改。</p>\n')
-
-    # ---- 总表
+            parts.append(_fig(key, f"V3 {t}　现计划 {k['plan']}", ""))
+    parts.append('<h3 id="p1-g5">四.5 不纳入：4.1 MoveCube、4.2 InsertPeg</h3>\n')
     parts.append('<h3 id="p1-g6">四.6 全任务总表</h3>\n')
-    parts.append("<table><thead><tr><th>编号</th><th>任务</th><th>旋钮 母样本 → 现计划 → 建议</th><th>中位 timestep hard → 现计划</th><th>窗 hard → 现计划</th><th>对 V2 倍数</th><th>对 hard 倍数</th><th>8 帧漏</th></tr></thead><tbody>\n")
+    parts.append("<table><thead><tr><th>编号</th><th>任务</th><th>旋钮 hard → 现计划 → 建议</th><th>中位 timestep hard → 现计划</th><th>窗 hard → 现计划</th><th>对 V2</th><th>对 hard</th><th>8 帧漏</th></tr></thead><tbody>\n")
     for t in WEB_ID:
         if t not in KNOB:
             parts.append(f"<tr><td>{WEB_ID[t]}</td><td>{t}</td><td>不纳入</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>\n")
@@ -322,11 +317,11 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
         hs, ns, p, alt = s["hard"], s["new"], s["prop"], s["alt"]
         k = KNOB[t]
         has = p.get("n_mid") is not None
-        rv = _ratio(ns["median_all"], s["target"]) + (f"（纯执行 {_ratio(ns['median_all'], v2[s['ref']]['stats']['exec_only_median'])}）" if alt else "")
+        rv = B(_ratio(ns["median_all"], s["target"])) + (f"（纯执行 {_ratio(ns['median_all'], v2[s['ref']]['stats']['exec_only_median'])}）" if alt else "")
         parts.append(f"<tr><td>{WEB_ID[t]}</td><td>{t}</td><td>{E(k['hard'])} → {E(k['plan'])}" + (f" → <b>{E(p['text'])}</b>" if has else "") + "</td>"
-                     f"<td>{hs['median_all']} → <b>{ns['median_all']}</b></td><td>{hs['windows_median_all']} → {ns['windows_median_all']}</td>"
-                     f"<td>{rv}</td><td>{_ratio(ns['median_all'], hs['median_all'])}</td>"
-                     f"<td>{ns['miss_units']}" + (f"+{ns['miss_swaps']}swap" if ns["swaps"] else "") + f" {'PASS' if ns['miss'] >= 1 else 'FAIL'}</td></tr>\n")
+                     f"<td>{hs['median_all']} → {B(ns['median_all'])}</td><td>{hs['windows_median_all']} → {ns['windows_median_all']}</td>"
+                     f"<td>{rv}</td><td>{B(_ratio(ns['median_all'], hs['median_all']))}</td>"
+                     f"<td>{B(ns['miss'])} {'PASS' if ns['miss'] >= 1 else 'FAIL'}</td></tr>\n")
     parts.append("</tbody></table>\n")
 
     payload = {"boards": boards, "win": v2_plot.WIN, "stride": v2_plot.STRIDE, "budgets": list(v2_plot.BUDGETS),
@@ -346,6 +341,8 @@ figure.tl .tl-legend { display:flex; flex-wrap:wrap; gap:6px 16px; color:var(--m
 figure.tl .tl-legend i { display:inline-block; width:18px; height:10px; vertical-align:middle; margin-right:5px; border-radius:2px; }
 .muted { color:var(--muted); font-size:.88em; }
 .lead { font-size:1.08em; line-height:1.7; }
+.big { font-size:1.3em; font-weight:700; }
+table.kv td:first-child { white-space:nowrap; width:11em; }
 """
 
 

@@ -112,170 +112,167 @@ a { color:var(--accent); }
 
 <h2 id="p1-_4">三、对齐原则（两条）</h2>
 <ol class="lead">
-<li><b>旋钮只调长度</b>：把每个任务的中位 timestep 拉到配对的 V2 参照中位附近，timestep 就是 motion 窗数；每个任务同时报两个倍数——对 V2 参照、对本任务 hard 母样本。</li>
-<li><b>长度定了再验一下</b>：8 帧等距采样在中位条上至少漏一个 subgoal；拿起加放下算一个，每次 swap 算一个。</li>
+<li><b>旋钮只调长度</b>：中位 timestep 拉到配对的 V2 参照，同时报对 V2、对本任务 hard 两个倍数。</li>
+<li><b>长度定了再验</b>：8 帧采样在中位条上至少漏一个 subgoal（拿起加放下算一个，每次 swap 算一个）。</li>
 </ol>
-<p class="muted">配对（用户确认）：计数组对 V2 BinFill hard，序列组对 V2 RouteStick xhard，容器组对 V2 VideoUnmaskSwap xhard，参考组对 V2 VideoRepick xhard。subgoal 合并：BinFill 「pick up the」+「put it into the bin」合一；PickXtimes 「pick up the」+「place the」合一；SwingXtimes 「right-side target」+「left-side target」合一；StopCube 「move to the top of the button」+「press the button」合一；PatternLock 每段一个；RouteStick 每段一个；VideoUnmask 「pick up the container」+「put down the container」合一；ButtonUnmask 「pick up the container」+「put down the container」合一；VideoUnmaskSwap 「pick up the container」+「put down the container」合一；ButtonUnmaskSwap 「pick up the container」+「put down the container」合一；PickHighlight 「pick up the」+「place the cube onto the table」合一；VideoRepick 「pick up the correct cube」+「put it down」合一；VideoPlaceButton 「pick up the cube」+「place the cube onto the correct target」合一；VideoPlaceOrder 「pick up the cube」+「place the cube onto the correct target」合一。</p>
 <h2 id="p1-_5">四、分组讨论</h2>
-<p class="muted">一图一轴，组内同刻度。V2 为实跑中位条；V3 为按 subgoal 段复制粘贴的合成中位条（非实跑）。「现计划」是 10-07 取值（第二部分仍按它写），「建议」是拉到 V2 参照所需的取值，待拍板。</p>
 <h3 id="p1-g1">四.1 计数组：V2 BinFill/hard ← V3 BinFill、PickXtimes、SwingXtimes</h3>
-<p><b>V2 参照</b>：V2 BinFill hard：3 色、生成 8–10 块、投入 3–5 块；h5 把成品轨迹重复两遍，前一遍标 is_video_demo=True（假 demo，V3 已弃用，AGENTS.md P4）。中位 timestep <b>1658</b>、窗 100，8 帧漏 2。 中位 1658 含假 demo 一遍，纯执行中位 829，下面两个都报。</p>
-<figure class="tl"><div class="tl-title">图 V2-1　V2 BinFill/hard 中位条</div><p class="tl-sub">横轴 0–1700</p><div class="tl-scroll"><div class="tl-board" data-board="v2-g1"></div></div><div class="tl-legend"></div></figure>
+<p><b>V2 参照</b>　中位 timestep <span class="big">1658</span> · 窗 <span class="big">100</span> · 8 帧漏 <span class="big">2</span> · 纯执行 <span class="big">829</span></p>
+<figure class="tl"><div class="tl-title">V2 BinFill/hard　3 色、生成 8–10 块、投入 3–5 块；h5 把成品轨迹重复两遍，前一遍标 is_video_demo=True（假 demo，V3 已弃用，AGENTS.md P4）</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v2-g1"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-binfill">1.1 BinFill</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;put_in_numbers&quot;]</code>：母样本 [3,5] → 现计划 [5,6] → 建议 <b>[8,9]</b></td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 868 / 53 → 现计划 <b>1109</b> / 68 → 建议估 1591</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 0.67 → 建议 0.96；对纯执行 829：1.34（对齐它的取值 [3,4]）</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 1.28 → 建议 1.83</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>1 个 subgoal（共 7 个）→ <b>PASS</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;put_in_numbers&quot;]</code>　hard [3,5] → 现计划 <span class="big">[5,6]</span> → 建议 <span class="big">[8,9]</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 868 / 53 → 现计划 <span class="big">1109</span> / <span class="big">68</span> → 建议估 <span class="big">1591</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">0.67</span> → 建议 <span class="big">0.96</span>　对纯执行 <span class="big">1.34</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">1.28</span> → 建议 <span class="big">1.83</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">1</span> / 7　漏：按钮　<span class="big">PASS</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-1.1　V3 BinFill 中位条（现计划 [5,6]）</div><p class="tl-sub">横轴 0–1700，与图 V2-1 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-BinFill"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 BinFill　现计划 [5,6]</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-BinFill"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-pickxtimes">1.2 PickXtimes</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;number_min&quot;/&quot;number_max&quot;]</code>：母样本 [4,5] → 现计划 [6,7] → 建议 <b>[9,10]</b></td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 812 / 49 → 现计划 <b>1128</b> / 69 → 建议估 1602</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 0.68 → 建议 0.97；对纯执行 829：1.36（对齐它的取值 [4,5]）</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 1.39 → 建议 1.97</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>2 个 subgoal（共 8 个）→ <b>PASS</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;number_min&quot;/&quot;number_max&quot;]</code>　hard [4,5] → 现计划 <span class="big">[6,7]</span> → 建议 <span class="big">[9,10]</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 812 / 49 → 现计划 <span class="big">1128</span> / <span class="big">69</span> → 建议估 <span class="big">1602</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">0.68</span> → 建议 <span class="big">0.97</span>　对纯执行 <span class="big">1.36</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">1.39</span> → 建议 <span class="big">1.97</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">2</span> / 8　漏：抓绿2、按钮停　<span class="big">PASS</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-1.2　V3 PickXtimes 中位条（现计划 [6,7]）</div><p class="tl-sub">横轴 0–1700，与图 V2-1 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-PickXtimes"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 PickXtimes　现计划 [6,7]</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-PickXtimes"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-swingxtimes">1.3 SwingXtimes</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;number_min&quot;/&quot;number_max&quot;]</code>：母样本 3 → 现计划 [7,8] → 建议 <b>[18,19]</b></td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 488 / 29 → 现计划 <b>833</b> / 51 → 建议估 1676</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 0.50 → 建议 1.01；对纯执行 829：1.00（对齐它的取值 [7,8]）</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 1.71 → 建议 3.43</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>4 个 subgoal（共 10 个）→ <b>PASS</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;number_min&quot;/&quot;number_max&quot;]</code>　hard 3 → 现计划 <span class="big">[7,8]</span> → 建议 <span class="big">[18,19]</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 488 / 29 → 现计划 <span class="big">833</span> / <span class="big">51</span> → 建议估 <span class="big">1676</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">0.50</span> → 建议 <span class="big">1.01</span>　对纯执行 <span class="big">1.00</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">1.71</span> → 建议 <span class="big">3.43</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">4</span> / 10　漏：摆右2、摆右2、摆右1、按钮　<span class="big">PASS</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-1.3　V3 SwingXtimes 中位条（现计划 [7,8]）</div><p class="tl-sub">横轴 0–1700，与图 V2-1 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-SwingXtimes"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 SwingXtimes　现计划 [7,8]</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-SwingXtimes"></div></div><div class="tl-legend"></div></figure>
 <h3 id="p1-g2">四.2 序列组：V2 RouteStick/xhard ← V3 StopCube、PatternLock、RouteStick</h3>
-<p><b>V2 参照</b>：V2 RouteStick xhard：length 8–10、可折返；demo 与执行各 50·L 步，T = 100·L。中位 timestep <b>900</b>、窗 54，8 帧漏 6。</p>
-<figure class="tl"><div class="tl-title">图 V2-2　V2 RouteStick/xhard 中位条</div><p class="tl-sub">横轴 0–1100</p><div class="tl-scroll"><div class="tl-board" data-board="v2-g2"></div></div><div class="tl-legend"></div></figure>
+<p><b>V2 参照</b>　中位 timestep <span class="big">900</span> · 窗 <span class="big">54</span> · 8 帧漏 <span class="big">6</span></p>
+<figure class="tl"><div class="tl-title">V2 RouteStick/xhard　length 8–10、可折返；demo 与执行各 50·L 步，T = 100·L</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v2-g2"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-stopcube">1.4 StopCube</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>stop_time randint 上下界 + move_interval</code>：母样本 [2,5]，间隔 60/80/120 随机 → 现计划 [8,10]，间隔钉 120 → 建议 <b>[7,9]</b></td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 309 / 18 → 现计划 <b>1054</b> / 64 → 建议估 919</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 1.17 → 建议 1.02</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 3.41 → 建议 2.97</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>5 个 subgoal（共 12 个）→ <b>PASS</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>stop_time randint 上下界 + move_interval</code>　hard [2,5]，间隔 60/80/120 随机 → 现计划 <span class="big">[8,10]，间隔钉 120</span> → 建议 <span class="big">[7,9]</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 309 / 18 → 现计划 <span class="big">1054</span> / <span class="big">64</span> → 建议估 <span class="big">919</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">1.17</span> → 建议 <span class="big">1.02</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">3.41</span> → 建议 <span class="big">2.97</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">5</span> / 12　漏：静止、静止、静止、静止、按钮停　<span class="big">PASS</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-1.4　V3 StopCube 中位条（现计划 [8,10]，间隔钉 120）</div><p class="tl-sub">横轴 0–1100，与图 V2-2 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-StopCube"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 StopCube　现计划 [8,10]，间隔钉 120</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-StopCube"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-patternlock">4.3 PatternLock</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;length&quot;]</code>：母样本 [4,8] → 现计划 [10,14] → 建议 <b>[12,16]</b></td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 324 / 18 → 现计划 <b>737</b> / 43 → 建议估 875</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 0.82 → 建议 0.97</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 2.27 → 建议 2.70</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>9 个 subgoal（共 12 个）→ <b>PASS</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;length&quot;]</code>　hard [4,8] → 现计划 <span class="big">[10,14]</span> → 建议 <span class="big">[12,16]</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 324 / 18 → 现计划 <span class="big">737</span> / <span class="big">43</span> → 建议估 <span class="big">875</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">0.82</span> → 建议 <span class="big">0.97</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">2.27</span> → 建议 <span class="big">2.70</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">9</span> / 12　漏：移左前、移右、移左后、移右、移左前、移左后、移左后、移右、移右　<span class="big">PASS</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-4.3　V3 PatternLock 中位条（现计划 [10,14]）</div><p class="tl-sub">横轴 0–1100，与图 V2-2 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-PatternLock"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 PatternLock　现计划 [10,14]</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-PatternLock"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-routestick">4.4 RouteStick</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;length&quot;]</code>：母样本 [4,7] → 现计划 [8,10] → 建议 <b>[8,10]</b></td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 500 / 28 → 现计划 <b>900</b> / 54 → 建议估 900</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 1.00 → 建议 1.00</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 1.80 → 建议 1.80</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>6 个 subgoal（共 9 个）→ <b>PASS</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;length&quot;]</code>　hard [4,7] → 现计划 <span class="big">[8,10]</span> → 建议 <span class="big">[8,10]</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 500 / 28 → 现计划 <span class="big">900</span> / <span class="big">54</span> → 建议估 <span class="big">900</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">1.00</span> → 建议 <span class="big">1.00</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">1.80</span> → 建议 <span class="big">1.80</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">6</span> / 9　漏：绕左顺、绕右逆、绕左顺、绕左顺、绕右逆、绕右顺　<span class="big">PASS</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-4.4　V3 RouteStick 中位条（现计划 [8,10]）</div><p class="tl-sub">横轴 0–1100，与图 V2-2 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-RouteStick"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 RouteStick　现计划 [8,10]</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-RouteStick"></div></div><div class="tl-legend"></div></figure>
 <h3 id="p1-g3">四.3 容器组：V2 VideoUnmaskSwap/xhard ← V3 VideoUnmask、ButtonUnmask、VideoUnmaskSwap、ButtonUnmaskSwap</h3>
-<p><b>V2 参照</b>：V2 VideoUnmaskSwap xhard：4 容器、swap 4–5、pick 2；demo = 6·ceil((64+50n)/6)，n=4/5 → 264/318。中位 timestep <b>564</b>、窗 32，8 帧漏 2。</p>
-<figure class="tl"><div class="tl-title">图 V2-3　V2 VideoUnmaskSwap/xhard 中位条</div><p class="tl-sub">横轴 0–600</p><div class="tl-scroll"><div class="tl-board" data-board="v2-g3"></div></div><div class="tl-legend"></div></figure>
+<p><b>V2 参照</b>　中位 timestep <span class="big">564</span> · 窗 <span class="big">32</span> · 8 帧漏 <span class="big">2</span></p>
+<figure class="tl"><div class="tl-title">V2 VideoUnmaskSwap/xhard　4 容器、swap 4–5、pick 2；demo = 6·ceil((64+50n)/6)，n=4/5 → 264/318</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v2-g3"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-videounmask">2.1 VideoUnmask</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>task_list 抓容器次数（重写方法）</code>：母样本 2 → 现计划 3 → 建议 <b>4</b></td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 329 / 18 → 现计划 <b>476</b> / 27 → 建议估 623</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 0.84 → 建议 1.10</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 1.45 → 建议 1.89</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>0 个 subgoal（共 3 个）→ <b>FAIL</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>task_list 抓容器次数（重写方法）</code>　hard 2 → 现计划 <span class="big">3</span> → 建议 <span class="big">4</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 329 / 18 → 现计划 <span class="big">476</span> / <span class="big">27</span> → 建议估 <span class="big">623</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">0.84</span> → 建议 <span class="big">1.10</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">1.45</span> → 建议 <span class="big">1.89</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">0</span> / 3　<span class="big">FAIL</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-2.1　V3 VideoUnmask 中位条（现计划 3）</div><p class="tl-sub">横轴 0–600，与图 V2-3 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-VideoUnmask"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 VideoUnmask　现计划 3</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-VideoUnmask"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-buttonunmask">2.2 ButtonUnmask</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>task_list 抓容器次数（重写方法）</code>：母样本 2 → 现计划 3 → 建议 <b>3</b></td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 373 / 22 → 现计划 <b>515</b> / 31 → 建议估 515</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 0.91 → 建议 0.91</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 1.38 → 建议 1.38</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>0 个 subgoal（共 4 个）→ <b>FAIL</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>task_list 抓容器次数（重写方法）</code>　hard 2 → 现计划 <span class="big">3</span> → 建议 <span class="big">3</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 373 / 22 → 现计划 <span class="big">515</span> / <span class="big">31</span> → 建议估 <span class="big">515</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">0.91</span> → 建议 <span class="big">0.91</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">1.38</span> → 建议 <span class="big">1.38</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">0</span> / 4　<span class="big">FAIL</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-2.2　V3 ButtonUnmask 中位条（现计划 3）</div><p class="tl-sub">横轴 0–600，与图 V2-3 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-ButtonUnmask"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 ButtonUnmask　现计划 3</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-ButtonUnmask"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-videounmaskswap">2.3 VideoUnmaskSwap</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;swap_min&quot;/&quot;swap_max&quot;]</code>：母样本 [2,3] → 现计划 [4,5] → 建议 <b>[4,5]</b></td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 457 / 26 → 现计划 <b>560</b> / 32 → 建议估 560</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 0.99 → 建议 0.99</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 1.23 → 建议 1.23</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>0 个 subgoal + 2 次 swap（共 2 个、swap 5 次）→ <b>PASS</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;swap_min&quot;/&quot;swap_max&quot;]</code>　hard [2,3] → 现计划 <span class="big">[4,5]</span> → 建议 <span class="big">[4,5]</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 457 / 26 → 现计划 <span class="big">560</span> / <span class="big">32</span> → 建议估 <span class="big">560</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">0.99</span> → 建议 <span class="big">0.99</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">1.23</span> → 建议 <span class="big">1.23</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">2</span> / 7　漏：、swap　<span class="big">PASS</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-2.3　V3 VideoUnmaskSwap 中位条（现计划 [4,5]）</div><p class="tl-sub">横轴 0–600，与图 V2-3 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-VideoUnmaskSwap"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 VideoUnmaskSwap　现计划 [4,5]</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-VideoUnmaskSwap"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-buttonunmaskswap">2.4 ButtonUnmaskSwap</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;swap_min&quot;/&quot;swap_max&quot;]</code>：母样本 [2,3] → 现计划 [4,5] → 建议 <b>3</b></td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 461 / 27 → 现计划 <b>461</b> / 27 → 建议估 603</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 0.82 → 建议 1.07</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 1.00 → 建议 1.31</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>0 个 subgoal + 0 次 swap（共 4 个、swap 4 次）→ <b>FAIL</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;swap_min&quot;/&quot;swap_max&quot;]</code>　hard [2,3] → 现计划 <span class="big">[4,5]</span> → 建议 <span class="big">3</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 461 / 27 → 现计划 <span class="big">461</span> / <span class="big">27</span> → 建议估 <span class="big">603</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">0.82</span> → 建议 <span class="big">1.07</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">1.00</span> → 建议 <span class="big">1.31</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">0</span> / 8　<span class="big">FAIL</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-2.4　V3 ButtonUnmaskSwap 中位条（现计划 [4,5]）</div><p class="tl-sub">横轴 0–600，与图 V2-3 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-ButtonUnmaskSwap"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 ButtonUnmaskSwap　现计划 [4,5]</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-ButtonUnmaskSwap"></div></div><div class="tl-legend"></div></figure>
 <h3 id="p1-g4">四.4 参考组：V2 VideoRepick/xhard ← V3 PickHighlight、VideoRepick、VideoPlaceButton、VideoPlaceOrder</h3>
-<p><b>V2 参照</b>：V2 VideoRepick xhard：3 块 cube（easy/medium 分支）、swap 4–5、重抓 1–3 次；demo = 拿起 + 放下 + static(20) + swap×static(54)。中位 timestep <b>858</b>、窗 51，8 帧漏 4。</p>
-<figure class="tl"><div class="tl-title">图 V2-4　V2 VideoRepick/xhard 中位条</div><p class="tl-sub">横轴 0–1200</p><div class="tl-scroll"><div class="tl-board" data-board="v2-g4"></div></div><div class="tl-legend"></div></figure>
+<p><b>V2 参照</b>　中位 timestep <span class="big">858</span> · 窗 <span class="big">51</span> · 8 帧漏 <span class="big">4</span></p>
+<figure class="tl"><div class="tl-title">V2 VideoRepick/xhard　3 块 cube（easy/medium 分支）、swap 4–5、重抓 1–3 次；demo = 拿起 + 放下 + static(20) + swap×static(54)</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v2-g4"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-pickhighlight">3.1 PickHighlight</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;pickup&quot;]</code>：母样本 3 → 现计划 5 → 建议 <b>5</b></td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 539 / 32 → 现计划 <b>855</b> / 52 → 建议估 855</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 1.00 → 建议 1.00</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 1.59 → 建议 1.59</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>1 个 subgoal（共 6 个）→ <b>PASS</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>configs[&quot;hard&quot;][&quot;pickup&quot;]</code>　hard 3 → 现计划 <span class="big">5</span> → 建议 <span class="big">5</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 539 / 32 → 现计划 <span class="big">855</span> / <span class="big">52</span> → 建议估 <span class="big">855</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">1.00</span> → 建议 <span class="big">1.00</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">1.59</span> → 建议 <span class="big">1.59</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">1</span> / 6　漏：抓亮3　<span class="big">PASS</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-3.1　V3 PickHighlight 中位条（现计划 5）</div><p class="tl-sub">横轴 0–1200，与图 V2-4 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-PickHighlight"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 PickHighlight　现计划 5</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-PickHighlight"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-videorepick">3.2 VideoRepick</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>母样本 medium；configs[&quot;medium&quot;][&quot;swap_min&quot;/&quot;swap_max&quot;]</code>：母样本 [2,3] → 现计划 [4,5] → 建议 <b>[4,5]</b></td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 747 / 43 → 现计划 <b>862</b> / 51 → 建议估 862</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 1.00 → 建议 1.00</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 1.15 → 建议 1.15</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>1 个 subgoal + 3 次 swap（共 3 个、swap 5 次）→ <b>PASS</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>母样本 medium；configs[&quot;medium&quot;][&quot;swap_min&quot;/&quot;swap_max&quot;]</code>　hard [2,3] → 现计划 <span class="big">[4,5]</span> → 建议 <span class="big">[4,5]</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 747 / 43 → 现计划 <span class="big">862</span> / <span class="big">51</span> → 建议估 <span class="big">862</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">1.00</span> → 建议 <span class="big">1.00</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">1.15</span> → 建议 <span class="big">1.15</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">4</span> / 8　漏：按钮停、swap　<span class="big">PASS</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-3.2　V3 VideoRepick 中位条（现计划 [4,5]）</div><p class="tl-sub">横轴 0–1200，与图 V2-4 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-VideoRepick"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 VideoRepick　现计划 [4,5]</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-VideoRepick"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-videoplacebutton">3.3 VideoPlaceButton</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>不改</code>：母样本 原 hard → 现计划 原 hard</td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 961 / 57 → 现计划 <b>961</b> / 57</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 1.12</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 1.00</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>0 个 subgoal + 1 次 swap（共 1 个、swap 1 次）→ <b>PASS</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>不改</code>　hard 原 hard → 现计划 <span class="big">原 hard</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 961 / 57 → 现计划 <span class="big">961</span> / <span class="big">57</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">1.12</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">1.00</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">1</span> / 2　漏：、swap　<span class="big">PASS</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-3.3　V3 VideoPlaceButton 中位条（现计划 原 hard）</div><p class="tl-sub">横轴 0–1200，与图 V2-4 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-VideoPlaceButton"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 VideoPlaceButton　现计划 原 hard</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-VideoPlaceButton"></div></div><div class="tl-legend"></div></figure>
 <h4 id="p1-t-videoplaceorder">3.4 VideoPlaceOrder</h4>
-<table><tbody>
-<tr><td>旋钮</td><td><code>不改</code>：母样本 原 hard → 现计划 原 hard</td></tr>
-<tr><td>中位 timestep / 窗</td><td>hard 1115 / 67 → 现计划 <b>1115</b> / 67</td></tr>
-<tr><td>对 V2 参照倍数</td><td>现计划 1.30</td></tr>
-<tr><td>对本任务 hard 倍数</td><td>现计划 1.00</td></tr>
-<tr><td>8 帧漏（中位条）</td><td>0 个 subgoal + 1 次 swap（共 1 个、swap 1 次）→ <b>PASS</b></td></tr>
+<table class="kv"><tbody>
+<tr><td>旋钮</td><td><code>不改</code>　hard 原 hard → 现计划 <span class="big">原 hard</span></td></tr>
+<tr><td>中位 timestep / 窗</td><td>hard 1115 / 67 → 现计划 <span class="big">1115</span> / <span class="big">67</span></td></tr>
+<tr><td>对 V2 倍数</td><td>现计划 <span class="big">1.30</span></td></tr>
+<tr><td>对 hard 倍数</td><td>现计划 <span class="big">1.00</span></td></tr>
+<tr><td>8 帧漏</td><td><span class="big">1</span> / 2　漏：、swap　<span class="big">PASS</span></td></tr>
 </tbody></table>
-<figure class="tl"><div class="tl-title">图 V3-3.4　V3 VideoPlaceOrder 中位条（现计划 原 hard）</div><p class="tl-sub">横轴 0–1200，与图 V2-4 同刻度</p><div class="tl-scroll"><div class="tl-board" data-board="v3-VideoPlaceOrder"></div></div><div class="tl-legend"></div></figure>
+<figure class="tl"><div class="tl-title">V3 VideoPlaceOrder　现计划 原 hard</div><p class="tl-sub"></p><div class="tl-scroll"><div class="tl-board" data-board="v3-VideoPlaceOrder"></div></div><div class="tl-legend"></div></figure>
 <h3 id="p1-g5">四.5 不纳入：4.1 MoveCube、4.2 InsertPeg</h3>
-<p>没有次数型的量，不改。</p>
 <h3 id="p1-g6">四.6 全任务总表</h3>
-<table><thead><tr><th>编号</th><th>任务</th><th>旋钮 母样本 → 现计划 → 建议</th><th>中位 timestep hard → 现计划</th><th>窗 hard → 现计划</th><th>对 V2 倍数</th><th>对 hard 倍数</th><th>8 帧漏</th></tr></thead><tbody>
-<tr><td>1.1</td><td>BinFill</td><td>[3,5] → [5,6] → <b>[8,9]</b></td><td>868 → <b>1109</b></td><td>53 → 68</td><td>0.67（纯执行 1.34）</td><td>1.28</td><td>1 PASS</td></tr>
-<tr><td>1.2</td><td>PickXtimes</td><td>[4,5] → [6,7] → <b>[9,10]</b></td><td>812 → <b>1128</b></td><td>49 → 69</td><td>0.68（纯执行 1.36）</td><td>1.39</td><td>2 PASS</td></tr>
-<tr><td>1.3</td><td>SwingXtimes</td><td>3 → [7,8] → <b>[18,19]</b></td><td>488 → <b>833</b></td><td>29 → 51</td><td>0.50（纯执行 1.00）</td><td>1.71</td><td>4 PASS</td></tr>
-<tr><td>1.4</td><td>StopCube</td><td>[2,5]，间隔 60/80/120 随机 → [8,10]，间隔钉 120 → <b>[7,9]</b></td><td>309 → <b>1054</b></td><td>18 → 64</td><td>1.17</td><td>3.41</td><td>5 PASS</td></tr>
-<tr><td>2.1</td><td>VideoUnmask</td><td>2 → 3 → <b>4</b></td><td>329 → <b>476</b></td><td>18 → 27</td><td>0.84</td><td>1.45</td><td>0 FAIL</td></tr>
-<tr><td>2.2</td><td>ButtonUnmask</td><td>2 → 3 → <b>3</b></td><td>373 → <b>515</b></td><td>22 → 31</td><td>0.91</td><td>1.38</td><td>0 FAIL</td></tr>
-<tr><td>2.3</td><td>VideoUnmaskSwap</td><td>[2,3] → [4,5] → <b>[4,5]</b></td><td>457 → <b>560</b></td><td>26 → 32</td><td>0.99</td><td>1.23</td><td>0+2swap PASS</td></tr>
-<tr><td>2.4</td><td>ButtonUnmaskSwap</td><td>[2,3] → [4,5] → <b>3</b></td><td>461 → <b>461</b></td><td>27 → 27</td><td>0.82</td><td>1.00</td><td>0+0swap FAIL</td></tr>
-<tr><td>3.1</td><td>PickHighlight</td><td>3 → 5 → <b>5</b></td><td>539 → <b>855</b></td><td>32 → 52</td><td>1.00</td><td>1.59</td><td>1 PASS</td></tr>
-<tr><td>3.2</td><td>VideoRepick</td><td>[2,3] → [4,5] → <b>[4,5]</b></td><td>747 → <b>862</b></td><td>43 → 51</td><td>1.00</td><td>1.15</td><td>1+3swap PASS</td></tr>
-<tr><td>3.3</td><td>VideoPlaceButton</td><td>原 hard → 原 hard</td><td>961 → <b>961</b></td><td>57 → 57</td><td>1.12</td><td>1.00</td><td>0+1swap PASS</td></tr>
-<tr><td>3.4</td><td>VideoPlaceOrder</td><td>原 hard → 原 hard</td><td>1115 → <b>1115</b></td><td>67 → 67</td><td>1.30</td><td>1.00</td><td>0+1swap PASS</td></tr>
+<table><thead><tr><th>编号</th><th>任务</th><th>旋钮 hard → 现计划 → 建议</th><th>中位 timestep hard → 现计划</th><th>窗 hard → 现计划</th><th>对 V2</th><th>对 hard</th><th>8 帧漏</th></tr></thead><tbody>
+<tr><td>1.1</td><td>BinFill</td><td>[3,5] → [5,6] → <b>[8,9]</b></td><td>868 → <span class="big">1109</span></td><td>53 → 68</td><td><span class="big">0.67</span>（纯执行 1.34）</td><td><span class="big">1.28</span></td><td><span class="big">1</span> PASS</td></tr>
+<tr><td>1.2</td><td>PickXtimes</td><td>[4,5] → [6,7] → <b>[9,10]</b></td><td>812 → <span class="big">1128</span></td><td>49 → 69</td><td><span class="big">0.68</span>（纯执行 1.36）</td><td><span class="big">1.39</span></td><td><span class="big">2</span> PASS</td></tr>
+<tr><td>1.3</td><td>SwingXtimes</td><td>3 → [7,8] → <b>[18,19]</b></td><td>488 → <span class="big">833</span></td><td>29 → 51</td><td><span class="big">0.50</span>（纯执行 1.00）</td><td><span class="big">1.71</span></td><td><span class="big">4</span> PASS</td></tr>
+<tr><td>1.4</td><td>StopCube</td><td>[2,5]，间隔 60/80/120 随机 → [8,10]，间隔钉 120 → <b>[7,9]</b></td><td>309 → <span class="big">1054</span></td><td>18 → 64</td><td><span class="big">1.17</span></td><td><span class="big">3.41</span></td><td><span class="big">5</span> PASS</td></tr>
+<tr><td>2.1</td><td>VideoUnmask</td><td>2 → 3 → <b>4</b></td><td>329 → <span class="big">476</span></td><td>18 → 27</td><td><span class="big">0.84</span></td><td><span class="big">1.45</span></td><td><span class="big">0</span> FAIL</td></tr>
+<tr><td>2.2</td><td>ButtonUnmask</td><td>2 → 3 → <b>3</b></td><td>373 → <span class="big">515</span></td><td>22 → 31</td><td><span class="big">0.91</span></td><td><span class="big">1.38</span></td><td><span class="big">0</span> FAIL</td></tr>
+<tr><td>2.3</td><td>VideoUnmaskSwap</td><td>[2,3] → [4,5] → <b>[4,5]</b></td><td>457 → <span class="big">560</span></td><td>26 → 32</td><td><span class="big">0.99</span></td><td><span class="big">1.23</span></td><td><span class="big">2</span> PASS</td></tr>
+<tr><td>2.4</td><td>ButtonUnmaskSwap</td><td>[2,3] → [4,5] → <b>3</b></td><td>461 → <span class="big">461</span></td><td>27 → 27</td><td><span class="big">0.82</span></td><td><span class="big">1.00</span></td><td><span class="big">0</span> FAIL</td></tr>
+<tr><td>3.1</td><td>PickHighlight</td><td>3 → 5 → <b>5</b></td><td>539 → <span class="big">855</span></td><td>32 → 52</td><td><span class="big">1.00</span></td><td><span class="big">1.59</span></td><td><span class="big">1</span> PASS</td></tr>
+<tr><td>3.2</td><td>VideoRepick</td><td>[2,3] → [4,5] → <b>[4,5]</b></td><td>747 → <span class="big">862</span></td><td>43 → 51</td><td><span class="big">1.00</span></td><td><span class="big">1.15</span></td><td><span class="big">4</span> PASS</td></tr>
+<tr><td>3.3</td><td>VideoPlaceButton</td><td>原 hard → 原 hard</td><td>961 → <span class="big">961</span></td><td>57 → 57</td><td><span class="big">1.12</span></td><td><span class="big">1.00</span></td><td><span class="big">1</span> PASS</td></tr>
+<tr><td>3.4</td><td>VideoPlaceOrder</td><td>原 hard → 原 hard</td><td>1115 → <span class="big">1115</span></td><td>67 → 67</td><td><span class="big">1.30</span></td><td><span class="big">1.00</span></td><td><span class="big">1</span> PASS</td></tr>
 <tr><td>4.1</td><td>MoveCube</td><td>不纳入</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
 <tr><td>4.2</td><td>InsertPeg</td><td>不纳入</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-<tr><td>4.3</td><td>PatternLock</td><td>[4,8] → [10,14] → <b>[12,16]</b></td><td>324 → <b>737</b></td><td>18 → 43</td><td>0.82</td><td>2.27</td><td>9 PASS</td></tr>
-<tr><td>4.4</td><td>RouteStick</td><td>[4,7] → [8,10] → <b>[8,10]</b></td><td>500 → <b>900</b></td><td>28 → 54</td><td>1.00</td><td>1.80</td><td>6 PASS</td></tr>
+<tr><td>4.3</td><td>PatternLock</td><td>[4,8] → [10,14] → <b>[12,16]</b></td><td>324 → <span class="big">737</span></td><td>18 → 43</td><td><span class="big">0.82</span></td><td><span class="big">2.27</span></td><td><span class="big">9</span> PASS</td></tr>
+<tr><td>4.4</td><td>RouteStick</td><td>[4,7] → [8,10] → <b>[8,10]</b></td><td>500 → <span class="big">900</span></td><td>28 → 54</td><td><span class="big">1.00</span></td><td><span class="big">1.80</span></td><td><span class="big">6</span> PASS</td></tr>
 </tbody></table>
 <style>
 figure.tl { margin:14px 0; border:1px solid var(--border); border-radius:8px; padding:10px 14px; }
@@ -286,6 +283,8 @@ figure.tl .tl-legend { display:flex; flex-wrap:wrap; gap:6px 16px; color:var(--m
 figure.tl .tl-legend i { display:inline-block; width:18px; height:10px; vertical-align:middle; margin-right:5px; border-radius:2px; }
 .muted { color:var(--muted); font-size:.88em; }
 .lead { font-size:1.08em; line-height:1.7; }
+.big { font-size:1.3em; font-weight:700; }
+table.kv td:first-child { white-space:nowrap; width:11em; }
 </style>
 <script>window.TL_DATA = {"boards":{"v2-g1":{"title":"V2 BinFill/hard 中位条","sub":"","xmax":1700,"items":[{"kind":"row","left":["V2 BinFill/hard","中位条","ep18 · seed 5800"],"r":{"episode":18,"seed":5800,"total":1658,"demo":829,"segs":[[0,121,"抓红1","pick up the first red cube"],[121,76,"投箱","put it into the bin"],[197,96,"抓红2","pick up the second red cube"],[293,69,"投箱","put it into the bin"],[362,110,"抓红3","pick up the third red cube"],[472,60,"投箱","put it into the bin"],[532,120,"抓蓝1","pick up the first blue cube"],[652,83,"投箱","put it into the bin"],[735,56,"按钮","press the button"],[791,38,"完成","All tasks completed"],[829,121,"抓红1","pick up the first red cube"],[950,76,"投箱","put it into the bin"],[1026,96,"抓红2","pick up the second red cube"],[1122,69,"投箱","put it into the bin"],[1191,110,"抓红3","pick up the third red cube"],[1301,60,"投箱","put it into the bin"],[1361,120,"抓蓝1","pick up the first blue cube"],[1481,83,"投箱","put it into the bin"],[1564,56,"按钮","press the button"],[1620,38,"完成","All tasks completed"]],"swaps":[],"swap_ok":true,"windows":[50,50],"extra":""}}]},"v3-BinFill":{"title":"V3 BinFill 中位条","sub":"","xmax":1700,"items":[{"kind":"row","left":["V3 BinFill","现计划 [5,6]","ep39 · seed 7900","合成"],"r":{"episode":39,"seed":7900,"total":1109,"demo":0,"segs":[[0,105,"抓红1","pick up the first red cube"],[105,61,"投箱","put it into the bin"],[166,95,"抓红2","pick up the second red cube"],[261,78,"投箱","put it into the bin"],[339,97,"抓蓝1","pick up the first blue cube"],[436,76,"投箱","put it into the bin"],[512,105,"抓红1","pick up the first red cube"],[617,61,"投箱","put it into the bin"],[678,95,"抓红2","pick up the second red cube"],[773,78,"投箱","put it into the bin"],[851,97,"抓蓝1","pick up the first blue cube"],[948,76,"投箱","put it into the bin"],[1024,51,"按钮","press the button"],[1075,34,"完成","All tasks completed"]],"swaps":[],"swap_ok":true,"windows":[0,68],"extra":""}}]},"v3-PickXtimes":{"title":"V3 PickXtimes 中位条","sub":"","xmax":1700,"items":[{"kind":"row","left":["V3 PickXtimes","现计划 [6,7]","ep39 · seed 4900","合成"],"r":{"episode":39,"seed":4900,"total":1128,"demo":0,"segs":[[0,112,"抓绿1","pick up the green cube for the first time"],[112,76,"放台","place the green cube onto the target"],[188,76,"抓绿2","pick up the green cube for the second time"],[264,52,"放台","place the green cube onto the target"],[316,76,"抓绿3","pick up the green cube for the third time"],[392,54,"放台","place the green cube onto the target"],[446,76,"抓绿4","pick up the green cube for the fourth time"],[522,54,"放台","place the green cube onto the target"],[576,76,"抓绿5","pick up the green cube for the fifth time"],[652,54,"放台","place the green cube onto the target"],[706,112,"抓绿1","pick up the green cube for the first time"],[818,76,"放台","place the green cube onto the target"],[894,76,"抓绿2","pick up the green cube for the second time"],[970,52,"放台","place the green cube onto the target"],[1022,70,"按钮停","press the button to stop"],[1092,36,"完成","All tasks completed"]],"swaps":[],"swap_ok":true,"windows":[0,69],"extra":""}}]},"v3-SwingXtimes":{"title":"V3 SwingXtimes 中位条","sub":"","xmax":1700,"items":[{"kind":"row","left":["V3 SwingXtimes","现计划 [7,8]","ep3 · seed 3301","合成"],"r":{"episode":3,"seed":3301,"total":833,"demo":0,"segs":[[0,179,"抓红","pick up the red cube"],[179,35,"摆右1","move to the top of the right-side target for the first time"],[214,38,"摆左1","move to the top of the left-side target for the first time"],[252,38,"摆右2","move to the top of the right-side target for the second time"],[290,38,"摆左2","move to the top of the left-side target for the second time"],[328,38,"摆右3","move to the top of the right-side target for the third time"],[366,38,"摆左3","move to the top of the left-side target for the third time"],[404,35,"摆右1","move to the top of the right-side target for the first time"],[439,38,"摆左1","move to the top of the left-side target for the first time"],[477,38,"摆右2","move to the top of the right-side target for the second time"],[515,38,"摆左2","move to the top of the left-side target for the second time"],[553,38,"摆右3","move to the top of the right-side target for the third time"],[591,38,"摆左3","move to the top of the left-side target for the third time"],[629,35,"摆右1","move to the top of the right-side target for the first time"],[664,38,"摆左1","move to the top of the left-side target for the first time"],[702,36,"放桌","put the red cube on the table"],[738,59,"按钮","press the button"],[797,36,"完成","All tasks completed"]],"swaps":[],"swap_ok":true,"windows":[0,51],"extra":""}}]},"v2-g2":{"title":"V2 RouteStick/xhard 中位条","sub":"","xmax":1100,"items":[{"kind":"row","left":["V2 RouteStick/xhard","中位条","ep14 · seed 17400"],"r":{"episode":14,"seed":17400,"total":900,"demo":450,"segs":[[0,50,"绕右逆","move to the nearest right target by circling around the stick counterclockwise"],[50,50,"绕左顺","move to the nearest left target by circling around the stick clockwise"],[100,50,"绕左顺","move to the nearest left target by circling around the stick clockwise"],[150,50,"绕右逆","move to the nearest right target by circling around the stick counterclockwise"],[200,50,"绕右顺","move to the nearest right target by circling around the stick clockwise"],[250,50,"绕左逆","move to the nearest left target by circling around the stick counterclockwise"],[300,50,"绕左顺","move to the nearest left target by circling around the stick clockwise"],[350,50,"绕左逆","move to the nearest left target by circling around the stick counterclockwise"],[400,50,"绕右顺","move to the nearest right target by circling around the stick clockwise"],[450,50,"绕右逆","move to the nearest right target by circling around the stick counterclockwise"],[500,50,"绕左顺","move to the nearest left target by circling around the stick clockwise"],[550,50,"绕左顺","move to the nearest left target by circling around the stick clockwise"],[600,50,"绕右逆","move to the nearest right target by circling around the stick counterclockwise"],[650,50,"绕右顺","move to the nearest right target by circling around the stick clockwise"],[700,50,"绕左逆","move to the nearest left target by circling around the stick counterclockwise"],[750,50,"绕左顺","move to the nearest left target by circling around the stick clockwise"],[800,50,"绕左逆","move to the nearest left target by circling around the stick counterclockwise"],[850,43,"绕右顺","move to the nearest right target by circling around the stick clockwise"],[893,7,"完成","All tasks completed"]],"swaps":[],"swap_ok":true,"windows":[27,27],"extra":""}}]},"v3-StopCube":{"title":"V3 StopCube 中位条","sub":"","xmax":1100,"items":[{"kind":"row","left":["V3 StopCube","现计划 [8,10]，间隔钉 120","ep19 · seed 3900","合成"],"r":{"episode":19,"seed":3900,"total":1054,"demo":0,"segs":[[0,52,"备按","move to the top of the button to prepare"],[52,48,"静止","remain static"],[100,100,"静止","remain static"],[200,100,"静止","remain static"],[300,100,"静止","remain static"],[400,100,"静止","remain static"],[500,100,"静止","remain static"],[600,100,"静止","remain static"],[700,100,"静止","remain static"],[800,100,"静止","remain static"],[900,90,"静止","remain static"],[990,27,"按钮停","press the button to stop the cube on the target"],[1017,37,"完成","All tasks completed"]],"swaps":[],"swap_ok":true,"windows":[0,64],"extra":""}}]},"v3-PatternLock":{"title":"V3 PatternLock 中位条","sub":"","xmax":1100,"items":[{"kind":"row","left":["V3 PatternLock","现计划 [10,14]","ep75 · seed 22500","合成"],"r":{"episode":75,"seed":22500,"total":737,"demo":372,"segs":[[0,37,"移左前","move forward-left"],[37,32,"移左后","move backward-left"],[69,30,"移右","move right"],[99,31,"移左后","move backward-left"],[130,29,"移右","move right"],[159,27,"移右","move right"],[186,37,"移左前","move forward-left"],[223,32,"移左后","move backward-left"],[255,30,"移右","move right"],[285,31,"移左后","move backward-left"],[316,29,"移右","move right"],[345,27,"移右","move right"],[372,37,"移左前","move forward-left"],[409,32,"移左后","move backward-left"],[441,30,"移右","move right"],[471,31,"移左后","move backward-left"],[502,29,"移右","move right"],[531,20,"移右","move right"],[551,37,"移左前","move forward-left"],[588,32,"移左后","move backward-left"],[620,30,"移右","move right"],[650,31,"移左后","move backward-left"],[681,29,"移右","move right"],[710,20,"移右","move right"],[730,7,"完成","All tasks completed"]],"swaps":[],"swap_ok":true,"windows":[22,21],"extra":""}}]},"v3-RouteStick":{"title":"V3 RouteStick 中位条","sub":"","xmax":1100,"items":[{"kind":"row","left":["V3 RouteStick","现计划 [8,10]","ep7 · seed 16700","合成"],"r":{"episode":7,"seed":16700,"total":900,"demo":450,"segs":[[0,50,"绕左顺","move to the nearest left target by circling around the stick clockwise"],[50,50,"绕右顺","move to the nearest right target by circling around the stick clockwise"],[100,50,"绕右逆","move to the nearest right target by circling around the stick counterclockwise"],[150,50,"绕右顺","move to the nearest right target by circling around the stick clockwise"],[200,50,"绕左顺","move to the nearest left target by circling around the stick clockwise"],[250,50,"绕左顺","move to the nearest left target by circling around the stick clockwise"],[300,50,"绕右顺","move to the nearest right target by circling around the stick clockwise"],[350,50,"绕右逆","move to the nearest right target by circling around the stick counterclockwise"],[400,50,"绕右顺","move to the nearest right target by circling around the stick clockwise"],[450,50,"绕左顺","move to the nearest left target by circling around the stick clockwise"],[500,50,"绕右顺","move to the nearest right target by circling around the stick clockwise"],[550,50,"绕右逆","move to the nearest right target by circling around the stick counterclockwise"],[600,50,"绕右顺","move to the nearest right target by circling around the stick clockwise"],[650,43,"绕左顺","move to the nearest left target by circling around the stick clockwise"],[693,50,"绕左顺","move to the nearest left target by circling around the stick clockwise"],[743,50,"绕右顺","move to the nearest right target by circling around the stick clockwise"],[793,50,"绕右逆","move to the nearest right target by circling around the stick counterclockwise"],[843,50,"绕右顺","move to the nearest right target by circling around the stick clockwise"],[893,7,"完成","All tasks completed"]],"swaps":[],"swap_ok":true,"windows":[27,27],"extra":""}}]},"v2-g3":{"title":"V2 VideoUnmaskSwap/xhard 中位条","sub":"","xmax":600,"items":[{"kind":"row","left":["V2 VideoUnmaskSwap/xhard","中位条","ep25 · seed 7500"],"r":{"episode":25,"seed":7500,"total":564,"demo":318,"segs":[[0,318,"静止","static"],[318,98,"抓绿容","pick up the container that hides the green cube"],[416,48,"放容","put down the container"],[464,92,"抓红容","pick up the container that hides the red cube"],[556,8,"完成","All tasks completed"]],"swaps":[[64,114,"0↔3"],[114,164,"1↔2"],[164,214,"2↔1"],[214,264,"0↔3"],[264,314,"1↔2"]],"swap_ok":true,"windows":[18,14],"extra":""}}]},"v3-VideoUnmask":{"title":"V3 VideoUnmask 中位条","sub":"","xmax":600,"items":[{"kind":"row","left":["V3 VideoUnmask","现计划 3","ep39 · seed 9900","合成"],"r":{"episode":39,"seed":9900,"total":476,"demo":66,"segs":[[0,66,"静止","static"],[66,127,"抓蓝容","pick up the container that hides the blue cube"],[193,50,"放容","put down the container"],[243,88,"抓红容","pick up the container that hides the red cube"],[331,50,"放容","put down the container"],[381,88,"抓红容","pick up the container that hides the red cube"],[469,7,"完成","All tasks completed"]],"swaps":[],"swap_ok":true,"windows":[3,24],"extra":""}}]},"v3-ButtonUnmask":{"title":"V3 ButtonUnmask 中位条","sub":"","xmax":600,"items":[{"kind":"row","left":["V3 ButtonUnmask","现计划 3","ep67 · seed 14700","合成"],"r":{"episode":67,"seed":14700,"total":515,"demo":0,"segs":[[0,110,"按钮","press the button"],[110,97,"抓红容","pick up the container that hides the red cube"],[207,52,"放容","put down the container"],[259,97,"抓蓝容","pick up the container that hides the blue cube"],[356,52,"放容","put down the container"],[408,97,"抓蓝容","pick up the container that hides the blue cube"],[505,10,"完成","All tasks completed"]],"swaps":[],"swap_ok":true,"windows":[0,31],"extra":""}}]},"v3-VideoUnmaskSwap":{"title":"V3 VideoUnmaskSwap 中位条","sub":"","xmax":600,"items":[{"kind":"row","left":["V3 VideoUnmaskSwap","现计划 [4,5]","ep87 · seed 13700","合成"],"r":{"episode":87,"seed":13700,"total":560,"demo":318,"segs":[[0,318,"静止","static"],[318,100,"抓红容","pick up the container that hides the red cube"],[418,50,"放容","put down the container"],[468,83,"抓蓝容","pick up the container that hides the blue cube"],[551,9,"完成","All tasks completed"]],"swaps":[[64,114,""],[114,164,""],[164,214,""],[214,264,""],[264,314,""]],"swap_ok":true,"windows":[18,14],"extra":""}}]},"v3-ButtonUnmaskSwap":{"title":"V3 ButtonUnmaskSwap 中位条","sub":"","xmax":600,"items":[{"kind":"row","left":["V3 ButtonUnmaskSwap","现计划 [4,5]","ep75 · seed 14500","合成"],"r":{"episode":75,"seed":14500,"total":461,"demo":0,"segs":[[0,109,"按钮1","press the first button"],[109,94,"按钮2","press the second button"],[203,99,"抓红容","pick up the container that hides the red cube"],[302,50,"放容","put down the container"],[352,97,"抓绿容","pick up the container that hides the green cube"],[449,12,"完成","All tasks completed"]],"swaps":[[64,114,"估"],[114,164,"估"],[164,214,"估"],[214,264,"估"]],"swap_ok":true,"windows":[0,27],"extra":""}}]},"v2-g4":{"title":"V2 VideoRepick/xhard 中位条","sub":"","xmax":1200,"items":[{"kind":"row","left":["V2 VideoRepick/xhard","中位条","ep12 · seed 10200"],"r":{"episode":12,"seed":10200,"total":858,"demo":468,"segs":[[0,101,"抓块","pick up the cube"],[101,54,"放桌","drop the cube on the table"],[155,43,"静止","static"],[198,54,"静止","static"],[252,54,"静止","static"],[306,54,"静止","static"],[360,54,"静止","static"],[414,54,"静止","static"],[468,114,"抓对1","pick up the correct cube for the first time"],[582,59,"放下","put it down"],[641,69,"抓对2","pick up the correct cube for the second time"],[710,59,"放下","put it down"],[769,51,"按钮停","press the button to finish"],[820,38,"完成","All tasks completed"]],"swaps":[[186,236,"2↔0"],[236,286,"1↔0"],[286,336,"0↔1"],[336,386,"2↔0"],[386,436,"1↔2"]],"swap_ok":true,"windows":[28,23],"extra":""}}]},"v3-PickHighlight":{"title":"V3 PickHighlight 中位条","sub":"","xmax":1200,"items":[{"kind":"row","left":["V3 PickHighlight","现计划 5","ep95 · seed 21500","合成"],"r":{"episode":95,"seed":21500,"total":855,"demo":0,"segs":[[0,119,"按钮","press the button"],[119,105,"抓亮1","pick up the first highlighted cube, which is green"],[224,50,"放桌","place the cube onto the table"],[274,101,"抓亮2","pick up the second highlighted cube, which is red"],[375,54,"放桌","place the cube onto the table"],[429,105,"抓亮1","pick up the first highlighted cube, which is green"],[534,50,"放桌","place the cube onto the table"],[584,101,"抓亮2","pick up the second highlighted cube, which is red"],[685,54,"放桌","place the cube onto the table"],[739,99,"抓亮3","pick up the third highlighted cube, which is red"],[838,17,"完成","All tasks completed"]],"swaps":[],"swap_ok":true,"windows":[0,52],"extra":""}}]},"v3-VideoRepick":{"title":"V3 VideoRepick 中位条","sub":"","xmax":1200,"items":[{"kind":"row","left":["V3 VideoRepick","现计划 [4,5]","ep86 · seed 17600","合成"],"r":{"episode":86,"seed":17600,"total":862,"demo":484,"segs":[[0,108,"抓块","pick up the cube"],[108,55,"放桌","drop the cube on the table"],[163,51,"静止","static"],[214,54,"静止","static"],[268,54,"静止","static"],[322,54,"静止","static"],[376,54,"静止","static"],[430,54,"静止","static"],[484,108,"抓对1","pick up the correct cube for the first time"],[592,50,"放下","put it down"],[642,70,"抓对2","pick up the correct cube for the second time"],[712,50,"放下","put it down"],[762,62,"按钮停","press the button to finish"],[824,38,"完成","All tasks completed"]],"swaps":[[214,264,""],[264,314,""],[314,364,""],[364,414,""],[414,464,""]],"swap_ok":true,"windows":[29,22],"extra":""}}]},"v3-VideoPlaceButton":{"title":"V3 VideoPlaceButton 中位条","sub":"","xmax":1200,"items":[{"kind":"row","left":["V3 VideoPlaceButton","现计划 原 hard","ep55 · seed 15500","合成"],"r":{"episode":55,"seed":15500,"total":961,"demo":757,"segs":[[0,114,"抓块","pick up the cube"],[114,102,"放台","drop the cube onto target"],[216,83,"按钮","press the button"],[299,88,"抓块","pick up the cube"],[387,100,"放台","drop the cube onto target"],[487,71,"抓块","pick up the cube"],[558,82,"放桌","drop the cube onto table"],[640,57,"静止","static"],[697,60,"静止","static"],[757,113,"抓块","pick up the cube"],[870,73,"放对台","place the cube onto the correct target"],[943,18,"完成","All tasks completed"]],"swaps":[[697,747,""]],"swap_ok":true,"windows":[46,11],"extra":""}}]},"v3-VideoPlaceOrder":{"title":"V3 VideoPlaceOrder 中位条","sub":"","xmax":1200,"items":[{"kind":"row","left":["V3 VideoPlaceOrder","现计划 原 hard","ep67 · seed 17700","合成"],"r":{"episode":67,"seed":17700,"total":1115,"demo":923,"segs":[[0,124,"抓块","pick up the cube"],[124,98,"放台","drop the cube onto target"],[222,68,"抓块","pick up the cube"],[290,88,"放台","drop the cube onto target"],[378,74,"按钮","press the button"],[452,82,"抓块","pick up the cube"],[534,93,"放台","drop the cube onto target"],[627,73,"抓块","pick up the cube"],[700,107,"放桌","drop the cube onto table"],[807,56,"静止","static"],[863,60,"静止","static"],[923,113,"抓块","pick up the cube"],[1036,66,"放对台","place the cube onto the correct target"],[1102,13,"完成","All tasks completed"]],"swaps":[[863,913,""]],"swap_ok":true,"windows":[56,10],"extra":""}}]}},"win":33,"stride":16,"budgets":[32,8],"swap_colors":["#6a1b9a","#ef6c00","#00838f","#ad1457","#5d4037"],"color":{"demo":"#3E7FA8","exec":"#4E9B7C","f32":"#7B6FC9","f8":"#C2593E","empty":"#C9713D","sg_a":"#DDE3E0","sg_b":"#EEF2F0","sg_line":"#A3AFAA","ink":"#14181A","ink2":"#48534F","ink3":"#7B8783"}};</script>
 <script>
