@@ -263,11 +263,12 @@ def build(v2: dict[str, Any], v3: dict[str, Any]) -> tuple[str, dict[str, Any], 
     E = html.escape
 
     # ---- 三、对齐原则
-    parts.append('<h2 id="p1-_4">三、对齐原则：V3 怎么对齐 V2（六条，2026-10-08 用户定）</h2>\n')
-    parts.append("<p>下面六条是本计划判「对齐了没有」的唯一标准；四节按配对组逐个对照，末尾一张总表。每条后面括号里是用户原话（语音转写，未改字）。</p>\n<ol>\n")
-    for name, body, quote in PRINCIPLES:
-        parts.append(f"<li><b>{E(name)}</b>——{body}<span class=\"muted\">（用户原话：「{E(quote)}」）</span></li>\n")
-    parts.append("</ol>\n")
+    parts.append('<h2 id="p1-_4">三、对齐原则（2026-10-08 用户定）</h2>\n')
+    parts.append("<p class=\"lead\">V3 对齐 V2 只看一件事：每个任务的<b>中位 timestep</b> 落到配对的 V2 参照附近"
+                 "（计数组对 V2 BinFill，序列组对 V2 RouteStick，容器组对 V2 VideoUnmaskSwap，参考组对 V2 VideoRepick），timestep 就是 motion 窗数。"
+                 "改法只拧次数旋钮、不动结构，和 V2 同名的环境直接取 V2 的值。长度定了之后只验一条：8 帧等距采样在中位条上至少漏一个 subgoal，"
+                 "subgoal 按「拿起加放下算一个、每次 swap 算一个」数。</p>\n")
+    parts.append("<p class=\"muted\">用户原话（语音转写）：" + "；".join(f"「{E(q)}」" for _, _, q in PRINCIPLES) + "</p>\n")
     parts.append("<p><b>量的定义</b>（全部按 timestep 计；中位条 = 该组按 timestep 排序取下标 n//2 的那条）：</p>\n")
     parts.append("<table><thead><tr><th>量</th><th>定义</th><th>怎么用</th></tr></thead><tbody>\n"
                  "<tr><td>timestep</td><td>一条 episode 的总步数（demo + 执行）</td><td>主判据：V3 中位对 V2 参照中位</td></tr>\n"
@@ -372,7 +373,8 @@ figure.tl .tl-sub { color:var(--muted); font-size:.86em; margin:3px 0 6px; }
 figure.tl .tl-scroll { overflow-x:auto; }
 figure.tl .tl-legend { display:flex; flex-wrap:wrap; gap:6px 16px; color:var(--muted); font-size:.84em; margin-top:4px; }
 figure.tl .tl-legend i { display:inline-block; width:18px; height:10px; vertical-align:middle; margin-right:5px; border-radius:2px; }
-.muted { color:var(--muted); }
+.muted { color:var(--muted); font-size:.88em; }
+.lead { font-size:1.08em; line-height:1.7; }
 """
 
 
