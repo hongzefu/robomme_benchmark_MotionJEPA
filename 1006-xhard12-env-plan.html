@@ -68,7 +68,7 @@ a { color:var(--accent); }
 <li class="lv3"><a href="#p1-g5">4.1 MoveCube、4.2 InsertPeg</a></li>
 <li class="lv3"><a href="#p1-t-patternlock">4.3 PatternLock</a></li>
 <li class="lv3"><a href="#p1-t-routestick">4.4 RouteStick</a></li>
-<li class="lv2"><a href="#p1-goals">五、逐任务 goal/subgoal 与配套审查</a></li>
+<li class="lv2"><a href="#p1-goals">五、goal / subgoal 改什么：逐任务示例</a></li>
 <li class="lv2"><a href="#p1-_6">六、验收、步骤、子代理（三行）</a></li>
 <li class="lv1"><a href="#agent">第二部分（技术细节，供 agent 追踪）</a></li>
 <li class="lv2"><a href="#_13">〇、红线</a></li>
@@ -459,52 +459,39 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
   });
 })();
 </script>
-<h2 id="p1-goals">五、逐任务 goal/subgoal 与配套审查</h2>
-<p><strong>网页位置：</strong>导航中的“二、逐环境怎么改与长度对齐”之后新增“三、逐任务 goal/subgoal”。本节按官网四类、16 个任务逐个讨论。<strong>审查锚点：</strong><code>AUDIT_BASE=ac0033f11f195434bd9b22570f6ea5fc306cafa1</code>；四个只读审查代理均经运行记录核实为 <code>gpt-6.1-sol</code>。以下是固定提交的静态结论与拟修改契约，未运行环境、未证明真实轨迹通过。现行口径以本节和第二部分“本轮审查修订契约”为准；旧附录的“只改字典／一处文本／Place 原样”不再作为实施范围。</p>
-<blockquote><p>用户本次原话：“ButtonUnmaskSwap 改为增加press button次数 左右交替按 和swap一起同步改”“也是match2倍”“goal/subgoal也要对应修改”“在第二节后增加一节 goal/subgoal哪些需要修改 改成什么样 逐个任务讨论”“启动subagent再审查一次所有的task 是否需要改goal/subgoal以及其他问题”。本轮只改计划及展示工具；保护目录代码与运行覆盖仍须按具体项批准后实施。</p></blockquote>
-<p><strong>三个层次分别核对：</strong>goal 是 <code>utils/task_goal.py::get_language_goal</code> 的整体指令；subgoal 是各环境 <code>task_list</code> 中的 <code>name/subgoal_segment</code>，还必须与 <code>func/solve/segment/choice_label</code> 对齐；“8 帧漏 subgoal”是统计口径，相邻拿起＋放下合成一个统计单元，不代表删掉 HDF5 中真实的两段。<code>subgoal_language.py::get_subgoal_with_index</code> 只是序数工具，不是所有 subgoal 的唯一来源。相邻文字相同也不能合并记录边界；按 <code>info/is_subgoal_boundary</code> 与任务索引识别。</p>
+<h2 id="p1-goals">五、goal / subgoal 改什么：逐任务示例</h2>
+<p><b>goal</b> 是整个任务的指令，<b>subgoal</b> 是每一步的指令。下面每个任务举一个 episode，展示修改后的内容；颜色、目标和路径仅作中文说明示例，不是已生成的真实 episode。省略号表示同类步骤继续，未提到的原有步骤保留。</p>
 <h3 id="goal-counting">1 计数</h3>
-<table id="goals-counting"><thead><tr><th>任务</th><th>goal 改不改、改成什么</th><th>subgoal 与配套修改</th><th>源码锚点与验收重点</th></tr></thead><tbody>
-<tr data-goal-task="BinFill"><td>1.1 BinFill</td><td>语言函数不新增分支。仍是“按各颜色规定数量投箱，最后按按钮”；三个实际 <code>*_cubes_target_number</code> 合计为候选 9，goal 自动读新值。</td><td>先保留父类 hard 母场景，再按实际库存设新目标并重新构建每色抓取→投入清单；末按钮保留，不增加假 demo。9 次投入对应 18 个抓放任务＋1 个按钮任务。</td><td><code>BinFill::_load_scene/_initialize_episode</code>、<code>task_goal::get_language_goal</code>。每色目标≤库存、总目标9、清单19项；序数工具当前足够。直接提前改目标配置会消耗不同随机数，不能声称布局不变。</td></tr>
-<tr data-goal-task="PickXtimes"><td>1.2 PickXtimes</td><td>不改模板，自动读取 <code>num_repeats=9</code>，说明同一块抓放九次后按按钮。</td><td>动态生成第一至第九次拿起及各自放置，最后按钮。保持每次目标 actor、分割和动作标签一致。</td><td><code>PickXtimes::__init__/_load_scene</code>。序数工具支持索引0–9，当前九次安全；若以后超过十次需另批扩展，不能靠复制旧序号。</td></tr>
-<tr data-goal-task="SwingXtimes"><td>1.3 SwingXtimes</td><td>不改模板，读取 <code>num_repeats=8</code>；一次往返是去右再回左，八次往返对应十六次到达。</td><td>各自生成“第 n 次到右侧／左侧”，保留开头拿起、最后放下与按钮；<code>max_swings=2*num_repeats</code> 同步。</td><td><code>SwingXtimes::_load_scene/_initialize_episode</code>。核对8组左右、16次到达；不能把左右到达合计8次当成8个往返。</td></tr>
-<tr data-goal-task="StopCube"><td>1.4 StopCube</td><td>不改模板，动态读取新 <code>stop_time</code>：在第 k 次经过中央目标时按按钮停住。纠正旧文的“k个往返”。</td><td>文本可沿用等待与按压，但按新 k 和原 <code>move_interval</code> 重建等待清单、<code>steps_press</code> 和 <code>stop_time_range</code>；扩大运动段循环。</td><td><code>StopCube::_initialize_episode/step</code>、<code>vqa_options::_options_stopcube</code>。<code>steps_press=move_interval*(k−0.5)</code>。每100步等待段不等于一次经过事件，二者不能混报遗漏数量。</td></tr>
+<table id="goals-counting"><thead><tr><th>任务</th><th>goal 要改什么</th><th>subgoal 要改什么</th><th>一个 episode 示例</th></tr></thead><tbody>
+<tr data-goal-task="BinFill"><td>1.1 BinFill</td><td>句式不变，把各颜色的目标数量换成新数量，总计9块。</td><td>按新数量补齐“抓第几个、什么颜色的方块→投入箱子”；最后按按钮不变。</td><td><b>goal：</b>将3块红、3块蓝、3块绿方块放入箱子，最后按按钮。<br><b>subgoal：</b>抓第1块红方块→投入箱子→…→抓第3块绿方块→投入箱子→按按钮。</td></tr>
+<tr data-goal-task="PickXtimes"><td>1.2 PickXtimes</td><td>把抓放次数改成9次，其余句式不变。</td><td>补齐第1至第9次拿起与放下，最后按按钮。</td><td><b>goal：</b>将蓝色方块拿起并放到目标上9次，最后按按钮。<br><b>subgoal：</b>第1次拿起蓝方块→放到目标上→…→第9次拿起→放到目标上→按按钮。</td></tr>
+<tr data-goal-task="SwingXtimes"><td>1.3 SwingXtimes</td><td>把往返次数改成8次；一次是去右侧再回左侧。</td><td>补齐第1至第8组“到右侧→到左侧”，保留拿起、放下和按钮。</td><td><b>goal：</b>拿着红方块在左右目标之间往返8次，放下后按按钮。<br><b>subgoal：</b>拿起红方块→第1次到右侧→第1次到左侧→…→第8次到右侧→第8次到左侧→放下→按按钮。</td></tr>
+<tr data-goal-task="StopCube"><td>1.4 StopCube</td><td>把停止序号改成新次数，例如第3次经过目标改为第6次。</td><td>“到按钮上方、保持静止、按按钮”的文字不变，等待步骤延长到新的停止时机。</td><td><b>goal：</b>在方块第6次经过中央目标时按按钮停住它。<br><b>subgoal：</b>移动到按钮上方→保持静止→…→在第6次经过时按按钮。</td></tr>
 </tbody></table>
 <h3 id="goal-permanence">2 永久性</h3>
-<table id="goals-permanence"><thead><tr><th>任务</th><th>goal 改不改、改成什么</th><th>subgoal 与配套修改</th><th>源码锚点与验收重点</th></tr></thead><tbody>
-<tr data-goal-task="VideoUnmask"><td>2.1 VideoUnmask</td><td><b>要改</b>对应分支：观看演示后依次抓起隐藏 c0、c1、c2 三种颜色方块的容器；从 <code>xhard_pick_count=3</code> 读取新语义。母档两抓文本保持不变。</td><td>在第二抓后追加放下第二个容器→抓第三个容器，尾部不额外要求放下。同步第三个 actor、颜色、失败条件及 recovery。</td><td><code>VideoUnmask::_load_scene</code>、<code>task_goal::get_language_goal[VideoUnmask]</code>。核对三色顺序及三个不同容器；VQA动作空间不扩。</td></tr>
-<tr data-goal-task="ButtonUnmask"><td>2.2 ButtonUnmask</td><td><b>要改</b>单独分支：先按按钮，再依次抓 c0、c1、c2 对应容器。不是把 Video 分支改一次就能覆盖此任务。</td><td>按钮仍一次；追加放下第二个→抓第三个，重算清单与 recovery。序数工具不需要修改。</td><td><code>ButtonUnmask::_load_scene</code>、<code>task_goal::get_language_goal[ButtonUnmask]</code>。逐项核对按钮前缀、三色和完成条件。</td></tr>
-<tr data-goal-task="VideoUnmaskSwap"><td>2.3 VideoUnmaskSwap</td><td>不改整体模板；增加的是演示交换，仍观察后按两色顺序抓两容器，不能把交换数写成抓取数。</td><td>泛化 S=11–12 的交换调度和属性，使演示等到末次交换结束。机器人抓放模板保持原样；交换事件单独按调度与录制边界映射。</td><td><code>VideoUnmaskSwap::_load_scene/_refresh_swap_schedule/step</code>。第4次起配对不得缺属性，重入不清空已算出的伙伴；环境步不能直接冒充录制帧。</td></tr>
-<tr data-goal-task="ButtonUnmaskSwap"><td>2.4 ButtonUnmaskSwap</td><td><b>要改</b>派生分支：“从右侧开始，左右交替按按钮，共 P 次；观察并等待全部交换结束，再依次抓起隐藏 c0、c1 的容器”。P读取实际值，不再只写“按两个按钮”；候选P6/S12。</td><td>重建右→左交替清单，名称写“第 k/P 次按右／左按钮”，<code>choice_label</code> 只保留两个稳定方向动作。新增释放→按下边沿与锁存判定；首抓须等P次完成且最后swap落定。末两抓不变，重算recovery。</td><td><code>ButtonUnmaskSwap::_initialize_episode/evaluate/step</code>、<code>is_any_button_pressed_removelist</code>、<code>task_goal::get_language_goal</code>、<code>vqa_options::_options_button_unmask_swap</code>。原移除式判定第三按会卡死；旧first/second选项方向与求解器相反，新分支必须同步actor、文本、VQA和分割。</td></tr>
+<table id="goals-permanence"><thead><tr><th>任务</th><th>goal 要改什么</th><th>subgoal 要改什么</th><th>一个 episode 示例</th></tr></thead><tbody>
+<tr data-goal-task="VideoUnmask"><td>2.1 VideoUnmask</td><td>从依次抓两个颜色对应的容器，改为依次抓三个颜色对应的容器。</td><td>第二抓后新增“放下第二个容器→抓第三种颜色对应的容器”。</td><td><b>goal：</b>观看视频，然后依次抓起藏着红、蓝、绿方块的容器。<br><b>subgoal：</b>抓藏红方块的容器→放下→抓藏蓝方块的容器→放下→抓藏绿方块的容器。</td></tr>
+<tr data-goal-task="ButtonUnmask"><td>2.2 ButtonUnmask</td><td>保留“先按按钮”，后面的两个颜色改为三个颜色。</td><td>按按钮仍一次；新增第二个容器放下和第三个容器抓起。</td><td><b>goal：</b>先按按钮，再依次抓起藏着红、蓝、绿方块的容器。<br><b>subgoal：</b>按按钮→抓藏红方块的容器→放下→抓藏蓝方块的容器→放下→抓藏绿方块的容器。</td></tr>
+<tr data-goal-task="VideoUnmaskSwap"><td>2.3 VideoUnmaskSwap</td><td>不改，仍是观察视频后按指定颜色顺序抓两个容器。</td><td>抓放指令不改；演示中的交换增多，观察／等待覆盖全部交换。</td><td><b>goal：</b>观看视频，然后先抓藏红方块的容器，再抓藏蓝方块的容器。<br><b>subgoal：</b>观察演示中的12次交换→抓藏红方块的容器→放下→抓藏蓝方块的容器。交换不是新增的机器人抓取指令。</td></tr>
+<tr data-goal-task="ButtonUnmaskSwap"><td>2.4 ButtonUnmaskSwap</td><td>将“按两个按钮”改成“从右侧开始，左右交替按6次，待交换结束后依次抓指定颜色对应的容器”。</td><td>把两次按压改为带方向、次数的六次按压；必要时补“等待交换结束”；两抓指令不变。</td><td><b>goal：</b>从右侧开始，左右交替按按钮6次，待交换全部结束后，先抓藏红方块的容器，再抓藏蓝方块的容器。<br><b>subgoal：</b>第1次按右→第2次按左→第3次按右→第4次按左→第5次按右→第6次按左→必要时等待交换结束→抓藏红方块的容器→放下→抓藏蓝方块的容器。按钮按压与12次交换并行推进；若按压先完成，等待剩余交换落定后再抓取。</td></tr>
 </tbody></table>
-<figure><svg viewBox="0 0 1000 180" role="img" aria-label="ButtonUnmaskSwap按钮与交换并行，双条件完成后抓取"><rect x="10" y="10" width="680" height="60" rx="8" fill="#eef4fb"/><text x="30" y="46" font-size="20">按钮：右① → 左② → 右③ → 左④ → 右⑤ → 左⑥</text><rect x="10" y="90" width="680" height="60" rx="8" fill="#eef8ef"/><text x="30" y="126" font-size="20">交换：第1次 → … → 第12次（64–664环境步）</text><path d="M690 40 H735 V80 H765 M690 120 H735 V80" fill="none" stroke="#59636e" stroke-width="3"/><rect x="765" y="42" width="225" height="80" rx="8" fill="#fff2db"/><text x="780" y="74" font-size="17">按钮完成＋交换落定</text><text x="780" y="104" font-size="17">→ 按原两色顺序抓容器</text></svg><figcaption>结构示意，不是实测时间轴。两条并行链取完成时刻的较大值；等待仅用于交换落定门禁。</figcaption></figure>
 <h3 id="goal-reference">3 参考</h3>
-<table id="goals-reference"><thead><tr><th>任务</th><th>goal 改不改、改成什么</th><th>subgoal 与配套修改</th><th>源码锚点与验收重点</th></tr></thead><tbody>
-<tr data-goal-task="PickHighlight"><td>3.1 PickHighlight</td><td>“抓所有高亮块”自动覆盖6块；但现有另一条goal误要求最后再次按按钮，而真实清单没有末按钮。拟单独修正该派生goal为“先按按钮，再依次抓全部高亮块”，不额外加结束按钮。</td><td>自动生成第一至第六个高亮块，不改序数工具；五次中间放下、最后抓起结束。必须检查实际生成6块且目标6块，不足即失败，不能把5块成功当6块。</td><td><code>PickHighlight::_load_scene/evaluate</code>、<code>task_goal::get_language_goal[PickHighlight]</code>。父类既有错误单列待批；六块全亮失去非目标干扰的变化保留说明。</td></tr>
-<tr data-goal-task="VideoRepick"><td>3.2 VideoRepick</td><td>不改模板，仍按演示身份重抓原 <code>num_repeats=1–3</code> 次；母档保持medium、三块cube。</td><td>15–16次swap增加的是演示hold，抓放与末按钮不加。保留 <code>demonstration=True/specialflag=swap</code>；重复static按边界与调度映射为独立事件，不按字符串合并。</td><td><code>VideoRepick::_load_scene/_refresh_swap_schedule/step</code>。调度、配对属性、hold数量同步；HDF5未存specialflag，不能据文字推断交换起止。VQA不新增机器人swap动作。</td></tr>
-<tr data-goal-task="VideoPlaceButton"><td>3.3 VideoPlaceButton</td><td>不改“按钮紧前／紧后目标”的模板，前提是新增两组抓放保住原答案，不采用旧“原样重生成”验收。</td><td>明确演示顺序：<code>target_2 → target_0 → 按钮 → target_1 → target_3</code>，然后接原回桌、静止、交换与执行。新增一组放在target_0前，另一组放在target_1后；不能盲开原post_flag。</td><td><code>VideoPlaceButton::_load_scene</code>、<code>task_goal::get_language_goal</code>。核对按钮前最后平台为target_0、后第一平台为target_1，答案actor与语言before/after一致；重算recovery。原四平台VQA够用。</td></tr>
-<tr data-goal-task="VideoPlaceOrder"><td>3.4 VideoPlaceOrder</td><td>不改模板，实际 <code>which_in_subset</code> 动态生成第一至第四次。保留母序列与母答案，补齐四个不同目标，不重抽答案序数。</td><td>在母访问前缀后追加未访问平台至4个；保持ordinal与答案actor，更新任务清单、按钮索引、错误目标集合和recovery。闭包绑定各自目标，不能全部落到最后一个actor。</td><td><code>VideoPlaceOrder::_load_scene/_initialize_episode</code>。<code>target_target is which_targets_to_pick[which_in_subset−1]</code>，四目标互异；<code>func/solve/segment/failure_func</code>一致。VQA仍用四平台。</td></tr>
+<table id="goals-reference"><thead><tr><th>任务</th><th>goal 要改什么</th><th>subgoal 要改什么</th><th>一个 episode 示例</th></tr></thead><tbody>
+<tr data-goal-task="PickHighlight"><td>3.1 PickHighlight</td><td>保留“先按按钮，再抓所有高亮方块”；删除某条旧指令中多余的“最后再次按按钮”。</td><td>将高亮块序号补到第6个；前5个抓后放下，最后抓起第6个结束，不加末尾按钮。</td><td><b>goal：</b>先按按钮，再依次抓起所有高亮方块。<br><b>subgoal：</b>按按钮→抓第1个高亮块→放下→…→抓第5个→放下→抓第6个。此例共6个高亮块。</td></tr>
+<tr data-goal-task="VideoRepick"><td>3.2 VideoRepick</td><td>不改，仍抓演示中同一块方块，抓放次数保持该episode原值。</td><td>演示观察／等待覆盖更多交换；执行的抓放次数和最后按钮不变。</td><td><b>goal：</b>观看视频，认出演示中被拿起的方块，将它抓放2次，最后按按钮。<br><b>subgoal：</b>观察演示中的15次交换→拿起正确方块→放下→再次拿起同一块→放下→按按钮。</td></tr>
+<tr data-goal-task="VideoPlaceButton"><td>3.3 VideoPlaceButton</td><td>不改，仍要求放到演示里“按按钮紧前／紧后”的目标。</td><td>在演示中增加两组抓放，保留按钮紧前和紧后的位置；执行抓放指令不变。</td><td>用A、B、C、D标记四个平台：演示由“A→按钮→B”扩成“C→A→按钮→B→D”（每个字母都表示拿起并放到该平台）。<br><b>goal：</b>将方块放到演示中按按钮后第一次放置的平台。<br><b>执行subgoal：</b>拿起方块→放到B。答案仍是B。</td></tr>
+<tr data-goal-task="VideoPlaceOrder"><td>3.4 VideoPlaceOrder</td><td>不改，保留该episode原来的目标序号。</td><td>演示补齐四个不同平台的抓放；原访问顺序保留，执行仍放到原指定序号的平台。</td><td>演示访问由“A→B→C”扩成“A→B→C→D”（每个字母都表示拿起并放到该平台，原按钮等步骤保留）。<br><b>goal：</b>将方块放到演示中第二次放置的平台。<br><b>执行subgoal：</b>拿起方块→放到B。</td></tr>
 </tbody></table>
 <h3 id="goal-imitation">4 模仿</h3>
-<table id="goals-imitation"><thead><tr><th>任务</th><th>goal 改不改、改成什么</th><th>subgoal 与配套修改</th><th>源码锚点与验收重点</th></tr></thead><tbody>
-<tr data-goal-task="MoveCube"><td>4.1 MoveCube</td><td>不改，仍按演示同样方式移动。</td><td>不改，不增加重复轮次，保留抓放／推／钩各自方式。</td><td><code>MoveCube::evaluate</code>、<code>task_goal::get_language_goal</code>。不纳入加长生成；无此轮动态验证结论。</td></tr>
-<tr data-goal-task="InsertPeg"><td>4.2 InsertPeg</td><td>不改，仍是同一根、同一端、同一侧。</td><td>不改，不加重复插拔，保留错误端、错误侧及其他peg的失败判定。</td><td><code>InsertPeg::_initialize_episode</code>、<code>vqa_options::_options_insertpeg</code>。保持原机制。</td></tr>
-<tr data-goal-task="PatternLock"><td>4.3 PatternLock</td><td>不改“复现同一pattern”的模板，没有写死节点数。</td><td><b>重建清单</b>，按候选 <code>L_new=2L−1</code> 的真实相邻边生成方向；演示与执行各 <code>L_new−1</code> 个move。不得把复制旧文字当新路径；拒绝采样耗尽须明确失败。</td><td><code>PatternLock::_load_scene</code>、<code>subgoal_evaluate_func::direction</code>、<code>vqa_options::_options_patternlock</code>。八方向空间不扩；此任务不调用序数工具。检查相邻性、无零长度边、demo/exec方向一致。</td></tr>
-<tr data-goal-task="RouteStick"><td>4.4 RouteStick</td><td>不改“绕障碍复现同一路径”的模板，没有写死段数。</td><td><b>重建清单</b>：完整生成母路径与母方向后，用独立可追溯随机流扩尾至 <code>S_new=2S</code>；新尾从母终点接出，拼接只追加尾路径的 <code>[1:]</code>。演示与执行使用同一条新路径。</td><td><code>RouteStick::_load_scene/direction_fail</code>、<code>route::generate_dynamic_walk</code>。母路径与方向前缀不变；每段侧向、绕向、actor和VQA一致；四类动作空间不扩。真实步数不能直接当100S。</td></tr>
-</tbody></table>
-<h3 id="goal-review-actions">本轮审查结论与实施前闸门</h3>
-<p>全部16个任务均已覆盖。明确新增／修正goal的派生分支是 VideoUnmask、ButtonUnmask、ButtonUnmaskSwap、PickHighlight；其他任务主要靠动态变量或重建任务清单同步。没有要求修改通用 <code>subgoal_language.py</code>；它的十个序数上限仍须对候选次数做检查。下列判定是拟实施验收，当前均未动态验证，不能写为已通过。</p>
-<table><thead><tr><th>查什么</th><th>怎么查／过了说明什么</th><th>拟判定行</th></tr></thead><tbody>
-<tr><td>语言与真实动作</td><td>逐任务核对全部goal变体、每项name/subgoal、actor、func/solve/segment；母档分支文本不变，派生次数、颜色、答案一致。</td><td><code>XHARD_GOAL_SUBGOAL=PASS tasks=16 mismatches=0</code></td></tr>
-<tr><td>重复按钮与方向</td><td>第三次可再次按右；按住不重复计数，错侧/同时按不推进；多次evaluate不多计；第二次reset归零。动作标签仅右/左两个稳定身份，所有choice标签非空。</td><td><code>XHARD_BUTTON_ORDER=PASS P=6</code>、<code>XHARD_BUTTON_REPRESS=PASS</code>、<code>XHARD_BUTTON_RESET=PASS</code>、<code>XHARD_CHOICE_GROUNDING=PASS mismatches=0</code></td></tr>
-<tr><td>交换与抓取同步</td><td>采集真实环境步和录制帧映射，最后交换实际落定早于第一抓；调度、配对、事件数等于S；不靠旧固定按钮时长推断。</td><td><code>XHARD_SWAP_FINISHED_BEFORE_PICK=PASS S=12</code></td></tr>
-<tr><td>两倍长度上界</td><td>按任务真实HDF5长度中位核对 <code>median(T_new)≤2*median(T_parent)</code>，不是逐episode上界；报告相同集合与母档，Repick用medium。Button同25条母集合上界922；单条smoke不代表任务中位通过。</td><td><code>XHARD_LENGTH_CAP=PASS task=... median=... cap=...</code></td></tr>
-<tr><td>Place答案关系</td><td>核对按钮紧前／紧后actor以及Order的ordinal→actor映射，检查实际录制grounding；不再要求新增后的段数或长度与母档相等。</td><td><code>XHARD_PLACE_ANSWER=PASS tasks=2 mismatches=0</code></td></tr>
-<tr><td>母布局与路径约束</td><td>BinFill按原库存分目标；PickHighlight实际足6；Pattern拒绝采样耗尽失败；Route母路径、母方向前缀和尾端连续性正确。</td><td><code>XHARD_TARGET_COUNTS=PASS</code>、<code>XHARD_PATH_CONTRACT=PASS</code></td></tr>
+<table id="goals-imitation"><thead><tr><th>任务</th><th>goal 要改什么</th><th>subgoal 要改什么</th><th>一个 episode 示例</th></tr></thead><tbody>
+<tr data-goal-task="MoveCube"><td>4.1 MoveCube</td><td>不改。</td><td>不改，保留演示中的移动方式。</td><td><b>goal：</b>用视频演示的同样方式把方块移到目标位置。<br><b>subgoal：</b>若演示采用抓放：拿起方块→放到目标位置。</td></tr>
+<tr data-goal-task="InsertPeg"><td>4.2 InsertPeg</td><td>不改。</td><td>不改，仍选同一根杆、同一端和同一插入侧。</td><td><b>goal：</b>按视频演示，使用同一根杆的同一端，从同一侧插入孔。<br><b>subgoal：</b>拿起演示中的杆→将演示中的那一端从对应侧插入。</td></tr>
+<tr data-goal-task="PatternLock"><td>4.3 PatternLock</td><td>不改，仍要求复现视频中的路线。</td><td>按加长后的实际路径补齐每一步方向，演示与执行使用相同的新方向序列。</td><td>某episode从4个节点改为7个节点，示例新路径含6次移动。<br><b>goal：</b>按视频演示复现相同路线。<br><b>subgoal：</b>向右→向右→向下→向左→向下→向右；演示与执行相同。</td></tr>
+<tr data-goal-task="RouteStick"><td>4.4 RouteStick</td><td>不改，仍要求绕杆复现演示路线。</td><td>保留原路线的方向指令，在末尾追加新路段；每段仍说明去左／右目标，以及顺／逆时针绕杆。</td><td>某episode从4段延长到8段，前4段保留。<br><b>goal：</b>绕过杆子，复现视频演示的路线。<br><b>subgoal：</b>前4段原指令→第5段逆时针绕到右侧最近目标→第6段顺时针绕到左侧最近目标→第7段逆时针绕到右侧最近目标→第8段顺时针绕到左侧最近目标。演示与执行相同。</td></tr>
 </tbody></table>
 <h2 id="p1-_6">六、验收、步骤、子代理（三行）</h2>
 <ul>
-<li><strong>验收</strong>：原有身份、配置、卡片、关闭态、保护目录、smoke闸门，加第五节的goal/subgoal、按钮状态/grounding/落定、真实中位两倍上界、Place答案与路径/目标数量闸门；具体见第二部分，不以INFO统计代替通过。</li>
+<li><strong>验收</strong>：原有身份、配置、卡片、关闭态、保护目录、smoke闸门，加技术细节中的goal/subgoal、按钮状态/grounding/落定、真实中位两倍上界、Place答案与路径/目标数量闸门；具体见第二部分，不以INFO统计代替通过。</li>
 <li><strong>步骤</strong>：开工 → 前置验证六项 → 主会话写新包骨架 S0 → 四个 worktree 子代理并行 → 逐个合并 → 先单任务/单episode/单worker，过后再按批准规模出对账表 → 用户审阅取值再说「开工」→ 全量 650 条 → 数轴图与留档；表与判据见第二部分四节 runbook。</li>
 <li><strong>子代理</strong>：S1 八个参数／后处理／路径／Place子类，S2 重写方法组 6 子类，S3 生成器开关，S4 轻量测试；按 S1→S2→S3→S4 合并，每个合并前后各审一次；分配表见第二部分二节。</li>
 </ul>
@@ -528,8 +515,19 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <tr><td><code>src/robomme/env_record_wrapper/RecordWrapper.py::step</code></td><td>保留既有计划中2000步保护阈值的独立待批项；本次语言审查不自动授权或实施。</td><td>只按用户批准的阈值范围变更；默认路径保护不变。</td></tr>
 </tbody></table>
 <p><strong>实现前后链路：</strong>原链路“母参数→原task_list→goal/grounding/VQA→录像”在按钮任务只含两次按压；新链路“母布局→P/S联合参数→交替按压状态机＋末swap门禁→同源goal/grounding/VQA→录像”。不改HDF5结构；交换的环境步与HDF5帧单独映射，保持原dtype和字段，只有授权新增动作及其文本发生语义变化，不宣称新旧轨迹等价。</p>
-<p><strong>实施顺序与验证：</strong>S0明确公共派生标志与P/S字段→S1、S2各自独立worktree修改归属文件→S3接生成器→S4写语义定向测试→主会话逐项获批后接保护文件→逐项审查与整合。第一道真实运行仅单任务、单episode、单worker；通过后才按原批准规模扩展。拟测试入口 <code>UV_CACHE_DIR=$HOME/.cache/uv uv run --no-sync python -m pytest tests/lightweight/test_robomme_xhard.py -k 'goal or button or target or path or place' -q</code>，对应第一部分五节新增具名判据；该测试文件与用例为拟新增，当前没有执行。与现有configs/register测试互补，不能只比较字典。</p>
+<p><strong>实施顺序与验证：</strong>S0明确公共派生标志与P/S字段→S1、S2各自独立worktree修改归属文件→S3接生成器→S4写语义定向测试→主会话逐项获批后接保护文件→逐项审查与整合。第一道真实运行仅单任务、单episode、单worker；通过后才按原批准规模扩展。拟测试入口 <code>UV_CACHE_DIR=$HOME/.cache/uv uv run --no-sync python -m pytest tests/lightweight/test_robomme_xhard.py -k 'goal or button or target or path or place' -q</code>，对应本部分“目标语义审查与实施前闸门”的具名判据；该测试文件与用例为拟新增，当前没有执行。与现有configs/register测试互补，不能只比较字典。</p>
 <p><strong>风险与未验证项：</strong>919是复制母按钮段的估计，环境步到录制帧、重复按释放与重新接近的规划时长、动画碰撞、跨reset均未实测；严格按同集合任务中位两倍上界验收，不把单条smoke或合成统计当正式通过。原源码语义问题只修被批准的派生分支；不借审查修改母任务。实施结果按原留档制度追加，保护清单按批准原话维护，关闭开关时原行为回归验证。</p>
+<p>审查基线 <code>ac0033f11f195434bd9b22570f6ea5fc306cafa1</code>。此处保留技术核查与验收要求；第一部分五节只展示goal/subgoal改动及说明示例。</p>
+<h2 id="goal-review-actions">目标语义审查与实施前闸门</h2>
+<p>全部16个任务均已覆盖。明确新增／修正goal的派生分支是 VideoUnmask、ButtonUnmask、ButtonUnmaskSwap、PickHighlight；其他任务主要靠动态变量或重建任务清单同步。没有要求修改通用 <code>subgoal_language.py</code>；它的十个序数上限仍须对候选次数做检查。下列判定是拟实施验收，当前均未动态验证，不能写为已通过。</p>
+<table><thead><tr><th>查什么</th><th>怎么查／过了说明什么</th><th>拟判定行</th></tr></thead><tbody>
+<tr><td>语言与真实动作</td><td>逐任务核对全部goal变体、每项name/subgoal、actor、func/solve/segment；母档分支文本不变，派生次数、颜色、答案一致。</td><td><code>XHARD_GOAL_SUBGOAL=PASS tasks=16 mismatches=0</code></td></tr>
+<tr><td>重复按钮与方向</td><td>第三次可再次按右；按住不重复计数，错侧/同时按不推进；多次evaluate不多计；第二次reset归零。动作标签仅右/左两个稳定身份，所有choice标签非空。</td><td><code>XHARD_BUTTON_ORDER=PASS P=6</code>、<code>XHARD_BUTTON_REPRESS=PASS</code>、<code>XHARD_BUTTON_RESET=PASS</code>、<code>XHARD_CHOICE_GROUNDING=PASS mismatches=0</code></td></tr>
+<tr><td>交换与抓取同步</td><td>采集真实环境步和录制帧映射，最后交换实际落定早于第一抓；调度、配对、事件数等于S；不靠旧固定按钮时长推断。</td><td><code>XHARD_SWAP_FINISHED_BEFORE_PICK=PASS S=12</code></td></tr>
+<tr><td>两倍长度上界</td><td>按任务真实HDF5长度中位核对 <code>median(T_new)≤2*median(T_parent)</code>，不是逐episode上界；报告相同集合与母档，Repick用medium。Button同25条母集合上界922；单条smoke不代表任务中位通过。</td><td><code>XHARD_LENGTH_CAP=PASS task=... median=... cap=...</code></td></tr>
+<tr><td>Place答案关系</td><td>核对按钮紧前／紧后actor以及Order的ordinal→actor映射，检查实际录制grounding；不再要求新增后的段数或长度与母档相等。</td><td><code>XHARD_PLACE_ANSWER=PASS tasks=2 mismatches=0</code></td></tr>
+<tr><td>母布局与路径约束</td><td>BinFill按原库存分目标；PickHighlight实际足6；Pattern拒绝采样耗尽失败；Route母路径、母方向前缀和尾端连续性正确。</td><td><code>XHARD_TARGET_COUNTS=PASS</code>、<code>XHARD_PATH_CONTRACT=PASS</code></td></tr>
+</tbody></table>
 <h2 id="_13">〇、红线</h2>
 <p><strong>本次取值补充：</strong>2000环境步不再作设计上限，录像器阈值是待逐项批准的代码修改；其它受保护边界保留。VideoRepick的母档与产物difficulty均为medium。所有新参数实测值尚缺，数轴是更新后的合成估算。旧图中的BinFill／PickHighlight hard示例仍适用，不能据示例把VideoRepick强制成hard。</p>
 <ul>
@@ -1407,7 +1405,7 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 </table>
 <p>派发前核对：<code>~/.claude/settings.json</code> 的 <code>worktree.baseRef</code> 为 <code>"head"</code>（当前文件没有这一项，派发前先补）；<code>git status --short --ignore-submodules=dirty -- . ':!docs/subagent-stats'</code> 为空；<code>git check-ignore -q .claude/worktrees/probe</code>；<code>git worktree list</code> 存档。</p>
 <h2 id="_16">三、闸门总表</h2>
-<p>以下原有闸门与第一部分五节的 <code>XHARD_GOAL_SUBGOAL</code>、按钮状态/grounding/落定、<code>XHARD_LENGTH_CAP</code>、<code>XHARD_PLACE_ANSWER</code>、目标数/路径契约闸门共同构成验收。旧 <code>XHARD_LENGTH=INFO</code> 仅作统计，不能代替真实中位两倍上界硬判定；所有新闸门当前待实施验证。</p>
+<p>以下原有闸门与本部分“目标语义审查与实施前闸门”的 <code>XHARD_GOAL_SUBGOAL</code>、按钮状态/grounding/落定、<code>XHARD_LENGTH_CAP</code>、<code>XHARD_PLACE_ANSWER</code>、目标数/路径契约闸门共同构成验收。旧 <code>XHARD_LENGTH=INFO</code> 仅作统计，不能代替真实中位两倍上界硬判定；所有新闸门当前待实施验证。</p>
 <table>
 <thead>
 <tr>
