@@ -1,5 +1,7 @@
 # RoboMME MotionJEPA 全任务训练数据仓库（newtask-v3）— AGENTS.md
 
+**模型选择覆盖第 26 条（2026-10-10，用户当前指令）**：Codex 主代理、所有角色子代理和递归子代理只允许使用 GPT-6、GPT-6.1 系列，禁止任何 GPT-5.6 模型及其它系列。本覆盖项优先于下方同步块内的旧 Aspen GPT-5.6 限定，旧型号不得被调用或继续派发。每次委派须核对实际角色绑定；若角色预设仍绑定 GPT-5.6，改为显式指定宿主实际提供的 GPT-6／GPT-6.1 型号，不可静默回退，也不虚构型号。子代理档位仍不得高于主请求。文档更新不代表已安装角色配置或既有会话已热切换。用户原话：「不允许使用任何GPT 5.6的模型，只允许使用GPT 6和GPT 6.1的模型。」「这个你可以直接改，对于 Markdown 的修改是可以直接改。」「你要更新一下这些 Markdown，就是说都要更新成GPT-6，GPT-6.1的系列。」正本同一规则见 AgentMetaRules 提交 `8a9ee32`；下方标记块来源仍按其 `src=` 如实记录。
+
 本文件由三部分构成：①下面的「运行环境判定」与本段头部；②标记块 `common-agents`——[AgentMetaRules-hongzefu](https://github.com/hongzefu/AgentMetaRules-hongzefu) 正本 `AGENTS.md`「强制规则」第 1–26 条与附录 A 的逐字副本（标记行 `src=` 记正本 commit、`blob=` 记块内容 blob id，**块内禁止手改**；同步核对命令 `uv run --no-project python /data/hongzefu/AgentMetaRules-hongzefu/scripts/sync_rules.py check --repo newtask-v3`）；③标记块之后的项目专属规则、覆盖项、占位符取值、项目 scope 与规则来源。优先级：系统 / 开发者 / 用户当前指令 > 标记块外明确写出的覆盖项与项目专属规则 > 标记块内的正本条目。平时只读本文件，不需要去读 GitHub 上的正本；正本改动经同步脚本回流。项目目标、历史计划和示例命令不代表本轮实施授权。
 
 **历史账本已归档**：2026-07-13 至 2026-10-06 的旧版规则 1–10、仓库目标、三阶段任务说明、「当前进度」表与追加式执行日志，已按正本第 22 条**逐字节**归档到 [`docs/ledger/AGENTS-ledger-20260713-20261006.md`](docs/ledger/AGENTS-ledger-20260713-20261006.md)（即 commit `deb938e0` 时的整份 `AGENTS.md`），只读、不再追加；本文件不再放进度表与执行日志。旧条号对照：旧 1 → 正本第 1 条；旧 2 → 第 3 条；旧 3 → 第 4 条（覆盖）；旧 4 → 第 7 条；旧 5（Workflow）→ `CLAUDE.md`「Workflow 与 Agent 模型」；旧 6 → 第 9 条；旧 7 → 第 5 条；旧 8 → 第 11 条（覆盖）；旧 9 → 第 14 条（覆盖）；旧 10 → 第 20 条。
