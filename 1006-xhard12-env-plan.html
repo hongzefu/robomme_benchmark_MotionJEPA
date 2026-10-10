@@ -68,7 +68,7 @@ a { color:var(--accent); }
 <li class="lv3"><a href="#p1-g5">4.1 MoveCube、4.2 InsertPeg</a></li>
 <li class="lv3"><a href="#p1-t-patternlock">4.3 PatternLock</a></li>
 <li class="lv3"><a href="#p1-t-routestick">4.4 RouteStick</a></li>
-<li class="lv2"><a href="#p1-goals">五、goal / subgoal 改什么：逐任务示例</a></li>
+<li class="lv2"><a href="#p1-goals">五、goal / subgoal 原文与注释</a></li>
 <li class="lv2"><a href="#p1-_6">六、验收、步骤、子代理（三行）</a></li>
 <li class="lv1"><a href="#agent">第二部分（技术细节，供 agent 追踪）</a></li>
 <li class="lv2"><a href="#_13">〇、红线</a></li>
@@ -459,36 +459,273 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
   });
 })();
 </script>
-<h2 id="p1-goals">五、goal / subgoal 改什么：逐任务示例</h2>
-<p><b>goal</b> 是整个任务的指令，<b>subgoal</b> 是每一步的指令。下面每个任务举一个 episode，展示修改后的内容；颜色、目标和路径仅作中文说明示例，不是已生成的真实 episode。省略号表示同类步骤继续，未提到的原有步骤保留。</p>
+<h2 id="p1-goals">五、goal / subgoal 原文与注释</h2>
+<p>每个任务展示一个真实母 episode：goal 和 subgoal 均逐字读取已保存记录，右栏逐句注释要改哪里。新增动作尚未生成，没有已有原文可引用；此处不以自编英文或中文概括冒充原文。</p>
+<p>来源：本机官方参考集 <code>/data/hongzefu/data_0226/record_dataset_&lt;Task&gt;.h5</code>；goal 取 <code>setup/task_goal</code>，subgoal 取各段起点的 <code>info/simple_subgoal</code>。保留全部goal备选句、重复subgoal、大小写和拼写；“演示／执行”只作阶段标记。</p>
+<style>.goal-originals .original-goals td:first-child{width:48%}.goal-originals code{display:block;white-space:pre-wrap;word-break:normal;overflow-wrap:anywhere;background:#f6f8fa;padding:8px}.goal-originals .sub-original{width:44%}.goal-originals .seq{width:3em;white-space:nowrap}.goal-originals .phase{width:4em;white-space:nowrap}.goal-episode{color:#59636e;font-size:.9em}@media(max-width:700px){.goal-originals table,.goal-originals tbody,.goal-originals tr,.goal-originals td{display:block;width:auto!important}.goal-originals thead{display:none}.goal-originals tbody tr{margin-bottom:14px;border:1px solid var(--border)}.goal-originals td{border:0}.goal-originals td.seq,.goal-originals td.phase{display:inline-block}.goal-originals .original-goals td:first-child:before{content:"goal 原文";font-weight:600}.goal-originals td.sub-original:before{content:"subgoal 原文";font-weight:600}.goal-originals td:last-child:before{content:"原文注释：";font-weight:600}}</style>
 <h3 id="goal-counting">1 计数</h3>
-<table id="goals-counting"><thead><tr><th>任务</th><th>goal 要改什么</th><th>subgoal 要改什么</th><th>一个 episode 示例</th></tr></thead><tbody>
-<tr data-goal-task="BinFill"><td>1.1 BinFill</td><td>句式不变，把各颜色的目标数量换成新数量，总计9块。</td><td>按新数量补齐“抓第几个、什么颜色的方块→投入箱子”；最后按按钮不变。</td><td><b>goal：</b>将3块红、3块蓝、3块绿方块放入箱子，最后按按钮。<br><b>subgoal：</b>抓第1块红方块→投入箱子→…→抓第3块绿方块→投入箱子→按按钮。</td></tr>
-<tr data-goal-task="PickXtimes"><td>1.2 PickXtimes</td><td>把抓放次数改成9次，其余句式不变。</td><td>补齐第1至第9次拿起与放下，最后按按钮。</td><td><b>goal：</b>将蓝色方块拿起并放到目标上9次，最后按按钮。<br><b>subgoal：</b>第1次拿起蓝方块→放到目标上→…→第9次拿起→放到目标上→按按钮。</td></tr>
-<tr data-goal-task="SwingXtimes"><td>1.3 SwingXtimes</td><td>把往返次数改成8次；一次是去右侧再回左侧。</td><td>补齐第1至第8组“到右侧→到左侧”，保留拿起、放下和按钮。</td><td><b>goal：</b>拿着红方块在左右目标之间往返8次，放下后按按钮。<br><b>subgoal：</b>拿起红方块→第1次到右侧→第1次到左侧→…→第8次到右侧→第8次到左侧→放下→按按钮。</td></tr>
-<tr data-goal-task="StopCube"><td>1.4 StopCube</td><td>把停止序号改成新次数，例如第3次经过目标改为第6次。</td><td>“到按钮上方、保持静止、按按钮”的文字不变，等待步骤延长到新的停止时机。</td><td><b>goal：</b>在方块第6次经过中央目标时按按钮停住它。<br><b>subgoal：</b>移动到按钮上方→保持静止→…→在第6次经过时按按钮。</td></tr>
+<section class="goal-originals" data-goal-task="BinFill" id="goal-task-binfill"><h4>1.1 BinFill</h4>
+<p class="goal-episode">episode_51 · seed 9102 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">put four blue cubes into the bin, then press the button to stop</code></td><td>原文要求投入四块蓝方块，然后按按钮结束。要改的是颜色数量短语；新目标总数为9，按实际各色目标填入，不能直接把本例写成九块蓝方块。投箱和末尾按钮的句式保留。</td></tr>
+<tr><td><code data-original="goal" data-index="1">put four blue cubes into the bin and press the button to stop</code></td><td>原文要求投入四块蓝方块，然后按按钮结束。要改的是颜色数量短语；新目标总数为9，按实际各色目标填入，不能直接把本例写成九块蓝方块。投箱和末尾按钮的句式保留。</td></tr>
 </tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">pick up the first blue cube</code></td><td>抓第1块蓝方块。现有条目原文保留；按新各色数量续接相应序号和颜色，不能把旧序号循环复制。</td></tr>
+<tr><td class="seq">2</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="115">put it into the bin</code></td><td>将刚抓起的方块投入箱子。每次新增抓取后也用这句投放原文。</td></tr>
+<tr><td class="seq">3</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="191">pick up the second blue cube</code></td><td>抓第2块蓝方块。现有条目原文保留；按新各色数量续接相应序号和颜色，不能把旧序号循环复制。</td></tr>
+<tr><td class="seq">4</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="315">put it into the bin</code></td><td>将刚抓起的方块投入箱子。每次新增抓取后也用这句投放原文。</td></tr>
+<tr><td class="seq">5</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="407">pick up the third blue cube</code></td><td>抓第3块蓝方块。现有条目原文保留；按新各色数量续接相应序号和颜色，不能把旧序号循环复制。</td></tr>
+<tr><td class="seq">6</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="5" data-start="488">put it into the bin</code></td><td>将刚抓起的方块投入箱子。每次新增抓取后也用这句投放原文。</td></tr>
+<tr><td class="seq">7</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="6" data-start="555">pick up the fourth blue cube</code></td><td>抓第4块蓝方块。现有条目原文保留；按新各色数量续接相应序号和颜色，不能把旧序号循环复制。</td></tr>
+<tr><td class="seq">8</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="7" data-start="665">put it into the bin</code></td><td>将刚抓起的方块投入箱子。每次新增抓取后也用这句投放原文。</td></tr>
+<tr><td class="seq">9</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="8" data-start="753">press the button</code></td><td>按按钮；保留原文及其原有用途。</td></tr>
+<tr><td class="seq">10</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="9" data-start="826">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
+<section class="goal-originals" data-goal-task="PickXtimes" id="goal-task-pickxtimes"><h4>1.2 PickXtimes</h4>
+<p class="goal-episode">episode_39 · seed 4900 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">pick up the green cube and place it on the target, repeating this action five times, then press the button to stop</code></td><td>原文要求拿起绿色方块、放到目标上，重复五次，然后按按钮结束。只将 five times 改为 nine times，绿色方块、放置目标和末按钮不变。</td></tr>
+<tr><td><code data-original="goal" data-index="1">pick up the green cube and place it on the target, repeating this pick-and-place action five times, then press the button to stop</code></td><td>原文要求拿起绿色方块、放到目标上，重复五次，然后按按钮结束。只将 five times 改为 nine times，绿色方块、放置目标和末按钮不变。</td></tr>
+</tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">pick up the green cube for the first time</code></td><td>第1次拿起绿方块。本例原有第1至5次，修改后按同一句式接到第9次。</td></tr>
+<tr><td class="seq">2</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="112">place the green cube onto the target</code></td><td>把该方块放到目标上。文字不改；每次新增拿起后都配一条放置。</td></tr>
+<tr><td class="seq">3</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="188">pick up the green cube for the second time</code></td><td>第2次拿起绿方块。本例原有第1至5次，修改后按同一句式接到第9次。</td></tr>
+<tr><td class="seq">4</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="264">place the green cube onto the target</code></td><td>把该方块放到目标上。文字不改；每次新增拿起后都配一条放置。</td></tr>
+<tr><td class="seq">5</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="316">pick up the green cube for the third time</code></td><td>第3次拿起绿方块。本例原有第1至5次，修改后按同一句式接到第9次。</td></tr>
+<tr><td class="seq">6</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="5" data-start="392">place the green cube onto the target</code></td><td>把该方块放到目标上。文字不改；每次新增拿起后都配一条放置。</td></tr>
+<tr><td class="seq">7</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="6" data-start="446">pick up the green cube for the fourth time</code></td><td>第4次拿起绿方块。本例原有第1至5次，修改后按同一句式接到第9次。</td></tr>
+<tr><td class="seq">8</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="7" data-start="522">place the green cube onto the target</code></td><td>把该方块放到目标上。文字不改；每次新增拿起后都配一条放置。</td></tr>
+<tr><td class="seq">9</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="8" data-start="576">pick up the green cube for the fifth time</code></td><td>第5次拿起绿方块。本例原有第1至5次，修改后按同一句式接到第9次。</td></tr>
+<tr><td class="seq">10</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="9" data-start="652">place the green cube onto the target</code></td><td>把该方块放到目标上。文字不改；每次新增拿起后都配一条放置。</td></tr>
+<tr><td class="seq">11</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="10" data-start="706">press the button to stop</code></td><td>按按钮；保留原文及其原有用途。</td></tr>
+<tr><td class="seq">12</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="11" data-start="776">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
+<section class="goal-originals" data-goal-task="SwingXtimes" id="goal-task-swingxtimes"><h4>1.3 SwingXtimes</h4>
+<p class="goal-episode">episode_59 · seed 8900 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back and forth motion three times, finally press the button to stop</code></td><td>原文要求拿起蓝方块，先到右侧目标再到左侧目标，重复三次，最后按按钮；第二条还明确写出先放下方块。只将 three times 改为 eight times，其余句式保留。</td></tr>
+<tr><td><code data-original="goal" data-index="1">pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion three times, then put down the cube and press the button to stop</code></td><td>原文要求拿起蓝方块，先到右侧目标再到左侧目标，重复三次，最后按按钮；第二条还明确写出先放下方块。只将 three times 改为 eight times，其余句式保留。</td></tr>
+</tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">pick up the blue cube</code></td><td>拿起蓝方块；保留这条开头抓取指令。</td></tr>
+<tr><td class="seq">2</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="120">move to the top of the right-side target for the first time</code></td><td>第1次移到右侧目标上方。按此句式补齐第4至8组左右步骤。</td></tr>
+<tr><td class="seq">3</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="149">move to the top of the left-side target for the first time</code></td><td>第1次移到左侧目标上方。按此句式补齐第4至8组左右步骤。</td></tr>
+<tr><td class="seq">4</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="192">move to the top of the right-side target for the second time</code></td><td>第2次移到右侧目标上方。按此句式补齐第4至8组左右步骤。</td></tr>
+<tr><td class="seq">5</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="232">move to the top of the left-side target for the second time</code></td><td>第2次移到左侧目标上方。按此句式补齐第4至8组左右步骤。</td></tr>
+<tr><td class="seq">6</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="5" data-start="273">move to the top of the right-side target for the third time</code></td><td>第3次移到右侧目标上方。按此句式补齐第4至8组左右步骤。</td></tr>
+<tr><td class="seq">7</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="6" data-start="312">move to the top of the left-side target for the third time</code></td><td>第3次移到左侧目标上方。按此句式补齐第4至8组左右步骤。</td></tr>
+<tr><td class="seq">8</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="7" data-start="353">put the blue cube on the table</code></td><td>把蓝方块放到桌面；在新增到第8组摆动结束后仍保留。</td></tr>
+<tr><td class="seq">9</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="8" data-start="393">press the button</code></td><td>按按钮；保留原文及其原有用途。</td></tr>
+<tr><td class="seq">10</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="9" data-start="447">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
+<section class="goal-originals" data-goal-task="StopCube" id="goal-task-stopcube"><h4>1.4 StopCube</h4>
+<p class="goal-episode">episode_31 · seed 5100 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">press the button to stop the cube just as it reaches the target for the fourth time</code></td><td>原文要求方块第四次到达目标时按按钮，使其停在目标处。本例原序号4改为8，所以 fourth 改为 eighth；不是第四个完整往返。</td></tr>
+<tr><td><code data-original="goal" data-index="1">press the button to stop the cube exactly at the target on its fourth visit</code></td><td>原文要求方块第四次到达目标时按按钮，使其停在目标处。本例原序号4改为8，所以 fourth 改为 eighth；不是第四个完整往返。</td></tr>
+</tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">move to the top of the button to prepare</code></td><td>移到按钮上方准备按压；文字不改。</td></tr>
+<tr><td class="seq">2</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="58">remain static</code></td><td>保持静止。本例相邻的同名条目是不同等待步骤；文字保留，等待序列需延长到第8次经过目标时。</td></tr>
+<tr><td class="seq">3</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="100">remain static</code></td><td>保持静止。本例相邻的同名条目是不同等待步骤；文字保留，等待序列需延长到第8次经过目标时。</td></tr>
+<tr><td class="seq">4</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="202">remain static</code></td><td>保持静止。本例相邻的同名条目是不同等待步骤；文字保留，等待序列需延长到第8次经过目标时。</td></tr>
+<tr><td class="seq">5</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="250">press the button to stop the cube on the target</code></td><td>按按钮，让方块停在目标上。文字不改；本例触发时机由第4次经过改为第8次经过。</td></tr>
+<tr><td class="seq">6</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="5" data-start="277">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
 <h3 id="goal-permanence">2 永久性</h3>
-<table id="goals-permanence"><thead><tr><th>任务</th><th>goal 要改什么</th><th>subgoal 要改什么</th><th>一个 episode 示例</th></tr></thead><tbody>
-<tr data-goal-task="VideoUnmask"><td>2.1 VideoUnmask</td><td>从依次抓两个颜色对应的容器，改为依次抓三个颜色对应的容器。</td><td>第二抓后新增“放下第二个容器→抓第三种颜色对应的容器”。</td><td><b>goal：</b>观看视频，然后依次抓起藏着红、蓝、绿方块的容器。<br><b>subgoal：</b>抓藏红方块的容器→放下→抓藏蓝方块的容器→放下→抓藏绿方块的容器。</td></tr>
-<tr data-goal-task="ButtonUnmask"><td>2.2 ButtonUnmask</td><td>保留“先按按钮”，后面的两个颜色改为三个颜色。</td><td>按按钮仍一次；新增第二个容器放下和第三个容器抓起。</td><td><b>goal：</b>先按按钮，再依次抓起藏着红、蓝、绿方块的容器。<br><b>subgoal：</b>按按钮→抓藏红方块的容器→放下→抓藏蓝方块的容器→放下→抓藏绿方块的容器。</td></tr>
-<tr data-goal-task="VideoUnmaskSwap"><td>2.3 VideoUnmaskSwap</td><td>不改，仍是观察视频后按指定颜色顺序抓两个容器。</td><td>抓放指令不改；演示中的交换增多，观察／等待覆盖全部交换。</td><td><b>goal：</b>观看视频，然后先抓藏红方块的容器，再抓藏蓝方块的容器。<br><b>subgoal：</b>观察演示中的12次交换→抓藏红方块的容器→放下→抓藏蓝方块的容器。交换不是新增的机器人抓取指令。</td></tr>
-<tr data-goal-task="ButtonUnmaskSwap"><td>2.4 ButtonUnmaskSwap</td><td>将“按两个按钮”改成“从右侧开始，左右交替按6次，待交换结束后依次抓指定颜色对应的容器”。</td><td>把两次按压改为带方向、次数的六次按压；必要时补“等待交换结束”；两抓指令不变。</td><td><b>goal：</b>从右侧开始，左右交替按按钮6次，待交换全部结束后，先抓藏红方块的容器，再抓藏蓝方块的容器。<br><b>subgoal：</b>第1次按右→第2次按左→第3次按右→第4次按左→第5次按右→第6次按左→必要时等待交换结束→抓藏红方块的容器→放下→抓藏蓝方块的容器。按钮按压与12次交换并行推进；若按压先完成，等待剩余交换落定后再抓取。</td></tr>
+<section class="goal-originals" data-goal-task="VideoUnmask" id="goal-task-videounmask"><h4>2.1 VideoUnmask</h4>
+<p class="goal-episode">episode_35 · seed 9500 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube</code></td><td>原文要求观看视频，先抓藏绿方块的容器，最后抓另一个藏蓝方块的容器。新指令要把蓝色这一步改为中间步骤，再增补第三个目标的实际颜色；新增第三色句尚无已生成的原文。</td></tr>
 </tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">static</code></td><td>静止／观察段。保留原文；原文没有说明具体交换次数，不据此补写。</td></tr>
+<tr><td class="seq">2</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="66">pick up the container that hides the green cube</code></td><td>抓起藏着绿方块的容器。这句保留；在原第二抓之后新增放下，以及第三个实际颜色对应的抓取句。</td></tr>
+<tr><td class="seq">3</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="172">put down the container</code></td><td>放下当前容器。新增第三抓之前也需要这句，放下原第二个容器。</td></tr>
+<tr><td class="seq">4</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="220">pick up the container that hides the blue cube</code></td><td>抓起藏着蓝方块的容器。这句保留；在原第二抓之后新增放下，以及第三个实际颜色对应的抓取句。</td></tr>
+<tr><td class="seq">5</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="321">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
+<section class="goal-originals" data-goal-task="ButtonUnmask" id="goal-task-buttonunmask"><h4>2.2 ButtonUnmask</h4>
+<p class="goal-episode">episode_95 · seed 17500 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">first press the button, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube</code></td><td>原文要求先按按钮，再抓藏绿方块的容器，最后抓藏蓝方块的另一个容器。保留开头一次按钮，将蓝色这一步改为中间步骤，再增补第三个目标的实际颜色；第三色的新句尚未生成。</td></tr>
+</tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">press the button</code></td><td>按按钮；保留原文及其原有用途。</td></tr>
+<tr><td class="seq">2</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="119">pick up the container that hides the green cube</code></td><td>抓起藏着绿方块的容器。这句保留；在原第二抓之后新增放下，以及第三个实际颜色对应的抓取句。</td></tr>
+<tr><td class="seq">3</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="237">put down the container</code></td><td>放下当前容器。新增第三抓之前也需要这句，放下原第二个容器。</td></tr>
+<tr><td class="seq">4</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="285">pick up the container that hides the blue cube</code></td><td>抓起藏着蓝方块的容器。这句保留；在原第二抓之后新增放下，以及第三个实际颜色对应的抓取句。</td></tr>
+<tr><td class="seq">5</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="367">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
+<section class="goal-originals" data-goal-task="VideoUnmaskSwap" id="goal-task-videounmaskswap"><h4>2.3 VideoUnmaskSwap</h4>
+<p class="goal-episode">episode_27 · seed 7700 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube</code></td><td>原文要求观察视频，再先抓藏红方块的容器、最后抓藏绿方块的另一个容器。此goal原文不改；增加交换不等于增加抓容器次数。</td></tr>
+</tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">static</code></td><td>演示中的静止／观察段，原文只写 static。交换增多后延长或增加相应演示段；不把它冒写成“执行第几次交换”。</td></tr>
+<tr><td class="seq">2</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="216">pick up the container that hides the red cube</code></td><td>抓起藏着红方块的容器。保留原文及本episode的两色抓取顺序。</td></tr>
+<tr><td class="seq">3</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="322">put down the container</code></td><td>放下当前容器。原文不改。</td></tr>
+<tr><td class="seq">4</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="369">pick up the container that hides the green cube</code></td><td>抓起藏着绿方块的容器。保留原文及本episode的两色抓取顺序。</td></tr>
+<tr><td class="seq">5</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="447">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
+<section class="goal-originals" data-goal-task="ButtonUnmaskSwap" id="goal-task-buttonunmaskswap"><h4>2.4 ButtonUnmaskSwap</h4>
+<p class="goal-episode">episode_75 · seed 14500 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">first press both buttons on the table, then pick up the container hiding the red cube, finally pick up another container hiding the green cube</code></td><td>原文要求先按桌上的两个按钮，再先抓藏红方块的容器、最后抓藏绿方块的另一个容器。需要替换 first press both buttons on the table：明确从右侧开始、左右交替共6次，并等交换结束；红、绿两抓的顺序保留。新前缀尚无已生成原文。</td></tr>
+</tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">press the first button</code></td><td>原文只说按第1个按钮，没有写左右；现行求解器对应右按钮。修改时须明确“第1次按右按钮”，并追加第3至6次交替按压；新增条目没有母episode原文。</td></tr>
+<tr><td class="seq">2</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="109">press the second button</code></td><td>原文只说按第2个按钮，没有写左右；现行求解器对应左按钮。修改时须明确“第2次按左按钮”，并追加第3至6次交替按压；新增条目没有母episode原文。</td></tr>
+<tr><td class="seq">3</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="203">pick up the container that hides the red cube</code></td><td>抓起藏着红方块的容器。保留原文及本episode的两色抓取顺序。</td></tr>
+<tr><td class="seq">4</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="302">put down the container</code></td><td>放下当前容器。原文不改。</td></tr>
+<tr><td class="seq">5</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="352">pick up the container that hides the green cube</code></td><td>抓起藏着绿方块的容器。保留原文及本episode的两色抓取顺序。</td></tr>
+<tr><td class="seq">6</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="5" data-start="449">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
 <h3 id="goal-reference">3 参考</h3>
-<table id="goals-reference"><thead><tr><th>任务</th><th>goal 要改什么</th><th>subgoal 要改什么</th><th>一个 episode 示例</th></tr></thead><tbody>
-<tr data-goal-task="PickHighlight"><td>3.1 PickHighlight</td><td>保留“先按按钮，再抓所有高亮方块”；删除某条旧指令中多余的“最后再次按按钮”。</td><td>将高亮块序号补到第6个；前5个抓后放下，最后抓起第6个结束，不加末尾按钮。</td><td><b>goal：</b>先按按钮，再依次抓起所有高亮方块。<br><b>subgoal：</b>按按钮→抓第1个高亮块→放下→…→抓第5个→放下→抓第6个。此例共6个高亮块。</td></tr>
-<tr data-goal-task="VideoRepick"><td>3.2 VideoRepick</td><td>不改，仍抓演示中同一块方块，抓放次数保持该episode原值。</td><td>演示观察／等待覆盖更多交换；执行的抓放次数和最后按钮不变。</td><td><b>goal：</b>观看视频，认出演示中被拿起的方块，将它抓放2次，最后按按钮。<br><b>subgoal：</b>观察演示中的15次交换→拿起正确方块→放下→再次拿起同一块→放下→按按钮。</td></tr>
-<tr data-goal-task="VideoPlaceButton"><td>3.3 VideoPlaceButton</td><td>不改，仍要求放到演示里“按按钮紧前／紧后”的目标。</td><td>在演示中增加两组抓放，保留按钮紧前和紧后的位置；执行抓放指令不变。</td><td>用A、B、C、D标记四个平台：演示由“A→按钮→B”扩成“C→A→按钮→B→D”（每个字母都表示拿起并放到该平台）。<br><b>goal：</b>将方块放到演示中按按钮后第一次放置的平台。<br><b>执行subgoal：</b>拿起方块→放到B。答案仍是B。</td></tr>
-<tr data-goal-task="VideoPlaceOrder"><td>3.4 VideoPlaceOrder</td><td>不改，保留该episode原来的目标序号。</td><td>演示补齐四个不同平台的抓放；原访问顺序保留，执行仍放到原指定序号的平台。</td><td>演示访问由“A→B→C”扩成“A→B→C→D”（每个字母都表示拿起并放到该平台，原按钮等步骤保留）。<br><b>goal：</b>将方块放到演示中第二次放置的平台。<br><b>执行subgoal：</b>拿起方块→放到B。</td></tr>
+<section class="goal-originals" data-goal-task="PickHighlight" id="goal-task-pickhighlight"><h4>3.1 PickHighlight</h4>
+<p class="goal-episode">episode_55 · seed 17500 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">first press the button, then pick up all cubes that have been highlighteted with white areas on the table</code></td><td>原文要求先按按钮，再抓起桌上所有带白色高亮区域的方块。all cubes 仍覆盖增加到6块的目标，不必改为抓六次；highlighteted 是记录里的原有拼写，引用原样保留。</td></tr>
+<tr><td><code data-original="goal" data-index="1">first press the button, then pick up all highlighted cubes, finally press the button again to stop</code></td><td>原文要求先按按钮、抓全部高亮方块，最后再按按钮结束。但本回合下方subgoal没有最后一次按按钮；要删除 finally press the button again to stop 这一后缀，而不是新增一个末尾按钮动作。</td></tr>
 </tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">press the button</code></td><td>按按钮，位于本例开头；保留。此回合末尾没有再次按按钮。</td></tr>
+<tr><td class="seq">2</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="112">pick up the first highlighted cube, which is blue</code></td><td>抓起第1个高亮方块，它是蓝色。新增第4至6个时按实际序号与颜色填入，不猜测新方块颜色。</td></tr>
+<tr><td class="seq">3</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="212">place the cube onto the table</code></td><td>把方块放到桌面。增加高亮目标后在相邻抓取间保留此句，最后第6个抓起后不追加放下。</td></tr>
+<tr><td class="seq">4</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="274">pick up the second highlighted cube, which is red</code></td><td>抓起第2个高亮方块，它是红色。新增第4至6个时按实际序号与颜色填入，不猜测新方块颜色。</td></tr>
+<tr><td class="seq">5</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="379">place the cube onto the table</code></td><td>把方块放到桌面。增加高亮目标后在相邻抓取间保留此句，最后第6个抓起后不追加放下。</td></tr>
+<tr><td class="seq">6</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="5" data-start="429">pick up the third highlighted cube, which is red</code></td><td>抓起第3个高亮方块，它是红色。新增第4至6个时按实际序号与颜色填入，不猜测新方块颜色。</td></tr>
+<tr><td class="seq">7</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="6" data-start="524">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
+<section class="goal-originals" data-goal-task="VideoRepick" id="goal-task-videorepick"><h4>3.2 VideoRepick</h4>
+<p class="goal-episode">episode_22 · seed 11200 · medium</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for two times, finally put it down and press the button to stop</code></td><td>原文要求观察视频，认出演示中被拿起的同一块方块，抓放两次，最后放下并按按钮结束。此episode的两次抓放不改，goal原文保留；不能把新增交换次数写成抓放次数。</td></tr>
+<tr><td><code data-original="goal" data-index="1">watch the video carefully, then pick up the same cube that was previously picked up for two times, finally press the button to stop</code></td><td>原文要求观察视频，认出演示中被拿起的同一块方块，抓放两次，最后放下并按按钮结束。此episode的两次抓放不改，goal原文保留；不能把新增交换次数写成抓放次数。</td></tr>
+</tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">pick up the cube</code></td><td>演示中拿起方块。原文不改。</td></tr>
+<tr><td class="seq">2</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="112">drop the cube on the table</code></td><td>演示中将方块放到桌面；保留原文。</td></tr>
+<tr><td class="seq">3</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="157">static</code></td><td>演示中的静止／观察段，原文只写 static。交换增多后延长或增加相应演示段；不把它冒写成“执行第几次交换”。</td></tr>
+<tr><td class="seq">4</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="217">static</code></td><td>演示中的静止／观察段，原文只写 static。交换增多后延长或增加相应演示段；不把它冒写成“执行第几次交换”。</td></tr>
+<tr><td class="seq">5</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="271">static</code></td><td>演示中的静止／观察段，原文只写 static。交换增多后延长或增加相应演示段；不把它冒写成“执行第几次交换”。</td></tr>
+<tr><td class="seq">6</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="5" data-start="325">static</code></td><td>演示中的静止／观察段，原文只写 static。交换增多后延长或增加相应演示段；不把它冒写成“执行第几次交换”。</td></tr>
+<tr><td class="seq">7</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="6" data-start="379">pick up the correct cube for the first time</code></td><td>第1次拿起正确的方块，即演示中被拿起的同一块；文字与本例两次抓取次数都不改。</td></tr>
+<tr><td class="seq">8</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="7" data-start="480">put it down</code></td><td>放下刚拿起的方块；本例保留两次抓放，不因交换增多而增加执行抓放。</td></tr>
+<tr><td class="seq">9</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="8" data-start="530">pick up the correct cube for the second time</code></td><td>第2次拿起正确的方块，即演示中被拿起的同一块；文字与本例两次抓取次数都不改。</td></tr>
+<tr><td class="seq">10</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="9" data-start="600">put it down</code></td><td>放下刚拿起的方块；本例保留两次抓放，不因交换增多而增加执行抓放。</td></tr>
+<tr><td class="seq">11</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="10" data-start="650">press the button to finish</code></td><td>按按钮；保留原文及其原有用途。</td></tr>
+<tr><td class="seq">12</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="11" data-start="711">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
+<section class="goal-originals" data-goal-task="VideoPlaceButton" id="goal-task-videoplacebutton"><h4>3.3 VideoPlaceButton</h4>
+<p class="goal-episode">episode_55 · seed 15500 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">watch the video carefully, then place the green cube on the target right after the button was pressed</code></td><td>原文要求观看视频，把绿色方块放到按按钮后紧接着第一次放置的平台。right after / immediately after 表示紧接在按钮之后，不是右侧。goal原文保留，增加演示抓放不能改变这个答案。</td></tr>
+<tr><td><code data-original="goal" data-index="1">watch the video carefully and place the green cube on the target where it was placed immediately after the button was pressed</code></td><td>原文要求观看视频，把绿色方块放到按按钮后紧接着第一次放置的平台。right after / immediately after 表示紧接在按钮之后，不是右侧。goal原文保留，增加演示抓放不能改变这个答案。</td></tr>
+</tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">pick up the cube</code></td><td>演示中拿起方块。新增演示抓放仍使用这句原文。</td></tr>
+<tr><td class="seq">2</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="114">drop the cube onto target</code></td><td>演示中将方块放到目标平台。新增平台访问仍沿用此句；原文未写平台名字，不能擅自补成A/B/C/D。</td></tr>
+<tr><td class="seq">3</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="216">press the button</code></td><td>演示中的按按钮。新增一组抓放在按钮前最后一次放置之前，另一组在按钮后第一次放置之后；这条文字不改。</td></tr>
+<tr><td class="seq">4</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="299">pick up the cube</code></td><td>演示中拿起方块。新增演示抓放仍使用这句原文。</td></tr>
+<tr><td class="seq">5</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="387">drop the cube onto target</code></td><td>演示中将方块放到目标平台。新增平台访问仍沿用此句；原文未写平台名字，不能擅自补成A/B/C/D。</td></tr>
+<tr><td class="seq">6</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="5" data-start="487">pick up the cube</code></td><td>演示中拿起方块。新增演示抓放仍使用这句原文。</td></tr>
+<tr><td class="seq">7</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="6" data-start="558">drop the cube onto table</code></td><td>演示中将方块放到桌面；保留原文。</td></tr>
+<tr><td class="seq">8</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="7" data-start="640">static</code></td><td>静止／观察段。保留原文；原文没有说明具体交换次数，不据此补写。</td></tr>
+<tr><td class="seq">9</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="8" data-start="697">static</code></td><td>静止／观察段。保留原文；原文没有说明具体交换次数，不据此补写。</td></tr>
+<tr><td class="seq">10</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="9" data-start="757">pick up the cube</code></td><td>执行时拿起方块。原文不改。</td></tr>
+<tr><td class="seq">11</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="10" data-start="870">place the cube onto the correct target</code></td><td>把方块放到正确平台；原文不改。本例答案是按按钮后紧接着第一次放置的平台。</td></tr>
+<tr><td class="seq">12</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="11" data-start="943">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
+<section class="goal-originals" data-goal-task="VideoPlaceOrder" id="goal-task-videoplaceorder"><h4>3.4 VideoPlaceOrder</h4>
+<p class="goal-episode">episode_67 · seed 17700 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">watch the video carefully, then place the blue cube on the third target it was previously placed on</code></td><td>原文要求观看视频，再把蓝方块放到演示中第三次放置的平台。third 保留：演示补到四个平台，并不把本episode的答案改成第四个平台。</td></tr>
+<tr><td><code data-original="goal" data-index="1">watch the video carefully and place the blue cube on the third target where it was placed</code></td><td>原文要求观看视频，再把蓝方块放到演示中第三次放置的平台。third 保留：演示补到四个平台，并不把本episode的答案改成第四个平台。</td></tr>
+</tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">pick up the cube</code></td><td>演示中拿起方块。新增演示抓放仍使用这句原文。</td></tr>
+<tr><td class="seq">2</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="124">drop the cube onto target</code></td><td>演示中将方块放到目标平台。新增平台访问仍沿用此句；原文未写平台名字，不能擅自补成A/B/C/D。</td></tr>
+<tr><td class="seq">3</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="222">pick up the cube</code></td><td>演示中拿起方块。新增演示抓放仍使用这句原文。</td></tr>
+<tr><td class="seq">4</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="290">drop the cube onto target</code></td><td>演示中将方块放到目标平台。新增平台访问仍沿用此句；原文未写平台名字，不能擅自补成A/B/C/D。</td></tr>
+<tr><td class="seq">5</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="378">press the button</code></td><td>演示中的按按钮；保留原文及其原有用途。</td></tr>
+<tr><td class="seq">6</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="5" data-start="452">pick up the cube</code></td><td>演示中拿起方块。新增演示抓放仍使用这句原文。</td></tr>
+<tr><td class="seq">7</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="6" data-start="534">drop the cube onto target</code></td><td>演示中将方块放到目标平台。新增平台访问仍沿用此句；原文未写平台名字，不能擅自补成A/B/C/D。</td></tr>
+<tr><td class="seq">8</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="7" data-start="627">pick up the cube</code></td><td>演示中拿起方块。新增演示抓放仍使用这句原文。</td></tr>
+<tr><td class="seq">9</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="8" data-start="700">drop the cube onto table</code></td><td>演示中将方块放到桌面；保留原文。</td></tr>
+<tr><td class="seq">10</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="9" data-start="807">static</code></td><td>静止／观察段。保留原文；原文没有说明具体交换次数，不据此补写。</td></tr>
+<tr><td class="seq">11</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="10" data-start="863">static</code></td><td>静止／观察段。保留原文；原文没有说明具体交换次数，不据此补写。</td></tr>
+<tr><td class="seq">12</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="11" data-start="923">pick up the cube</code></td><td>执行时拿起方块。原文不改。</td></tr>
+<tr><td class="seq">13</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="12" data-start="1036">place the cube onto the correct target</code></td><td>把方块放到正确平台；原文不改。本例答案是演示中第三次放置的平台。</td></tr>
+<tr><td class="seq">14</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="13" data-start="1102">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
 <h3 id="goal-imitation">4 模仿</h3>
-<table id="goals-imitation"><thead><tr><th>任务</th><th>goal 要改什么</th><th>subgoal 要改什么</th><th>一个 episode 示例</th></tr></thead><tbody>
-<tr data-goal-task="MoveCube"><td>4.1 MoveCube</td><td>不改。</td><td>不改，保留演示中的移动方式。</td><td><b>goal：</b>用视频演示的同样方式把方块移到目标位置。<br><b>subgoal：</b>若演示采用抓放：拿起方块→放到目标位置。</td></tr>
-<tr data-goal-task="InsertPeg"><td>4.2 InsertPeg</td><td>不改。</td><td>不改，仍选同一根杆、同一端和同一插入侧。</td><td><b>goal：</b>按视频演示，使用同一根杆的同一端，从同一侧插入孔。<br><b>subgoal：</b>拿起演示中的杆→将演示中的那一端从对应侧插入。</td></tr>
-<tr data-goal-task="PatternLock"><td>4.3 PatternLock</td><td>不改，仍要求复现视频中的路线。</td><td>按加长后的实际路径补齐每一步方向，演示与执行使用相同的新方向序列。</td><td>某episode从4个节点改为7个节点，示例新路径含6次移动。<br><b>goal：</b>按视频演示复现相同路线。<br><b>subgoal：</b>向右→向右→向下→向左→向下→向右；演示与执行相同。</td></tr>
-<tr data-goal-task="RouteStick"><td>4.4 RouteStick</td><td>不改，仍要求绕杆复现演示路线。</td><td>保留原路线的方向指令，在末尾追加新路段；每段仍说明去左／右目标，以及顺／逆时针绕杆。</td><td>某episode从4段延长到8段，前4段保留。<br><b>goal：</b>绕过杆子，复现视频演示的路线。<br><b>subgoal：</b>前4段原指令→第5段逆时针绕到右侧最近目标→第6段顺时针绕到左侧最近目标→第7段逆时针绕到右侧最近目标→第8段顺时针绕到左侧最近目标。演示与执行相同。</td></tr>
+<section class="goal-originals" data-goal-task="MoveCube" id="goal-task-movecube"><h4>4.1 MoveCube</h4>
+<p class="goal-episode">episode_3 · seed 14300 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">watch the video carefully, then move the cube to the target in the same manner as before</code></td><td>原文要求观看视频，再用演示中的同样方式把方块移到目标。此例是推，不能把原文替换成抓起再放下。goal原文不改。</td></tr>
+<tr><td><code data-original="goal" data-index="1">watch the video carefully, then move the cube to the target in the same manner shown in the video</code></td><td>原文要求观看视频，再用演示中的同样方式把方块移到目标。此例是推，不能把原文替换成抓起再放下。goal原文不改。</td></tr>
 </tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">Close the gripper and push the cube to the target</code></td><td>闭合夹爪并将方块推到目标。演示与执行均为推，保留大写开头及全部原文，不改成抓放。</td></tr>
+<tr><td class="seq">2</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="101">static</code></td><td>静止／观察段。保留原文；原文没有说明具体交换次数，不据此补写。</td></tr>
+<tr><td class="seq">3</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="161">Close the gripper and push the cube to the target</code></td><td>闭合夹爪并将方块推到目标。演示与执行均为推，保留大写开头及全部原文，不改成抓放。</td></tr>
+<tr><td class="seq">4</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="261">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
+<section class="goal-originals" data-goal-task="InsertPeg" id="goal-task-insertpeg"><h4>4.2 InsertPeg</h4>
+<p class="goal-episode">episode_3 · seed 13300 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">watch the video carefully, then grasp the same end of the same peg you&#x27;ve picked before and insert it into the same side of the box</code></td><td>原文要求观看视频，再抓住同一根杆的同一端，从箱子的同一侧插入。杆的身份、抓取端和插入侧都保留，goal原文不改。</td></tr>
+<tr><td><code data-original="goal" data-index="1">watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video</code></td><td>原文要求观看视频，再抓住同一根杆的同一端，从箱子的同一侧插入。杆的身份、抓取端和插入侧都保留，goal原文不改。</td></tr>
+</tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">Pick up the peg by grasping the far end</code></td><td>抓住杆较远的一端，将杆拿起；保留原文和这一抓取端。</td></tr>
+<tr><td class="seq">2</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="118">Insert the peg from the right side of the box</code></td><td>从右侧插入杆。演示与执行记录的句尾不同，分别逐字保留，不擅自补齐或统一。</td></tr>
+<tr><td class="seq">3</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="217">Pick up the peg by grasping the far end</code></td><td>抓住杆较远的一端，将杆拿起；保留原文和这一抓取端。</td></tr>
+<tr><td class="seq">4</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="335">Insert the peg from the right side</code></td><td>从右侧插入杆。演示与执行记录的句尾不同，分别逐字保留，不擅自补齐或统一。</td></tr>
+<tr><td class="seq">5</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="415">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
+<section class="goal-originals" data-goal-task="PatternLock" id="goal-task-patternlock"><h4>4.3 PatternLock</h4>
+<p class="goal-episode">episode_43 · seed 19300 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">Watch the video carefully, then use the stick attached to the robot to retrace the same pattern</code></td><td>原文要求观看视频，使用机器人上安装的杆复现同一图案。加长演示路径后仍用此句，不在goal中另编方向序列。第一条原文的 Watch 大写保留。</td></tr>
+<tr><td><code data-original="goal" data-index="1">watch the video carefully, then use the stick attached to the robot to retrace the same pattern shown in the video</code></td><td>原文要求观看视频，使用机器人上安装的杆复现同一图案。加长演示路径后仍用此句，不在goal中另编方向序列。第一条原文的 Watch 大写保留。</td></tr>
+</tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">move right</code></td><td>向右移动。新路径按实际方向逐步生成同类原句；不能为凑长度复制本回合这串方向。</td></tr>
+<tr><td class="seq">2</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="30">move right</code></td><td>向右移动。新路径按实际方向逐步生成同类原句；不能为凑长度复制本回合这串方向。</td></tr>
+<tr><td class="seq">3</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="58">move forward-right</code></td><td>向前右方移动。新路径按实际方向逐步生成同类原句；不能为凑长度复制本回合这串方向。</td></tr>
+<tr><td class="seq">4</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="93">move left</code></td><td>向左移动。新路径按实际方向逐步生成同类原句；不能为凑长度复制本回合这串方向。</td></tr>
+<tr><td class="seq">5</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="125">move forward-left</code></td><td>向前左方移动。新路径按实际方向逐步生成同类原句；不能为凑长度复制本回合这串方向。</td></tr>
+<tr><td class="seq">6</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="5" data-start="162">move right</code></td><td>向右移动。新路径按实际方向逐步生成同类原句；不能为凑长度复制本回合这串方向。</td></tr>
+<tr><td class="seq">7</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="6" data-start="192">move right</code></td><td>向右移动。新路径按实际方向逐步生成同类原句；不能为凑长度复制本回合这串方向。</td></tr>
+<tr><td class="seq">8</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="7" data-start="220">move forward-right</code></td><td>向前右方移动。新路径按实际方向逐步生成同类原句；不能为凑长度复制本回合这串方向。</td></tr>
+<tr><td class="seq">9</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="8" data-start="255">move left</code></td><td>向左移动。新路径按实际方向逐步生成同类原句；不能为凑长度复制本回合这串方向。</td></tr>
+<tr><td class="seq">10</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="9" data-start="287">move forward-left</code></td><td>向前左方移动。新路径按实际方向逐步生成同类原句；不能为凑长度复制本回合这串方向。</td></tr>
+<tr><td class="seq">11</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="10" data-start="314">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
+<section class="goal-originals" data-goal-task="RouteStick" id="goal-task-routestick"><h4>4.4 RouteStick</h4>
+<p class="goal-episode">episode_95 · seed 25500 · hard</p>
+<table class="original-goals"><thead><tr><th>goal 原文（本回合全部备选句）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td><code data-original="goal" data-index="0">Watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path</code></td><td>原文要求观看视频，用机器人上安装的杆绕过桌上各杆，沿同一路径移动。路径加长但goal原文不改。第一条原文的 Watch 大写保留。</td></tr>
+<tr><td><code data-original="goal" data-index="1">watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video</code></td><td>原文要求观看视频，用机器人上安装的杆绕过桌上各杆，沿同一路径移动。路径加长但goal原文不改。第一条原文的 Watch 大写保留。</td></tr>
+</tbody></table>
+<table class="original-subgoals"><thead><tr><th class="seq">顺序</th><th class="phase">阶段</th><th class="sub-original">subgoal 原文（逐段完整列出）</th><th>原文注释与修改位置</th></tr></thead><tbody>
+<tr><td class="seq">1</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="0" data-start="0">move to the nearest left target by circling around the stick clockwise</code></td><td>顺时针绕杆，移到左侧最近的目标。原有前缀保留；新增尾段按其实际方向使用对应原句，演示与执行一致。</td></tr>
+<tr><td class="seq">2</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="1" data-start="50">move to the nearest right target by circling around the stick clockwise</code></td><td>顺时针绕杆，移到右侧最近的目标。原有前缀保留；新增尾段按其实际方向使用对应原句，演示与执行一致。</td></tr>
+<tr><td class="seq">3</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="2" data-start="100">move to the nearest left target by circling around the stick counterclockwise</code></td><td>逆时针绕杆，移到左侧最近的目标。原有前缀保留；新增尾段按其实际方向使用对应原句，演示与执行一致。</td></tr>
+<tr><td class="seq">4</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="3" data-start="150">move to the nearest left target by circling around the stick clockwise</code></td><td>顺时针绕杆，移到左侧最近的目标。原有前缀保留；新增尾段按其实际方向使用对应原句，演示与执行一致。</td></tr>
+<tr><td class="seq">5</td><td class="phase">演示</td><td class="sub-original"><code data-original="subgoal" data-index="4" data-start="200">move to the nearest left target by circling around the stick clockwise</code></td><td>顺时针绕杆，移到左侧最近的目标。原有前缀保留；新增尾段按其实际方向使用对应原句，演示与执行一致。</td></tr>
+<tr><td class="seq">6</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="5" data-start="250">move to the nearest left target by circling around the stick clockwise</code></td><td>顺时针绕杆，移到左侧最近的目标。原有前缀保留；新增尾段按其实际方向使用对应原句，演示与执行一致。</td></tr>
+<tr><td class="seq">7</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="6" data-start="300">move to the nearest right target by circling around the stick clockwise</code></td><td>顺时针绕杆，移到右侧最近的目标。原有前缀保留；新增尾段按其实际方向使用对应原句，演示与执行一致。</td></tr>
+<tr><td class="seq">8</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="7" data-start="350">move to the nearest left target by circling around the stick counterclockwise</code></td><td>逆时针绕杆，移到左侧最近的目标。原有前缀保留；新增尾段按其实际方向使用对应原句，演示与执行一致。</td></tr>
+<tr><td class="seq">9</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="8" data-start="400">move to the nearest left target by circling around the stick clockwise</code></td><td>顺时针绕杆，移到左侧最近的目标。原有前缀保留；新增尾段按其实际方向使用对应原句，演示与执行一致。</td></tr>
+<tr><td class="seq">10</td><td class="phase">执行</td><td class="sub-original"><code data-original="subgoal" data-index="9" data-start="450">move to the nearest left target by circling around the stick clockwise</code></td><td>顺时针绕杆，移到左侧最近的目标。原有前缀保留；新增尾段按其实际方向使用对应原句，演示与执行一致。</td></tr>
+<tr><td class="seq">11</td><td class="phase">结束</td><td class="sub-original"><code data-original="subgoal" data-index="10" data-start="493">All tasks completed</code></td><td>全部任务完成的结束文字，不是额外动作；原文不改。</td></tr>
+</tbody></table></section>
 <h2 id="p1-_6">六、验收、步骤、子代理（三行）</h2>
 <ul>
 <li><strong>验收</strong>：原有身份、配置、卡片、关闭态、保护目录、smoke闸门，加技术细节中的goal/subgoal、按钮状态/grounding/落定、真实中位两倍上界、Place答案与路径/目标数量闸门；具体见第二部分，不以INFO统计代替通过。</li>
@@ -517,7 +754,7 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <p><strong>实现前后链路：</strong>原链路“母参数→原task_list→goal/grounding/VQA→录像”在按钮任务只含两次按压；新链路“母布局→P/S联合参数→交替按压状态机＋末swap门禁→同源goal/grounding/VQA→录像”。不改HDF5结构；交换的环境步与HDF5帧单独映射，保持原dtype和字段，只有授权新增动作及其文本发生语义变化，不宣称新旧轨迹等价。</p>
 <p><strong>实施顺序与验证：</strong>S0明确公共派生标志与P/S字段→S1、S2各自独立worktree修改归属文件→S3接生成器→S4写语义定向测试→主会话逐项获批后接保护文件→逐项审查与整合。第一道真实运行仅单任务、单episode、单worker；通过后才按原批准规模扩展。拟测试入口 <code>UV_CACHE_DIR=$HOME/.cache/uv uv run --no-sync python -m pytest tests/lightweight/test_robomme_xhard.py -k 'goal or button or target or path or place' -q</code>，对应本部分“目标语义审查与实施前闸门”的具名判据；该测试文件与用例为拟新增，当前没有执行。与现有configs/register测试互补，不能只比较字典。</p>
 <p><strong>风险与未验证项：</strong>919是复制母按钮段的估计，环境步到录制帧、重复按释放与重新接近的规划时长、动画碰撞、跨reset均未实测；严格按同集合任务中位两倍上界验收，不把单条smoke或合成统计当正式通过。原源码语义问题只修被批准的派生分支；不借审查修改母任务。实施结果按原留档制度追加，保护清单按批准原话维护，关闭开关时原行为回归验证。</p>
-<p>审查基线 <code>ac0033f11f195434bd9b22570f6ea5fc306cafa1</code>。此处保留技术核查与验收要求；第一部分五节只展示goal/subgoal改动及说明示例。</p>
+<p>审查基线 <code>ac0033f11f195434bd9b22570f6ea5fc306cafa1</code>。此处保留技术核查与验收要求；第一部分五节只展示真实episode的goal/subgoal原文及修改注释。</p>
 <h2 id="goal-review-actions">目标语义审查与实施前闸门</h2>
 <p>全部16个任务均已覆盖。明确新增／修正goal的派生分支是 VideoUnmask、ButtonUnmask、ButtonUnmaskSwap、PickHighlight；其他任务主要靠动态变量或重建任务清单同步。没有要求修改通用 <code>subgoal_language.py</code>；它的十个序数上限仍须对候选次数做检查。下列判定是拟实施验收，当前均未动态验证，不能写为已通过。</p>
 <table><thead><tr><th>查什么</th><th>怎么查／过了说明什么</th><th>拟判定行</th></tr></thead><tbody>
