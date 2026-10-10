@@ -413,6 +413,8 @@ def main() -> None:
     ap.add_argument("--write", action="store_true", help="写回根计划 HTML")
     ap.add_argument("--plan", default=str(PLAN))
     a = ap.parse_args()
+    if a.write and '<h2 id="p1-goals">' in pathlib.Path(a.plan).read_text(encoding="utf-8"):
+        ap.error("当前计划已人工修订两倍上界与逐任务目标；本工具的旧参数未同步，禁止回写覆盖。请直接修改根计划后运行 build_plan_site.py。")
     v2, v3 = load_v2(), load_v3()
     frag, boards, summary = build(v2, v3)
     for t, s in summary.items():
