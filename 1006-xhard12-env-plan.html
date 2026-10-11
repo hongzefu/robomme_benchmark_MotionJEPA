@@ -71,6 +71,7 @@ a { color:var(--accent); }
 <li class="lv2"><a href="#p1-goals">五、goal 原文与拟修改稿对照</a></li>
 <li class="lv2"><a href="#p1-_6">六、验收、步骤、子代理（三行）</a></li>
 <li class="lv1"><a href="#agent">第二部分（技术细节，供 agent 追踪）</a></li>
+<li class="lv2"><a href="#knob-review-heading">逐任务续审：母档取中位，目标取唯一整数</a></li>
 <li class="lv2"><a href="#_13">〇、红线</a></li>
 <li class="lv2"><a href="#_14">一、逐文件改动清单</a></li>
 <li class="lv3"><a href="#iface-table">接口改动总表（原第一部分二节，2026-10-08 移入）</a></li>
@@ -450,121 +451,7 @@ a { color:var(--accent); }
 <td><b>S=10条边</b><br>993帧 / 59窗<br><small>估算 1.986 倍</small></td></tr>
 </tbody></table>
 </div>
-<p class="muted">点击任务名展开中位数来源、唯一参数的选择依据与估算公式。K=投入数，n=重复次数，p=抓容器数，P=按压次数，S=交换次数或RouteStick移动边数，R=重抓次数，a=额外抓放组数，N=不同目标数，L=节点数；它们是表中参数简称，不是新增接口已实现的声明。筛选与原任务勾选联动，MoveCube、InsertPeg始终保留作说明。</p>
-<h4>逐任务续审：母档取中位，目标取唯一整数</h4>
-<details class="knob-review" data-task="BinFill" id="knob-BinFill"><summary>1.1 BinFill：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>次数：3（5条）、4（10条）、5（10条）。</p>
-<p><strong>1.0母档怎么定：</strong>25条实际总投放数的中位数是4，固定母档K=4；本轮用原本K=4的10条作为帧窗参照，不再用混合配置的868帧。</p>
-<p><strong>各档为何这样选：</strong>固定K候选5/6/7/8分别合成1034.5/1203/1372/1564.5帧。两倍目标1661帧：K8偏差96.5，K9为1768.5帧、偏差107.5，K8估算1.884倍，在1.8与2.0中更接近1.8，因此仅保留1.8档，2.0留空；不另取K9填补2.0。</p>
-<p><strong>帧窗估算：</strong>T′=T+Σ循环追加的母抓取投入对；保留按钮和完成尾段，W′=w(T′)。偶数子集按中间两项平均，不能换成较大的中位条。</p>
-<p><strong>实施边界：</strong>先生成原Hard场景，再按固定总数K分配颜色目标，必须核实际库存。现有参照子集都原生K4；其它K5样本变成固定K4需要减少目标，不再满足旧“只增加”契约，当前不执行该标准化或据此宣称母语义不变。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/BinFill.py</code>；符号锚点：<code>BinFill.config_hard、BinFill._load_scene、BinFill._initialize_episode</code>。固定配置参照子集n=10，episode=3、7、15、19、23、31、47、51、83、87。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="PickXtimes" id="knob-PickXtimes"><summary>1.2 PickXtimes：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>次数：4（12条）、5（13条）。</p>
-<p><strong>1.0母档怎么定：</strong>25条实际次数中位为5；固定母档number_min=number_max=5，用原5次的13条，基线841帧/51窗。</p>
-<p><strong>各档为何这样选：</strong>每档number_min与number_max均设为同一个数，目标1.2/1.4/1.6/1.8/2.0分别选6/7/8/9/10。1.8目标1513.8帧：9次1444差69.8，10次1586差72.2，故选9；2.0选择当前上限10次，估算1.886倍。</p>
-<p><strong>帧窗估算：</strong>T′=T+Σ循环追加的母抓放对；固定按钮与完成段只保留一次；逐条计算w(T′)后取中位。</p>
-<p><strong>实施边界：</strong>10次是当前序数语言上限，不增到11。布局沿用固定5次母seed，不把原4次样本混入固定基线；循环复制首抓段可能偏离后续真实抓放耗时。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/PickXtimes.py</code>；符号锚点：<code>PickXtimes.__init__、PickXtimes._load_scene；utils/subgoal_language.py::get_subgoal_with_index</code>。固定配置参照子集n=13，episode=7、11、19、23、27、39、43、55、67、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="SwingXtimes" id="knob-SwingXtimes"><summary>1.3 SwingXtimes：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>次数：3（25条）。</p>
-<p><strong>1.0母档怎么定：</strong>全部25条母样本均为3个往返，固定母档n=3，488帧/29窗；此项基线不变。</p>
-<p><strong>各档为何这样选：</strong>唯一整数次数依次为4/5/7/8/9；每档number_min=number_max=n，max_swings=2n自动派生。1.4目标683.2帧选5次642，较6次732更近；2倍目标976帧选9次978。</p>
-<p><strong>帧窗估算：</strong>每增加一个往返只追加一对右移、左移的母段长；保留一次拾起、放下、按钮及尾段；W′=w(T′)。</p>
-<p><strong>实施边界：</strong>保持三色方块、两个目标和原布局；max_swings不是另一个可任选的旋钮。总目标次数及动作序数须同步，当前未实跑。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/SwingXtimes.py</code>；符号锚点：<code>SwingXtimes.config_hard、SwingXtimes._load_scene、SwingXtimes._initialize_episode</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="StopCube" id="knob-StopCube"><summary>1.4 StopCube：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>停止序号k：2（7条）、3（7条）、4（6条）、5（5条）；间隔：60（7条）、80（9条）、120（9条）。</p>
-<p><strong>1.0母档怎么定：</strong>25条实际停止序号的中位为3，间隔中位为80，固定母档(k=3, move_interval=80)。两者同时满足的3条原母样本为ep59/83/87，中位237帧/13窗；不能再用混合基线309。</p>
-<p><strong>各档为何这样选：</strong>所有目标档都保持间隔80，停止序号只取固定4、5、6。k4估算1.338倍，只归1.4；k5估算1.675倍，只归1.6；2.0选k6。1.2与1.8留空；不存在按原k变化的映射，也不在同档随机抽取间隔。</p>
-<p><strong>帧窗估算：</strong>T′=T+80×(k−3)，逐条保留原固定开销并取数学中位；每侧w按统一公式。参数通过母seed复现源码CPU随机抽样顺序核对，未导入环境。</p>
-<p><strong>实施边界：</strong>参照只有3条且速度相同；把其它seed强设间隔80会改变其原速度，不能写成原速度保持。本轮仅定义固定配置及估算；未来k6还须同步扩展step中的range(5)、停止窗口和序数语言。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/StopCube.py</code>；符号锚点：<code>StopCube._initialize_episode、StopCube.step</code>。固定配置参照子集n=3，episode=59、83、87。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="VideoUnmask" id="knob-VideoUnmask"><summary>2.1 VideoUnmask：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>抓取数p：2（25条）。</p>
-<p><strong>1.0母档怎么定：</strong>全部25条实际均为2抓，固定母档p=2，329帧/18窗。</p>
-<p><strong>各档为何这样选：</strong>唯一新增配置p=3，476帧/27窗、1.447倍，放在约1.4档；1.2更近原母档，没有独立新增档。更高目标无第四个合法目标可抓。</p>
-<p><strong>帧窗估算：</strong>T′=T+原放下段+原第二抓段；演示长度不变，分别计演示与执行窗口。</p>
-<p><strong>实施边界：</strong>父类pick仅判断>1，不能只把字典改成3。拟派生任务需要真正追加放下bin_1与抓起bin_2，并同步文本与grounding；不新增容器、不重复抓凑档。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/VideoUnmask.py</code>；符号锚点：<code>VideoUnmask.config_hard、VideoUnmask._load_scene</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="ButtonUnmask" id="knob-ButtonUnmask"><summary>2.2 ButtonUnmask：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>抓取数p：2（25条）。</p>
-<p><strong>1.0母档怎么定：</strong>全部25条实际均为2抓，固定母档p=2，373帧/22窗。</p>
-<p><strong>各档为何这样选：</strong>唯一新增配置p=3，515帧/31窗、1.381倍。p3的1.381倍更接近1.4，因此只保留1.4，1.2留空，不再一组参数对应两档。</p>
-<p><strong>帧窗估算：</strong>T′=T+原放下段+原第二抓段，W′=w(T′)，按25条分别计算后取中位。</p>
-<p><strong>实施边界：</strong>父类pick只是>1开关；第三抓须构造真实任务、正确颜色与恢复索引，不能把复制母段的第二种颜色文字用于第三抓。1.6以上无新增配置。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/ButtonUnmask.py</code>；符号锚点：<code>ButtonUnmask.config_hard、ButtonUnmask._load_scene</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="VideoUnmaskSwap" id="knob-VideoUnmaskSwap"><summary>2.3 VideoUnmaskSwap：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>交换数S：2（13条）、3（12条）。</p>
-<p><strong>1.0母档怎么定：</strong>实际S中位为2，固定swap_min=swap_max=2；取原S2的13条作母参照，基线428帧/24窗，不再用混合457。</p>
-<p><strong>各档为何这样选：</strong>五个目标分别固定S=4/5/7/9/11，所有seed在同一档使用同一S；不再写S+增量或4–5等范围。2倍目标856帧：S11为878，差22，近于S10的824（差32），所以允许略高的2.051倍。</p>
-<p><strong>帧窗估算：</strong>D′=6×ceil((64+50S)/6)，T′=T−168+D′；W′=w(D′)+w(T−168)。原母子集demo均168帧。</p>
-<p><strong>实施边界：</strong>保持两抓、前64步与每次50环境步动画。第4次起需泛化全部配对属性和调度，重建不得清空已求idx2。执行段原长是估算假设，真实最终容器位置会影响规划。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/VideoUnmaskSwap.py</code>；符号锚点：<code>VideoUnmaskSwap.__init__、VideoUnmaskSwap._refresh_swap_schedule、VideoUnmaskSwap.step</code>。固定配置参照子集n=13，episode=7、11、19、23、31、35、39、43、67、75、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="ButtonUnmaskSwap" id="knob-ButtonUnmaskSwap"><summary>2.4 ButtonUnmaskSwap：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>按压数P：2（25条）；交换数S：2（12条）、3（13条）。</p>
-<p><strong>1.0母档怎么定：</strong>按压中位P=2；从母seed复现__init__第一笔torch.randint得到真实S分布，中位S=3（不使用旧JSON里按序号估的交换事件）。固定P2/S3的13条实录基线460帧/27窗。</p>
-<p><strong>各档为何这样选：</strong>唯一组合依次P3/S4、P4/S6、P4/S8、P5/S10、P6/S12。中位误差相同时优先较少落定等待，交换保持4/6/8/10/12；1.4→1.6的P固定4，仅S增加。每格只有一组，不给多种等长P/S备选。</p>
-<p><strong>帧窗估算：</strong>C(P)=ceil(P/2)R+floor(P/2)L；新增档T′=T−R−L+max(C(P),65+50S)。母P2/S3直接用原实录460，不能套新增门禁公式补成466。</p>
-<p><strong>实施边界：</strong>右起交替按、先释放、错侧不推进、末交换落定后再抓；状态、goal、VQA和grounding同步。P6/S12估算916帧是固定S3子集，旧919是混合25条，两者不混用。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/ButtonUnmaskSwap.py</code>；符号锚点：<code>ButtonUnmaskSwap.__init__、ButtonUnmaskSwap._initialize_episode、ButtonUnmaskSwap._refresh_swap_schedule、ButtonUnmaskSwap.step</code>。固定配置参照子集n=13，episode=7、27、31、35、39、43、51、59、63、67、83、91、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="PickHighlight" id="knob-PickHighlight"><summary>3.1 PickHighlight：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>次数：3（25条）。</p>
-<p><strong>1.0母档怎么定：</strong>全部25条母pickup=3，spawn=6保持固定，基线539帧/32窗。</p>
-<p><strong>各档为何这样选：</strong>固定pickup4的700/539≈1.2987倍更接近1.2，故只归1.2；pickup5归1.6；pickup6的1010/539≈1.8738倍更接近1.8，故只归1.8。1.4与2.0留空，新增配置仍为三种；距离比较使用未舍入比值，不能把1.2987先写成1.3再当平局。</p>
-<p><strong>帧窗估算：</strong>最后抓取之前每增加一目标，追加一组已有抓起＋放下段；分别得700/855/1010帧与42/52/62窗。</p>
-<p><strong>实施边界：</strong>不增加第七个方块；pickup6会让六块全高亮，失去非目标干扰。实际actor数量、目标前缀、真实路径和遗漏均须后续验证。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/PickHighlight.py</code>；符号锚点：<code>PickHighlight.config_hard、PickHighlight._load_scene、PickHighlight.step</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="VideoRepick" id="knob-VideoRepick"><summary>3.2 VideoRepick：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>交换数S：2（16条）、3（9条）；重抓数R：1（8条）、2（9条）、3（8条）。</p>
-<p><strong>1.0母档怎么定：</strong>medium三方块例外不变。25条实际交换S中位2、重抓R中位2；各档都固定R=2，母档S=2。原本同时S2/R2的子集只有4条ep2/46/86/90，母中位717帧/42窗。</p>
-<p><strong>各档为何这样选：</strong>每档固定一个交换数S=5/7/10/13/15，不再用原S+增量范围，且不再保留R随机1–3。两倍目标1434帧：S15为1419差15，S16为1473差39，因此选15。</p>
-<p><strong>帧窗估算：</strong>每新增交换沿用母static段54录制帧估计：T′=T+54(S−2)，D′=D+54(S−2)；W′=w(D′)+w(T−D)，四条分别算再取中位。</p>
-<p><strong>实施边界：</strong>58.5窗、85.5窗是4条整数窗口数的数学中位，不是单轨迹半个窗口。固定R2是最新单配置口径，取代旧表中各seed保留1–3的混合估时；本轮未把其它seed改为R2。50环境步不等于54录制帧，长交换配对仍待实现。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/VideoRepick.py</code>；符号锚点：<code>VideoRepick.config_medium、VideoRepick.__init__、VideoRepick._refresh_swap_schedule、VideoRepick._initialize_episode</code>。固定配置参照子集n=4，episode=2、46、86、90。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="VideoPlaceButton" id="knob-VideoPlaceButton"><summary>3.3 VideoPlaceButton：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>额外组数a：0（25条）。</p>
-<p><strong>1.0母档怎么定：</strong>全部25条额外组数a=0，母档固定0组，961帧/57窗；答案task_flag不是长度旋钮，仍按母seed保留。</p>
-<p><strong>各档为何这样选：</strong>1.2档固定额外a=1组，放置侧按前50%／后50%随机选择。前侧：在原target_0抓放之前追加到target_2的一组；后侧：在原target_1已放完之后追加到target_3的一组。两种结果属于同一随机策略配置。等权混合估算1156.5帧/69窗、1.203倍。1.4档a=2仍为前后各一组，1359帧/82窗。</p>
-<p><strong>帧窗估算：</strong>母按钮前、后抓放对分别为A、B。a1以前后各0.5概率加A或B，同时加至T与D，再分侧计窗；用25条母记录各自的前、后两分支组成50个等权合成候选，分别取数学中位得到1156.5帧和69窗，不是50条实跑，也不是将两侧中位1171与1149直接平均。a2仍加A+B。</p>
-<p><strong>实施边界：</strong>保持additional_place=False，不开启旧post_flag；按钮前最后落点target_0与按钮后第一落点target_1不变。额外任务插入后重算恢复和失败注入索引。新增的选侧抽样使用由母seed与档位派生的独立随机流，不能消耗母generator或挪动task_flag；同seed同档可复现，50%指单次概率，不要求25条恰好一半在前、一半在后。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/VideoPlaceButton.py</code>；符号锚点：<code>VideoPlaceButton._load_scene::task_list/pre_flag/post_flag/task_flag；utils/task4recovery.py::task4recovery</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="VideoPlaceOrder" id="knob-VideoPlaceOrder"><summary>3.4 VideoPlaceOrder：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>不同目标数N：2（10条）、3（7条）、4（8条）。</p>
-<p><strong>1.0母档怎么定：</strong>25条实际不同目标数中位N=3；固定母档3个不同目标，参照原N3的7条，1120帧/67窗，不使用旧混合1115。</p>
-<p><strong>各档为何这样选：</strong>唯一新增配置固定N=4，1326帧/80窗、1.184倍，归约1.2档。没有2/3/4→4的动态映射，也不重复访问凑更多档。</p>
-<p><strong>帧窗估算：</strong>在每条三目标母样本上加第一组母演示抓放段长A：T′=T+A、D′=D+A，再分侧计窗并取7条中位。</p>
-<p><strong>实施边界：</strong>本表只使用原N3子集估时，不把原N4样本截成3。原N4可能要求第4项答案、按钮在第4组后，强行缩短会删掉答案或改变时序；后续若要全部seed标准化须另定义合法答案与按钮规则。当前N3→N4保留固定母档原三项、答案与按钮，再追加剩余目标。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/VideoPlaceOrder.py</code>；符号锚点：<code>VideoPlaceOrder._load_scene::num_targets_to_pick/which_in_subset/button_task_index；VideoPlaceOrder._initialize_episode</code>。固定配置参照子集n=7，episode=7、15、19、31、47、67、95。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="MoveCube" id="knob-MoveCube"><summary>4.1 MoveCube：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>无可取中位的长度次数参数。</p>
-<p><strong>1.0母档怎么定：</strong>无次数旋钮；母档固定一次演示＋一次执行，已有25条摘要416帧/23窗。</p>
-<p><strong>各档为何这样选：</strong>1.2–2.0无独立新增配置，维持不纳入extra hard。peg_push/gripper_push/grasp_putdown是动作类别，不给不可排序的类别取伪中位。</p>
-<p><strong>帧窗估算：</strong>引用1006-xhard12-prev-training-and-task-plan.md「4.2 每任务汇总」，本轮未重新读取HDF5。</p>
-<p><strong>实施边界：</strong>布局与动作方式仍按原seed，不当作不同长度档；禁止通过重复演示、多轮搬运或加静止填档。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/MoveCube.py</code>；符号锚点：<code>MoveCube._initialize_episode、MoveCube.evaluate</code>。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="InsertPeg" id="knob-InsertPeg"><summary>4.2 InsertPeg：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>无可取中位的长度次数参数。</p>
-<p><strong>1.0母档怎么定：</strong>无次数旋钮；固定一次演示抓插＋一次执行抓插，已有25条摘要464帧/26窗。</p>
-<p><strong>各档为何这样选：</strong>1.2–2.0无独立新增配置。obj_flag、direction是类别选择，不给它们取中位，也不把布局随机性解释成同一档多配置。</p>
-<p><strong>帧窗估算：</strong>引用1006-xhard12-prev-training-and-task-plan.md「4.2 每任务汇总」，本轮未重新读取HDF5。</p>
-<p><strong>实施边界：</strong>不追加插入轮数、不延长静止来构造难度；当前母语义保持。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/InsertPeg.py</code>；符号锚点：<code>InsertPeg.__init__、InsertPeg._initialize_episode::tasks</code>。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="PatternLock" id="knob-PatternLock"><summary>4.3 PatternLock：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>路径长度：4（2条）、5（9条）、6（5条）、7（3条）、8（6条）。</p>
-<p><strong>1.0母档怎么定：</strong>25条实际节点数中位L=6，grid=5；取原L6的5条ep7/15/27/31/43，固定母档334帧/18窗。</p>
-<p><strong>各档为何这样选：</strong>目标档只取固定L=7/8/9/10/11（length上下界都设成该L），不再有五值映射。直接比较该固定子集的合成帧中位：396/480/528/604/661；两倍目标668，L11只差7，近于L10或L12。</p>
-<p><strong>帧窗估算：</strong>每侧追加L−6个母移动段作估计；完成尾段一次，D′/E′分别重算，W′=w(D′)+w(E′)。</p>
-<p><strong>实施边界：</strong>参照子集原生L6，不把其它路径截短/加长后冒充真实母档。保持grid5、不重复节点与母前缀时仍可能无法扩尾；不可达须固定seed报告，不能回走、换seed或吞采样耗尽。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/PatternLock.py</code>；符号锚点：<code>PatternLock._load_scene；utils/adjacent.py::grid_adjacency/dfs_path</code>。固定配置参照子集n=5，episode=7、15、27、31、43。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<details class="knob-review" data-task="RouteStick" id="knob-RouteStick"><summary>4.4 RouteStick：固定母档与唯一配置</summary>
-<p><strong>25条实际旋钮分布：</strong>路径长度：4（6条）、5（7条）、6（5条）、7（7条）。</p>
-<p><strong>1.0母档怎么定：</strong>25条实际移动边数中位S=5；取原S5的7条，固定母档500帧/28窗。S是边数，不是节点数。</p>
-<p><strong>各档为何这样选：</strong>每个目标只有固定S=6/7/8/9/10，分别600/700/800/900/993帧，34/40/46/54/59窗；不再根据母S输出四个不同值。</p>
-<p><strong>帧窗估算：</strong>demo、exec各追加S−5个母移动段。复制到原exec末段43帧时产生截尾，S10合成993帧/59窗，名义约1000帧/60窗，真实值待校对。</p>
-<p><strong>实施边界：</strong>布局、路径选择和方向仍由seed决定，不算多套长度配置。先完整生成固定母路径与方向，再用独立尾部随机流延长；保持折返、母前缀及两侧一致，不复制轨迹作为新玩法。</p>
-<p class="muted">源码：<code>src/robomme/robomme_env/RouteStick.py</code>；符号锚点：<code>RouteStick.config_hard、RouteStick._load_scene；utils/route.py::generate_dynamic_walk</code>。固定配置参照子集n=7，episode=3、7、39、47、51、63、95。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
-<p class="muted">固定母档已由16个任务的独立审阅代理分别核对，源码与母记录锚点为 <code>e978d076a862938730bb75957e50bd219f8a82bd</code>；母段来源 <code>vis/output/reference_&lt;Task&gt;.json::records[].hard.item</code>。固定子集与候选帧窗证据在 <code>artifacts/fixed-knobs-20261011/candidates.json</code>。本次按最近目标去重由涉及的4个原任务代理复核，VideoPlaceButton随机侧策略由其原代理另行复核，均锚定 <code>337b94ac4a1ac8843e4ea2a08ea437921ee6a19e</code>；50分支混合统计与最终页面验证在 <code>artifacts/unique-knobs-20261011/side-mixture.json</code>、<code>verification.log</code>。本轮没有更改环境、重新生成母样本或扩大轨迹预算；把未符合中位配置的seed标准化为同一配置，仍需另核语义与受保护改动，不能沿用“原seed全部行为不变”的结论。</p>
+<p class="muted">点击任务名查看第二部分对应的中位数来源、参数选择依据与估算公式。K=投入数，n=重复次数，p=抓容器数，P=按压次数，S=交换次数或RouteStick移动边数，R=重抓次数，a=额外抓放组数，N=不同目标数，L=节点数；它们是表中参数简称，不是新增接口已实现的声明。表格筛选与原任务勾选联动，MoveCube、InsertPeg始终保留作说明。</p>
 </section>
 <style>
 .gradient-scroll { overflow-x:auto; }
@@ -572,10 +459,6 @@ a { color:var(--accent); }
 #length-gradient-table th, #length-gradient-table td { vertical-align:top; padding:8px; }
 #length-gradient-table small { color:var(--muted); }
 #length-gradient-table .knob-empty { color:var(--muted); }
-#length-gradient .knob-review { margin:10px 0; border:1px solid var(--border); border-radius:6px; padding:10px 14px; }
-#length-gradient .knob-review summary { cursor:pointer; font-weight:700; }
-#length-gradient .knob-review:target { border-color:var(--accent); background:#f8fbff; }
-#length-gradient .knob-review p { margin:8px 0; }
 #length-gradient code { overflow-wrap:anywhere; }
 </style>
 <script>
@@ -586,7 +469,7 @@ a { color:var(--accent); }
     const on = {};
     tsk.forEach(c => { on[c.dataset.task] = c.checked; });
     document.querySelectorAll('.task[data-task]').forEach(d => { d.style.display = on[d.dataset.task] ? '' : 'none'; });
-    document.querySelectorAll('#total tr[data-task], #length-gradient-table tr[data-task], #length-gradient .knob-review[data-task]').forEach(r => { r.style.display = on[r.dataset.task] !== false ? '' : 'none'; });
+    document.querySelectorAll('#total tr[data-task], #length-gradient-table tr[data-task]').forEach(r => { r.style.display = on[r.dataset.task] !== false ? '' : 'none'; });
     document.querySelectorAll('section.grp').forEach(sec => {
       const any = [...tsk].some(c => c.dataset.group === sec.dataset.group && c.checked);
       sec.style.display = any ? '' : 'none';
@@ -596,9 +479,6 @@ a { color:var(--accent); }
   }
   grp.forEach(g => g.addEventListener('change', () => { tsk.forEach(c => { if (c.dataset.group === g.dataset.group) c.checked = g.checked; }); apply(); }));
   tsk.forEach(c => c.addEventListener('change', apply));
-  document.querySelectorAll('#length-gradient-table a[href^="#knob-"]').forEach(a => {
-    a.addEventListener('click', () => { document.getElementById(a.getAttribute('href').slice(1)).open = true; });
-  });
   apply();
 })();
 </script>
@@ -815,6 +695,150 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <li><strong>子代理</strong>：S1 八个参数／后处理／路径／Place子类，S2 重写方法组 6 子类，S3 生成器开关，S4 轻量测试；按 S1→S2→S3→S4 合并，每个合并前后各审一次；分配表见第二部分二节。</li>
 </ul>
 <h1 id="agent">第二部分（技术细节，供 agent 追踪）</h1>
+<section id="knob-review-notes">
+<h2 id="knob-review-heading">逐任务续审：母档取中位，目标取唯一整数</h2>
+<details class="knob-review" data-task="BinFill" id="knob-BinFill"><summary>1.1 BinFill：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>次数：3（5条）、4（10条）、5（10条）。</p>
+<p><strong>1.0母档怎么定：</strong>25条实际总投放数的中位数是4，固定母档K=4；本轮用原本K=4的10条作为帧窗参照，不再用混合配置的868帧。</p>
+<p><strong>各档为何这样选：</strong>固定K候选5/6/7/8分别合成1034.5/1203/1372/1564.5帧。两倍目标1661帧：K8偏差96.5，K9为1768.5帧、偏差107.5，K8估算1.884倍，在1.8与2.0中更接近1.8，因此仅保留1.8档，2.0留空；不另取K9填补2.0。</p>
+<p><strong>帧窗估算：</strong>T′=T+Σ循环追加的母抓取投入对；保留按钮和完成尾段，W′=w(T′)。偶数子集按中间两项平均，不能换成较大的中位条。</p>
+<p><strong>实施边界：</strong>先生成原Hard场景，再按固定总数K分配颜色目标，必须核实际库存。现有参照子集都原生K4；其它K5样本变成固定K4需要减少目标，不再满足旧“只增加”契约，当前不执行该标准化或据此宣称母语义不变。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/BinFill.py</code>；符号锚点：<code>BinFill.config_hard、BinFill._load_scene、BinFill._initialize_episode</code>。固定配置参照子集n=10，episode=3、7、15、19、23、31、47、51、83、87。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="PickXtimes" id="knob-PickXtimes"><summary>1.2 PickXtimes：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>次数：4（12条）、5（13条）。</p>
+<p><strong>1.0母档怎么定：</strong>25条实际次数中位为5；固定母档number_min=number_max=5，用原5次的13条，基线841帧/51窗。</p>
+<p><strong>各档为何这样选：</strong>每档number_min与number_max均设为同一个数，目标1.2/1.4/1.6/1.8/2.0分别选6/7/8/9/10。1.8目标1513.8帧：9次1444差69.8，10次1586差72.2，故选9；2.0选择当前上限10次，估算1.886倍。</p>
+<p><strong>帧窗估算：</strong>T′=T+Σ循环追加的母抓放对；固定按钮与完成段只保留一次；逐条计算w(T′)后取中位。</p>
+<p><strong>实施边界：</strong>10次是当前序数语言上限，不增到11。布局沿用固定5次母seed，不把原4次样本混入固定基线；循环复制首抓段可能偏离后续真实抓放耗时。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/PickXtimes.py</code>；符号锚点：<code>PickXtimes.__init__、PickXtimes._load_scene；utils/subgoal_language.py::get_subgoal_with_index</code>。固定配置参照子集n=13，episode=7、11、19、23、27、39、43、55、67、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="SwingXtimes" id="knob-SwingXtimes"><summary>1.3 SwingXtimes：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>次数：3（25条）。</p>
+<p><strong>1.0母档怎么定：</strong>全部25条母样本均为3个往返，固定母档n=3，488帧/29窗；此项基线不变。</p>
+<p><strong>各档为何这样选：</strong>唯一整数次数依次为4/5/7/8/9；每档number_min=number_max=n，max_swings=2n自动派生。1.4目标683.2帧选5次642，较6次732更近；2倍目标976帧选9次978。</p>
+<p><strong>帧窗估算：</strong>每增加一个往返只追加一对右移、左移的母段长；保留一次拾起、放下、按钮及尾段；W′=w(T′)。</p>
+<p><strong>实施边界：</strong>保持三色方块、两个目标和原布局；max_swings不是另一个可任选的旋钮。总目标次数及动作序数须同步，当前未实跑。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/SwingXtimes.py</code>；符号锚点：<code>SwingXtimes.config_hard、SwingXtimes._load_scene、SwingXtimes._initialize_episode</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="StopCube" id="knob-StopCube"><summary>1.4 StopCube：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>停止序号k：2（7条）、3（7条）、4（6条）、5（5条）；间隔：60（7条）、80（9条）、120（9条）。</p>
+<p><strong>1.0母档怎么定：</strong>25条实际停止序号的中位为3，间隔中位为80，固定母档(k=3, move_interval=80)。两者同时满足的3条原母样本为ep59/83/87，中位237帧/13窗；不能再用混合基线309。</p>
+<p><strong>各档为何这样选：</strong>所有目标档都保持间隔80，停止序号只取固定4、5、6。k4估算1.338倍，只归1.4；k5估算1.675倍，只归1.6；2.0选k6。1.2与1.8留空；不存在按原k变化的映射，也不在同档随机抽取间隔。</p>
+<p><strong>帧窗估算：</strong>T′=T+80×(k−3)，逐条保留原固定开销并取数学中位；每侧w按统一公式。参数通过母seed复现源码CPU随机抽样顺序核对，未导入环境。</p>
+<p><strong>实施边界：</strong>参照只有3条且速度相同；把其它seed强设间隔80会改变其原速度，不能写成原速度保持。本轮仅定义固定配置及估算；未来k6还须同步扩展step中的range(5)、停止窗口和序数语言。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/StopCube.py</code>；符号锚点：<code>StopCube._initialize_episode、StopCube.step</code>。固定配置参照子集n=3，episode=59、83、87。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="VideoUnmask" id="knob-VideoUnmask"><summary>2.1 VideoUnmask：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>抓取数p：2（25条）。</p>
+<p><strong>1.0母档怎么定：</strong>全部25条实际均为2抓，固定母档p=2，329帧/18窗。</p>
+<p><strong>各档为何这样选：</strong>唯一新增配置p=3，476帧/27窗、1.447倍，放在约1.4档；1.2更近原母档，没有独立新增档。更高目标无第四个合法目标可抓。</p>
+<p><strong>帧窗估算：</strong>T′=T+原放下段+原第二抓段；演示长度不变，分别计演示与执行窗口。</p>
+<p><strong>实施边界：</strong>父类pick仅判断>1，不能只把字典改成3。拟派生任务需要真正追加放下bin_1与抓起bin_2，并同步文本与grounding；不新增容器、不重复抓凑档。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/VideoUnmask.py</code>；符号锚点：<code>VideoUnmask.config_hard、VideoUnmask._load_scene</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="ButtonUnmask" id="knob-ButtonUnmask"><summary>2.2 ButtonUnmask：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>抓取数p：2（25条）。</p>
+<p><strong>1.0母档怎么定：</strong>全部25条实际均为2抓，固定母档p=2，373帧/22窗。</p>
+<p><strong>各档为何这样选：</strong>唯一新增配置p=3，515帧/31窗、1.381倍。p3的1.381倍更接近1.4，因此只保留1.4，1.2留空，不再一组参数对应两档。</p>
+<p><strong>帧窗估算：</strong>T′=T+原放下段+原第二抓段，W′=w(T′)，按25条分别计算后取中位。</p>
+<p><strong>实施边界：</strong>父类pick只是>1开关；第三抓须构造真实任务、正确颜色与恢复索引，不能把复制母段的第二种颜色文字用于第三抓。1.6以上无新增配置。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/ButtonUnmask.py</code>；符号锚点：<code>ButtonUnmask.config_hard、ButtonUnmask._load_scene</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="VideoUnmaskSwap" id="knob-VideoUnmaskSwap"><summary>2.3 VideoUnmaskSwap：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>交换数S：2（13条）、3（12条）。</p>
+<p><strong>1.0母档怎么定：</strong>实际S中位为2，固定swap_min=swap_max=2；取原S2的13条作母参照，基线428帧/24窗，不再用混合457。</p>
+<p><strong>各档为何这样选：</strong>五个目标分别固定S=4/5/7/9/11，所有seed在同一档使用同一S；不再写S+增量或4–5等范围。2倍目标856帧：S11为878，差22，近于S10的824（差32），所以允许略高的2.051倍。</p>
+<p><strong>帧窗估算：</strong>D′=6×ceil((64+50S)/6)，T′=T−168+D′；W′=w(D′)+w(T−168)。原母子集demo均168帧。</p>
+<p><strong>实施边界：</strong>保持两抓、前64步与每次50环境步动画。第4次起需泛化全部配对属性和调度，重建不得清空已求idx2。执行段原长是估算假设，真实最终容器位置会影响规划。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/VideoUnmaskSwap.py</code>；符号锚点：<code>VideoUnmaskSwap.__init__、VideoUnmaskSwap._refresh_swap_schedule、VideoUnmaskSwap.step</code>。固定配置参照子集n=13，episode=7、11、19、23、31、35、39、43、67、75、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="ButtonUnmaskSwap" id="knob-ButtonUnmaskSwap"><summary>2.4 ButtonUnmaskSwap：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>按压数P：2（25条）；交换数S：2（12条）、3（13条）。</p>
+<p><strong>1.0母档怎么定：</strong>按压中位P=2；从母seed复现__init__第一笔torch.randint得到真实S分布，中位S=3（不使用旧JSON里按序号估的交换事件）。固定P2/S3的13条实录基线460帧/27窗。</p>
+<p><strong>各档为何这样选：</strong>唯一组合依次P3/S4、P4/S6、P4/S8、P5/S10、P6/S12。中位误差相同时优先较少落定等待，交换保持4/6/8/10/12；1.4→1.6的P固定4，仅S增加。每格只有一组，不给多种等长P/S备选。</p>
+<p><strong>帧窗估算：</strong>C(P)=ceil(P/2)R+floor(P/2)L；新增档T′=T−R−L+max(C(P),65+50S)。母P2/S3直接用原实录460，不能套新增门禁公式补成466。</p>
+<p><strong>实施边界：</strong>右起交替按、先释放、错侧不推进、末交换落定后再抓；状态、goal、VQA和grounding同步。P6/S12估算916帧是固定S3子集，旧919是混合25条，两者不混用。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/ButtonUnmaskSwap.py</code>；符号锚点：<code>ButtonUnmaskSwap.__init__、ButtonUnmaskSwap._initialize_episode、ButtonUnmaskSwap._refresh_swap_schedule、ButtonUnmaskSwap.step</code>。固定配置参照子集n=13，episode=7、27、31、35、39、43、51、59、63、67、83、91、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="PickHighlight" id="knob-PickHighlight"><summary>3.1 PickHighlight：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>次数：3（25条）。</p>
+<p><strong>1.0母档怎么定：</strong>全部25条母pickup=3，spawn=6保持固定，基线539帧/32窗。</p>
+<p><strong>各档为何这样选：</strong>固定pickup4的700/539≈1.2987倍更接近1.2，故只归1.2；pickup5归1.6；pickup6的1010/539≈1.8738倍更接近1.8，故只归1.8。1.4与2.0留空，新增配置仍为三种；距离比较使用未舍入比值，不能把1.2987先写成1.3再当平局。</p>
+<p><strong>帧窗估算：</strong>最后抓取之前每增加一目标，追加一组已有抓起＋放下段；分别得700/855/1010帧与42/52/62窗。</p>
+<p><strong>实施边界：</strong>不增加第七个方块；pickup6会让六块全高亮，失去非目标干扰。实际actor数量、目标前缀、真实路径和遗漏均须后续验证。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/PickHighlight.py</code>；符号锚点：<code>PickHighlight.config_hard、PickHighlight._load_scene、PickHighlight.step</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="VideoRepick" id="knob-VideoRepick"><summary>3.2 VideoRepick：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>交换数S：2（16条）、3（9条）；重抓数R：1（8条）、2（9条）、3（8条）。</p>
+<p><strong>1.0母档怎么定：</strong>medium三方块例外不变。25条实际交换S中位2、重抓R中位2；各档都固定R=2，母档S=2。原本同时S2/R2的子集只有4条ep2/46/86/90，母中位717帧/42窗。</p>
+<p><strong>各档为何这样选：</strong>每档固定一个交换数S=5/7/10/13/15，不再用原S+增量范围，且不再保留R随机1–3。两倍目标1434帧：S15为1419差15，S16为1473差39，因此选15。</p>
+<p><strong>帧窗估算：</strong>每新增交换沿用母static段54录制帧估计：T′=T+54(S−2)，D′=D+54(S−2)；W′=w(D′)+w(T−D)，四条分别算再取中位。</p>
+<p><strong>实施边界：</strong>58.5窗、85.5窗是4条整数窗口数的数学中位，不是单轨迹半个窗口。固定R2是最新单配置口径，取代旧表中各seed保留1–3的混合估时；本轮未把其它seed改为R2。50环境步不等于54录制帧，长交换配对仍待实现。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/VideoRepick.py</code>；符号锚点：<code>VideoRepick.config_medium、VideoRepick.__init__、VideoRepick._refresh_swap_schedule、VideoRepick._initialize_episode</code>。固定配置参照子集n=4，episode=2、46、86、90。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="VideoPlaceButton" id="knob-VideoPlaceButton"><summary>3.3 VideoPlaceButton：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>额外组数a：0（25条）。</p>
+<p><strong>1.0母档怎么定：</strong>全部25条额外组数a=0，母档固定0组，961帧/57窗；答案task_flag不是长度旋钮，仍按母seed保留。</p>
+<p><strong>各档为何这样选：</strong>1.2档固定额外a=1组，放置侧按前50%／后50%随机选择。前侧：在原target_0抓放之前追加到target_2的一组；后侧：在原target_1已放完之后追加到target_3的一组。两种结果属于同一随机策略配置。等权混合估算1156.5帧/69窗、1.203倍。1.4档a=2仍为前后各一组，1359帧/82窗。</p>
+<p><strong>帧窗估算：</strong>母按钮前、后抓放对分别为A、B。a1以前后各0.5概率加A或B，同时加至T与D，再分侧计窗；用25条母记录各自的前、后两分支组成50个等权合成候选，分别取数学中位得到1156.5帧和69窗，不是50条实跑，也不是将两侧中位1171与1149直接平均。a2仍加A+B。</p>
+<p><strong>实施边界：</strong>保持additional_place=False，不开启旧post_flag；按钮前最后落点target_0与按钮后第一落点target_1不变。额外任务插入后重算恢复和失败注入索引。新增的选侧抽样使用由母seed与档位派生的独立随机流，不能消耗母generator或挪动task_flag；同seed同档可复现，50%指单次概率，不要求25条恰好一半在前、一半在后。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/VideoPlaceButton.py</code>；符号锚点：<code>VideoPlaceButton._load_scene::task_list/pre_flag/post_flag/task_flag；utils/task4recovery.py::task4recovery</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="VideoPlaceOrder" id="knob-VideoPlaceOrder"><summary>3.4 VideoPlaceOrder：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>不同目标数N：2（10条）、3（7条）、4（8条）。</p>
+<p><strong>1.0母档怎么定：</strong>25条实际不同目标数中位N=3；固定母档3个不同目标，参照原N3的7条，1120帧/67窗，不使用旧混合1115。</p>
+<p><strong>各档为何这样选：</strong>唯一新增配置固定N=4，1326帧/80窗、1.184倍，归约1.2档。没有2/3/4→4的动态映射，也不重复访问凑更多档。</p>
+<p><strong>帧窗估算：</strong>在每条三目标母样本上加第一组母演示抓放段长A：T′=T+A、D′=D+A，再分侧计窗并取7条中位。</p>
+<p><strong>实施边界：</strong>本表只使用原N3子集估时，不把原N4样本截成3。原N4可能要求第4项答案、按钮在第4组后，强行缩短会删掉答案或改变时序；后续若要全部seed标准化须另定义合法答案与按钮规则。当前N3→N4保留固定母档原三项、答案与按钮，再追加剩余目标。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/VideoPlaceOrder.py</code>；符号锚点：<code>VideoPlaceOrder._load_scene::num_targets_to_pick/which_in_subset/button_task_index；VideoPlaceOrder._initialize_episode</code>。固定配置参照子集n=7，episode=7、15、19、31、47、67、95。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="MoveCube" id="knob-MoveCube"><summary>4.1 MoveCube：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>无可取中位的长度次数参数。</p>
+<p><strong>1.0母档怎么定：</strong>无次数旋钮；母档固定一次演示＋一次执行，已有25条摘要416帧/23窗。</p>
+<p><strong>各档为何这样选：</strong>1.2–2.0无独立新增配置，维持不纳入extra hard。peg_push/gripper_push/grasp_putdown是动作类别，不给不可排序的类别取伪中位。</p>
+<p><strong>帧窗估算：</strong>引用1006-xhard12-prev-training-and-task-plan.md「4.2 每任务汇总」，本轮未重新读取HDF5。</p>
+<p><strong>实施边界：</strong>布局与动作方式仍按原seed，不当作不同长度档；禁止通过重复演示、多轮搬运或加静止填档。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/MoveCube.py</code>；符号锚点：<code>MoveCube._initialize_episode、MoveCube.evaluate</code>。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="InsertPeg" id="knob-InsertPeg"><summary>4.2 InsertPeg：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>无可取中位的长度次数参数。</p>
+<p><strong>1.0母档怎么定：</strong>无次数旋钮；固定一次演示抓插＋一次执行抓插，已有25条摘要464帧/26窗。</p>
+<p><strong>各档为何这样选：</strong>1.2–2.0无独立新增配置。obj_flag、direction是类别选择，不给它们取中位，也不把布局随机性解释成同一档多配置。</p>
+<p><strong>帧窗估算：</strong>引用1006-xhard12-prev-training-and-task-plan.md「4.2 每任务汇总」，本轮未重新读取HDF5。</p>
+<p><strong>实施边界：</strong>不追加插入轮数、不延长静止来构造难度；当前母语义保持。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/InsertPeg.py</code>；符号锚点：<code>InsertPeg.__init__、InsertPeg._initialize_episode::tasks</code>。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="PatternLock" id="knob-PatternLock"><summary>4.3 PatternLock：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>路径长度：4（2条）、5（9条）、6（5条）、7（3条）、8（6条）。</p>
+<p><strong>1.0母档怎么定：</strong>25条实际节点数中位L=6，grid=5；取原L6的5条ep7/15/27/31/43，固定母档334帧/18窗。</p>
+<p><strong>各档为何这样选：</strong>目标档只取固定L=7/8/9/10/11（length上下界都设成该L），不再有五值映射。直接比较该固定子集的合成帧中位：396/480/528/604/661；两倍目标668，L11只差7，近于L10或L12。</p>
+<p><strong>帧窗估算：</strong>每侧追加L−6个母移动段作估计；完成尾段一次，D′/E′分别重算，W′=w(D′)+w(E′)。</p>
+<p><strong>实施边界：</strong>参照子集原生L6，不把其它路径截短/加长后冒充真实母档。保持grid5、不重复节点与母前缀时仍可能无法扩尾；不可达须固定seed报告，不能回走、换seed或吞采样耗尽。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/PatternLock.py</code>；符号锚点：<code>PatternLock._load_scene；utils/adjacent.py::grid_adjacency/dfs_path</code>。固定配置参照子集n=5，episode=7、15、27、31、43。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="RouteStick" id="knob-RouteStick"><summary>4.4 RouteStick：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>路径长度：4（6条）、5（7条）、6（5条）、7（7条）。</p>
+<p><strong>1.0母档怎么定：</strong>25条实际移动边数中位S=5；取原S5的7条，固定母档500帧/28窗。S是边数，不是节点数。</p>
+<p><strong>各档为何这样选：</strong>每个目标只有固定S=6/7/8/9/10，分别600/700/800/900/993帧，34/40/46/54/59窗；不再根据母S输出四个不同值。</p>
+<p><strong>帧窗估算：</strong>demo、exec各追加S−5个母移动段。复制到原exec末段43帧时产生截尾，S10合成993帧/59窗，名义约1000帧/60窗，真实值待校对。</p>
+<p><strong>实施边界：</strong>布局、路径选择和方向仍由seed决定，不算多套长度配置。先完整生成固定母路径与方向，再用独立尾部随机流延长；保持折返、母前缀及两侧一致，不复制轨迹作为新玩法。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/RouteStick.py</code>；符号锚点：<code>RouteStick.config_hard、RouteStick._load_scene；utils/route.py::generate_dynamic_walk</code>。固定配置参照子集n=7，episode=3、7、39、47、51、63、95。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<p class="muted">固定母档已由16个任务的独立审阅代理分别核对，源码与母记录锚点为 <code>e978d076a862938730bb75957e50bd219f8a82bd</code>；母段来源 <code>vis/output/reference_&lt;Task&gt;.json::records[].hard.item</code>。固定子集与候选帧窗证据在 <code>artifacts/fixed-knobs-20261011/candidates.json</code>。本次按最近目标去重由涉及的4个原任务代理复核，VideoPlaceButton随机侧策略由其原代理另行复核，均锚定 <code>337b94ac4a1ac8843e4ea2a08ea437921ee6a19e</code>；50分支混合统计与最终页面验证在 <code>artifacts/unique-knobs-20261011/side-mixture.json</code>、<code>verification.log</code>。本轮没有更改环境、重新生成母样本或扩大轨迹预算；把未符合中位配置的seed标准化为同一配置，仍需另核语义与受保护改动，不能沿用“原seed全部行为不变”的结论。</p>
+</section>
+<style>
+#knob-review-notes .knob-review { margin:10px 0; border:1px solid var(--border); border-radius:6px; padding:10px 14px; }
+#knob-review-notes .knob-review summary { cursor:pointer; font-weight:700; }
+#knob-review-notes .knob-review:target { border-color:var(--accent); background:#f8fbff; }
+#knob-review-notes .knob-review p { margin:8px 0; }
+#knob-review-notes code { overflow-wrap:anywhere; }
+</style>
+<script>
+(function () {
+  function openTaskNote() {
+    const id = window.location.hash.slice(1);
+    if (!id.startsWith('knob-')) return;
+    const note = document.getElementById(id);
+    if (note && note.matches('details.knob-review')) {
+      note.open = true;
+      note.scrollIntoView({block: 'start'});
+    }
+  }
+  window.addEventListener('hashchange', openTaskNote);
+  document.addEventListener('click', event => {
+    const link = event.target.closest('a[href^="#knob-"]');
+    if (!link) return;
+    const note = document.getElementById(link.getAttribute('href').slice(1));
+    if (note && note.matches('details.knob-review')) note.open = true;
+  });
+  openTaskNote();
+})();
+</script>
 <h2 id="review-contract">本轮审查修订契约（2026-10-10，优先于旧示意与附录）</h2>
 <p>第一部分五节是16任务语言和动作语义清单。本节补足文件、方法、归属与验证，属于待实施计划。本轮没有修改 <code>src/robomme/</code>、没有实现子类、没有启动reset或rollout。按钮6次／交换12次只作为联合校准初值；未授权正式数据生成。</p>
 <table><thead><tr><th>文件与归属</th><th>具体允许覆盖项（实施前须批准）</th><th>接口与失败处理</th></tr></thead><tbody>

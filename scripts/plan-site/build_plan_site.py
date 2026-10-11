@@ -43,6 +43,8 @@ def build(plan: pathlib.Path, out: pathlib.Path) -> list[str]:
     sec1 = section(main, r"<h2 id=\"p1-_2\">", r"<h2 id=\"p1-_3\">")        # 一、口径
     sec2 = section(main, r"<h2 id=\"p1-_3\">", r"<h2 id=\"p1-_4\">")        # 二、接口
     sec34 = section(main, r"<h2 id=\"p1-_4\">", r"<h2 id=\"p1-goals\">")    # 对齐与逐环境讨论，含内联数轴
+    # 分页后任务说明位于技术细节页；根计划仍保留页内锚点。
+    sec34 = re.sub(r'href="#(knob-[^"]+)"', r'href="details.html#\1"', sec34)
     goals = section(main, r"<h2 id=\"p1-goals\">", r"<h2 id=\"p1-_6\">")
     sec5 = section(main, r"<h2 id=\"p1-_6\">", r"<h1 id=\"[^\"]*\">第二部分")  # 五、三行
     part2 = main[re.search(r"<h1 id=\"[^\"]*\">第二部分", main).start():]
