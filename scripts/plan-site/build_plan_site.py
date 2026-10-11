@@ -1,6 +1,6 @@
 """把根目录单文件计划 HTML 拆成托管网页（分页），输出到 artifacts/plan-site/。
 
-页面：index（引言、口径、三行概要、导航）/ interface（接口怎么改）/ envs（逐环境与长度）/ goals（逐任务总目标对照）/ review（逐环境物体与动作审查）/ details（第二部分技术细节）。
+页面：index（引言、口径、三行概要、导航）/ interface（接口怎么改）/ envs（逐环境与长度）/ goals（逐任务总目标对照）/ review（逐环境物体与动作审查）/ h5（H5 产物与 MotionJEPA 对接核对）/ details（第二部分技术细节）。
 根计划里以 base64 内联的 PNG 还原成相对路径引用（data-src），图片另行复制；envs 页的数轴（V2 参照与 V3 各任务的中位条）
 由 scripts/plan-site/align_section.py 以「内联数据 + timeline_board.js」直接写在根计划里，本脚本只切页、不再注入。
 只读计划文件与 vis 下的图片，不改仓库任何文件；托管命令见 vis/README.md 同款：
@@ -15,7 +15,7 @@ import shutil
 import sys
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
-NAV = [("index.html", "首页"), ("interface.html", "一、接口怎么改"), ("envs.html", "二、逐环境怎么改与长度对齐"), ("goals.html", "三、逐任务 goal 对照"), ("review.html", "四、逐环境物体与动作审查"), ("details.html", "技术细节（第二部分）")]
+NAV = [("index.html", "首页"), ("interface.html", "一、接口怎么改"), ("envs.html", "二、逐环境怎么改与长度对齐"), ("goals.html", "三、逐任务 goal 对照"), ("review.html", "四、逐环境物体与动作审查"), ("h5.html", "五、H5 产物与 MotionJEPA 对接核对"), ("details.html", "技术细节（第二部分）")]
 
 
 def section(doc: str, start_pat: str, end_pat: str) -> str:
@@ -46,7 +46,8 @@ def build(plan: pathlib.Path, out: pathlib.Path) -> list[str]:
     # 分页后任务说明位于技术细节页；根计划仍保留页内锚点。
     sec34 = re.sub(r'href="#(knob-[^"]+)"', r'href="details.html#\1"', sec34)
     goals = section(main, r"<h2 id=\"p1-goals\">", r"<h2 id=\"p1-review\">")
-    review = section(main, r"<h2 id=\"p1-review\">", r"<h2 id=\"p1-_6\">")  # 四、逐环境物体与动作审查
+    review = section(main, r"<h2 id=\"p1-review\">", r"<h2 id=\"p1-h5\">")  # 四、逐环境物体与动作审查
+    h5 = section(main, r"<h2 id=\"p1-h5\">", r"<h2 id=\"p1-_6\">")  # 五、H5 产物与 MotionJEPA 对接核对
     sec5 = section(main, r"<h2 id=\"p1-_6\">", r"<h1 id=\"[^\"]*\">第二部分")  # 五、三行
     part2 = main[re.search(r"<h1 id=\"[^\"]*\">第二部分", main).start():]
     cards = "".join(f'<div class="card"><a href="{h}">{t}</a></div>' for h, t in NAV[1:])
@@ -62,6 +63,7 @@ def build(plan: pathlib.Path, out: pathlib.Path) -> list[str]:
         "envs.html": sec34,
         "goals.html": goals,
         "review.html": review,
+        "h5.html": h5,
         "details.html": part2,
     }
     out.mkdir(parents=True, exist_ok=True)
