@@ -380,6 +380,118 @@ def test_render_small_mp4(tmp_path):
     assert out.stat().st_size > 0
 
 
+# ------------------------------------------------------------------ S3 真实布局：根下 run_summary.json
+
+
+def _card(task, seed, difficulty, role, ok, failure_class=None, episode=7):
+    return {
+        "task": task,
+        "role": role,
+        "make_name": f"{task}XHard" if role == "xhard" else task,
+        "difficulty": difficulty,
+        "source_difficulty": "hard",
+        "mother_episode": episode,
+        "seed": seed,
+        "attempt": 0,
+        "ok": ok,
+        "task_success": ok,
+        "timesteps": None,
+        "h5": None,
+        "failure_class": None if ok else failure_class,
+        "error": None if ok else "planner 失败",
+    }
+
+
+def _s3_root(tmp_path: Path, with_summary: bool = True) -> Path:
+    """按 S3 生成器布局造最小产物：结果记录在根下，H5 在 <root>/<档>/hdf5_files/。"""
+    root = tmp_path / "s3run"
+    _write_h5(root / "mother/hdf5_files/PickXtimes_ep7_seed1700.h5", 7, 1700, "hard", 2, 3)
+    _write_h5(root / "xhard12/hdf5_files/PickXtimes_ep7_seed1700.h5", 7, 1700, "xhard12", 3, 4)
+    # xhard16 失败且留下 FAILED_ 视频（空文件，视频工具应容错）；xhard14 失败且无任何产物
+    vids = root / "xhard16/videos"
+    vids.mkdir(parents=True)
+    (vids / "FAILED_PickXtimes_ep7_seed1700_xhard16_pick_up.mp4").write_bytes(b"")
+    cards = [
+        _card("PickXtimes", 1700, "hard", "mother", True),
+        _card("PickXtimes", 1700, "xhard12", "xhard", True),
+        _card("PickXtimes", 1700, "xhard14", "xhard", False, "task"),
+        _card("PickXtimes", 1700, "xhard16", "xhard", False, "code"),
+    ]
+    # 根下 jsonl 与 run_summary 矛盾（xhard14 记 ok=true），用来证明 run_summary 优先
+    jsonl = [
+        {"task": "PickXtimes", "episode": 7, "seed": 1700, "difficulty": "xhard14", "card_role": "xhard", "ok": True},
+        {"task": "PickXtimes", "episode": 7, "seed": 1700, "difficulty": "xhard18", "card_role": "xhard", "ok": False, "failure_class": "task"},
+    ]
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "episode_results.jsonl").write_text("\n".join(json.dumps(r) for r in jsonl) + "\n")
+    if with_summary:
+        (root / "run_summary.json").write_text(json.dumps({"requested_count": 4, "cards": cards}))
+    return root
+
+
+def test_s3_layout_run_summary_is_authoritative(tmp_path):
+    root = _s3_root(tmp_path)
+    results, source = layout.read_run_results(root)
+    assert source == "run_summary"
+    assert set(results) == {("PickXtimes", 1700, lvl) for lvl in ("mother", "xhard12", "xhard14", "xhard16")}
+    rows = summarize.collect(root)
+    by = {r["level"]: r for r in rows}
+    assert [r["level"] for r in rows] == ["mother", "xhard12", "xhard14", "xhard16"]
+    assert by["mother"]["task_success"] == 1 and by["mother"]["ok"] is True
+    assert by["xhard12"]["timesteps"] == 7 and by["xhard12"]["ratio_timesteps"] == 1.4
+    # 失败卡即使既无 H5 也无视频也出现在表里，且以 run_summary 为准（不采纳 jsonl 的 ok=true）
+    x14 = by["xhard14"]
+    assert x14["h5"] is None and x14["failed_video"] is None
+    assert (x14["ok"], x14["task_success"], x14["failure_class"], x14["result_source"]) == (False, 0, "task", "run_summary")
+    assert by["xhard16"]["failure_class"] == "code" and by["xhard16"]["task_success"] == 0
+    # jsonl 里多出的 xhard18 不进表（run_summary 存在时不读 jsonl）
+    assert "xhard18" not in by
+    verdicts = summarize.judge(rows)
+    assert verdicts["DIFFICULTY_LABEL"] == "DIFFICULTY_LABEL=PASS files=2"
+    assert "failed=2" in verdicts["GRADIENT_REVIEW"]
+
+
+def test_s3_layout_fallback_to_root_jsonl(tmp_path):
+    root = _s3_root(tmp_path, with_summary=False)
+    results, source = layout.read_run_results(root)
+    assert source == "episode_results"
+    rows = summarize.collect(root)
+    by = {r["level"]: r for r in rows}
+    # 根下 jsonl 定档：card_role=xhard → difficulty 档
+    assert by["xhard14"]["ok"] is True and by["xhard14"]["result_source"] == "episode_results"
+    assert by["xhard18"]["task_success"] == 0 and by["xhard18"]["failure_class"] == "task"
+    # 两种记录都没有的档退回 H5 / FAILED_ 视频推断
+    assert by["mother"]["task_success"] == 1 and by["mother"]["result_source"] == "h5"
+    assert by["xhard16"]["task_success"] == 0 and by["xhard16"]["result_source"] == "failed_video"
+
+
+def test_s3_layout_compare_video_marks_failed_cards(tmp_path):
+    root = _s3_root(tmp_path)
+    arts = layout.scan(root)
+    results, _ = layout.read_run_results(root)
+    cols = compare_video.build_columns("PickXtimes", 1700, arts, results)
+    try:
+        # 母档、xhard12 成功；xhard14 失败无产物 → 失败（不是无产物）；xhard16 失败视频打不开 → 失败；
+        # xhard18、xhard20 有效档但无卡无产物 → 无产物
+        assert [c.status for c in cols] == ["ok", "ok", "failed", "failed", "absent", "absent"]
+        assert cols[2].length == 0 and cols[3].length == 0
+    finally:
+        for c in cols:
+            if c.source is not None:
+                c.source.close()
+    # 没有 results 时 xhard14 只能标“无产物”
+    cols = compare_video.build_columns("PickXtimes", 1700, arts)
+    try:
+        assert cols[2].status == compare_video.ABSENT
+    finally:
+        for c in cols:
+            if c.source is not None:
+                c.source.close()
+    out = tmp_path / "s3.mp4"
+    stats = compare_video.render(root, out, None, fps=10, panel=32)
+    assert stats["segments"] == 1 and stats["frames"] == 7 and out.stat().st_size > 0
+
+
 # ------------------------------------------------------------------ 生产代码不依赖测试目录
 
 

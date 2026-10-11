@@ -28,7 +28,7 @@ from typing import Iterator, Sequence
 import numpy as np
 
 from ..configs import SOURCE_DIFFICULTY, TASK_ORDER, TIER_CONFIGS
-from .layout import LEVELS, MOTHER, Artifact, episode_group, scan, task_rank
+from .layout import LEVELS, MOTHER, Artifact, episode_group, read_run_results, scan, task_rank
 
 DEFAULT_FPS = 30  # RecordWrapper._video_write_mp4 的 fps
 DEFAULT_PANEL = 256  # 官方 front_rgb 分辨率
@@ -164,8 +164,18 @@ def level_label(task: str, level: str) -> str:
     return level
 
 
-def build_columns(task: str, seed: int, artifacts: dict[tuple[str, int, str], Artifact]) -> list[Column]:
-    """按 LEVELS 顺序建六栏；只用本 (task, seed, level) 自己的产物，不跨档补位。"""
+def build_columns(
+    task: str,
+    seed: int,
+    artifacts: dict[tuple[str, int, str], Artifact],
+    results: dict[tuple[str, int, str], dict] | None = None,
+) -> list[Column]:
+    """按 LEVELS 顺序建六栏；只用本 (task, seed, level) 自己的产物，不跨档补位。
+
+    ``results`` 是 ``layout.read_run_results`` 读出的生成器结果（run_summary.json cards[] 优先）：
+    其中 ok=false 的卡一律标“失败”（有 FAILED_ 视频就播，没有任何产物也标“失败”而不是“无产物”）。
+    """
+    results = results or {}
     columns = []
     for level in LEVELS:
         label = level_label(task, level)
@@ -173,22 +183,37 @@ def build_columns(task: str, seed: int, artifacts: dict[tuple[str, int, str], Ar
             columns.append(Column(label, MISSING))
             continue
         art = artifacts.get((task, seed, level))
+        rec = results.get((task, seed, level))
+        failed = rec is not None and not rec.get("ok")
         if art is None:
-            columns.append(Column(label, ABSENT))
+            columns.append(Column(label, FAILED if failed else ABSENT))
             continue
-        if art.h5 is not None:
+        if art.h5 is not None and not failed:
             try:
                 columns.append(Column(label, OK, H5Source(art.h5, art.episode)))
                 continue
             except Exception:
                 pass
-        if art.video is not None:
-            columns.append(Column(label, OK, Mp4Source(art.video)))
-        elif art.failed_video is not None:
-            columns.append(Column(label, FAILED, Mp4Source(art.failed_video)))
+        video = _open_mp4(art.video) if not failed else None
+        if video is not None:
+            columns.append(Column(label, OK, video))
+            continue
+        failed_video = _open_mp4(art.failed_video)
+        if failed_video is not None:
+            columns.append(Column(label, FAILED, failed_video))
         else:
-            columns.append(Column(label, FAILED if art.h5 is not None else ABSENT))
+            columns.append(Column(label, FAILED if (failed or art.h5 is not None or art.failed_video is not None) else ABSENT))
     return columns
+
+
+def _open_mp4(path: Path | None) -> Mp4Source | None:
+    """打不开（缺文件、空文件、损坏）就返回 None，由调用方按状态标注，不让整支视频失败。"""
+    if path is None:
+        return None
+    try:
+        return Mp4Source(path)
+    except Exception:
+        return None
 
 
 # ---------------------------------------------------------------- 绘制
@@ -327,8 +352,10 @@ def iter_segment_frames(
 # ---------------------------------------------------------------- 段顺序与主流程
 
 
-def segment_keys(artifacts: dict, manifest: dict | None) -> list[tuple[str, int, int | None]]:
-    """返回 [(task, seed, episode)]：有清单按 TASK_ORDER→rank，否则按扫描到的 TASK_ORDER→seed。"""
+def segment_keys(
+    artifacts: dict, manifest: dict | None, results: dict | None = None
+) -> list[tuple[str, int, int | None]]:
+    """返回 [(task, seed, episode)]：有清单按 TASK_ORDER→rank，否则按扫描到的产物与结果记录 TASK_ORDER→seed。"""
     if manifest:
         out = []
         for task in TASK_ORDER:
@@ -338,6 +365,9 @@ def segment_keys(artifacts: dict, manifest: dict | None) -> list[tuple[str, int,
     pairs = {}
     for (task, seed, _level), art in artifacts.items():
         pairs.setdefault((task, seed), art.episode)
+    for (task, seed, _level), rec in (results or {}).items():
+        if pairs.get((task, seed)) is None:
+            pairs[(task, seed)] = rec.get("episode")
     return [(t, s, e) for (t, s), e in sorted(pairs.items(), key=lambda kv: (task_rank(kv[0][0]), kv[0][1]))]
 
 
@@ -345,13 +375,14 @@ def render(root: Path, out: Path, manifest: dict | None = None, fps: int = DEFAU
     import imageio.v2 as imageio
 
     artifacts = scan(root)
+    results, _source = read_run_results(root)
     painter = _Painter()
-    segments = segment_keys(artifacts, manifest)
+    segments = segment_keys(artifacts, manifest, results)
     out.parent.mkdir(parents=True, exist_ok=True)
     stats = {"segments": 0, "frames": 0, "cjk_font": painter.font_path}
     with imageio.get_writer(str(out), fps=fps, codec="libx264", quality=8, macro_block_size=16) as writer:
         for task, seed, episode in segments:
-            columns = build_columns(task, seed, artifacts)
+            columns = build_columns(task, seed, artifacts, results)
             n = TASK_ORDER.index(task) + 1 if task in TASK_ORDER else 0
             title = f"{n:02d} {task}  seed={seed}  ep={episode}"
             try:

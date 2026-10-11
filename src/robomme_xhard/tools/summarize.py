@@ -5,8 +5,10 @@
 - ``demo_timesteps`` / ``exec_timesteps`` / ``timesteps``：按 ``info/is_video_demo`` 分演示与执行两段。
 - ``windows``：stride-16 窗口数，演示、执行两段分别按 w(L)=max(0,floor((L-33)/16)+1) 计后相加。
 - ``ratio_timesteps`` / ``ratio_windows``：相对同 task、同 seed 母档的倍数。
-- ``task_success``：RecordWrapper 只在 episode 成功时写 H5 的 episode 组，故有 episode 组记 1；
-  只有 ``FAILED_`` 视频或 episode_results.jsonl 记失败的记 0；都没有记 None。
+- ``task_success`` / ``ok`` / ``failure_class``：权威来源依次为输出根下 ``run_summary.json`` 的
+  ``cards[]``（role==mother→mother 档，role==xhard→difficulty 档）、根下 ``episode_results.jsonl``；
+  都没有时才推断——RecordWrapper 只在 episode 成功时写 H5 的 episode 组，故有该组记 1，只有
+  ``FAILED_`` 视频记 0，都没有记 None。失败卡即使既无 H5 也无视频也照样出行。
 
 排序：TASK_ORDER → 母 seed（给 --seeds 时按清单 rank，否则 seed 升序）→ mother、xhard12..20。
 
@@ -30,11 +32,11 @@ from pathlib import Path
 
 from ..configs import DIFFICULTIES, TARGET_RATIO, TASK_ORDER
 from .layout import (
-    LEVELS,
     MOTHER,
     expected_difficulty,
     level_rank,
     read_h5_summary,
+    read_run_results,
     scan,
     task_rank,
     windows,
@@ -62,42 +64,22 @@ def sort_key(row: dict, seed_order: dict[tuple[str, int], int] | None = None):
     )
 
 
-def _read_jsonl_results(level_dir: Path) -> dict[tuple[str, int], dict]:
-    """读档目录下 episode_results.jsonl，取每个 (task, seed) 最后一条记录。"""
-    results: dict[tuple[str, int], dict] = {}
-    for path in sorted(level_dir.rglob("episode_results.jsonl")):
-        for line in path.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                rec = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            if "task" in rec and "seed" in rec:
-                task = str(rec["task"]).removesuffix("XHard")
-                results[(task, int(rec["seed"]))] = rec
-    return results
-
-
 def collect(root: Path, manifest: dict | None = None) -> list[dict]:
     root = Path(root)
     artifacts = scan(root)
-    jsonl = {level: _read_jsonl_results(root / level) for level in LEVELS if (root / level).is_dir()}
-    keys = set(artifacts)
-    for level, recs in jsonl.items():
-        for task, seed in recs:
-            keys.add((task, seed, level))
+    # 权威来源：根下 run_summary.json cards[] → 根下 episode_results.jsonl → H5 / FAILED_ 视频推断
+    results, result_source = read_run_results(root)
+    keys = set(artifacts) | set(results)
 
     rows = []
     for task, seed, level in keys:
         art = artifacts.get((task, seed, level))
-        rec = jsonl.get(level, {}).get((task, seed))
+        rec = results.get((task, seed, level))
         row = {
             "task": task,
             "seed": seed,
             "level": level,
-            "episode": art.episode if art else (rec or {}).get("episode"),
+            "episode": art.episode if art and art.episode is not None else (rec or {}).get("episode"),
             "expected_difficulty": expected_difficulty(task, level),
             "difficulty": None,
             "h5_seed": None,
@@ -129,11 +111,21 @@ def collect(root: Path, manifest: dict | None = None) -> list[dict]:
                 row["demo_windows"] = windows(info["demo_timesteps"])
                 row["exec_windows"] = windows(info["exec_timesteps"])
                 row["windows"] = row["demo_windows"] + row["exec_windows"]
-        if row["task_success"] is None:
-            if (art and art.failed_video) or (rec is not None and not rec.get("ok")):
+        if rec is not None:
+            # 生成器结果记录是 task_success / ok / failure_class 的权威来源
+            row["ok"] = rec["ok"]
+            if rec["task_success"] is not None:
+                row["task_success"] = rec["task_success"]
+            row["failure_class"] = rec["failure_class"]
+            row["error"] = rec["error"]
+            row["result_source"] = rec["source"]
+        else:
+            row["ok"] = None
+            row["error"] = None
+            row["result_source"] = "h5" if row["task_success"] == 1 else None
+            if row["task_success"] is None and art and art.failed_video:
                 row["task_success"] = 0
-        if rec is not None and not rec.get("ok"):
-            row["failure_class"] = rec.get("failure_class")
+                row["result_source"] = "failed_video"
         rows.append(row)
 
     # 相对同 seed 母档的倍数

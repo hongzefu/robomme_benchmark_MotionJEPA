@@ -172,3 +172,94 @@ def read_h5_summary(path: Path, episode: int | None = None) -> dict:
             if info is not None and "is_completed" in info:
                 out["last_completed"] = bool(info["is_completed"][()])
     return out
+
+
+# ---------------------------------------------------------------- 生成器结果记录
+#
+# S3 生成器把 run_summary.json 与 episode_results.jsonl 写在输出根 <root>/ 下（不在各档目录下）。
+# run_summary.json 的 cards[] 每卡字段：task、role（mother|xhard）、make_name、difficulty、
+# source_difficulty、mother_episode、seed、attempt、ok、task_success、timesteps、h5、failure_class、error。
+# 权威顺序：run_summary.json cards[] → 根下 episode_results.jsonl → （调用方）H5 / FAILED_ 视频推断。
+
+
+def _level_of(record: dict) -> str | None:
+    """按卡片角色定档：mother 卡进 mother/，xhard 卡进 difficulty 同名档。"""
+    role = record.get("role") or record.get("card_role")
+    difficulty = record.get("difficulty")
+    if role == "mother":
+        return MOTHER
+    if role == "xhard":
+        return difficulty if difficulty in DIFFICULTIES else None
+    # 无角色字段的记录：xhard 值归该档，其余视为母档
+    if difficulty in DIFFICULTIES:
+        return difficulty
+    return MOTHER if difficulty is not None else None
+
+
+def _normalize_result(record: dict, source: str) -> dict:
+    ok = bool(record.get("ok"))
+    success = record.get("task_success", ok if "ok" in record else None)
+    episode = record.get("mother_episode", record.get("episode"))
+    return {
+        "ok": ok,
+        "task_success": None if success is None else int(bool(success)),
+        "failure_class": None if ok else record.get("failure_class"),
+        "error": None if ok else record.get("error"),
+        "episode": None if episode is None else int(episode),
+        "timesteps": record.get("timesteps", record.get("timestep_count")),
+        "source": source,
+    }
+
+
+def read_run_results(root: Path) -> tuple[dict[tuple[str, int, str], dict], str | None]:
+    """读输出根下的生成器结果，返回 ({(task, seed, level): 结果}, 来源名)；都没有时来源为 None。"""
+    import json
+
+    root = Path(root)
+    summary_path = root / "run_summary.json"
+    if summary_path.is_file():
+        try:
+            payload = json.loads(summary_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            payload = None
+        cards = payload.get("cards") if isinstance(payload, dict) else None
+        if isinstance(cards, list):
+            out: dict[tuple[str, int, str], dict] = {}
+            for card in cards:
+                if not isinstance(card, dict) or "task" not in card or "seed" not in card:
+                    continue
+                level = _level_of(card)
+                if level is None:
+                    continue
+                task = str(card["task"]).removesuffix("XHard")
+                out[(task, int(card["seed"]), level)] = _normalize_result(card, "run_summary")
+            return out, "run_summary"
+
+    # 退回：根下 episode_results.jsonl；兼容旧布局时各档目录下的同名文件按目录定档
+    jsonl_paths: list[tuple[Path, str | None]] = [(root / "episode_results.jsonl", None)]
+    for level in LEVELS:
+        if (root / level).is_dir():
+            jsonl_paths.extend((p, level) for p in sorted((root / level).rglob("episode_results.jsonl")))
+    out = {}
+    found = False
+    for path, dir_level in jsonl_paths:
+        if not path.is_file():
+            continue
+        found = True
+        for line in path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(rec, dict) or "task" not in rec or "seed" not in rec:
+                continue
+            level = dir_level or _level_of(rec)
+            if level is None:
+                continue
+            task = str(rec["task"]).removesuffix("XHard")
+            # 同一身份取最后一条（文件按时间追加）
+            out[(task, int(rec["seed"]), level)] = _normalize_result(rec, "episode_results")
+    return out, ("episode_results" if found else None)
