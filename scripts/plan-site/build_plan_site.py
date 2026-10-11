@@ -49,8 +49,14 @@ def build(plan: pathlib.Path, out: pathlib.Path) -> list[str]:
     sec5 = section(main, r"<h2 id=\"p1-_6\">", r"<h1 id=\"[^\"]*\">第二部分")  # 五、三行
     part2 = main[re.search(r"<h1 id=\"[^\"]*\">第二部分", main).start():]
     cards = "".join(f'<div class="card"><a href="{h}">{t}</a></div>' for h, t in NAV[1:])
+    index_body = intro + sec1 + sec5 + f'<h2 id="nav">页面</h2><div class="cards">{cards}</div>'
+    if '<section id="homepage-current-plan">' in main:
+        # 首页优先展示本轮简明计划，历史接口和规模只保留为折叠参考。
+        current = section(main, r'<section id="homepage-current-plan">', r'</section>') + '</section>'
+        history = '<details id="homepage-history"><summary>历史背景与旧方案（不作为本轮实施口径）</summary>' + intro + sec1 + sec5 + '</details>'
+        index_body = current + f'<h2 id="nav">页面</h2><div class="cards">{cards}</div>' + history
     pages = {
-        "index.html": intro + sec1 + sec5 + f'<h2 id="nav">页面</h2><div class="cards">{cards}</div>',
+        "index.html": index_body,
         "interface.html": sec2,
         "envs.html": sec34,
         "goals.html": goals,
