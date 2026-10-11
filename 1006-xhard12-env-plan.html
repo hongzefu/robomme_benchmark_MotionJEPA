@@ -69,6 +69,7 @@ a { color:var(--accent); }
 <li class="lv3"><a href="#p1-t-patternlock">4.3 PatternLock</a></li>
 <li class="lv3"><a href="#p1-t-routestick">4.4 RouteStick</a></li>
 <li class="lv2"><a href="#p1-goals">五、goal 原文与拟修改稿对照</a></li>
+<li class="lv2"><a href="#p1-review">对抗审查意见与用户裁决（2026-10-11）</a></li>
 <li class="lv2"><a href="#p1-_6">六、验收、步骤、子代理（三行）</a></li>
 <li class="lv1"><a href="#agent">第二部分（技术细节，供 agent 追踪）</a></li>
 <li class="lv2"><a href="#knob-review-heading">逐任务续审：母档取中位，目标取唯一整数</a></li>
@@ -739,6 +740,160 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <section class="goal-originals" data-goal-task="RouteStick" id="goal-task-routestick"><h4>4.4 RouteStick</h4><p class="goal-episode">episode_95 · seed 25500 · hard</p><p class="goal-status">总目标文字：无区别</p><table class="goal-compare" data-cols="3"><thead><tr><th>英文goal原文（全部备选句）</th><th>英文goal拟修改稿（计划）</th><th>只注释改动</th></tr></thead><tbody><tr><td class="sub-original"><code data-original="goal" data-index="0">Watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path</code></td><td class="proposed"><code data-proposed="goal" data-index="0">Watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path</code></td><td></td></tr>
 <tr><td class="sub-original"><code data-original="goal" data-index="1">watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video</code></td><td class="proposed"><code data-proposed="goal" data-index="1">watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video</code></td><td></td></tr></tbody></table>
 </section>
+<h2 id="p1-review">对抗审查意见与用户裁决（2026-10-11）</h2>
+<blockquote>
+<p><b>锚点：</b><code>35b37f4c</code>（2.42.31）。本节汇总当日三轮审查：</p>
+<ul>
+<li>Claude 多代理对抗验证：16 个任务各配 1 个实测代理、1 个审查代理，9 个机制各 1 个审查代理，HIGH 和 MEDIUM 问题逐条复核；临时进程打补丁实测 71 条 rollout，不改 <code>src/robomme/</code>。</li>
+<li>Codex 静态审查：浏览器实测、h5 逐字核对、CPU 谓词探针，仿真 0 条。</li>
+<li>16 个环境各 1 个只读代理，审查“是否扩充原有物体、是否执行原本执行不到的动作”。</li>
+</ul>
+<p>本节的用户裁决<b>优先于</b>本页其他小节和第二部分里与之冲突的旧口径；其余小节尚未按本节逐处改写。</p>
+</blockquote>
+
+<h3 id="p1-review-decisions">一、用户裁决（原话逐条保留）</h3>
+<table>
+<tr><th>编号</th><th>事项</th><th>用户原话</th><th>落地口径</th></tr>
+<tr><td>R1</td><td>母任务成功判据的宽松边界</td><td>「1 全部不动」</td><td>保持原判据，不收紧、不覆盖；作为已知边界记录（见四节）</td></tr>
+<tr><td>R2</td><td>8 帧采样必漏</td><td>「8 帧采样一个 subgoal 都不漏 只评估xhard20」</td><td>只对 xhard20 评估严格单元口径的 8 帧遗漏，其余档不作要求</td></tr>
+<tr><td>R3</td><td>VideoPlaceOrder 实测只有 1.132 倍</td><td>「4 a」</td><td>仍叫 xhard12，标注实际倍数</td></tr>
+<tr><td>R4</td><td>超过 2.0 倍的配置</td><td>「5留下」</td><td>SwingXtimes 2.004、StopCube 2.013、VideoUnmaskSwap 2.051 保留；两倍硬上界作废</td></tr>
+<tr><td>R5</td><td>PickHighlight 全部高亮档（pickup=spawn=6）</td><td>「7 a」</td><td>保留并注明记忆要求退化为“全抓”</td></tr>
+<tr><td>R6</td><td>交换类第 4 次及以后的配对规则</td><td>「8 先不动」</td><td>暂不改规则；退化问题记录在四节</td></tr>
+<tr><td>R7</td><td>BinFill 多出目标的颜色</td><td>「9 b」</td><td>允许把母档原本没有目标的颜色（场景里已生成的方块）选为目标</td></tr>
+<tr><td>R8</td><td>同 seed 是否须同母路径</td><td>「10 无所谓同seed不需要一样」</td><td>同 seed 不要求与母档同一路径或布局（PatternLock 可整条重抽）</td></tr>
+<tr><td>R9</td><td>1.0 母档视频</td><td>「11 b」</td><td>用当前代码按同 seed 重新生成，不复用官方旧视频</td></tr>
+<tr><td>R10</td><td>goal 对照基准</td><td>「12 同意」</td><td>改为当前 <code>task_goal.py</code> 的输出，不再以官方 h5 原文为基准</td></tr>
+<tr><td>R11</td><td>FailRecover 的 episode（编号 ≤5）</td><td>「13 先避开」</td><td>选母 seed 时先避开</td></tr>
+<tr><td>R12</td><td>Unmask 系中位数的统计总体</td><td>「14 25」</td><td>按 ep&lt;100 的 25 条统计，并在页面写明</td></tr>
+<tr><td>R13</td><td>受保护改动（P1）</td><td>「15 同意」「16 同意」「17 同意」</td><td>批准 <code>task_goal.py</code> 四个分支（VideoUnmask、ButtonUnmask、ButtonUnmaskSwap、PickHighlight）和 StopCube <code>step()</code> 中 <code>range(5)</code> 的覆盖；<code>RecordWrapper</code> 2000 步阈值暂不改</td></tr>
+<tr><td>R14</td><td><code>test_TaskGoal.py</code> 锚点上 2 个测试本来就不过</td><td>「18不管」</td><td>不处理</td></tr>
+<tr><td>R15</td><td>补缺档的硬约束</td><td>「都不允许用新的生成的物体都只能在原先的subgo里面做排列组合」</td><td>不新生成任何物体（新方块、新颜色、新目标、新容器都不行），只在原有物体和原有 subgoal 上排列组合；原参数域外的新取值也不用</td></tr>
+<tr><td>R16</td><td>补缺档的具体方案</td><td>「1.1同意 1.4同意 3.3否定 3.4否定」</td><td>新增 BinFill xhard20：K=9；新增 StopCube xhard18：间隔 60、k=7。否定 VideoPlaceButton a=4/5/6 和 VideoPlaceOrder 重复访问</td></tr>
+</table>
+<p>按 R16 补完后，有效“任务 × 难度”配置从 50 个变为 <b>52 个</b>，小规模实测（每任务 2 个母 seed）从 100 条变为 <b>104 条</b>，最终版从 50 条变为 52 条。仍缺 18 格：</p>
+<ul>
+<li>MoveCube、InsertPeg 各 5 格，属于既定“只有母档”；</li>
+<li>StopCube 1.2：原取值组合里没有合适长度；</li>
+<li>VideoUnmask、ButtonUnmask 各 4 格：原场景只有 3 个藏方块的容器，重抓已打开的容器不需要记忆；</li>
+<li>PickHighlight 1.4、2.0：每抓一个是 0.30 倍的步长，放不下更多档；</li>
+<li>VideoPlaceButton 1.6～2.0；</li>
+<li>VideoPlaceOrder 1.4～2.0：目标位只有 4 个。</li>
+</ul>
+
+<h3 id="p1-review-objects">二、逐环境审查：是否扩充物体、是否执行原本执行不到的动作</h3>
+<p>判定口径：</p>
+<ul>
+<li><b>扩充物体</b>：新档是否生成了原环境在任何 difficulty、任何 seed 下都不会出现的物体。</li>
+<li><b>原本执行不到</b>：新档的动作序列、作用对象或次数，原代码在任何 difficulty、任何 seed 下都产生不了。</li>
+<li><b>参数越界</b>：只是取值超过原代码的取值域，单独列出，不算新物体或新动作。</li>
+</ul>
+<p>结论：<b>16 个环境都没有扩充物体。</b>“原本执行不到的动作”不只 VideoPlaceButton 一个，共 7 个环境，分两类，见表后。</p>
+<table>
+<tr><th>编号</th><th>任务</th><th>新档配置（现行）</th><th>扩充物体</th><th>原本执行不到的动作</th><th>参数越界</th><th>依据要点</th></tr>
+<tr><td>1.1</td><td>BinFill</td><td>K=5/6/7/8/9</td><td>否</td><td>否</td><td>是</td><td>原 hard 场景生成 10～12 个方块（<code>config_hard["spawn_cubes"]=[10,12]</code>），K=9 不超库存；动作仍是“抓起 → 放进桶”循环加按按钮；原目标总数 <code>put_in_numbers=[3,5]</code>，K=6～9 越界</td></tr>
+<tr><td>1.2</td><td>PickXtimes</td><td>n=6/7/8/9/10</td><td>否</td><td>否</td><td>是</td><td>原 hard 是 4～5 次；序数词表 <code>get_subgoal_with_index</code> 上限为 tenth，n=10 正好用满</td></tr>
+<tr><td>1.3</td><td>SwingXtimes</td><td>4/5/7/8/9 往返</td><td>否</td><td>否</td><td>是</td><td>原各档最多 3 次往返；同一对左右摆动重复更多次</td></tr>
+<tr><td>1.4</td><td>StopCube</td><td>k=4/5/6（间隔 80），xhard18 为间隔 60、k=7</td><td>否</td><td><b>是（k=6、7）</b></td><td>是</td><td>原 <code>step()</code> 中 <code>range(5)</code> 写死，方块最多运动 5 段，<code>stop_time</code> 原取值 2～5；第 6、7 段运动和在第 6、7 次经过时按按钮，原代码做不到。k=4、5 在原范围内；间隔 60、80 都是原取值</td></tr>
+<tr><td>2.1</td><td>VideoUnmask</td><td>xhard14：p=3</td><td>否</td><td><b>是</b></td><td>是</td><td>第三个容器和第三种颜色的方块原本就生成（<code>spawned_bins[:3]</code>）；但原 <code>pick</code> 最多为 2，bin_2 只在误抓判负里出现，“放下 bin_1 → 抓 bin_2”作为正确动作原本不会出现</td></tr>
+<tr><td>2.2</td><td>ButtonUnmask</td><td>xhard14：p=3</td><td>否</td><td><b>是</b></td><td>是</td><td>同 2.1</td></tr>
+<tr><td>2.3</td><td>VideoUnmaskSwap</td><td>S=4/5/7/9/11</td><td>否</td><td><b>是</b></td><td>是</td><td>原交换次数 1～3，<code>_refresh_swap_schedule</code> 只实现 1、2、3 三个分支，<code>swap_pair</code> 只有三组；第 4 次及以后的交换原本不会出现</td></tr>
+<tr><td>2.4</td><td>ButtonUnmaskSwap</td><td>P/S=3/4、4/6、4/8、5/10、6/12</td><td>否</td><td><b>是</b></td><td>是</td><td>原按钮固定按 2 次，按过的按钮会被移出可按列表（<code>is_any_button_pressed_removelist</code>），不能重复按；交换最多 3 次。多次交替按压和第 4 次及以后的交换，原本都不会出现</td></tr>
+<tr><td>3.1</td><td>PickHighlight</td><td>spawn 6，pickup 4/5/6</td><td>否</td><td>否</td><td>是</td><td>spawn=6 等于原 hard；原 pickup 最大为 3；pickup=6 时没有干扰方块</td></tr>
+<tr><td>3.2</td><td>VideoRepick</td><td>medium 三块，R=2，S=5/7/10/13/15</td><td>否</td><td><b>是</b></td><td>是</td><td>原交换次数 medium 为 2～3，代码只支持 1～3；R=2 在原范围 1～3 内</td></tr>
+<tr><td>3.3</td><td>VideoPlaceButton</td><td>a=1（前或后各 50%），a=2（前后各一组）</td><td>否</td><td><b>是</b></td><td>否</td><td>4 个目标原本都生成（<code>targets=4</code>）；但三档的 <code>additional_place</code> 都是 False，演示只放 2 次、落在 2 个目标上。放到 target_2、target_3（a=2 时共放四次）按原配置执行不到。原代码里有这条分支（<code>pre_flag</code>/<code>post_flag</code>），只是没有任何档位开启</td></tr>
+<tr><td>3.4</td><td>VideoPlaceOrder</td><td>xhard12：N=3→4</td><td>否</td><td>否</td><td>否</td><td>原 <code>num_targets_to_pick</code> 的取值包含 4，第 4 个目标原本就在场景里；“前三项加第四项”是原环境的合法排列之一</td></tr>
+<tr><td>4.1</td><td>MoveCube</td><td>只有母档</td><td>否</td><td>否</td><td>否</td><td>网站与计划里没有为它安排新档</td></tr>
+<tr><td>4.2</td><td>InsertPeg</td><td>只有母档</td><td>否</td><td>否</td><td>否</td><td>同上</td></tr>
+<tr><td>4.3</td><td>PatternLock</td><td>L=7/8/9/10/11</td><td>否</td><td>否</td><td>是</td><td>仍是 5×5 网格、8 邻接、不重复节点；原 hard 的 length 为 [4,8]，L=9～11 越界</td></tr>
+<tr><td>4.4</td><td>RouteStick</td><td>S=6/7/8/9/10</td><td>否</td><td>否</td><td>是</td><td>按钮固定 5 个，相邻游走、允许折返；原 hard 为 4～7 条边，S=8～10 越界</td></tr>
+</table>
+<p><b>“原本执行不到”的两类：</b></p>
+<ul>
+<li><b>甲类：作用对象原本从不被这样操作。</b>
+  <ul>
+  <li>VideoUnmask、ButtonUnmask：抓 bin_2。</li>
+  <li>VideoPlaceButton：演示放到 target_2、target_3。原代码有该分支但从未启用。</li>
+  </ul>
+</li>
+<li><b>乙类：同一种动作的次数超过原代码写死的上限。</b>
+  <ul>
+  <li>交换第 4 次及以后：VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick。</li>
+  <li>重复按按钮：ButtonUnmaskSwap。</li>
+  <li>方块第 6、7 段运动：StopCube。</li>
+  </ul>
+  动作原语本身是原有的，只是原代码在结构上产生不了这么多次。
+</li>
+</ul>
+<p>上述 7 个环境的这些档是否保留，<b>待用户裁决</b>；用户当前预期是“只有 VideoPlaceButton 会有”。</p>
+
+<h3 id="p1-review-measure">三、实测长度梯度（每任务 1 个母 seed，临时补丁）</h3>
+<p>比值 = 该档 timestep ÷ 母档 timestep，括号内是计划估算，“—”表示缺档。只有 1 个 seed，不能外推到全部母样本。</p>
+<table>
+<tr><th>编号</th><th>任务</th><th>母档</th><th>xhard12</th><th>xhard14</th><th>xhard16</th><th>xhard18</th><th>xhard20</th><th>判断</th></tr>
+<tr><td>1.1</td><td>BinFill</td><td>842</td><td>1.257（1.246）</td><td>1.468（1.449）</td><td>1.696（1.652）</td><td>1.901（1.884）</td><td>K=9 未测（估约 2.11）</td><td>吻合</td></tr>
+<tr><td>1.2</td><td>PickXtimes</td><td>841</td><td>1.165（1.222）</td><td>1.325（1.384）</td><td>1.486（1.546）</td><td>1.641（1.717）</td><td>1.809（1.886）</td><td>估算每档偏高 48～65 timestep</td></tr>
+<tr><td>1.3</td><td>SwingXtimes</td><td>488</td><td>1.160</td><td>1.320</td><td>1.648</td><td>1.807</td><td>1.969</td><td>吻合</td></tr>
+<tr><td>1.4</td><td>StopCube</td><td>237</td><td>—</td><td>1.329</td><td>1.658</td><td>间隔 60、k=7 未测（估约 1.80）</td><td>2.013</td><td>吻合</td></tr>
+<tr><td>2.1</td><td>VideoUnmask</td><td>329</td><td>—</td><td>1.477</td><td>—</td><td>—</td><td>—</td><td>吻合</td></tr>
+<tr><td>2.2</td><td>ButtonUnmask</td><td>373</td><td>—</td><td>1.421</td><td>—</td><td>—</td><td>—</td><td>吻合</td></tr>
+<tr><td>2.3</td><td>VideoUnmaskSwap</td><td>428</td><td>1.224</td><td>1.329</td><td>1.554</td><td>1.820</td><td>2.030</td><td>长度吻合；配对退化，第二抓丢失 grounding 坐标</td></tr>
+<tr><td>2.4</td><td>ButtonUnmaskSwap</td><td>460</td><td>1.209</td><td>1.400</td><td>1.570</td><td>1.789</td><td>1.996</td><td>长度吻合；交换只在两对桶之间</td></tr>
+<tr><td>3.1</td><td>PickHighlight</td><td>539</td><td>1.301</td><td>—</td><td>1.599</td><td>1.907</td><td>—</td><td>pickup4、6 的档位归属被实测翻转</td></tr>
+<tr><td>3.2</td><td>VideoRepick</td><td>记录长度未测</td><td>≈1.24</td><td>≈1.38</td><td>≈1.61</td><td>≈1.84</td><td>≈2.00</td><td>部分实测，只有环境步数推算</td></tr>
+<tr><td>3.3</td><td>VideoPlaceButton</td><td>未测到</td><td>未测到</td><td>1.318（1.414）</td><td>—</td><td>—</td><td>—</td><td>部分实测</td></tr>
+<tr><td>3.4</td><td>VideoPlaceOrder</td><td>1120</td><td>1.132（1.184）</td><td>—</td><td>—</td><td>—</td><td>—</td><td>低于档名，按 R3 保留</td></tr>
+<tr><td>4.1</td><td>MoveCube</td><td>416</td><td colspan="5">只有母档</td><td>与官方逐字节相同</td></tr>
+<tr><td>4.2</td><td>InsertPeg</td><td>记录长度未测</td><td colspan="5">只有母档</td><td>部分实测</td></tr>
+<tr><td>4.3</td><td>PatternLock</td><td>324</td><td>1.259</td><td>1.741</td><td>1.704</td><td>1.784</td><td>2.198</td><td>整条重抽，长度不单调</td></tr>
+<tr><td>4.4</td><td>RouteStick</td><td>500</td><td>未测到</td><td>未测到</td><td>未测到</td><td>未测到</td><td>2.000（站点写 1.986）</td><td>只测到 xhard20</td></tr>
+</table>
+<p><b>部分实测的原因：</b><code>RobommeRecordWrapper.step</code> 只在需要录像时才缓存每一步，所以 <code>save_video=False</code> 时 HDF5 一个 timestep 都没有，而且不报错。正式生成器必须断言录像开启且 timestep 数大于 0。</p>
+
+<h3 id="p1-review-issues">四、已确认的主要问题（待修订计划时处理）</h3>
+<ul>
+<li><b>页面新旧方案并存</b>（两路都确认）：
+  <ul>
+  <li>goals 页仍按旧的最大旋钮写：BinFill 9、PickXtimes nine、SwingXtimes eight、StopCube eighth/tenth，而且不分档。</li>
+  <li>StopCube 的 k→2k、VideoUnmaskSwap 的 [11,12]、VideoRepick 的 15–16、PatternLock 的 2L−1、RouteStick 的 2S 等旧数仍然可见。</li>
+  <li>details 页有两块都自称优先级最高。</li>
+  <li>interface 页仍是 <code>--xhard</code> 加 <code>&lt;Task&gt;XHard1</code>。</li>
+  <li>两倍硬上界闸门仍在，按 R4 已作废。</li>
+  <li>多处用“帧”和 T′ 表示长度，应改为 timestep。</li>
+  </ul>
+</li>
+<li><b>接口</b>（两路都确认）：
+  <ul>
+  <li><code>difficulty="xhard12"</code> 会被父类 <code>normalize_robomme_difficulty</code> 拒绝，计划没写衔接机制。</li>
+  <li>导入 <code>robomme_xhard.jobs</code> 一定会先执行包的 <code>__init__</code>。</li>
+  </ul>
+</li>
+<li><b>写法照字面会出错：</b>
+  <ul>
+  <li>Unmask 应改为“在原第二抓之后追加”，不是“在尾段之前”。</li>
+  <li>VideoPlaceOrder 应“抽完再追加”，不能只改 <code>num_targets_to_pick</code>。</li>
+  <li>VideoUnmask 数轴上第三抓重复了第二色。</li>
+  </ul>
+</li>
+<li><b>交换配对退化</b>（按 R6 暂不改）：
+  <ul>
+  <li>VideoUnmaskSwap 第 3、4 次互相抵消，xhard12 终态与母档相同。</li>
+  <li>ButtonUnmaskSwap 只在 {0,3}、{1,2} 两对之间。</li>
+  <li>VideoRepick S≥4 原代码会报 AttributeError，必须补实现。</li>
+  </ul>
+</li>
+<li><b>VideoUnmaskSwap</b> xhard14/16/20 的第二抓 94 步没有像素坐标，并产出 <code>success_NO_OBJECT</code> 视频。</li>
+<li><b>母任务判据的宽松边界</b>（Codex CPU 探针，按 R1 不动）：BinFill 抓错颜色也算抓到、SwingXtimes 不抓着方块也算、Unmask 只看高度、PickHighlight 不按按钮也能成功、MoveCube 和 InsertPeg 的谓词偏宽。planner 生成不受影响。</li>
+<li><b>执行账本：</b>没有续跑和防覆盖；strike 的键是 (task, episode)，五个档位会互相冲突。</li>
+</ul>
+
+<h3 id="p1-review-open">五、仍待用户裁决</h3>
+<ol>
+<li>二节里 7 个环境的“原本执行不到的动作”（甲类：VideoUnmask、ButtonUnmask、VideoPlaceButton；乙类：VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick、StopCube k=6/7）是否接受。</li>
+<li>没有 xhard20 的任务（VideoUnmask、ButtonUnmask、PickHighlight、VideoPlaceButton、VideoPlaceOrder）在 R2 下是否不做 8 帧评估。</li>
+<li>PickXtimes、PickHighlight 是否按小规模实测重新归档。</li>
+<li>BinFill K=9 要核对母 seed 场景的方块数不少于 9：每个 seed 只 reset 一次计数，不跑 rollout，是否执行。</li>
+</ol>
 <h2 id="p1-_6">六、验收、步骤、子代理（三行）</h2>
 <ul>
 <li><strong>验收</strong>：原有身份、配置、卡片、关闭态、保护目录、smoke闸门，加技术细节中的goal/subgoal、按钮状态/grounding/落定、真实中位两倍上界、Place答案与路径/目标数量闸门；具体见第二部分，不以INFO统计代替通过。</li>
