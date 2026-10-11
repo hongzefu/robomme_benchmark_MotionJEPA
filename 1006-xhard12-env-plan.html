@@ -786,6 +786,159 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 </ul>
 <p>上述 7 个环境的这些档经用户裁决全部保留（原话「1 全部保留」）；用户此前预期是“只有 VideoPlaceButton 会有”。</p>
 
+<h2 id="p1-h5">五、H5 产物一致性检验（xhard12～xhard20 全档，2026-10-11）</h2>
+<p><b>总结论</b>：50 个 xhard 档 H5 与官方同任务 H5 在键集、dtype、shape 上完全一致，单 episode 文件结构满足 MotionJEPA 读取要求；MotionJEPA 扫描的 FAIL 全部来自「任务本身没有视频演示」，官方原件同样如此。</p>
+<blockquote>
+<p><b>用户原话（逐字，按时间）</b>：①「当前仓库你最后做一轮评估现在会生成H5文件吗生成的H5文件和 https://github.com/hongzefu/MotionJEPA/tree/v6.1.2-awsNoSlurm 最近一次文件要的是否一致」②「我说的是cripts/data-generation-newSeed/generate_dataset_newseed.py」③「用subagent不启动workflow 尽可能详细 把这个问题写到网页的第五部分」④「你还是调用这个接口的你应该能够生成 xhard12到20最后一轮产物都要生成」⑤「接口问题先不用管。接口问题和键问题都不用管。长度问题也不用管。binfill需要手动Demo这个也已经放弃了。来源锁也不用管。暂时不用动还缺什么。我问这个问题主要是为了一致性的检验。」⑥「对的你做一下一致性的检验然后也是写入这个呃网页写入第五节。」</p>
+<p><b>定位</b>：据④⑤⑥，本节是<b>一致性检验</b>——只判本仓库 xhard 档产物与官方参考集、与 MotionJEPA 读取结构是否一致；接口、键差异、长度、BinFill 手动 demo、来源锁一律不纳入本轮判定（见第 5 小节）。</p>
+<p><b>锚点</b>：本仓库 HEAD <code>5d1fb3e6</code>（分支 <code>newtask-v3-MotionJepa1006</code>）；MotionJEPA 分支 <code>v6.1.2-awsNoSlurm</code> 最新提交 <code>49ee501461533f86e5a72d02331acc34d3b192d1</code>（2026-09-27，「docs: 压缩启动上下文……」）；官方参考集 <code>/data/hongzefu/data_0226/</code>（只读，未核 HF revision）。</p>
+<p><b>边界</b>：只核对、不改代码，两边仓库都没有源码改动；xhard 档由审查脚本在进程内临时覆盖 configs 生成，<code>src/robomme/</code> 磁盘文件零改动。</p>
+<p><b>证据位置</b>：xhard 档 H5 与日志在 <code>artifacts/audit-1011/&lt;Task&gt;/</code>，普通档 smoke 在 <code>artifacts/h5-smoke-1011/</code>（<code>artifacts/</code> 根锚定忽略、不入库）；对比脚本 <code>h5_vs_official.py</code> 与原始输出 <code>h5_vs_official.out</code>、MotionJEPA 只读扫描脚本 <code>mj_scan.py</code>（<code>-I</code> 隔离）在主会话 scratchpad。</p>
+</blockquote>
+
+<table>
+<tr><th>判定</th><th>结果</th><th>依据</th></tr>
+<tr><td><code>XHARD_VS_OFFICIAL_KEYSET=PASS files=50 pass=50</code></td><td>PASS</td><td>50 档逐个与官方同任务 <code>episode_0</code> 比：缺键 0、多键 0、同名键 dtype / shape 全同（第 1 小节）</td></tr>
+<tr><td>与本仓库普通档 smoke 比：<code>50/50 missing=[] extra=[]</code></td><td>PASS</td><td>只差 <code>setup/task_goal</code> 候选句数（及 stick 类任务 <code>gripper_state</code>），均为任务固有</td></tr>
+<tr><td><code>MJ_SCAN_VIDEO_TASKS=PASS files=24</code></td><td>PASS</td><td>有视频演示的 7 个任务 24 档全部通过 MotionJEPA <code>scan_episode</code></td></tr>
+<tr><td><code>MJ_SCAN_NO_DEMO_TASKS=FAIL files=26 official_same=demo0</code></td><td>不纳入本轮一致性判定（用户 2026-10-11 定）</td><td>无视频演示的 7 个任务 26 档报「demo 标记非前缀」；官方同任务 <code>episode_0</code> 的 demo 也都是 0，官方原件同样过不了，属任务性质</td></tr>
+<tr><td><code>GEN_H5=PASS mode=211 task=VideoUnmask ep=3 seed=6300 T=399 exit=0</code></td><td>PASS</td><td>辅助材料 B：生产生成器普通档单 episode 实跑</td></tr>
+<tr><td>xhard 档的生成路径</td><td>说明</td><td>生产生成器尚无 xhard 开关；本节 50 档经审查脚本调用同一录像接口生成</td></tr>
+<tr><td><code>MJ_WHITELIST=FAIL</code></td><td>不纳入本轮一致性判定（用户 2026-10-11 定）</td><td><code>select_primary</code> 任务只认 4 个、难度只认字面 <code>xhard</code></td></tr>
+<tr><td><code>MJ_SOURCE_PIN=FAIL</code></td><td>不纳入本轮一致性判定（用户 2026-10-11 定）</td><td>生成器不产 <code>MANIFEST.json</code> / <code>control/source.json</code>；<code>verify_source_pin</code> 写死 revision 与 sha</td></tr>
+<tr><td><code>MJ_BINFILL=FAIL</code></td><td>不纳入本轮一致性判定（用户 2026-10-11 定）</td><td>BinFill 手动 demo 已放弃（P4）</td></tr>
+<tr><td><code>OFFICIAL_KEYSET=差异</code></td><td>不纳入本轮一致性判定（用户 2026-10-11 定）</td><td>写入端自 commit <code>68a65a09</code> 起不写 <code>*_raw</code> 两组，另缺 <code>setup/fail_recover_*</code> 4 键；本节结构比较已剔除这些键</td></tr>
+<tr><td>长度口径</td><td>不纳入本轮一致性判定（用户 2026-10-11 定）</td><td>MotionJEPA full1600 源抽样 912–972 timestep</td></tr>
+</table>
+
+<h3 id="p1-h5-xhard">xhard12～xhard20 全档产物一致性</h3>
+
+<p><b>怎么生成的</b>：</p>
+<table>
+<tr><th>项目</th><th>做法</th></tr>
+<tr><td>范围</td><td>计划冻结的 50 个有效档位（四.7 确定性长度梯度表加总 = 50），MoveCube、InsertPeg 计划只有母档、无 xhard 档</td></tr>
+<tr><td>入口</td><td><code>artifacts/audit-1011/&lt;Task&gt;/</code> 下的审查脚本 <code>run_level.py</code> / <code>run_level2.py</code> / <code>rollout.py</code> / <code>vpo_audit.py</code> 重新跑；脚本内部都调用生成器的 <code>_execute_tasks</code> 与录像器 <code>RobommeRecordWrapper</code> 写 H5（与生产生成器同一录像接口），进程内临时覆盖 configs，不改 <code>src/robomme</code> 磁盘文件</td></tr>
+<tr><td>执行</td><td>五个运行型子代理（opus）：按官网四类各一个，另加 VideoRepick 补跑一个；全部在 GPU 1 串行，每条 <code>timeout 300</code></td></tr>
+<tr><td>日志</td><td><code>artifacts/audit-1011/&lt;Task&gt;/regen1011_&lt;level&gt;.log</code>（VideoRepick 为 <code>regen1011rec_&lt;level&gt;.log</code>）</td></tr>
+<tr><td>H5 位置</td><td><code>artifacts/audit-1011/&lt;Task&gt;/tmp/&lt;level&gt;/hdf5_files/</code>（PickXtimes 为 <code>tmp/&lt;level&gt;_w/</code>，VideoRepick 为 <code>tmp_rec/&lt;level&gt;/</code>）</td></tr>
+<tr><td>结果</td><td>50 个文件全部生成成功（success / 末帧 <code>is_completed</code> 为真）</td></tr>
+</table>
+
+<p><b>脚本坑与处置</b>：</p>
+<table>
+<tr><th>任务</th><th>坑</th><th>处置</th></tr>
+<tr><td>3.2 VideoRepick</td><td><code>run_level.py</code> 写死 <code>save_video=False</code>，录像器不缓冲 timestep，H5 只有 <code>setup</code>（11,656 B）</td><td>主会话复制出 <code>run_level_rec.py</code>，只改 <code>save_video=True</code> 与输出目录 <code>tmp_rec</code>，原脚本不动；补跑五档，环境步数与上一轮 902 / 1002 / 1165 / 1326 / 1438 逐个一致</td></tr>
+<tr><td>4.1 MoveCube、4.3 PatternLock 的脚本</td><td>写死 <code>_pool_init("0")</code> 绑 GPU 0</td><td>运行代理用 scratchpad 包装把卡号换成 1（日志 <code>BOUND gpu '1'</code>）</td></tr>
+<tr><td>4.4 RouteStick</td><td><code>rollout.py</code> 默认不录像</td><td>用脚本自带开关 <code>AUDIT_SAVE_VIDEO=1</code></td></tr>
+</table>
+<p><b>退出码 139</b>：VideoUnmask、VideoUnmaskSwap、VideoRepick、VideoPlaceButton 等出现在 RESULT / json 与 H5 写完之后的进程收尾段错误，旧审查同样存在，不影响产物，未重试。</p>
+<p><b>复现性</b>：各档 timestep 数 / 环境步数与 10-11 旧审查逐个相同；VideoUnmask xhard14 关节动作 npy 与旧文件逐字节相同，与官方 ep35 前 329 步关节动作 <code>max_abs_diff=0.0</code>。</p>
+
+<p><b>50 档 timestep 表</b>（任务按官网顺序；— 为计划不设档）：</p>
+<table>
+<tr><th>任务</th><th>seed / ep</th><th>xhard12</th><th>xhard14</th><th>xhard16</th><th>xhard18</th><th>xhard20</th><th>档数</th></tr>
+<tr><td>1.1 BinFill</td><td>7101 / 31</td><td>1058</td><td>1236</td><td>1428</td><td>1601</td><td>—</td><td>4</td></tr>
+<tr><td>1.2 PickXtimes</td><td>6500 / 55</td><td>980</td><td>1114</td><td>1250</td><td>1380</td><td>1521</td><td>5</td></tr>
+<tr><td>1.3 SwingXtimes</td><td>8900 / 59</td><td>566</td><td>644</td><td>804</td><td>882</td><td>961</td><td>5</td></tr>
+<tr><td>1.4 StopCube</td><td>10700 / 87</td><td>—</td><td>315</td><td>393</td><td>—</td><td>477</td><td>3</td></tr>
+<tr><td>2.1 VideoUnmask</td><td>9500 / 35</td><td>—</td><td>486</td><td>—</td><td>—</td><td>—</td><td>1</td></tr>
+<tr><td>2.2 ButtonUnmask</td><td>17500 / 95</td><td>—</td><td>530</td><td>—</td><td>—</td><td>—</td><td>1</td></tr>
+<tr><td>2.3 VideoUnmaskSwap</td><td>8900 / 39</td><td>524</td><td>569</td><td>665</td><td>779</td><td>869</td><td>5</td></tr>
+<tr><td>2.4 ButtonUnmaskSwap</td><td>12900 / 59</td><td>556</td><td>644</td><td>722</td><td>823</td><td>918</td><td>5</td></tr>
+<tr><td>3.1 PickHighlight</td><td>17500 / 55</td><td>701</td><td>—</td><td>862</td><td>1028</td><td>—</td><td>3</td></tr>
+<tr><td>3.2 VideoRepick</td><td>17600 / 86</td><td>866</td><td>966</td><td>1129</td><td>1290</td><td>1348</td><td>5</td></tr>
+<tr><td>3.3 VideoPlaceButton</td><td>15500 / 55</td><td>1098</td><td>1267</td><td>—</td><td>—</td><td>—</td><td>2</td></tr>
+<tr><td>3.4 VideoPlaceOrder</td><td>15702 / 47</td><td>1268</td><td>—</td><td>—</td><td>—</td><td>—</td><td>1</td></tr>
+<tr><td>4.1 MoveCube</td><td>—</td><td colspan="5">计划只有母档，无 xhard 档</td><td>0</td></tr>
+<tr><td>4.2 InsertPeg</td><td>—</td><td colspan="5">计划只有母档，无 xhard 档</td><td>0</td></tr>
+<tr><td>4.3 PatternLock</td><td>19300 / 43</td><td>408</td><td>564</td><td>552</td><td>578</td><td>712</td><td>5</td></tr>
+<tr><td>4.4 RouteStick</td><td>16300 / 3</td><td>600</td><td>700</td><td>800</td><td>900</td><td>1000</td><td>5</td></tr>
+<tr><td colspan="7"><b>合计</b>（计数 17 + 永久性 12 + 参考 11 + 模仿 10）</td><td><b>50</b></td></tr>
+</table>
+
+<p><b>三层一致性判定</b>：</p>
+<table>
+<tr><th>层</th><th>比什么</th><th>判定行 / 结果</th><th>说明</th></tr>
+<tr><td>1. 结构一致</td><td>与官方 <code>data_0226</code> 同任务 <code>episode_0</code> 逐键比；剔除写入端自 <code>68a65a09</code> 起已删的 <code>*_raw</code> 与 <code>fail_recover_*</code>（用户定不管键问题）</td><td><code>XHARD_VS_OFFICIAL_KEYSET=PASS files=50 pass=50</code></td><td>缺键 0、多键 0、同名键 dtype / shape 全同；<code>waypoint_action</code> 的 float32 / float64 交替与官方相同，是既有行为</td></tr>
+<tr><td>2. 与普通档 smoke 一致</td><td>与本仓库生产生成器普通档 smoke（VideoUnmask ep3，见辅助材料 B）逐键比</td><td><code>50/50 missing=[] extra=[]</code></td><td>只差 <code>setup/task_goal</code> 形状（及 stick 类任务 <code>gripper_state</code>），均为任务固有，与官方同任务一致</td></tr>
+<tr><td>3. MotionJEPA 读取</td><td>只读调用 MotionJEPA v6.1.2 <code>scan_episode</code></td><td><code>MJ_SCAN_VIDEO_TASKS=PASS files=24</code>；<code>MJ_SCAN_NO_DEMO_TASKS=FAIL files=26 official_same=demo0</code></td><td>FAIL 全部来自断言 d&gt;0（至少 1 个 demo timestep），无视频演示的任务官方原件同样过不了；用户已定 BinFill 手工 demo 放弃，本轮不纳入一致性判定</td></tr>
+</table>
+<p><b>唯一随数据变化的形状</b>：<code>setup/task_goal</code> 是语言目标候选句列表，长度随任务实例变化——VideoRepick 生成 (3,)、官方 ep0 (2,)；VideoPlaceButton 生成 (4,)、官方 ep0 (2,)；其余任务与官方同为 (1,) 或 (2,)。这是值层面的变长列表，不是结构差异。</p>
+
+<p><b>MotionJEPA <code>scan_episode</code> 按有无视频演示分组</b>：</p>
+<table>
+<tr><th>分组</th><th>任务（官网顺序）</th><th>档数</th><th>扫描结果</th><th>官方同任务 <code>episode_0</code> 的 demo 长度（timestep）</th></tr>
+<tr><td rowspan="7">有视频演示（24 档）</td><td>2.1 VideoUnmask</td><td>1</td><td>PASS</td><td>66</td></tr>
+<tr><td>2.3 VideoUnmaskSwap</td><td>5</td><td>PASS</td><td>168</td></tr>
+<tr><td>3.2 VideoRepick</td><td>5</td><td>PASS</td><td>321</td></tr>
+<tr><td>3.3 VideoPlaceButton</td><td>2</td><td>PASS</td><td>765</td></tr>
+<tr><td>3.4 VideoPlaceOrder</td><td>1</td><td>PASS</td><td>940</td></tr>
+<tr><td>4.3 PatternLock</td><td>5</td><td>PASS</td><td>48</td></tr>
+<tr><td>4.4 RouteStick</td><td>5</td><td>PASS</td><td>100</td></tr>
+<tr><td rowspan="7">无视频演示（26 档）</td><td>1.1 BinFill</td><td>4</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
+<tr><td>1.2 PickXtimes</td><td>5</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
+<tr><td>1.3 SwingXtimes</td><td>5</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
+<tr><td>1.4 StopCube</td><td>3</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
+<tr><td>2.2 ButtonUnmask</td><td>1</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
+<tr><td>2.4 ButtonUnmaskSwap</td><td>5</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
+<tr><td>3.1 PickHighlight</td><td>3</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
+</table>
+
+<p><b><code>setup/difficulty</code> 字段照实说明</b>：审查脚本按母配置跑，H5 里写的是 <code>hard</code>（VideoRepick 为 <code>medium</code>），不是计划新口径的 <code>xhard12</code>..<code>xhard20</code>。用户定「接口问题先不用管」，照实记录、本轮不改。</p>
+
+<p><b>记录但不处理</b>：</p>
+<ul>
+<li>「逐环境审查」表的「新档配置（现行）」列与四.7 表不一致：前者写 BinFill K=5～9（含 xhard20 的 K=9）、StopCube xhard18 为间隔 60 / k=7；四.7 表 BinFill 无 xhard20、StopCube 无 xhard12 / xhard18。本轮按四.7（加总 50）跑，BinFill K=9 与 StopCube xhard18 未生成。仅记录，待用户需要时裁决。</li>
+<li>4.3 PatternLock xhard16（552 timestep）比 xhard14（564 timestep）短，旧审查同样如此（路径移动段长度差异，未验证）。</li>
+<li>退出码 139 的收尾段错误未定位，产物不受影响。</li>
+</ul>
+
+<h3 id="p1-h5-1">辅助材料 A：生产生成器现状</h3>
+<table>
+<tr><th>项目</th><th>普通档（easy / medium / hard）</th><th>xhard 档</th></tr>
+<tr><td>能否产 H5</td><td>能：<code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code>，<code>--difficulty</code> 默认 <code>211</code>（按 <code>episode%4</code> 取 easy、easy、medium、hard）</td><td>生产生成器尚无 xhard 开关、<code>src/robomme_xhard/</code> 不存在；<code>--difficulty xhard12</code> 在 <code>seed_layout.parse_difficulty_ratio</code> 报 <code>SeedLayoutError</code>（退出码 1，<code>_prepare_output</code> 已建空目录）。本节 50 档经审查脚本调用同一录像接口生成</td></tr>
+<tr><td>谁写 H5</td><td colspan="2">录像器 <code>RobommeRecordWrapper</code>（<code>src/robomme/env_record_wrapper/RecordWrapper.py</code>，P1 默认冻结）在 episode 成功时由 <code>close()</code> 写 <code>&lt;output-dir&gt;/hdf5_files/{Task}_ep{N}_seed{S}.h5</code>；失败 attempt 删组删空壳、只留 <code>videos/FAILED_*.mp4</code>；<code>fail_safe_limit=2000</code> 环境步</td></tr>
+<tr><td>其他输出</td><td colspan="2"><code>record_dataset_&lt;Task&gt;_metadata.json</code>、<code>run_summary.json</code>、<code>run_parameters.json</code>、<code>episode_results.jsonl</code>；合并成 <code>record_dataset_&lt;Task&gt;.h5</code> 需另跑 <code>merge_episode_h5.py --input-dir &lt;dir&gt; --env &lt;Task&gt;</code>（按 metadata 定位、写 <code>.tmp</code> 再 replace、默认不删源）</td></tr>
+</table>
+
+<h3 id="p1-h5-2">辅助材料 B：普通档 smoke（生产生成器）</h3>
+<pre><code>PYTHONUNBUFFERED=1 timeout 480 uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py --output-dir artifacts/h5-smoke-1011/gen --env VideoUnmask --episode-start 3 --episodes 1 --workers 1 --gpus 1
+uv run --no-sync python scripts/data-generation-newSeed/merge_episode_h5.py --input-dir artifacts/h5-smoke-1011/gen --env VideoUnmask</code></pre>
+<table>
+<tr><th>项目</th><th>实测</th></tr>
+<tr><td>运行</td><td>主检出 <code>5d1fb3e6</code>、GPU 1；2026-10-11 16:41:41 → 16:41:58（17 s）；<code>[1/1] VideoUnmask/episode_3 succeeded with seed 6300 (attempt 0, 10.464s)</code>；<code>EXIT_CODE=0</code>；peak_rss 3101.9 MB</td></tr>
+<tr><td>产物</td><td>单文件 <code>VideoUnmask_ep3_seed6300.h5</code> 266,042,280 B；合并 <code>record_dataset_VideoUnmask.h5</code> 264,836,912 B（结构相同）；mp4 8,318,424 B</td></tr>
+<tr><td>键树要点</td><td>根键只有 <code>episode_3</code>；399 个 timestep；<code>obs/front_rgb</code>、<code>obs/wrist_rgb</code> (256,256,3) uint8，深度 (256,256,1) int16，<code>joint_state</code> (7,) / <code>gripper_state</code> (2,) / <code>eef_state</code> (6,) float32，外参 (3,4) float32；<code>action/joint_action</code> (8,) / <code>eef_action</code> (7,) float64，<code>waypoint_action</code> (7,) float32（末步 float64，官方同），<code>choice_action</code> 字符串；<code>info/</code> 4 个 subgoal 字符串与 <code>is_completed</code> / <code>is_subgoal_boundary</code> / <code>is_video_demo</code> bool；<code>setup/difficulty='hard'</code>、<code>seed=6300</code></td></tr>
+<tr><td><code>simple_subgoal</code> 五段</td><td>0–65 static（<code>is_video_demo</code> 前缀 66 个）；66–244 pick up the container that hides the green cube；245–291 put down the container；292–388 pick up the container that hides the blue cube；389–398 All tasks completed</td></tr>
+<tr><td>与官方 <code>episode_3</code> 比</td><td>同 seed 6300、hard：timestep 数同为 399、demo 同为 0–65、五段边界逐位相同、同名键 dtype / shape 全同（只比结构与段边界，未比像素与动作数值）；生成文件只少不多：<code>setup/fail_recover_*</code> 4 键、每步 <code>*_raw</code> 两组</td></tr>
+</table>
+
+<h3 id="p1-h5-3">辅助材料 C：MotionJEPA v6.1.2 读取要求</h3>
+<table>
+<tr><th>项目</th><th>内容</th></tr>
+<tr><td>最近一次数据集 full1600</td><td>库根 <code>/scratch/hongze/dataset-local-a100-4task-full1600</code>；源 <code>HongzeFu/robomme-4task-h5-20260912-v2</code> revision <code>604f16da36d6b6d175884df8fb687dc08e0a36eb</code>，MANIFEST sha256 <code>df992cdf…</code>；任务 BinFill、VideoUnmaskSwap、VideoRepick、RouteStick；1600 条（每任务 400）、2800 变体、901,970 raw 帧（MotionJEPA 原文术语，指图像帧数）、812,370 chunk；源 episode 抽样 912–972 timestep；训练配置 <code>configs/full1600_armwnull.yaml</code></td></tr>
+<tr><td><code>local_dataset_source.py::scan_episode</code></td><td>顶层恰 1 个 <code>episode_&lt;N&gt;</code> 组；<code>timestep_0</code>..连续；<code>obs/front_rgb</code> (256,256,3) uint8；<code>is_video_demo</code> / <code>is_completed</code> 为 0/1 标量；demo 为非空前缀（d&gt;0）；首个完成步 c 满足 c+2 不超过总 timestep；BinFill 要求 demo 段与执行段逐帧相同</td></tr>
+<tr><td><code>local_dataset_source.py::select_primary</code></td><td><code>TASKS</code> 只有 4 个任务、<code>DIFFICULTIES=(easy, medium, hard, xhard)</code>，strict 时每任务 400 条、组合 14 格（本轮不纳入判定）</td></tr>
+<tr><td><code>local_dataset_source.py::verify_source_pin</code></td><td>revision 与 MANIFEST sha 写死，逐 H5 校验 sha 与大小（本轮不纳入判定）</td></tr>
+<tr><td>建库读哪些键</td><td>只读 <code>obs/front_rgb</code>、<code>info/is_video_demo</code>、<code>info/is_completed</code>；wrist、关节、动作、subgoal、<code>task_goal</code>、<code>setup</code>、深度、metadata json 都不读；fps 写死 30.0；训练 loader <code>dataset_wan.py</code> 不读 H5</td></tr>
+</table>
+
+<h3 id="p1-h5-4">辅助材料 D：普通档 smoke 喂入 MotionJEPA 实测</h3>
+<pre><code>MJ_SCAN=PASS source_frames=399 demo_frames=66 first_completed_global=389 dropped_tail_frames=8 demo_exec_identical=False variants=[exec T=325 N=293, demo T=66 N=34]
+WHITELIST=FAIL</code></pre>
+<p>字段名为 MotionJEPA 原文：源 399 timestep、demo 前缀 66、首个完成步 389、截到 c+2=391 丢尾 8 个 timestep，切出执行段 325 与 demo 段 66 两个变体；<code>WHITELIST=FAIL</code> 是 VideoUnmask 不在 4 任务白名单（本轮不纳入判定）。官方 <code>data_0226</code> BinFill <code>episode_0</code> 为 550 timestep、demo 0 个，同样过不了 d&gt;0。</p>
+
+<h3 id="p1-h5-5">5. 本轮不处理的项（用户已定）</h3>
+<p>按用户 2026-10-11 原话「接口问题和键问题都不用管。长度问题也不用管。binfill需要手动Demo这个也已经放弃了。来源锁也不用管。暂时不用动还缺什么。」，下列各项本轮不处理、不纳入一致性判定，也未授权任何修改：</p>
+<ul>
+<li><b>接口</b>：生产生成器的 xhard 开关；H5 <code>setup/difficulty</code> 写什么；MotionJEPA <code>select_primary</code> 的任务白名单与难度字面值；单 episode 文件与合并文件的交付粒度。</li>
+<li><b>键差异</b>：与官方相比缺 <code>setup/fail_recover_*</code> 4 键与每步 <code>*_raw</code> 两组（补回需改录像器，涉及 P1）。</li>
+<li><b>长度</b>：与 MotionJEPA full1600 源 912–972 timestep 的对齐。</li>
+<li><b>BinFill 手动 demo</b>：已放弃；P4 不做假 demo，无视频演示任务过不了 <code>scan_episode</code> 的 d&gt;0。</li>
+<li><b>来源锁</b>：<code>MANIFEST.json</code> / <code>control/source.json</code> 与 <code>verify_source_pin</code> 写死值。</li>
+<li><b>产物去留</b>：<code>artifacts/h5-smoke-1011/</code>（约 515 MB）与 <code>artifacts/audit-1011/</code> 下本轮 H5 暂留作对照，去留另由用户决定。</li>
+</ul>
+
 <h2 id="p1-_6">六、验收、步骤、子代理（三行）</h2>
 <ul>
 <li><strong>验收</strong>：原有身份、配置、卡片、关闭态、保护目录、smoke闸门，加技术细节中的goal/subgoal、按钮状态/grounding/落定、真实中位两倍上界、Place答案与路径/目标数量闸门；具体见第二部分，不以INFO统计代替通过。</li>
