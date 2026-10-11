@@ -91,7 +91,7 @@ a { color:var(--accent); }
 <main>
 <h1 id="1006-xhard12-env-planmd-16-hard-xhard">1006-xhard12-env-plan.html — 在原 16 任务 hard 母样本上派生 xhard 档：子类继承 + 独立包 + 生成器一个开关</h1>
 <blockquote>
-<p><strong>权威与授权</strong>：只规划不实施。完整计划呈现后，用户不提修改而明确同意即为开工令（<code>AGENTS.md</code> 第2条）；本轮只修订计划，尚未取得新版实施开工令。下面版本演进保留作历史，不替代本次契约。本版 2026-10-06（2.32，2.34 按用户决定纳入 Unmask 两任务 pick 3 与 Place 两任务「2 块 + 回原位 + swap 3」）把前两版「接口方案」（2.30.x）与「上次训练参照与逐任务高层方案」（2.31）合成一份完整计划；上次训练怎么做的、官方 hard 档统计、16 任务源码核查全部移到留档 <a href="1006-xhard12-prev-training-and-task-plan.md"><code>1006-xhard12-prev-training-and-task-plan.md</code></a>，本文只引用、不复述。2.32.1 按用户要求（2026-10-06「第一部分现在简略了……这两块都要展开来讲讲清楚了……列一个完整的16task的表」）把第一部分二、三节恢复为分步讲解、四节扩成 16 任务全表，第一部分篇幅因此超出正本第 2 条的 90～130 行参考值，属用户明示。2.35（2026-10-07）按用户「v2有一个swap的标注 也作为subgoal 你也要考虑这个问题 swap采不到也不行」「然后恢复v2的图片数轴」把每次 swap 计入 8 帧漏段判据，并把 <code>vis/</code> 改为 V2 数轴画法、在四节嵌图。2.36（2026-10-07）按用户「VideoPlaceButton、VideoPlaceOrder 是否不用改」「改计划 两个任务用 --xhard 按原 hard 配置重新生成」撤回口径 ⑩ 的 Place 两任务重型重写：官方 hard 档两任务 timestep 数中位 961 / 1115、窗中位 57 / 67、8 帧合计漏最少 1 / 2（留档 4.2 节、<code>vis/output/reference_summary.md</code> hard 列），已满足长度目标与 8 帧必漏，改为子类不改任何键和方法、只挂 <code>XHardMixin</code>，经 <code>--xhard</code> 用原 seed 重新生成；S5 子代理、<code>home_site.py</code>、<code>XHARD_PLACE</code> 一并取消。
+<p><strong>本版回写 10-11 裁决后待用户确认</strong>：2026-10-11 本版把当日用户裁决 R1–R26 回写进计划（第二部分「10-11 裁决回写」），有效配置统一为 52 个，并重写实现阶段的子代理分配表；仍只规划不实施，用户看完本版完整计划不提修改而明确同意，才算开工令。<br><strong>权威与授权</strong>：只规划不实施。完整计划呈现后，用户不提修改而明确同意即为开工令（<code>AGENTS.md</code> 第2条）；本轮只修订计划，尚未取得新版实施开工令。下面版本演进保留作历史，不替代本次契约。本版 2026-10-06（2.32，2.34 按用户决定纳入 Unmask 两任务 pick 3 与 Place 两任务「2 块 + 回原位 + swap 3」）把前两版「接口方案」（2.30.x）与「上次训练参照与逐任务高层方案」（2.31）合成一份完整计划；上次训练怎么做的、官方 hard 档统计、16 任务源码核查全部移到留档 <a href="1006-xhard12-prev-training-and-task-plan.md"><code>1006-xhard12-prev-training-and-task-plan.md</code></a>，本文只引用、不复述。2.32.1 按用户要求（2026-10-06「第一部分现在简略了……这两块都要展开来讲讲清楚了……列一个完整的16task的表」）把第一部分二、三节恢复为分步讲解、四节扩成 16 任务全表，第一部分篇幅因此超出正本第 2 条的 90～130 行参考值，属用户明示。2.35（2026-10-07）按用户「v2有一个swap的标注 也作为subgoal 你也要考虑这个问题 swap采不到也不行」「然后恢复v2的图片数轴」把每次 swap 计入 8 帧漏段判据，并把 <code>vis/</code> 改为 V2 数轴画法、在四节嵌图。2.36（2026-10-07）按用户「VideoPlaceButton、VideoPlaceOrder 是否不用改」「改计划 两个任务用 --xhard 按原 hard 配置重新生成」撤回口径 ⑩ 的 Place 两任务重型重写：官方 hard 档两任务 timestep 数中位 961 / 1115、窗中位 57 / 67、8 帧合计漏最少 1 / 2（留档 4.2 节、<code>vis/output/reference_summary.md</code> hard 列），已满足长度目标与 8 帧必漏，改为子类不改任何键和方法、只挂 <code>XHardMixin</code>，经 <code>--xhard</code> 用原 seed 重新生成；S5 子代理、<code>home_site.py</code>、<code>XHARD_PLACE</code> 一并取消。
 <strong>代码锚点</strong>：<code>deb938e0</code>（2.31）。工作副本 <code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>，分支 <code>newtask-v3-MotionJepa1006</code>，提交编号 <code>2.&lt;小版本&gt;</code>。生成代码起点 <code>3a5951a8</code>（2.24），源码核查锚点 <code>13905997</code>（2.25）。
 <strong>外部锚点</strong>：ManiSkill <code>07be6fbc66350ddca200abfb0a11b692f078f7fd</code>（<code>pyproject.toml</code> git rev，不改）；<code>.venv</code> gymnasium 0.29.1、torch 2.9.1；上次训练 run <code>wan-full1600-filter2-b176x4-72ep-a</code>（留档一节）。
 <strong>事实核查</strong>：2026-10-06 三个只读子代理逐文件核实了 ManiSkill <code>spec</code> 挂载与 reset 生命周期、生成器锚点与导入路径、11 个任务的覆写锚点（留档 5.0–5.2 节）；本文第二部分的代码锚点以此为准。所有 timestep 数、窗口数仍是线性外推 [估算]，实跑后要重算。</p>
@@ -100,7 +100,7 @@ a { color:var(--accent); }
 <section id="homepage-current-plan">
 <style>#homepage-current-plan code, #current-five-tier-contract code { overflow-wrap:anywhere; } #homepage-current-plan table { width:100%; }</style>
 <h2 id="homepage-current-heading">本轮计划：五级难度、同 seed 实测、确认后生成最终版</h2>
-<p><strong>本轮先更新计划，不启动实现或生成。</strong>确认这版计划后，按“先实现 → 小规模实测 → 审阅并确认改动 → 最终生成”执行。下面的新接口与规模优先于历史的 <code>--xhard</code>、仅传 <code>hard</code>、严格两倍上界和650条全量等旧口径。</p>
+<p><strong>本轮先更新计划，不启动实现或生成。</strong>确认这版计划后，按“先实现 → 小规模实测 → 审阅并确认改动 → 最终生成”执行。下面的新接口与规模优先于历史的 <code>--xhard</code>、仅传 <code>hard</code>、严格两倍上界和650条全量等旧口径。2026-10-11 用户裁决 R1–R26 已回写（第二部分「10-11 裁决回写」）：有效配置 <strong>52 个</strong>（新增 BinFill xhard20 K=9、StopCube xhard18 间隔60 k=7），两倍硬上界作废，8 帧遗漏只查每任务最长一档，母档用当前代码按同 seed 重新生成，选母 seed 先避开 FailRecover。</p>
 <table><thead><tr><th>目标长度</th><th>传入的 difficulty</th><th>母档</th></tr></thead><tbody>
 <tr><td>约1.2倍</td><td><code>xhard12</code></td><td rowspan="5">使用现行表的固定中位母配置；VideoRepick保留medium三方块例外，其余以Hard为来源。</td></tr>
 <tr><td>约1.4倍</td><td><code>xhard14</code></td></tr>
@@ -113,22 +113,23 @@ a { color:var(--accent); }
 <svg role="img" aria-label="先实现，再小规模实测，用户确认改动后最终生成" viewBox="0 0 960 88" style="width:100%;height:auto;font-family:inherit"><rect x="2" y="12" width="210" height="60" rx="8" fill="#eef4fb" stroke="#0969da"/><text x="107" y="48" text-anchor="middle" font-size="18">① 实现五级 difficulty</text><text x="230" y="48" font-size="24">→</text><rect x="258" y="12" width="210" height="60" rx="8" fill="#eef4fb" stroke="#0969da"/><text x="363" y="48" text-anchor="middle" font-size="18">② 两母seed小规模实测</text><text x="486" y="48" font-size="24">→</text><rect x="514" y="12" width="190" height="60" rx="8" fill="#fff4df" stroke="#b87500"/><text x="609" y="48" text-anchor="middle" font-size="18">③ 用户确认改动</text><text x="722" y="48" font-size="24">→</text><rect x="750" y="12" width="208" height="60" rx="8" fill="#eaf6ed" stroke="#238636"/><text x="854" y="48" text-anchor="middle" font-size="18">④ 最终16母seed组</text></svg>
 <table><thead><tr><th>阶段</th><th>执行口径</th><th>规模与交付</th></tr></thead><tbody>
 <tr><td>先实现</td><td>在新包实现各档固定旋钮；改造现有 <code>generate_dataset_newseed.py</code> 的作业构建，复用其多worker进程池。保留旧比例参数的兼容入口。</td><td>先验证新difficulty、同seed、输出隔离、目标与子目标同步，再开始生成。</td></tr>
-<tr><td>小规模实测</td><td>每任务预先固定2个符合母中位配置的母episode/seed；每组只跑各有效档一遍。先用其中1条、1个worker验通，再用4个worker和一张空闲GPU完成剩余作业；首条计入本批预算。</td><td>32个母seed组；按当前50个有效“任务×难度”配置，共<strong>100条新轨迹</strong>。1.0母视频优先复用已有记录，不重复生成。交逐条实测表和一支完整对比视频。</td></tr>
+<tr><td>小规模实测</td><td>每任务预先固定2个符合母中位配置、避开FailRecover（R11）的母episode/seed；每组只跑各有效档一遍。先用其中1条、1个worker验通，再用4个worker和一张空闲GPU完成剩余作业；首条计入本批预算。</td><td>32个母seed组；按当前52个有效“任务×难度”配置，共<strong>104条新轨迹</strong>。1.0母档按R9用当前代码同seed重新生成（32条），不复用官方旧视频。交逐条实测表和一支完整对比视频。</td></tr>
 <tr><td>用户确认</td><td>检查实际长度梯度、行为、失败记录与视频；如需改旋钮，先展示改动供确认，再安排获准范围内的定向复测。</td><td><strong>确认实测结果与改动前，不启动最终版。</strong>不自动扩大样本，也不自动补跑。</td></tr>
-<tr><td>最终版</td><td>“16 episode”按用户确认解释为<strong>16个母seed组</strong>：每任务只选1个母episode/seed，各有效难度各生成一次。默认沿用实测前已指定的第一个母seed，不按成功结果偷换。</td><td>按当前表共<strong>50条新轨迹</strong>，另引用16条母轨迹作对照；交最终HDF5、独立视频、清单和<strong>一支最终总对比视频</strong>。若批准后配置表变化，先更新确切作业数。</td></tr>
+<tr><td>最终版</td><td>“16 episode”按用户确认解释为<strong>16个母seed组</strong>：每任务只选1个母episode/seed，各有效难度各生成一次。默认沿用实测前已指定的第一个母seed，不按成功结果偷换。</td><td>按R26写死：每个任务的每个有效xhard档各生成1条，共<strong>52条新轨迹</strong>，用多worker并行（<code>--workers</code> 不超过本机安全上限32、单张空闲卡）；另按R9同seed重生成16条母档作对照；交最终HDF5、独立视频、清单和<strong>一支最终总对比视频</strong>。若批准后配置表变化，先更新确切作业数。</td></tr>
 </tbody></table>
-<p><strong>怎样确认梯度正确：</strong>按同任务、同seed核对真实旋钮、帧数、分段motion窗口数及相对1.0母轨迹的倍数；检查各有效档长度总体递增、接近目标且没有错误复用配置。每窗33帧、stride16，演示与执行分开计数。近目标即可，不要求精确等于1.2/1.4/1.6/1.8/2.0；失败与反常递减如实列出，不用正常退出替代 <code>task_success</code>。每任务只有2个母seed，这次验证用于校准与发现问题，不当作全分布证明。</p>
+<p><strong>怎样确认梯度正确：</strong>按同任务、同seed核对真实旋钮、帧数、分段motion窗口数及相对1.0母轨迹的倍数；检查各有效档长度总体递增、接近目标且没有错误复用配置。每窗33帧、stride16，演示与执行分开计数。近目标即可，不要求精确等于1.2/1.4/1.6/1.8/2.0；失败与反常递减如实列出，不用正常退出替代 <code>task_success</code>。每任务只有2个母seed，这次验证用于校准与发现问题，不当作全分布证明。8 帧遗漏按R18只查每任务最长一档；实测倍数低于档名（如VideoPlaceOrder 1.132、PatternLock xhard16短于xhard14）按R3、R24照旧命名并标实际倍数，PickXtimes、PickHighlight按R19实测后重新归档、先交用户确认。</p>
 <p><strong>视频怎么比较：</strong>每个“任务＋母seed”作为一段，母档及五个difficulty共六栏同屏、从t=0按原速播放；统一视角、显示尺寸和帧率，不时间拉伸。短轨迹结束后停在末帧并标记结束，缺档/失败明确标注，不用其他档补位。各段按官网16任务顺序、再按母seed顺序接成<strong>一个MP4</strong>；实测版和最终版分别各交一支，原始单条视频同时保留。</p>
-<p class="muted">分工：环境与旋钮、生成器同seed多档作业、验证与视频工具分开实现；主会话依次整合审查，运行代理只跑确定版本，不能边跑边改。产物按 <code>artifacts/xhard/&lt;run_name&gt;/&lt;阶段&gt;/&lt;difficulty&gt;/</code> 分目录，避免同seed文件互相覆盖。运行前确认新run_name与资源；超过5分钟的任务用独立tmux并留日志。具体文件、保护边界和验收见技术细节中的“本轮五级难度实施补充”。</p>
+<p class="muted">分工（子代理分工与合并简述）：拆成六块。主会话先自做新包骨架与五档配置表（S0），以及已获批的受保护改动 <code>task_goal.py</code> 四个派生分支（S0-P1）；再并行派四个独立worktree写入子代理：S1 管九个“改数或重写一个方法”的任务子类，S2 管五个Unmask/交换类子类，S3 管生成器开关与作业构建，S4 管测试与母seed清单、对比视频工具。按 S1→S2→S3→S4 逐个合回工作分支：合并前主会话核对改动范围、复跑验收并派一个只读审查代理审固定的两个提交；合并后跑核心短测、核对保护目录零diff再推送。全部合完，主会话在主检出串行跑GPU首条，再交运行代理跑小规模实测；最终批次另经用户确认后由运行代理多worker生成。产物按 <code>artifacts/xhard/&lt;run_name&gt;/&lt;阶段&gt;/&lt;difficulty&gt;/</code> 分目录。分配表见第二部分二节。</p>
 </section>
-<p><strong>2026-10-10 取值更新：</strong>保留原章节、表格、图示与交互布局；能达到自身母样本中位长度两倍的，以两倍为上界校准，达不到的取原机制最大值。VideoRepick 仍用 medium 三方块、swap 旋钮，基准 747、目标 1494。2000 环境步只列为录像器待改项。新参数尚未实跑，下文V3数轴全部重算为本次参数；“旧方案合成”行仅留作旧取值对照。新数轴与新表数字一致，属于合成统计，真实生成与遗漏验收仍待实施。原历史用户原话保持原文。</p>
+<p><strong>历史（已被首页新口径取代）· 2026-10-10 取值更新：</strong>保留原章节、表格、图示与交互布局；能达到自身母样本中位长度两倍的，以两倍为上界校准，达不到的取原机制最大值。VideoRepick 仍用 medium 三方块、swap 旋钮，基准 747、目标 1494。2000 环境步只列为录像器待改项。新参数尚未实跑，下文V3数轴全部重算为本次参数；“旧方案合成”行仅留作旧取值对照。新数轴与新表数字一致，属于合成统计，真实生成与遗漏验收仍待实施。原历史用户原话保持原文。</p>
 <p>本部分先讲两件事：<strong>接口与每个环境改什么</strong>（一、二节），<strong>改完怎么对齐长度</strong>（三、四节）。第五节只比较逐任务goal文字；实施步骤、验收、子代理分工压成末尾三行，细节全在第二部分（用户 2026-10-08：「修改的步骤不用告诉我」）。</p>
 <h2 id="p1-_2">一、一句话与已定口径</h2>
-<p><strong>一句话</strong>：不改原 16 个任务文件，在新包 <code>src/robomme_xhard/</code> 里给 14 个任务各写一个子类（10 个只换 <code>configs["hard"]</code> 里的一两个数或重写一个方法，VideoUnmask / ButtonUnmask 追加第三次抓，VideoPlaceButton / VideoPlaceOrder 分别取额外2组抓放／4个不同访问目标）；生成器加一个 <code>--xhard</code> 开关，用 train metadata 里对应母档记录的<strong>原 seed</strong>（VideoRepick medium，其余hard） 把子类跑一遍，录像器照原任务名录制。目标：每个任务以母样本中位长度的两倍为上界，达不到的取原机制最大值（VideoRepick 保持 medium），继续核对8帧遗漏；有限档按风险表如实报告，不为制造遗漏突破原机制和两倍上界。</p>
+<p><strong>现行口径（2026-10-11）</strong>：以首页“本轮计划”、四.7 表（52 个有效配置）与第二部分“10-11 裁决回写（R1–R26）”为准：对外传入 <code>difficulty="xhard12"</code>..<code>"xhard20"</code>，<code>setup/difficulty</code> 写 xhard 值、母配置另存 <code>source_difficulty</code>。下面一句话与已定口径中的 <code>--xhard</code> 开关、<code>&lt;Task&gt;XHard1</code> 名字、“两倍为上界”“达不到取原机制最大值”等写法为<strong>历史（已被首页新口径取代）</strong>；用户原话保留原文。</p>
+<p><strong>历史（已被首页新口径取代）· 一句话</strong>：不改原 16 个任务文件，在新包 <code>src/robomme_xhard/</code> 里给 14 个任务各写一个子类（10 个只换 <code>configs["hard"]</code> 里的一两个数或重写一个方法，VideoUnmask / ButtonUnmask 追加第三次抓，VideoPlaceButton / VideoPlaceOrder 分别取额外2组抓放／4个不同访问目标）；生成器加一个 <code>--xhard</code> 开关，用 train metadata 里对应母档记录的<strong>原 seed</strong>（VideoRepick medium，其余hard） 把子类跑一遍，录像器照原任务名录制。目标：每个任务以母样本中位长度的两倍为上界，达不到的取原机制最大值（VideoRepick 保持 medium），继续核对8帧遗漏；有限档按风险表如实报告，不为制造遗漏突破原机制和两倍上界。</p>
 <p><strong>已定口径（用户原话，2026-10-06 / 10-07）</strong>：①「沿用 Hard 的所有配置，只在一两个参数上改动，比如 pick 5 次变成 pick 7 次」；②「seed 先用现有的，直接拿 <code>src/robomme/env_metadata/train</code> 里已经生成过原版 hard 的那组 seed」「新 seed 的事以后再说」；③「新增部分用独立的 ENV 文件表示」「所有改动只限于生成器 <code>generate_dataset_newseed.py</code> 这一个文件和新增的那些文件」「把所有改的部分全部归档在一起，放在 <code>src</code> 里面」；④「不再把 BinFill 做成带 video 的任务」；⑤ 长度对齐 newtask-v2 xhard（timestep ≈900、50–60 窗），token 落实为 stride-16 窗口数；⑥ 只硬性要求 8 帧有 subgoal 级遗漏，32 帧「尽量」；⑦ 只用现有 hard seed、本轮接受总量缺口（约为上次 stride-1 chunk 的四成）；⑧ 纳入「换字典 + 重写方法」共 11 个任务；⑨「积极调用一些子代理可以搞清楚一些事实」；⑩「两个unmask任务都改为pick三次」；⑪（2026-10-07）「v2有一个swap的标注 也作为subgoal 你也要考虑这个问题 swap采不到也不行」→ 每次 swap 计入 8 帧漏段判据；⑫（2026-10-07）「VideoPlaceButton、VideoPlaceOrder 是否不用改」→「改计划 两个任务用 --xhard 按原 hard 配置重新生成」，撤回 10-06 的「2 块 + 回原位 + swap 3」。2026-10-06 子代理核实的两处修正：<code>pyproject.toml</code> <strong>不改</strong>（editable <code>.pth</code> 已把整个 <code>src/</code> 加进 <code>sys.path</code>）；两个 Swap 任务 swap≥4 必须重写 <code>_refresh_swap_schedule</code>，列入「重写一个方法」组。</p>
 <h2 id="p1-_3">二、接口改在哪：一个开关、一个新包</h2>
 <p class="muted">本轮按用户要求保留原SVG框架，仅在两图下方增加橙色的五级difficulty传递说明，并更新图1的实际传参标注。原说明中的 <code>--xhard</code> 是历史接口；本轮以首页新口径为准，实际传入 <code>xhard12/xhard14/xhard16/xhard18/xhard20</code>，原hard或medium只表示母配置来源。</p>
-<p>只动两样。第一样是生成器 <code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code> 加一个 <code>--xhard</code> 开关：传了它，卡片不再按公式造 seed，而是读 <code>src/robomme/env_metadata/train/</code> 里对应母档记录的原 seed（VideoRepick取medium，其余hard）（attempt 固定 0，失败不换 seed），工人进程在 <code>import robomme.robomme_env</code> 之后多 <code>import robomme_xhard</code> 一句，<code>gym.make</code> 的名字换成 <code>&lt;Task&gt;XHard1</code>，其余 kwargs、录像器、planner、执行、落盘全走原路；不传时解析结果、卡片、名字逐字节与现在相同。第二样是新包 <code>src/robomme_xhard/</code>：<code>envs/&lt;task&gt;.py</code> 每任务一个子类，只换 <code>configs["hard"]</code> 里的一两个数或重写一个方法，其余全部继承父类；<code>base.py</code> 的 <code>XHardMixin</code> 在 gymnasium 挂身份牌那一刻把 <code>unwrapped.spec.id</code> 换回原任务名，所以四个 wrapper 与语言目标、VQA 查表全按原任务走、一字不改；<code>jobs.py</code> 放读 json 造卡片的 <code>jobs_from_metadata</code> 与拼名字的 <code>make_name</code>。原 16 个任务文件、<code>pyproject.toml</code>、HDF5 结构都不碰，待批准例外另含 <code>RecordWrapper.py::step</code> 的2000步阈值调整；语言例外是 <code>task_goal.py</code> 的 Unmask 分支要加一句 3 抓文本，属受保护目录（P1），用户逐个批准后才改。输出放独立目录 <code>artifacts/xhard/&lt;档名&gt;-&lt;日期&gt;/</code>，文件名与原 hard 同名、靠目录区分。图 1 是生成器整条流程与 --xhard 在哪几层变，图 2 是 gym.make 之后 ENV、wrapper 与 id 的变化；逐文件改动表、前后对照图与继承图见第二部分一节。</p>
+<p><strong>历史（已被首页新口径取代）：</strong>只动两样。第一样是生成器 <code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code> 加一个 <code>--xhard</code> 开关：传了它，卡片不再按公式造 seed，而是读 <code>src/robomme/env_metadata/train/</code> 里对应母档记录的原 seed（VideoRepick取medium，其余hard）（attempt 固定 0，失败不换 seed），工人进程在 <code>import robomme.robomme_env</code> 之后多 <code>import robomme_xhard</code> 一句，<code>gym.make</code> 的名字换成 <code>&lt;Task&gt;XHard1</code>，其余 kwargs、录像器、planner、执行、落盘全走原路；不传时解析结果、卡片、名字逐字节与现在相同。第二样是新包 <code>src/robomme_xhard/</code>：<code>envs/&lt;task&gt;.py</code> 每任务一个子类，只换 <code>configs["hard"]</code> 里的一两个数或重写一个方法，其余全部继承父类；<code>base.py</code> 的 <code>XHardMixin</code> 在 gymnasium 挂身份牌那一刻把 <code>unwrapped.spec.id</code> 换回原任务名，所以四个 wrapper 与语言目标、VQA 查表全按原任务走、一字不改；<code>jobs.py</code> 放读 json 造卡片的 <code>jobs_from_metadata</code> 与拼名字的 <code>make_name</code>。原 16 个任务文件、<code>pyproject.toml</code>、HDF5 结构都不碰，待批准例外另含 <code>RecordWrapper.py::step</code> 的2000步阈值调整；语言例外是 <code>task_goal.py</code> 的 Unmask 分支要加一句 3 抓文本，属受保护目录（P1），用户逐个批准后才改。输出放独立目录 <code>artifacts/xhard/&lt;档名&gt;-&lt;日期&gt;/</code>，文件名与原 hard 同名、靠目录区分。图 1 是生成器整条流程与 --xhard 在哪几层变，图 2 是 gym.make 之后 ENV、wrapper 与 id 的变化；逐文件改动表、前后对照图与继承图见第二部分一节。</p>
 <figure id="fig-A">
 <svg role="img" aria-label="图 1　generate_dataset_newseed.py：外框是文件、内框是函数；橙框是改动的函数、白框不变；箭头是文件间调用" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1000" xml:space="preserve" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif"><defs><marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#6b7280"/></marker></defs><rect width="1100" height="730" fill="#fff"/><text x="550" y="30" font-size="16" fill="#1f2328" font-weight="bold" text-anchor="middle" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">图 1　generate_dataset_newseed.py：每个函数干什么、哪些改、它们调用哪些新文件</text><rect x="60" y="45" width="14" height="14" rx="3" fill="#f7f8fa" stroke="#8a94a0" stroke-width="1.5" stroke-dasharray="3 2"/><text x="80" y="56" font-size="11.5" fill="#1f2328" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">现有文件（生成器）</text><rect x="209.5" y="45" width="14" height="14" rx="3" fill="#fff8ef" stroke="#d9772b" stroke-width="1.5" stroke-dasharray="3 2"/><text x="229.5" y="56" font-size="11.5" fill="#1f2328" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">新增文件</text><rect x="301.5" y="45" width="14" height="14" rx="3" fill="#f0f5fc" stroke="#4a7fc1" stroke-width="1.5" stroke-dasharray="3 2"/><text x="321.5" y="56" font-size="11.5" fill="#1f2328" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">src/robomme 原文件（不改）</text><rect x="512.0" y="45" width="14" height="14" rx="3" fill="#ffe4c4" stroke="#d9772b" stroke-width="1.5"/><text x="532.0" y="56" font-size="11.5" fill="#1f2328" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">改动的函数</text><rect x="615.5" y="45" width="14" height="14" rx="3" fill="#ffffff" stroke="#b0b8c0" stroke-width="1.5"/><text x="635.5" y="56" font-size="11.5" fill="#1f2328" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">不变的函数</text><text x="1060" y="56" font-size="11.5" fill="#6b7280" font-weight="normal" text-anchor="end" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">橙箭头 = 调用 / import，绿箭头 = gym.make</text><rect x="40" y="76" width="560" height="604" rx="10" fill="#f7f8fa" stroke="#8a94a0" stroke-width="2" stroke-dasharray="7 4"/><text x="52" y="96" font-size="13" font-weight="bold" fill="#8a94a0" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">scripts/data-generation-newSeed/generate_dataset_newseed.py</text><text x="588" y="96" font-size="11.5" fill="#6b7280" text-anchor="end" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">一个文件，六处小改</text><rect x="56" y="104" width="528" height="64" rx="6" fill="#ffe4c4" stroke="#d9772b" stroke-width="1.5"/><text x="66" y="121" font-size="12" font-weight="bold" fill="#1f2328" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">EpisodeJob  (dataclass)</text><text x="66" y="137" font-size="11.5" fill="#4b5563" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">作用：一张卡片 = 一条 episode 的录制任务（task、episode、seed、difficulty…）</text><text x="66" y="154" font-size="11.5" fill="#c2410c" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">+ 字段 xhard: str | None = None</text><rect x="56" y="186" width="528" height="64" rx="6" fill="#ffe4c4" stroke="#d9772b" stroke-width="1.5"/><text x="66" y="203" font-size="12" font-weight="bold" fill="#1f2328" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">_args()</text><text x="66" y="219" font-size="11.5" fill="#4b5563" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">作用：解析命令行参数</text><text x="66" y="236" font-size="11.5" fill="#c2410c" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">+ --xhard  + --source-split；与 --difficulty/--layout/--episodes 互斥</text><rect x="56" y="268" width="528" height="64" rx="6" fill="#ffe4c4" stroke="#d9772b" stroke-width="1.5"/><text x="66" y="285" font-size="12" font-weight="bold" fill="#1f2328" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">generate_dataset_newseed()</text><text x="66" y="301" font-size="11.5" fill="#4b5563" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">作用：主流程：建输出目录、算 seed、造全部卡片、交给调度</text><text x="66" y="318" font-size="11.5" fill="#c2410c" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">args.xhard 时：jobs = jobs_from_metadata(...)，跳过 seed 护栏</text><rect x="56" y="350" width="528" height="64" rx="6" fill="#ffe4c4" stroke="#d9772b" stroke-width="1.5"/><text x="66" y="367" font-size="12" font-weight="bold" fill="#1f2328" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">_run_jobs()</text><text x="66" y="383" font-size="11.5" fill="#4b5563" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">作用：调度员：开进程池、发卡片、收结果、决定重试</text><text x="66" y="400" font-size="11.5" fill="#c2410c" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">xhard 卡片 task 失败不 bump；池崩退回原卡片</text><rect x="56" y="432" width="528" height="64" rx="6" fill="#ffe4c4" stroke="#d9772b" stroke-width="1.5"/><text x="66" y="449" font-size="12" font-weight="bold" fill="#1f2328" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">_pool_init()</text><text x="66" y="465" font-size="11.5" fill="#4b5563" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">作用：每个工人进程启动时：绑 GPU、压线程、import 环境预热</text><text x="66" y="482" font-size="11.5" fill="#c2410c" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">import robomme.robomme_env 之后 + import robomme_xhard</text><rect x="56" y="514" width="528" height="64" rx="6" fill="#ffe4c4" stroke="#d9772b" stroke-width="1.5"/><text x="66" y="531" font-size="12" font-weight="bold" fill="#1f2328" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">_worker(job)</text><text x="66" y="547" font-size="11.5" fill="#4b5563" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">作用：处理一张卡片：造环境、套录像器、执行任务、写 HDF5</text><text x="66" y="564" font-size="11.5" fill="#c2410c" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">同上 + import；gym.make(job.task) → gym.make(make_name(job))</text><rect x="56" y="596" width="528" height="64" rx="6" fill="#ffffff" stroke="#b0b8c0" stroke-width="1.5"/><text x="66" y="613" font-size="12" font-weight="bold" fill="#1f2328" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">_execute_tasks() / _write_metadata()</text><text x="66" y="629" font-size="11.5" fill="#4b5563" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">作用：逐条执行 task_list；按任务写 metadata 与 run_summary</text><text x="66" y="646" font-size="11.5" fill="#6b7280" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">不变</text><rect x="660" y="150" width="400" height="190" rx="10" fill="#fff8ef" stroke="#d9772b" stroke-width="2" stroke-dasharray="7 4"/><text x="672" y="170" font-size="13" font-weight="bold" fill="#d9772b" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">src/robomme_xhard/jobs.py</text><text x="1048" y="170" font-size="11.5" fill="#6b7280" text-anchor="end" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">新增，只读 json，不碰 torch</text><rect x="676" y="178" width="368" height="64" rx="6" fill="#ffe4c4" stroke="#d9772b" stroke-width="1.5"/><text x="686" y="195" font-size="12" font-weight="bold" fill="#1f2328" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">jobs_from_metadata(tasks, split, xhard, …)</text><text x="686" y="211" font-size="11.5" fill="#4b5563" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">作用：从 train metadata 读 hard 记录造卡片</text><text x="686" y="228" font-size="11.5" fill="#c2410c" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">按母档取卡：Repick medium，其余hard</text><rect x="676" y="254" width="368" height="64" rx="6" fill="#ffe4c4" stroke="#d9772b" stroke-width="1.5"/><text x="686" y="271" font-size="12" font-weight="bold" fill="#1f2328" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">make_name(job)</text><text x="686" y="287" font-size="11.5" fill="#4b5563" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">作用：决定 gym.make 用哪个注册名</text><text x="686" y="304" font-size="11.5" fill="#c2410c" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">job.xhard 为空 → job.task；否则 → f"{task}XHard1"</text><rect x="660" y="362" width="400" height="86" rx="10" fill="#f0f5fc" stroke="#4a7fc1" stroke-width="2" stroke-dasharray="7 4"/><text x="672" y="382" font-size="13" font-weight="bold" fill="#4a7fc1" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">src/robomme/env_metadata/train/*.json</text><text x="1048" y="382" font-size="11.5" fill="#6b7280" text-anchor="end" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">只读</text><rect x="676" y="390" width="368" height="48" rx="6" fill="#ffffff" stroke="#b0b8c0" stroke-width="1.5"/><text x="686" y="407" font-size="12" font-weight="bold" fill="#1f2328" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">record_dataset_&lt;Task&gt;_metadata.json</text><text x="686" y="423" font-size="11.5" fill="#4b5563" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">作用：官方 train 集每条 episode 的 task、seed、difficulty</text><rect x="660" y="470" width="400" height="108" rx="10" fill="#fff8ef" stroke="#d9772b" stroke-width="2" stroke-dasharray="7 4"/><text x="672" y="490" font-size="13" font-weight="bold" fill="#d9772b" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">src/robomme_xhard/envs/__init__.py + envs/&lt;task&gt;.py</text><text x="1048" y="490" font-size="11.5" fill="#6b7280" text-anchor="end" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">新增</text><rect x="676" y="498" width="368" height="64" rx="6" fill="#ffe4c4" stroke="#d9772b" stroke-width="1.5"/><text x="686" y="515" font-size="12" font-weight="bold" fill="#1f2328" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">import 即执行 @register_env("&lt;Task&gt;XHard1")</text><text x="686" y="531" font-size="11.5" fill="#4b5563" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">作用：把 14 个子类注册进 ManiSkill 注册表</text><text x="686" y="548" font-size="11.5" fill="#c2410c" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">必须在工人绑卡之后 import</text><rect x="660" y="600" width="400" height="108" rx="10" fill="#f1f8f2" stroke="#4f9a5c" stroke-width="2" stroke-dasharray="7 4"/><text x="672" y="620" font-size="13" font-weight="bold" fill="#4f9a5c" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">gym.make(make_name(job), **kwargs)</text><text x="1048" y="620" font-size="11.5" fill="#6b7280" text-anchor="end" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">逐档传入</text><rect x="676" y="628" width="368" height="64" rx="6" fill="#ffffff" stroke="#b0b8c0" stroke-width="1.5"/><text x="686" y="645" font-size="12" font-weight="bold" fill="#1f2328" font-family="Noto Sans Mono CJK SC, DejaVu Sans Mono, Menlo, monospace">seed=母seed, difficulty=job.difficulty</text><text x="686" y="661" font-size="11.5" fill="#4b5563" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">作用：按注册名造环境实例；之后套 RobommeRecordWrapper</text><text x="686" y="678" font-size="11.5" fill="#6b7280" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">见图 2</text><path d="M584,300 L676,210" stroke="#d9772b" stroke-width="1.8" fill="none" marker-end="url(#ar)"/><path d="M860,340 L860,362" stroke="#4a7fc1" stroke-width="1.8" fill="none" marker-end="url(#ar)"/><text x="880" y="356" font-size="11" fill="#4a7fc1" text-anchor="middle" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">读</text><path d="M584,464 L676,526" stroke="#d9772b" stroke-width="1.8" fill="none" marker-end="url(#ar)"/><path d="M584,534 L676,536" stroke="#d9772b" stroke-width="1.8" fill="none" marker-end="url(#ar)"/><path d="M584,550 L676,286" stroke="#d9772b" stroke-width="1.8" fill="none" marker-end="url(#ar)"/><path d="M584,566 L676,656" stroke="#4f9a5c" stroke-width="1.8" fill="none" marker-end="url(#ar)"/>
 <g id="fig-A-five-difficulties" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">
@@ -167,8 +168,8 @@ a { color:var(--accent); }
 
 <h2 id="p1-_4">三、对齐原则（两条）</h2>
 <ol class="lead">
-<li><b>旋钮只调长度</b>：以各任务母样本中位长度的两倍为上界；达不到两倍的取原机制最大值。VideoRepick 保持 medium 例外；V2 倍数仅作参照，不再决定取值。</li>
-<li><b>长度定了再验</b>：按闸门表核对8帧遗漏（拿起加放下算一个，每次swap算一个）；有限档无法满足时如实报告，不为制造遗漏突破上界。</li>
+<li><b>旋钮只调长度</b>：每任务固定 1.0 倍中位母档（四.7），每个目标倍数只取一组唯一整数配置，允许略高或略低。两倍硬上界已作废（R4）：SwingXtimes 2.004、StopCube 2.013、VideoUnmaskSwap 2.051 与 BinFill K=9 保留。补缺档只在原有物体与原有 subgoal 上排列组合，不新生成物体、不取原参数域外的新值（R15）。VideoRepick 保持 medium 例外；V2 倍数仅作参照。</li>
+<li><b>长度定了再验</b>：8 帧遗漏只查每任务最长一档（R18：有 xhard20 的查 xhard20；VideoUnmask、ButtonUnmask、VideoPlaceButton 查 xhard14；PickHighlight 查 xhard18；VideoPlaceOrder 查 xhard12；MoveCube、InsertPeg 不查），拿起加放下算一个，每次swap算一个；无法满足时如实报告，不为制造遗漏突破原机制。</li>
 </ol>
 <p><b>V2 四个参照任务比原版 hard 长多少</b>（V2 实跑 20260911-contract-v3-07，剔除慢条；原版 hard = 本仓库官方 hard 档中位；都按 timestep 计）</p>
 <table><thead><tr><th>V2 参照</th><th>条数</th><th>V2 中位 timestep</th><th>V2 Motion 窗口数（中位）</th><th>原版 hard 中位 timestep</th><th>V2 / 原版 hard</th></tr></thead><tbody>
@@ -179,6 +180,7 @@ a { color:var(--accent); }
 </tbody></table>
 <p class="muted">V2 Motion 窗口数沿用本表剔除慢条后的同一批样本：每窗33帧、步长16，演示与执行分别计数后相加，再取中位数，不跨段、不补尾窗。BinFill 的100窗包含 V2 原有的假演示，与本表1658帧口径一致；本轮不新增假演示。</p>
 <h2 id="p1-_5">四、分组讨论</h2>
+<p class="muted"><strong>历史（已被首页新口径取代）：</strong>四.1～四.6 的逐任务讨论、取值、数轴与总表是 10-10 旧混合母档口径（含 k→2k、[11,12]、[15,16]、2L−1、2S 等旧数），现行取值只看四.7 表（52 个有效配置）与第二部分 R1–R26。</p>
 <div class="pick"><div class="pick-g"><label><input type="checkbox" class="pick-grp" data-group="g1" checked> <b>四.1 对 V2 BinFill hard</b></label><label><input type="checkbox" class="pick-task" data-group="g1" data-task="BinFill" checked> 1.1 BinFill</label><label><input type="checkbox" class="pick-task" data-group="g1" data-task="PickXtimes" checked> 1.2 PickXtimes</label><label><input type="checkbox" class="pick-task" data-group="g1" data-task="SwingXtimes" checked> 1.3 SwingXtimes</label></div><div class="pick-g"><label><input type="checkbox" class="pick-grp" data-group="g2" checked> <b>四.2 对 V2 RouteStick xhard</b></label><label><input type="checkbox" class="pick-task" data-group="g2" data-task="StopCube" checked> 1.4 StopCube</label><label><input type="checkbox" class="pick-task" data-group="g2" data-task="PatternLock" checked> 4.3 PatternLock</label><label><input type="checkbox" class="pick-task" data-group="g2" data-task="RouteStick" checked> 4.4 RouteStick</label></div><div class="pick-g"><label><input type="checkbox" class="pick-grp" data-group="g3" checked> <b>四.3 对 V2 VideoUnmaskSwap xhard</b></label><label><input type="checkbox" class="pick-task" data-group="g3" data-task="VideoUnmask" checked> 2.1 VideoUnmask</label><label><input type="checkbox" class="pick-task" data-group="g3" data-task="ButtonUnmask" checked> 2.2 ButtonUnmask</label><label><input type="checkbox" class="pick-task" data-group="g3" data-task="VideoUnmaskSwap" checked> 2.3 VideoUnmaskSwap</label><label><input type="checkbox" class="pick-task" data-group="g3" data-task="ButtonUnmaskSwap" checked> 2.4 ButtonUnmaskSwap</label></div><div class="pick-g"><label><input type="checkbox" class="pick-grp" data-group="g4" checked> <b>四.4 对 V2 VideoRepick xhard</b></label><label><input type="checkbox" class="pick-task" data-group="g4" data-task="PickHighlight" checked> 3.1 PickHighlight</label><label><input type="checkbox" class="pick-task" data-group="g4" data-task="VideoRepick" checked> 3.2 VideoRepick</label><label><input type="checkbox" class="pick-task" data-group="g4" data-task="VideoPlaceButton" checked> 3.3 VideoPlaceButton</label><label><input type="checkbox" class="pick-task" data-group="g4" data-task="VideoPlaceOrder" checked> 3.4 VideoPlaceOrder</label></div></div>
 <section class="grp" data-group="g1">
 <h3 id="p1-g1">四.1 对 V2 BinFill hard：1.1 BinFill、1.2 PickXtimes、1.3 SwingXtimes</h3>
@@ -332,6 +334,7 @@ a { color:var(--accent); }
 <h3 id="p1-g5">四.5 不纳入：4.1 MoveCube、4.2 InsertPeg</h3>
 <p>两任务无原生次数旋钮：均增加0次、维持1.00倍；不新增重复演示或多轮执行。原hard中位分别416、464帧。</p>
 <h3 id="p1-g6">四.6 总表（只列上面勾选的任务）</h3>
+<p><strong>历史（已被首页新口径取代）：</strong>本表是 10-10 旧取值的合成对照；现行有效配置合计 <b>52</b> 个，逐格见四.7 表。</p>
 <p class="muted">Motion 窗口数：每窗33帧、步长16，演示与执行分别计数后相加，不跨段、不补尾窗；两列均先逐条计算，再取各任务25条的中位数。修改后列来自本次参数的合成数轴，非实跑；VideoRepick 的原本列仍为 medium 母样本。</p>
 <table id="total"><thead><tr><th>编号</th><th>任务</th><th>旋钮含义</th><th>母样本 → 本次取值</th><th>中位 timestep 母样本 → 本次</th><th>原本 Motion 窗口数（中位）</th><th>修改后 Motion 窗口数（合成中位）</th><th>对 V2 参照倍数</th><th>对本任务母样本倍数</th><th>8 帧漏</th></tr></thead><tbody>
 <tr data-task="BinFill"><td>1.1</td><td>BinFill</td><td>要投进 bin 的方块总数（按颜色分配，从桌上 10–12 块里挑）</td><td>[3,5] → <b>9（后续真实校准）</b><br>增加4–6块</td><td>868 → <span class="big">1677</span>（新参数合成）</td><td>53</td><td>103</td><td>1.01（合成）</td><td>1.93（合成）</td><td>3+0swap（合成）</td></tr>
@@ -348,126 +351,127 @@ a { color:var(--accent); }
 <tr data-task="VideoPlaceOrder"><td>3.4</td><td>VideoPlaceOrder</td><td>访问的不同目标数，不重复访问</td><td>访问2–4个 → <b>4个不同目标</b><br>增加0–2个</td><td>1115 → <span class="big">1311</span>（新参数合成）</td><td>67</td><td>79</td><td>1.53（合成）</td><td>1.18（合成）</td><td>0+1swap（合成）</td></tr>
 <tr data-task="PatternLock"><td>4.3</td><td>PatternLock</td><td>要按的按钮路径节点数，demo 先演示一遍再照做</td><td>[4,8] → <b>原L→2L−1：7/9/11/13/15</b><br>增加3/4/5/6/7节点</td><td>324 → <span class="big">638</span>（新参数合成）</td><td>18</td><td>37</td><td>0.71（合成）</td><td>1.97（合成）</td><td>5+0swap（合成）</td></tr>
 <tr data-task="RouteStick"><td>4.4</td><td>RouteStick</td><td>绕杆走到目标的段数，demo 先演示一遍再照做</td><td>[4,7] → <b>原S→2S：8/10/12/14</b><br>增加4/5/6/7段</td><td>500 → <span class="big">993</span>（新参数合成）</td><td>28</td><td>59</td><td>1.10（合成）</td><td>1.99（合成）</td><td>7+0swap（合成）</td></tr>
-</tbody></table>
+<tr><td colspan="10"><b>现行合计：52 个有效“任务×难度”配置</b>（本表为历史取值，逐格以四.7 为准）</td></tr></tbody></table>
 <section id="length-gradient">
 <h3 id="p1-gradient">四.7 确定性长度梯度：固定中位母档，每目标只取一组配置</h3>
+<p><strong>10-11 裁决回写：</strong>按 R16 新增 BinFill xhard20（K=9，1768.5 timestep，估算 2.129 倍，库存核对 R20 PASS）与 StopCube xhard18（间隔 60、k=7，10-11 审查估算约 1.80 倍），R21 单 seed 补跑实测：BinFill K=9 为 1815 timestep（相对该 seed 母档 842 为 ×2.16），StopCube 间隔 60 k=7 为 423 timestep（相对母档 237 为 ×1.78），见第五节；有效配置由 50 个变为 <b>52 个</b>（见表末合计行）。超过 2.0 倍的配置按 R4 保留；VideoPlaceOrder 实测 1.132 倍仍叫 xhard12（R3）；PickXtimes、PickHighlight 小规模实测后按实测倍数重新归档（R19）；PatternLock xhard16 实测短于 xhard14 不改旋钮、照旧命名并标实际倍数（R24）。下表长度单位为 timestep。</p>
 <p><strong>母档口径（用户确认，2026-10-11）：</strong>「按现有25条母样本的实际旋钮取中位数，半整数四舍五入」。先逐条读取实际旋钮，取数学中位后按 <code>floor(median+0.5)</code> 固定为1.0倍配置。表中不再出现次数区间、按母参数变化的数组或“原S+若干”的配置。影响长度的配套次数也固定：StopCube各档间隔80，VideoRepick各档重抓2次；布局、颜色、答案类别等不作为长度旋钮取中位。</p>
 <p><strong>每目标一配置：</strong>目标为1.0、1.2、1.4、1.6、1.8、2.0倍，在可用整数配置中选估算长度最接近者，允许略低或略高，不取下限。每个已填格明确写唯一参数；同一参数若命中多个目标，只保留估算倍数最接近的那一个，其余目标格留空，不另找替代参数凑满。最右列仅汇总最长配置，不是额外目标档。VideoPlaceButton的a=1按用户新指令作为一个随机策略：前侧、后侧各50%概率，不拆成两个配置档。仍以最右侧<strong>本轮最长配置</strong>审阅。原对齐原则、分组讨论、总表与数轴原样保留，它们是旧混合母档口径；本节固定基线及新取值为本轮梯度依据。</p>
 <p><strong>帧数基准也固定：</strong>25条用于决定旋钮中位；估算长度只采用其中<strong>原本就符合固定母配置</strong>的真实母子集，并在1.0列写出参照n。所有新档在同一子集上估算，不再把不同旋钮混合后的中位长度作分母。固定子集从3到25条不等，是本次估算依据，不代表25条都已按固定配置生成，也不改变正式生成批次或删除任何样本。VideoRepick继续使用medium三方块母档。</p>
 <p class="muted">帧窗统计统一取数学中位：偶数子集取中间两项平均，因此可能出现830.5帧、58.5窗；这是整数记录集合的中位数，不是单条轨迹有半帧或半窗。仅旋钮的半整数按用户口径四舍五入。每条先估计T′与D′，窗口为 <code>w(D′)+w(T′−D′)</code>，其中 <code>w(L)=max(0,floor((L−33)/16)+1)</code>；不跨演示／执行分界，也不逐subgoal断窗。所有新增档仍是段长合成估计，无仿真实跑。</p>
 <div class="gradient-scroll">
-<table id="length-gradient-table"><thead><tr><th>编号</th><th>任务</th><th>1.0倍固定母档<br>实际旋钮中位</th><th>目标约1.2倍</th><th>目标约1.4倍</th><th>目标约1.6倍</th><th>目标约1.8倍</th><th>目标约2.0倍</th><th>本轮最长配置<br>按此审阅</th></tr></thead><tbody>
+<table id="length-gradient-table"><thead><tr><th>编号</th><th>任务</th><th>1.0倍固定母档<br>实际旋钮中位（timestep / 窗）</th><th>目标约1.2倍</th><th>目标约1.4倍</th><th>目标约1.6倍</th><th>目标约1.8倍</th><th>目标约2.0倍</th><th>本轮最长配置<br>按此审阅</th></tr></thead><tbody>
 <tr data-task="BinFill"><td>1.1</td>
 <td><a href="#knob-BinFill">BinFill</a></td>
-<td data-base-config='{"count":4}'><b>K=4块</b><br>830.5帧 / 50.5窗<br><small>1.000倍；参照n=10</small></td>
-<td data-config='{"count":5}'><b>K=5块</b><br>1034.5帧 / 63窗<br><small>估算 1.246 倍</small></td>
-<td data-config='{"count":6}'><b>K=6块</b><br>1203帧 / 74窗<br><small>估算 1.449 倍</small></td>
-<td data-config='{"count":7}'><b>K=7块</b><br>1372帧 / 84.5窗<br><small>估算 1.652 倍</small></td>
-<td data-config='{"count":8}'><b>K=8块</b><br>1564.5帧 / 96.5窗<br><small>估算 1.884 倍</small></td>
-<td class="knob-empty">—<br><small>不设独立档</small></td>
-<td><b>K=8块</b><br>1564.5帧 / 96.5窗<br><small>估算 1.884 倍</small></td></tr>
+<td data-base-config='{"count":4}'><b>K=4块</b><br>830.5 timestep / 50.5窗<br><small>1.000倍；参照n=10</small></td>
+<td data-config='{"count":5}'><b>K=5块</b><br>1034.5 timestep / 63窗<br><small>估算 1.246 倍</small></td>
+<td data-config='{"count":6}'><b>K=6块</b><br>1203 timestep / 74窗<br><small>估算 1.449 倍</small></td>
+<td data-config='{"count":7}'><b>K=7块</b><br>1372 timestep / 84.5窗<br><small>估算 1.652 倍</small></td>
+<td data-config='{"count":8}'><b>K=8块</b><br>1564.5 timestep / 96.5窗<br><small>估算 1.884 倍</small></td>
+<td data-config='{"count":9}'><b>K=9块</b><br>1768.5 timestep / 窗数待算<br><small>估算 2.129 倍（R16 新增；R21 单 seed 实测 ×2.16）</small></td>
+<td><b>K=9块</b><br>1768.5 timestep / 窗数待算<br><small>估算 2.129 倍</small></td></tr>
 <tr data-task="PickXtimes"><td>1.2</td>
 <td><a href="#knob-PickXtimes">PickXtimes</a></td>
-<td data-base-config='{"count":5}'><b>n=5次</b><br>841帧 / 51窗<br><small>1.000倍；参照n=13</small></td>
-<td data-config='{"count":6}'><b>n=6次</b><br>1028帧 / 63窗<br><small>估算 1.222 倍</small></td>
-<td data-config='{"count":7}'><b>n=7次</b><br>1164帧 / 71窗<br><small>估算 1.384 倍</small></td>
-<td data-config='{"count":8}'><b>n=8次</b><br>1300帧 / 80窗<br><small>估算 1.546 倍</small></td>
-<td data-config='{"count":9}'><b>n=9次</b><br>1444帧 / 89窗<br><small>估算 1.717 倍</small></td>
-<td data-config='{"count":10}'><b>n=10次</b><br>1586帧 / 98窗<br><small>估算 1.886 倍</small></td>
-<td><b>n=10次</b><br>1586帧 / 98窗<br><small>估算 1.886 倍</small></td></tr>
+<td data-base-config='{"count":5}'><b>n=5次</b><br>841 timestep / 51窗<br><small>1.000倍；参照n=13</small></td>
+<td data-config='{"count":6}'><b>n=6次</b><br>1028 timestep / 63窗<br><small>估算 1.222 倍</small></td>
+<td data-config='{"count":7}'><b>n=7次</b><br>1164 timestep / 71窗<br><small>估算 1.384 倍</small></td>
+<td data-config='{"count":8}'><b>n=8次</b><br>1300 timestep / 80窗<br><small>估算 1.546 倍</small></td>
+<td data-config='{"count":9}'><b>n=9次</b><br>1444 timestep / 89窗<br><small>估算 1.717 倍</small></td>
+<td data-config='{"count":10}'><b>n=10次</b><br>1586 timestep / 98窗<br><small>估算 1.886 倍</small></td>
+<td><b>n=10次</b><br>1586 timestep / 98窗<br><small>估算 1.886 倍</small></td></tr>
 <tr data-task="SwingXtimes"><td>1.3</td>
 <td><a href="#knob-SwingXtimes">SwingXtimes</a></td>
-<td data-base-config='{"count":3}'><b>n=3往返</b><br>488帧 / 29窗<br><small>1.000倍；参照n=25</small></td>
-<td data-config='{"count":4}'><b>n=4往返</b><br>560帧 / 33窗<br><small>估算 1.148 倍</small></td>
-<td data-config='{"count":5}'><b>n=5往返</b><br>642帧 / 39窗<br><small>估算 1.316 倍</small></td>
-<td data-config='{"count":7}'><b>n=7往返</b><br>793帧 / 48窗<br><small>估算 1.625 倍</small></td>
-<td data-config='{"count":8}'><b>n=8往返</b><br>886帧 / 54窗<br><small>估算 1.816 倍</small></td>
-<td data-config='{"count":9}'><b>n=9往返</b><br>978帧 / 60窗<br><small>估算 2.004 倍</small></td>
-<td><b>n=9往返</b><br>978帧 / 60窗<br><small>估算 2.004 倍</small></td></tr>
+<td data-base-config='{"count":3}'><b>n=3往返</b><br>488 timestep / 29窗<br><small>1.000倍；参照n=25</small></td>
+<td data-config='{"count":4}'><b>n=4往返</b><br>560 timestep / 33窗<br><small>估算 1.148 倍</small></td>
+<td data-config='{"count":5}'><b>n=5往返</b><br>642 timestep / 39窗<br><small>估算 1.316 倍</small></td>
+<td data-config='{"count":7}'><b>n=7往返</b><br>793 timestep / 48窗<br><small>估算 1.625 倍</small></td>
+<td data-config='{"count":8}'><b>n=8往返</b><br>886 timestep / 54窗<br><small>估算 1.816 倍</small></td>
+<td data-config='{"count":9}'><b>n=9往返</b><br>978 timestep / 60窗<br><small>估算 2.004 倍</small></td>
+<td><b>n=9往返</b><br>978 timestep / 60窗<br><small>估算 2.004 倍</small></td></tr>
 <tr data-task="StopCube"><td>1.4</td>
 <td><a href="#knob-StopCube">StopCube</a></td>
-<td data-base-config='{"k":3,"mi":80}'><b>k=3；间隔=80</b><br>237帧 / 13窗<br><small>1.000倍；参照n=3</small></td>
+<td data-base-config='{"k":3,"mi":80}'><b>k=3；间隔=80</b><br>237 timestep / 13窗<br><small>1.000倍；参照n=3</small></td>
 <td class="knob-empty">—<br><small>不设独立档</small></td>
-<td data-config='{"k":4,"mi":80}'><b>k=4；间隔=80</b><br>317帧 / 18窗<br><small>估算 1.338 倍</small></td>
-<td data-config='{"k":5,"mi":80}'><b>k=5；间隔=80</b><br>397帧 / 23窗<br><small>估算 1.675 倍</small></td>
-<td class="knob-empty">—<br><small>不设独立档</small></td>
-<td data-config='{"k":6,"mi":80}'><b>k=6；间隔=80</b><br>477帧 / 28窗<br><small>估算 2.013 倍</small></td>
-<td><b>k=6；间隔=80</b><br>477帧 / 28窗<br><small>估算 2.013 倍</small></td></tr>
+<td data-config='{"k":4,"mi":80}'><b>k=4；间隔=80</b><br>317 timestep / 18窗<br><small>估算 1.338 倍</small></td>
+<td data-config='{"k":5,"mi":80}'><b>k=5；间隔=80</b><br>397 timestep / 23窗<br><small>估算 1.675 倍</small></td>
+<td data-config='{"k":7,"mi":60}'><b>k=7；间隔=60</b><br>约427 timestep / 窗数待算<br><small>估算约 1.80 倍（R16 新增；R21 单 seed 实测 ×1.78）</small></td>
+<td data-config='{"k":6,"mi":80}'><b>k=6；间隔=80</b><br>477 timestep / 28窗<br><small>估算 2.013 倍</small></td>
+<td><b>k=6；间隔=80</b><br>477 timestep / 28窗<br><small>估算 2.013 倍</small></td></tr>
 <tr data-task="VideoUnmask"><td>2.1</td>
 <td><a href="#knob-VideoUnmask">VideoUnmask</a></td>
-<td data-base-config='{"pick":2}'><b>p=2抓</b><br>329帧 / 18窗<br><small>1.000倍；参照n=25</small></td>
+<td data-base-config='{"pick":2}'><b>p=2抓</b><br>329 timestep / 18窗<br><small>1.000倍；参照n=25</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td data-config='{"pick":3}'><b>p=3抓</b><br>476帧 / 27窗<br><small>估算 1.447 倍</small></td>
+<td data-config='{"pick":3}'><b>p=3抓</b><br>476 timestep / 27窗<br><small>估算 1.447 倍</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td><b>p=3抓</b><br>476帧 / 27窗<br><small>估算 1.447 倍</small></td></tr>
+<td><b>p=3抓</b><br>476 timestep / 27窗<br><small>估算 1.447 倍</small></td></tr>
 <tr data-task="ButtonUnmask"><td>2.2</td>
 <td><a href="#knob-ButtonUnmask">ButtonUnmask</a></td>
-<td data-base-config='{"pick":2}'><b>p=2抓</b><br>373帧 / 22窗<br><small>1.000倍；参照n=25</small></td>
+<td data-base-config='{"pick":2}'><b>p=2抓</b><br>373 timestep / 22窗<br><small>1.000倍；参照n=25</small></td>
 <td class="knob-empty">—<br><small>不设独立档</small></td>
-<td data-config='{"pick":3}'><b>p=3抓</b><br>515帧 / 31窗<br><small>估算 1.381 倍</small></td>
+<td data-config='{"pick":3}'><b>p=3抓</b><br>515 timestep / 31窗<br><small>估算 1.381 倍</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td><b>p=3抓</b><br>515帧 / 31窗<br><small>估算 1.381 倍</small></td></tr>
+<td><b>p=3抓</b><br>515 timestep / 31窗<br><small>估算 1.381 倍</small></td></tr>
 <tr data-task="VideoUnmaskSwap"><td>2.3</td>
 <td><a href="#knob-VideoUnmaskSwap">VideoUnmaskSwap</a></td>
-<td data-base-config='{"swap":2}'><b>S=2次交换</b><br>428帧 / 24窗<br><small>1.000倍；参照n=13</small></td>
-<td data-config='{"swap":4}'><b>S=4次交换</b><br>524帧 / 30窗<br><small>估算 1.224 倍</small></td>
-<td data-config='{"swap":5}'><b>S=5次交换</b><br>578帧 / 33窗<br><small>估算 1.350 倍</small></td>
-<td data-config='{"swap":7}'><b>S=7次交换</b><br>674帧 / 39窗<br><small>估算 1.575 倍</small></td>
-<td data-config='{"swap":9}'><b>S=9次交换</b><br>776帧 / 46窗<br><small>估算 1.813 倍</small></td>
-<td data-config='{"swap":11}'><b>S=11次交换</b><br>878帧 / 52窗<br><small>估算 2.051 倍</small></td>
-<td><b>S=11次交换</b><br>878帧 / 52窗<br><small>估算 2.051 倍</small></td></tr>
+<td data-base-config='{"swap":2}'><b>S=2次交换</b><br>428 timestep / 24窗<br><small>1.000倍；参照n=13</small></td>
+<td data-config='{"swap":4}'><b>S=4次交换</b><br>524 timestep / 30窗<br><small>估算 1.224 倍</small></td>
+<td data-config='{"swap":5}'><b>S=5次交换</b><br>578 timestep / 33窗<br><small>估算 1.350 倍</small></td>
+<td data-config='{"swap":7}'><b>S=7次交换</b><br>674 timestep / 39窗<br><small>估算 1.575 倍</small></td>
+<td data-config='{"swap":9}'><b>S=9次交换</b><br>776 timestep / 46窗<br><small>估算 1.813 倍</small></td>
+<td data-config='{"swap":11}'><b>S=11次交换</b><br>878 timestep / 52窗<br><small>估算 2.051 倍</small></td>
+<td><b>S=11次交换</b><br>878 timestep / 52窗<br><small>估算 2.051 倍</small></td></tr>
 <tr data-task="ButtonUnmaskSwap"><td>2.4</td>
 <td><a href="#knob-ButtonUnmaskSwap">ButtonUnmaskSwap</a></td>
-<td data-base-config='{"press":2,"swap":3}'><b>P=2；S=3</b><br>460帧 / 27窗<br><small>1.000倍；参照n=13</small></td>
-<td data-config='{"press":3,"swap":4}'><b>P=3；S=4</b><br>575帧 / 34窗<br><small>估算 1.250 倍</small></td>
-<td data-config='{"press":4,"swap":6}'><b>P=4；S=6</b><br>666帧 / 40窗<br><small>估算 1.448 倍</small></td>
-<td data-config='{"press":4,"swap":8}'><b>P=4；S=8</b><br>716帧 / 43窗<br><small>估算 1.557 倍</small></td>
-<td data-config='{"press":5,"swap":10}'><b>P=5；S=10</b><br>816帧 / 49窗<br><small>估算 1.774 倍</small></td>
-<td data-config='{"press":6,"swap":12}'><b>P=6；S=12</b><br>916帧 / 56窗<br><small>估算 1.991 倍</small></td>
-<td><b>P=6；S=12</b><br>916帧 / 56窗<br><small>估算 1.991 倍</small></td></tr>
+<td data-base-config='{"press":2,"swap":3}'><b>P=2；S=3</b><br>460 timestep / 27窗<br><small>1.000倍；参照n=13</small></td>
+<td data-config='{"press":3,"swap":4}'><b>P=3；S=4</b><br>575 timestep / 34窗<br><small>估算 1.250 倍</small></td>
+<td data-config='{"press":4,"swap":6}'><b>P=4；S=6</b><br>666 timestep / 40窗<br><small>估算 1.448 倍</small></td>
+<td data-config='{"press":4,"swap":8}'><b>P=4；S=8</b><br>716 timestep / 43窗<br><small>估算 1.557 倍</small></td>
+<td data-config='{"press":5,"swap":10}'><b>P=5；S=10</b><br>816 timestep / 49窗<br><small>估算 1.774 倍</small></td>
+<td data-config='{"press":6,"swap":12}'><b>P=6；S=12</b><br>916 timestep / 56窗<br><small>估算 1.991 倍</small></td>
+<td><b>P=6；S=12</b><br>916 timestep / 56窗<br><small>估算 1.991 倍</small></td></tr>
 <tr data-task="PickHighlight"><td>3.1</td>
 <td><a href="#knob-PickHighlight">PickHighlight</a></td>
-<td data-base-config='{"count":3}'><b>pickup=3；spawn=6</b><br>539帧 / 32窗<br><small>1.000倍；参照n=25</small></td>
-<td data-config='{"count":4}'><b>pickup=4；spawn=6</b><br>700帧 / 42窗<br><small>估算 1.299 倍</small></td>
+<td data-base-config='{"count":3}'><b>pickup=3；spawn=6</b><br>539 timestep / 32窗<br><small>1.000倍；参照n=25</small></td>
+<td data-config='{"count":4}'><b>pickup=4；spawn=6</b><br>700 timestep / 42窗<br><small>估算 1.299 倍</small></td>
 <td class="knob-empty">—<br><small>不设独立档</small></td>
-<td data-config='{"count":5}'><b>pickup=5；spawn=6</b><br>855帧 / 52窗<br><small>估算 1.586 倍</small></td>
-<td data-config='{"count":6}'><b>pickup=6；spawn=6</b><br>1010帧 / 62窗<br><small>估算 1.874 倍</small></td>
+<td data-config='{"count":5}'><b>pickup=5；spawn=6</b><br>855 timestep / 52窗<br><small>估算 1.586 倍</small></td>
+<td data-config='{"count":6}'><b>pickup=6；spawn=6</b><br>1010 timestep / 62窗<br><small>估算 1.874 倍</small></td>
 <td class="knob-empty">—<br><small>不设独立档</small></td>
-<td><b>pickup=6；spawn=6</b><br>1010帧 / 62窗<br><small>估算 1.874 倍</small></td></tr>
+<td><b>pickup=6；spawn=6</b><br>1010 timestep / 62窗<br><small>估算 1.874 倍</small></td></tr>
 <tr data-task="VideoRepick"><td>3.2</td>
 <td><a href="#knob-VideoRepick">VideoRepick</a><br><small>medium三方块</small></td>
-<td data-base-config='{"swap":2,"repeat":2}'><b>S=2；重抓R=2</b><br>717帧 / 42窗<br><small>1.000倍；参照n=4</small></td>
-<td data-config='{"swap":5,"repeat":2}'><b>S=5；重抓R=2</b><br>879帧 / 52窗<br><small>估算 1.226 倍</small></td>
-<td data-config='{"swap":7,"repeat":2}'><b>S=7；重抓R=2</b><br>987帧 / 58.5窗<br><small>估算 1.377 倍</small></td>
-<td data-config='{"swap":10,"repeat":2}'><b>S=10；重抓R=2</b><br>1149帧 / 69窗<br><small>估算 1.603 倍</small></td>
-<td data-config='{"swap":13,"repeat":2}'><b>S=13；重抓R=2</b><br>1311帧 / 79窗<br><small>估算 1.828 倍</small></td>
-<td data-config='{"swap":15,"repeat":2}'><b>S=15；重抓R=2</b><br>1419帧 / 85.5窗<br><small>估算 1.979 倍</small></td>
-<td><b>S=15；重抓R=2</b><br>1419帧 / 85.5窗<br><small>估算 1.979 倍</small></td></tr>
+<td data-base-config='{"swap":2,"repeat":2}'><b>S=2；重抓R=2</b><br>717 timestep / 42窗<br><small>1.000倍；参照n=4</small></td>
+<td data-config='{"swap":5,"repeat":2}'><b>S=5；重抓R=2</b><br>879 timestep / 52窗<br><small>估算 1.226 倍</small></td>
+<td data-config='{"swap":7,"repeat":2}'><b>S=7；重抓R=2</b><br>987 timestep / 58.5窗<br><small>估算 1.377 倍</small></td>
+<td data-config='{"swap":10,"repeat":2}'><b>S=10；重抓R=2</b><br>1149 timestep / 69窗<br><small>估算 1.603 倍</small></td>
+<td data-config='{"swap":13,"repeat":2}'><b>S=13；重抓R=2</b><br>1311 timestep / 79窗<br><small>估算 1.828 倍</small></td>
+<td data-config='{"swap":15,"repeat":2}'><b>S=15；重抓R=2</b><br>1419 timestep / 85.5窗<br><small>估算 1.979 倍</small></td>
+<td><b>S=15；重抓R=2</b><br>1419 timestep / 85.5窗<br><small>估算 1.979 倍</small></td></tr>
 <tr data-task="VideoPlaceButton"><td>3.3</td>
 <td><a href="#knob-VideoPlaceButton">VideoPlaceButton</a></td>
-<td data-base-config='{"extra":0}'><b>a=0组</b><br>961帧 / 57窗<br><small>1.000倍；参照n=25</small></td>
-<td data-config='{"extra":1,"pre_probability":0.5}'><b>a=1组（前/后各50%）</b><br>1156.5帧 / 69窗<br><small>估算 1.203 倍</small></td>
-<td data-config='{"extra":2}'><b>a=2组（前后各1）</b><br>1359帧 / 82窗<br><small>估算 1.414 倍</small></td>
+<td data-base-config='{"extra":0}'><b>a=0组</b><br>961 timestep / 57窗<br><small>1.000倍；参照n=25</small></td>
+<td data-config='{"extra":1,"pre_probability":0.5}'><b>a=1组（前/后各50%）</b><br>1156.5 timestep / 69窗<br><small>估算 1.203 倍</small></td>
+<td data-config='{"extra":2}'><b>a=2组（前后各1）</b><br>1359 timestep / 82窗<br><small>估算 1.414 倍</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td><b>a=2组（前后各1）</b><br>1359帧 / 82窗<br><small>估算 1.414 倍</small></td></tr>
+<td><b>a=2组（前后各1）</b><br>1359 timestep / 82窗<br><small>估算 1.414 倍</small></td></tr>
 <tr data-task="VideoPlaceOrder"><td>3.4</td>
 <td><a href="#knob-VideoPlaceOrder">VideoPlaceOrder</a></td>
-<td data-base-config='{"targets":3}'><b>N=3个不同目标</b><br>1120帧 / 67窗<br><small>1.000倍；参照n=7</small></td>
-<td data-config='{"targets":4}'><b>N=4个不同目标</b><br>1326帧 / 80窗<br><small>估算 1.184 倍</small></td>
+<td data-base-config='{"targets":3}'><b>N=3个不同目标</b><br>1120 timestep / 67窗<br><small>1.000倍；参照n=7</small></td>
+<td data-config='{"targets":4}'><b>N=4个不同目标</b><br>1326 timestep / 80窗<br><small>估算 1.184 倍</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td><b>N=4个不同目标</b><br>1326帧 / 80窗<br><small>估算 1.184 倍</small></td></tr>
+<td><b>N=4个不同目标</b><br>1326 timestep / 80窗<br><small>估算 1.184 倍</small></td></tr>
 <tr data-task="MoveCube"><td>4.1</td>
 <td><a href="#knob-MoveCube">MoveCube</a></td>
-<td data-base-config='{"demo":1,"execute":1}'><b>一次演示＋一次执行</b><br>416帧 / 23窗<br><small>1.000倍；参照n=25</small></td>
+<td data-base-config='{"demo":1,"execute":1}'><b>一次演示＋一次执行</b><br>416 timestep / 23窗<br><small>1.000倍；参照n=25</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
@@ -476,7 +480,7 @@ a { color:var(--accent); }
 <td>保持母档<br>不新增玩法</td></tr>
 <tr data-task="InsertPeg"><td>4.2</td>
 <td><a href="#knob-InsertPeg">InsertPeg</a></td>
-<td data-base-config='{"demo":1,"execute":1}'><b>一次演示＋一次执行</b><br>464帧 / 26窗<br><small>1.000倍；参照n=25</small></td>
+<td data-base-config='{"demo":1,"execute":1}'><b>一次演示＋一次执行</b><br>464 timestep / 26窗<br><small>1.000倍；参照n=25</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
@@ -485,23 +489,23 @@ a { color:var(--accent); }
 <td>保持母档<br>不新增玩法</td></tr>
 <tr data-task="PatternLock"><td>4.3</td>
 <td><a href="#knob-PatternLock">PatternLock</a></td>
-<td data-base-config='{"length":6}'><b>L=6节点；grid=5</b><br>334帧 / 18窗<br><small>1.000倍；参照n=5</small></td>
-<td data-config='{"length":7}'><b>L=7节点；grid=5</b><br>396帧 / 22窗<br><small>估算 1.186 倍</small></td>
-<td data-config='{"length":8}'><b>L=8节点；grid=5</b><br>480帧 / 26窗<br><small>估算 1.437 倍</small></td>
-<td data-config='{"length":9}'><b>L=9节点；grid=5</b><br>528帧 / 30窗<br><small>估算 1.581 倍</small></td>
-<td data-config='{"length":10}'><b>L=10节点；grid=5</b><br>604帧 / 34窗<br><small>估算 1.808 倍</small></td>
-<td data-config='{"length":11}'><b>L=11节点；grid=5</b><br>661帧 / 38窗<br><small>估算 1.979 倍</small></td>
-<td><b>L=11节点；grid=5</b><br>661帧 / 38窗<br><small>估算 1.979 倍</small></td></tr>
+<td data-base-config='{"length":6}'><b>L=6节点；grid=5</b><br>334 timestep / 18窗<br><small>1.000倍；参照n=5</small></td>
+<td data-config='{"length":7}'><b>L=7节点；grid=5</b><br>396 timestep / 22窗<br><small>估算 1.186 倍</small></td>
+<td data-config='{"length":8}'><b>L=8节点；grid=5</b><br>480 timestep / 26窗<br><small>估算 1.437 倍</small></td>
+<td data-config='{"length":9}'><b>L=9节点；grid=5</b><br>528 timestep / 30窗<br><small>估算 1.581 倍</small></td>
+<td data-config='{"length":10}'><b>L=10节点；grid=5</b><br>604 timestep / 34窗<br><small>估算 1.808 倍</small></td>
+<td data-config='{"length":11}'><b>L=11节点；grid=5</b><br>661 timestep / 38窗<br><small>估算 1.979 倍</small></td>
+<td><b>L=11节点；grid=5</b><br>661 timestep / 38窗<br><small>估算 1.979 倍</small></td></tr>
 <tr data-task="RouteStick"><td>4.4</td>
 <td><a href="#knob-RouteStick">RouteStick</a></td>
-<td data-base-config='{"length":5}'><b>S=5条边</b><br>500帧 / 28窗<br><small>1.000倍；参照n=7</small></td>
-<td data-config='{"length":6}'><b>S=6条边</b><br>600帧 / 34窗<br><small>估算 1.200 倍</small></td>
-<td data-config='{"length":7}'><b>S=7条边</b><br>700帧 / 40窗<br><small>估算 1.400 倍</small></td>
-<td data-config='{"length":8}'><b>S=8条边</b><br>800帧 / 46窗<br><small>估算 1.600 倍</small></td>
-<td data-config='{"length":9}'><b>S=9条边</b><br>900帧 / 54窗<br><small>估算 1.800 倍</small></td>
-<td data-config='{"length":10}'><b>S=10条边</b><br>993帧 / 59窗<br><small>估算 1.986 倍</small></td>
-<td><b>S=10条边</b><br>993帧 / 59窗<br><small>估算 1.986 倍</small></td></tr>
-</tbody></table>
+<td data-base-config='{"length":5}'><b>S=5条边</b><br>500 timestep / 28窗<br><small>1.000倍；参照n=7</small></td>
+<td data-config='{"length":6}'><b>S=6条边</b><br>600 timestep / 34窗<br><small>估算 1.200 倍</small></td>
+<td data-config='{"length":7}'><b>S=7条边</b><br>700 timestep / 40窗<br><small>估算 1.400 倍</small></td>
+<td data-config='{"length":8}'><b>S=8条边</b><br>800 timestep / 46窗<br><small>估算 1.600 倍</small></td>
+<td data-config='{"length":9}'><b>S=9条边</b><br>900 timestep / 54窗<br><small>估算 1.800 倍</small></td>
+<td data-config='{"length":10}'><b>S=10条边</b><br>993 timestep / 59窗<br><small>估算 1.986 倍</small></td>
+<td><b>S=10条边</b><br>993 timestep / 59窗<br><small>估算 1.986 倍</small></td></tr>
+<tr class="gradient-total"><td colspan="2"><b>合计</b></td><td>母档 16 个（MoveCube、InsertPeg 只有母档）</td><td>11 个</td><td>12 个</td><td>10 个</td><td>10 个</td><td>9 个</td><td><b>52 个有效配置</b></td></tr></tbody></table>
 </div>
 <p class="muted">点击任务名查看第二部分对应的中位数来源、参数选择依据与估算公式。K=投入数，n=重复次数，p=抓容器数，P=按压次数，S=交换次数或RouteStick移动边数，R=重抓次数，a=额外抓放组数，N=不同目标数，L=节点数；它们是表中参数简称，不是新增接口已实现的声明。表格筛选与原任务勾选联动，MoveCube、InsertPeg始终保留作说明。</p>
 </section>
@@ -678,6 +682,7 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 </script>
 <h2 id="p1-goals">五、goal 原文与拟修改稿对照</h2>
 <p>只比较各任务的总目标文字。左栏为真实母回合的英文原文，右栏为英文拟修改稿；有差异的文字高亮，中文注释只解释修改处。拟稿尚未实施。</p>
+<p><strong>10-11 裁决（R10）：</strong>goal 对照基准改为当前 <code>task_goal.py</code> 的输出，不再以官方 h5 原文为基准；下表左栏的官方原文只作参考，实施验收以当前代码输出为准。</p>
 <p>来源：本机官方参考集 <code style="overflow-wrap:anywhere">/data/hongzefu/data_0226/record_dataset_&lt;Task&gt;.h5</code> 的 <code>setup/task_goal</code>（未核HF revision）。花括号内为待实际目标确定的颜色或数量。</p>
 <style>
 .goal-originals .goal-compare{width:100%;table-layout:fixed}
@@ -820,16 +825,16 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <h3>为什么说一致：三条理由</h3>
 <ol>
 <li><b>源头相同</b>：官方、普通档、xhard 的 H5 都由同一个录像器 <code>RobommeRecordWrapper</code> 写出；xhard 只改环境配置（多抓几次、多交换几次），没有碰录像器，<code>src/robomme/</code> 零改动。写盒子的工具没变，盒子样式就不会变。</li>
-<li><b>逐格对比官方文件</b>：50 个 xhard 文件逐个和官方参考集 <code>data_0226</code> 同任务文件比，50/50 一样：不缺格子、不多格子，类型和尺寸全同（比对时剔除写入端早已删除的 <code>*_raw</code>、<code>fail_recover_*</code> 键；<code>setup/task_goal</code> 是候选目标句列表，句数随任务不同，属内容差异）（判定行 <code>XHARD_VS_OFFICIAL_KEYSET=PASS files=50 pass=50</code>）。</li>
+<li><b>逐格对比官方文件</b>：52 个 xhard 文件逐个和官方参考集 <code>data_0226</code> 同任务文件比，52/52 一样：不缺格子、不多格子，类型和尺寸全同（比对时剔除写入端早已删除的 <code>*_raw</code>、<code>fail_recover_*</code> 键；<code>setup/task_goal</code> 是候选目标句列表，句数随任务不同，属内容差异）（判定行 <code>XHARD_VS_OFFICIAL_KEYSET=PASS files=52 pass=52</code>）。</li>
 <li><b>交给 MotionJEPA 自己的读取代码</b>：直接调用 MotionJEPA 建库时读 H5 的函数 <code>scan_episode</code>，它只读前视角图像、视频演示标记、完成标记三样，并检查图像尺寸、演示段是否在开头；有视频演示的 7 个任务（24 个文件）全部通过，说明能照常读入。</li>
 </ol>
 <h3>哪些没通过、为什么不算不一致</h3>
-<p>没有视频演示的 7 个任务（26 个文件：BinFill、PickXtimes、SwingXtimes、StopCube、ButtonUnmask、ButtonUnmaskSwap、PickHighlight）过不了，因为 MotionJEPA 要求开头至少 1 帧演示，而这些任务本来就没有演示；官方原文件也一样过不了，所以不是 xhard 造成的差异（BinFill 手工 demo 用户已放弃，不计入）。难度标签写的是 <code>hard</code> 而不是 <code>xhard12</code>，属接口问题，用户定先不管。</p>
+<p>没有视频演示的 7 个任务（28 个文件：BinFill、PickXtimes、SwingXtimes、StopCube、ButtonUnmask、ButtonUnmaskSwap、PickHighlight）过不了，因为 MotionJEPA 要求开头至少 1 帧演示，而这些任务本来就没有演示；官方原文件也一样过不了，所以不是 xhard 造成的差异（BinFill 手工 demo 用户已放弃，不计入）。难度标签写的是 <code>hard</code> 而不是 <code>xhard12</code>，属接口问题，用户定先不管。</p>
 <h3>一点说明</h3>
 <p>MotionJEPA 上次真正用的那批 H5（HF 上 <code>robomme-4task-h5-20260912-v2</code>）本机没有副本，没有拿它逐个比；用的是两个间接证据：同一录像器写出的官方 <code>data_0226</code> 文件，以及 MotionJEPA 自己的读取代码。若要直接比，可从 HF 下载那批里的一两个文件对照（整批约 126.6 GB（MotionJEPA AGENTS.md 记录的 bucket 体积，2058 个文件），大下载须先问用户）。</p>
 <p>下面是详细判定与证据。</p>
 </section>
-<p><b>总结论</b>：50 个 xhard 档 H5 与官方同任务 H5 在键集、dtype、shape 上完全一致，单 episode 文件结构满足 MotionJEPA 读取要求；MotionJEPA 扫描的 FAIL 全部来自「任务本身没有视频演示」，官方原件同样如此。</p>
+<p><b>总结论</b>：52 个 xhard 档 H5 与官方同任务 H5 在键集、dtype、shape 上完全一致，单 episode 文件结构满足 MotionJEPA 读取要求；MotionJEPA 扫描的 FAIL 全部来自「任务本身没有视频演示」，官方原件同样如此。</p>
 <blockquote>
 <p><b>用户原话（逐字，按时间）</b>：①「当前仓库你最后做一轮评估现在会生成H5文件吗生成的H5文件和 https://github.com/hongzefu/MotionJEPA/tree/v6.1.2-awsNoSlurm 最近一次文件要的是否一致」②「我说的是cripts/data-generation-newSeed/generate_dataset_newseed.py」③「用subagent不启动workflow 尽可能详细 把这个问题写到网页的第五部分」④「你还是调用这个接口的你应该能够生成 xhard12到20最后一轮产物都要生成」⑤「接口问题先不用管。接口问题和键问题都不用管。长度问题也不用管。binfill需要手动Demo这个也已经放弃了。来源锁也不用管。暂时不用动还缺什么。我问这个问题主要是为了一致性的检验。」⑥「对的你做一下一致性的检验然后也是写入这个呃网页写入第五节。」</p>
 <p><b>定位</b>：据④⑤⑥，本节是<b>一致性检验</b>——只判本仓库 xhard 档产物与官方参考集、与 MotionJEPA 读取结构是否一致；接口、键差异、长度、BinFill 手动 demo、来源锁一律不纳入本轮判定（见第 5 小节）。</p>
@@ -840,12 +845,12 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 
 <table>
 <tr><th>判定</th><th>结果</th><th>依据</th></tr>
-<tr><td><code>XHARD_VS_OFFICIAL_KEYSET=PASS files=50 pass=50</code></td><td>PASS</td><td>50 档逐个与官方同任务 <code>episode_0</code> 比：缺键 0、多键 0、同名键 dtype / shape 全同（第 1 小节）</td></tr>
-<tr><td>与本仓库普通档 smoke 比：<code>50/50 missing=[] extra=[]</code></td><td>PASS</td><td>只差 <code>setup/task_goal</code> 候选句数（及 stick 类任务 <code>gripper_state</code>），均为任务固有</td></tr>
+<tr><td><code>XHARD_VS_OFFICIAL_KEYSET=PASS files=52 pass=52</code></td><td>PASS</td><td>52 档逐个与官方同任务 <code>episode_0</code> 比：缺键 0、多键 0、同名键 dtype / shape 全同（第 1 小节）</td></tr>
+<tr><td>与本仓库普通档 smoke 比：<code>52/52 missing=[] extra=[]</code></td><td>PASS</td><td>只差 <code>setup/task_goal</code> 候选句数（及 stick 类任务 <code>gripper_state</code>），均为任务固有</td></tr>
 <tr><td><code>MJ_SCAN_VIDEO_TASKS=PASS files=24</code></td><td>PASS</td><td>有视频演示的 7 个任务 24 档全部通过 MotionJEPA <code>scan_episode</code></td></tr>
-<tr><td><code>MJ_SCAN_NO_DEMO_TASKS=FAIL files=26 official_same=demo0</code></td><td>不纳入本轮一致性判定（用户 2026-10-11 定）</td><td>无视频演示的 7 个任务 26 档报「demo 标记非前缀」；官方同任务 <code>episode_0</code> 的 demo 也都是 0，官方原件同样过不了，属任务性质</td></tr>
+<tr><td><code>MJ_SCAN_NO_DEMO_TASKS=FAIL files=28 official_same=demo0</code></td><td>不纳入本轮一致性判定（用户 2026-10-11 定）</td><td>无视频演示的 7 个任务 28 档报「demo 标记非前缀」；官方同任务 <code>episode_0</code> 的 demo 也都是 0，官方原件同样过不了，属任务性质</td></tr>
 <tr><td><code>GEN_H5=PASS mode=211 task=VideoUnmask ep=3 seed=6300 T=399 exit=0</code></td><td>PASS</td><td>辅助材料 B：生产生成器普通档单 episode 实跑</td></tr>
-<tr><td>xhard 档的生成路径</td><td>说明</td><td>生产生成器尚无 xhard 开关；本节 50 档经审查脚本调用同一录像接口生成</td></tr>
+<tr><td>xhard 档的生成路径</td><td>说明</td><td>生产生成器尚无 xhard 开关；本节 52 档经审查脚本调用同一录像接口生成</td></tr>
 <tr><td><code>MJ_WHITELIST=FAIL</code></td><td>不纳入本轮一致性判定（用户 2026-10-11 定）</td><td><code>select_primary</code> 任务只认 4 个、难度只认字面 <code>xhard</code></td></tr>
 <tr><td><code>MJ_SOURCE_PIN=FAIL</code></td><td>不纳入本轮一致性判定（用户 2026-10-11 定）</td><td>生成器不产 <code>MANIFEST.json</code> / <code>control/source.json</code>；<code>verify_source_pin</code> 写死 revision 与 sha</td></tr>
 <tr><td><code>MJ_BINFILL=FAIL</code></td><td>不纳入本轮一致性判定（用户 2026-10-11 定）</td><td>BinFill 手动 demo 已放弃（P4）</td></tr>
@@ -858,12 +863,13 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <p><b>怎么生成的</b>：</p>
 <table>
 <tr><th>项目</th><th>做法</th></tr>
-<tr><td>范围</td><td>计划冻结的 50 个有效档位（四.7 确定性长度梯度表加总 = 50），MoveCube、InsertPeg 计划只有母档、无 xhard 档</td></tr>
+<tr><td>范围</td><td>计划的 52 个有效档位（四.7 确定性长度梯度表加总 = 52；其中 BinFill xhard20 与 StopCube xhard18 两档按 R21 补跑），MoveCube、InsertPeg 计划只有母档、无 xhard 档</td></tr>
 <tr><td>入口</td><td><code>artifacts/audit-1011/&lt;Task&gt;/</code> 下的审查脚本 <code>run_level.py</code> / <code>run_level2.py</code> / <code>rollout.py</code> / <code>vpo_audit.py</code> 重新跑；脚本内部都调用生成器的 <code>_execute_tasks</code> 与录像器 <code>RobommeRecordWrapper</code> 写 H5（与生产生成器同一录像接口），进程内临时覆盖 configs，不改 <code>src/robomme</code> 磁盘文件</td></tr>
 <tr><td>执行</td><td>五个运行型子代理（opus）：按官网四类各一个，另加 VideoRepick 补跑一个；全部在 GPU 1 串行，每条 <code>timeout 300</code></td></tr>
 <tr><td>日志</td><td><code>artifacts/audit-1011/&lt;Task&gt;/regen1011_&lt;level&gt;.log</code>（VideoRepick 为 <code>regen1011rec_&lt;level&gt;.log</code>）</td></tr>
 <tr><td>H5 位置</td><td><code>artifacts/audit-1011/&lt;Task&gt;/tmp/&lt;level&gt;/hdf5_files/</code>（PickXtimes 为 <code>tmp/&lt;level&gt;_w/</code>，VideoRepick 为 <code>tmp_rec/&lt;level&gt;/</code>）</td></tr>
-<tr><td>结果</td><td>50 个文件全部生成成功（success / 末帧 <code>is_completed</code> 为真）</td></tr>
+<tr><td>结果</td><td>52 个文件全部生成成功（success / 末帧 <code>is_completed</code> 为真）</td></tr>
+<tr><td>R21 补跑两档</td><td>BinFill xhard20（K=9，seed 7101 / ep31）：<code>artifacts/audit-1011/BinFill/run_level.py --level xhard20 --K 9</code>，1815 timestep，相对母档 842 为 ×2.16，demo 0，<code>VS_OFFICIAL=PASS</code>；库存 rgb=[4,2,5]、新目标 [4,0,5]，目标句「put four red cubes and five green cubes into the bin, then press the button to stop」。StopCube xhard18（move_interval=60、k=7，seed 10700 / ep87）：<code>artifacts/audit-1011/StopCube/run_level_mi60.py xhard18 7</code>（主会话复制的副本，只把 <code>FIXED_MI</code> 80 改 60；60 在原 <code>move_interval_list</code> [60,80,120] 内），423 timestep，相对母档 237 为 ×1.78，demo 0，<code>VS_OFFICIAL=PASS</code>；press_step 389 落在窗口 [360,420]</td></tr>
 </table>
 
 <p><b>脚本坑与处置</b>：</p>
@@ -876,13 +882,13 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <p><b>退出码 139</b>：VideoUnmask、VideoUnmaskSwap、VideoRepick、VideoPlaceButton 等出现在 RESULT / json 与 H5 写完之后的进程收尾段错误，旧审查同样存在，不影响产物，未重试。</p>
 <p><b>复现性</b>：各档 timestep 数 / 环境步数与 10-11 旧审查逐个相同；VideoUnmask xhard14 关节动作 npy 与旧文件逐字节相同，与官方 ep35 前 329 步关节动作 <code>max_abs_diff=0.0</code>。</p>
 
-<p><b>50 档 timestep 表</b>（任务按官网顺序；— 为计划不设档）：</p>
+<p><b>52 档 timestep 表</b>（任务按官网顺序；— 为计划不设档）：</p>
 <table>
 <tr><th>任务</th><th>seed / ep</th><th>xhard12</th><th>xhard14</th><th>xhard16</th><th>xhard18</th><th>xhard20</th><th>档数</th></tr>
-<tr><td>1.1 BinFill</td><td>7101 / 31</td><td>1058</td><td>1236</td><td>1428</td><td>1601</td><td>—</td><td>4</td></tr>
+<tr><td>1.1 BinFill</td><td>7101 / 31</td><td>1058</td><td>1236</td><td>1428</td><td>1601</td><td>1815</td><td>5</td></tr>
 <tr><td>1.2 PickXtimes</td><td>6500 / 55</td><td>980</td><td>1114</td><td>1250</td><td>1380</td><td>1521</td><td>5</td></tr>
 <tr><td>1.3 SwingXtimes</td><td>8900 / 59</td><td>566</td><td>644</td><td>804</td><td>882</td><td>961</td><td>5</td></tr>
-<tr><td>1.4 StopCube</td><td>10700 / 87</td><td>—</td><td>315</td><td>393</td><td>—</td><td>477</td><td>3</td></tr>
+<tr><td>1.4 StopCube</td><td>10700 / 87</td><td>—</td><td>315</td><td>393</td><td>423</td><td>477</td><td>4</td></tr>
 <tr><td>2.1 VideoUnmask</td><td>9500 / 35</td><td>—</td><td>486</td><td>—</td><td>—</td><td>—</td><td>1</td></tr>
 <tr><td>2.2 ButtonUnmask</td><td>17500 / 95</td><td>—</td><td>530</td><td>—</td><td>—</td><td>—</td><td>1</td></tr>
 <tr><td>2.3 VideoUnmaskSwap</td><td>8900 / 39</td><td>524</td><td>569</td><td>665</td><td>779</td><td>869</td><td>5</td></tr>
@@ -895,15 +901,15 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <tr><td>4.2 InsertPeg</td><td>—</td><td colspan="5">计划只有母档，无 xhard 档</td><td>0</td></tr>
 <tr><td>4.3 PatternLock</td><td>19300 / 43</td><td>408</td><td>564</td><td>552</td><td>578</td><td>712</td><td>5</td></tr>
 <tr><td>4.4 RouteStick</td><td>16300 / 3</td><td>600</td><td>700</td><td>800</td><td>900</td><td>1000</td><td>5</td></tr>
-<tr><td colspan="7"><b>合计</b>（计数 17 + 永久性 12 + 参考 11 + 模仿 10）</td><td><b>50</b></td></tr>
+<tr><td colspan="7"><b>合计</b>（计数 19 + 永久性 12 + 参考 11 + 模仿 10）</td><td><b>52</b></td></tr>
 </table>
 
 <p><b>三层一致性判定</b>：</p>
 <table>
 <tr><th>层</th><th>比什么</th><th>判定行 / 结果</th><th>说明</th></tr>
-<tr><td>1. 结构一致</td><td>与官方 <code>data_0226</code> 同任务 <code>episode_0</code> 逐键比；剔除写入端自 <code>68a65a09</code> 起已删的 <code>*_raw</code> 与 <code>fail_recover_*</code>（用户定不管键问题）</td><td><code>XHARD_VS_OFFICIAL_KEYSET=PASS files=50 pass=50</code></td><td>缺键 0、多键 0、同名键 dtype / shape 全同；<code>waypoint_action</code> 的 float32 / float64 交替与官方相同，是既有行为</td></tr>
-<tr><td>2. 与普通档 smoke 一致</td><td>与本仓库生产生成器普通档 smoke（VideoUnmask ep3，见辅助材料 B）逐键比</td><td><code>50/50 missing=[] extra=[]</code></td><td>只差 <code>setup/task_goal</code> 形状（及 stick 类任务 <code>gripper_state</code>），均为任务固有，与官方同任务一致</td></tr>
-<tr><td>3. MotionJEPA 读取</td><td>只读调用 MotionJEPA v6.1.2 <code>scan_episode</code></td><td><code>MJ_SCAN_VIDEO_TASKS=PASS files=24</code>；<code>MJ_SCAN_NO_DEMO_TASKS=FAIL files=26 official_same=demo0</code></td><td>FAIL 全部来自断言 d&gt;0（至少 1 个 demo timestep），无视频演示的任务官方原件同样过不了；用户已定 BinFill 手工 demo 放弃，本轮不纳入一致性判定</td></tr>
+<tr><td>1. 结构一致</td><td>与官方 <code>data_0226</code> 同任务 <code>episode_0</code> 逐键比；剔除写入端自 <code>68a65a09</code> 起已删的 <code>*_raw</code> 与 <code>fail_recover_*</code>（用户定不管键问题）</td><td><code>XHARD_VS_OFFICIAL_KEYSET=PASS files=52 pass=52</code></td><td>缺键 0、多键 0、同名键 dtype / shape 全同；<code>waypoint_action</code> 的 float32 / float64 交替与官方相同，是既有行为</td></tr>
+<tr><td>2. 与普通档 smoke 一致</td><td>与本仓库生产生成器普通档 smoke（VideoUnmask ep3，见辅助材料 B）逐键比</td><td><code>52/52 missing=[] extra=[]</code></td><td>只差 <code>setup/task_goal</code> 形状（及 stick 类任务 <code>gripper_state</code>），均为任务固有，与官方同任务一致</td></tr>
+<tr><td>3. MotionJEPA 读取</td><td>只读调用 MotionJEPA v6.1.2 <code>scan_episode</code></td><td><code>MJ_SCAN_VIDEO_TASKS=PASS files=24</code>；<code>MJ_SCAN_NO_DEMO_TASKS=FAIL files=28 official_same=demo0</code></td><td>FAIL 全部来自断言 d&gt;0（至少 1 个 demo timestep），无视频演示的任务官方原件同样过不了；用户已定 BinFill 手工 demo 放弃，本轮不纳入一致性判定</td></tr>
 </table>
 <p><b>唯一随数据变化的形状</b>：<code>setup/task_goal</code> 是语言目标候选句列表，长度随任务实例变化——VideoRepick 生成 (3,)、官方 ep0 (2,)；VideoPlaceButton 生成 (4,)、官方 ep0 (2,)；其余任务与官方同为 (1,) 或 (2,)。这是值层面的变长列表，不是结构差异。</p>
 
@@ -917,10 +923,10 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <tr><td>3.4 VideoPlaceOrder</td><td>1</td><td>PASS</td><td>940</td></tr>
 <tr><td>4.3 PatternLock</td><td>5</td><td>PASS</td><td>48</td></tr>
 <tr><td>4.4 RouteStick</td><td>5</td><td>PASS</td><td>100</td></tr>
-<tr><td rowspan="7">无视频演示（26 档）</td><td>1.1 BinFill</td><td>4</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
+<tr><td rowspan="7">无视频演示（28 档）</td><td>1.1 BinFill</td><td>5</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
 <tr><td>1.2 PickXtimes</td><td>5</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
 <tr><td>1.3 SwingXtimes</td><td>5</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
-<tr><td>1.4 StopCube</td><td>3</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
+<tr><td>1.4 StopCube</td><td>4</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
 <tr><td>2.2 ButtonUnmask</td><td>1</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
 <tr><td>2.4 ButtonUnmaskSwap</td><td>5</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
 <tr><td>3.1 PickHighlight</td><td>3</td><td>FAIL「demo 标记非前缀」</td><td>0</td></tr>
@@ -930,9 +936,9 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 
 <p><b>记录但不处理</b>：</p>
 <ul>
-<li>「逐环境审查」表的「新档配置（现行）」列与四.7 表不一致：前者写 BinFill K=5～9（含 xhard20 的 K=9）、StopCube xhard18 为间隔 60 / k=7；四.7 表 BinFill 无 xhard20、StopCube 无 xhard12 / xhard18。本轮按四.7（加总 50）跑，BinFill K=9 与 StopCube xhard18 未生成。仅记录，待用户需要时裁决。</li>
 <li>4.3 PatternLock xhard16（552 timestep）比 xhard14（564 timestep）短，旧审查同样如此（路径移动段长度差异，未验证）。</li>
 <li>退出码 139 的收尾段错误未定位，产物不受影响。</li>
+<li>首轮一致性检验按 50 档跑；BinFill K=9（xhard20）与 StopCube 间隔 60 k=7（xhard18）两档已按 R21 补跑并纳入，现行有效配置 52 档全部覆盖。</li>
 </ul>
 
 <h3 id="p1-h5-1">辅助材料 A：生产生成器现状</h3>
@@ -983,11 +989,12 @@ WHITELIST=FAIL</code></pre>
 
 <h2 id="p1-_6">六、验收、步骤、子代理（三行）</h2>
 <ul>
-<li><strong>验收</strong>：原有身份、配置、卡片、关闭态、保护目录、smoke闸门，加技术细节中的goal/subgoal、按钮状态/grounding/落定、真实中位两倍上界、Place答案与路径/目标数量闸门；具体见第二部分，不以INFO统计代替通过。</li>
-<li><strong>步骤</strong>：开工 → 前置验证六项 → 主会话写新包骨架 S0 → 四个 worktree 子代理并行 → 逐个合并 → 先单任务/单episode/单worker，过后再按批准规模出对账表 → 用户审阅取值再说「开工」→ 全量 650 条 → 数轴图与留档；表与判据见第二部分四节 runbook。</li>
-<li><strong>子代理</strong>：S1 八个参数／后处理／路径／Place子类，S2 重写方法组 6 子类，S3 生成器开关，S4 轻量测试；按 S1→S2→S3→S4 合并，每个合并前后各审一次；分配表见第二部分二节。</li>
+<li><strong>验收</strong>：52 个配置唯一、difficulty 写 xhard 值并另存 source_difficulty、同 seed 不换 seed、母档同 seed 重生成、避开 FailRecover、录像非空、不新增物体、8 帧只查每任务最长一档、保护目录只含已批的 task_goal.py 四分支；两倍上界作废（R4）只作统计。判定行见第二部分三节“现行闸门”，不以 INFO 统计代替通过。</li>
+<li><strong>步骤</strong>：用户看完本版完整计划并明确同意 → 前置核对 → 主会话 S0 骨架与 S0-P1 已批分支 → S1～S4 并行写入、逐个两次审查合并 → 主会话 GPU 首条（1 任务/1 seed/1 档/1 worker）→ 运行代理小规模实测 104 条 + 32 条母档 → 用户审阅确认改动 → 最终批次 52 条 + 16 条母档（每任务每有效档 1 条，多 worker，R26），最终批次前须用户单独确认、不自动接续；详见第二部分四节“现行 runbook”。</li>
+<li><strong>子代理</strong>：S0／S0-P1 主会话自做；S1 九个任务子类、S2 五个 Unmask/交换类子类、S3 生成器开关、S4 测试与工具，各在独立 worktree；按 S1→S2→S3→S4 合并，每次合并前后各审一次；运行型 R1 小规模、R2 最终；分配表见第二部分二节。</li>
 </ul>
 <h1 id="agent">第二部分（技术细节，供 agent 追踪）</h1>
+<p><strong>本版现行口径（2026-10-11）</strong>：首页 + 四.7 表 + 本部分“10-11 裁决回写（R1–R26）”+ 一节“现行逐文件改动清单”+ 二节“现行子代理分配表”+ 三节“现行闸门”+ 四节“现行 runbook”+ 五节“现行风险登记”。凡标“历史（已被首页新口径取代）”的段落只作追溯，不作实施依据。</p>
 <section id="current-five-tier-contract">
 <h2>本轮五级难度实施补充（2026-10-11，优先于旧接口及旧规模）</h2>
 <p>锚点 <code>179aca24ec57847e961ebe4f97a3b98688b68459</code>。本次只修计划；当前 <code>src/robomme_xhard/</code> 尚不存在，生成器的 <code>--difficulty</code> 仍是easy/medium/hard比例参数，尚不支持上述五级字面值。实现、实测与最终生成依首页分阶段批准，不能把本计划写成已经完成。</p>
@@ -998,22 +1005,17 @@ WHITELIST=FAIL</code></pre>
 <tr><td><code>src/robomme_xhard/tests/</code>（拟新增）</td><td>验证difficulty传递、同seed、不换seed、配置唯一、缺档、不覆盖输出和视频配对；生产代码不得依赖测试目录。</td></tr>
 </tbody></table>
 <p><strong>接口保护：</strong><code>normalize_robomme_difficulty</code> 目前仅认easy/medium/hard；<code>RecordWrapper.close</code> 从 <code>env.unwrapped.difficulty</code> 写入HDF5。实现必须让外部传入值、job、metadata、HDF5的difficulty都为对应xhard值，并单独保存 <code>source_difficulty</code>（hard或medium）。优先在新包隔离父类硬编码分支；若必须修改受保护源码或录像器，先明确文件、函数、修改理由逐项批准，不能悄悄把记录改回hard来规避。旧“所有kwargs不变／difficulty始终hard”契约被本次用户指令替代。</p>
-<table><thead><tr><th>子任务</th><th>职责／写入归属</th><th>依赖、整合及验证</th></tr></thead><tbody>
-<tr><td>S1 环境</td><td>独立worktree；只写新包的注册、配置与各任务派生类；保护目录禁触。</td><td>先定difficulty契约；目标、子目标、按钮与路径边界按逐任务说明核查。主会话先合S1并审查。</td></tr>
-<tr><td>S2 生成器</td><td>独立worktree；只写newSeed生成器，母manifest工具归主会话。</td><td>依S1注册接口；同seed五档、缺档、尝试预算、目录唯一检查通过后合入。</td></tr>
-<tr><td>S3 验证／视频</td><td>独立worktree；只写新包tests与离线视频工具，配置文件不与S1共享写入。</td><td>依S1/S2；先运行无仿真的定向验证，再检查同seed视频六栏拼接，最后合入。</td></tr>
-<tr><td>R1 运行</td><td>不写代码、配置或依赖；主会话登记run_name、物理GPU、workers、tmux及产物目录后给完整命令。</td><td>单worker首条通过后，以4worker执行批准manifest；新JobID不适用。失败记录后交回，主会话负责预算、监听和清理，不自行修复、换seed或重试。</td></tr>
-</tbody></table>
-<p><strong>验收与运行顺序：</strong>主会话从当前表冻结50个有效任务档位，选定每任务两个实际满足固定母配置的seed，锁定最终使用的第一个；核实所有母视频存在，缺视频先补齐只读导出方案而不擅增仿真。完成实现并提交后做1任务/1seed/1档/1worker首条（计入100条）；通过后完成剩余实测。每条记录 <code>DIFFICULTY_LABEL</code>、<code>SAME_MOTHER_SEED</code>、<code>UNIQUE_OUTPUT</code>、<code>task_success</code>、真实T/W/倍率；批次输出 <code>GRADIENT_REVIEW</code> 和 <code>COMPARE_VIDEO</code>。通过项用 <code>NAME=PASS</code>，未知或异常不得伪造通过。母Hard之外的真实路径或答案错误先报告修法，用户确认改动再定向复测；最终批次须额外获得用户确认，不自动接续。</p>
+<p><strong>分工：</strong>原 S1/S2/S3/R1 四行简表已由二节“现行子代理分配表”取代（历史，已被首页新口径取代）。</p>
+<p><strong>验收与运行顺序：</strong>主会话从当前表冻结52个有效任务档位，选定每任务两个实际满足固定母配置、避开FailRecover（R11）的seed，锁定最终使用的第一个；母档按R9用当前代码同seed重新生成（小规模32条、最终16条），不复用官方旧视频。完成实现并提交后做1任务/1seed/1档/1worker首条（计入104条）；通过后完成剩余实测。每条记录 <code>DIFFICULTY_LABEL</code>、<code>SAME_MOTHER_SEED</code>、<code>UNIQUE_OUTPUT</code>、<code>task_success</code>、真实T/W/倍率；批次输出 <code>GRADIENT_REVIEW</code> 和 <code>COMPARE_VIDEO</code>。通过项用 <code>NAME=PASS</code>，未知或异常不得伪造通过。母Hard之外的真实路径或答案错误先报告修法，用户确认改动再定向复测；最终批次须额外获得用户确认，不自动接续。</p>
 <p><strong>运行与留档：</strong>本机Aspen，一张现场核实空闲的GPU；workers首条为1、主批为4，不把旧RTX6000Ada上的32worker吞吐当当前A6000实测。预计超过5分钟则用唯一tmux名、无缓冲日志与EXIT_CODE尾行；日志和视频均落artifacts，禁止覆盖旧run。正式最终构建按原第13条先锁Beta提交及干净工作树，在 <code>docs/xhard-doc/&lt;run_name&gt;/</code> 记启动与结果，冻结执行版本，不拷贝数据进git。</p>
-<p><strong>边界与风险：</strong>当前50配置意味着实测100条、最终50条新轨迹；32／16个母组是统计单位，不把它们说成32／16条输出。MoveCube/InsertPeg没有新轨迹，仅出母档比较片段。两个母seed不能证明所有布局成功；估算梯度与真实耗时可能不同，失败不换seed，原速视频不掩盖长度差。具体运行命令、分配的GPU/tmux及预算账本在开跑前填全，未填不得由运行代理起跑；本次不下载数据、不提交Slurm、不启动仿真。</p>
+<p><strong>边界与风险：</strong>当前52配置意味着实测104条、最终52条新轨迹（每任务每有效档1条，R26），另重生成母档32／16条；32／16个母组是统计单位，不把它们说成32／16条输出。MoveCube/InsertPeg没有新轨迹，仅出母档比较片段。两个母seed不能证明所有布局成功；估算梯度与真实耗时可能不同，失败不换seed，原速视频不掩盖长度差。具体运行命令、分配的GPU/tmux及预算账本在开跑前填全，未填不得由运行代理起跑；本次不下载数据、不提交Slurm、不启动仿真。</p>
 </section>
 <section id="knob-review-notes">
 <h2 id="knob-review-heading">逐任务续审：母档取中位，目标取唯一整数</h2>
 <details class="knob-review" data-task="BinFill" id="knob-BinFill"><summary>1.1 BinFill：固定母档与唯一配置</summary>
 <p><strong>25条实际旋钮分布：</strong>次数：3（5条）、4（10条）、5（10条）。</p>
 <p><strong>1.0母档怎么定：</strong>25条实际总投放数的中位数是4，固定母档K=4；本轮用原本K=4的10条作为帧窗参照，不再用混合配置的868帧。</p>
-<p><strong>各档为何这样选：</strong>固定K候选5/6/7/8分别合成1034.5/1203/1372/1564.5帧。两倍目标1661帧：K8偏差96.5，K9为1768.5帧、偏差107.5，K8估算1.884倍，在1.8与2.0中更接近1.8，因此仅保留1.8档，2.0留空；不另取K9填补2.0。</p>
+<p><strong>各档为何这样选：</strong>固定K候选5/6/7/8分别合成1034.5/1203/1372/1564.5帧。两倍目标1661帧：K8偏差96.5，K9为1768.5帧、偏差107.5，K8估算1.884倍，在1.8与2.0中更接近1.8，因此仅保留1.8档，2.0留空；不另取K9填补2.0。<strong>10-11 更新（R16，取代前句）：</strong>用户批准新增 xhard20：K=9（1768.5 timestep，估算 2.129 倍），2.0 档不再留空；库存核对 R20 PASS（10 个母 seed 方块总数 10～12），ep51（seed 9102）K≥7 时按 R7 把红绿也选为目标。</p>
 <p><strong>帧窗估算：</strong>T′=T+Σ循环追加的母抓取投入对；保留按钮和完成尾段，W′=w(T′)。偶数子集按中间两项平均，不能换成较大的中位条。</p>
 <p><strong>实施边界：</strong>先生成原Hard场景，再按固定总数K分配颜色目标，必须核实际库存。现有参照子集都原生K4；其它K5样本变成固定K4需要减少目标，不再满足旧“只增加”契约，当前不执行该标准化或据此宣称母语义不变。</p>
 <p class="muted">源码：<code>src/robomme/robomme_env/BinFill.py</code>；符号锚点：<code>BinFill.config_hard、BinFill._load_scene、BinFill._initialize_episode</code>。固定配置参照子集n=10，episode=3、7、15、19、23、31、47、51、83、87。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
@@ -1034,7 +1036,7 @@ WHITELIST=FAIL</code></pre>
 <details class="knob-review" data-task="StopCube" id="knob-StopCube"><summary>1.4 StopCube：固定母档与唯一配置</summary>
 <p><strong>25条实际旋钮分布：</strong>停止序号k：2（7条）、3（7条）、4（6条）、5（5条）；间隔：60（7条）、80（9条）、120（9条）。</p>
 <p><strong>1.0母档怎么定：</strong>25条实际停止序号的中位为3，间隔中位为80，固定母档(k=3, move_interval=80)。两者同时满足的3条原母样本为ep59/83/87，中位237帧/13窗；不能再用混合基线309。</p>
-<p><strong>各档为何这样选：</strong>所有目标档都保持间隔80，停止序号只取固定4、5、6。k4估算1.338倍，只归1.4；k5估算1.675倍，只归1.6；2.0选k6。1.2与1.8留空；不存在按原k变化的映射，也不在同档随机抽取间隔。</p>
+<p><strong>各档为何这样选：</strong>所有目标档都保持间隔80，停止序号只取固定4、5、6。k4估算1.338倍，只归1.4；k5估算1.675倍，只归1.6；2.0选k6。1.2与1.8留空；不存在按原k变化的映射，也不在同档随机抽取间隔。<strong>10-11 更新（R16，取代前句中的 1.8 留空）：</strong>用户批准新增 xhard18：间隔 60、k=7（审查估算约 1.80 倍，未实测），是唯一不用间隔 80 的档；1.2 仍留空。k=6、7 需要的 <code>step()</code> 中 <code>range(5)</code> 覆盖已按 R13 获批。</p>
 <p><strong>帧窗估算：</strong>T′=T+80×(k−3)，逐条保留原固定开销并取数学中位；每侧w按统一公式。参数通过母seed复现源码CPU随机抽样顺序核对，未导入环境。</p>
 <p><strong>实施边界：</strong>参照只有3条且速度相同；把其它seed强设间隔80会改变其原速度，不能写成原速度保持。本轮仅定义固定配置及估算；未来k6还须同步扩展step中的range(5)、停止窗口和序数语言。</p>
 <p class="muted">源码：<code>src/robomme/robomme_env/StopCube.py</code>；符号锚点：<code>StopCube._initialize_episode、StopCube.step</code>。固定配置参照子集n=3，episode=59、83、87。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
@@ -1153,6 +1155,7 @@ WHITELIST=FAIL</code></pre>
 })();
 </script>
 <h2 id="review-contract">本轮审查修订契约（2026-10-10，优先于旧示意与附录）</h2>
+<p class="muted"><strong>历史（部分条目已被首页新口径与 10-11 裁决取代）：</strong>本节 Pattern“锁定2L−1”、Route“扩尾至2S、保留母路径与母方向前缀”已被四.7 固定 L、S 与 R8（同 seed 不要求同路径）取代；按钮6次／交换12次以四.7 为准；保护目录清单中 <code>vqa_options.py</code> 分支未获批、<code>RecordWrapper.py</code> 阈值暂不改（R13）。现行以下一节“10-11 裁决回写”为准。</p>
 <p>第一部分五节是16任务语言和动作语义清单。本节补足文件、方法、归属与验证，属于待实施计划。本轮没有修改 <code>src/robomme/</code>、没有实现子类、没有启动reset或rollout。按钮6次／交换12次只作为联合校准初值；未授权正式数据生成。</p>
 <table><thead><tr><th>文件与归属</th><th>具体允许覆盖项（实施前须批准）</th><th>接口与失败处理</th></tr></thead><tbody>
 <tr><td><code>src/robomme_xhard/envs/bin_fill.py</code>，S1</td><td><code>_load_scene</code> 先调用原hard母场景生成，再分配候选9块目标；<code>_initialize_episode</code>读取新目标构建清单。不是提前换目标字典。</td><td>按原三色顺序确定性分配，在剩余容量允许的前提下逐色增加目标；不消耗母布局随机流、不增减actor。每色不超库存，总数不足9则响亮失败、不换seed。验证母布局与新目标/语言/清单。</td></tr>
@@ -1174,7 +1177,40 @@ WHITELIST=FAIL</code></pre>
 <p><strong>实施顺序与验证：</strong>S0明确公共派生标志与P/S字段→S1、S2各自独立worktree修改归属文件→S3接生成器→S4写语义定向测试→主会话逐项获批后接保护文件→逐项审查与整合。第一道真实运行仅单任务、单episode、单worker；通过后才按原批准规模扩展。拟测试入口 <code>UV_CACHE_DIR=$HOME/.cache/uv uv run --no-sync python -m pytest tests/lightweight/test_robomme_xhard.py -k 'goal or button or target or path or place' -q</code>，对应本部分“目标语义审查与实施前闸门”的具名判据；该测试文件与用例为拟新增，当前没有执行。与现有configs/register测试互补，不能只比较字典。</p>
 <p><strong>风险与未验证项：</strong>919是复制母按钮段的估计，环境步到录制帧、重复按释放与重新接近的规划时长、动画碰撞、跨reset均未实测；严格按同集合任务中位两倍上界验收，不把单条smoke或合成统计当正式通过。原源码语义问题只修被批准的派生分支；不借审查修改母任务。实施结果按原留档制度追加，保护清单按批准原话维护，关闭开关时原行为回归验证。</p>
 <p>审查基线 <code>ac0033f11f195434bd9b22570f6ea5fc306cafa1</code>。此处保留技术核查与验收要求；第一部分五节只展示真实episode的goal原文、拟修改稿及差异注释。</p>
+<h2 id="decisions-1011">10-11 裁决回写（R1–R26，2026-10-11，本版现行口径）</h2>
+<p>来源：R1–R16 的“用户原话”逐字取自提交 <code>eb51aa68</code>（2.42.33）说明“一、用户指令原话”中的裁决串；R17–R20 逐字取自提交 <code>5d1fb3e6</code>（2.42.34）说明中的“1 全部保留 2都检查最长的一档 3同意 4同意”；R21–R26 逐字取自主会话 2026-10-11 转达的用户对“未确定清单”的答复。本节与首页、四.7 表一起构成现行口径；与之冲突的旧段落以本节为准，并已就地标注“历史（已被首页新口径取代）”。原话中的“19删除”所指条目随审查清单删除，计划不保留；R2 已被 R18 细化取代。</p>
+<table id="decisions-1011-table">
+<thead><tr><th>编号</th><th>事项</th><th>用户原话（逐字）</th><th>对计划的影响</th><th>落到哪个文件或闸门</th></tr></thead><tbody>
+<tr><td>R1</td><td>母任务成功判据的宽松边界</td><td class="r-quote">1 全部不动</td><td>保持原判据，不收紧、不覆盖；作为已知边界记录</td><td>不改 <code>src/robomme/</code> 任何环境的 <code>evaluate</code>；五节现行风险登记</td></tr>
+<tr><td>R2</td><td>8 帧采样必漏（第一轮）</td><td class="r-quote">8 帧采样一个 subgoal 都不漏 只评估xhard20</td><td>只对 xhard20 评严格单元口径 8 帧遗漏；已被 R18 细化为“每任务最长一档”</td><td>三节 <code>XHARD_8FRAME_LONGEST</code></td></tr>
+<tr><td>R3</td><td>VideoPlaceOrder 实测只有 1.132 倍</td><td class="r-quote">4 a</td><td>仍叫 xhard12，标注实际倍数</td><td>四.7 表 3.4 行；<code>GRADIENT_REVIEW</code> 不因低于 1.2 判失败</td></tr>
+<tr><td>R4</td><td>超过 2.0 倍的配置</td><td class="r-quote">5留下</td><td>SwingXtimes 2.004、StopCube 2.013、VideoUnmaskSwap 2.051（及新增 BinFill K=9）保留；两倍硬上界作废</td><td>三节 <code>XHARD_LENGTH_CAP</code> 作废；第一部分对齐原则</td></tr>
+<tr><td>R5</td><td>PickHighlight 全部高亮档</td><td class="r-quote">7 a</td><td>保留 pickup=spawn=6，注明记忆要求退化为“全抓”</td><td><code>src/robomme_xhard/envs/pick_highlight.py</code>；四.7 表 3.1</td></tr>
+<tr><td>R6</td><td>交换类第 4 次及以后的配对规则</td><td class="r-quote">8 先不动</td><td>暂不改配对规则，退化问题记为已知风险</td><td><code>envs/video_unmask_swap.py</code>、<code>button_unmask_swap.py</code>、<code>video_repick.py</code>；五节风险</td></tr>
+<tr><td>R7</td><td>BinFill 多出目标的颜色</td><td class="r-quote">9 b</td><td>允许把母档原本没有目标的颜色（场景里已生成的方块）选为目标</td><td><code>envs/bin_fill.py</code>；<code>XHARD_TARGET_COUNTS</code></td></tr>
+<tr><td>R8</td><td>同 seed 是否须同母路径</td><td class="r-quote">10 无所谓同seed不需要一样</td><td>同 seed 不要求与母档同一路径或布局，PatternLock 可整条重抽；同 seed 只核 seed 相等</td><td><code>envs/pattern_lock.py</code>、<code>route_stick.py</code>；<code>SAME_MOTHER_SEED</code></td></tr>
+<tr><td>R9</td><td>1.0 母档视频</td><td class="r-quote">11 b</td><td>用当前代码按同 seed 重新生成母档，不复用官方旧视频</td><td>四节 runbook 母档重生成；<code>XHARD_MOTHER_REGEN</code></td></tr>
+<tr><td>R10</td><td>goal 对照基准</td><td class="r-quote">12 同意</td><td>改为当前 <code>task_goal.py</code> 的输出，不再以官方 h5 原文为基准</td><td>第一部分 goal 对照节注明；<code>XHARD_GOAL_SUBGOAL</code></td></tr>
+<tr><td>R11</td><td>FailRecover 的 episode（编号 ≤5）</td><td class="r-quote">13 先避开</td><td>选母 seed 时先避开</td><td><code>src/robomme_xhard/tools/</code> 母 seed 清单；<code>XHARD_MOTHER_NO_FAILRECOVER</code></td></tr>
+<tr><td>R12</td><td>Unmask 系中位数的统计总体</td><td class="r-quote">14 25</td><td>按 ep&lt;100 的 25 条统计并写明</td><td>四.7 表与逐任务续审节（已按 25 条）</td></tr>
+<tr><td>R13</td><td>受保护改动（P1）</td><td class="r-quote">「15 同意」「16 同意」「17 同意」</td><td>批准 <code>task_goal.py::get_language_goal</code> 四个派生分支（VideoUnmask、ButtonUnmask、ButtonUnmaskSwap、PickHighlight）与 <code>StopCube.step</code> 中 <code>range(5)</code> 的子类覆盖；<code>RecordWrapper</code> 2000 步阈值暂不改</td><td>一节现行清单 P1 已批项；S0-P1（主会话）与 S1；<code>XHARD_P1_SCOPE</code></td></tr>
+<tr><td>R14</td><td><code>test_TaskGoal.py</code> 2 个既有失败</td><td class="r-quote">18不管</td><td>不处理，不计入回归</td><td>核心短测与 BASE 对比时排除这 2 个既有失败</td></tr>
+<tr><td>R15</td><td>补缺档的硬约束</td><td class="r-quote">6你再检查一下都不允许用新的生成的物体都只能在原先的subgo里面做排列组合。这些都否定</td><td>不新生成任何物体，只在原有物体和原有 subgoal 上排列组合；原参数域外的新取值也否定</td><td>〇节红线 R12；<code>XHARD_NO_NEW_OBJECTS</code></td></tr>
+<tr><td>R16</td><td>补缺档的具体方案</td><td class="r-quote">1.1同意 1.4同意 3.3否定 3.4否定</td><td>新增 BinFill xhard20：K=9；新增 StopCube xhard18：间隔 60、k=7；否定 VideoPlaceButton a=4/5/6 与 VideoPlaceOrder 重复访问</td><td>四.7 表；<code>envs/bin_fill.py</code>、<code>envs/stop_cube.py</code>；<code>XHARD_CONFIGS</code></td></tr>
+<tr><td>R17</td><td>七个环境的原本执行不到动作</td><td class="r-quote">1 全部保留</td><td>甲类 VideoUnmask、ButtonUnmask、VideoPlaceButton；乙类 VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick、StopCube k=6/7，全部保留</td><td>第四节审查表（不改）；S1、S2 照实现</td></tr>
+<tr><td>R18</td><td>8 帧评估范围</td><td class="r-quote">2都检查最长的一档</td><td>每任务只查最长一档：有 xhard20 的（BinFill、PickXtimes、SwingXtimes、StopCube、VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick、PatternLock、RouteStick）查 xhard20；VideoUnmask、ButtonUnmask、VideoPlaceButton 查 xhard14；PickHighlight 查 xhard18；VideoPlaceOrder 查 xhard12；MoveCube、InsertPeg 不查</td><td><code>XHARD_8FRAME_LONGEST tasks=14</code></td></tr>
+<tr><td>R19</td><td>PickXtimes、PickHighlight 档位归属</td><td class="r-quote">3同意</td><td>两个母 seed 小规模实测后按实测倍数重新归档；改档先交用户确认</td><td>四节 runbook 用户确认步骤；<code>GRADIENT_REVIEW</code></td></tr>
+<tr><td>R20</td><td>BinFill K=9 库存</td><td class="r-quote">4同意</td><td>已执行库存核对：<code>BINFILL_K9_INVENTORY=PASS seeds=10 ok=10 min_total=10</code>；ep51（seed 9102）K≥7 需按 R7 选红绿</td><td><code>envs/bin_fill.py</code>；证据 <code>artifacts/audit-1011/binfill-inventory/</code>（不进 git）</td></tr>
+<tr><td>R21</td><td>新增两档的一致性检验</td><td class="r-quote">5 现在补跑</td><td>BinFill xhard20（K=9）与 StopCube xhard18（间隔 60、k=7）的 H5 一致性检验现在补跑；已补跑完成并写入第五节（两档 <code>VS_OFFICIAL=PASS</code>，合计 <code>XHARD_VS_OFFICIAL_KEYSET=PASS files=52 pass=52</code>）</td><td>第五节 R21 补跑行与 52 档 timestep 表</td></tr>
+<tr><td>R22</td><td><code>test_step_error_handling.py</code> 2 个既有失败</td><td class="r-quote">6不动</td><td>不动，不计入回归</td><td>五节现行风险登记；核心短测对比时排除</td></tr>
+<tr><td>R23</td><td>审查脚本退出码 139 收尾段错误</td><td class="r-quote">7不动</td><td>不查，只记录</td><td>五节现行风险登记</td></tr>
+<tr><td>R24</td><td>PatternLock xhard16（552 timestep）短于 xhard14（564）</td><td class="r-quote">4不动</td><td>不改旋钮，档名照旧并标实际倍数</td><td>四.7 表说明；五节现行风险登记</td></tr>
+<tr><td>R25</td><td>与 MotionJEPA 实际所用 H5 直接比格式</td><td class="r-quote">9下载对比</td><td>从 HF bucket <code>HongzeFu/robomme-4task-h5-20260912-v2</code> 下载一两个 H5 与 xhard 产物直接比格式；主会话已派运行代理</td><td>第五节（结果回来后由主会话补）</td></tr>
+<tr><td>R26</td><td>最终生成规模</td><td class="r-quote">2最终是每个任务每个xhard12到20都生成1个 实用multiworker！</td><td>最终 = 每个任务的每个有效 xhard 档（共 52 个有效配置）各生成 1 条，多 worker 并行（<code>--workers</code> 不超过本机安全上限 32、单张空闲卡）；规模写死，最终批次前不再另设规模问题，但仍须用户看完完整计划后明确同意才开工</td><td>首页规模表；四节现行 runbook 步骤 10；运行型 R2</td></tr>
+</tbody></table>
+<p><b>规模合计：</b>有效“任务 × 难度”配置 <b>52 个</b>（xhard12 11 个、xhard14 12 个、xhard16 10 个、xhard18 10 个、xhard20 9 个）；小规模实测 2 个母 seed × 52 = <b>104 条</b>新轨迹，另按 R9 重生成 32 条母档；最终版按 R26 每任务每有效档 1 条 = <b>52 条</b>新轨迹，另重生成 16 条母档。仍缺 28 格（16 × 5 = 80 减 52）：MoveCube、InsertPeg 各 5 格；StopCube xhard12；VideoUnmask、ButtonUnmask 各 4 格；PickHighlight xhard14、xhard20；VideoPlaceButton xhard16～20；VideoPlaceOrder xhard14～20。</p>
 <h2 id="goal-review-actions">目标语义审查与实施前闸门</h2>
+<p class="muted"><strong>10-11 更新：</strong>下表“两倍长度上界”一行已按 R4 作废，<code>XHARD_LENGTH_CAP</code> 不再作硬判定，只作统计；其余拟判定行保留，现行闸门汇总见三节。</p>
 <p>全部16个任务均已覆盖。明确新增／修正goal的派生分支是 VideoUnmask、ButtonUnmask、ButtonUnmaskSwap、PickHighlight；其他任务主要靠动态变量或重建任务清单同步。没有要求修改通用 <code>subgoal_language.py</code>；它的十个序数上限仍须对候选次数做检查。下列判定是拟实施验收，当前均未动态验证，不能写为已通过。</p>
 <table><thead><tr><th>查什么</th><th>怎么查／过了说明什么</th><th>拟判定行</th></tr></thead><tbody>
 <tr><td>语言与真实动作</td><td>逐任务核对全部goal变体、每项name/subgoal、actor、func/solve/segment；母档分支文本不变，派生次数、颜色、答案一致。</td><td><code>XHARD_GOAL_SUBGOAL=PASS tasks=16 mismatches=0</code></td></tr>
@@ -1185,22 +1221,37 @@ WHITELIST=FAIL</code></pre>
 <tr><td>母布局与路径约束</td><td>BinFill按原库存分目标；PickHighlight实际足6；Pattern拒绝采样耗尽失败；Route母路径、母方向前缀和尾端连续性正确。</td><td><code>XHARD_TARGET_COUNTS=PASS</code>、<code>XHARD_PATH_CONTRACT=PASS</code></td></tr>
 </tbody></table>
 <h2 id="_13">〇、红线</h2>
-<p><strong>本次取值补充：</strong>2000环境步不再作设计上限，录像器阈值是待逐项批准的代码修改；其它受保护边界保留。VideoRepick的母档与产物difficulty均为medium。所有新参数实测值尚缺，数轴是更新后的合成估算。旧图中的BinFill／PickHighlight hard示例仍适用，不能据示例把VideoRepick强制成hard。</p>
+<p><strong>历史（已被首页新口径取代）· 本次取值补充：</strong>2000环境步不再作设计上限，录像器阈值是待逐项批准的代码修改（10-11 R13：录像器阈值暂不改）；其它受保护边界保留。VideoRepick的母档与产物difficulty均为medium。所有新参数实测值尚缺，数轴是更新后的合成估算。旧图中的BinFill／PickHighlight hard示例仍适用，不能据示例把VideoRepick强制成hard。</p>
 <ul>
-<li><strong>R1</strong> 保护目录默认零diff；仅主会话在逐项批准后可修改本轮审查修订契约所列task_goal四分支、按钮VQA派生分支及独立录像阈值项。原16个环境文件、其它wrapper、通用planner、seed_layout、metadata保持不变；子类运行覆盖同样按具体方法获批。批准前全部保持零diff，批准后逐hunk核对，不能只比文件名。</li>
-<li><strong>R2</strong> 开关关闭态逐字节不变：不传 <code>--xhard</code> 时生成器的解析结果、jobs、<code>gym.make</code> 名字、metadata 输出与 <code>BASE</code> 版本相同（<code>XHARD_BASELINE_EQ</code>）。</li>
+<li><strong>R1</strong> 保护目录默认零diff；按 10-11 R13，<code>src/robomme/</code> 只允许主会话改 <code>robomme_env/utils/task_goal.py::get_language_goal</code> 的四个派生分支（VideoUnmask、ButtonUnmask、ButtonUnmaskSwap、PickHighlight），母档分支文本逐字不变；<code>StopCube.step</code> 的 <code>range(5)</code> 只在新包子类里覆写（已批覆盖），源文件零diff。<code>vqa_options.py</code> 按钮分支未获批、<code>RecordWrapper.py</code> 2000 步阈值暂不改；实现中若证明必须改未批项，停下列“文件／函数／改什么／为什么”报批。原16个环境文件、其它wrapper、通用planner、seed_layout、metadata保持不变；合并后逐hunk核对，不能只比文件名。</li>
+<li><strong>R2</strong> 关闭态逐字节不变：不传 xhard 字面值（沿用 <code>--difficulty 211</code> 等旧比例参数）时，生成器的解析结果、jobs、<code>gym.make</code> 名字、metadata 输出与 <code>BASE</code> 版本相同（<code>XHARD_BASELINE_EQ</code>）。</li>
 <li><strong>R3</strong> seed 不换、attempt 固定 0：xhard 卡片失败不 <code>bump</code>，池损坏退回原卡片；不写任何「失败换 seed」的兜底。</li>
 <li><strong>R4</strong> 不传、不移植 <code>--binfill-demo</code>（P4）。</li>
 <li><strong>R5</strong> 不改 <code>pyproject.toml</code>、<code>uv.lock</code>（editable <code>.pth</code> 指向整个 <code>src/</code>，新包天然可 import；wheel 不含新包写进盲区）。</li>
 <li><strong>R6</strong> worktree 内子代理只跑 ≤5 分钟 CPU 测试，不 <code>gym.make</code>、不起生成；GPU 验收归合并后主会话。</li>
-<li><strong>R7</strong> 全量生成前须用户审阅步骤 5 对账表并再次说「开工」；smoke 每任务 3 条不扩（P5）。</li>
+<li><strong>R7</strong> 规模按 10-11 口径写死：小规模实测 104 条新轨迹 + 32 条母档；最终 52 条新轨迹 + 16 条母档（R26）。小规模实测结果须经用户审阅确认，最终批次另须用户单独确认，不自动接续；不擅加 reset 对拍或额外 rollout（P5）。</li>
 <li><strong>R8</strong> 子类只许改第二部分一节表列出的键 / 方法；其它键、其它方法、其它任务一律不碰，顺手修不算获准（P1 逐个批准）。Place 两任务仅按表一最大值调整任务清单与相关计数，必须保住按钮前后答案，不新增重复玩法。</li>
 <li><strong>R10</strong> 两个 Unmask 任务不加 V9 的干扰容器（<code>unmask_distractor_sampler.py</code> 等不搬），只追加第三次抓；两个 Place 任务不搬 V9 的两块循环或新布局；只采用本表的额外2组／4个不同目标。</li>
-<li><strong>R9</strong> 输出目录独立：派生档一律写 <code>artifacts/xhard/&lt;档名&gt;-&lt;日期&gt;/</code>，不与原 hard 混放（HDF5 文件名与原 hard 同名 <code>BinFill_ep3_seed4301.h5</code>，靠目录区分；<code>setup/difficulty</code> 保留母档（VideoRepick medium，其余hard））。</li>
+<li><strong>R9</strong> 输出目录独立：派生档一律写 <code>artifacts/xhard/&lt;档名&gt;-&lt;日期&gt;/</code>，不与原 hard 混放（HDF5 文件名与原 hard 同名 <code>BinFill_ep3_seed4301.h5</code>，靠目录区分；<code>setup/difficulty</code> 写对外 xhard 值，母配置另存 <code>source_difficulty</code>（VideoRepick medium，其余hard）；10-11 起目录为 <code>artifacts/xhard/&lt;run_name&gt;/&lt;阶段&gt;/&lt;difficulty&gt;/</code>）。</li>
+<li><strong>R11</strong> 选母 seed 先避开 FailRecover（R11）；母档用当前代码按同 seed 重新生成，不复用官方旧视频（R9）。</li>
+<li><strong>R12</strong> 不新生成任何物体（新方块、新颜色、新目标、新容器都不行），只在原有物体与原有 subgoal 上排列组合；原参数域外的新取值也不用（R15）。</li>
 </ul>
 <h2 id="_14">一、逐文件改动清单</h2>
+<h3 id="files-1011">现行逐文件改动清单（10-11 裁决回写，优先于下方旧表）</h3>
+<table><thead><tr><th>文件</th><th>锚点</th><th>改什么</th><th>归属</th><th>状态</th></tr></thead><tbody>
+<tr><td><code>src/robomme_xhard/__init__.py</code>、<code>base.py</code>、<code>configs.py</code>（新增）</td><td><code>XHardMixin</code>、<code>DIFFICULTIES</code>、<code>TIER_CONFIGS[task][difficulty]</code></td><td>五级 difficulty 到四.7 表 52 个固定配置的唯一映射；无档返回缺档、不复制配置凑档；对外 difficulty 与 <code>source_difficulty</code>（hard，VideoRepick medium）分开；不把 xhard 字符串塞进父类只认三档的字典</td><td>S0 主会话</td><td>拟新增</td></tr>
+<tr><td><code>src/robomme_xhard/envs/__init__.py</code></td><td>14 个子类注册</td><td>S0 建好注册与空壳模块，之后只由主会话改</td><td>S0 主会话</td><td>拟新增</td></tr>
+<tr><td><code>src/robomme_xhard/envs/</code> 九个：<code>bin_fill.py</code>、<code>pick_xtimes.py</code>、<code>swing_xtimes.py</code>、<code>stop_cube.py</code>、<code>pick_highlight.py</code>、<code>video_place_button.py</code>、<code>video_place_order.py</code>、<code>pattern_lock.py</code>、<code>route_stick.py</code></td><td>各父类 <code>config_hard</code>／<code>_load_scene</code>／<code>_initialize_episode</code>；<code>StopCube.step</code></td><td>按四.7 写固定配置；BinFill K=9 按 R7 选目标颜色；StopCube 在子类覆写 <code>step</code> 把 <code>range(5)</code> 扩到 k（R13 已批覆盖）；PatternLock／RouteStick 同 seed 不要求同路径（R8）；不新生成物体（R15）</td><td>S1</td><td>拟新增</td></tr>
+<tr><td><code>src/robomme_xhard/envs/</code> 五个：<code>video_unmask.py</code>、<code>button_unmask.py</code>、<code>video_unmask_swap.py</code>、<code>button_unmask_swap.py</code>、<code>video_repick.py</code></td><td><code>_load_scene</code>／<code>_initialize_episode</code>／<code>_refresh_swap_schedule</code></td><td>Unmask 两任务追加第三抓；交换类按固定 S 泛化调度，第 4 次起配对规则先不动（R6）；VideoRepick 用 medium 三方块</td><td>S2</td><td>拟新增</td></tr>
+<tr><td><code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code> 与 <code>src/robomme_xhard/jobs.py</code></td><td><code>_args</code>、<code>EpisodeJob</code>、<code>_run_jobs</code>、<code>_worker</code>、<code>_h5_path</code></td><td>接受 xhard12..xhard20 字面值，由母 seed 清单展开作业，attempt 固定 0，每档独立目录，worker 内绑卡并 <code>import robomme.robomme_env</code> 之后再 <code>import robomme_xhard</code>；录像必须开启且 timestep&gt;0；旧比例参数逐字节不变</td><td>S3</td><td>拟改</td></tr>
+<tr><td><code>src/robomme_xhard/tools/</code>、<code>src/robomme_xhard/tests/</code>（新增）</td><td>母 seed 清单、实测汇总、离线六栏对比 MP4；定向测试</td><td>母 seed 避开 FailRecover（R11）且满足固定母配置；测试覆盖配置唯一、difficulty 传递、同 seed、不换 seed、缺档、输出不覆盖；生产代码不依赖测试目录</td><td>S4</td><td>拟新增</td></tr>
+<tr><td><code>src/robomme/robomme_env/utils/task_goal.py</code></td><td><code>get_language_goal</code> 的 VideoUnmask、ButtonUnmask、ButtonUnmaskSwap、PickHighlight 分支</td><td>各新增派生分支（三抓文本；先按一次按钮再三抓；右起交替 P 次后两抓；PickHighlight 派生分支去掉“最后再按按钮”错文），母档分支文本逐字不变；按 R10 以当前代码输出为对照基准</td><td>S0-P1 主会话自做（受保护目录不进子代理写集）</td><td><b>P1 已批（R13）</b></td></tr>
+<tr><td><code>src/robomme/robomme_env/utils/vqa_options.py::_options_button_unmask_swap</code></td><td>—</td><td>未获批，不得改；若实现证明必须，停下报批</td><td>—</td><td>未批</td></tr>
+<tr><td><code>src/robomme/env_record_wrapper/RecordWrapper.py::step</code></td><td>2000 步保护阈值</td><td>暂不改（R13）；长轨迹触发即如实记失败、不换 seed</td><td>—</td><td>不改</td></tr>
+<tr><td>其余 <code>src/robomme/</code>、<code>pyproject.toml</code>、<code>uv.lock</code></td><td>—</td><td>零 diff（P1、P2）</td><td>—</td><td>不改</td></tr>
+</tbody></table>
 <h3 id="iface-table">接口改动总表（原第一部分二节，2026-10-08 移入）</h3>
-<p>主体改动落新包与生成器；保护目录例外以本轮审查修订契约逐项清单为准。旧“仅一处三抓文本”已扩为四个goal派生分支及按钮VQA分支；阈值项独立待批。HDF5结构、依赖、母seed及原环境源码保持原要求。</p>
+<p><strong>历史（已被首页新口径取代）：</strong>下表与本节其余旧小节中的 <code>--xhard</code>、<code>XHard1</code>、<code>setup/difficulty</code> 保留母档、按钮 VQA 分支与录像阈值待批等写法，均已被上方现行清单取代，方法级细节仅在不冲突处作参考。主体改动落新包与生成器；保护目录例外以本轮审查修订契约逐项清单为准。旧“仅一处三抓文本”已扩为四个goal派生分支及按钮VQA分支；阈值项独立待批。HDF5结构、依赖、母seed及原环境源码保持原要求。</p>
 <table>
 <thead>
 <tr>
@@ -1741,6 +1792,30 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 - <code>test_unmask_three_colors_goal</code>：对 <code>task_goal.py</code> 新分支用假 env（<code>xhard_pick_count=3</code>、三色）断言文本含三个颜色且 2 抓文本逐字不变（批准改 <code>task_goal.py</code> 后才启用）。
 - 另有 <code>tests/lightweight/test_robomme_xhard_spec.py</code>（标 <code>gpu, slow</code>，主检出跑）：对 14 个子类 <code>gym.make(名, obs_mode=..., difficulty=&lt;母档&gt;, seed=&lt;该母档首条 seed&gt;)</code>，母档为VideoRepick medium／其余hard；断言 <code>unwrapped.spec.id</code> 原名、外层 <code>spec.id</code> 原名、<code>entry_point</code> 不变、<code>isinstance(env.unwrapped, 父类)</code>。</p>
 <h2 id="_15">二、子代理分配表</h2>
+<h3 id="agents-1011">现行子代理分配表（实现阶段，2026-10-11）</h3>
+<p>模型按 <code>AGENTS.md</code> 第 26 条：探索 <code>haiku</code> 只读按需派、写入与运行 <code>opus</code>、审查 <code>sonnet</code>。写入型一律 <code>isolation: "worktree"</code>，每次 git 命令单独一次 Bash，提交前缀 <code>sub/&lt;编号&gt;: </code>，不 push、不合主分支；worktree 内只跑 CPU 轻量测试，<code>gym.make</code> 类验收合并后由主会话在主检出串行跑。worktree 环境取法：先 <code>UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -c "import robomme_xhard;print(robomme_xhard.__file__)"</code> 确认落在 <code>&lt;worktree&gt;/src/</code>。共享文件单一 owner；P1 已批的受保护改动不进任何子代理写集。</p>
+<table id="agents-1011-table"><thead><tr><th>子任务编号</th><th>目标</th><th>可写文件集合</th><th>禁触路径</th><th>接口契约与依赖</th><th>合并顺序</th><th>验收命令与判定行（在哪里、什么环境）</th><th>资源占用</th><th>共享文件归属</th></tr></thead><tbody>
+<tr><td>S0（主会话自做）</td><td>新包骨架、五档配置表、子类注册空壳</td><td><code>src/robomme_xhard/__init__.py</code>、<code>base.py</code>、<code>configs.py</code>、<code>envs/__init__.py</code> 与 14 个空壳模块</td><td><code>src/robomme/</code>、生成器</td><td>定死 <code>TIER_CONFIGS</code>（52 项）、子类名、<code>source_difficulty</code> 字段；S1～S4 全部依赖它。理由：公共契约切不开，先由单一写者定稿</td><td>第 1（主会话直接提交）</td><td>主检出：<code>uv run --no-sync python -c "from robomme_xhard.configs import TIER_CONFIGS as T;print(sum(len(v) for v in T.values()))"</code> → <code>XHARD_CONFIGS=PASS configs=52 dup=0</code></td><td>CPU</td><td>14 个空壳模块提交后移交 S1／S2；<code>envs/__init__.py</code> 始终归主会话</td></tr>
+<tr><td>S0-P1（主会话自做）</td><td><code>task_goal.py</code> 四个派生分支（R13 已批）</td><td><code>src/robomme/robomme_env/utils/task_goal.py</code> 的四个分支</td><td>该文件其余分支与 <code>src/robomme/</code> 其余文件</td><td>派生分支读取实际 p／P／颜色；母档分支逐字不变。理由：受保护目录不进子代理写集（第 2、21 条）</td><td>第 2（主会话直接提交）</td><td>主检出：<code>git diff HEAD~1 -- src/robomme/</code> 只含四分支 hunk → <code>XHARD_P1_SCOPE=PASS files=1 branches=4</code></td><td>CPU</td><td>主会话独占</td></tr>
+<tr><td>S1（opus，worktree）</td><td>九个任务子类</td><td><code>src/robomme_xhard/envs/</code>：<code>bin_fill.py</code>、<code>pick_xtimes.py</code>、<code>swing_xtimes.py</code>、<code>stop_cube.py</code>、<code>pick_highlight.py</code>、<code>video_place_button.py</code>、<code>video_place_order.py</code>、<code>pattern_lock.py</code>、<code>route_stick.py</code>；<code>src/robomme_xhard/tests/test_s1_configs.py</code></td><td><code>src/robomme/</code>、<code>configs.py</code>、<code>envs/__init__.py</code>、S2 的五个文件、生成器</td><td>读 S0 的 <code>TIER_CONFIGS</code>；StopCube 子类覆写 <code>step</code>（R13 已批覆盖）；不新生成物体（R15）</td><td>第 3</td><td>worktree：<code>UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -m pytest src/robomme_xhard/tests/test_s1_configs.py -q -m 'not gpu'</code> → <code>XHARD_S1_CPU=PASS envs=9</code></td><td>CPU，不占 GPU</td><td>九个文件归 S1</td></tr>
+<tr><td>S2（opus，worktree）</td><td>五个 Unmask／交换类子类</td><td><code>src/robomme_xhard/envs/</code>：<code>video_unmask.py</code>、<code>button_unmask.py</code>、<code>video_unmask_swap.py</code>、<code>button_unmask_swap.py</code>、<code>video_repick.py</code>；<code>src/robomme_xhard/tests/test_s2_configs.py</code></td><td>同 S1，另禁 S1 的九个文件</td><td>读 <code>TIER_CONFIGS</code>；第 4 次起配对规则不动（R6）；VideoRepick medium；与 S1 无文件交集，可并行</td><td>第 4</td><td>worktree：<code>UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -m pytest src/robomme_xhard/tests/test_s2_configs.py -q -m 'not gpu'</code> → <code>XHARD_S2_CPU=PASS envs=5</code></td><td>CPU</td><td>五个文件归 S2</td></tr>
+<tr><td>S3（opus，worktree）</td><td>生成器开关与作业构建</td><td><code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code>、<code>src/robomme_xhard/jobs.py</code>、<code>src/robomme_xhard/tests/test_jobs.py</code></td><td><code>src/robomme/</code>、<code>seed_layout.py</code>、envs 子类</td><td>只依赖 S0 的子类名与 <code>TIER_CONFIGS</code>；attempt=0、母 seed 清单展开、每档独立目录、worker 内绑卡后再 <code>import robomme_xhard</code>、断言录像开启；旧比例参数逐字节不变</td><td>第 5</td><td>worktree：<code>UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -m pytest src/robomme_xhard/tests/test_jobs.py -q -m 'not gpu'</code> → <code>XHARD_BASELINE_EQ=PASS</code>、<code>XHARD_JOBS=PASS jobs=52 attempt0=1</code></td><td>CPU</td><td>生成器归 S3</td></tr>
+<tr><td>S4（opus，worktree）</td><td>定向测试、母 seed 清单与对比视频工具</td><td><code>src/robomme_xhard/tools/</code>、<code>src/robomme_xhard/tests/test_contract.py</code></td><td>S1～S3 的文件、<code>configs.py</code>、<code>src/robomme/</code></td><td>母 seed 清单每任务 2 个、避开 FailRecover（R11）、满足固定母配置；只读已有数据，不起仿真；可与 S1～S3 并行写，合并放最后</td><td>第 6</td><td>worktree：<code>UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -m pytest src/robomme_xhard/tests/test_contract.py -q -m 'not gpu'</code> → <code>XHARD_TESTS_CPU=PASS</code>、<code>XHARD_MOTHER_NO_FAILRECOVER=PASS seeds=32</code></td><td>CPU</td><td>tools、test_contract 归 S4</td></tr>
+<tr><td>REV（sonnet，只读）</td><td>每次合并前审查</td><td>无</td><td>一切写入</td><td>钉死 <code>REVIEW_BASE</code>／<code>REVIEW_TIP</code>，只许 <code>git diff/log/show</code> 两 sha 之间</td><td>每个分支合并前一个</td><td><code>PRE_MERGE_REVIEW=PASS|FAIL base=&lt;sha&gt; tip=&lt;sha&gt; files=&lt;n&gt; commits=&lt;n&gt; findings=&lt;n&gt;</code></td><td>无</td><td>—</td></tr>
+<tr><td>R1（opus，运行型）</td><td>小规模实测：104 条新轨迹 + 32 条母档</td><td>只写授权产物与日志</td><td>代码、配置、依赖、启动脚本</td><td>主会话合完 S1～S4、GPU 首条通过后交付确定 HEAD 与命令；见四节现行 runbook 步骤 7</td><td>—</td><td>主检出：日志出现首个 <code>succeeded with seed</code> 且无 <code>Traceback</code> 即起跑成功；交回 tmux 名、日志绝对路径</td><td>1 张现场核实空闲的 GPU，<code>--workers 4</code>；tmux <code>xh-pilot-&lt;MMDD&gt;</code></td><td>预算、监听、<code>tmux kill-session</code> 归主会话</td></tr>
+<tr><td>R2（opus，运行型）</td><td>最终批次：52 条新轨迹 + 16 条母档（R26）</td><td>同 R1</td><td>同 R1</td><td>用户审阅小规模结果并单独确认最终批次、主会话打 Beta 锚点后才派</td><td>—</td><td>同 R1；跑完 <code>XHARD_FINAL=PASS configs=52 mothers=16</code> 由主会话判定</td><td>1 张空闲 GPU，<code>--workers</code> ≤32（本机安全上限）；tmux <code>xh-final-&lt;MMDD&gt;</code></td><td>同 R1</td></tr>
+<tr><td>探索（haiku，只读）</td><td>按需检索锚点、日志</td><td>无</td><td>一切写入与有副作用命令</td><td>无需预列</td><td>—</td><td>主会话打开原文核实</td><td>无</td><td>—</td></tr>
+</tbody></table>
+<p><b>运行型命令（R1；R2 同形，只换阶段名、会话名与 <code>--workers</code>）：</b></p>
+<pre><code>tmux new-session -d -s xh-pilot-&lt;MMDD&gt; \
+  "set -o pipefail; cd /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006; CUDA_VISIBLE_DEVICES=&lt;现场核实的空闲卡&gt; PYTHONUNBUFFERED=1 \
+   uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py \
+   --difficulty xhard12,xhard14,xhard16,xhard18,xhard20 --mother-manifest artifacts/xhard/&lt;run_name&gt;/mother_seeds.json \
+   --with-mother --workers 4 --outdir artifacts/xhard/&lt;run_name&gt;/pilot 2&gt;&amp;1 | tee artifacts/xhard/&lt;run_name&gt;/logs/pilot.log; \
+   echo \"EXIT_CODE=\$?\" &gt;&gt; artifacts/xhard/&lt;run_name&gt;/logs/pilot.log"</code></pre>
+<p>参数名 <code>--mother-manifest</code>、<code>--with-mother</code> 是拟定接口，由 S3 定稿，名字变化须回写本表后再派运行代理。起跑判据：10 分钟内日志出现首个 <code>succeeded with seed</code>，且没有 <code>Traceback</code>、<code>BrokenProcessPool</code>、<code>进程池已损坏</code>、<code>svulkan2</code>、<code>out of memory</code>、<code>NO RECORD</code>。失败处置：运行代理不改代码、不换 seed、不重试正常失败，收集日志交回主会话；基础设施故障最多重试 1 次并记录原因。监听由主会话按一份日志一个 Monitor 挂过滤（<code>succeeded with seed|EXIT_CODE=|failed|进程池已损坏|ERROR:|Traceback|BrokenProcessPool|svulkan2|out of memory|NO RECORD</code>），会话清单登记在 <code>launch.md</code>。</p>
+<p>派发前核对：<code>~/.claude/settings.json</code> 的 <code>worktree.baseRef</code> 为 <code>"head"</code>；记录 <code>git status --short --ignore-submodules=dirty -- . ':!docs/subagent-stats'</code> 并固定 <code>BASE</code>；<code>git check-ignore -q .claude/worktrees/probe</code>；<code>git worktree list</code> 存档。</p>
+<details class="history"><summary>历史（已被首页新口径取代）：原子代理分工示意图与 S1～S4／R1 旧派发表（含 <code>--xhard</code>、全量 650 条等旧口径）</summary>
 <figure id="fig-D5">
 <p>历史分工示意仅供理解依赖；具体方法、保护项与闸门已按本轮审查修订契约更新，以下方派发表为准。</p>
 <svg role="img" aria-label="图 5　子代理分工与合并顺序：S0 骨架 → S1～S4 并行 → 逐个两次审查合并 → GPU 验收 → 全量" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1198" width="1100" height="1198" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#555"/></marker></defs><rect x="0" y="0" width="1100" height="1198" fill="#ffffff"/><text x="550" y="30" font-size="19" font-weight="bold" text-anchor="middle" fill="#2b2b2b">计划 1006-xhard12：子代理分工与合并流程</text>
@@ -2060,7 +2135,24 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 </tbody>
 </table>
 <p>派发前核对：<code>~/.claude/settings.json</code> 的 <code>worktree.baseRef</code> 为 <code>"head"</code>（当前文件没有这一项，派发前先补）；<code>git status --short --ignore-submodules=dirty -- . ':!docs/subagent-stats'</code> 为空；<code>git check-ignore -q .claude/worktrees/probe</code>；<code>git worktree list</code> 存档。</p>
+</details>
 <h2 id="_16">三、闸门总表</h2>
+<h3 id="gates-1011">现行闸门（10-11）</h3>
+<table><thead><tr><th>闸门</th><th>怎么查</th><th>判定行</th></tr></thead><tbody>
+<tr><td>配置唯一</td><td><code>TIER_CONFIGS</code> 共 52 项、无重复配置</td><td><code>XHARD_CONFIGS=PASS configs=52 dup=0</code></td></tr>
+<tr><td>difficulty 传递</td><td>job、metadata、HDF5 <code>setup/difficulty</code> 都是对应 xhard 值，<code>source_difficulty</code> 另存</td><td><code>DIFFICULTY_LABEL=PASS files=&lt;n&gt;</code></td></tr>
+<tr><td>同 seed、不换 seed</td><td>只核 seed 相等与 attempt=0，不要求同路径（R8）</td><td><code>SAME_MOTHER_SEED=PASS</code></td></tr>
+<tr><td>母档重生成</td><td>母档由当前代码按同 seed 生成（R9）</td><td><code>XHARD_MOTHER_REGEN=PASS mothers=32</code>（最终 16）</td></tr>
+<tr><td>避开 FailRecover</td><td>母 seed 清单不含 FailRecover episode（R11）</td><td><code>XHARD_MOTHER_NO_FAILRECOVER=PASS seeds=32</code></td></tr>
+<tr><td>录像非空</td><td>录像开启且每个 HDF5 timestep&gt;0（审查脚本 <code>save_video=False</code> 坑）</td><td><code>XHARD_RECORD_NONEMPTY=PASS files=&lt;n&gt;</code></td></tr>
+<tr><td>8 帧遗漏</td><td>只查 R18 名单的每任务最长一档</td><td><code>XHARD_8FRAME_LONGEST=PASS tasks=14</code></td></tr>
+<tr><td>不新增物体</td><td>新档 actor 种类与数量不超出母环境可生成范围（R15）</td><td><code>XHARD_NO_NEW_OBJECTS=PASS tasks=14</code></td></tr>
+<tr><td>保护目录</td><td><code>git diff BASE..HEAD -- src/robomme/</code> 只含 <code>task_goal.py</code> 四分支</td><td><code>XHARD_P1_SCOPE=PASS files=1 branches=4</code></td></tr>
+<tr><td>核心短测</td><td><code>timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q</code>；排除 R14、R22 既有失败</td><td><code>POST_MERGE_REVIEW=PASS merge=&lt;sha&gt; tests=&lt;结果&gt; files=&lt;n&gt;</code></td></tr>
+<tr><td>长度梯度</td><td>逐条实测倍数，交用户审阅；低于档名按 R3、R24 照旧命名</td><td><code>GRADIENT_REVIEW=INFO</code>（用户裁决）</td></tr>
+<tr><td>两倍上界</td><td>作废（R4）</td><td><code>XHARD_LENGTH_CAP</code> 不再判定</td></tr>
+</tbody></table>
+<details class="history"><summary>历史（已被首页新口径取代）：旧闸门总表（含两倍上界、<code>--xhard</code> 关闭态等旧写法）</summary>
 <p>以下原有闸门与本部分“目标语义审查与实施前闸门”的 <code>XHARD_GOAL_SUBGOAL</code>、按钮状态/grounding/落定、<code>XHARD_LENGTH_CAP</code>、<code>XHARD_PLACE_ANSWER</code>、目标数/路径契约闸门共同构成验收。旧 <code>XHARD_LENGTH=INFO</code> 仅作统计，不能代替真实中位两倍上界硬判定；所有新闸门当前待实施验证。</p>
 <table>
 <thead>
@@ -2128,7 +2220,24 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 </tr>
 </tbody>
 </table>
+</details>
 <h2 id="runbook">四、runbook（主会话）</h2>
+<h3 id="runbook-1011">现行 runbook（10-11）</h3>
+<table><thead><tr><th>步骤</th><th>内容</th><th>判据</th></tr></thead><tbody>
+<tr><td>0</td><td>用户看完本版完整计划，不提修改而明确同意（开工令）</td><td>无开工令不动代码</td></tr>
+<tr><td>1</td><td>前置核对：派发前四项；<code>git diff --quiet HEAD -- src/robomme/</code>；<code>uv run --no-sync python -c "import robomme;print(robomme.__file__)"</code> 指向本仓库 <code>src/</code></td><td>全部通过</td></tr>
+<tr><td>2</td><td>主会话 S0 骨架与配置表、S0-P1 <code>task_goal.py</code> 四分支，各自提交并 push</td><td><code>XHARD_CONFIGS=PASS configs=52</code>、<code>XHARD_P1_SCOPE=PASS</code></td></tr>
+<tr><td>3</td><td>同一决策点并行派 S1、S2、S3、S4（worktree，opus）</td><td>各自 CPU 判定行</td></tr>
+<tr><td>4</td><td>按 S1→S2→S3→S4 逐个：合并前审查 → <code>--no-ff</code> 合 TIP sha → 合并后审查 → push</td><td><code>PRE_MERGE_REVIEW=PASS</code>、<code>POST_MERGE_REVIEW=PASS</code></td></tr>
+<tr><td>5</td><td>主会话在主检出串行跑 GPU 首条：1 任务 / 1 seed / 1 档 / 1 worker（计入 104 条）</td><td><code>DIFFICULTY_LABEL=PASS</code>、<code>XHARD_RECORD_NONEMPTY=PASS</code>、<code>task_success</code> 照实</td></tr>
+<tr><td>6</td><td>S4 工具出母 seed 清单（每任务 2 个，锁定第一个给最终版）</td><td><code>XHARD_MOTHER_NO_FAILRECOVER=PASS seeds=32</code></td></tr>
+<tr><td>7</td><td>派 R1：小规模实测 104 条新轨迹 + 32 条母档，<code>--workers 4</code>，单卡，tmux <code>xh-pilot-&lt;MMDD&gt;</code></td><td>起跑判据见二节；完成看 <code>EXIT_CODE=0</code></td></tr>
+<tr><td>8</td><td>主会话汇总：逐条实测表、<code>GRADIENT_REVIEW</code>、<code>XHARD_8FRAME_LONGEST</code>、一支对比 MP4；按 R19 给 PickXtimes、PickHighlight 重新归档建议</td><td>交用户</td></tr>
+<tr><td>9</td><td>用户审阅并确认改动；需要改旋钮时先展示改动、获准后只做定向复测</td><td>用户确认</td></tr>
+<tr><td>10</td><td>最终批次须用户单独确认，不自动接续；按第 13 条打 Beta 锚点、建 <code>docs/xhard-doc/&lt;run_name&gt;/</code>，派 R2：每任务每有效档 1 条共 52 条 + 16 条母档（R26），<code>--workers</code> ≤32，单卡，tmux <code>xh-final-&lt;MMDD&gt;</code></td><td><code>XHARD_FINAL=PASS configs=52 mothers=16</code>、<code>COMPARE_VIDEO</code></td></tr>
+<tr><td>11</td><td>收尾：清洗日志、<code>result.md</code>、commit、push；按会话清单逐个 <code>tmux kill-session -t '=名'</code>，删前删后各 <code>tmux ls</code></td><td>差集只少目标会话</td></tr>
+</tbody></table>
+<details class="history"><summary>历史（已被首页新口径取代）：旧 runbook（含 <code>--xhard</code>、smoke 每任务 3 条、全量 650 条等旧流程）</summary>
 <p>起跑前附加闸门：<code>RecordWrapper.py::step</code> 阈值改动逐项获批并通过关闭态／超长保护验证后才运行长轨迹，输出 <code>XHARD_RECORD_LIMIT=PASS</code>；未获批或未通过时停止起跑，不将2000步当成布局可行性上限。本轮仅更新HTML，不执行该代码修改。新数轴已内联，不运行仍含旧取值的 <code>align_section.py --write</code> 或旧合成脚本覆盖本版。</p>
 <figure id="fig-D1">
 <svg role="img" aria-label="图 1　实施步骤总览（开工 → 步骤 1～7）与 --xhard 数据链路五跳（以 BinFill xhard1 为例）" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1670" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">
@@ -2261,7 +2370,21 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 <li><strong>监听</strong>：<code>tail -n +1 -F artifacts/xhard/logs/xh-full.log | stdbuf -oL tr '\r' '\n' | grep --line-buffered -E "succeeded with seed|failed|进程池已损坏|ERROR:|Traceback|BrokenProcessPool|svulkan2|out of memory|EXIT_CODE="</code>；一份日志一个 Monitor。</li>
 <li><strong>收尾</strong>：<code>run_summary.json</code>、每任务 metadata 条数、<code>XHARD_FULL</code> 行；数轴图按留档 4.1 节切段口径，用 <code>vis/v2_plot.py</code> 的 V2 画法出实测图，每次 swap 画竖带，与 <code>vis/output/</code> 的合成参考并排；<code>docs/xhard-doc/&lt;档案名&gt;/{launch.md,result.md,records/}</code>；commit、push；smoke 产物按第 6 条清理（只删核实属于本轮的 <code>artifacts/xhard/smoke-*</code>，先 <code>ls -ld</code>）。</li>
 </ol>
+</details>
 <h2 id="_17">五、风险登记</h2>
+<h3 id="risks-1011">现行风险登记（10-11，只作已知风险，不改审查脚本）</h3>
+<table><thead><tr><th>项</th><th>说明</th><th>处置</th></tr></thead><tbody>
+<tr><td>PatternLock xhard16 短于 xhard14</td><td>审查实测 552 对 564 timestep，整条重抽（R8）导致路径移动段长度差异</td><td>R24：不改旋钮、档名照旧、标实际倍数；小规模实测照实记录</td></tr>
+<tr><td>审查脚本退出码 139 收尾段错误</td><td>未定位，产物不受影响</td><td>R23：不查，只记录；正式生成器不复用审查脚本，按 <code>EXIT_CODE</code> 与产物完整性分别判定</td></tr>
+<tr><td>VideoRepick、InsertPeg 审查脚本 <code>save_video=False</code></td><td><code>RobommeRecordWrapper.step</code> 只在录像时缓存，HDF5 会 0 timestep 且不报错</td><td>正式生成器断言录像开启且 timestep&gt;0（<code>XHARD_RECORD_NONEMPTY</code>）</td></tr>
+<tr><td>MoveCube、PatternLock 审查脚本写死 GPU 0</td><td>与正式运行可能抢卡</td><td>正式运行用 <code>CUDA_VISIBLE_DEVICES</code> 指定现场核实的空闲卡</td></tr>
+<tr><td>录像器 2000 步保护未改</td><td>R13 暂不改；BinFill K=9（估算 1768.5 timestep）、VideoRepick S=15 等最长档可能接近</td><td>触发即如实记失败，不换 seed，交用户</td></tr>
+<tr><td>交换第 4 次起配对退化</td><td>审查实测 VideoUnmaskSwap 第二抓丢失 grounding 坐标</td><td>R6：先不动，实测表标注</td></tr>
+<tr><td>新增两档只有单 seed 实测</td><td>R21 补跑：BinFill K=9 为 1815 timestep（×2.16），StopCube 间隔 60 k=7 为 423 timestep（×1.78），各 1 个 seed</td><td>一致性已 PASS（第五节）；长度梯度以小规模实测为准</td></tr>
+<tr><td>既有测试失败</td><td><code>test_TaskGoal.py</code> 2 个（R14）、<code>test_step_error_handling.py</code> 2 个（R22）</td><td>不动，核心短测对比 BASE 时排除</td></tr>
+<tr><td>母任务判据宽松边界</td><td>审查确认原判据偏宽</td><td>R1：全部不动</td></tr>
+</tbody></table>
+<p class="muted"><strong>历史（部分条目已被 R1–R26 取代）：</strong>下面是旧风险登记，涉及两倍上界、<code>--xhard</code>、2L−1／2S 的条目以上表与 R1–R26 为准。</p>
 <table>
 <thead>
 <tr>
@@ -2356,7 +2479,7 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 <li><code>XHARD_SMOKE_LIMIT</code> 环境变量是本轮新增的测试便利，不是正式接口；全量不设。</li>
 <li>VideoRepick仅改medium的swap；第4次及以后动态配对与hold录制增量待前置验证⑤，不能改num_repeats。</li>
 <li><code>make_vec</code> 路径未验证（本仓库不走）。</li>
-<li><code>XHard2</code> 档只预留名字，不写数。</li>
+<li>（历史，已被首页新口径取代）<code>XHard2</code> 档只预留名字，不写数。</li>
 <li>Place母样本长度为官方hard实测，新两组/四目标时长仍是估算；真实答案关系由XHARD_PLACE_ANSWER核验，长度另受任务母中位两倍上界约束，不要求新旧逐条等长。</li>
 <li>Unmask 两任务 pick 3 的长度参考 V9 xhard2（带 4 个干扰容器）实测均值 475 / 526 timestep，本轮不加干扰，预计略短。</li>
 <li>实测数轴图用 <code>vis/v2_plot.py</code>，不改 <code>scripts/patternlock-routestick-params/</code>。</li>
@@ -2365,7 +2488,7 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 <h2 id="commit">七、留档与 commit 纪律</h2>
 <ul>
 <li>S1–S4 各经 <code>--no-ff</code> 合并占一个 <code>2.&lt;n&gt;</code>；保护清单中获批改动按实际函数分支留档并提交，body 写用户批准原话；子代理提交前缀 <code>sub/S&lt;k&gt;:</code>；S0、<code>envs/__init__.py</code>、留档由主会话按第 11 条六项 body 提交，含第一部分一节的用户原话。</li>
-<li>全量生成按第 13 条：起跑前 <code>2.&lt;n&gt;Beta</code> 锚点，<code>docs/xhard-doc/xhard1-&lt;日期&gt;/launch.md</code>（起跑即写：HEAD、命令原文、tmux 会话名、日志路径、<code>XHARD_*</code> 前置判定行）、<code>result.md</code>（跑完写：每任务条数、<code>XHARD_FULL</code>、<code>XHARD_LENGTH</code> 对账表、数轴图、结论边界）、<code>records/</code>（清洗后日志 <code>tr '\r' '\n' | grep -vE '%\|'</code>、统计 JSON、临时脚本逐字副本）；不归档 h5/mp4。</li>
+<li>全量生成按第 13 条：起跑前 <code>2.&lt;n&gt;Beta</code> 锚点，<code>docs/xhard-doc/&lt;run_name&gt;/launch.md</code>（起跑即写：HEAD、命令原文、tmux 会话名、日志路径、<code>XHARD_*</code> 前置判定行）、<code>result.md</code>（跑完写：每任务条数、<code>XHARD_FULL</code>、<code>XHARD_LENGTH</code> 对账表、数轴图、结论边界）、<code>records/</code>（清洗后日志 <code>tr '\r' '\n' | grep -vE '%\|'</code>、统计 JSON、临时脚本逐字副本）；不归档 h5/mp4。</li>
 <li>留档根 <code>docs/</code> 新建；<code>docs/ledger/</code> 只读不动。</li>
 </ul>
 <h2 id="_19">八、逐任务源码依据与估算公式</h2>
@@ -2387,6 +2510,7 @@ def jobs_from_metadata(tasks, split, xhard, output_root, repo_root, job_cls):
 </ol>
 <p>前置验证的结论（实施时填写）：①spec拦截待验；②Pattern精确路径与耗尽失败待验；③ButtonUnmaskSwap重复按/交换落定待验；④BinFill九目标库存与母布局待验；⑤Repick长交换及录制映射待验；⑥Place新版答案关系待验（旧“取消”不再适用）；⑦保护清单逐项批准待取得。</p>
 <h2 id="appendix-old-part1">九、原第一部分二、三节的分步讲解（2026-10-08 压缩第一部分时移入，原文未改）</h2>
+<p class="muted"><strong>历史（已被首页新口径取代）：</strong>本节的 <code>--xhard</code>、<code>&lt;Task&gt;XHard1</code>、<code>setup/difficulty</code> 保留母档等写法只作追溯。</p>
 <p>以下两节原在第一部分，讲现有生成器怎么跑、新参数怎么接、子类为什么够；压缩后第一部分只留接口表与逐环境对齐，这里逐字留档供 agent 追踪。</p>
 <h3 id="_3">二、现在的脚本是怎么传参的，新参数接在哪里</h3>
 <h4 id="binfill">先看现在的脚本是怎么跑的，用 BinFill 举例分五步走</h4>
