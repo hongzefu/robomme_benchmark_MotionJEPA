@@ -99,7 +99,11 @@ def get_language_goal(self, env):
         color_names = getattr(self.env.unwrapped, "color_names", ["unknown", "unknown", "unknown"])
         cube_0_color = color_names[0]
         cube_1_color = color_names[1]
-        if self.env.unwrapped.configs[self.difficulty]['pick'] > 1:
+        # xhard 派生分支（robomme_xhard，三抓）；母档分支文本不变
+        if (getattr(self.env.unwrapped, "xhard_knobs", None) or {}).get("pick_count") == 3:
+            cube_2_color = color_names[2]
+            language_goals.append(f"watch the video carefully, then pick up the container hiding the {cube_0_color} cube, then pick up another container hiding the {cube_1_color} cube, put down that container, finally pick up another container hiding the {cube_2_color} cube")
+        elif self.env.unwrapped.configs[self.difficulty]['pick'] > 1:
             language_goals.append(f"watch the video carefully, then pick up the container hiding the {cube_0_color} cube, finally pick up another container hiding the {cube_1_color} cube")
         else:
             language_goals.append(f"watch the video carefully, then pick up the container hiding the {cube_0_color} cube")
@@ -117,7 +121,11 @@ def get_language_goal(self, env):
         color_names = getattr(self.env.unwrapped, "color_names", ["unknown", "unknown", "unknown"])
         cube_0_color = color_names[0]
         cube_1_color = color_names[1]
-        if self.env.unwrapped.configs[self.difficulty]['pick'] > 1:
+        # xhard 派生分支（robomme_xhard，先按一次按钮再三抓）；母档分支文本不变
+        if (getattr(self.env.unwrapped, "xhard_knobs", None) or {}).get("pick_count") == 3:
+            cube_2_color = color_names[2]
+            language_goals.append(f"first press the button, then pick up the container hiding the {cube_0_color} cube, then pick up another container hiding the {cube_1_color} cube, put down that container, finally pick up another container hiding the {cube_2_color} cube")
+        elif self.env.unwrapped.configs[self.difficulty]['pick'] > 1:
             language_goals.append(f"first press the button, then pick up the container hiding the {cube_0_color} cube, finally pick up another container hiding the {cube_1_color} cube")
         else:
             language_goals.append(f"first press the button, then pick up the container hiding the {cube_0_color} cube")
@@ -126,7 +134,20 @@ def get_language_goal(self, env):
         color_names = getattr(self.env.unwrapped, "color_names", ["unknown", "unknown", "unknown"])
         cube_0_color = color_names[0]
         cube_1_color = color_names[1]
-        if self.pick_times == 2:
+        press_count = (getattr(self.env.unwrapped, "xhard_knobs", None) or {}).get("press_count")
+        # xhard 派生分支（robomme_xhard，右起交替按压 P 次；first 指右按钮、second 指左按钮）；母档分支文本不变
+        if press_count:
+            button_names = ["first" if i % 2 == 0 else "second" for i in range(press_count)]
+            press_phrase = f"press the {button_names[0]} button"
+            for i, name in enumerate(button_names[1:], start=1):
+                press_phrase += f", and then the {name} button" if i == press_count - 1 else f", then the {name} button"
+            swap_times = getattr(self.env.unwrapped, "swap_times", 0)
+            swap_word = num2words.get(swap_times, str(swap_times))
+            if self.pick_times == 2:
+                language_goals.append(f"{press_phrase}; after all {swap_word} swaps have finished, pick up the container hiding the {cube_0_color} cube, put down the container, then pick up another container hiding the {cube_1_color} cube")
+            else:
+                language_goals.append(f"{press_phrase}; after all {swap_word} swaps have finished, pick up the container hiding the {cube_0_color} cube")
+        elif self.pick_times == 2:
             language_goals.append(f"first press both buttons on the table, then pick up the container hiding the {cube_0_color} cube, finally pick up another container hiding the {cube_1_color} cube")
         else:
             language_goals.append(f"first press both buttons on the table, then pick up the container hiding the {cube_0_color} cube")
@@ -154,7 +175,11 @@ def get_language_goal(self, env):
 
     elif env == 'PickHighlight':
         language_goals.append(f"first press the button, then pick up all cubes that have been highlighteted with white areas on the table")
-        language_goals.append(f"first press the button, then pick up all highlighted cubes, finally press the button again to stop")
+        # xhard 派生分支（robomme_xhard）去掉没有对应任务的末按钮文字；母档分支文本不变
+        if getattr(self.env.unwrapped, "xhard_label", None):
+            language_goals.append(f"first press the button, then pick up all highlighted cubes")
+        else:
+            language_goals.append(f"first press the button, then pick up all highlighted cubes, finally press the button again to stop")
 
     elif env == "VideoRepick":
         num_repeats = self.num_repeats
