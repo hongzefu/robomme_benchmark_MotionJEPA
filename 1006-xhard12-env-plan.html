@@ -787,6 +787,48 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <p>上述 7 个环境的这些档经用户裁决全部保留（原话「1 全部保留」）；用户此前预期是“只有 VideoPlaceButton 会有”。</p>
 
 <h2 id="p1-h5">五、H5 产物一致性检验（xhard12～xhard20 全档，2026-10-11）</h2>
+<section id="p1-h5-plain">
+<p class="muted"><small>来源：用户原话「http://sled-aspen.eecs.umich.edu:8092/h5.html没看懂这一部分是给人干的告诉我为什么是一致」「改，写进第五节最前面」</small></p>
+<h3>这一节回答什么</h3>
+<p>只回答一个问题：按 xhard 方案生成的 H5，格式和 MotionJEPA 之前用的 H5 是不是一样、能不能直接拿去训练。</p>
+<h3>「一致」指什么</h3>
+<p>H5 像一个装数据的盒子，每个 timestep 有固定的格子：前视角图像、手腕图像、深度、关节角、动作、subgoal 文字、「这一步是不是视频演示」、「任务是否完成」。<b>一致</b>是指格子的种类、名字、数据类型、尺寸都一样（例：前视角图像都是 256×256×3 的 uint8）。<b>本来就该不同</b>的是盒子里装的内容（轨迹多长、抓几次、交换几次），xhard 就是要改这些。所以这里只检验盒子一样，不检验内容一样。</p>
+<figure>
+<svg viewBox="0 0 640 330" width="100%" role="img" aria-label="官方 H5 与 xhard H5 格子对照：格子相同，内容不同" xmlns="http://www.w3.org/2000/svg" style="max-width:640px;font-family:inherit">
+<rect x="20" y="10" width="240" height="270" rx="8" fill="var(--code)" stroke="var(--border)"/>
+<rect x="380" y="10" width="240" height="270" rx="8" fill="var(--code)" stroke="var(--border)"/>
+<text x="140" y="34" text-anchor="middle" font-size="15" font-weight="bold" fill="var(--fg)">官方 H5</text>
+<text x="500" y="34" text-anchor="middle" font-size="15" font-weight="bold" fill="var(--fg)">xhard H5</text>
+<g font-size="13" fill="var(--fg)">
+<text x="40" y="66">前视角图像</text><text x="400" y="66">前视角图像</text>
+<text x="40" y="94">手腕图像</text><text x="400" y="94">手腕图像</text>
+<text x="40" y="122">深度</text><text x="400" y="122">深度</text>
+<text x="40" y="150">关节角</text><text x="400" y="150">关节角</text>
+<text x="40" y="178">动作</text><text x="400" y="178">动作</text>
+<text x="40" y="206">subgoal 文字</text><text x="400" y="206">subgoal 文字</text>
+<text x="40" y="234">是不是视频演示</text><text x="400" y="234">是不是视频演示</text>
+<text x="40" y="262">任务是否完成</text><text x="400" y="262">任务是否完成</text>
+</g>
+<g font-size="16" font-weight="bold" fill="var(--accent)" text-anchor="middle">
+<text x="320" y="66">=</text><text x="320" y="94">=</text><text x="320" y="122">=</text><text x="320" y="150">=</text>
+<text x="320" y="178">=</text><text x="320" y="206">=</text><text x="320" y="234">=</text><text x="320" y="262">=</text>
+</g>
+<text x="320" y="312" text-anchor="middle" font-size="13" fill="var(--muted)">格子相同（名字、类型、尺寸），内容（长度、次数）不同</text>
+</svg>
+<figcaption>只比盒子的格子，不比格子里装了多少</figcaption>
+</figure>
+<h3>为什么说一致：三条理由</h3>
+<ol>
+<li><b>源头相同</b>：官方、普通档、xhard 的 H5 都由同一个录像器 <code>RobommeRecordWrapper</code> 写出；xhard 只改环境配置（多抓几次、多交换几次），没有碰录像器，<code>src/robomme/</code> 零改动。写盒子的工具没变，盒子样式就不会变。</li>
+<li><b>逐格对比官方文件</b>：50 个 xhard 文件逐个和官方参考集 <code>data_0226</code> 同任务文件比，50/50 一样：不缺格子、不多格子，类型和尺寸全同（判定行 <code>XHARD_VS_OFFICIAL_KEYSET=PASS files=50 pass=50</code>）。</li>
+<li><b>交给 MotionJEPA 自己的读取代码</b>：直接调用 MotionJEPA 建库时读 H5 的函数 <code>scan_episode</code>，它只读前视角图像、视频演示标记、完成标记三样，并检查图像尺寸、演示段是否在开头；有视频演示的 7 个任务（24 个文件）全部通过，说明能照常读入。</li>
+</ol>
+<h3>哪些没通过、为什么不算不一致</h3>
+<p>没有视频演示的 7 个任务（26 个文件：BinFill、PickXtimes、SwingXtimes、StopCube、ButtonUnmask、ButtonUnmaskSwap、PickHighlight）过不了，因为 MotionJEPA 要求开头至少 1 帧演示，而这些任务本来就没有演示；官方原文件也一样过不了，所以不是 xhard 造成的差异（BinFill 手工 demo 用户已放弃，不计入）。难度标签写的是 <code>hard</code> 而不是 <code>xhard12</code>，属接口问题，用户定先不管。</p>
+<h3>一点说明</h3>
+<p>MotionJEPA 上次真正用的那批 H5（HF 上 <code>robomme-4task-h5-20260912-v2</code>）本机没有副本，没有拿它逐个比；用的是两个间接证据：同一录像器写出的官方 <code>data_0226</code> 文件，以及 MotionJEPA 自己的读取代码。若要直接比，可从 HF 下载那批里的一两个文件对照（整批约 126 GB，大下载须先问用户）。</p>
+<p>下面是详细判定与证据。</p>
+</section>
 <p><b>总结论</b>：50 个 xhard 档 H5 与官方同任务 H5 在键集、dtype、shape 上完全一致，单 episode 文件结构满足 MotionJEPA 读取要求；MotionJEPA 扫描的 FAIL 全部来自「任务本身没有视频演示」，官方原件同样如此。</p>
 <blockquote>
 <p><b>用户原话（逐字，按时间）</b>：①「当前仓库你最后做一轮评估现在会生成H5文件吗生成的H5文件和 https://github.com/hongzefu/MotionJEPA/tree/v6.1.2-awsNoSlurm 最近一次文件要的是否一致」②「我说的是cripts/data-generation-newSeed/generate_dataset_newseed.py」③「用subagent不启动workflow 尽可能详细 把这个问题写到网页的第五部分」④「你还是调用这个接口的你应该能够生成 xhard12到20最后一轮产物都要生成」⑤「接口问题先不用管。接口问题和键问题都不用管。长度问题也不用管。binfill需要手动Demo这个也已经放弃了。来源锁也不用管。暂时不用动还缺什么。我问这个问题主要是为了一致性的检验。」⑥「对的你做一下一致性的检验然后也是写入这个呃网页写入第五节。」</p>
