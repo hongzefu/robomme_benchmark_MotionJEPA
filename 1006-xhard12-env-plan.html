@@ -297,114 +297,210 @@ a { color:var(--accent); }
 <tr data-task="RouteStick"><td>4.4</td><td>RouteStick</td><td>绕杆走到目标的段数，demo 先演示一遍再照做</td><td>[4,7] → <b>原S→2S：8/10/12/14</b><br>增加4/5/6/7段</td><td>500 → <span class="big">993</span>（新参数合成）</td><td>28</td><td>59</td><td>1.10（合成）</td><td>1.99（合成）</td><td>7+0swap（合成）</td></tr>
 </tbody></table>
 <section id="length-gradient">
-<h3 id="p1-gradient">四.7 长度梯度：先定旋钮，再估帧数与窗口（按最长档审阅）</h3>
-<p><strong>最新取值口径（2026-10-11）：</strong>目标刻度为1.0、1.2、1.4、1.6、1.8、2.0倍，按<strong>最接近目标的合法整数旋钮</strong>选取，不再向下限取整，也不再用“必须≤2倍”裁掉近邻候选。档名是目标，格内另列该旋钮对应的合成中位帧数、窗口数和估算倍率；例如10次抓放的2.021倍归入约2.0档。有限旋钮产生重复取值时合并，没有合法增量的格子留空，不靠插值制造独立难度。</p>
-<p><strong>仍按最长档审阅：</strong>原对齐原则、分组讨论、总表和数轴原样保留。本轮梯度的新选值以此表为准；原文“超过两倍便下调”的旧选择口径不再限制此表。最长候选的三处更新为 PickXtimes 9→10次、SwingXtimes 8→9往返、VideoRepick 原S+13→原S+14；其余最长旋钮保持。审阅时看最右列及下方对应任务依据。未达两倍的任务也保留可达的 extra hard，重复配置不另算新档。</p>
-<p>母档沿用Hard，<strong>VideoRepick继续保留medium三方块例外</strong>。本表由每任务一个独立子代理逐项审阅，共16项；14个可扩任务的帧窗再由主会话按各25条已有母段独立重算，没有新增仿真或轨迹。MoveCube、InsertPeg只保留母档。表中K、n、p、P、S、a、N、L是下方定义的旋钮，不代表已经存在新的命令行接口。</p>
-<p class="muted">估算口径：候选配置先生成逐条合成长度T′及演示长度D′，再分别取25条帧数与窗数的中位。每侧 <code>w(L)=max(0,floor((L−33)/16)+1)</code>，总窗 <code>w(D′)+w(T′−D′)</code>；只在演示／执行分界断窗，不在每个subgoal处断窗。普通固定次数与swap按合成中位最近选；StopCube按整数映射组合选；PatternLock／RouteStick按边数四舍五入，帧偏差如实报告。段复制仅用于估时，实施时必须执行对应真实动作，不能复制帧、加静止或随机混合两档来凑倍率。</p>
+<h3 id="p1-gradient">四.7 确定性长度梯度：固定中位母档，每目标只取一组配置</h3>
+<p><strong>母档口径（用户确认，2026-10-11）：</strong>「按现有25条母样本的实际旋钮取中位数，半整数四舍五入」。先逐条读取实际旋钮，取数学中位后按 <code>floor(median+0.5)</code> 固定为1.0倍配置。表中不再出现次数区间、按母参数变化的数组或“原S+若干”的配置。影响长度的配套次数也固定：StopCube各档间隔80，VideoRepick各档重抓2次；布局、颜色、答案类别等不作为长度旋钮取中位。</p>
+<p><strong>每目标一配置：</strong>目标为1.0、1.2、1.4、1.6、1.8、2.0倍，在可用整数配置中选估算长度最接近者，允许略低或略高，不取下限。每个已填格明确写唯一参数，重复命中同一参数时注明共用，不能再作为两套配置生成；原机制没有新参数的档位留空。仍以最右侧<strong>本轮最长配置</strong>审阅。原对齐原则、分组讨论、总表与数轴原样保留，它们是旧混合母档口径；本节固定基线及新取值为本轮梯度依据。</p>
+<p><strong>帧数基准也固定：</strong>25条用于决定旋钮中位；估算长度只采用其中<strong>原本就符合固定母配置</strong>的真实母子集，并在1.0列写出参照n。所有新档在同一子集上估算，不再把不同旋钮混合后的中位长度作分母。固定子集从3到25条不等，是本次估算依据，不代表25条都已按固定配置生成，也不改变正式生成批次或删除任何样本。VideoRepick继续使用medium三方块母档。</p>
+<p class="muted">帧窗统计统一取数学中位：偶数子集取中间两项平均，因此可能出现830.5帧、58.5窗；这是整数记录集合的中位数，不是单条轨迹有半帧或半窗。仅旋钮的半整数按用户口径四舍五入。每条先估计T′与D′，窗口为 <code>w(D′)+w(T′−D′)</code>，其中 <code>w(L)=max(0,floor((L−33)/16)+1)</code>；不跨演示／执行分界，也不逐subgoal断窗。所有新增档仍是段长合成估计，无仿真实跑。</p>
 <div class="gradient-scroll">
-<table id="length-gradient-table"><thead><tr><th>编号</th><th>任务 / 旋钮</th><th>1.0倍母档</th><th>目标约1.2倍</th><th>目标约1.4倍</th><th>目标约1.6倍</th><th>目标约1.8倍</th><th>目标约2.0倍</th><th>本轮最长候选<br>按此审阅</th></tr></thead><tbody>
-<tr data-task="BinFill"><td>1.1</td><td><a href="#knob-BinFill">BinFill</a><br><small>投入K块</small></td><td>原K=3–5<br>868帧 / 53窗<br><small>1.000倍</small></td><td data-config='5'><b>K=5</b><br>988帧 / 60窗<br><small>估算 1.138 倍</small></td>
-<td data-config='6'><b>K=6</b><br>1166帧 / 71窗<br><small>估算 1.343 倍</small></td>
-<td data-config='7'><b>K=7</b><br>1340帧 / 82窗<br><small>估算 1.544 倍</small></td>
-<td data-config='8'><b>K=8</b><br>1495帧 / 92窗<br><small>估算 1.722 倍</small></td>
-<td data-config='9'><b>K=9</b><br>1677帧 / 103窗<br><small>估算 1.932 倍</small></td><td><b>K=9</b><br>1677帧 / 103窗<br><small>估算 1.932 倍</small></td></tr>
-<tr data-task="PickXtimes"><td>1.2</td><td><a href="#knob-PickXtimes">PickXtimes</a><br><small>抓放n次</small></td><td>原n=4–5<br>812帧 / 49窗<br><small>1.000倍</small></td><td data-config='6'><b>n=6</b><br>1044帧 / 64窗<br><small>估算 1.286 倍</small></td>
-<td data-config='7'><b>n=7</b><br>1179帧 / 72窗<br><small>估算 1.452 倍</small></td>
-<td data-config='8'><b>n=8</b><br>1316帧 / 81窗<br><small>估算 1.621 倍</small></td>
-<td data-config='9'><b>n=9</b><br>1501帧 / 92窗<br><small>估算 1.849 倍</small></td>
-<td data-config='10'><b>n=10</b><br>1641帧 / 101窗<br><small>估算 2.021 倍</small></td><td><b>n=10</b><br>1641帧 / 101窗<br><small>估算 2.021 倍</small></td></tr>
-<tr data-task="SwingXtimes"><td>1.3</td><td><a href="#knob-SwingXtimes">SwingXtimes</a><br><small>往返n次</small></td><td>原n=3<br>488帧 / 29窗<br><small>1.000倍</small></td><td data-config='4'><b>n=4</b><br>560帧 / 33窗<br><small>估算 1.148 倍</small></td>
-<td data-config='5'><b>n=5</b><br>642帧 / 39窗<br><small>估算 1.316 倍</small></td>
-<td data-config='7'><b>n=7</b><br>793帧 / 48窗<br><small>估算 1.625 倍</small></td>
-<td data-config='8'><b>n=8</b><br>886帧 / 54窗<br><small>估算 1.816 倍</small></td>
-<td data-config='9'><b>n=9</b><br>978帧 / 60窗<br><small>估算 2.004 倍</small></td><td><b>n=9</b><br>978帧 / 60窗<br><small>估算 2.004 倍</small></td></tr>
-<tr data-task="StopCube"><td>1.4</td><td><a href="#knob-StopCube">StopCube</a><br><small>停止序号k′</small></td><td>原k=2/3/4/5<br>309帧 / 18窗<br><small>1.000倍</small></td><td data-config='[2,4,5,6]'><b>k′=2/4/5/6</b><br>370帧 / 22窗<br><small>估算 1.197 倍</small></td>
-<td data-config='[3,4,6,7]'><b>k′=3/4/6/7</b><br>430帧 / 25窗<br><small>估算 1.392 倍</small></td>
-<td data-config='[3,5,7,8]'><b>k′=3/5/7/8</b><br>490帧 / 29窗<br><small>估算 1.586 倍</small></td>
-<td data-config='[4,5,8,9]'><b>k′=4/5/8/9</b><br>550帧 / 33窗<br><small>估算 1.780 倍</small></td>
-<td data-config='[4,6,8,10]'><b>k′=4/6/8/10</b><br>610帧 / 37窗<br><small>估算 1.974 倍</small></td><td><b>k′=4/6/8/10</b><br>610帧 / 37窗<br><small>估算 1.974 倍</small></td></tr>
-<tr data-task="VideoUnmask"><td>2.1</td><td><a href="#knob-VideoUnmask">VideoUnmask</a><br><small>抓取p个容器</small></td><td>原p=2<br>329帧 / 18窗<br><small>1.000倍</small></td><td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td data-config='3'><b>p=3</b><br>476帧 / 27窗<br><small>估算 1.447 倍</small></td>
+<table id="length-gradient-table"><thead><tr><th>编号</th><th>任务</th><th>1.0倍固定母档<br>实际旋钮中位</th><th>目标约1.2倍</th><th>目标约1.4倍</th><th>目标约1.6倍</th><th>目标约1.8倍</th><th>目标约2.0倍</th><th>本轮最长配置<br>按此审阅</th></tr></thead><tbody>
+<tr data-task="BinFill"><td>1.1</td><td><a href="#knob-BinFill">BinFill</a></td><td data-base-config='{"count":4}'><b>K=4块</b><br>830.5帧 / 50.5窗<br><small>1.000倍；参照n=10</small></td><td data-config='{"count":5}'><b>K=5块</b><br>1034.5帧 / 63窗<br><small>估算 1.246 倍</small></td>
+<td data-config='{"count":6}'><b>K=6块</b><br>1203帧 / 74窗<br><small>估算 1.449 倍</small></td>
+<td data-config='{"count":7}'><b>K=7块</b><br>1372帧 / 84.5窗<br><small>估算 1.652 倍</small></td>
+<td data-config='{"count":8}'><b>K=8块</b><br>1564.5帧 / 96.5窗<br><small>估算 1.884 倍</small></td>
+<td data-config='{"count":8}' data-shared="3" class="knob-merged"><b>K=8块</b><br>1564.5帧 / 96.5窗<br><small>估算 1.884 倍<br>与1.8档共用配置</small></td><td><b>K=8块</b><br>1564.5帧 / 96.5窗<br><small>估算 1.884 倍</small></td></tr>
+<tr data-task="PickXtimes"><td>1.2</td><td><a href="#knob-PickXtimes">PickXtimes</a></td><td data-base-config='{"count":5}'><b>n=5次</b><br>841帧 / 51窗<br><small>1.000倍；参照n=13</small></td><td data-config='{"count":6}'><b>n=6次</b><br>1028帧 / 63窗<br><small>估算 1.222 倍</small></td>
+<td data-config='{"count":7}'><b>n=7次</b><br>1164帧 / 71窗<br><small>估算 1.384 倍</small></td>
+<td data-config='{"count":8}'><b>n=8次</b><br>1300帧 / 80窗<br><small>估算 1.546 倍</small></td>
+<td data-config='{"count":9}'><b>n=9次</b><br>1444帧 / 89窗<br><small>估算 1.717 倍</small></td>
+<td data-config='{"count":10}'><b>n=10次</b><br>1586帧 / 98窗<br><small>估算 1.886 倍</small></td><td><b>n=10次</b><br>1586帧 / 98窗<br><small>估算 1.886 倍</small></td></tr>
+<tr data-task="SwingXtimes"><td>1.3</td><td><a href="#knob-SwingXtimes">SwingXtimes</a></td><td data-base-config='{"count":3}'><b>n=3往返</b><br>488帧 / 29窗<br><small>1.000倍；参照n=25</small></td><td data-config='{"count":4}'><b>n=4往返</b><br>560帧 / 33窗<br><small>估算 1.148 倍</small></td>
+<td data-config='{"count":5}'><b>n=5往返</b><br>642帧 / 39窗<br><small>估算 1.316 倍</small></td>
+<td data-config='{"count":7}'><b>n=7往返</b><br>793帧 / 48窗<br><small>估算 1.625 倍</small></td>
+<td data-config='{"count":8}'><b>n=8往返</b><br>886帧 / 54窗<br><small>估算 1.816 倍</small></td>
+<td data-config='{"count":9}'><b>n=9往返</b><br>978帧 / 60窗<br><small>估算 2.004 倍</small></td><td><b>n=9往返</b><br>978帧 / 60窗<br><small>估算 2.004 倍</small></td></tr>
+<tr data-task="StopCube"><td>1.4</td><td><a href="#knob-StopCube">StopCube</a></td><td data-base-config='{"k":3,"mi":80}'><b>k=3；间隔=80</b><br>237帧 / 13窗<br><small>1.000倍；参照n=3</small></td><td data-config='{"k":4,"mi":80}'><b>k=4；间隔=80</b><br>317帧 / 18窗<br><small>估算 1.338 倍</small></td>
+<td data-config='{"k":4,"mi":80}' data-shared="0" class="knob-merged"><b>k=4；间隔=80</b><br>317帧 / 18窗<br><small>估算 1.338 倍<br>与1.2档共用配置</small></td>
+<td data-config='{"k":5,"mi":80}'><b>k=5；间隔=80</b><br>397帧 / 23窗<br><small>估算 1.675 倍</small></td>
+<td data-config='{"k":5,"mi":80}' data-shared="2" class="knob-merged"><b>k=5；间隔=80</b><br>397帧 / 23窗<br><small>估算 1.675 倍<br>与1.6档共用配置</small></td>
+<td data-config='{"k":6,"mi":80}'><b>k=6；间隔=80</b><br>477帧 / 28窗<br><small>估算 2.013 倍</small></td><td><b>k=6；间隔=80</b><br>477帧 / 28窗<br><small>估算 2.013 倍</small></td></tr>
+<tr data-task="VideoUnmask"><td>2.1</td><td><a href="#knob-VideoUnmask">VideoUnmask</a></td><td data-base-config='{"pick":2}'><b>p=2抓</b><br>329帧 / 18窗<br><small>1.000倍；参照n=25</small></td><td class="knob-empty">—<br><small>无独立新增档</small></td>
+<td data-config='{"pick":3}'><b>p=3抓</b><br>476帧 / 27窗<br><small>估算 1.447 倍</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td class="knob-empty">—<br><small>无独立新增档</small></td><td><b>p=3</b><br>476帧 / 27窗<br><small>估算 1.447 倍</small></td></tr>
-<tr data-task="ButtonUnmask"><td>2.2</td><td><a href="#knob-ButtonUnmask">ButtonUnmask</a><br><small>抓取p个容器</small></td><td>原p=2<br>373帧 / 22窗<br><small>1.000倍</small></td><td class="knob-merged">同 1.4 档<br><small>同一旋钮，合并</small></td>
-<td data-config='3'><b>p=3</b><br>515帧 / 31窗<br><small>估算 1.381 倍</small></td>
+<td class="knob-empty">—<br><small>无独立新增档</small></td><td><b>p=3抓</b><br>476帧 / 27窗<br><small>估算 1.447 倍</small></td></tr>
+<tr data-task="ButtonUnmask"><td>2.2</td><td><a href="#knob-ButtonUnmask">ButtonUnmask</a></td><td data-base-config='{"pick":2}'><b>p=2抓</b><br>373帧 / 22窗<br><small>1.000倍；参照n=25</small></td><td data-config='{"pick":3}'><b>p=3抓</b><br>515帧 / 31窗<br><small>估算 1.381 倍</small></td>
+<td data-config='{"pick":3}' data-shared="0" class="knob-merged"><b>p=3抓</b><br>515帧 / 31窗<br><small>估算 1.381 倍<br>与1.2档共用配置</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td class="knob-empty">—<br><small>无独立新增档</small></td><td><b>p=3</b><br>515帧 / 31窗<br><small>估算 1.381 倍</small></td></tr>
-<tr data-task="VideoUnmaskSwap"><td>2.3</td><td><a href="#knob-VideoUnmaskSwap">VideoUnmaskSwap</a><br><small>交换S′次</small></td><td>原S=2–3<br>457帧 / 26窗<br><small>1.000倍</small></td><td data-config='2'><b>S′=S+2<br>（4–5次）</b><br>557帧 / 32窗<br><small>估算 1.219 倍</small></td>
-<td data-config='4'><b>S′=S+4<br>（6–7次）</b><br>655帧 / 38窗<br><small>估算 1.433 倍</small></td>
-<td data-config='5'><b>S′=S+5<br>（7–8次）</b><br>707帧 / 41窗<br><small>估算 1.547 倍</small></td>
-<td data-config='7'><b>S′=S+7<br>（9–10次）</b><br>805帧 / 48窗<br><small>估算 1.761 倍</small></td>
-<td data-config='9'><b>S′=S+9<br>（11–12次）</b><br>907帧 / 54窗<br><small>估算 1.985 倍</small></td><td><b>S′=S+9<br>（11–12次）</b><br>907帧 / 54窗<br><small>估算 1.985 倍</small></td></tr>
-<tr data-task="ButtonUnmaskSwap"><td>2.4</td><td><a href="#knob-ButtonUnmaskSwap">ButtonUnmaskSwap</a><br><small>按压P次 / 交换S次</small></td><td>原P=2 / S=2–3<br>461帧 / 27窗<br><small>1.000倍</small></td><td data-config='[3,4]'><b>P=3 / S=4</b><br>575帧 / 34窗<br><small>估算 1.247 倍</small></td>
-<td data-config='[4,6]'><b>P=4 / S=6</b><br>666帧 / 40窗<br><small>估算 1.445 倍</small></td>
-<td data-config='[4,8]'><b>P=4 / S=8</b><br>719帧 / 43窗<br><small>估算 1.560 倍</small></td>
-<td data-config='[5,10]'><b>P=5 / S=10</b><br>819帧 / 50窗<br><small>估算 1.777 倍</small></td>
-<td data-config='[6,12]'><b>P=6 / S=12</b><br>919帧 / 56窗<br><small>估算 1.993 倍</small></td><td><b>P=6 / S=12</b><br>919帧 / 56窗<br><small>估算 1.993 倍</small></td></tr>
-<tr data-task="PickHighlight"><td>3.1</td><td><a href="#knob-PickHighlight">PickHighlight</a><br><small>高亮目标p个</small></td><td>原p=3<br>539帧 / 32窗<br><small>1.000倍</small></td><td data-config='4'><b>pickup=4</b><br>700帧 / 42窗<br><small>估算 1.299 倍</small></td>
-<td class="knob-merged">同 1.2 档<br><small>同一旋钮，合并</small></td>
-<td data-config='5'><b>pickup=5</b><br>855帧 / 52窗<br><small>估算 1.586 倍</small></td>
-<td data-config='6'><b>pickup=6</b><br>1010帧 / 62窗<br><small>估算 1.874 倍</small></td>
-<td class="knob-merged">同 1.8 档<br><small>同一旋钮，合并</small></td><td><b>pickup=6</b><br>1010帧 / 62窗<br><small>估算 1.874 倍</small></td></tr>
-<tr data-task="VideoRepick"><td>3.2</td><td><a href="#knob-VideoRepick">VideoRepick</a><br><small>交换S′次（medium）</small></td><td>原S=2–3<br>747帧 / 43窗<br><small>1.000倍；medium</small></td><td data-config='3'><b>S′=S+3<br>（5–6次）</b><br>909帧 / 53窗<br><small>估算 1.217 倍</small></td>
-<td data-config='6'><b>S′=S+6<br>（8–9次）</b><br>1071帧 / 63窗<br><small>估算 1.434 倍</small></td>
-<td data-config='8'><b>S′=S+8<br>（10–11次）</b><br>1179帧 / 70窗<br><small>估算 1.578 倍</small></td>
-<td data-config='11'><b>S′=S+11<br>（13–14次）</b><br>1341帧 / 80窗<br><small>估算 1.795 倍</small></td>
-<td data-config='14'><b>S′=S+14<br>（16–17次）</b><br>1503帧 / 90窗<br><small>估算 2.012 倍</small></td><td><b>S′=S+14<br>（16–17次）</b><br>1503帧 / 90窗<br><small>估算 2.012 倍</small></td></tr>
-<tr data-task="VideoPlaceButton"><td>3.3</td><td><a href="#knob-VideoPlaceButton">VideoPlaceButton</a><br><small>额外演示a组</small></td><td>原a=0<br>961帧 / 57窗<br><small>1.000倍</small></td><td data-config='"post"'><b>a=1（按钮后）</b><br>1149帧 / 69窗<br><small>估算 1.196 倍</small></td>
-<td data-config='"both"'><b>a=2（前后各1）</b><br>1359帧 / 82窗<br><small>估算 1.414 倍</small></td>
+<td class="knob-empty">—<br><small>无独立新增档</small></td><td><b>p=3抓</b><br>515帧 / 31窗<br><small>估算 1.381 倍</small></td></tr>
+<tr data-task="VideoUnmaskSwap"><td>2.3</td><td><a href="#knob-VideoUnmaskSwap">VideoUnmaskSwap</a></td><td data-base-config='{"swap":2}'><b>S=2次交换</b><br>428帧 / 24窗<br><small>1.000倍；参照n=13</small></td><td data-config='{"swap":4}'><b>S=4次交换</b><br>524帧 / 30窗<br><small>估算 1.224 倍</small></td>
+<td data-config='{"swap":5}'><b>S=5次交换</b><br>578帧 / 33窗<br><small>估算 1.350 倍</small></td>
+<td data-config='{"swap":7}'><b>S=7次交换</b><br>674帧 / 39窗<br><small>估算 1.575 倍</small></td>
+<td data-config='{"swap":9}'><b>S=9次交换</b><br>776帧 / 46窗<br><small>估算 1.813 倍</small></td>
+<td data-config='{"swap":11}'><b>S=11次交换</b><br>878帧 / 52窗<br><small>估算 2.051 倍</small></td><td><b>S=11次交换</b><br>878帧 / 52窗<br><small>估算 2.051 倍</small></td></tr>
+<tr data-task="ButtonUnmaskSwap"><td>2.4</td><td><a href="#knob-ButtonUnmaskSwap">ButtonUnmaskSwap</a></td><td data-base-config='{"press":2,"swap":3}'><b>P=2；S=3</b><br>460帧 / 27窗<br><small>1.000倍；参照n=13</small></td><td data-config='{"press":3,"swap":4}'><b>P=3；S=4</b><br>575帧 / 34窗<br><small>估算 1.250 倍</small></td>
+<td data-config='{"press":4,"swap":6}'><b>P=4；S=6</b><br>666帧 / 40窗<br><small>估算 1.448 倍</small></td>
+<td data-config='{"press":4,"swap":8}'><b>P=4；S=8</b><br>716帧 / 43窗<br><small>估算 1.557 倍</small></td>
+<td data-config='{"press":5,"swap":10}'><b>P=5；S=10</b><br>816帧 / 49窗<br><small>估算 1.774 倍</small></td>
+<td data-config='{"press":6,"swap":12}'><b>P=6；S=12</b><br>916帧 / 56窗<br><small>估算 1.991 倍</small></td><td><b>P=6；S=12</b><br>916帧 / 56窗<br><small>估算 1.991 倍</small></td></tr>
+<tr data-task="PickHighlight"><td>3.1</td><td><a href="#knob-PickHighlight">PickHighlight</a></td><td data-base-config='{"count":3}'><b>pickup=3；spawn=6</b><br>539帧 / 32窗<br><small>1.000倍；参照n=25</small></td><td data-config='{"count":4}'><b>pickup=4；spawn=6</b><br>700帧 / 42窗<br><small>估算 1.299 倍</small></td>
+<td data-config='{"count":4}' data-shared="0" class="knob-merged"><b>pickup=4；spawn=6</b><br>700帧 / 42窗<br><small>估算 1.299 倍<br>与1.2档共用配置</small></td>
+<td data-config='{"count":5}'><b>pickup=5；spawn=6</b><br>855帧 / 52窗<br><small>估算 1.586 倍</small></td>
+<td data-config='{"count":6}'><b>pickup=6；spawn=6</b><br>1010帧 / 62窗<br><small>估算 1.874 倍</small></td>
+<td data-config='{"count":6}' data-shared="3" class="knob-merged"><b>pickup=6；spawn=6</b><br>1010帧 / 62窗<br><small>估算 1.874 倍<br>与1.8档共用配置</small></td><td><b>pickup=6；spawn=6</b><br>1010帧 / 62窗<br><small>估算 1.874 倍</small></td></tr>
+<tr data-task="VideoRepick"><td>3.2</td><td><a href="#knob-VideoRepick">VideoRepick</a><br><small>medium三方块</small></td><td data-base-config='{"swap":2,"repeat":2}'><b>S=2；重抓R=2</b><br>717帧 / 42窗<br><small>1.000倍；参照n=4</small></td><td data-config='{"swap":5,"repeat":2}'><b>S=5；重抓R=2</b><br>879帧 / 52窗<br><small>估算 1.226 倍</small></td>
+<td data-config='{"swap":7,"repeat":2}'><b>S=7；重抓R=2</b><br>987帧 / 58.5窗<br><small>估算 1.377 倍</small></td>
+<td data-config='{"swap":10,"repeat":2}'><b>S=10；重抓R=2</b><br>1149帧 / 69窗<br><small>估算 1.603 倍</small></td>
+<td data-config='{"swap":13,"repeat":2}'><b>S=13；重抓R=2</b><br>1311帧 / 79窗<br><small>估算 1.828 倍</small></td>
+<td data-config='{"swap":15,"repeat":2}'><b>S=15；重抓R=2</b><br>1419帧 / 85.5窗<br><small>估算 1.979 倍</small></td><td><b>S=15；重抓R=2</b><br>1419帧 / 85.5窗<br><small>估算 1.979 倍</small></td></tr>
+<tr data-task="VideoPlaceButton"><td>3.3</td><td><a href="#knob-VideoPlaceButton">VideoPlaceButton</a></td><td data-base-config='{"extra":0}'><b>a=0组</b><br>961帧 / 57窗<br><small>1.000倍；参照n=25</small></td><td data-config='{"extra":1}'><b>a=1组（固定后侧）</b><br>1149帧 / 69窗<br><small>估算 1.196 倍</small></td>
+<td data-config='{"extra":2}'><b>a=2组（前后各1）</b><br>1359帧 / 82窗<br><small>估算 1.414 倍</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td class="knob-empty">—<br><small>无独立新增档</small></td><td><b>a=2（前后各1）</b><br>1359帧 / 82窗<br><small>估算 1.414 倍</small></td></tr>
-<tr data-task="VideoPlaceOrder"><td>3.4</td><td><a href="#knob-VideoPlaceOrder">VideoPlaceOrder</a><br><small>不同访问目标N′个</small></td><td>原N=2/3/4<br>1115帧 / 67窗<br><small>1.000倍</small></td><td data-config='4'><b>N′=4</b><br>1311帧 / 79窗<br><small>估算 1.176 倍</small></td>
-<td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td class="knob-empty">—<br><small>无独立新增档</small></td><td><b>N′=4</b><br>1311帧 / 79窗<br><small>估算 1.176 倍</small></td></tr>
-<tr data-task="MoveCube"><td>4.1</td><td><a href="#knob-MoveCube">MoveCube</a><br><small>无次数旋钮</small></td><td>一次演示＋一次执行<br>416帧 / 23窗<br><small>1.000倍</small></td><td class="knob-empty">—<br><small>无独立新增档</small></td>
+<td class="knob-empty">—<br><small>无独立新增档</small></td><td><b>a=2组（前后各1）</b><br>1359帧 / 82窗<br><small>估算 1.414 倍</small></td></tr>
+<tr data-task="VideoPlaceOrder"><td>3.4</td><td><a href="#knob-VideoPlaceOrder">VideoPlaceOrder</a></td><td data-base-config='{"targets":3}'><b>N=3个不同目标</b><br>1120帧 / 67窗<br><small>1.000倍；参照n=7</small></td><td data-config='{"targets":4}'><b>N=4个不同目标</b><br>1326帧 / 80窗<br><small>估算 1.184 倍</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
-<td class="knob-empty">—<br><small>无独立新增档</small></td><td>保持母档<br>不新增玩法</td></tr>
-<tr data-task="InsertPeg"><td>4.2</td><td><a href="#knob-InsertPeg">InsertPeg</a><br><small>无次数旋钮</small></td><td>一次演示＋一次执行<br>464帧 / 26窗<br><small>1.000倍</small></td><td class="knob-empty">—<br><small>无独立新增档</small></td>
+<td class="knob-empty">—<br><small>无独立新增档</small></td><td><b>N=4个不同目标</b><br>1326帧 / 80窗<br><small>估算 1.184 倍</small></td></tr>
+<tr data-task="MoveCube"><td>4.1</td><td><a href="#knob-MoveCube">MoveCube</a></td><td data-base-config='{"demo":1,"execute":1}'><b>一次演示＋一次执行</b><br>416帧 / 23窗<br><small>1.000倍；参照n=25</small></td><td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td>
 <td class="knob-empty">—<br><small>无独立新增档</small></td><td>保持母档<br>不新增玩法</td></tr>
-<tr data-task="PatternLock"><td>4.3</td><td><a href="#knob-PatternLock">PatternLock</a><br><small>路径节点L′个</small></td><td>原L=4/5/6/7/8<br>324帧 / 18窗<br><small>1.000倍</small></td><td data-config='12'><b>L′=5/6/7/8/9</b><br>398帧 / 22窗<br><small>估算 1.228 倍</small></td>
-<td data-config='14'><b>L′=5/7/8/9/11</b><br>480帧 / 26窗<br><small>估算 1.481 倍</small></td>
-<td data-config='16'><b>L′=6/7/9/11/12</b><br>520帧 / 30窗<br><small>估算 1.605 倍</small></td>
-<td data-config='18'><b>L′=6/8/10/12/14</b><br>578帧 / 34窗<br><small>估算 1.784 倍</small></td>
-<td data-config='20'><b>L′=7/9/11/13/15</b><br>638帧 / 37窗<br><small>估算 1.969 倍</small></td><td><b>L′=7/9/11/13/15</b><br>638帧 / 37窗<br><small>估算 1.969 倍</small></td></tr>
-<tr data-task="RouteStick"><td>4.4</td><td><a href="#knob-RouteStick">RouteStick</a><br><small>路径边S′条</small></td><td>原S=4/5/6/7<br>500帧 / 28窗<br><small>1.000倍</small></td><td data-config='12'><b>S′=5/6/7/8</b><br>600帧 / 34窗<br><small>估算 1.200 倍</small></td>
-<td data-config='14'><b>S′=6/7/8/10</b><br>700帧 / 40窗<br><small>估算 1.400 倍</small></td>
-<td data-config='16'><b>S′=6/8/10/11</b><br>800帧 / 46窗<br><small>估算 1.600 倍</small></td>
-<td data-config='18'><b>S′=7/9/11/13</b><br>900帧 / 54窗<br><small>估算 1.800 倍</small></td>
-<td data-config='20'><b>S′=8/10/12/14</b><br>993帧 / 59窗<br><small>估算 1.986 倍</small></td><td><b>S′=8/10/12/14</b><br>993帧 / 59窗<br><small>估算 1.986 倍</small></td></tr>
+<tr data-task="InsertPeg"><td>4.2</td><td><a href="#knob-InsertPeg">InsertPeg</a></td><td data-base-config='{"demo":1,"execute":1}'><b>一次演示＋一次执行</b><br>464帧 / 26窗<br><small>1.000倍；参照n=25</small></td><td class="knob-empty">—<br><small>无独立新增档</small></td>
+<td class="knob-empty">—<br><small>无独立新增档</small></td>
+<td class="knob-empty">—<br><small>无独立新增档</small></td>
+<td class="knob-empty">—<br><small>无独立新增档</small></td>
+<td class="knob-empty">—<br><small>无独立新增档</small></td><td>保持母档<br>不新增玩法</td></tr>
+<tr data-task="PatternLock"><td>4.3</td><td><a href="#knob-PatternLock">PatternLock</a></td><td data-base-config='{"length":6}'><b>L=6节点；grid=5</b><br>334帧 / 18窗<br><small>1.000倍；参照n=5</small></td><td data-config='{"length":7}'><b>L=7节点；grid=5</b><br>396帧 / 22窗<br><small>估算 1.186 倍</small></td>
+<td data-config='{"length":8}'><b>L=8节点；grid=5</b><br>480帧 / 26窗<br><small>估算 1.437 倍</small></td>
+<td data-config='{"length":9}'><b>L=9节点；grid=5</b><br>528帧 / 30窗<br><small>估算 1.581 倍</small></td>
+<td data-config='{"length":10}'><b>L=10节点；grid=5</b><br>604帧 / 34窗<br><small>估算 1.808 倍</small></td>
+<td data-config='{"length":11}'><b>L=11节点；grid=5</b><br>661帧 / 38窗<br><small>估算 1.979 倍</small></td><td><b>L=11节点；grid=5</b><br>661帧 / 38窗<br><small>估算 1.979 倍</small></td></tr>
+<tr data-task="RouteStick"><td>4.4</td><td><a href="#knob-RouteStick">RouteStick</a></td><td data-base-config='{"length":5}'><b>S=5条边</b><br>500帧 / 28窗<br><small>1.000倍；参照n=7</small></td><td data-config='{"length":6}'><b>S=6条边</b><br>600帧 / 34窗<br><small>估算 1.200 倍</small></td>
+<td data-config='{"length":7}'><b>S=7条边</b><br>700帧 / 40窗<br><small>估算 1.400 倍</small></td>
+<td data-config='{"length":8}'><b>S=8条边</b><br>800帧 / 46窗<br><small>估算 1.600 倍</small></td>
+<td data-config='{"length":9}'><b>S=9条边</b><br>900帧 / 54窗<br><small>估算 1.800 倍</small></td>
+<td data-config='{"length":10}'><b>S=10条边</b><br>993帧 / 59窗<br><small>估算 1.986 倍</small></td><td><b>S=10条边</b><br>993帧 / 59窗<br><small>估算 1.986 倍</small></td></tr>
 </tbody></table>
 </div>
-<p class="muted">点击任务名查看参数选择依据。斜线映射按母参数从小到大逐项对应（StopCube：k=2/3/4/5；PatternLock：L=4/5/6/7/8；RouteStick：S=4/5/6/7）。任务筛选同步作用于本表与下方依据；无原筛选项的MoveCube、InsertPeg始终保留作说明。同seed得到相同旋钮时合并配置，不把多个目标标签当多种难度。</p>
-<h4>逐任务旋钮审阅与估算依据</h4>
-<details class="knob-review" data-task="BinFill" id="knob-BinFill"><summary>1.1 BinFill：旋钮与选档依据</summary><p><strong>旋钮：</strong>K为母场景生成后的总投放目标，不是提前把 put_in_numbers 改成固定值。</p><p><strong>为什么这样取：</strong>从原3–5块向外枚举K=5…10，逐条循环复制母抓取＋投入段，保留一次按钮及完成尾段。各目标最近者为5/6/7/8/9。两倍目标1736帧：K9合成1677（差59），K10合成1853（差117），故仍选9。K5对原本已投5块的10条母样本不加动作。</p><p><strong>估算：</strong>T′=T+Σ新增抓取投入对段长；无演示，W′=w(T′)。</p><p><strong>实施边界：</strong>先完整生成原Hard场景，保留母颜色目标，再按固定红/蓝/绿顺序从真实剩余库存补到K；不能重抽布局。实际库存不足即报告，不补物体、不换seed。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/BinFill.py</code> 中的 <code>BinFill.config_hard、BinFill._load_scene、BinFill._initialize_episode</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="PickXtimes" id="knob-PickXtimes"><summary>1.2 PickXtimes：旋钮与选档依据</summary><p><strong>旋钮：</strong>number_min=number_max=n；n是完整抓起＋放回次数。</p><p><strong>为什么这样取：</strong>枚举固定n=5…10，按25条合成中位最近取6/7/8/9/10。1.2目标974.4帧：5次888（差86.4）、6次1044（差69.6），选6。2倍目标1624帧：9次1501（差123）、10次1641（差17），选10。</p><p><strong>估算：</strong>逐条T′=T+Σ循环取用的新增抓放对；W′=w(T′)，按钮与完成尾段不重复。</p><p><strong>实施边界：</strong>次数与场景使用独立的同seed生成器；保留颜色、目标、位置。序数语言仅支持到tenth，10次是本轮上限，不再外推11。复制首次抓取段可能高估后续重复抓放耗时。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/PickXtimes.py</code> 中的 <code>PickXtimes.config_hard、PickXtimes.__init__、PickXtimes._load_scene；utils/subgoal_language.py::get_subgoal_with_index</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="SwingXtimes" id="knob-SwingXtimes"><summary>1.3 SwingXtimes：旋钮与选档依据</summary><p><strong>旋钮：</strong>number_min=number_max=n；一个往返包含右、左两个移动，max_swings=2n自动派生。</p><p><strong>为什么这样取：</strong>枚举n=4…10，最近结果4/5/7/8/9。1.4目标683.2帧：5次642（差41.2）、6次732（差48.8），选5；1.6选7。2倍目标976：9次978只差2，故不再因略超两倍退到8次886。</p><p><strong>估算：</strong>T′=T+Σ新增右→左段对；W′=w(T′)。</p><p><strong>实施边界：</strong>保留抓起、放下、按钮和结束段；只复制往返段长估算。不得把max_swings当作另一个独立次数旋钮。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/SwingXtimes.py</code> 中的 <code>SwingXtimes.config_hard、SwingXtimes._load_scene、SwingXtimes._initialize_episode</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="StopCube" id="knob-StopCube"><summary>1.4 StopCube：旋钮与选档依据</summary><p><strong>旋钮：</strong>表内四个k′值按原k=2/3/4/5逐项对应；原move_interval=60/80/120不变。</p><p><strong>为什么这样取：</strong>对每个目标r，在各k的floor(rk)/ceil(rk)邻居中枚举确定性映射，以25条中位最接近r×309为准；相同中位误差再比较逐条误差，不随机混档。选定映射依次为[2,4,5,6]、[3,4,6,7]、[3,5,7,8]、[4,5,8,9]、[4,6,8,10]。1.6按简单逐条取整会得469帧，而本映射490更近目标494.4。</p><p><strong>估算：</strong>T′=T+move_interval×(k′−k)，保留每条原固定开销。按名义检查点重建会相差约0–5帧并可能影响1窗，本表采用保留原开销估计。</p><p><strong>实施边界：</strong>先消耗母抽样，再映射k，保持原速度和方向。未来须同步将step中的固定range(5)扩到stop_time并更新停止窗口。同seed相邻档可能得到相同k′，应去重；表中是整套映射的档位。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/StopCube.py</code> 中的 <code>StopCube._initialize_episode、StopCube.step</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="VideoUnmask" id="knob-VideoUnmask"><summary>2.1 VideoUnmask：旋钮与选档依据</summary><p><strong>旋钮：</strong>新旋钮为实际抓取目标数p，合法新增值只有3；不能只设置configs.hard.pick=3。</p><p><strong>为什么这样取：</strong>原2抓329帧；3抓复制母放下＋第二抓段，估算476帧/27窗，1.447倍，归到最近的1.4刻度。1.2目标到原档比到3抓更近，因此没有独立新增档；更高刻度不再复用3抓冒造梯度。</p><p><strong>估算：</strong>T′=T+原放下段+原第二抓段；demo不变，W′=w(D)+w(T′−D)。</p><p><strong>实施边界：</strong>场景只有三个不同颜色目标容器；父类pick只判断>1。拟子类追加放下bin_1、抓起bin_2，goal、恢复索引与grounding同步。禁止重复抓或增加第四目标来填档。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/VideoUnmask.py</code> 中的 <code>VideoUnmask.config_hard、VideoUnmask._load_scene</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="ButtonUnmask" id="knob-ButtonUnmask"><summary>2.2 ButtonUnmask：旋钮与选档依据</summary><p><strong>旋钮：</strong>实际抓取目标数p=3；原按钮流程及三色目标布局保留。</p><p><strong>为什么这样取：</strong>373→515帧/31窗，1.381倍。1.2与1.4各自找最近配置都会落在3抓，因此合并到更贴近实际的1.4列；不是两种配置。1.6以上没有新目标可抓。</p><p><strong>估算：</strong>T′=T+原放下段+原第二抓段；无演示，W′=w(T′)。</p><p><strong>实施边界：</strong>父类pick同样只是>1开关，改字典不会生成第三抓。子类应追加放下bin_1与抓bin_2并同步文本；不能拿复制段里重复的颜色文字当第三抓的真实指令。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/ButtonUnmask.py</code> 中的 <code>ButtonUnmask.config_hard、ButtonUnmask._load_scene</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="VideoUnmaskSwap" id="knob-VideoUnmaskSwap"><summary>2.3 VideoUnmaskSwap：旋钮与选档依据</summary><p><strong>旋钮：</strong>保留母交换S=2–3，确定性加整数d，S′=S+d；范围宽度不变。</p><p><strong>为什么这样取：</strong>枚举d=1…10，选2/4/5/7/9。1.6目标731.2帧：d5为707（差24.2），d6为757（差25.8），选5；2倍目标914：d9为907，近于d10的955。</p><p><strong>估算：</strong>D′=6×ceil((64+50(S+d))/6)，T′=T−D+D′；W′=w(D′)+w(T−D)。</p><p><strong>实施边界：</strong>前64步露出、每次50环境步和两抓语义不变。第4次起必须泛化配对属性与调度；重建时间表不得清空已经求出的idx2。交换后执行段真实路径可能变化，当前估计将其保留。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/VideoUnmaskSwap.py</code> 中的 <code>VideoUnmaskSwap.__init__、VideoUnmaskSwap._refresh_swap_schedule、VideoUnmaskSwap.step</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="ButtonUnmaskSwap" id="knob-ButtonUnmaskSwap"><summary>2.4 ButtonUnmaskSwap：旋钮与选档依据</summary><p><strong>旋钮：</strong>P是右起交替按压次数，S是交换次数；两链并行，取较长者，不能把耗时相加。</p><p><strong>为什么这样取：</strong>固定交换梯度S=4/6/8/10/12，按目标最近选择不递减的P=3/4/4/5/6，所有新档均比母档P2、S2–3更高。1.4→1.6仅S增加，P保持4；不把它写成P每档严格增加。中位相同的P平台按保持原最长P6端点与平滑按压梯度选取；如P4/S4、S5、S6均666帧，S6并非唯一最优，而是等步长交换梯度的选择。</p><p><strong>估算：</strong>C(P)=ceil(P/2)R+floor(P/2)L；T′=T−R−L+max(C(P),65+50S)，W′=w(T′)。</p><p><strong>实施边界：</strong>以原第一按钮段为右R、第二段为左L，奇数P也按右起完整段计算，不用P/2×(R+L)的平均近似。重复按压需先释放、错侧不推进；末次交换落定后抓取；状态、goal、VQA与grounding同步。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/ButtonUnmaskSwap.py</code> 中的 <code>ButtonUnmaskSwap._initialize_episode、ButtonUnmaskSwap._refresh_swap_schedule、ButtonUnmaskSwap.step；utils/subgoal_planner_func.py::solve_button</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="PickHighlight" id="knob-PickHighlight"><summary>3.1 PickHighlight：旋钮与选档依据</summary><p><strong>旋钮：</strong>spawn保持6，只改pickup=4/5/6三个整数值。</p><p><strong>为什么这样取：</strong>25条合成分别700/855/1010帧。按目标最近选择时1.2与1.4同选4，1.6选5，1.8与2.0同选6；表中合并重复，只有三个新增配置。最长期望约2倍，但实际估算1.874倍，不能靠新增第7个方块填满。</p><p><strong>估算：</strong>最后一次抓前每增加一目标，循环追加一组母抓起＋放下段；完成尾段不重复；W′=w(T′)。</p><p><strong>实施边界：</strong>实际actor须足够且原前三个目标保持前缀；6块全高亮会失去非目标干扰，这一语义边界保留。真实新增目标路径与复制母段不同，耗时待用户实测校对。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/PickHighlight.py</code> 中的 <code>PickHighlight.config_hard、PickHighlight._load_scene、PickHighlight.step</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="VideoRepick" id="knob-VideoRepick"><summary>3.2 VideoRepick：旋钮与选档依据</summary><p><strong>旋钮：</strong>保留medium三方块、原num_repeats=1–3，仅S′=S+d。</p><p><strong>为什么这样取：</strong>25条母记录的每个交换static段均54帧；d=round(747(r−1)/54)，得到3/6/8/11/14。两倍目标1494：+13为1449（差45），+14为1503（差9），故2.0档改为原S+14即16–17次。</p><p><strong>估算：</strong>T′=T+54d、D′=D+54d；W′=w(D′)+w(T−D)。</p><p><strong>实施边界：</strong>50环境步不等于54录制帧，54只是现有母段依据。第4次及以后需动态配对与幂等调度，保留已解析idx2；不改抓放次数，不切到15方块Hard。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/VideoRepick.py</code> 中的 <code>VideoRepick.config_medium、VideoRepick._refresh_swap_schedule、VideoRepick._initialize_episode</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="VideoPlaceButton" id="knob-VideoPlaceButton"><summary>3.3 VideoPlaceButton：旋钮与选档依据</summary><p><strong>旋钮：</strong>a为额外完整演示抓放组数，取0/1/2；保持additional_place=False，不启用旧post_flag。</p><p><strong>为什么这样取：</strong>a1选按钮后原target_1已放完，再加target_3：1149帧距1.2目标1153.2仅4.2，优于按钮前加组的1171（差17.8）。a2在此基础上再于原target_0前加target_2，1359帧/82窗，约1.414倍。只有两个新增档，不循环访问凑两倍。</p><p><strong>估算：</strong>A/B为原按钮前/后抓放对时长：a1加B，a2加A+B；同时加到T与D，再分别计窗。</p><p><strong>实施边界：</strong>a1顺序：target_0→按钮→target_1→target_3→归位；a2：target_2→target_0→按钮→target_1→target_3→归位。每个目标都含抓放；按钮前最后落点与按钮后第一落点保持原答案。不新增随机调用，重建恢复及失败注入索引。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/VideoPlaceButton.py</code> 中的 <code>VideoPlaceButton._load_scene::task_list、pre_flag/post_flag/task_flag；utils/task4recovery.py::task4recovery</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="VideoPlaceOrder" id="knob-VideoPlaceOrder"><summary>3.4 VideoPlaceOrder：旋钮与选档依据</summary><p><strong>旋钮：</strong>不同访问目标数N′=4；原N=2/3/4映成4/4/4，不重复访问。</p><p><strong>为什么这样取：</strong>1311/1115=1.176，按最近刻度列约1.2档，79窗，不再因不足1.2而空着。仅抬到max(N,3)估算1154帧、1.035倍，不构成有意义的20%新档。原本已4目标的8条母样本保持不变。</p><p><strong>估算：</strong>按每条原N补4−N组段长，A=Σ循环取母抓放对；T′=T+A、D′=D+A，再分别计窗。</p><p><strong>实施边界：</strong>保留原raw_N抽样、完整randperm、按raw_N抽出的答案序号和按钮位置，再把原目标序列前缀补到4项。不能直接把randint替换为常量4，或按4重抽答案；这会改变随机流和母答案。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/VideoPlaceOrder.py</code> 中的 <code>VideoPlaceOrder._load_scene::num_targets_to_pick/which_in_subset/button_task_index；VideoPlaceOrder._initialize_episode</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="MoveCube" id="knob-MoveCube"><summary>4.1 MoveCube：旋钮与选档依据</summary><p><strong>旋钮：</strong>无原生次数旋钮，保持一次演示、一次执行。</p><p><strong>为什么这样取：</strong>源码按peg_push/gripper_push/grasp_putdown选择既有任务清单，difficulty不控制次数。已有Hard摘要中位416帧/23窗；1.2–2.0均无独立合法参数，本轮保留不纳入决定。</p><p><strong>估算：</strong>母统计引用1006-xhard12-prev-training-and-task-plan.md「4.2 每任务汇总」，n=25；本轮未重读HDF5。</p><p><strong>实施边界：</strong>重复演示或多轮搬运会改变一次模仿语义，延长static只是补长度，均不用于填档。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/MoveCube.py</code> 中的 <code>MoveCube._initialize_episode、MoveCube.evaluate</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="InsertPeg" id="knob-InsertPeg"><summary>4.2 InsertPeg：旋钮与选档依据</summary><p><strong>旋钮：</strong>无原生次数旋钮，保持演示抓插、复位、执行抓插。</p><p><strong>为什么这样取：</strong>difficulty仅保存而不用于任务构造；固定任务序列没有次数参数。已有Hard摘要中位464帧/26窗；1.2–2.0无独立合法参数，仍不纳入extra hard。</p><p><strong>估算：</strong>母统计引用1006-xhard12-prev-training-and-task-plan.md「4.2 每任务汇总」，n=25；本轮未重读HDF5。</p><p><strong>实施边界：</strong>增加插入轮数、重复演示属于新玩法；增加静止时长不作为难度旋钮。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/InsertPeg.py</code> 中的 <code>InsertPeg.__init__、InsertPeg._initialize_episode::tasks</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="PatternLock" id="knob-PatternLock"><summary>4.3 PatternLock：旋钮与选档依据</summary><p><strong>旋钮：</strong>L为节点数，真正移动边数是L−1；用L′=1+floor(r(L−1)+0.5)取最近整数边数。</p><p><strong>为什么这样取：</strong>表内五值按原L=4/5/6/7/8顺序对应。这里最接近指边数倍数，不宣称帧中位全局最优；1.4档因此合成480帧、1.481倍，须保留实际偏差。相同母L的邻档可能得到同一L′，该seed只生成一次并附多个目标标签。</p><p><strong>估算：</strong>demo、exec分别追加L′−L个母移动段作估计；D′/E′各自重算，W′=w(D′)+w(E′)。</p><p><strong>实施边界：</strong>grid保持5，母路径前缀与不重复节点都要保留；仅改length重新采样不能保证前缀。某些母路径终点已被访问节点包围，无法合法扩尾；须固定seed报告不可达，不能逆向回走、换seed或放宽判据。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/PatternLock.py</code> 中的 <code>PatternLock._load_scene；utils/adjacent.py::grid_adjacency/dfs_path</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<details class="knob-review" data-task="RouteStick" id="knob-RouteStick"><summary>4.4 RouteStick：旋钮与选档依据</summary><p><strong>旋钮：</strong>S为移动边数而非节点数；S′=floor(rS+0.5)，原S=4/5/6/7。</p><p><strong>为什么这样取：</strong>表内四值与原S逐项对应。1.2/1.4/1.6/1.8合成中位600/700/800/900帧；2.0合成993帧、1.986倍。不是按倍数直接插窗，分段重算窗数为34/40/46/54/59。相同seed邻档取同一S′时去重。</p><p><strong>估算：</strong>demo/exec各追加S′−S个母移动段；按两侧总长分别计窗。</p><p><strong>实施边界：</strong>先生成原路径及swing_directions，再用独立尾部随机流延长，保留Hard折返与原前缀，不复制旧轨迹作为新玩法。993源于合成复用母末段43帧截尾，真实新路径名义约1000帧，未实跑。</p><p class="muted">源码锚点：<code>src/robomme/robomme_env/RouteStick.py</code> 中的 <code>RouteStick.config_hard、RouteStick._load_scene；utils/route.py::generate_dynamic_walk</code>。此项由独立任务审阅代理核对，当前仅是计划，不代表环境已实现。</p></details>
-<p class="muted">审阅与数据锚点：<code>17b8037ee0935922532bbaafb4c71be035bcb1ff</code>；母段来源 <code>vis/output/reference_&lt;Task&gt;.json::records[].hard.item</code>，只使用母段，不沿用旧xhard1参数。复核产物 <code>artifacts/length-knobs-20261011/candidates.json</code> 与 <code>recompute.log</code>。上述数字均非新配置实跑结果；原始参考数据尚未核HF revision。保护目录覆盖、具体语言修改与正式生成仍按原审批边界执行。</p>
+<p class="muted">点击任务名展开中位数来源、唯一参数的选择依据与估算公式。K=投入数，n=重复次数，p=抓容器数，P=按压次数，S=交换次数或RouteStick移动边数，R=重抓次数，a=额外抓放组数，N=不同目标数，L=节点数；它们是表中参数简称，不是新增接口已实现的声明。筛选与原任务勾选联动，MoveCube、InsertPeg始终保留作说明。</p>
+<h4>逐任务续审：母档取中位，目标取唯一整数</h4>
+<details class="knob-review" data-task="BinFill" id="knob-BinFill"><summary>1.1 BinFill：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>次数：3（5条）、4（10条）、5（10条）。</p>
+<p><strong>1.0母档怎么定：</strong>25条实际总投放数的中位数是4，固定母档K=4；本轮用原本K=4的10条作为帧窗参照，不再用混合配置的868帧。</p>
+<p><strong>各档为何这样选：</strong>固定K候选5/6/7/8分别合成1034.5/1203/1372/1564.5帧。两倍目标1661帧：K8偏差96.5，K9为1768.5帧、偏差107.5，因此1.8与2.0均选K8并共用；不保留K9作为同一档的另一候选。</p>
+<p><strong>帧窗估算：</strong>T′=T+Σ循环追加的母抓取投入对；保留按钮和完成尾段，W′=w(T′)。偶数子集按中间两项平均，不能换成较大的中位条。</p>
+<p><strong>实施边界：</strong>先生成原Hard场景，再按固定总数K分配颜色目标，必须核实际库存。现有参照子集都原生K4；其它K5样本变成固定K4需要减少目标，不再满足旧“只增加”契约，当前不执行该标准化或据此宣称母语义不变。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/BinFill.py</code>；符号锚点：<code>BinFill.config_hard、BinFill._load_scene、BinFill._initialize_episode</code>。固定配置参照子集n=10，episode=3、7、15、19、23、31、47、51、83、87。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="PickXtimes" id="knob-PickXtimes"><summary>1.2 PickXtimes：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>次数：4（12条）、5（13条）。</p>
+<p><strong>1.0母档怎么定：</strong>25条实际次数中位为5；固定母档number_min=number_max=5，用原5次的13条，基线841帧/51窗。</p>
+<p><strong>各档为何这样选：</strong>每档number_min与number_max均设为同一个数，目标1.2/1.4/1.6/1.8/2.0分别选6/7/8/9/10。1.8目标1513.8帧：9次1444差69.8，10次1586差72.2，故选9；2.0选择当前上限10次，估算1.886倍。</p>
+<p><strong>帧窗估算：</strong>T′=T+Σ循环追加的母抓放对；固定按钮与完成段只保留一次；逐条计算w(T′)后取中位。</p>
+<p><strong>实施边界：</strong>10次是当前序数语言上限，不增到11。布局沿用固定5次母seed，不把原4次样本混入固定基线；循环复制首抓段可能偏离后续真实抓放耗时。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/PickXtimes.py</code>；符号锚点：<code>PickXtimes.__init__、PickXtimes._load_scene；utils/subgoal_language.py::get_subgoal_with_index</code>。固定配置参照子集n=13，episode=7、11、19、23、27、39、43、55、67、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="SwingXtimes" id="knob-SwingXtimes"><summary>1.3 SwingXtimes：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>次数：3（25条）。</p>
+<p><strong>1.0母档怎么定：</strong>全部25条母样本均为3个往返，固定母档n=3，488帧/29窗；此项基线不变。</p>
+<p><strong>各档为何这样选：</strong>唯一整数次数依次为4/5/7/8/9；每档number_min=number_max=n，max_swings=2n自动派生。1.4目标683.2帧选5次642，较6次732更近；2倍目标976帧选9次978。</p>
+<p><strong>帧窗估算：</strong>每增加一个往返只追加一对右移、左移的母段长；保留一次拾起、放下、按钮及尾段；W′=w(T′)。</p>
+<p><strong>实施边界：</strong>保持三色方块、两个目标和原布局；max_swings不是另一个可任选的旋钮。总目标次数及动作序数须同步，当前未实跑。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/SwingXtimes.py</code>；符号锚点：<code>SwingXtimes.config_hard、SwingXtimes._load_scene、SwingXtimes._initialize_episode</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="StopCube" id="knob-StopCube"><summary>1.4 StopCube：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>停止序号k：2（7条）、3（7条）、4（6条）、5（5条）；间隔：60（7条）、80（9条）、120（9条）。</p>
+<p><strong>1.0母档怎么定：</strong>25条实际停止序号的中位为3，间隔中位为80，固定母档(k=3, move_interval=80)。两者同时满足的3条原母样本为ep59/83/87，中位237帧/13窗；不能再用混合基线309。</p>
+<p><strong>各档为何这样选：</strong>所有目标档都保持间隔80，停止序号只取固定4、5、6。1.2与1.4共用k4，1.6与1.8共用k5，2.0选k6；不存在按原k变化的映射，也不在同档随机抽取间隔。</p>
+<p><strong>帧窗估算：</strong>T′=T+80×(k−3)，逐条保留原固定开销并取数学中位；每侧w按统一公式。参数通过母seed复现源码CPU随机抽样顺序核对，未导入环境。</p>
+<p><strong>实施边界：</strong>参照只有3条且速度相同；把其它seed强设间隔80会改变其原速度，不能写成原速度保持。本轮仅定义固定配置及估算；未来k6还须同步扩展step中的range(5)、停止窗口和序数语言。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/StopCube.py</code>；符号锚点：<code>StopCube._initialize_episode、StopCube.step</code>。固定配置参照子集n=3，episode=59、83、87。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="VideoUnmask" id="knob-VideoUnmask"><summary>2.1 VideoUnmask：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>抓取数p：2（25条）。</p>
+<p><strong>1.0母档怎么定：</strong>全部25条实际均为2抓，固定母档p=2，329帧/18窗。</p>
+<p><strong>各档为何这样选：</strong>唯一新增配置p=3，476帧/27窗、1.447倍，放在约1.4档；1.2更近原母档，没有独立新增档。更高目标无第四个合法目标可抓。</p>
+<p><strong>帧窗估算：</strong>T′=T+原放下段+原第二抓段；演示长度不变，分别计演示与执行窗口。</p>
+<p><strong>实施边界：</strong>父类pick仅判断>1，不能只把字典改成3。拟派生任务需要真正追加放下bin_1与抓起bin_2，并同步文本与grounding；不新增容器、不重复抓凑档。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/VideoUnmask.py</code>；符号锚点：<code>VideoUnmask.config_hard、VideoUnmask._load_scene</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="ButtonUnmask" id="knob-ButtonUnmask"><summary>2.2 ButtonUnmask：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>抓取数p：2（25条）。</p>
+<p><strong>1.0母档怎么定：</strong>全部25条实际均为2抓，固定母档p=2，373帧/22窗。</p>
+<p><strong>各档为何这样选：</strong>唯一新增配置p=3，515帧/31窗、1.381倍。目标1.2与1.4各自最近者相同，表中两格都明确写p3并注明共用，不保留分数次数或另一配置。</p>
+<p><strong>帧窗估算：</strong>T′=T+原放下段+原第二抓段，W′=w(T′)，按25条分别计算后取中位。</p>
+<p><strong>实施边界：</strong>父类pick只是>1开关；第三抓须构造真实任务、正确颜色与恢复索引，不能把复制母段的第二种颜色文字用于第三抓。1.6以上无新增配置。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/ButtonUnmask.py</code>；符号锚点：<code>ButtonUnmask.config_hard、ButtonUnmask._load_scene</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="VideoUnmaskSwap" id="knob-VideoUnmaskSwap"><summary>2.3 VideoUnmaskSwap：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>交换数S：2（13条）、3（12条）。</p>
+<p><strong>1.0母档怎么定：</strong>实际S中位为2，固定swap_min=swap_max=2；取原S2的13条作母参照，基线428帧/24窗，不再用混合457。</p>
+<p><strong>各档为何这样选：</strong>五个目标分别固定S=4/5/7/9/11，所有seed在同一档使用同一S；不再写S+增量或4–5等范围。2倍目标856帧：S11为878，差22，近于S10的824（差32），所以允许略高的2.051倍。</p>
+<p><strong>帧窗估算：</strong>D′=6×ceil((64+50S)/6)，T′=T−168+D′；W′=w(D′)+w(T−168)。原母子集demo均168帧。</p>
+<p><strong>实施边界：</strong>保持两抓、前64步与每次50环境步动画。第4次起需泛化全部配对属性和调度，重建不得清空已求idx2。执行段原长是估算假设，真实最终容器位置会影响规划。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/VideoUnmaskSwap.py</code>；符号锚点：<code>VideoUnmaskSwap.__init__、VideoUnmaskSwap._refresh_swap_schedule、VideoUnmaskSwap.step</code>。固定配置参照子集n=13，episode=7、11、19、23、31、35、39、43、67、75、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="ButtonUnmaskSwap" id="knob-ButtonUnmaskSwap"><summary>2.4 ButtonUnmaskSwap：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>按压数P：2（25条）；交换数S：2（12条）、3（13条）。</p>
+<p><strong>1.0母档怎么定：</strong>按压中位P=2；从母seed复现__init__第一笔torch.randint得到真实S分布，中位S=3（不使用旧JSON里按序号估的交换事件）。固定P2/S3的13条实录基线460帧/27窗。</p>
+<p><strong>各档为何这样选：</strong>唯一组合依次P3/S4、P4/S6、P4/S8、P5/S10、P6/S12。中位误差相同时优先较少落定等待，交换保持4/6/8/10/12；1.4→1.6的P固定4，仅S增加。每格只有一组，不给多种等长P/S备选。</p>
+<p><strong>帧窗估算：</strong>C(P)=ceil(P/2)R+floor(P/2)L；新增档T′=T−R−L+max(C(P),65+50S)。母P2/S3直接用原实录460，不能套新增门禁公式补成466。</p>
+<p><strong>实施边界：</strong>右起交替按、先释放、错侧不推进、末交换落定后再抓；状态、goal、VQA和grounding同步。P6/S12估算916帧是固定S3子集，旧919是混合25条，两者不混用。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/ButtonUnmaskSwap.py</code>；符号锚点：<code>ButtonUnmaskSwap.__init__、ButtonUnmaskSwap._initialize_episode、ButtonUnmaskSwap._refresh_swap_schedule、ButtonUnmaskSwap.step</code>。固定配置参照子集n=13，episode=7、27、31、35、39、43、51、59、63、67、83、91、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="PickHighlight" id="knob-PickHighlight"><summary>3.1 PickHighlight：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>次数：3（25条）。</p>
+<p><strong>1.0母档怎么定：</strong>全部25条母pickup=3，spawn=6保持固定，基线539帧/32窗。</p>
+<p><strong>各档为何这样选：</strong>每目标只指向固定pickup：1.2和1.4都为4，1.6为5，1.8和2.0都为6；重复目标共用配置，新增配置共三种。</p>
+<p><strong>帧窗估算：</strong>最后抓取之前每增加一目标，追加一组已有抓起＋放下段；分别得700/855/1010帧与42/52/62窗。</p>
+<p><strong>实施边界：</strong>不增加第七个方块；pickup6会让六块全高亮，失去非目标干扰。实际actor数量、目标前缀、真实路径和遗漏均须后续验证。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/PickHighlight.py</code>；符号锚点：<code>PickHighlight.config_hard、PickHighlight._load_scene、PickHighlight.step</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="VideoRepick" id="knob-VideoRepick"><summary>3.2 VideoRepick：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>交换数S：2（16条）、3（9条）；重抓数R：1（8条）、2（9条）、3（8条）。</p>
+<p><strong>1.0母档怎么定：</strong>medium三方块例外不变。25条实际交换S中位2、重抓R中位2；各档都固定R=2，母档S=2。原本同时S2/R2的子集只有4条ep2/46/86/90，母中位717帧/42窗。</p>
+<p><strong>各档为何这样选：</strong>每档固定一个交换数S=5/7/10/13/15，不再用原S+增量范围，且不再保留R随机1–3。两倍目标1434帧：S15为1419差15，S16为1473差39，因此选15。</p>
+<p><strong>帧窗估算：</strong>每新增交换沿用母static段54录制帧估计：T′=T+54(S−2)，D′=D+54(S−2)；W′=w(D′)+w(T−D)，四条分别算再取中位。</p>
+<p><strong>实施边界：</strong>58.5窗、85.5窗是4条整数窗口数的数学中位，不是单轨迹半个窗口。固定R2是最新单配置口径，取代旧表中各seed保留1–3的混合估时；本轮未把其它seed改为R2。50环境步不等于54录制帧，长交换配对仍待实现。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/VideoRepick.py</code>；符号锚点：<code>VideoRepick.config_medium、VideoRepick.__init__、VideoRepick._refresh_swap_schedule、VideoRepick._initialize_episode</code>。固定配置参照子集n=4，episode=2、46、86、90。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="VideoPlaceButton" id="knob-VideoPlaceButton"><summary>3.3 VideoPlaceButton：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>额外组数a：0（25条）。</p>
+<p><strong>1.0母档怎么定：</strong>全部25条额外组数a=0，母档固定0组，961帧/57窗；答案task_flag不是长度旋钮，仍按母seed保留。</p>
+<p><strong>各档为何这样选：</strong>1.2固定a1且只选后侧：原target_1放完后追加target_3，1149帧/69窗；1.4固定a2：再在target_0前加target_2，1359帧/82窗。不提供同一a1的前侧备选，因1171帧离1.2目标更远。</p>
+<p><strong>帧窗估算：</strong>母按钮前、后抓放对分别为A、B；a1加B，a2加A+B，同时加至T与D，再分侧计窗。</p>
+<p><strong>实施边界：</strong>保持additional_place=False，不开启旧post_flag；按钮前最后落点target_0与按钮后第一落点target_1不变。额外任务插入后重算恢复和失败注入索引，不新增随机调用。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/VideoPlaceButton.py</code>；符号锚点：<code>VideoPlaceButton._load_scene::task_list/pre_flag/post_flag/task_flag；utils/task4recovery.py::task4recovery</code>。固定配置参照子集n=25，episode=3、7、11、15、19、23、27、31、35、39、43、47、51、55、59、63、67、71、75、79、83、87、91、95、99。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="VideoPlaceOrder" id="knob-VideoPlaceOrder"><summary>3.4 VideoPlaceOrder：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>不同目标数N：2（10条）、3（7条）、4（8条）。</p>
+<p><strong>1.0母档怎么定：</strong>25条实际不同目标数中位N=3；固定母档3个不同目标，参照原N3的7条，1120帧/67窗，不使用旧混合1115。</p>
+<p><strong>各档为何这样选：</strong>唯一新增配置固定N=4，1326帧/80窗、1.184倍，归约1.2档。没有2/3/4→4的动态映射，也不重复访问凑更多档。</p>
+<p><strong>帧窗估算：</strong>在每条三目标母样本上加第一组母演示抓放段长A：T′=T+A、D′=D+A，再分侧计窗并取7条中位。</p>
+<p><strong>实施边界：</strong>本表只使用原N3子集估时，不把原N4样本截成3。原N4可能要求第4项答案、按钮在第4组后，强行缩短会删掉答案或改变时序；后续若要全部seed标准化须另定义合法答案与按钮规则。当前N3→N4保留固定母档原三项、答案与按钮，再追加剩余目标。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/VideoPlaceOrder.py</code>；符号锚点：<code>VideoPlaceOrder._load_scene::num_targets_to_pick/which_in_subset/button_task_index；VideoPlaceOrder._initialize_episode</code>。固定配置参照子集n=7，episode=7、15、19、31、47、67、95。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="MoveCube" id="knob-MoveCube"><summary>4.1 MoveCube：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>无可取中位的长度次数参数。</p>
+<p><strong>1.0母档怎么定：</strong>无次数旋钮；母档固定一次演示＋一次执行，已有25条摘要416帧/23窗。</p>
+<p><strong>各档为何这样选：</strong>1.2–2.0无独立新增配置，维持不纳入extra hard。peg_push/gripper_push/grasp_putdown是动作类别，不给不可排序的类别取伪中位。</p>
+<p><strong>帧窗估算：</strong>引用1006-xhard12-prev-training-and-task-plan.md「4.2 每任务汇总」，本轮未重新读取HDF5。</p>
+<p><strong>实施边界：</strong>布局与动作方式仍按原seed，不当作不同长度档；禁止通过重复演示、多轮搬运或加静止填档。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/MoveCube.py</code>；符号锚点：<code>MoveCube._initialize_episode、MoveCube.evaluate</code>。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="InsertPeg" id="knob-InsertPeg"><summary>4.2 InsertPeg：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>无可取中位的长度次数参数。</p>
+<p><strong>1.0母档怎么定：</strong>无次数旋钮；固定一次演示抓插＋一次执行抓插，已有25条摘要464帧/26窗。</p>
+<p><strong>各档为何这样选：</strong>1.2–2.0无独立新增配置。obj_flag、direction是类别选择，不给它们取中位，也不把布局随机性解释成同一档多配置。</p>
+<p><strong>帧窗估算：</strong>引用1006-xhard12-prev-training-and-task-plan.md「4.2 每任务汇总」，本轮未重新读取HDF5。</p>
+<p><strong>实施边界：</strong>不追加插入轮数、不延长静止来构造难度；当前母语义保持。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/InsertPeg.py</code>；符号锚点：<code>InsertPeg.__init__、InsertPeg._initialize_episode::tasks</code>。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="PatternLock" id="knob-PatternLock"><summary>4.3 PatternLock：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>路径长度：4（2条）、5（9条）、6（5条）、7（3条）、8（6条）。</p>
+<p><strong>1.0母档怎么定：</strong>25条实际节点数中位L=6，grid=5；取原L6的5条ep7/15/27/31/43，固定母档334帧/18窗。</p>
+<p><strong>各档为何这样选：</strong>目标档只取固定L=7/8/9/10/11（length上下界都设成该L），不再有五值映射。直接比较该固定子集的合成帧中位：396/480/528/604/661；两倍目标668，L11只差7，近于L10或L12。</p>
+<p><strong>帧窗估算：</strong>每侧追加L−6个母移动段作估计；完成尾段一次，D′/E′分别重算，W′=w(D′)+w(E′)。</p>
+<p><strong>实施边界：</strong>参照子集原生L6，不把其它路径截短/加长后冒充真实母档。保持grid5、不重复节点与母前缀时仍可能无法扩尾；不可达须固定seed报告，不能回走、换seed或吞采样耗尽。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/PatternLock.py</code>；符号锚点：<code>PatternLock._load_scene；utils/adjacent.py::grid_adjacency/dfs_path</code>。固定配置参照子集n=5，episode=7、15、27、31、43。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<details class="knob-review" data-task="RouteStick" id="knob-RouteStick"><summary>4.4 RouteStick：固定母档与唯一配置</summary>
+<p><strong>25条实际旋钮分布：</strong>路径长度：4（6条）、5（7条）、6（5条）、7（7条）。</p>
+<p><strong>1.0母档怎么定：</strong>25条实际移动边数中位S=5；取原S5的7条，固定母档500帧/28窗。S是边数，不是节点数。</p>
+<p><strong>各档为何这样选：</strong>每个目标只有固定S=6/7/8/9/10，分别600/700/800/900/993帧，34/40/46/54/59窗；不再根据母S输出四个不同值。</p>
+<p><strong>帧窗估算：</strong>demo、exec各追加S−5个母移动段。复制到原exec末段43帧时产生截尾，S10合成993帧/59窗，名义约1000帧/60窗，真实值待校对。</p>
+<p><strong>实施边界：</strong>布局、路径选择和方向仍由seed决定，不算多套长度配置。先完整生成固定母路径与方向，再用独立尾部随机流延长；保持折返、母前缀及两侧一致，不复制轨迹作为新玩法。</p>
+<p class="muted">源码：<code>src/robomme/robomme_env/RouteStick.py</code>；符号锚点：<code>RouteStick.config_hard、RouteStick._load_scene；utils/route.py::generate_dynamic_walk</code>。固定配置参照子集n=7，episode=3、7、39、47、51、63、95。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
+<p class="muted">16个任务分别由原来的16个独立审阅代理续审。源码与母记录锚点：<code>e978d076a862938730bb75957e50bd219f8a82bd</code>；母段来源 <code>vis/output/reference_&lt;Task&gt;.json::records[].hard.item</code>。主会话独立复核14个可扩任务的旋钮分布、固定子集和候选帧窗，证据在 <code>artifacts/fixed-knobs-20261011/candidates.json</code> 与 <code>recompute.log</code>。本轮没有更改环境、重新生成母样本或扩大轨迹预算；把未符合中位配置的seed标准化为同一配置，仍需另核语义与受保护改动，不能沿用“原seed全部行为不变”的结论。</p>
 </section>
 <style>
 .gradient-scroll { overflow-x:auto; }
