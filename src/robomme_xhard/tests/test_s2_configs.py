@@ -379,12 +379,21 @@ GPU_CASES = [
 ]
 
 
+# 每任务用正式母 seed 清单的 rank0 seed（来源：``robomme_xhard.tools.mother_seeds.build_manifest``，
+# 即 ``src/robomme/env_metadata/train/`` 官方 train metadata 按 REFERENCE_SUBSETS 选出的 rank=0 条目；
+# 2026-10-11 核对一致），替换此前统一使用的占位 seed 12900。
+MOTHER_RANK0_SEEDS = {
+    "VideoUnmask": 6700, "ButtonUnmask": 8700, "VideoUnmaskSwap": 5700,
+    "ButtonUnmaskSwap": 7700, "VideoRepick": 13600,
+}
+
+
 @pytest.mark.gpu
 @pytest.mark.parametrize("task,label", GPU_CASES)
 def test_gym_make_reset_contract(task, label):
     import gymnasium as gym
 
-    seed = 12900
+    seed = MOTHER_RANK0_SEEDS[task]
     env = gym.make(robomme_xhard.env_name(task), obs_mode="rgb+depth+segmentation",
                    control_mode="pd_joint_pos", render_mode="rgb_array", reward_mode="dense",
                    seed=seed, difficulty=label)

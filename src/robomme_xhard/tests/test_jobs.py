@@ -408,3 +408,142 @@ def test_worker_import_order(new_gen):
         assert source.index("import robomme.robomme_env") < source.index("import robomme_xhard")
     top = GEN_PATH.read_text(encoding="utf-8").split("\ndef ", 1)[0]
     assert "robomme_xhard" not in top
+
+
+# ---------------------------------------------------------------- 固定 seed 卡片的调度行为（替身进程池驱动）
+#
+# 用假进程池替换生成器模块里的 ProcessPoolExecutor：submit 不起任何进程，按脚本立即返回一个
+# 已完成（或永不完成）的 concurrent.futures.Future；_run_jobs 里真实的 wait / BrokenProcessPool 分支照常走。
+# 判定行：XHARD_FIXED_SEED_BEHAVIOR=PASS
+
+
+class _FakePool:
+    """替身进程池：按卡片身份消费预设结局，并把每次提交的卡片原样记入日志。"""
+
+    instances: list["_FakePool"] = []
+
+    def __init__(self, script, submitted, **kwargs):
+        self.script = script
+        self.submitted = submitted
+        self.kwargs = kwargs
+        self.shutdown_calls = 0
+        _FakePool.instances.append(self)
+
+    def submit(self, fn, job):
+        from concurrent.futures import Future
+
+        self.submitted.append(job)
+        outcome = self.script[(job.task, job.episode, job.difficulty)].pop(0)
+        future: Future = Future()
+        if outcome == "hang":  # 永不完成：模拟池崩溃时仍在途的卡片
+            return future
+        if isinstance(outcome, BaseException):
+            future.set_exception(outcome)
+            return future
+        future.set_result({
+            "task": job.task, "episode": job.episode, "attempt": job.attempt, "seed": job.seed,
+            "difficulty": job.difficulty, "wall_s": 0.0, **outcome,
+        })
+        return future
+
+    def shutdown(self, wait=True, cancel_futures=False):
+        self.shutdown_calls += 1
+
+
+def _card(new_gen, task, episode, seed, difficulty, role="xhard"):
+    return new_gen.EpisodeJob(
+        task=task, episode=episode, attempt=0, seed=seed, difficulty=difficulty,
+        output_root="x", repo_root="y", card_role=role,
+        make_name=f"{task}XHard" if role == "xhard" else None, source_difficulty="hard",
+    )
+
+
+def _drive(new_gen, monkeypatch, tmp_path, jobs, script, workers):
+    submitted: list = []
+    _FakePool.instances = []
+    monkeypatch.setattr(new_gen, "ProcessPoolExecutor",
+                        lambda **kwargs: _FakePool(script, submitted, **kwargs))
+    jsonl = tmp_path / "episode_results.jsonl"
+    succeeded, exhausted = new_gen._run_jobs(
+        jobs, ["0"], workers, "train", jsonl, max_attempts=5, max_tasks_per_child=None,
+        cpu_plan={}, xhard_mode=True,
+    )
+    lines = [json.loads(line) for line in jsonl.read_text(encoding="utf-8").splitlines()]
+    return succeeded, exhausted, submitted, lines
+
+
+def test_fixed_seed_run_jobs_failures_are_final_and_infra_requeues(new_gen, monkeypatch, tmp_path):
+    """任务失败与代码错误不 bump、直接记最终；infra 原卡重排，连续 3 次放弃，中途成功则记成功。"""
+    x_task = _card(new_gen, "BinFill", 7, 4701, "xhard12")
+    m_code = _card(new_gen, "PickXtimes", 7, 1700, "hard", role="mother")
+    x_infra3 = _card(new_gen, "StopCube", 59, 7900, "xhard14")
+    x_infra2 = _card(new_gen, "RouteStick", 7, 16700, "xhard20")
+    m_infra3 = _card(new_gen, "PatternLock", 7, 15700, "hard", role="mother")
+    script = {
+        ("BinFill", 7, "xhard12"): [{"ok": False, "failure_class": "task", "error_type": "SceneGenerationError"}],
+        ("PickXtimes", 7, "hard"): [{"ok": False, "failure_class": "code", "error_type": "KeyError"}],
+        # infra 两种来源：worker 抛出的异常（父进程合成 infra）与结果里直接标 infra
+        ("StopCube", 59, "xhard14"): [RuntimeError("w1"), RuntimeError("w2"), RuntimeError("w3"), {"ok": True}],
+        ("RouteStick", 7, "xhard20"): [RuntimeError("w1"), {"ok": False, "failure_class": "infra"}, {"ok": True}],
+        ("PatternLock", 7, "hard"): [{"ok": False, "failure_class": "infra"}] * 3 + [{"ok": True}],
+    }
+    jobs = [x_task, m_code, x_infra3, x_infra2, m_infra3]
+    succeeded, exhausted, submitted, lines = _drive(new_gen, monkeypatch, tmp_path, jobs, script, workers=1)
+
+    # 每次提交的都是原卡片：seed 与 attempt 从不改变（没有任何 bump）
+    originals = {(j.task, j.episode, j.difficulty): j for j in jobs}
+    for job in submitted:
+        assert job == originals[(job.task, job.episode, job.difficulty)]
+        assert job.attempt == 0
+    counts = {key: sum(1 for j in submitted if (j.task, j.episode, j.difficulty) == key) for key in originals}
+    assert counts == {
+        ("BinFill", 7, "xhard12"): 1,       # 任务失败：只跑一次
+        ("PickXtimes", 7, "hard"): 1,       # 代码错误：只跑一次
+        ("StopCube", 59, "xhard14"): 3,     # 连续 3 次 infra：第 3 次放弃，第 4 个结局不会被消费
+        ("RouteStick", 7, "xhard20"): 3,    # 两次 infra 后成功
+        ("PatternLock", 7, "hard"): 3,      # 母卡同样连续 3 次放弃
+    }
+    assert script[("StopCube", 59, "xhard14")] == [{"ok": True}]
+    assert script[("PatternLock", 7, "hard")] == [{"ok": True}]
+
+    ex = {(r["task"], r["episode"], r["difficulty"]): r for r in exhausted}
+    assert set(ex) == {("BinFill", 7, "xhard12"), ("PickXtimes", 7, "hard"),
+                       ("StopCube", 59, "xhard14"), ("PatternLock", 7, "hard")}
+    assert ex[("BinFill", 7, "xhard12")]["failure_class"] == "task"
+    assert ex[("PickXtimes", 7, "hard")]["failure_class"] == "code"
+    assert ex[("StopCube", 59, "xhard14")]["failure_class"] == "infra"
+    assert ex[("StopCube", 59, "xhard14")]["card_role"] == "xhard"
+    for record in exhausted:
+        key = (record["task"], record["episode"], record["difficulty"])
+        assert (record["seed"], record["attempt"]) == (originals[key].seed, 0)
+    assert [(r["task"], r["seed"], r["attempt"]) for r in succeeded] == [("RouteStick", 16700, 0)]
+    # jsonl 逐次落盘：1 + 1 + 3 + 3 + 3 = 11 行，全部 attempt 0
+    assert len(lines) == 11 and all(line["attempt"] == 0 for line in lines)
+    assert len(_FakePool.instances) == 1  # 非池崩溃不重建池
+
+
+def test_fixed_seed_run_jobs_pool_crash_returns_inflight_card_unchanged(new_gen, monkeypatch, tmp_path):
+    """池崩溃：崩溃卡记 infra 后原卡重排；同池在途卡原样退回队首，池被重建，两卡最终用原 seed 成功。"""
+    crash = _card(new_gen, "VideoPlaceOrder", 7, 11705, "xhard16")
+    inflight = _card(new_gen, "VideoRepick", 46, 13600, "hard", role="mother")
+    script = {
+        ("VideoPlaceOrder", 7, "xhard16"): [new_gen.BrokenProcessPool("池坏了"), {"ok": True}],
+        ("VideoRepick", 46, "hard"): ["hang", {"ok": True}],
+    }
+    succeeded, exhausted, submitted, lines = _drive(
+        new_gen, monkeypatch, tmp_path, [crash, inflight], script, workers=2)
+
+    assert exhausted == []
+    assert sorted((r["task"], r["seed"], r["attempt"]) for r in succeeded) == [
+        ("VideoPlaceOrder", 11705, 0), ("VideoRepick", 13600, 0)]
+    assert submitted.count(crash) == 2 and submitted.count(inflight) == 2
+    assert all(job in (crash, inflight) for job in submitted)  # 没有任何 bump 出来的新卡片
+    # 第一个池在崩溃后被关闭并重建一个新池
+    assert len(_FakePool.instances) == 2 and _FakePool.instances[0].shutdown_calls >= 1
+    # 退回在途卡时落一条 infra 记录，seed / attempt 与原卡相同
+    returned = [line for line in lines if line.get("error") == "池重建，任务退回队列"]
+    assert len(returned) == 1
+    assert (returned[0]["task"], returned[0]["seed"], returned[0]["attempt"]) == ("VideoRepick", 13600, 0)
+    assert returned[0]["failure_class"] == "infra" and returned[0]["card_role"] == "mother"
+    crashed = [line for line in lines if line.get("error_type") == "BrokenProcessPool"]
+    assert len(crashed) == 1 and crashed[0]["seed"] == 11705

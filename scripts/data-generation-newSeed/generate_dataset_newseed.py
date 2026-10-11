@@ -950,7 +950,7 @@ def generate_dataset_newseed(
 
 
 def _is_xhard_request(value: Any) -> bool:
-    """--difficulty 里出现 xhard 字面值即进入 xhard 模式（不 import robomme_xhard，保持轻量）。"""
+    """--difficulty 里出现 xhard 字面值即进入 xhard 模式（纯字符串判断，本函数自身不 import robomme_xhard）。"""
     return isinstance(value, str) and any(
         item.strip().lower().startswith("xhard") for item in value.split(",")
     )
@@ -958,6 +958,10 @@ def _is_xhard_request(value: Any) -> bool:
 
 def _xhard_jobs_module() -> Any:
     """父进程里按需导入 robomme_xhard.jobs（只在 xhard 模式、建池之前调用，不放文件顶部）。
+
+    注意这次导入并不轻量：``robomme_xhard`` 包的 ``__init__`` 会连带导入 ``robomme_xhard.envs``，
+    进而导入 mani_skill 与 torch（父进程因此多出这些模块的导入开销与内存）。但它不初始化 CUDA：
+    2026-10-11 实测导入后 ``torch.cuda.is_initialized()`` 为 False，父进程不建 CUDA 上下文。
 
     spawn 出来的 worker 只重跑本模块顶层、不执行本函数，因此 worker 内的
     robomme_xhard 导入仍严格在绑卡与 import robomme.robomme_env 之后（_pool_init / _worker）。
@@ -1191,7 +1195,9 @@ def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="无 seed 独立生成：seed 由公式自算，失败自动 attempt+1 重试"
     )
-    parser.add_argument("--output-dir", "--outdir", dest="output_dir", required=True, help="仓库内的输出目录")
+    parser.add_argument("--output-dir", "--outdir", dest="output_dir", required=True,
+        help="仓库内的输出目录；xhard 模式一轮用一个新输出目录，同目录重跑会累积 episode_results.jsonl",
+    )
     parser.add_argument("--env", "--environment", default="all", help="all 或逗号分隔的环境名")
     parser.add_argument("--episodes", type=int, default=MAX_EPISODES, help="每个环境的条数（配合 --episode-start）")
     parser.add_argument(

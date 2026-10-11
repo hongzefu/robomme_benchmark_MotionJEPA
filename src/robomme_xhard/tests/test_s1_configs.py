@@ -554,27 +554,43 @@ def test_routestick_walk_has_exact_edges(label):
 # ---------------------------------------------------------------- 需要仿真（主会话合并后跑）
 
 
+# 每任务用正式母 seed 清单的 rank0 seed（来源：``robomme_xhard.tools.mother_seeds.build_manifest``，
+# 即 ``src/robomme/env_metadata/train/`` 官方 train metadata 按 REFERENCE_SUBSETS 选出的 rank=0 条目；
+# 2026-10-11 核对一致）。此前的占位 seed（如 VideoPlaceOrder 用 7101）会让父类撒目标点失败。
+MOTHER_RANK0_SEEDS = {
+    "BinFill": 4701, "PickXtimes": 1700, "SwingXtimes": 3700, "StopCube": 7900,
+    "PickHighlight": 12700, "VideoPlaceButton": 10701, "VideoPlaceOrder": 11705,
+    "PatternLock": 15700, "RouteStick": 16700,
+}
+
+
 @pytest.mark.gpu
 @pytest.mark.slow
 @pytest.mark.parametrize("task,label", [(t, d) for t in S1 for d in TIER_CONFIGS[t]])
 def test_gym_make_reset_each_tier(task, label):
     """每个有效档 gym.make + reset 一次，核对实例旋钮落地。仅主会话在主检出串行跑。"""
+    _check_gym_make_reset(task, label, MOTHER_RANK0_SEEDS[task])
+
+
+@pytest.mark.gpu
+@pytest.mark.slow
+def test_gym_make_reset_binfill_xhard20_expands_red_green():
+    """BinFill xhard20（K=9）在官方 ep51（seed 9102）上需要把投放扩到红、绿两色，核对同一组断言。"""
+    _check_gym_make_reset("BinFill", "xhard20", 9102)
+
+
+def _check_gym_make_reset(task, label, seed):
     import gymnasium as gym
 
     from robomme_xhard.configs import tier
 
-    seeds = {
-        "BinFill": 4301, "PickXtimes": 7101, "SwingXtimes": 7101, "StopCube": 10700,
-        "PickHighlight": 7101, "VideoPlaceButton": 15500, "VideoPlaceOrder": 7101,
-        "PatternLock": 7101, "RouteStick": 7101,
-    }
     env = gym.make(
         env_name(task),
         obs_mode="rgb+depth+segmentation",
         control_mode="pd_joint_pos",
         render_mode="rgb_array",
         reward_mode="dense",
-        seed=seeds[task],
+        seed=seed,
         difficulty=label,
     )
     try:
