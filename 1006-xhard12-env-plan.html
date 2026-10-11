@@ -825,7 +825,7 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
   动作原语本身是原有的，只是原代码在结构上产生不了这么多次。
 </li>
 </ul>
-<p>上述 7 个环境的这些档是否保留，<b>待用户裁决</b>；用户当前预期是“只有 VideoPlaceButton 会有”。</p>
+<p>上述 7 个环境的这些档按 R17（「1 全部保留」）全部保留；用户此前预期是“只有 VideoPlaceButton 会有”。</p>
 
 <h3 id="p1-review-measure">三、实测长度梯度（每任务 1 个母 seed，临时补丁）</h3>
 <p>比值 = 该档 timestep ÷ 母档 timestep，括号内是计划估算，“—”表示缺档。只有 1 个 seed，不能外推到全部母样本。</p>
@@ -887,13 +887,23 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <li><b>执行账本：</b>没有续跑和防覆盖；strike 的键是 (task, episode)，五个档位会互相冲突。</li>
 </ul>
 
-<h3 id="p1-review-open">五、仍待用户裁决</h3>
-<ol>
-<li>二节里 7 个环境的“原本执行不到的动作”（甲类：VideoUnmask、ButtonUnmask、VideoPlaceButton；乙类：VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick、StopCube k=6/7）是否接受。</li>
-<li>没有 xhard20 的任务（VideoUnmask、ButtonUnmask、PickHighlight、VideoPlaceButton、VideoPlaceOrder）在 R2 下是否不做 8 帧评估。</li>
-<li>PickXtimes、PickHighlight 是否按小规模实测重新归档。</li>
-<li>BinFill K=9 要核对母 seed 场景的方块数不少于 9：每个 seed 只 reset 一次计数，不跑 rollout，是否执行。</li>
-</ol>
+<h3 id="p1-review-open">五、第二轮裁决与 BinFill 库存核对（2026-10-11）</h3>
+<table>
+<tr><th>编号</th><th>事项</th><th>用户原话</th><th>落地口径</th></tr>
+<tr><td>R17</td><td>二节 7 个环境的“原本执行不到的动作”</td><td>「1 全部保留」</td><td>甲类（VideoUnmask、ButtonUnmask、VideoPlaceButton）和乙类（VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick、StopCube k=6/7）的档位全部保留</td></tr>
+<tr><td>R18</td><td>没有 xhard20 的任务怎么做 8 帧评估</td><td>「2都检查最长的一档」</td><td>R2 的口径改为：每个任务检查自己最长的一档。有 xhard20 的查 xhard20；VideoUnmask、ButtonUnmask 查 xhard14，PickHighlight 查 xhard18，VideoPlaceButton 查 xhard14，VideoPlaceOrder 查 xhard12；MoveCube、InsertPeg 没有新档，不查</td></tr>
+<tr><td>R19</td><td>PickXtimes、PickHighlight 的档位归属</td><td>「3同意」</td><td>等两个母 seed 的小规模实测完成后，再按实测重新归档</td></tr>
+<tr><td>R20</td><td>BinFill K=9 的母 seed 库存核对</td><td>「4同意」</td><td>已执行，结果见下</td></tr>
+</table>
+<p><b>BinFill K=9 库存核对</b>（R20）：</p>
+<ul>
+<li>做法：对 K=4 母子集的 10 个 seed 各 <code>reset</code> 一次，只数场景里的方块，不跑 rollout。代码 <code>eb51aa68</code>，GPU 1，用时约 20 秒，退出码 0，只跑了 1 次。</li>
+<li>结果：10 个 seed 的方块总数为 10～12 个，都不少于 9 个。判定行原文：<code>BINFILL_K9_INVENTORY=PASS seeds=10 ok=10 min_total=10</code>。</li>
+<li>注意：ep51（seed 9102）母档的目标全是蓝色（目标数为红 0、蓝 4、绿 0），而蓝色只有 6 块。K≥7 时必须按 R7 把红、绿方块也选为目标。</li>
+<li>ep3（seed 4301）按 R11 先避开。</li>
+<li>证据：<code>artifacts/audit-1011/binfill-inventory/binfill_inventory.json</code>、<code>run.log</code>。</li>
+</ul>
+<p>本节所列事项<b>目前没有待裁决项</b>。四节的问题待修订计划时逐项处理；本节裁决尚未回写到第二部分和其他小节。</p>
 <h2 id="p1-_6">六、验收、步骤、子代理（三行）</h2>
 <ul>
 <li><strong>验收</strong>：原有身份、配置、卡片、关闭态、保护目录、smoke闸门，加技术细节中的goal/subgoal、按钮状态/grounding/落定、真实中位两倍上界、Place答案与路径/目标数量闸门；具体见第二部分，不以INFO统计代替通过。</li>
