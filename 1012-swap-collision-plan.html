@@ -257,12 +257,14 @@ a { color:var(--accent); }
 
   <!-- 左列失败通道 -->
   <rect x="566" y="92" width="60" height="512" rx="4" fill="#fdecea" stroke="#c0392b" stroke-width="1.5"/>
-  <text transform="rotate(-90 596 348)" text-anchor="middle" font-size="12" fill="#c0392b">
-    <tspan x="596" y="343">检测不过 → raise SwapCollisionError（SceneGenerationError 子类）</tspan>
-    <tspan x="596" y="361">→ 生成器 failure_class=task，固定 seed 不重试</tspan>
-  </text>
 
-  <!-- ===== 右列 ===== -->
+
+    <line x1="596" y1="604" x2="596" y2="618" stroke="#c0392b" stroke-width="2" marker-end="url(#arrRed)"/>
+    <rect x="30" y="620" width="596" height="50" rx="4" fill="#fdecea" stroke="#c0392b" stroke-width="1.5"/>
+    <text x="42" y="640" fill="#c0392b">检测不过 → raise SwapCollisionError（SceneGenerationError 子类）</text>
+    <text x="42" y="658" fill="#c0392b">→ 生成器 failure_class=task，固定 seed 不重试</text>
+
+    <!-- ===== 右列 ===== -->
   <!-- ① 灰 -->
   <rect x="850" y="92" width="440" height="50" rx="4" fill="#eee" stroke="#999"/>
   <text x="862" y="112" fill="#333">① 前 64 步抬放演示、方块落入</text>
@@ -296,27 +298,29 @@ a { color:var(--accent); }
 
   <!-- 右列失败通道 -->
   <rect x="1326" y="92" width="60" height="348" rx="4" fill="#fdecea" stroke="#c0392b" stroke-width="1.5"/>
-  <text transform="rotate(-90 1356 266)" text-anchor="middle" font-size="12" fill="#c0392b">
-    <tspan x="1356" y="261">检测不过 → raise SwapCollisionError / SwapBindingError</tspan>
-    <tspan x="1356" y="279">→ 样本 failure，attempt 固定 0</tspan>
-  </text>
 
-  <!-- 底部灰条 -->
-  <rect x="30" y="660" width="1356" height="50" rx="4" fill="#eee" stroke="#999"/>
-  <text x="42" y="680" fill="#333">判据模块 src/robomme_xhard/collision/bin_collision.py 逐字节 vendoring 自 v2.1 ce72b04f；src/robomme/ 零 diff；</text>
-  <text x="42" y="698" fill="#333">覆盖 VideoUnmaskSwap / ButtonUnmaskSwap / VideoRepick 三个 xhard 子类</text>
+
+    <line x1="1356" y1="440" x2="1356" y2="454" stroke="#c0392b" stroke-width="2" marker-end="url(#arrRed)"/>
+    <rect x="850" y="456" width="536" height="50" rx="4" fill="#fdecea" stroke="#c0392b" stroke-width="1.5"/>
+    <text x="862" y="476" fill="#c0392b">检测不过 → raise SwapCollisionError / SwapBindingError</text>
+    <text x="862" y="494" fill="#c0392b">→ 样本 failure，attempt 固定 0</text>
+
+    <!-- 底部灰条 -->
+  <rect x="30" y="700" width="1356" height="50" rx="4" fill="#eee" stroke="#999"/>
+  <text x="42" y="720" fill="#333">判据模块 src/robomme_xhard/collision/bin_collision.py 逐字节 vendoring 自 v2.1 ce72b04f；src/robomme/ 零 diff；</text>
+  <text x="42" y="738" fill="#333">覆盖 VideoUnmaskSwap / ButtonUnmaskSwap / VideoRepick 三个 xhard 子类</text>
 
   <!-- 图例 -->
-  <rect x="30" y="740" width="16" height="16" fill="#dbe9ff" stroke="#3b6fc4"/>
-  <text x="52" y="753" fill="#333">决策（写死配对）</text>
-  <rect x="190" y="740" width="16" height="16" fill="#fde2c8" stroke="#d9772a"/>
-  <text x="212" y="753" fill="#333">碰撞检测</text>
-  <rect x="310" y="740" width="16" height="16" fill="#e4f5e1" stroke="#3a9d4f"/>
-  <text x="332" y="753" fill="#333">新增逻辑</text>
-  <rect x="430" y="740" width="16" height="16" fill="#eee" stroke="#999"/>
-  <text x="452" y="753" fill="#333">沿用父类 / v2.1，不改</text>
-  <rect x="640" y="740" width="16" height="16" fill="#fdecea" stroke="#c0392b"/>
-  <text x="662" y="753" fill="#333">失败通道（红箭头 = 检测不过）</text>
+  <rect x="30" y="780" width="16" height="16" fill="#dbe9ff" stroke="#3b6fc4"/>
+  <text x="52" y="793" fill="#333">决策（写死配对）</text>
+  <rect x="190" y="780" width="16" height="16" fill="#fde2c8" stroke="#d9772a"/>
+  <text x="212" y="793" fill="#333">碰撞检测</text>
+  <rect x="310" y="780" width="16" height="16" fill="#e4f5e1" stroke="#3a9d4f"/>
+  <text x="332" y="793" fill="#333">新增逻辑</text>
+  <rect x="430" y="780" width="16" height="16" fill="#eee" stroke="#999"/>
+  <text x="452" y="793" fill="#333">沿用父类 / v2.1，不改</text>
+  <rect x="640" y="780" width="16" height="16" fill="#fdecea" stroke="#c0392b"/>
+  <text x="662" y="793" fill="#333">失败通道：红箭头 = 该检测不过，汇到下方红框的处置</text>
 </svg><figcaption>图 1　reset 阶段与运行阶段的两组碰撞检测流程（绿为新增、橙为检测、灰为沿用父类）</figcaption></figure>
 <h3>2.2 第二层：新写的规划函数（<code>src/robomme_xhard/swap_plan.py</code>）</h3>
 <table>
