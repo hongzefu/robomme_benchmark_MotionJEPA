@@ -9,6 +9,7 @@ from types import SimpleNamespace
 from pathlib import Path
 import json
 import os
+import subprocess
 
 import numpy as np
 import pytest
@@ -114,6 +115,8 @@ def _write_timing_evidence(u, task, seed, start, hooks):
     assert root.is_relative_to(artifacts.resolve()) and root != artifacts.resolve()
     root.mkdir(parents=True, exist_ok=True)
     evidence = dict(task=task, seed=seed, tier="xhard12", start=start,
+                    git_commit=subprocess.check_output(
+                        ["git", "rev-parse", "HEAD"], cwd=Path(__file__).resolve().parents[3], text=True).strip(),
                     current_step=int(u.elapsed_steps), phase="before_physics", hooks=hooks,
                     fatal=u._xhard_fatal, runtime_checks=u._xhard_runtime_checks,
                     sim_backend=str(u.backend.sim_backend), gpu_sim_enabled=bool(u.gpu_sim_enabled),
@@ -133,23 +136,15 @@ def test_real_step_first_start_and_shared_endpoint(monkeypatch, task, cls, seed,
         hooks = []
         original = SwapCollisionMixin._before_control_step
         def traced(self):
-            result = original(self)
-            row = dict(control_step=int(self.elapsed_steps), phase="before_physics")
-            k = self._swap_segment_index_at(int(self.elapsed_steps))
-            if k is not None:
-                actors, states, _ = self._states()
-                schedule = self.swap_schedule[k]
-                a = next(i for i, actor in enumerate(actors) if actor is schedule[0])
-                b = next(i for i, actor in enumerate(actors) if actor is schedule[1])
-                _, row["endpoints"] = self._endpoint_evidence(k, states[a], states[b])
-                row["sweep_index"] = k
-            hooks.append(row)
-            return result
+            hooks.append(dict(control_step=int(self.elapsed_steps), phase="before_physics"))
+            return original(self)
         monkeypatch.setattr(SwapCollisionMixin, "_before_control_step", traced)
         # 真正逐步推进，含首次起点与 50 步后的相邻共享端点；不跳改 elapsed_steps。
         while int(u.elapsed_steps) <= start + 50:
-            u.step(None)
-            _write_timing_evidence(u, task, seed, start, hooks)
+            try:
+                u.step(None)
+            finally:
+                _write_timing_evidence(u, task, seed, start, hooks)
             assert u._xhard_fatal is None, u._xhard_fatal
         assert u.swap_schedule[0][2] == start
         assert u.swap_schedule[0][3] == u.swap_schedule[1][2] == start + 50

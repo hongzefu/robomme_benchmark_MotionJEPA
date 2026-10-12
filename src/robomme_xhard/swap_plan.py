@@ -167,7 +167,10 @@ class SwapCollisionMixin:
         cached = {"a_p": ca.p.tolist(), "a_q": ca.q.tolist(), "b_p": cb.p.tolist(), "b_q": cb.q.tolist()}
         # 原始四元数均按判据的归一化语义转换后比较，不改变几何容差。
         mismatches = [key for key in actual if not np.array_equal(actual[key], cached[key])]
+        delta = {key: (np.asarray(actual[key], dtype=np.float64) -
+                       np.asarray(cached[key], dtype=np.float64)).tolist() for key in actual}
         return not mismatches, {"actual": actual, "cached": cached, "mismatches": mismatches, **diagnostics,
+                                "delta": delta,
                                 "cached_raw_q": {"a": bc._to_numpy(cache["qa"]).tolist(),
                                                  "b": bc._to_numpy(cache["qb"]).tolist()}}
 
