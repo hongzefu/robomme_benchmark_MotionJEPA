@@ -159,7 +159,9 @@ def get_language_goal(self, env):
         language_goals.append(f"watch the video carefully, then place the {target_color_name} cube on the target right {target_target_language} the button was pressed")
         language_goals.append(f"watch the video carefully, and place the {target_color_name} cube on the target where it was placed immediately {target_target_language} the button was pressed")
         
-        language_goals.append(f"watch the video carefully, then place the {target_color_name} cube on the target where it was previously placed {target_target_language} the button was pressed")
+        # xhard 派生分支（robomme_xhard）的额外放置组使按钮同侧可有两个「曾经放过」的目标，本句语义不唯一故去掉；母档分支文本不变
+        if not getattr(self.env.unwrapped, "xhard_label", None):
+            language_goals.append(f"watch the video carefully, then place the {target_color_name} cube on the target where it was previously placed {target_target_language} the button was pressed")
         if target_target_language == "before":
             language_goals.append(f"watch the video carefully, then place the {target_color_name} cube on the target where it was last placed before the button was pressed")
         else:
