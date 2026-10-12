@@ -169,3 +169,31 @@ git merge-base --is-ancestor 3a5951a834ea014f63724647ab0bc091eb9f109d HEAD
 ```
 
 后续 Python 运行与依赖管理统一使用 `uv`，先核对 `pyproject.toml`、`uv.lock` 和实际环境；本 README 不提供尚未实现的 XHard1/2 启动命令。
+
+## 九、交换任务的配对规则与碰撞检测现状（2026-10-12 只读核查，暂不改代码）
+
+本节记录 VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick 三个交换类任务「交换哪两个对象」的规则，以及本分支与 `origin/newtask-v2.1refractor`（commit `ce72b04f`）在碰撞处理上的差别。用户 2026-10-12 决定「先不改了」，本节只作留档，不构成实施授权。
+
+### 配对规则（本分支与 v2.1 完全一致）
+
+- **发起者 idx1**：`_load_scene` 里一次抽定。方块固定放在 0、1、2 号容器（`torch.randperm(3)`）；第 1、2 次交换的发起者从这三个里随机抽两个，第 3 次从其余容器里随机抽一个（可能是空的 3 号）；xhard 子类第 k ≥ 4 次按 `(k-1) % 3 + 1` 循环复用前三次的发起者（`src/robomme_xhard/envs/video_unmask_swap.py::cyclic_base_index`）。
+- **搭档 idx2**：**不抽随机，永远取当时离发起者最近的对象**。父类 `step` 在第 k 段交换起点按实际位置算平面距离，严格小于比较，等距取生成序号小者。前几段交换会换位置，所以每段都现算一次。
+- 后果：hard 档四容器近似 15 cm × 20 cm 长方形，不加随机偏移时只有短边两对会互换，对角线永不配对，同一对会来回换回原处；xhard 子类文档已登记为「退化风险，只记录不处理」。
+- 源码错位：父类注释说交换「必须包含两个目标容器」，但 `target_bin_1/2` 用下标取打乱后的 `selected_bins`，交换发起者用同一下标取原顺序的 `spawned_bins`，两者不对应；`target_bin_1/2` 后面也未被使用，机器人真正要抓的是 `selected_bins[0]`、`[1]`。v2.1 看到了这一处并在配置里注明「按原行为保留」。
+
+### 本分支现状：没有任何碰撞检测
+
+- 摆放阶段只有 `spawn_random_bin` 的包围盒拒绝采样（间隔 ≥ 2 cm，最多 256 次）。
+- 交换阶段 `swap_flat_two_lane` 直接 `set_pose` 传送，防撞只靠两条经验：双方各往一侧弯出 7 cm、旁观对象逐帧按回原位。移动对象穿过第三个对象不检查、不报错，样本照常录制。
+
+### v2.1 多了什么（相对本分支）
+
+在「选谁交换」上一个字没改，只多了三样东西：
+
+1. **碰撞检测本身**（`src/robomme/robomme_env/utils/bin_collision.py`，899 行，只依赖 numpy）：静态分离轴检查（容器 6 个真实盒体两两检测，间隙必须大于 1 µm，接触与穿入都拒绝）+ 整段弯道路径的连续证明（复刻 7 cm 弯道与四元数插值，区间二分证明全程分离，证不出来按 `uncertified` 拒绝，阈值不可调）。
+2. **决策时点前移**：离线 CPU 规格生成器（`scripts/injection/candidates/specs.py::_simulate_swaps`）把「发起者随机、搭档最近邻」这套规则先算一遍，S 段配对一次算齐并逐段验证，冻结进规格文件；运行时按规格重建场景，在初态、每段交换起点（搭档必须等于预写值，再从实际位姿重证整段）、交换窗口内每个物理子步三处只复核不决策，任一处不过抛 `BinCollisionError`，样本作废。不传规格时所有检查关闭，退回原版行为。
+3. **撞了的处置**：v2.1 是换布局重抽（发起者不变，`MAX_CANDIDATES` 用光报错停止）。
+
+### 若日后移植到本分支（已讨论、未批准、未实施）
+
+用户 2026-10-12 讨论中的口径：不离线传规格；在 xhard 子类 `_load_scene` 末尾加 `certify_swap_plan()`，按 v2.1 的 `_simulate_swaps` 逻辑在 reset 时一次算齐 S 个搭档并证明不撞，证不出来抛 `SceneGenerationError` 报 failure（生成器记 `failure_class=task`，固定 seed 不重试）；运行时加段起点复核与每子步复核，撞了同样报 failure；判据模块从 v2.1 `ce72b04f` 原样 vendoring 进 `src/robomme_xhard/`，`src/robomme/` 零 diff。能通过的样本交换序列与现在完全相同，区别只是会穿模的样本从「照常录制」变成「报 failure 被剔除」。覆写 `step`、`_before/_after_simulation_step` 属 P1「覆盖」，实施前须逐项批准。对比示意图见 `artifacts/vis/swap-collision-v21-v3-v3new.svg`（不进 git）。
