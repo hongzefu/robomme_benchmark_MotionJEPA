@@ -1,4 +1,4 @@
-"""母 seed 清单：每任务选 2 个母 episode/seed（计划 R11、四.7 表与逐任务续审）。
+"""母 seed 清单：默认每任务选 2 个参照母 seed，--all 使用来源难度全体。
 
 选法（确定性）：
 1. 候选来自官方 train metadata（``src/robomme/env_metadata/train/record_dataset_<Task>_metadata.json``
@@ -10,6 +10,8 @@
 4. 按 episode 升序取前两个：rank 0 为较小者（锁定给最终版），rank 1 为另一个。
 
 不足 2 个时响亮失败，不自行放宽口径。
+``--all --limit N`` 跳过参照子集，仍保留来源难度与 MIN_EPISODE，并按 episode 升序
+取前 N 个（不足 N 个报错）；所有模式拒绝 metadata 中任何超出官方 0–99 的 episode。
 
 可选只读核验：若 ``/data/hongzefu/data_0226/record_dataset_<Task>.h5`` 可读，只读打开
 ``episode_<n>/setup/seed`` 与 ``setup/difficulty`` 与 metadata 比对（不读图像）；读不到记 ``unverified``。
@@ -91,11 +93,21 @@ def load_records(metadata_dir: Path, task: str) -> list[dict]:
     return records
 
 
-def select_task(task: str, records: list[dict]) -> list[dict]:
-    """对单个任务按确定性规则选 PER_TASK 个母 episode。"""
+def select_task(task: str, records: list[dict], *, all_seeds: bool = False, limit: int | None = None) -> list[dict]:
+    """按 episode 升序选母条目；默认取参照子集两个，全部模式按 limit 限额。"""
     source = SOURCE_DIFFICULTY[task]
+    if limit is not None and (isinstance(limit, bool) or not isinstance(limit, int) or limit <= 0):
+        raise MotherSeedError("limit 必须是正整数")
+    if limit is not None and not all_seeds:
+        raise MotherSeedError("--limit 只能与 --all 一起使用")
+    for rec in records:
+        ep = rec["episode"]
+        if isinstance(ep, bool) or not isinstance(ep, int) or not 0 <= ep <= 99:
+            raise MotherSeedError(f"{task}: 官方 metadata episode 必须在 0–99，收到 {ep!r}")
+    if len({r["episode"] for r in records}) != len(records):
+        raise MotherSeedError(f"{task}: metadata episode 重复")
     by_episode = {int(r["episode"]): r for r in records}
-    subset = REFERENCE_SUBSETS[task]
+    subset = None if all_seeds else REFERENCE_SUBSETS[task]
     if subset is None:
         candidates = sorted(int(r["episode"]) for r in records if r["difficulty"] == source)
     else:
@@ -110,12 +122,13 @@ def select_task(task: str, records: list[dict]) -> list[dict]:
                 )
             candidates.append(ep)
     eligible = [ep for ep in candidates if ep >= MIN_EPISODE]
-    if len(eligible) < PER_TASK:
+    count = (limit if limit is not None else len(eligible)) if all_seeds else PER_TASK
+    if not eligible or len(eligible) < count:
         raise MotherSeedError(
-            f"{task}: 参照子集内 episode>={MIN_EPISODE} 的只有 {eligible}，不足 {PER_TASK} 个（不自行放宽口径）"
+            f"{task}: 候选内 episode>={MIN_EPISODE} 的只有 {eligible}，不足 {count} 个（不自行放宽口径）"
         )
     chosen = []
-    for rank, ep in enumerate(eligible[:PER_TASK]):
+    for rank, ep in enumerate(eligible[:count]):
         rec = by_episode[ep]
         chosen.append(
             {
@@ -170,10 +183,16 @@ def verify_against_official(official_dir: Path, task: str, entries: list[dict]) 
 def build_manifest(
     metadata_dir: Path = DEFAULT_METADATA_DIR,
     official_dir: Path | None = DEFAULT_OFFICIAL_DIR,
+    *, all_seeds: bool = False, limit: int | None = None, selected_tasks: list[str] | None = None,
 ) -> dict:
     tasks: dict[str, list[dict]] = {}
+    selected_tasks = list(TASK_ORDER) if selected_tasks is None else selected_tasks
+    if not selected_tasks or len(set(selected_tasks)) != len(selected_tasks) or any(t not in TASK_ORDER for t in selected_tasks):
+        raise MotherSeedError("任务列表必须非空、无重复且只含已知任务")
     for task in TASK_ORDER:
-        entries = select_task(task, load_records(metadata_dir, task))
+        if task not in selected_tasks:
+            continue
+        entries = select_task(task, load_records(metadata_dir, task), all_seeds=all_seeds, limit=limit)
         if official_dir is not None:
             verify_against_official(official_dir, task, entries)
         else:
@@ -182,9 +201,13 @@ def build_manifest(
         tasks[task] = entries
     return {
         "version": 1,
+        "mode": "all" if all_seeds else "reference",
+        "all_seeds": all_seeds,
+        "limit": limit,
         "rule": (
-            f"计划固定配置参照子集（MoveCube/InsertPeg 取全体）∩ difficulty=SOURCE_DIFFICULTY ∩ "
-            f"episode>={MIN_EPISODE}（R11），episode 升序前 {PER_TASK} 个；rank 0 锁定给最终版"
+            ("来源难度全体" if all_seeds else "计划固定配置参照子集（MoveCube/InsertPeg 取全体）")
+            + f"∩ difficulty=SOURCE_DIFFICULTY ∩ {MIN_EPISODE}<=episode<=99，episode 升序"
+            + (f"前 {limit} 个" if all_seeds and limit is not None else ("全部" if all_seeds else f"前 {PER_TASK} 个"))
         ),
         "metadata_dir": str(metadata_dir),
         "verify_source": str(official_dir) if official_dir is not None else None,
@@ -196,11 +219,11 @@ def check_manifest(manifest: dict) -> tuple[bool, int, int]:
     """返回 (是否通过, seed 数, 最小 episode)。"""
     entries = [e for task in TASK_ORDER for e in manifest["tasks"].get(task, [])]
     ok = (
-        list(manifest["tasks"]) == list(TASK_ORDER)
-        and len(entries) == PER_TASK * len(TASK_ORDER)
-        and all(e["episode"] >= MIN_EPISODE for e in entries)
-        and sum(e["rank"] == 0 for e in entries) == len(TASK_ORDER)
-        and sum(e["rank"] == 1 for e in entries) == len(TASK_ORDER)
+        bool(entries)
+        and list(manifest["tasks"]) == [t for t in TASK_ORDER if t in manifest["tasks"]]
+        and all(MIN_EPISODE <= e["episode"] <= 99 for e in entries)
+        and all([e["rank"] for e in values] == list(range(len(values))) for values in manifest["tasks"].values())
+        and all(len(values) == (manifest.get("limit") or (len(values) if manifest.get("all_seeds") else PER_TASK)) for values in manifest["tasks"].values())
     )
     min_episode = min((e["episode"] for e in entries), default=-1)
     return ok, len(entries), min_episode
@@ -217,23 +240,31 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--metadata-dir", default=str(DEFAULT_METADATA_DIR))
     parser.add_argument("--official-dir", default=str(DEFAULT_OFFICIAL_DIR), help="只读核验用官方 H5 目录")
     parser.add_argument("--no-verify", action="store_true", help="跳过官方 H5 只读核验")
+    parser.add_argument("--all", dest="all_seeds", action="store_true", help="使用来源难度全体，跳过固定配置参照子集")
+    parser.add_argument("--limit", type=int, help="--all 下每任务按 episode 升序取前几个")
+    parser.add_argument("--tasks", help="逗号分隔任务；默认全部，输出按官网顺序")
     args = parser.parse_args(argv)
 
     manifest = build_manifest(
         Path(args.metadata_dir),
         None if args.no_verify else Path(args.official_dir),
+        all_seeds=args.all_seeds, limit=args.limit,
+        selected_tasks=[t.strip() for t in args.tasks.split(",")] if args.tasks else None,
     )
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     for task in TASK_ORDER:
-        for e in manifest["tasks"][task]:
+        for e in manifest["tasks"].get(task, []):
             print(f"{task}\tep={e['episode']}\tseed={e['seed']}\trank={e['rank']}\t{e['source_difficulty']}\t{e['verify']}")
     ok, n, min_ep = check_manifest(manifest)
-    verified = sum(e["verify"] == "match" for t in TASK_ORDER for e in manifest["tasks"][t])
+    verified = sum(e["verify"] == "match" for entries in manifest["tasks"].values() for e in entries)
     print(f"MOTHER_SEED_VERIFY=INFO match={verified} total={n}")
     print(f"XHARD_MOTHER_NO_FAILRECOVER={'PASS' if ok else 'FAIL'} seeds={n} min_episode={min_ep}")
+    print(f"XHARD_MOTHER_OFFICIAL={'PASS' if ok else 'FAIL'} seeds={n} max_episode={max(e['episode'] for entries in manifest['tasks'].values() for e in entries)}")
+    if args.all_seeds:
+        print(f"XHARD_MOTHER_ALL={'PASS' if ok else 'FAIL'} tasks={len(manifest['tasks'])} seeds={n} limit={args.limit if args.limit is not None else 'all'}")
     return 0 if ok else 1
 
 

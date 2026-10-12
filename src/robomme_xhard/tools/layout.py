@@ -200,7 +200,7 @@ def _normalize_result(record: dict, source: str) -> dict:
     ok = bool(record.get("ok"))
     success = record.get("task_success", ok if "ok" in record else None)
     episode = record.get("mother_episode", record.get("episode"))
-    return {
+    out = {
         "ok": ok,
         "task_success": None if success is None else int(bool(success)),
         "failure_class": None if ok else record.get("failure_class"),
@@ -209,6 +209,9 @@ def _normalize_result(record: dict, source: str) -> dict:
         "timesteps": record.get("timesteps", record.get("timestep_count")),
         "source": source,
     }
+    for key in ("error_type", "stage", "rejection", "detail", "swap_plan", "runtime_checks"):
+        out[key] = record.get(key)
+    return out
 
 
 def read_run_results(root: Path) -> tuple[dict[tuple[str, int, str], dict], str | None]:
