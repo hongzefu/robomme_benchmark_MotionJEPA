@@ -394,7 +394,7 @@ a { color:var(--accent); }
 <td class="knob-empty">—<br><small>不设独立档</small></td>
 <td data-config='{"k":4,"mi":80}'><b>k=4；间隔=80</b><br>317 timestep / 18窗<br><small>估算 1.338 倍</small></td>
 <td data-config='{"k":5,"mi":80}'><b>k=5；间隔=80</b><br>397 timestep / 23窗<br><small>估算 1.675 倍</small></td>
-<td data-config='{"k":7,"mi":60}'><b>k=7；间隔=60</b><br>约427 timestep / 窗数待算<br><small>估算约 1.80 倍（R16 新增；R21 单 seed 实测 ×1.78）</small></td>
+<td data-config='{"k":7,"mi":60}'><b>k=7；间隔=60</b><br>实测 423 timestep（R21 单 seed，×1.78）/ 窗数未测<br><small>原估算约 427 timestep、约 1.80 倍（R16 新增），供对照</small></td>
 <td data-config='{"k":6,"mi":80}'><b>k=6；间隔=80</b><br>477 timestep / 28窗<br><small>估算 2.013 倍</small></td>
 <td><b>k=6；间隔=80</b><br>477 timestep / 28窗<br><small>估算 2.013 倍</small></td></tr>
 <tr data-task="VideoUnmask"><td>2.1</td>
@@ -1048,7 +1048,7 @@ WHITELIST=FAIL</code></pre>
 <p><strong>25条实际旋钮分布：</strong>停止序号k：2（7条）、3（7条）、4（6条）、5（5条）；间隔：60（7条）、80（9条）、120（9条）。</p>
 <p><strong>1.0母档怎么定：</strong>25条实际停止序号的中位为3，间隔中位为80，固定母档(k=3, move_interval=80)。两者同时满足的3条原母样本为ep59/83/87，中位237帧/13窗；不能再用混合基线309。</p>
 <p><strong>各档为何这样选：</strong>所有目标档都保持间隔80，停止序号只取固定4、5、6。k4估算1.338倍，只归1.4；k5估算1.675倍，只归1.6；2.0选k6。1.2与1.8留空；不存在按原k变化的映射，也不在同档随机抽取间隔。<strong>10-11 更新（R16，取代前句中的 1.8 留空）：</strong>用户批准新增 xhard18：间隔 60、k=7（审查估算约 1.80 倍，未实测），是唯一不用间隔 80 的档；1.2 仍留空。k=6、7 需要的 <code>step()</code> 中 <code>range(5)</code> 覆盖已按 R13 获批。</p>
-<p><strong>帧窗估算：</strong>T′=T+80×(k−3)，逐条保留原固定开销并取数学中位；每侧w按统一公式。参数通过母seed复现源码CPU随机抽样顺序核对，未导入环境。</p>
+<p><strong>帧窗估算：</strong>T′=T+80×(k−3)，逐条保留原固定开销并取数学中位；每侧w按统一公式。<strong>注意：</strong>该公式默认单程间隔为 80，只适用于间隔 80 的档（xhard14/16/20）。xhard18 的间隔是 60，应按「T′=T+60×(k−3)+（间隔改变引起的原 k 段长度差）」估算，并以 R21 单 seed 实测为准：423 timestep，相对母档 237 为 ×1.78（窗数未测）。参数通过母seed复现源码CPU随机抽样顺序核对，未导入环境。</p>
 <p><strong>实施边界：</strong>参照只有3条且速度相同；把其它seed强设间隔80会改变其原速度，不能写成原速度保持。本轮仅定义固定配置及估算；未来k6还须同步扩展step中的range(5)、停止窗口和序数语言。</p>
 <p class="muted">源码：<code>src/robomme/robomme_env/StopCube.py</code>；符号锚点：<code>StopCube._initialize_episode、StopCube.step</code>。固定配置参照子集n=3，episode=59、83、87。本项由原任务审阅代理续审，本轮只更新计划。</p></details>
 <details class="knob-review" data-task="VideoUnmask" id="knob-VideoUnmask"><summary>2.1 VideoUnmask：固定母档与唯一配置</summary>
