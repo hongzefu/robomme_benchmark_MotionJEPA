@@ -36,7 +36,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 **冲突即停**（正本第 0 条）：判定输出与上表不符（主机名不是 `sled-aspen`、NFS 不存在、出现第二套 GPU、`~/.ssh/config` 出现集群别名等），一律停下把原始输出交用户裁决，不得自行套用，也不得按「多数判据像 A」推断。本仓库目前只有这一个环境列；换到其他机器（如 sled-vail）时先补判据表再开工。
 
-<!-- AGENTMETARULES:BEGIN common-agents src=38a7fc10adc9da71d16b1c9f06d5b2c52682d2f3 blob=0367749e3e54aa859f077f78ebbe87af88965d24 -->
+<!-- AGENTMETARULES:BEGIN common-agents src=7df0e308a2a286557bbe229b6cb67be3343dcea3 blob=9fad1a89eeb46c972f66360b4adc2c3d29f9c10e -->
 
 ## 强制规则（最高优先级）
 
@@ -359,7 +359,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
     - **Codex：持久化、同职责续用与通信**。单个任务结束不关闭，同职责的后续工作交回原代理、保留上下文；职责整体结束或需要腾槽时再按宿主工具关闭，不长期空挂。
       - `followup_task` 给原代理追加任务并触发闲置代理新回合；`send_message` 送消息但不触发新回合，急需改向用 `interrupt_agent`；`wait_agent` 按宿主建议等待、避免忙轮询，期间主代理做不重叠工作；`list_agents` 在追加任务或汇报并发数前核对状态。
       - 有 `close_agent` 时按其语义关闭；2026-09-26 SSH App V2 实测无此工具，`rust-v0.157.0` 的空闲代理可由宿主在容量不足时卸载，不要求不存在的手动关闭操作。
-    - **实际并发容量与配置分别核对**：独立任务足够时尽量接近当前容量，满额等返回或按生命周期复用，不造重复任务、不另开顶层任务规避限制。Claude 的 64 配置与 Workflow 真工具限制见 `CLAUDE.md`；Codex 标准配置是 `~/.codex/config.toml` 的 `[agents] max_concurrent_threads_per_session = 16`，开工检查 `grep -A1 '^\[agents\]' ~/.codex/config.toml`，缺失或非 16 则改成 16 并汇报。配置改动仅对新任务生效，已有任务树以实际拒绝为准；2026-09-26 sled-vail SSH App 新任务实测 16 子代理加主代理同时运行，第 17 个报 `agent thread limit reached`（历史证据见 [`docs/codex-app-ssh-multiagent.md`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/docs/codex-app-ssh-multiagent.md)）。累计创建数不得当成同时运行数。
+    - **实际并发容量与配置分别核对**：独立任务足够时尽量接近当前容量，满额等返回或按生命周期复用，不造重复任务、不另开顶层任务规避限制。Claude 的 64 配置与 Workflow 真工具限制见 `CLAUDE.md`；**Codex 标准子代理并发配置为 32，不含主代理**（2026-10-10 用户要求）：每次会话开工均须检查 `~/.codex/config.toml` 的 `[agents] max_concurrent_threads_per_session`，不能仅凭历史记录跳过；该键缺失或不等于 32 时，须在保留其它配置的前提下对齐为 `max_concurrent_threads_per_session = 32`，读回确认并汇报。检查须定位 `[agents]` 表内的确切键，不依赖该键紧邻表头；写入受权限限制时按宿主审批流程处理，未获准或写入失败则报告阻塞，不宣称已对齐。配置改动仅对新任务生效，已有任务树以宿主实际容量为准；**配置写成 32 不等于已验证 32 个子代理同时运行**，不得据此宣称旧会话已扩容。2026-09-26 sled-vail SSH App 新任务实测 16 子代理加主代理同时运行，第 17 个报 `agent thread limit reached`（历史证据见 [`docs/codex-app-ssh-multiagent.md`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/docs/codex-app-ssh-multiagent.md)），该历史记录不改写成 32 个的实测。累计创建数不得当成同时运行数。
 
     来源：2026-09-26 用户要求「尽可能积极调用使用multi agent来实现 但是分隔要保持清晰」「子agent要小于等于主要请求agent的规格」（仅限制模型档位，不限制推理强度）及 Claude 按批一次性、Codex 持久复用原话；2026-10-09 用户要求派发表作建议、探索 Haiku／Luna 按需派发；2026-10-10 用户批准统一两宿主职责、模型、独立 worktree 与运行／修复分工，补充原话「就是这个持久化和一次性的问题，还是要根据 Cloud 和 Codex 的 Harness 来定，就还是保持这个不一样的。」「Agent Meta Roles也要更新。」。官方机制与带日期历史实测仍见上述对照文档，不把本次规则修订写成新的宿主实测。
 
@@ -382,7 +382,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 | `<COMMIT_SUBJECT_STYLE>` | commit subject 体例 | 第 11 条 |
 | `<PLAN_EXEMPLAR>` | 计划密度标杆文档 | 第 2 条 |
 
-<!-- AGENTMETARULES:END common-agents src=38a7fc10adc9da71d16b1c9f06d5b2c52682d2f3 blob=0367749e3e54aa859f077f78ebbe87af88965d24 -->
+<!-- AGENTMETARULES:END common-agents src=7df0e308a2a286557bbe229b6cb67be3343dcea3 blob=9fad1a89eeb46c972f66360b4adc2c3d29f9c10e -->
 
 ## 项目专属规则（P1…Pn）
 
@@ -443,7 +443,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 ## 规则来源与未采用清单
 
-- 现行 `common-agents` 与 `common-claude` 同步自正本 `38a7fc10adc9da71d16b1c9f06d5b2c52682d2f3`（2026-10-10）：保留远端统一子代理职责与生命周期规则，并将 Codex 模型系列统一限定为 GPT-6／GPT-6.1；下述旧 sha 仅记录历史来源。
+- 现行 `common-agents` 与 `common-claude` 同步自正本 `7df0e308a2a286557bbe229b6cb67be3343dcea3`（2026-10-12：`CLAUDE.md` 新增「写 HTML 计划不进 plan mode、进 plan mode 前先问用户」；顺带带入正本 10-10 之后的 Codex 子代理并发 32 条）。此前同步自 `38a7fc10adc9da71d16b1c9f06d5b2c52682d2f3`（2026-10-10）：保留远端统一子代理职责与生命周期规则，并将 Codex 模型系列统一限定为 GPT-6／GPT-6.1；下述旧 sha 仅记录历史来源。
 - 通用规则 = 上方标记块，正本 commit 见标记行 `src=`（2026-10-06 首次接入；此前本文件的强制规则 1–10 是 2026-08-18 自 MotionJEPA 移植的旧版，已随账本归档）。2026-10-08 回流到 `9ec0a8c`（子代理模型三档、开工令放宽、并发上限 64），并提交项目级 `.claude/settings.json`（与正本逐字相同，只含并发上限 `env`）；同日再回流到 `a5302d0`（根目录计划一律 HTML），再回流到 `464c1b6`（合并远端两条：新机器开工时检查全局并发上限、`worktree.baseRef="head"` 并入项目级 `.claude/settings.json`，本仓库该文件已同步为与正本逐字相同）。
 - 未采用的正本条目及原因：第 6 条（run_name）、第 10 条（训练超参落点）、第 12 条（训练 / 评估留档）、第 16 条（GPU 利用率判读）、第 17 条（长诊断 run 留档）、第 18 条（训练链路一致性）——本仓库无训练 / 评估链路；第 8 条集群分支与第 15 条集群校验分支——本环境无集群访问；第 23 条（server + client / job array 形态）——本仓库生成器是本机进程池，无服务形态，但其中「给用户的网页链接写完整域名 `sled-aspen.eecs.umich.edu`」一句照常适用。第 13 条（数据集构建留档）**采用**，新档全量生成按其 Beta 锚点与两段式留档。
 - Claude Code 独有机制见同目录 `CLAUDE.md`（标记块 `common-claude`）；本仓库无 `greatlakes.md`。两份文件冲突时以本文件为准。
