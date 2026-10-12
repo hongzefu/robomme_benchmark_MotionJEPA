@@ -1,0 +1,732 @@
+{
+  "launch_sha": "b7be8956e8399b33ea6fe7d889107f7a94e80ec8",
+  "original_logs": 5,
+  "json_files": 115,
+  "files": [
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/logs/xh-coll-timing-baseline-cpu-1012.log",
+      "bytes": 6972,
+      "sha256": "5d6db5367eb94a62f73828c3a9ef8d1a1a889c59fe86bd63164b4b0a3e2e88c0",
+      "archive": "docs/xhard-doc/xhard-1012-collision-smoke/records/xh-coll-timing-baseline-cpu-1012.summary.log",
+      "archive_sha256": "03738b3393baee1eaeff3a0f0cb7bd2b9569dfeddc5425949b6dcf53dc01fa57"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/logs/xh-coll-timing-T1-cpu-final-1012.log",
+      "bytes": 1318,
+      "sha256": "326871f5d942213c853771f67f9fbb481101da929db317035a6137f9f0657b74",
+      "archive": "docs/xhard-doc/xhard-1012-collision-smoke/records/xh-coll-timing-T1-cpu-final-1012.summary.log",
+      "archive_sha256": "326871f5d942213c853771f67f9fbb481101da929db317035a6137f9f0657b74"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/logs/xh-coll-timing-T1-reviewfix-final-cpu-1012.log",
+      "bytes": 1318,
+      "sha256": "28dd723398e37a92237ab58e3d203797ed605bbb13dd2226dcd0e4422bb53c78",
+      "archive": "docs/xhard-doc/xhard-1012-collision-smoke/records/xh-coll-timing-T1-reviewfix-final-cpu-1012.summary.log",
+      "archive_sha256": "28dd723398e37a92237ab58e3d203797ed605bbb13dd2226dcd0e4422bb53c78"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/logs/xh-coll-timing-merged-cpu-1012.log",
+      "bytes": 6972,
+      "sha256": "6adc12807c96cdbd4a5ca0be6992341d1f58b3a3f7325aa92a3364183ec16588",
+      "archive": "docs/xhard-doc/xhard-1012-collision-smoke/records/xh-coll-timing-merged-cpu-1012.summary.log",
+      "archive_sha256": "923de5b73ab8d9711a7f405a2609de64bd5c5d82071055b4d0e6a79c275af6a6"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/logs/xh-coll-timing-probe-1012.log",
+      "bytes": 5312,
+      "sha256": "f5f78fbf364ac5a4b99ba22fbb44c27eedcb4e91b2eec88eb8f76e804ddae01b",
+      "archive": "docs/xhard-doc/xhard-1012-collision-smoke/records/xh-coll-timing-probe-1012.summary.log",
+      "archive_sha256": "f5f78fbf364ac5a4b99ba22fbb44c27eedcb4e91b2eec88eb8f76e804ddae01b"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step1.json",
+      "bytes": 534,
+      "sha256": "f3e668a15562dca0c108a69f10943b39a777f91bd16a06637761bff10eac1493",
+      "step": 1
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step10.json",
+      "bytes": 1165,
+      "sha256": "729dfe8970c86effbd0d05222e55ee561f189eeba4f1ad4018b3c7ef788c3f80",
+      "step": 10
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step100.json",
+      "bytes": 69977,
+      "sha256": "0d0ffc031f038016938e030d25ddcd0de7c8de4b6f0ab1e88951fdf4c2ebe7e4",
+      "step": 100
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step101.json",
+      "bytes": 71707,
+      "sha256": "fe77cb5da36297dcedc085236a0b6aff9b931bfef2d8ad1299111fb63ac2b0e4",
+      "step": 101
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step102.json",
+      "bytes": 73440,
+      "sha256": "45147ac122de7e8090a4710441d4876461aa395782a4cc268cb5498f9b57b0ef",
+      "step": 102
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step103.json",
+      "bytes": 75169,
+      "sha256": "ea5e626ba497c9fbf52432643b20484b5223fd6001638b58eea3ffe6f31dfe9a",
+      "step": 103
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step104.json",
+      "bytes": 76901,
+      "sha256": "fb6fd84a7759b6f48c18db2729e6246504277b9b8672c12ac92f0742cb6a1b35",
+      "step": 104
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step105.json",
+      "bytes": 78631,
+      "sha256": "7fbf208082347e91898bbb32687b0e09bff4a18786791a845bd90f6f1e15bd66",
+      "step": 105
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step106.json",
+      "bytes": 80358,
+      "sha256": "d6c59f0b5fd255cd9ce225924ca9f029f38f638462a6539f9bb47fdb4d91357e",
+      "step": 106
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step107.json",
+      "bytes": 82091,
+      "sha256": "cfbe1d3f34b68d0052652971e2cce3bff90f754f508851469bb238055b5d362e",
+      "step": 107
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step108.json",
+      "bytes": 83818,
+      "sha256": "dbc14714f6f02a23e377e56ad600ef22af40d7d95721918a094f5470be09db03",
+      "step": 108
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step109.json",
+      "bytes": 85545,
+      "sha256": "207efac8efb0685526707ef9d5eed057b1364b23e8021b936b52753ed5901b6a",
+      "step": 109
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step11.json",
+      "bytes": 1236,
+      "sha256": "48e6726756cc70f6d077287323c613c1f25ab4bdc6112c1c104da0b720eba41d",
+      "step": 11
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step110.json",
+      "bytes": 87274,
+      "sha256": "875084f3a91440f179fb18b31c490c72c6d33460e77c44531bd9a923c1c7112f",
+      "step": 110
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step111.json",
+      "bytes": 89003,
+      "sha256": "30919100c18e01e0e191b7d519d3a0f75f9ef51983f7687a782a7f6ade293e26",
+      "step": 111
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step112.json",
+      "bytes": 90731,
+      "sha256": "c722f8ed05aeed30a50d459cdee5f1c21584450671ba10cb8a3b514dff2e216a",
+      "step": 112
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step113.json",
+      "bytes": 92456,
+      "sha256": "56f86c1d9976a04820f2a31e43fd461cb9009b00023a0a75f89102fe78ff2a91",
+      "step": 113
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step114.json",
+      "bytes": 94187,
+      "sha256": "2438b18948d7561facf1f4e7a01523fb249b3abcb9c3e43751de632cb647efe1",
+      "step": 114
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step115.json",
+      "bytes": 99906,
+      "sha256": "817353f1c817230302654daaa135a5360a3b9b78e15aa8e3baf0e07354df781b",
+      "step": 115
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step12.json",
+      "bytes": 1307,
+      "sha256": "c79274022624595a62884765600bf51d168c18f2260e721e9d62c4ed4a3f9848",
+      "step": 12
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step13.json",
+      "bytes": 1378,
+      "sha256": "18a61f2a1036b13795a0cb943685d9c4312d54485c1aabf6d48012614bfc4422",
+      "step": 13
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step14.json",
+      "bytes": 1449,
+      "sha256": "04414fd2b7c8a7b7a54b9ba2cf42129d0129e52931a55a5bcae5340b74453f50",
+      "step": 14
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step15.json",
+      "bytes": 1520,
+      "sha256": "ba40268d0a247916bd02c0dc5d1768aa72a64cc88cd8af516f9d5c9775899436",
+      "step": 15
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step16.json",
+      "bytes": 1591,
+      "sha256": "b9c893ef01f9b0e22c68925bb2bcce919259d74d195c9e1a6c200b58986f4726",
+      "step": 16
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step17.json",
+      "bytes": 1662,
+      "sha256": "baec79e006a86c96d450ba59a13ffd01b2fcea113bed1d5b6b685562fa666357",
+      "step": 17
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step18.json",
+      "bytes": 1733,
+      "sha256": "761848151bd170546674e05a18bde5432cda460155235554f729ae2da864095f",
+      "step": 18
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step19.json",
+      "bytes": 1804,
+      "sha256": "c2a5ead4d7279ddc29519888ec26b164fc937d6a3751e3c29bcf46327f4d747e",
+      "step": 19
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step2.json",
+      "bytes": 604,
+      "sha256": "2aa8693ca35bbff7df468388017ecf0a1ba58adb9cdebb27940a3325f5356199",
+      "step": 2
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step20.json",
+      "bytes": 1875,
+      "sha256": "f0d6d55863b18b9ee8c5e436b4bea11f08bca041a3e5c484920b56371191e174",
+      "step": 20
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step21.json",
+      "bytes": 1946,
+      "sha256": "da945038a2bf5899a0e818d7f46037a17d60063d105382866fd3469271dddf17",
+      "step": 21
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step22.json",
+      "bytes": 2017,
+      "sha256": "faac5883fceb355526c11ccf1a16ba191cb4a2e9b3b3c9db2ddb51611b4d5b35",
+      "step": 22
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step23.json",
+      "bytes": 2088,
+      "sha256": "5b16c86fb7216c450faa1b8ae89dc056f60a18a1a6d634120c1288878e7817bd",
+      "step": 23
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step24.json",
+      "bytes": 2159,
+      "sha256": "7e38790d45fe52a9b6f6c58e4b1b99c1bfa44e6a8b576f7c28950ddb4622d834",
+      "step": 24
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step25.json",
+      "bytes": 2230,
+      "sha256": "b911bdd4a4e273a6d63b52ad8f7e55dac0379f944447a47df3e48deb09f347cd",
+      "step": 25
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step26.json",
+      "bytes": 2301,
+      "sha256": "7127f7a6a421d64a622434db59619c06877892bcd51901c65b267d8eeb916944",
+      "step": 26
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step27.json",
+      "bytes": 2372,
+      "sha256": "7545017c668fa3cb10825f6c9d2a2e0ce779b0dc8f3b27718ff9ed9d346489bb",
+      "step": 27
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step28.json",
+      "bytes": 2443,
+      "sha256": "2e33a2c320f911d4de2771feb60020f2cd30ef4f15be385177053fd3093f13b3",
+      "step": 28
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step29.json",
+      "bytes": 2514,
+      "sha256": "428d5e0bae56f23f2ccd4ca1e3990c6aec030e3624bef6f33eaf51520144d513",
+      "step": 29
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step3.json",
+      "bytes": 674,
+      "sha256": "49f712c4b7ee9974e835d73aa81870b5c978a559c8c7fa615570a8ab67fd4b00",
+      "step": 3
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step30.json",
+      "bytes": 2585,
+      "sha256": "03381de076545e3d0a1a700935ef42593652b88a0abd4e2b9266310072797d3b",
+      "step": 30
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step31.json",
+      "bytes": 2656,
+      "sha256": "901719d6c8637699a5500b11ca88accfea070a34f3997349b5a0e346951fd405",
+      "step": 31
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step32.json",
+      "bytes": 2727,
+      "sha256": "d72ddaea644438d9a44451660967874ac2256d9f5c0ca6b62dbee534c67c045f",
+      "step": 32
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step33.json",
+      "bytes": 2798,
+      "sha256": "4c7b124f87079e2ad7dc907ec7abf31b79dcfbc98631a68b301c68c94e539800",
+      "step": 33
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step34.json",
+      "bytes": 2869,
+      "sha256": "0a6f66921fed8f2cb85dd6e3b2eef0a92b759baa8884550ed89aeafc6cc22571",
+      "step": 34
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step35.json",
+      "bytes": 2940,
+      "sha256": "cfe6b1a2fd7ff7ec244a25d21313cb2f054831765c92aa9250ee5e2e48db8838",
+      "step": 35
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step36.json",
+      "bytes": 3011,
+      "sha256": "a62b1f352758a40e289c21802fbc9b4c46b85972e31b695b0d10887bd475943b",
+      "step": 36
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step37.json",
+      "bytes": 3082,
+      "sha256": "ff7a2f853db4cebe00229da868e31dd161dede7234c115bb577dba44db470294",
+      "step": 37
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step38.json",
+      "bytes": 3153,
+      "sha256": "07cf02ec34cb3ebaeeb2acdc75100d64a7c00ad6beb928db186cb0db2419e32c",
+      "step": 38
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step39.json",
+      "bytes": 3224,
+      "sha256": "dee4dbf941fff595ebd6de3796100b63f481ed66d4bdae3e3374a8c1259d320b",
+      "step": 39
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step4.json",
+      "bytes": 744,
+      "sha256": "8542cd70d72b58fb25a033059f0760fe369e398adfcfe05d4e63ea15a5ce4f08",
+      "step": 4
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step40.json",
+      "bytes": 3295,
+      "sha256": "ca78a94116a9a8e202ed317d4e2f2f283c2191c7d0aa83813852d0698b047eda",
+      "step": 40
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step41.json",
+      "bytes": 3366,
+      "sha256": "d4d39efee0d1c4d6ed8a6160a5f99d6e910f4ce79ecb8aa05b582d86166d2698",
+      "step": 41
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step42.json",
+      "bytes": 3437,
+      "sha256": "aefb3e1cd65e09b56bb96d50f479ca6d773c75a5c29a72a03b749ed5b9e78543",
+      "step": 42
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step43.json",
+      "bytes": 3508,
+      "sha256": "2d710ef408ee285a5eb0ca3c8c759abb139e2aa47ba153d4ee0a34e8dbaef3df",
+      "step": 43
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step44.json",
+      "bytes": 3579,
+      "sha256": "3e280e5a379d51279e422320e23f352cbda27557cc672673b1745ed24957fbed",
+      "step": 44
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step45.json",
+      "bytes": 3650,
+      "sha256": "5155a654b4e1019b063d4bf137e3ba0a32b7b4408c40070ad873a28a1b79e225",
+      "step": 45
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step46.json",
+      "bytes": 3721,
+      "sha256": "fa28622ec535c3414b10630ea8fa9e48f4de9676d6e6e786a8af7004fdd2ff9f",
+      "step": 46
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step47.json",
+      "bytes": 3792,
+      "sha256": "45ff6faff98acf01745b12fefe6106a7e2e293959d322970164c77c28822c3a6",
+      "step": 47
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step48.json",
+      "bytes": 3863,
+      "sha256": "d80d59e324f30c46794c7e181f1ec74ba3e7b35f94f6034284187cf58de6531f",
+      "step": 48
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step49.json",
+      "bytes": 3934,
+      "sha256": "c250890b700b6ad020d5bd617c123e89c3598d664bb9e0ae0dc89ea7c4201166",
+      "step": 49
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step5.json",
+      "bytes": 814,
+      "sha256": "b4148925d6a24f94c1a370a261a802a6060073f27d249ad7840d26e7f8e22f38",
+      "step": 5
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step50.json",
+      "bytes": 4005,
+      "sha256": "2d0f00cb043bd4bcb40944dd8dd794289bd23dc8186f9d311ae7d9804a19af3e",
+      "step": 50
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step51.json",
+      "bytes": 4076,
+      "sha256": "184fe076699b54279b2e1434ca01c062a14fa15d18feb13469c3f5060cdc4f32",
+      "step": 51
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step52.json",
+      "bytes": 4147,
+      "sha256": "637ac979c5c2debf9b6024d34e25644384e0231613272dbda390f7a2e3b33e6f",
+      "step": 52
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step53.json",
+      "bytes": 4218,
+      "sha256": "5306dab6cf6fb8f37a6758e937fba14c2838ce0eede404a745281309e3f0a4c3",
+      "step": 53
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step54.json",
+      "bytes": 4289,
+      "sha256": "6cff521085b067260547bd72c10cdb5075c993029452fbeea0953686624baac6",
+      "step": 54
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step55.json",
+      "bytes": 4360,
+      "sha256": "f9a270f4ec4123137252a8bb0933280fdf1a93467d0a18a69f612796674d6148",
+      "step": 55
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step56.json",
+      "bytes": 4431,
+      "sha256": "5139cd10cdb406b4c175bfa5e11c4710f36afcd72dc3ccfd51ac03af1fc77294",
+      "step": 56
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step57.json",
+      "bytes": 4502,
+      "sha256": "e77a2e2d56d6e6901e86b8faf2a3d4e53f343d80f0bc2c67362a0fe3d314a293",
+      "step": 57
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step58.json",
+      "bytes": 4573,
+      "sha256": "edfe49afb1dda773995580df6fe37ac5a9357a57ce734a835744e71dc6ac8503",
+      "step": 58
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step59.json",
+      "bytes": 4644,
+      "sha256": "39f9e7aeb141b225ad5f6e442d6bb92b2e2609acc85f2512a0acb683f765b0c2",
+      "step": 59
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step6.json",
+      "bytes": 884,
+      "sha256": "7b99d96410ecadaa3687506d658dd94c10726f0ce234c3f217e1583c35d18655",
+      "step": 6
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step60.json",
+      "bytes": 4715,
+      "sha256": "a8c0d370750561de6c3577290655e094fd3aa584086c82dc2a9a5d9320889d0c",
+      "step": 60
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step61.json",
+      "bytes": 4786,
+      "sha256": "e402f307ef3e814d7c7f15dc66b163b24d5bc066d8e72ec926361a8fc5dedf49",
+      "step": 61
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step62.json",
+      "bytes": 4857,
+      "sha256": "a5f5e363c0ba69127f0e117fe34e6abade131a287c22a57f723fbcdbe7ebaa78",
+      "step": 62
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step63.json",
+      "bytes": 4928,
+      "sha256": "1d090e2825d57afd452132702dd076c7dac24ca66f1dbb18925f9d1c58a2c565",
+      "step": 63
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step64.json",
+      "bytes": 4999,
+      "sha256": "cb30fbba2923d5d6e02408d13d3a0d5d3d6e85b83fcdaad7b63c03d7dc87f9fb",
+      "step": 64
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step65.json",
+      "bytes": 9829,
+      "sha256": "5fe423966bd1268b322abc6463ceb7c2489f2e36844a19ee2eb76454d7ee35b1",
+      "step": 65
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step66.json",
+      "bytes": 11547,
+      "sha256": "7f6b6a8b4b12c0e41c64a7ad9c31d1b8da696be64197b31ef6ceb2a2ca050a1f",
+      "step": 66
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step67.json",
+      "bytes": 13265,
+      "sha256": "0c4d3e3600867a99b03059ebdd84c58e8e8e6aaff139bbe2ee47e6dc4bbc40d3",
+      "step": 67
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step68.json",
+      "bytes": 14981,
+      "sha256": "5a63fd3b3ad2974243b315412cc86ea2f71a8d62e6df62a5a0591d8948cb6211",
+      "step": 68
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step69.json",
+      "bytes": 16697,
+      "sha256": "bf06ac6bebc9215756946c6b81844ce91d79e82684c55b9cdf80ed8110234bfd",
+      "step": 69
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step7.json",
+      "bytes": 954,
+      "sha256": "a58cdd8521b07298250f1b24dda249493292659064ccb144c4889aad0a04ce95",
+      "step": 7
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step70.json",
+      "bytes": 18416,
+      "sha256": "afa640b5a9a2372701d6292f64ce77d2ebb2697ec32c18bf15f329915d75349b",
+      "step": 70
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step71.json",
+      "bytes": 20134,
+      "sha256": "6908b5bcf0ad2643a8ca5716cf9a0e133d144f5e352256b9c8e22fc3a184a50b",
+      "step": 71
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step72.json",
+      "bytes": 21848,
+      "sha256": "0e847d3839d2a0cba9942db89027360bf454ce6491ec77b95c20fc1e4d1a03b8",
+      "step": 72
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step73.json",
+      "bytes": 23570,
+      "sha256": "21bebbea96ac1eb2cf212a75ceefa379b8d8f111da2c9d58a6ed69101223d092",
+      "step": 73
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step74.json",
+      "bytes": 25287,
+      "sha256": "0772dbac53c566800d197c10194e52aeed0583bbffe7ccead19dcca017350e18",
+      "step": 74
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step75.json",
+      "bytes": 27003,
+      "sha256": "bc785f66c6e06dcb76a262a9db45057012e3b8ec13c60646d4d47ee3b90dd0da",
+      "step": 75
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step76.json",
+      "bytes": 28722,
+      "sha256": "a95256e6b5dac69578d7b7b6f5e03c8be53cd7db53a70ec4b6a9f1017c4a19b5",
+      "step": 76
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step77.json",
+      "bytes": 30444,
+      "sha256": "7e16e246eff9276f9ad6d3074b430c795fa9ec77409273bfa96879330053a481",
+      "step": 77
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step78.json",
+      "bytes": 32161,
+      "sha256": "dbc3a1b9a50d3967d57afbbe2da6063fc42af75e2915fddd95ca2c2a1d945f49",
+      "step": 78
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step79.json",
+      "bytes": 33881,
+      "sha256": "17280d648cd9068ad129868c89d9bb71d2bf5167f13f73de9aebe73a1134ee0d",
+      "step": 79
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step8.json",
+      "bytes": 1024,
+      "sha256": "8167ef404b2fc319bef13f67414d01a1242285ca986e96b848ff893e383dbe4b",
+      "step": 8
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step80.json",
+      "bytes": 35599,
+      "sha256": "97d83d5a44290d70e32b2000fe6a316eebc3715465a172c70638b1c771792566",
+      "step": 80
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step81.json",
+      "bytes": 37313,
+      "sha256": "b458fbeee2879b693c394be8e4cc24cc3bf62c7cafe563a8a577b623843e3ae5",
+      "step": 81
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step82.json",
+      "bytes": 39032,
+      "sha256": "836c8424048ea34a22e50db13943fed9cb4e0a365564f3ff74556a1a880554f4",
+      "step": 82
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step83.json",
+      "bytes": 40752,
+      "sha256": "ad17e2ebeff44bf8566a03d88bb010ddc046c067dd58e1bdb6bb75e671246cb1",
+      "step": 83
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step84.json",
+      "bytes": 42477,
+      "sha256": "1ea8cbd537e8411b81f7452f3c1b3e7d4748cee3c21657477da05b93761a2ba4",
+      "step": 84
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step85.json",
+      "bytes": 44194,
+      "sha256": "59a55cdd8e06fa8e12768149cc1d57b2b4c54d2ba86e301e00a38d5211063f63",
+      "step": 85
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step86.json",
+      "bytes": 45913,
+      "sha256": "3bc4f61d557011e6aa458525575b26fd888796a70fe9914f89d44b5df79a4ed3",
+      "step": 86
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step87.json",
+      "bytes": 47631,
+      "sha256": "cee614b3607e9bd884f3df4342e3db988c484c2ca611077cf26256063ef3e0ec",
+      "step": 87
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step88.json",
+      "bytes": 49348,
+      "sha256": "b7d69b49a4ef0e9e9239fccf96e931b3a8288bf757b7e4434061ce2c2a1db0ae",
+      "step": 88
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step89.json",
+      "bytes": 51066,
+      "sha256": "907c2b291c81e33b3c612c208e665e915665651f32ea7e944cddbe4fd90f9219",
+      "step": 89
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step9.json",
+      "bytes": 1094,
+      "sha256": "ee7e2644e6dc61768d4b7982a04e2c0b1b55ad6d9b1d1e8b3da54dfee43616fd",
+      "step": 9
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step90.json",
+      "bytes": 52784,
+      "sha256": "eb1acbffa1c044a2a51803fa0fe7d51fb440437fc55b367b39e7594648c97884",
+      "step": 90
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step91.json",
+      "bytes": 54504,
+      "sha256": "a1be6377b994d4bd83a5c83e40c94a72f90259e8a921d165ffee07d30dcf22db",
+      "step": 91
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step92.json",
+      "bytes": 56224,
+      "sha256": "f5ded16335f3706aeed7cab89567078c474f3e9cd92a72b58e7ed8a651617cd2",
+      "step": 92
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step93.json",
+      "bytes": 57940,
+      "sha256": "0bbe58f49d16ea3e43e1d1f92b85347a6d44b4900479522a8e3795434656faa5",
+      "step": 93
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step94.json",
+      "bytes": 59656,
+      "sha256": "501bbf558e9a75156a4ac69b0521794013c777c7ec970fd9dd20839ace492928",
+      "step": 94
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step95.json",
+      "bytes": 61374,
+      "sha256": "63de65b36cd6561f2b64519963718f8d9e3e96c62e7dd3bf58eac2db1c8de4cf",
+      "step": 95
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step96.json",
+      "bytes": 63092,
+      "sha256": "b42ce7eedcc3d4c983705050172bf1e83734fe3504a9bb8b3f144d0aaf507917",
+      "step": 96
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step97.json",
+      "bytes": 64816,
+      "sha256": "234ef09c2a5febc41e186cd846285466d78833a8e04c99f7fa4007c6c42cfbc0",
+      "step": 97
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step98.json",
+      "bytes": 66536,
+      "sha256": "699cad71054ab2912ba180bc3708ffb3735503c58071e1fc790ea0b6c369e93e",
+      "step": 98
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/swap-timing/run-1791842209792896638/VideoUnmaskSwap-seed5700-step99.json",
+      "bytes": 68253,
+      "sha256": "0e5beb2e4344bd43ba27d9f685930a591e758ebad09bc64987790d09ae4f5c91",
+      "step": 99
+    }
+  ]
+}

@@ -65,3 +65,5 @@ CUDA_VISIBLE_DEVICES=0 UV_CACHE_DIR=/home/hongzefu/.cache/uv timeout 300s uv run
 仅以上闸门通过后，正常 smoke 沿用旧母清单 `docs/xhard-doc/xhard-1011/records/mother_seeds.json` 的 rank0：VideoUnmaskSwap seed5700/ep7、ButtonUnmaskSwap seed7700/ep7、VideoRepick seed13600/ep46，各一张 xhard20、GPU0、单 worker，新输出根为 `artifacts/xhard/xhard-1012-coll/timing-smoke/`，会话名为 `xh-coll-timing-smoke-<任务>`。阶段 E 清单的 VideoRepick 首 seed9600 属另一批次，不替换这三张 smoke 卡。
 
 指定历史目录内没有找到三个 seed 的原始逐卡 `phases.solve_s`；旧批次在 sled-aspen、GPU0、12 worker 上运行，不能把计划旧文中的 44.1/47.8/72.5 秒称作 vail 实测。正常 smoke 完成后如实报告可获得的耗时和字节数。阶段 E 仍按计划 D6/P5，在具备 180 卡规模、实测耗时与磁盘报告后取得该批次决定；此前不自动启动全量。
+
+本次实际起跑 SHA 为 `b7be8956e8399b33ea6fe7d889107f7a94e80ec8`（2.89），时间为 2026-10-12 17:56:49 EDT，porcelain 空。实际清单只有 `xh-coll-timing-probe-1012`，pane PID 3631415；原始日志 `artifacts/logs/xh-coll-timing-probe-1012.log`，JSON 根 `artifacts/tests/swap-timing/run-1791842209792896638/`。探针 14.94 秒退出 1 后停止，其他接续会话没有启动；版本、精确命令、完整数值与证据 SHA256 见 `result.md` 的最新接续结果。

@@ -1,0 +1,500 @@
+{
+  "task": "VideoUnmaskSwap",
+  "seed": 5700,
+  "tier": "xhard12",
+  "start": 64,
+  "git_commit": "b7be8956e8399b33ea6fe7d889107f7a94e80ec8",
+  "current_step": 65,
+  "phase": "before_physics",
+  "hooks": [
+    {
+      "control_step": 0,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 1,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 2,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 3,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 4,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 5,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 6,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 7,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 8,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 9,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 10,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 11,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 12,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 13,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 14,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 15,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 16,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 17,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 18,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 19,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 20,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 21,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 22,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 23,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 24,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 25,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 26,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 27,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 28,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 29,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 30,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 31,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 32,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 33,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 34,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 35,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 36,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 37,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 38,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 39,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 40,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 41,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 42,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 43,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 44,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 45,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 46,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 47,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 48,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 49,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 50,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 51,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 52,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 53,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 54,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 55,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 56,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 57,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 58,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 59,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 60,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 61,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 62,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 63,
+      "phase": "before_physics"
+    },
+    {
+      "control_step": 64,
+      "phase": "before_physics"
+    }
+  ],
+  "fatal": null,
+  "runtime_checks": [
+    {
+      "kind": "swap_binding",
+      "control_step": 64,
+      "phase": "before_physics",
+      "sweep_index": 0,
+      "initiator": 2,
+      "expected": 1,
+      "recomputed": 1,
+      "distances": [
+        [
+          0,
+          0.24409244024251767
+        ],
+        [
+          1,
+          0.14149668305166674
+        ],
+        [
+          3,
+          0.2345581193963458
+        ]
+      ]
+    },
+    {
+      "kind": "swap_sweep",
+      "control_step": 64,
+      "phase": "before_physics",
+      "sweep_index": 0,
+      "gap_lower_bound": 0.03739392318516008,
+      "endpoint_match": true,
+      "endpoints": {
+        "actual": {
+          "a_p": [
+            -0.12764258682727814,
+            0.02475385181605816,
+            0.05334879085421562
+          ],
+          "a_q": [
+            2.791051347691592e-05,
+            -0.8358977516911937,
+            0.5488851327522469,
+            -0.00024286242797762404
+          ],
+          "b_p": [
+            -0.05033216252923012,
+            -0.09375526010990143,
+            0.053299594670534134
+          ],
+          "b_q": [
+            -0.0001056117893608287,
+            -0.9906236991671024,
+            0.1366187166606702,
+            4.1864393441418765e-05
+          ]
+        },
+        "cached": {
+          "a_p": [
+            -0.12764258682727814,
+            0.02475385181605816,
+            0.05334879085421562
+          ],
+          "a_q": [
+            2.791051347691592e-05,
+            -0.8358977516911937,
+            0.5488851327522469,
+            -0.00024286242797762404
+          ],
+          "b_p": [
+            -0.05033216252923012,
+            -0.09375526010990143,
+            0.053299594670534134
+          ],
+          "b_q": [
+            -0.0001056117893608287,
+            -0.9906236991671024,
+            0.1366187166606702,
+            4.1864393441418765e-05
+          ]
+        },
+        "mismatches": [],
+        "phase": "before_physics",
+        "actual_raw_q": {
+          "a": [
+            2.7910515200346708e-05,
+            -0.8358978033065796,
+            0.54888516664505,
+            -0.00024286244297400117
+          ],
+          "b": [
+            -0.0001056117907864973,
+            -0.9906237125396729,
+            0.1366187185049057,
+            4.1864394006552175e-05
+          ]
+        },
+        "delta": {
+          "a_p": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "a_q": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "b_p": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "b_q": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "cached_raw_q": {
+          "a": [
+            2.7910515200346708e-05,
+            -0.8358978033065796,
+            0.54888516664505,
+            -0.00024286244297400117
+          ],
+          "b": [
+            -0.0001056117907864973,
+            -0.9906237125396729,
+            0.1366187185049057,
+            4.1864394006552175e-05
+          ]
+        }
+      },
+      "rejection": null
+    },
+    {
+      "kind": "substep_before",
+      "control_step": 64,
+      "sweep_index": 0,
+      "gap_lower_bound": 0.04456343904963615,
+      "rejection": null
+    },
+    {
+      "kind": "substep_after",
+      "control_step": 64,
+      "sweep_index": 0,
+      "gap_lower_bound": 0.04456347760924355,
+      "rejection": null
+    },
+    {
+      "kind": "substep_before",
+      "control_step": 64,
+      "sweep_index": 0,
+      "gap_lower_bound": 0.04456347760924355,
+      "rejection": null
+    },
+    {
+      "kind": "substep_after",
+      "control_step": 64,
+      "sweep_index": 0,
+      "gap_lower_bound": 0.044563311484305486,
+      "rejection": null
+    },
+    {
+      "kind": "substep_before",
+      "control_step": 64,
+      "sweep_index": 0,
+      "gap_lower_bound": 0.044563311484305486,
+      "rejection": null
+    },
+    {
+      "kind": "substep_after",
+      "control_step": 64,
+      "sweep_index": 0,
+      "gap_lower_bound": 0.04456360463136999,
+      "rejection": null
+    },
+    {
+      "kind": "substep_before",
+      "control_step": 64,
+      "sweep_index": 0,
+      "gap_lower_bound": 0.04456360463136999,
+      "rejection": null
+    },
+    {
+      "kind": "substep_after",
+      "control_step": 64,
+      "sweep_index": 0,
+      "gap_lower_bound": 0.04456351087703137,
+      "rejection": null
+    },
+    {
+      "kind": "substep_before",
+      "control_step": 64,
+      "sweep_index": 0,
+      "gap_lower_bound": 0.04456351087703137,
+      "rejection": null
+    },
+    {
+      "kind": "substep_after",
+      "control_step": 64,
+      "sweep_index": 0,
+      "gap_lower_bound": 0.04456352032328046,
+      "rejection": null
+    }
+  ],
+  "sim_backend": "physx_cpu",
+  "gpu_sim_enabled": false,
+  "schedule": [
+    [
+      64,
+      114
+    ],
+    [
+      114,
+      164
+    ],
+    [
+      164,
+      214
+    ],
+    [
+      214,
+      264
+    ]
+  ]
+}
