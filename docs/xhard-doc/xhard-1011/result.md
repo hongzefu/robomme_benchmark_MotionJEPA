@@ -5,6 +5,59 @@
 - 首条：`INTERMEDIATE_CLEANUP=PASS stage=first h5=0 mp4=0`（2026-10-11）。
 - 小规模实测：2026-10-12 用户「小规模的删除」后，按清单删除 `artifacts/xhard/xhard-1011/pilot/` 下 285 个 H5/MP4 与 `report/pilot_compare.mp4`（共 286 个文件，约 67 GB），保留 71 个 json/log/metadata 文件。`INTERMEDIATE_CLEANUP=PASS stage=pilot h5=0 mp4=0`。
 
-## 最终批次
+## ① 一句话结论与指标速览
 
-（待最终批次跑完后补写：逐条实测、判定行、对比视频、结论与下一步。）
+最终批次 68/68 成功：52 条 xhard（14 任务全部有效档，rank0 母 seed）+ 16 条母档（当前代码同 seed 重生成），用时 339.8 s、12.0 ep/min、峰值 RSS 8.6 GB；各档长度随难度递增、贴近目标倍数（PatternLock xhard16 短于 xhard14、PickXtimes 偏低约半档，均经用户裁决不动）。每条 timestep 数与小规模实测同 seed 同档逐条相同。
+
+判定行：
+
+- `XHARD_FINAL=PASS configs=52 mothers=16`
+- `XHARD_MOTHER_REGEN=PASS mothers=16`
+- `SAME_MOTHER_SEED=PASS files=68 mismatch=0`（H5 setup/seed 与 rank0 清单逐条相等，attempt 全为 0）
+- `DIFFICULTY_LABEL=PASS files=68`（xhard 档写 xhard 值，母档写 hard／VideoRepick medium）
+- `XHARD_RECORD_NONEMPTY=PASS files=68`
+- `XHARD_CHOICE_GROUNDING`：ButtonUnmaskSwap 按钮步骤 2208 个全部 first→A、second→B，空值 0；全部任务执行段 choice 空值 0（records/final/final_choice_exec.txt）。按计划原“整条比例”口径脚本输出 FAIL tasks_over_mother=2，偏高全部来自演示段（母档演示段同样无 choice），按执行段口径判 PASS。
+- `XHARD_8FRAME_LONGEST=FAIL tasks=14 episodes=14 zero_miss=2`：零遗漏为 VideoUnmask、ButtonUnmask 的 xhard14；用户 2026-10-12 裁决「2不动」，记为已知限制。其余 12 任务最长档均至少漏 1 个 subgoal 单元。
+- `GRADIENT_REVIEW=INFO groups=16 rows=68 failed=0 missing_mother=0 non_monotonic=1 (PatternLock/15700)`
+- `COMPARE_VIDEO=PASS segments=16 frames=15240`（artifacts/xhard/xhard-1011/report/final_compare.mp4，母档+五档六栏原速，按官网顺序）
+- `XHARD_P1_SCOPE=PASS files=1 branches=4`（git diff da32a8b1..HEAD -- src/robomme/ 只含 task_goal.py 四分支；pyproject.toml、uv.lock 零 diff）
+- `INTERMEDIATE_CLEANUP=PASS stage=final h5=0 mp4=0 final_unchanged=1`：最终阶段没有需要删除的中间 H5/MP4（对比视频是交付物保留）；最终产物 220 个文件 sha256 清单（records/final/final_sha256.txt）复核 `sha256sum -c` 全部通过。
+
+## ⑥ 硬件与耗时
+
+sled-aspen，GPU 0（RTX A6000），12 worker，2026-10-12 10:37:05 EDT 起跑，339.8 s 跑完，`EXIT_CODE=0`；tmux `xh-final-1012` 随命令结束自行退出。最终产物 `artifacts/xhard/xhard-1011/final/` 36 GB：68 个 H5、81 个 MP4、各档 metadata 与 run_summary。
+
+## ⑧ 逐条实测（timestep，括号内为相对同 seed 母档倍数）
+
+| 任务 | seed | 母档 | xhard12 | xhard14 | xhard16 | xhard18 | xhard20 |
+|---|---|---|---|---|---|---|---|
+| BinFill | 4701 | 785 | 941（×1.20） | 1105（×1.41） | 1315（×1.68） | 1463（×1.86） | 1608（×2.05） |
+| PickXtimes | 1700 | 897 | 1052（×1.17） | 1206（×1.34） | 1365（×1.52） | 1538（×1.72） | 1710（×1.91） |
+| SwingXtimes | 3700 | 504 | 587（×1.17） | 671（×1.33） | 838（×1.66） | 922（×1.83） | 1005（×1.99） |
+| StopCube | 7900 | 235 | — | 313（×1.33） | 391（×1.66） | 421（×1.79） | 475（×2.02） |
+| VideoUnmask | 6700 | 338 | — | 498（×1.47） | — | — | — |
+| ButtonUnmask | 8700 | 377 | — | 535（×1.42） | — | — | — |
+| VideoUnmaskSwap | 5700 | 421 | 517（×1.23） | 583（×1.39） | 679（×1.61） | 761（×1.81） | 883（×2.10） |
+| ButtonUnmaskSwap | 7700 | 451 | 549（×1.22） | 643（×1.43） | 712（×1.58） | 808（×1.79） | 908（×2.01） |
+| PickHighlight | 12700 | 530 | 670（×1.26） | — | 823（×1.55） | 988（×1.86） | — |
+| VideoRepick | 13600 | 734 | 904（×1.23） | 996（×1.36） | 1158（×1.58） | 1320（×1.80） | 1382（×1.88） |
+| VideoPlaceButton | 10701 | 958 | 1132（×1.18） | 1265（×1.32） | — | — | — |
+| VideoPlaceOrder | 11705 | 1131 | 1281（×1.13） | — | — | — | — |
+| MoveCube | 14700 | 512 | — | — | — | — | — |
+| InsertPeg | 13700 | 486 | — | — | — | — | — |
+| PatternLock | 15700 | 358 | 424（×1.18） | 538（×1.50） | 512（×1.43） | 646（×1.80） | 704（×1.97） |
+| RouteStick | 16700 | 500 | 600（×1.20） | 700（×1.40） | 800（×1.60） | 900（×1.80） | 1000（×2.00） |
+窗口数、演示/执行分段见 records/final/final_summary.md。
+
+## ⑩ 计划外事件与处置
+
+- launch.md 写的是 GPU 1；起跑前运行代理核实 GPU 1 被其他用户（jungchun，PID 3669676，训练任务）占满 16 GB、利用率 100%，按规程未起跑、未干预该进程。主会话核实 GPU 0 空闲（189 MiB、0%、无计算进程）后改用 `--gpus 0`，其余参数与代码版本（51cc1365）不变。为保持 HEAD 等于 Beta 锚点，未改已提交的 launch.md，在此记录。
+- 对比视频首次渲染误把 rank1 母 seed 也列入（32 段，其中 16 段无产物），删除后改用只含 rank0 的清单（records/final/mother_seeds_rank0.json）重渲染为 16 段。
+
+## ⑪ 结论与下一步
+
+52 档 xhard 与 16 条母档最终产物齐备，可作 MotionJEPA 全任务训练数据的 xhard 档输入。已知限制：VideoUnmask、ButtonUnmask 的 xhard14 不满足 8 帧必漏；PickXtimes 各档偏低约半档；PatternLock seed 15700 xhard16 短于 xhard14；交换类第 4 次起 idx1 按 1,2,3 循环复用（R6 先不动）；VideoPlaceOrder 父类撒点失败时 SceneGenerationError 名字指向模块致 TypeError（母任务原样，R1 不动）。
+
+## ⑫ 归档文件清单
+
+records/mother_seeds.json；records/first/（run_summary.json、first.summary.log）；records/pilot/（run_summary.json、run_parameters.json、pilot.summary.log、pilot_summary.md/json、pilot_checks.py/txt、choice_exec.py/txt）；records/final/（run_summary.json、run_parameters.json、final.summary.log、final_summary.md/json、final_checks.txt、final_choice_exec.txt、final_sha256.txt、mother_seeds_rank0.json）。

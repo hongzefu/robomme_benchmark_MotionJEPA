@@ -1,0 +1,11 @@
+VideoPlaceButton xhard : demo empty 382/1983  exec empty 0/414
+VideoPlaceButton mother: demo empty 190/750  exec empty 0/208
+VideoPlaceOrder xhard : demo empty 116/1080  exec empty 0/201
+VideoPlaceOrder mother: demo empty 116/930  exec empty 0/201
+VideoRepick xhard : demo empty 2941/3811  exec empty 0/1949
+VideoRepick mother: demo empty 167/341  exec empty 0/393
+VideoUnmask xhard : demo empty 66/66  exec empty 0/432
+VideoUnmask mother: demo empty 66/66  exec empty 0/272
+VideoUnmaskSwap xhard : demo empty 2130/2130  exec empty 0/1293
+VideoUnmaskSwap mother: demo empty 168/168  exec empty 0/253
+派生档执行段空值的 subgoal： []
