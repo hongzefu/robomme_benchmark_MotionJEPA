@@ -1395,7 +1395,7 @@ ls -ld artifacts/tests artifacts/logs
 nvidia-smi -i 0 --query-gpu=index,memory.used,memory.total,utilization.gpu --format=csv,noheader
 # 由主会话生成唯一 run-时间戳 目录并作为 XHARD_TIMING_EVIDENCE_ROOT 传入；测试只认该 artifacts 根
 CUDA_VISIBLE_DEVICES=0 XHARD_TIMING_EVIDENCE_ROOT=&lt;唯一JSON根&gt; UV_CACHE_DIR=/home/hongzefu/.cache/uv timeout 280s uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py -q -s -m gpu -x -k 'test_real_step_first_start_and_shared_endpoint and VideoUnmaskSwap'
-# 首探针所有字段精确通过才扩大到其余14项，排除已通过用例；新代码影响控制步上下文，因此重验相关契约
+# 首探针所有字段精确通过才扩大到其余14项，排除已通过用例；新代码改动段起点复核的钩子位置，因此重验相关契约
 CUDA_VISIBLE_DEVICES=0 XHARD_TIMING_EVIDENCE_ROOT=&lt;同轮JSON根&gt; UV_CACHE_DIR=/home/hongzefu/.cache/uv timeout 280s uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py -q -s -m gpu -x -k 'not (test_real_step_first_start_and_shared_endpoint and VideoUnmaskSwap)'
 # T1真实契约全部通过后再重测第二段拒绝送达（测试文件冻结、接口签名不变）
 CUDA_VISIBLE_DEVICES=0 UV_CACHE_DIR=/home/hongzefu/.cache/uv timeout 300s uv run --no-sync python -m pytest src/robomme_xhard/tests/test_fatal_catch.py -q -s -m gpu -x
