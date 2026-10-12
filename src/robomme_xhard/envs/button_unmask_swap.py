@@ -3,8 +3,8 @@
 旋钮取值见 ``robomme_xhard.configs.TIER_CONFIGS["ButtonUnmaskSwap"]``，实例上读 ``self.xhard_knobs``。
 
 P/S：xhard12 3/4、xhard14 4/6、xhard16 4/8、xhard18 5/10、xhard20 6/12。
-- 交换：``swap_min=swap_max=S`` 由配置给出；调度泛化同 VideoUnmaskSwap（R6：前三次保留父类配对，
-  第 4 次起循环复用 idx1，idx2 仍由父类 ``step`` 动态取最近容器）。父类 ``step`` 不覆写，沿已有调度循环运行。
+- 交换：``swap_min=swap_max=S`` 由配置给出；调度泛化同 VideoUnmaskSwap，配对按 K2/K3
+  在父类建场后用独立流预写并证明，不再沿用原 R6 配对。运行复核只记录首条 fatal。
 - 按按钮：右起左右交替按 P 次。R27 方案甲（硬约束）：右按钮 ``button_right`` 一律叫
   “press the first button”、左按钮 ``button_left`` 一律叫 “press the second button”，
   ``subgoal_segment`` / ``choice_label`` 同原任务，交替多次也只用这两个名字，使录像器能匹配原 vqa 选项 a/b。
@@ -42,6 +42,7 @@ from robomme.robomme_env.utils.subgoal_planner_func import (
 )
 
 from ..base import XHardMixin
+from ..swap_plan import SwapCollisionMixin, certify_swap_plan
 from .video_unmask import reject_failure_recovery
 from .video_unmask_swap import (
     PARENT_MAX_SWAPS,
@@ -128,7 +129,7 @@ def build_press_tasks(env, press_count: int) -> list[dict]:
 
 
 @register_env("ButtonUnmaskSwapXHard")
-class ButtonUnmaskSwapXHard(XHardMixin, ButtonUnmaskSwap):
+class ButtonUnmaskSwapXHard(SwapCollisionMixin, XHardMixin, ButtonUnmaskSwap):
     robomme_base_id = "ButtonUnmaskSwap"
     # 父类 _refresh_swap_schedule 的交换起点
     swap_start_step = 64
@@ -144,6 +145,14 @@ class ButtonUnmaskSwapXHard(XHardMixin, ButtonUnmaskSwap):
         check_swap_count(self)
         if int(self.pick_times) != 2:
             raise SceneGenerationError(f"ButtonUnmaskSwap xhard 要求两抓，实际 pick_times={self.pick_times}")
+        certify_swap_plan(self, self._swap_actors(), self._bystander_actors(), self.swap_name_prefix)
+
+    def _swap_actors(self):
+        return list(self.spawned_bins)
+
+    def _bystander_actors(self):
+        # 按钮是关节体，不伪造盒体；保证范围仅为参与交换的对象。
+        return []
 
     def _refresh_swap_schedule(self):
         if self.swap_times <= PARENT_MAX_SWAPS:
