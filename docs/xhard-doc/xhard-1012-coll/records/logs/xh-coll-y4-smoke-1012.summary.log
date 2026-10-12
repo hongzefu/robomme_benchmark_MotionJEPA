@@ -1,0 +1,12 @@
+LAUNCH_SHA=bbff9f0b654067702b4d28fa3ce72ebdcf5fed05
+LAUNCH_TIME=2026-10-12 18:18:19 EDT
+LAUNCH_PREFLIGHT=PASS
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+[1/3] VideoUnmaskSwap/episode_7 succeeded with seed 5700 (attempt 0, 105.503s)
+[2/3] ButtonUnmaskSwap/episode_7 succeeded with seed 7700 (attempt 0, 156.538s)
+screw plan failed
+screw plan failed
+screw plan failed
+[3/3] VideoRepick/episode_46 succeeded with seed 13600 (attempt 0, 50.534s)
+EXIT_CODE=0

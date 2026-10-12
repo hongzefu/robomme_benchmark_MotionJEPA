@@ -1,0 +1,17 @@
+LAUNCH_SHA=bbff9f0b654067702b4d28fa3ce72ebdcf5fed05
+LAUNCH_TIME=2026-10-12 18:14:53 EDT
+LAUNCH_PREFLIGHT=PASS
+..............
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+
+src/robomme_xhard/tests/test_swap_collision_gpu.py: 183 warnings
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/mani_skill/utils/geometry/trimesh_utils.py:113: DeprecationWarning: component.pose can be ambiguous thus deprecated. It is equivalent to component.entity_pose, which should be used instead
+    T = component.pose.to_transformation_matrix()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+14 passed, 4 deselected, 185 warnings in 66.71s (0:01:06)
+EXIT_CODE=0

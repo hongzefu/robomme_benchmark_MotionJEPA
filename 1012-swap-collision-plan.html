@@ -975,6 +975,8 @@ a { color:var(--accent); }
 </table>
 <p><strong>D6 全量放行的处理</strong>：用户本轮「然后做全量的生成」作为对 4.1 这一批 180 张卡的明确决定（P5）。Y4 smoke 通过后主会话按实测耗时比与每卡字节数算出全量耗时和磁盘，<strong>在汇报中写出但不再停等</strong>；只有当估算超出 4.1 量级（墙钟超过 1 小时或磁盘超过 <code>/data</code> 可用空间的 10%）或 GPU0 被他人占满时才停下问用户。规模不得超过 180 张，不加额外 reset 对拍或 rollout。</p>
 <p><strong>未验证与风险</strong>：只在 seed5700 一个样本上复现了「一次 float32 归一化」就是全部差异；其他 seed、任务若还存在别的写入路径差异（如 q 与 −q），Y1/Y2/Y4/Y5 会照样以 <code>endpoint_binding</code> 拒绝并停下，不会被静默放过。全量中若出现此类拒绝，它会作为 <code>SwapBindingError</code> 卡计入失败统计；若单个任务该类拒绝超过该任务卡数的 10%，主会话停下交用户，不自行解释为碰撞。</p>
+<h3 id="full-results-1012">2026-10-12 方案 X′ 实施结果：闸门全过，180 卡全量完成</h3>
+<p>用户对方案 X′ 答复「开工」。T2 合并为 <code>bbff9f0b</code>（2.92，<code>PRE_MERGE_REVIEW=PASS findings=0</code>，<code>XHARD_TIMING_CPU=PASS tests=39</code>、<code>XHARD_PARENT_START_Q=PASS cases=3</code>，核心短测 389 通过、失败集合等于四项基线）。Y1 首探针 1 passed（端点 156 条全部一致，<code>XHARD_SEG_START_ALIGN=PASS mismatches=0</code>），Y2 契约 14 passed，Y3 <code>XHARD_FATAL_CATCH=PASS tasks=3 hang=0</code>，Y4 smoke 3/3 成功、38 段端点一致。Beta <code>df6802cd</code>（2.93Beta）后全量 612.9 秒跑完：<code>XHARD_FULL_DERIVE=DONE cards=180 ok=165 coll=15 other=0 unknown=0</code>，三任务五档均 9/10、母档 30/30；1139 个执行段端点全部逐位一致；15 张剔除来自 VideoUnmaskSwap seed9300、ButtonUnmaskSwap seed10500（规划期扫掠接触）与 VideoRepick seed11200（运行期最近邻绑定改变）各一个母 seed 的五档。<code>EPISODE_STRIP_VIDEO=PASS videos=30 columns=180 missing=0</code>。详见 <a href="docs/xhard-doc/xhard-1012-coll/result.md">xhard-1012-coll 结果留档</a>。</p>
 <h3>4.1 阶段 E 的规模与耗时</h3>
 <p>规模（只取官方 train metadata ep0–99，K12；train metadata 已于 2.69（<code>52877e2a</code>）恢复为官方 100 条，各任务 hard / medium 25 条；ep 列表从 <code>3521be0c</code> 版 <code>src/robomme/env_metadata/train/</code> 的 ep0–99 范围只读取出，主会话曾在 aspen 用 <code>/data/hongzefu/data_0226</code> 官方 metadata 核过来源难度 24/24/24 条，vail 无该参考集（P3，清单用 <code>--no-verify</code>）；本轮按 K13 每任务只取前 10 个；R11 <code>mother_seeds.py::MIN_EPISODE=6</code>「episode ≥ 6 避开 FailRecover」照旧，所以 VideoUnmaskSwap ep3/seed5300、ButtonUnmaskSwap ep3/seed7300、VideoRepick ep2/seed9200 不进清单）：</p>
 <table>
@@ -1621,7 +1623,7 @@ uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifa
 <td>D11</td>
 <td>端点契约改为「重放父类起点 float32 归一化后仍逐位比较」，并放行全量</td>
 <td>「比较前先对缓存做一遍和父类完全相同的 float32 归一化，然后仍然逐位比较。 同意 继续做」「然后做全量的生成」</td>
-<td><strong>待审查</strong>：完整修订见 <a href="#endpoint-contract-y-1012">方案 X′</a>，用户明确「开工」后实施 T2 并按 Y1–Y5 推进到 180 卡全量</td>
+<td><strong>已裁决</strong>（用户「开工」）：完整修订见 <a href="#endpoint-contract-y-1012">方案 X′</a>；T2 与 Y1–Y5 已完成，结果见 <a href="#full-results-1012">实施结果</a></td>
 </tr>
 </tbody>
 </table>

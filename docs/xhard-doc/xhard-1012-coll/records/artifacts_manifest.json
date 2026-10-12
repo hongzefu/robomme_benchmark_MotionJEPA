@@ -1,0 +1,22 @@
+{
+ "artifacts/xhard/xhard-1012-coll/full/episode_results.jsonl": {
+  "bytes": 74329460,
+  "sha256": "278bb011ae896189b1cf6509d6d819df69b4aef04a838b0a2063c6db0bc2c06d"
+ },
+ "artifacts/xhard/xhard-1012-coll/full/run_summary.json": {
+  "bytes": 115844218,
+  "sha256": "77f0a252b6ea906d490fc587348dda6e1290550490e3bda7ef4a4b93824426aa"
+ },
+ "artifacts/xhard/xhard-1012-coll/report/summary.json": {
+  "bytes": 115767076,
+  "sha256": "9bc7c581db37cd9a827f54292f345ba8f9bf4d72c5ad2ee665764c788994950e"
+ },
+ "artifacts/xhard/xhard-1012-coll/mother_seeds_all.json": {
+  "bytes": 4925,
+  "sha256": "56a0381bb78485a7373f6446a4a0007679c0aff3e5a0c347ad3c16528200e278"
+ },
+ "artifacts/logs/xh-coll-full-1012.log": {
+  "bytes": 74409329,
+  "sha256": "ca184d2a9cb689f5b0bb4ec0a7e8314db0172c25434f3244a8b68bbd868d4504"
+ }
+}

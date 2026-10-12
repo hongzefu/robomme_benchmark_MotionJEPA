@@ -1,0 +1,63 @@
+LAUNCH_SHA=bbff9f0b654067702b4d28fa3ce72ebdcf5fed05
+LAUNCH_TIME=2026-10-12 18:16:01 EDT
+LAUNCH_PREFLIGHT=PASS
+XHARD_FATAL_CATCH=PASS tasks=3 hang=0 evidence=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791843364276789082
+screw plan failed
+screw plan failed
+screw plan failed
+.
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+
+src/robomme_xhard/tests/test_fatal_catch.py: 25 warnings
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/mani_skill/utils/geometry/trimesh_utils.py:113: DeprecationWarning: component.pose can be ambiguous thus deprecated. It is equivalent to component.entity_pose, which should be used instead
+    T = component.pose.to_transformation_matrix()
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+    logger.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 41 warnings in 123.19s (0:02:03)
+EXIT_CODE=0

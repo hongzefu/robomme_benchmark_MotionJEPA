@@ -1,0 +1,4482 @@
+[
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 9300,
+  "episode": 43,
+  "level": "xhard12",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapCollisionError",
+  "stage": "sweep",
+  "rejection": {
+   "reason": "contact",
+   "stage": "sweep",
+   "object_a": "bin_1",
+   "object_b": "bin_2",
+   "shape_a": 1,
+   "shape_b": 2,
+   "gap_m": -0.0016987064352516567,
+   "s": 0.5,
+   "sweep_index": 0,
+   "interval_low": 0.0,
+   "interval_high": 1.0,
+   "depth": 0,
+   "intervals_used": 3,
+   "detail": "中点判定"
+  },
+  "detail": null,
+  "wall_s": 8.298,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 9300,
+  "episode": 43,
+  "level": "xhard14",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapCollisionError",
+  "stage": "sweep",
+  "rejection": {
+   "reason": "contact",
+   "stage": "sweep",
+   "object_a": "bin_1",
+   "object_b": "bin_2",
+   "shape_a": 1,
+   "shape_b": 2,
+   "gap_m": -0.0016987064352516567,
+   "s": 0.5,
+   "sweep_index": 0,
+   "interval_low": 0.0,
+   "interval_high": 1.0,
+   "depth": 0,
+   "intervals_used": 3,
+   "detail": "中点判定"
+  },
+  "detail": null,
+  "wall_s": 8.821,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6100,
+  "episode": 11,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 48.718,
+  "timesteps": 410,
+  "windows": 23,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 5700,
+  "episode": 7,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 51.452,
+  "timesteps": 421,
+  "windows": 23,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8500,
+  "episode": 35,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 51.29,
+  "timesteps": 427,
+  "windows": 24,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 9300,
+  "episode": 43,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 51.701,
+  "timesteps": 432,
+  "windows": 24,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6900,
+  "episode": 19,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 52.414,
+  "timesteps": 431,
+  "windows": 24,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8900,
+  "episode": 39,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 52.612,
+  "timesteps": 428,
+  "windows": 24,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 7300,
+  "episode": 23,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 53.17,
+  "timesteps": 437,
+  "windows": 24,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 7700,
+  "episode": 27,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 53.238,
+  "timesteps": 457,
+  "windows": 26,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8100,
+  "episode": 31,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 53.431,
+  "timesteps": 461,
+  "windows": 26,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6500,
+  "episode": 15,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 54.369,
+  "timesteps": 483,
+  "windows": 27,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 9300,
+  "episode": 43,
+  "level": "xhard16",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapCollisionError",
+  "stage": "sweep",
+  "rejection": {
+   "reason": "contact",
+   "stage": "sweep",
+   "object_a": "bin_1",
+   "object_b": "bin_2",
+   "shape_a": 1,
+   "shape_b": 2,
+   "gap_m": -0.0016987064352516567,
+   "s": 0.5,
+   "sweep_index": 0,
+   "interval_low": 0.0,
+   "interval_high": 1.0,
+   "depth": 0,
+   "intervals_used": 3,
+   "detail": "中点判定"
+  },
+  "detail": null,
+  "wall_s": 6.298,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8500,
+  "episode": 35,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 62.799,
+  "timesteps": 519,
+  "windows": 29,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6100,
+  "episode": 11,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 65.285,
+  "timesteps": 513,
+  "windows": 29,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8100,
+  "episode": 31,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 65.4,
+  "timesteps": 519,
+  "windows": 29,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 7300,
+  "episode": 23,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 67.939,
+  "timesteps": 533,
+  "windows": 30,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 7700,
+  "episode": 27,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 68.816,
+  "timesteps": 534,
+  "windows": 30,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8500,
+  "episode": 35,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 67.585,
+  "timesteps": 568,
+  "windows": 32,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 9300,
+  "episode": 43,
+  "level": "xhard18",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapCollisionError",
+  "stage": "sweep",
+  "rejection": {
+   "reason": "contact",
+   "stage": "sweep",
+   "object_a": "bin_1",
+   "object_b": "bin_2",
+   "shape_a": 1,
+   "shape_b": 2,
+   "gap_m": -0.0016987064352516567,
+   "s": 0.5,
+   "sweep_index": 0,
+   "interval_low": 0.0,
+   "interval_high": 1.0,
+   "depth": 0,
+   "intervals_used": 3,
+   "detail": "中点判定"
+  },
+  "detail": null,
+  "wall_s": 4.509,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8900,
+  "episode": 39,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 73.884,
+  "timesteps": 531,
+  "windows": 30,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6100,
+  "episode": 11,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 75.67,
+  "timesteps": 573,
+  "windows": 32,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 7700,
+  "episode": 27,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 75.594,
+  "timesteps": 559,
+  "windows": 32,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6900,
+  "episode": 19,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 78.159,
+  "timesteps": 527,
+  "windows": 30,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 7300,
+  "episode": 23,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 77.118,
+  "timesteps": 587,
+  "windows": 33,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8100,
+  "episode": 31,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 77.666,
+  "timesteps": 610,
+  "windows": 35,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8900,
+  "episode": 39,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 80.606,
+  "timesteps": 581,
+  "windows": 33,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6900,
+  "episode": 19,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 86.169,
+  "timesteps": 585,
+  "windows": 33,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 5700,
+  "episode": 7,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 89.149,
+  "timesteps": 525,
+  "windows": 30,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6100,
+  "episode": 11,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 88.69,
+  "timesteps": 667,
+  "windows": 38,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6500,
+  "episode": 15,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 93.017,
+  "timesteps": 514,
+  "windows": 29,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 9300,
+  "episode": 43,
+  "level": "xhard20",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapCollisionError",
+  "stage": "sweep",
+  "rejection": {
+   "reason": "contact",
+   "stage": "sweep",
+   "object_a": "bin_1",
+   "object_b": "bin_2",
+   "shape_a": 1,
+   "shape_b": 2,
+   "gap_m": -0.0016987064352516567,
+   "s": 0.5,
+   "sweep_index": 0,
+   "interval_low": 0.0,
+   "interval_high": 1.0,
+   "depth": 0,
+   "intervals_used": 3,
+   "detail": "中点判定"
+  },
+  "detail": null,
+  "wall_s": 5.059,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 5700,
+  "episode": 7,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 99.168,
+  "timesteps": 563,
+  "windows": 32,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6500,
+  "episode": 15,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 103.408,
+  "timesteps": 584,
+  "windows": 33,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6900,
+  "episode": 19,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 97.156,
+  "timesteps": 663,
+  "windows": 38,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 5700,
+  "episode": 7,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 120.434,
+  "timesteps": 679,
+  "windows": 39,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8500,
+  "episode": 35,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 72.954,
+  "timesteps": 686,
+  "windows": 39,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 7300,
+  "episode": 23,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 76.693,
+  "timesteps": 680,
+  "windows": 39,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8100,
+  "episode": 31,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 76.935,
+  "timesteps": 685,
+  "windows": 39,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 7700,
+  "episode": 27,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 80.521,
+  "timesteps": 693,
+  "windows": 40,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 7700,
+  "episode": 7,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 44.652,
+  "timesteps": 451,
+  "windows": 27,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6500,
+  "episode": 15,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 124.647,
+  "timesteps": 672,
+  "windows": 39,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8100,
+  "episode": 11,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 44.297,
+  "timesteps": 454,
+  "windows": 27,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8900,
+  "episode": 19,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 45.692,
+  "timesteps": 451,
+  "windows": 27,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8500,
+  "episode": 15,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 45.968,
+  "timesteps": 458,
+  "windows": 27,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8900,
+  "episode": 39,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 88.352,
+  "timesteps": 665,
+  "windows": 38,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10500,
+  "episode": 35,
+  "level": "xhard12",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapCollisionError",
+  "stage": "sweep",
+  "rejection": {
+   "reason": "contact",
+   "stage": "sweep",
+   "object_a": "bin_0",
+   "object_b": "bin_2",
+   "shape_a": 1,
+   "shape_b": 1,
+   "gap_m": -0.00043695588946612157,
+   "s": 0.25,
+   "sweep_index": 0,
+   "interval_low": 0.0,
+   "interval_high": 0.5,
+   "depth": 1,
+   "intervals_used": 4,
+   "detail": "中点判定"
+  },
+  "detail": null,
+  "wall_s": 5.275,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6100,
+  "episode": 11,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 93.224,
+  "timesteps": 771,
+  "windows": 45,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 9,
+   "swap_sweep": 9,
+   "substep_before": 2255,
+   "substep_after": 2255
+  },
+  "endpoint_match": {
+   "True": 9
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 9300,
+  "episode": 23,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 46.876,
+  "timesteps": 473,
+  "windows": 28,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8500,
+  "episode": 35,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 83.1,
+  "timesteps": 775,
+  "windows": 46,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 9,
+   "swap_sweep": 9,
+   "substep_before": 2255,
+   "substep_after": 2255
+  },
+  "endpoint_match": {
+   "True": 9
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 7300,
+  "episode": 23,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 91.142,
+  "timesteps": 785,
+  "windows": 46,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 9,
+   "swap_sweep": 9,
+   "substep_before": 2255,
+   "substep_after": 2255
+  },
+  "endpoint_match": {
+   "True": 9
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 9700,
+  "episode": 27,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 45.465,
+  "timesteps": 447,
+  "windows": 26,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10100,
+  "episode": 31,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 49.046,
+  "timesteps": 460,
+  "windows": 27,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 7700,
+  "episode": 27,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 94.76,
+  "timesteps": 757,
+  "windows": 45,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 9,
+   "swap_sweep": 9,
+   "substep_before": 2255,
+   "substep_after": 2255
+  },
+  "endpoint_match": {
+   "True": 9
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8100,
+  "episode": 31,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 94.455,
+  "timesteps": 808,
+  "windows": 48,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 9,
+   "swap_sweep": 9,
+   "substep_before": 2255,
+   "substep_after": 2255
+  },
+  "endpoint_match": {
+   "True": 9
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6900,
+  "episode": 19,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 113.156,
+  "timesteps": 781,
+  "windows": 46,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 9,
+   "swap_sweep": 9,
+   "substep_before": 2255,
+   "substep_after": 2255
+  },
+  "endpoint_match": {
+   "True": 9
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8900,
+  "episode": 39,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 101.505,
+  "timesteps": 779,
+  "windows": 46,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 9,
+   "swap_sweep": 9,
+   "substep_before": 2255,
+   "substep_after": 2255
+  },
+  "endpoint_match": {
+   "True": 9
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8500,
+  "episode": 35,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 90.188,
+  "timesteps": 849,
+  "windows": 50,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 11,
+   "swap_sweep": 11,
+   "substep_before": 2755,
+   "substep_after": 2755
+  },
+  "endpoint_match": {
+   "True": 11
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10500,
+  "episode": 35,
+  "level": "xhard14",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapCollisionError",
+  "stage": "sweep",
+  "rejection": {
+   "reason": "contact",
+   "stage": "sweep",
+   "object_a": "bin_0",
+   "object_b": "bin_2",
+   "shape_a": 1,
+   "shape_b": 1,
+   "gap_m": -0.00043695588946612157,
+   "s": 0.25,
+   "sweep_index": 0,
+   "interval_low": 0.0,
+   "interval_high": 0.5,
+   "depth": 1,
+   "intervals_used": 4,
+   "detail": "中点判定"
+  },
+  "detail": null,
+  "wall_s": 3.665,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10500,
+  "episode": 35,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 49.766,
+  "timesteps": 472,
+  "windows": 28,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 11300,
+  "episode": 43,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 50.782,
+  "timesteps": 463,
+  "windows": 27,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10900,
+  "episode": 39,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 51.131,
+  "timesteps": 466,
+  "windows": 28,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6100,
+  "episode": 11,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 102.917,
+  "timesteps": 871,
+  "windows": 51,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 11,
+   "swap_sweep": 11,
+   "substep_before": 2755,
+   "substep_after": 2755
+  },
+  "endpoint_match": {
+   "True": 11
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 7300,
+  "episode": 23,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 104.224,
+  "timesteps": 884,
+  "windows": 52,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 11,
+   "swap_sweep": 11,
+   "substep_before": 2755,
+   "substep_after": 2755
+  },
+  "endpoint_match": {
+   "True": 11
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8100,
+  "episode": 31,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 104.345,
+  "timesteps": 889,
+  "windows": 52,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 11,
+   "swap_sweep": 11,
+   "substep_before": 2755,
+   "substep_after": 2755
+  },
+  "endpoint_match": {
+   "True": 11
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 7700,
+  "episode": 27,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 110.816,
+  "timesteps": 897,
+  "windows": 53,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 11,
+   "swap_sweep": 11,
+   "substep_before": 2755,
+   "substep_after": 2755
+  },
+  "endpoint_match": {
+   "True": 11
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 5700,
+  "episode": 7,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 138.376,
+  "timesteps": 761,
+  "windows": 45,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 9,
+   "swap_sweep": 9,
+   "substep_before": 2255,
+   "substep_after": 2255
+  },
+  "endpoint_match": {
+   "True": 9
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10500,
+  "episode": 35,
+  "level": "xhard16",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapCollisionError",
+  "stage": "sweep",
+  "rejection": {
+   "reason": "contact",
+   "stage": "sweep",
+   "object_a": "bin_0",
+   "object_b": "bin_2",
+   "shape_a": 1,
+   "shape_b": 1,
+   "gap_m": -0.00043695588946612157,
+   "s": 0.25,
+   "sweep_index": 0,
+   "interval_low": 0.0,
+   "interval_high": 0.5,
+   "depth": 1,
+   "intervals_used": 4,
+   "detail": "中点判定"
+  },
+  "detail": null,
+  "wall_s": 3.4,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 8900,
+  "episode": 39,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 111.283,
+  "timesteps": 869,
+  "windows": 51,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 11,
+   "swap_sweep": 11,
+   "substep_before": 2755,
+   "substep_after": 2755
+  },
+  "endpoint_match": {
+   "True": 11
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6500,
+  "episode": 15,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 145.706,
+  "timesteps": 783,
+  "windows": 46,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 9,
+   "swap_sweep": 9,
+   "substep_before": 2255,
+   "substep_after": 2255
+  },
+  "endpoint_match": {
+   "True": 9
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6900,
+  "episode": 19,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 126.126,
+  "timesteps": 874,
+  "windows": 51,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 11,
+   "swap_sweep": 11,
+   "substep_before": 2755,
+   "substep_after": 2755
+  },
+  "endpoint_match": {
+   "True": 11
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8900,
+  "episode": 19,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 70.025,
+  "timesteps": 541,
+  "windows": 32,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 9300,
+  "episode": 23,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 75.187,
+  "timesteps": 558,
+  "windows": 33,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10100,
+  "episode": 31,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 72.138,
+  "timesteps": 565,
+  "windows": 34,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 11300,
+  "episode": 43,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 71.628,
+  "timesteps": 542,
+  "windows": 32,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8100,
+  "episode": 11,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 87.204,
+  "timesteps": 546,
+  "windows": 33,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 9700,
+  "episode": 27,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 82.573,
+  "timesteps": 551,
+  "windows": 33,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10500,
+  "episode": 35,
+  "level": "xhard18",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapCollisionError",
+  "stage": "sweep",
+  "rejection": {
+   "reason": "contact",
+   "stage": "sweep",
+   "object_a": "bin_0",
+   "object_b": "bin_2",
+   "shape_a": 1,
+   "shape_b": 1,
+   "gap_m": -0.00043695588946612157,
+   "s": 0.25,
+   "sweep_index": 0,
+   "interval_low": 0.0,
+   "interval_high": 0.5,
+   "depth": 1,
+   "intervals_used": 4,
+   "detail": "中点判定"
+  },
+  "detail": null,
+  "wall_s": 3.368,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 7700,
+  "episode": 7,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 96.426,
+  "timesteps": 549,
+  "windows": 33,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 5700,
+  "episode": 7,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 155.43,
+  "timesteps": 883,
+  "windows": 52,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 11,
+   "swap_sweep": 11,
+   "substep_before": 2755,
+   "substep_after": 2755
+  },
+  "endpoint_match": {
+   "True": 11
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10900,
+  "episode": 39,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 85.721,
+  "timesteps": 551,
+  "windows": 33,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8500,
+  "episode": 15,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 99.026,
+  "timesteps": 545,
+  "windows": 33,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 4,
+   "swap_sweep": 4,
+   "substep_before": 1005,
+   "substep_after": 1005
+  },
+  "endpoint_match": {
+   "True": 4
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8900,
+  "episode": 19,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 90.494,
+  "timesteps": 668,
+  "windows": 40,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 6,
+   "swap_sweep": 6,
+   "substep_before": 1505,
+   "substep_after": 1505
+  },
+  "endpoint_match": {
+   "True": 6
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "seed": 6500,
+  "episode": 15,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 167.097,
+  "timesteps": 876,
+  "windows": 52,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 11,
+   "swap_sweep": 11,
+   "substep_before": 2755,
+   "substep_after": 2755
+  },
+  "endpoint_match": {
+   "True": 11
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10100,
+  "episode": 31,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 85.533,
+  "timesteps": 657,
+  "windows": 40,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 6,
+   "swap_sweep": 6,
+   "substep_before": 1505,
+   "substep_after": 1505
+  },
+  "endpoint_match": {
+   "True": 6
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 9300,
+  "episode": 23,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 89.224,
+  "timesteps": 649,
+  "windows": 39,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 6,
+   "swap_sweep": 6,
+   "substep_before": 1505,
+   "substep_after": 1505
+  },
+  "endpoint_match": {
+   "True": 6
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10500,
+  "episode": 35,
+  "level": "xhard20",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapCollisionError",
+  "stage": "sweep",
+  "rejection": {
+   "reason": "contact",
+   "stage": "sweep",
+   "object_a": "bin_0",
+   "object_b": "bin_2",
+   "shape_a": 1,
+   "shape_b": 1,
+   "gap_m": -0.00043695588946612157,
+   "s": 0.25,
+   "sweep_index": 0,
+   "interval_low": 0.0,
+   "interval_high": 0.5,
+   "depth": 1,
+   "intervals_used": 4,
+   "detail": "中点判定"
+  },
+  "detail": null,
+  "wall_s": 2.779,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 11300,
+  "episode": 43,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 86.118,
+  "timesteps": 666,
+  "windows": 40,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 6,
+   "swap_sweep": 6,
+   "substep_before": 1505,
+   "substep_after": 1505
+  },
+  "endpoint_match": {
+   "True": 6
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8100,
+  "episode": 11,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 108.497,
+  "timesteps": 645,
+  "windows": 39,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 6,
+   "swap_sweep": 6,
+   "substep_before": 1505,
+   "substep_after": 1505
+  },
+  "endpoint_match": {
+   "True": 6
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 9700,
+  "episode": 27,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 104.757,
+  "timesteps": 654,
+  "windows": 39,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 6,
+   "swap_sweep": 6,
+   "substep_before": 1505,
+   "substep_after": 1505
+  },
+  "endpoint_match": {
+   "True": 6
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8900,
+  "episode": 19,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 97.157,
+  "timesteps": 707,
+  "windows": 43,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 8,
+   "swap_sweep": 8,
+   "substep_before": 2005,
+   "substep_after": 2005
+  },
+  "endpoint_match": {
+   "True": 8
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 7700,
+  "episode": 7,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 125.075,
+  "timesteps": 646,
+  "windows": 39,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 6,
+   "swap_sweep": 6,
+   "substep_before": 1505,
+   "substep_after": 1505
+  },
+  "endpoint_match": {
+   "True": 6
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10900,
+  "episode": 39,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 104.02,
+  "timesteps": 657,
+  "windows": 40,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 6,
+   "swap_sweep": 6,
+   "substep_before": 1505,
+   "substep_after": 1505
+  },
+  "endpoint_match": {
+   "True": 6
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10100,
+  "episode": 31,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 93.47,
+  "timesteps": 718,
+  "windows": 43,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 8,
+   "swap_sweep": 8,
+   "substep_before": 2005,
+   "substep_after": 2005
+  },
+  "endpoint_match": {
+   "True": 8
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8500,
+  "episode": 15,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 129.923,
+  "timesteps": 646,
+  "windows": 39,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 6,
+   "swap_sweep": 6,
+   "substep_before": 1505,
+   "substep_after": 1505
+  },
+  "endpoint_match": {
+   "True": 6
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 9300,
+  "episode": 23,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 103.141,
+  "timesteps": 729,
+  "windows": 44,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 8,
+   "swap_sweep": 8,
+   "substep_before": 2005,
+   "substep_after": 2005
+  },
+  "endpoint_match": {
+   "True": 8
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 11300,
+  "episode": 43,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 96.295,
+  "timesteps": 702,
+  "windows": 42,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 8,
+   "swap_sweep": 8,
+   "substep_before": 2005,
+   "substep_after": 2005
+  },
+  "endpoint_match": {
+   "True": 8
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8100,
+  "episode": 11,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 128.604,
+  "timesteps": 719,
+  "windows": 43,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 8,
+   "swap_sweep": 8,
+   "substep_before": 2005,
+   "substep_after": 2005
+  },
+  "endpoint_match": {
+   "True": 8
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 9700,
+  "episode": 27,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 121.46,
+  "timesteps": 705,
+  "windows": 43,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 8,
+   "swap_sweep": 8,
+   "substep_before": 2005,
+   "substep_after": 2005
+  },
+  "endpoint_match": {
+   "True": 8
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 9600,
+  "episode": 6,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 46.905,
+  "timesteps": 581,
+  "windows": 33,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10900,
+  "episode": 39,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 125.873,
+  "timesteps": 721,
+  "windows": 44,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 8,
+   "swap_sweep": 8,
+   "substep_before": 2005,
+   "substep_after": 2005
+  },
+  "endpoint_match": {
+   "True": 8
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 7700,
+  "episode": 7,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 148.939,
+  "timesteps": 709,
+  "windows": 43,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 8,
+   "swap_sweep": 8,
+   "substep_before": 2005,
+   "substep_after": 2005
+  },
+  "endpoint_match": {
+   "True": 8
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8900,
+  "episode": 19,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 118.286,
+  "timesteps": 809,
+  "windows": 49,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10800,
+  "episode": 18,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 51.424,
+  "timesteps": 588,
+  "windows": 34,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10100,
+  "episode": 31,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 111.64,
+  "timesteps": 809,
+  "windows": 49,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 11602,
+  "episode": 26,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 56.142,
+  "timesteps": 632,
+  "windows": 36,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8500,
+  "episode": 15,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 161.498,
+  "timesteps": 723,
+  "windows": 44,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 8,
+   "swap_sweep": 8,
+   "substep_before": 2005,
+   "substep_after": 2005
+  },
+  "endpoint_match": {
+   "True": 8
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 9300,
+  "episode": 23,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 126.851,
+  "timesteps": 832,
+  "windows": 50,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 11200,
+  "episode": 22,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 67.174,
+  "timesteps": 747,
+  "windows": 43,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10000,
+  "episode": 10,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 77.103,
+  "timesteps": 887,
+  "windows": 52,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 11300,
+  "episode": 43,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 123.671,
+  "timesteps": 824,
+  "windows": 50,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12800,
+  "episode": 38,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 57.589,
+  "timesteps": 572,
+  "windows": 32,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12000,
+  "episode": 30,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 68.093,
+  "timesteps": 740,
+  "windows": 43,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10400,
+  "episode": 14,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 75.803,
+  "timesteps": 845,
+  "windows": 50,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8100,
+  "episode": 11,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 161.734,
+  "timesteps": 822,
+  "windows": 50,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12400,
+  "episode": 34,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 81.244,
+  "timesteps": 865,
+  "windows": 51,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 9700,
+  "episode": 27,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 154.188,
+  "timesteps": 820,
+  "windows": 50,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8900,
+  "episode": 19,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 137.599,
+  "timesteps": 895,
+  "windows": 54,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 12,
+   "swap_sweep": 12,
+   "substep_before": 3005,
+   "substep_after": 3005
+  },
+  "endpoint_match": {
+   "True": 12
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 7700,
+  "episode": 7,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 183.442,
+  "timesteps": 813,
+  "windows": 49,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10900,
+  "episode": 39,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 157.244,
+  "timesteps": 834,
+  "windows": 51,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10100,
+  "episode": 31,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 138.7,
+  "timesteps": 917,
+  "windows": 56,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 12,
+   "swap_sweep": 12,
+   "substep_before": 3005,
+   "substep_after": 3005
+  },
+  "endpoint_match": {
+   "True": 12
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 9300,
+  "episode": 23,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 145.734,
+  "timesteps": 930,
+  "windows": 57,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 12,
+   "swap_sweep": 12,
+   "substep_before": 3005,
+   "substep_after": 3005
+  },
+  "endpoint_match": {
+   "True": 12
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 13200,
+  "episode": 42,
+  "level": "mother",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 89.862,
+  "timesteps": 848,
+  "windows": 50,
+  "net_identity": null,
+  "checks": {},
+  "endpoint_match": {}
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 9600,
+  "episode": 6,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 93.44,
+  "timesteps": 880,
+  "windows": 52,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8500,
+  "episode": 15,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 193.916,
+  "timesteps": 815,
+  "windows": 49,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10000,
+  "episode": 10,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 93.252,
+  "timesteps": 866,
+  "windows": 51,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 11300,
+  "episode": 43,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 145.736,
+  "timesteps": 898,
+  "windows": 55,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 12,
+   "swap_sweep": 12,
+   "substep_before": 3005,
+   "substep_after": 3005
+  },
+  "endpoint_match": {
+   "True": 12
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8100,
+  "episode": 11,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 189.207,
+  "timesteps": 917,
+  "windows": 56,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 12,
+   "swap_sweep": 12,
+   "substep_before": 3005,
+   "substep_after": 3005
+  },
+  "endpoint_match": {
+   "True": 12
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10800,
+  "episode": 18,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 95.714,
+  "timesteps": 870,
+  "windows": 51,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10400,
+  "episode": 14,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 98.715,
+  "timesteps": 901,
+  "windows": 53,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 11200,
+  "episode": 22,
+  "level": "xhard12",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapBindingError",
+  "stage": "segment_start",
+  "rejection": null,
+  "detail": {
+   "error_type": "SwapBindingError",
+   "stage": "segment_start",
+   "check": "binding",
+   "k": 1,
+   "rejection": null,
+   "detail": {
+    "initiator": 0,
+    "expected": 2,
+    "recomputed": 1,
+    "distances": [
+     [
+      1,
+      0.16989432630112186
+     ],
+     [
+      2,
+      0.1714379886782015
+     ]
+    ]
+   },
+   "control_step": 253
+  },
+  "wall_s": 95.009,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 2,
+   "swap_sweep": 1,
+   "substep_before": 250,
+   "substep_after": 250
+  },
+  "endpoint_match": {
+   "True": 1
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 9700,
+  "episode": 27,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 178.008,
+  "timesteps": 904,
+  "windows": 55,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 12,
+   "swap_sweep": 12,
+   "substep_before": 3005,
+   "substep_after": 3005
+  },
+  "endpoint_match": {
+   "True": 12
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 11602,
+  "episode": 26,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 99.42,
+  "timesteps": 889,
+  "windows": 53,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12000,
+  "episode": 30,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 98.453,
+  "timesteps": 878,
+  "windows": 51,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12400,
+  "episode": 34,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 101.481,
+  "timesteps": 897,
+  "windows": 53,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 13200,
+  "episode": 42,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 99.161,
+  "timesteps": 861,
+  "windows": 50,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12800,
+  "episode": 38,
+  "level": "xhard12",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 100.231,
+  "timesteps": 853,
+  "windows": 50,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 5,
+   "swap_sweep": 5,
+   "substep_before": 1255,
+   "substep_after": 1255
+  },
+  "endpoint_match": {
+   "True": 5
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 10900,
+  "episode": 39,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 188.816,
+  "timesteps": 926,
+  "windows": 56,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 12,
+   "swap_sweep": 12,
+   "substep_before": 3005,
+   "substep_after": 3005
+  },
+  "endpoint_match": {
+   "True": 12
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 7700,
+  "episode": 7,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 221.404,
+  "timesteps": 907,
+  "windows": 55,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 12,
+   "swap_sweep": 12,
+   "substep_before": 3005,
+   "substep_after": 3005
+  },
+  "endpoint_match": {
+   "True": 12
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10000,
+  "episode": 10,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 112.155,
+  "timesteps": 972,
+  "windows": 58,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 9600,
+  "episode": 6,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 112.763,
+  "timesteps": 981,
+  "windows": 58,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10400,
+  "episode": 14,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 113.734,
+  "timesteps": 984,
+  "windows": 59,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10800,
+  "episode": 18,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 113.903,
+  "timesteps": 971,
+  "windows": 58,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 11200,
+  "episode": 22,
+  "level": "xhard14",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapBindingError",
+  "stage": "segment_start",
+  "rejection": null,
+  "detail": {
+   "error_type": "SwapBindingError",
+   "stage": "segment_start",
+   "check": "binding",
+   "k": 1,
+   "rejection": null,
+   "detail": {
+    "initiator": 0,
+    "expected": 2,
+    "recomputed": 1,
+    "distances": [
+     [
+      1,
+      0.16989432630112186
+     ],
+     [
+      2,
+      0.1714379886782015
+     ]
+    ]
+   },
+   "control_step": 253
+  },
+  "wall_s": 114.174,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 2,
+   "swap_sweep": 1,
+   "substep_before": 250,
+   "substep_after": 250
+  },
+  "endpoint_match": {
+   "True": 1
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "seed": 8500,
+  "episode": 15,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 232.562,
+  "timesteps": 918,
+  "windows": 56,
+  "net_identity": true,
+  "checks": {
+   "swap_binding": 12,
+   "swap_sweep": 12,
+   "substep_before": 3005,
+   "substep_after": 3005
+  },
+  "endpoint_match": {
+   "True": 12
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 11602,
+  "episode": 26,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 116.399,
+  "timesteps": 995,
+  "windows": 60,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12000,
+  "episode": 30,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 115.703,
+  "timesteps": 982,
+  "windows": 58,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12400,
+  "episode": 34,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 118.462,
+  "timesteps": 1006,
+  "windows": 60,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12800,
+  "episode": 38,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 117.199,
+  "timesteps": 996,
+  "windows": 59,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 13200,
+  "episode": 42,
+  "level": "xhard14",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 117.441,
+  "timesteps": 988,
+  "windows": 58,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 7,
+   "swap_sweep": 7,
+   "substep_before": 1755,
+   "substep_after": 1755
+  },
+  "endpoint_match": {
+   "True": 7
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10000,
+  "episode": 10,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 131.59,
+  "timesteps": 1136,
+  "windows": 68,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 9600,
+  "episode": 6,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 133.891,
+  "timesteps": 1144,
+  "windows": 68,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10400,
+  "episode": 14,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 134.353,
+  "timesteps": 1170,
+  "windows": 70,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10800,
+  "episode": 18,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 131.482,
+  "timesteps": 1140,
+  "windows": 68,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 11200,
+  "episode": 22,
+  "level": "xhard16",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapBindingError",
+  "stage": "segment_start",
+  "rejection": null,
+  "detail": {
+   "error_type": "SwapBindingError",
+   "stage": "segment_start",
+   "check": "binding",
+   "k": 1,
+   "rejection": null,
+   "detail": {
+    "initiator": 0,
+    "expected": 2,
+    "recomputed": 1,
+    "distances": [
+     [
+      1,
+      0.16989432630112186
+     ],
+     [
+      2,
+      0.1714379886782015
+     ]
+    ]
+   },
+   "control_step": 253
+  },
+  "wall_s": 131.263,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 2,
+   "swap_sweep": 1,
+   "substep_before": 250,
+   "substep_after": 250
+  },
+  "endpoint_match": {
+   "True": 1
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12000,
+  "episode": 30,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 132.003,
+  "timesteps": 1143,
+  "windows": 68,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 11602,
+  "episode": 26,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 133.51,
+  "timesteps": 1157,
+  "windows": 70,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12400,
+  "episode": 34,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 132.162,
+  "timesteps": 1155,
+  "windows": 69,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12800,
+  "episode": 38,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 131.385,
+  "timesteps": 1158,
+  "windows": 69,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 13200,
+  "episode": 42,
+  "level": "xhard16",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 125.168,
+  "timesteps": 1140,
+  "windows": 68,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 10,
+   "swap_sweep": 10,
+   "substep_before": 2505,
+   "substep_after": 2505
+  },
+  "endpoint_match": {
+   "True": 10
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10000,
+  "episode": 10,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 135.485,
+  "timesteps": 1290,
+  "windows": 78,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 13,
+   "swap_sweep": 13,
+   "substep_before": 3255,
+   "substep_after": 3255
+  },
+  "endpoint_match": {
+   "True": 13
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 9600,
+  "episode": 6,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 138.302,
+  "timesteps": 1305,
+  "windows": 78,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 13,
+   "swap_sweep": 13,
+   "substep_before": 3255,
+   "substep_after": 3255
+  },
+  "endpoint_match": {
+   "True": 13
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10400,
+  "episode": 14,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 135.613,
+  "timesteps": 1254,
+  "windows": 75,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 13,
+   "swap_sweep": 13,
+   "substep_before": 3255,
+   "substep_after": 3255
+  },
+  "endpoint_match": {
+   "True": 13
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10800,
+  "episode": 18,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 135.783,
+  "timesteps": 1296,
+  "windows": 78,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 13,
+   "swap_sweep": 13,
+   "substep_before": 3255,
+   "substep_after": 3255
+  },
+  "endpoint_match": {
+   "True": 13
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 11200,
+  "episode": 22,
+  "level": "xhard18",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapBindingError",
+  "stage": "segment_start",
+  "rejection": null,
+  "detail": {
+   "error_type": "SwapBindingError",
+   "stage": "segment_start",
+   "check": "binding",
+   "k": 1,
+   "rejection": null,
+   "detail": {
+    "initiator": 0,
+    "expected": 2,
+    "recomputed": 1,
+    "distances": [
+     [
+      1,
+      0.16989432630112186
+     ],
+     [
+      2,
+      0.1714379886782015
+     ]
+    ]
+   },
+   "control_step": 253
+  },
+  "wall_s": 133.305,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 2,
+   "swap_sweep": 1,
+   "substep_before": 250,
+   "substep_after": 250
+  },
+  "endpoint_match": {
+   "True": 1
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 11602,
+  "episode": 26,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 133.162,
+  "timesteps": 1319,
+  "windows": 80,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 13,
+   "swap_sweep": 13,
+   "substep_before": 3255,
+   "substep_after": 3255
+  },
+  "endpoint_match": {
+   "True": 13
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12000,
+  "episode": 30,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 128.367,
+  "timesteps": 1306,
+  "windows": 78,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 13,
+   "swap_sweep": 13,
+   "substep_before": 3255,
+   "substep_after": 3255
+  },
+  "endpoint_match": {
+   "True": 13
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 13200,
+  "episode": 42,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 127.646,
+  "timesteps": 1312,
+  "windows": 78,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 13,
+   "swap_sweep": 13,
+   "substep_before": 3255,
+   "substep_after": 3255
+  },
+  "endpoint_match": {
+   "True": 13
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12400,
+  "episode": 34,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 129.78,
+  "timesteps": 1276,
+  "windows": 77,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 13,
+   "swap_sweep": 13,
+   "substep_before": 3255,
+   "substep_after": 3255
+  },
+  "endpoint_match": {
+   "True": 13
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12800,
+  "episode": 38,
+  "level": "xhard18",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 129.22,
+  "timesteps": 1320,
+  "windows": 79,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 13,
+   "swap_sweep": 13,
+   "substep_before": 3255,
+   "substep_after": 3255
+  },
+  "endpoint_match": {
+   "True": 13
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10000,
+  "episode": 10,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 120.269,
+  "timesteps": 1330,
+  "windows": 80,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 15,
+   "swap_sweep": 15,
+   "substep_before": 3755,
+   "substep_after": 3755
+  },
+  "endpoint_match": {
+   "True": 15
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 9600,
+  "episode": 6,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 128.764,
+  "timesteps": 1360,
+  "windows": 82,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 15,
+   "swap_sweep": 15,
+   "substep_before": 3755,
+   "substep_after": 3755
+  },
+  "endpoint_match": {
+   "True": 15
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10400,
+  "episode": 14,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 121.042,
+  "timesteps": 1362,
+  "windows": 82,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 15,
+   "swap_sweep": 15,
+   "substep_before": 3755,
+   "substep_after": 3755
+  },
+  "endpoint_match": {
+   "True": 15
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 10800,
+  "episode": 18,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 116.733,
+  "timesteps": 1337,
+  "windows": 80,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 15,
+   "swap_sweep": 15,
+   "substep_before": 3755,
+   "substep_after": 3755
+  },
+  "endpoint_match": {
+   "True": 15
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 11200,
+  "episode": 22,
+  "level": "xhard20",
+  "ok": false,
+  "task_success": false,
+  "error_type": "SwapBindingError",
+  "stage": "segment_start",
+  "rejection": null,
+  "detail": {
+   "error_type": "SwapBindingError",
+   "stage": "segment_start",
+   "check": "binding",
+   "k": 1,
+   "rejection": null,
+   "detail": {
+    "initiator": 0,
+    "expected": 2,
+    "recomputed": 1,
+    "distances": [
+     [
+      1,
+      0.16989432630112186
+     ],
+     [
+      2,
+      0.1714379886782015
+     ]
+    ]
+   },
+   "control_step": 253
+  },
+  "wall_s": 116.822,
+  "timesteps": null,
+  "windows": null,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 2,
+   "swap_sweep": 1,
+   "substep_before": 250,
+   "substep_after": 250
+  },
+  "endpoint_match": {
+   "True": 1
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12000,
+  "episode": 30,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 115.266,
+  "timesteps": 1334,
+  "windows": 80,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 15,
+   "swap_sweep": 15,
+   "substep_before": 3755,
+   "substep_after": 3755
+  },
+  "endpoint_match": {
+   "True": 15
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 11602,
+  "episode": 26,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 117.101,
+  "timesteps": 1346,
+  "windows": 81,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 15,
+   "swap_sweep": 15,
+   "substep_before": 3755,
+   "substep_after": 3755
+  },
+  "endpoint_match": {
+   "True": 15
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12400,
+  "episode": 34,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 115.634,
+  "timesteps": 1371,
+  "windows": 83,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 15,
+   "swap_sweep": 15,
+   "substep_before": 3755,
+   "substep_after": 3755
+  },
+  "endpoint_match": {
+   "True": 15
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 12800,
+  "episode": 38,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 106.477,
+  "timesteps": 1369,
+  "windows": 83,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 15,
+   "swap_sweep": 15,
+   "substep_before": 3755,
+   "substep_after": 3755
+  },
+  "endpoint_match": {
+   "True": 15
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "seed": 13200,
+  "episode": 42,
+  "level": "xhard20",
+  "ok": true,
+  "task_success": true,
+  "error_type": null,
+  "stage": null,
+  "rejection": null,
+  "detail": null,
+  "wall_s": 104.115,
+  "timesteps": 1357,
+  "windows": 82,
+  "net_identity": false,
+  "checks": {
+   "swap_binding": 15,
+   "swap_sweep": 15,
+   "substep_before": 3755,
+   "substep_after": 3755
+  },
+  "endpoint_match": {
+   "True": 15
+  }
+ }
+]
