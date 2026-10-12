@@ -1126,7 +1126,7 @@ class SwapCollisionMixin:
     swap_name_prefix = &quot;bin_&quot;
     def _swap_actors(self) -&gt; list: raise NotImplementedError
     def _bystander_actors(self) -&gt; list: return []
-    def _swap_segment_index_at(self, step) -&gt; int | None  # 返回 k-1 若 step == schedule[k][2]
+    def _swap_segment_index_at(self, step) -&gt; int | None  # 返回零基 k 当 step == swap_schedule[k][2]，否则 None；保留 static_flag 护栏
     def _in_swap_window(self) -&gt; bool                      # any(start &lt;= step &lt;= end)
     def _record_fatal(self, error_type, stage, k, rejection=None, detail=None, check=None):
         if self._xhard_fatal is None:                      # 只记第一条；之后不再复核
