@@ -907,7 +907,7 @@ a { color:var(--accent); }
 </tr>
 <tr>
 <td>E 全量派生、成功率、视频</td>
-<td>① 用 C4 的 <code>--all</code> 出三任务全量母清单；② 向用户报规模、按 <code>ratio</code> 算出的耗时与按实测字节数算出的磁盘，取得对这一批的确认（P5）；③ Beta commit（第 13 条）后由运行型子代理 R1 起 tmux <code>xh-coll-full-1012</code>，360 张 xhard 卡 + 72 张母卡，12 worker 单卡；④ 主会话 Monitor 盯到 <code>EXIT_CODE=</code>；⑤ <code>summarize.py</code> 出任务 × 档位成功率表；⑥ <code>episode_strip_video</code> 按 xhard-1011 <code>per_episode_strip</code> 版式出 ≤ 72 支六列横排视频（D7，不出合一总视频）；⑦ 两段式留档 <code>docs/xhard-doc/xhard-1012-coll/</code>，结果子节追加到本计划</td>
+<td>① 用 C4 的 <code>--all</code> 出三任务全量母清单；② 向用户报规模、按 <code>ratio</code> 算出的耗时与按实测字节数算出的磁盘，取得对这一批的确认（P5）；③ Beta commit（第 13 条）后由运行型子代理 R1 起 tmux <code>xh-coll-full-1012</code>，360 张 xhard 卡 + 72 张母卡，12 worker、本机 GPU0（用户 2026-10-12 指定：「改为在本机用gpu0」；起跑前 <code>nvidia-smi</code> 只核对 GPU0 未被他人占满，占满即停交用户、不自行换卡）；④ 主会话 Monitor 盯到 <code>EXIT_CODE=</code>；⑤ <code>summarize.py</code> 出任务 × 档位成功率表；⑥ <code>episode_strip_video</code> 按 xhard-1011 <code>per_episode_strip</code> 版式出 ≤ 72 支六列横排视频（D7，不出合一总视频）；⑦ 两段式留档 <code>docs/xhard-doc/xhard-1012-coll/</code>，结果子节追加到本计划</td>
 <td>主会话 + R1</td>
 <td>交付：成功率表 + 视频目录 + 留档</td>
 <td><code>XHARD_FULL_DERIVE</code>、<code>EPISODE_STRIP_VIDEO</code></td>
@@ -963,6 +963,7 @@ a { color:var(--accent); }
 </tbody>
 </table>
 <p>耗时：xhard-1011 无碰撞检测时同任务单卡 wall 实测为 VideoUnmaskSwap 29→56 s（母档→xhard20）、ButtonUnmaskSwap 31→58 s、VideoRepick 49→91 s，每母 seed 六卡合计分别 248 / 267 / 411 s，全量基线 ≈ 24×248 + 24×267 + 24×411 = 24×926 ≈ 22 200 卡·秒，12 worker 约 0.5 h 墙钟（换算依据：每任务母 seed 数 × 该任务六卡合计秒数，再除以 12 worker；三任务母 seed 数相同，故等于 24 × 三任务六卡合计秒数之和 ÷ 12）。母卡走原类没有子步检查，xhard 卡每子步两次 SAT；v2.1 注明单样本约慢十倍，按 3～10 倍估 <strong>1.5～5 h</strong>（0.5 h × 3～10），阶段 D 的 <code>ratio</code> 出来后换成实测数再报给用户。产物 H5 每张 150～270 MB，432 张约 65～117 GB（432 × 150～270 MB，未含视频）；不预设放行阈值，改为：阶段 D smoke 实测每卡字节数 → 换算全量 + 30% 余量，起跑前 <code>df -h /data</code> 核对，并写进给用户的规模报告（P5、D6）。</p>
+<p><strong>生成并行方式（照 <code>generate_dataset_newseed.py::_run_jobs</code> / <code>_pool_init</code> 实写）</strong>：生成器是单进程主控；每张卡建一个 <code>ProcessPoolExecutor</code>（spawn），进程数 = <code>--workers</code> ÷ 卡数（本轮只用 GPU0 一张卡，即一个池、12 个 worker）。池进程初始化（<code>_pool_init</code>）时先设 <code>CUDA_VISIBLE_DEVICES</code> 绑卡、把 BLAS 等线程数压到 1、预热 import。主循环把全部卡片（每张卡 = 一个任务 × 母 seed × 档位的一条 episode）放进队列，池有空位就提交，<code>wait(FIRST_COMPLETED)</code> 完成一张补一张，即动态负载均衡；每个池进程跑满 8 张卡后回收重建（<code>DEFAULT_MAX_TASKS_PER_CHILD=8</code>，防内存累积）；池崩溃（<code>BrokenProcessPool</code>）则重建该卡的池。每张卡写自己的 H5，结果行边跑边追加到 <code>episode_results.jsonl</code>。xhard 卡固定 seed、任务失败不重试，只有池崩溃这类基础设施故障把原卡退回队列（同卡上限 <code>MAX_NON_TASK_STRIKES=3</code>）。资源：本机 16 核、可用内存约 210 GB，xhard-1011 正式版 12 worker 峰值 RSS 8.6 GB；碰撞复核是 CPU 开销（numpy SAT），12 worker 留 4 核给主控与渲染。用卡：本机 2 × A6000，2026-10-12 实测 GPU1 被其他用户进程占用（约 16 GB、利用率 100%）、GPU0 基本空闲；用户 2026-10-12 指定「改为在本机用gpu0」，smoke 与全量命令一律 <code>--gpus 0</code>。起跑前用 <code>nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv -i 0</code> 只核对 GPU0 有没有被他人占满，占满即停下交用户，不得自行换卡；读数记进 <code>launch.md</code>。</p>
 <h3>4.2 阶段 E 的成功率口径与视频</h3>
 <ul>
 <li>同一母 seed 下五档是前缀关系（K11），各档成功率单调不增、彼此非独立，汇总表据此解读。另逐卡报「净置换是否为恒等」，按任务 × 档位给出恒等比例（D1）。每张卡三类：<code>ok=True</code>；<code>ok=False, failure_class=task, error_type ∈ {SwapCollisionError, SwapBindingError}</code>（被碰撞判据剔除，再按 <code>stage</code> 细分 initial / sweep / segment_start / substep）；其他失败（planner 等，与本轮改动无关）。汇总表按任务 × 档位给卡数、成功数、成功率、碰撞剔除数（分 stage）、其他失败数，母卡成功率单列对照。</li>
@@ -1124,7 +1125,7 @@ a { color:var(--accent); }
     <text x="1317" y="310">72 母 seed × 五档</text>
     <text x="1317" y="328">= 360 xhard 卡</text>
     <text x="1317" y="346">+ 72 母卡</text>
-    <text x="1317" y="364">12 worker，GPU1</text>
+    <text x="1317" y="364">12 worker，GPU0</text>
     <text x="1317" y="382">预计 1.5～5 h →</text>
     <text x="1317" y="400">主会话 Monitor →</text>
     <text x="1317" y="418">tools.summarize</text>
@@ -1451,10 +1452,10 @@ if fatal:
 <td>阶段 E 全量派生起跑：Beta commit 后按 runbook 起 tmux <code>xh-coll-full-1012</code>，验证起跑（日志出现首个 <code>succeeded with seed</code> 或首个 <code>SwapCollisionError</code>）即交回 tmux 名、日志路径、起跑时间</td>
 <td>只写 <code>artifacts/xhard/xhard-1012-coll/</code>、<code>artifacts/logs/</code>（程序正常产物）</td>
 <td>代码、配置、参数、启动脚本、依赖</td>
-<td>依赖全部合并 + <code>XHARD_FATAL_CATCH</code> 与 smoke 三条 PASS + 用户对规模、耗时与磁盘估算的确认（P5）。<strong>最长等待</strong>：起跑验证最多 10 分钟（首个 <code>succeeded with seed</code> 或首个碰撞拒绝行）；<strong>失败处置</strong>：起跑失败或 10 分钟无判据行即不重试，收集日志尾部与 <code>tmux ls</code> 交回主会话；<strong>重试上限 0</strong>；<strong>预算</strong>按第 3 条（360 xhard 卡 + 72 母卡、单卡 GPU1、12 worker、耗时与磁盘以用户批准的规模报告为上限）</td>
+<td>依赖全部合并 + <code>XHARD_FATAL_CATCH</code> 与 smoke 三条 PASS + 用户对规模、耗时与磁盘估算的确认（P5）。<strong>最长等待</strong>：起跑验证最多 10 分钟（首个 <code>succeeded with seed</code> 或首个碰撞拒绝行）；<strong>失败处置</strong>：起跑失败或 10 分钟无判据行即不重试，收集日志尾部与 <code>tmux ls</code> 交回主会话；<strong>重试上限 0</strong>；<strong>预算</strong>按第 3 条（360 xhard 卡 + 72 母卡、本机 GPU0（用户 2026-10-12 指定，<code>--gpus 0</code>；起跑前核对 GPU0 未被他人占满，占满即停交用户、不换卡）、12 worker、耗时与磁盘以用户批准的规模报告为上限）</td>
 <td>7</td>
 <td>主会话 Monitor 盯日志；跑完 <code>summarize.py</code> → <code>XHARD_FULL_DERIVE</code>；<code>episode_strip_video.py</code> → <code>EPISODE_STRIP_VIDEO</code></td>
-<td>单卡 GPU1，12 worker，预计 1.5～5 h</td>
+<td>本机 GPU0（用户 2026-10-12 指定），12 worker，预计 1.5～5 h</td>
 <td>主会话</td>
 </tr>
 <tr>
@@ -1483,9 +1484,11 @@ uv run --no-sync python -c &quot;import gymnasium as gym, robomme.robomme_env, r
 # 阶段 D0 闸门（smoke 之前）：运行期失败送达生成器
 timeout 300 uv run --no-sync python -m pytest src/robomme_xhard/tests/test_fatal_catch.py -q -m gpu   # → XHARD_FATAL_CATCH=PASS tasks=3 hang=0；不过即停
 uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py -q -m gpu
+# 用卡：本机 GPU0（用户 2026-10-12 指定：「改为在本机用gpu0」），命令一律 --gpus 0；2026-10-12 实测 GPU1 被其他用户进程占用（约 16 GB、利用率 100%）
+nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv -i 0   # smoke 与全量起跑前各核一次：GPU0 若被他人占满即停、交用户裁决，不得自行换卡；读数记进 launch.md
 # smoke（每任务一个 tmux，命令形态照 docs/xhard-doc/xhard-1011/launch.md 的单任务 smoke，--difficulty xhard20）
 # 注意：_generate_xhard 拒绝非默认 --episodes / --episode-start，不传 --episodes；用 --mother-rank 0（或单母记录清单）限定单卡
-tmux new-session -d -s xh-coll-smoke-VUS &quot;set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py --env VideoUnmaskSwap --difficulty xhard20 --mother-manifest &lt;清单&gt; --mother-rank 0 --gpus 1 --workers 1 --output-dir artifacts/xhard-1012-collision-smoke/VUS 2&gt;&amp;1 | tee artifacts/logs/xh-coll-smoke-VUS.log; echo \&quot;EXIT_CODE=\$?\&quot; &gt;&gt; artifacts/logs/xh-coll-smoke-VUS.log&quot;
+tmux new-session -d -s xh-coll-smoke-VUS &quot;set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py --env VideoUnmaskSwap --difficulty xhard20 --mother-manifest &lt;清单&gt; --mother-rank 0 --gpus 0 --workers 1 --output-dir artifacts/xhard-1012-collision-smoke/VUS 2&gt;&amp;1 | tee artifacts/logs/xh-coll-smoke-VUS.log; echo \&quot;EXIT_CODE=\$?\&quot; &gt;&gt; artifacts/logs/xh-coll-smoke-VUS.log&quot;
 # smoke 后记录每卡 H5 字节数：du -b artifacts/xhard-1012-collision-smoke/*/ ，换算全量 + 30% 余量
 # Monitor 过滤：succeeded with seed|EXIT_CODE=|SwapCollisionError|SwapBindingError|_xhard_fatal|failed|Traceback|out of memory|NO RECORD
 # D5：worker 写完 H5、回传前崩溃的卡，产物整体移到 &lt;输出根&gt;/_quarantine/&lt;卡名&gt;/，不覆盖、不自动重跑；本轮结束列清单交用户
@@ -1493,8 +1496,9 @@ ls -1 artifacts/xhard/xhard-1012-coll/full/_quarantine/ 2&gt;/dev/null   # 跑�
 
 # ---- 阶段 E 全量派生（smoke PASS、Beta commit、用户确认规模后）----
 uv run --no-sync python -m robomme_xhard.tools.mother_seeds --all --tasks VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick --out artifacts/xhard/xhard-1012-coll/mother_seeds_all.json
+nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv -i 0   # 全量起跑前再核 GPU0 未被他人占满（占满即停交用户、不换卡），读数写进 docs/xhard-doc/xhard-1012-coll/launch.md
 df -h /data | tail -1   # 与「smoke 实测每卡字节数 × 432 × 1.3」比对，结果写进给用户的规模报告
-tmux new-session -d -s xh-coll-full-1012 &quot;set -o pipefail; cd /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006; PYTHONUNBUFFERED=1 uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py --env VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick --difficulty xhard12,xhard14,xhard16,xhard18,xhard20 --mother-manifest artifacts/xhard/xhard-1012-coll/mother_seeds_all.json --with-mother --gpus 1 --workers 12 --output-dir artifacts/xhard/xhard-1012-coll/full 2&gt;&amp;1 | tee artifacts/logs/xh-coll-full-1012.log; echo \&quot;EXIT_CODE=\$?\&quot; &gt;&gt; artifacts/logs/xh-coll-full-1012.log&quot;
+tmux new-session -d -s xh-coll-full-1012 &quot;set -o pipefail; cd /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006; PYTHONUNBUFFERED=1 uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py --env VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick --difficulty xhard12,xhard14,xhard16,xhard18,xhard20 --mother-manifest artifacts/xhard/xhard-1012-coll/mother_seeds_all.json --with-mother --gpus 0 --workers 12 --output-dir artifacts/xhard/xhard-1012-coll/full 2&gt;&amp;1 | tee artifacts/logs/xh-coll-full-1012.log; echo \&quot;EXIT_CODE=\$?\&quot; &gt;&gt; artifacts/logs/xh-coll-full-1012.log&quot;
 # 跑完
 uv run --no-sync python -m robomme_xhard.tools.summarize --root artifacts/xhard/xhard-1012-coll/full   # → XHARD_FULL_DERIVE=DONE cards= ok= coll= other=
 uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifacts/xhard/xhard-1012-coll/full --out-dir artifacts/xhard/xhard-1012-coll/report/per_episode_strip --seeds artifacts/xhard/xhard-1012-coll/mother_seeds_all.json   # → EPISODE_STRIP_VIDEO=PASS videos=

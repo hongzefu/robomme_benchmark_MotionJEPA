@@ -79,3 +79,11 @@ records/mother_seeds.json；records/first/（run_summary.json、first.summary.lo
 输出 `artifacts/xhard/xhard-1011/report/per_episode_strip/` 16 支，宽 3072、高 656～816（2026-10-12 浏览器实测订正：SwingXtimes 752、VideoRepick 784、VideoPlaceButton 816；初记 656～720 只看了两支），合计 118 MB；16 行判定均为 `EPISODE_STRIP_VIDEO=PASS videos=1 columns=6`（records/final/per_episode_strip_run.txt），sha256 见 records/final/per_episode_strip_sha256.txt。抽查 2.3 VideoUnmaskSwap 第 450 帧：中文旋钮行无乱码、goal 完整、xhard18/20 演示段红框、母档“结束”。
 
 删除（R28）：被取代的 2×3 版本 `report/per_episode/` 16 支（约 1.1 GB）与其预览图已按清单删除，目录已移除；其 sha256 与判定行仍留在 records/final/per_episode_sha256.txt、per_episode_run.txt。
+
+## 2026-10-12 后续
+
+用户原话：「已生成的 xhard-1011 产物要不要处理。处理」「VideoPlaceButton删除3」「删除新的metadata 现在直接做 metadata只保留官方的 然后调整计划」。
+
+1. **VideoPlaceButton xhard12 / xhard14 两卡重生成**：goal 第 3 句（"…where it was previously placed before/after the button was pressed"）在额外放置组下语义不唯一，用户批准删除这一句（2.68 `08f28ead`，只作用于 xhard 档）。已重生成到 `artifacts/xhard/xhard-1011/vpbfix-1012/`（母卡 + xhard12 + xhard14，同 seed 10701，`EXIT_CODE=0`，3/3 成功，timesteps 958 / 1132 / 1265 与旧卡逐一相同）；xhard12 / xhard14 的 goal 由 4 句变 3 句，母卡仍 4 句。六列视频 `artifacts/xhard/xhard-1011/vpbfix-1012/report/per_episode_strip/3.3_VideoPlaceButton_ep7_seed10701.mp4`。旧 `final/` 下这两卡保留不删，**以 `vpbfix-1012/` 为准**。
+2. **交换类三任务待取代**：2.3 VideoUnmaskSwap、2.4 ButtonUnmaskSwap、3.2 VideoRepick 本档的卡是无碰撞检测版本，将在 1012 碰撞版（[`1012-swap-collision-plan.html`](../../../1012-swap-collision-plan.html)）跑完后被取代，届时再更新本节。
+3. **train metadata 恢复官方 100 条**：2.69（`52877e2a`）把四 Unmask 系 train metadata 恢复为官方 ep0–99；本档所用母 seed（ep7 / 11 / 27 / 46 / 86 等）均在官方 ep0–99 内，不受影响。
