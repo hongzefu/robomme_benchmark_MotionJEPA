@@ -1,0 +1,75 @@
+......    VideoUnmaskSwap/episode_7 [xhard20] seed 5700 failed (BrokenProcessPool)，固定 seed 不重试
+    GPU 0 的进程池已损坏，正在重建
+..    VideoUnmaskSwap/episode_7 [xhard20] seed 5700 failed (BrokenProcessPool)，固定 seed 不重试
+    GPU 0 的进程池已损坏，正在重建
+.    VideoUnmaskSwap/episode_7 [xhard20] seed 5700 failed (BrokenProcessPool)，固定 seed 不重试
+    GPU 0 的进程池已损坏，正在重建
+.    VideoUnmaskSwap/episode_7 [xhard20] seed 5700 failed (BrokenProcessPool)，固定 seed 不重试
+    GPU 0 的进程池已损坏，正在重建
+.    VideoUnmaskSwap/episode_7 [xhard20] seed 5700 failed (BrokenProcessPool)，固定 seed 不重试
+    GPU 0 的进程池已损坏，正在重建
+....    VideoUnmaskSwap/episode_7 [xhard20] seed 5700 failed (DatasetGenerationError)，固定 seed 不重试
+.....
+XHARD_BASELINE_EQ=PASS argv_sets=6 jobs_compared=3253 jobs_diff=0 names_diff=0
+.usage: __main__.py [-h] --output-dir OUTPUT_DIR [--env ENV]
+                   [--episodes EPISODES] [--episode-start EPISODE_START]
+                   [--workers WORKERS] [--gpus GPUS]
+                   [--difficulty DIFFICULTY_RATIO]
+                   [--layout {heldout,test,train,val}]
+                   [--max-attempts MAX_ATTEMPTS] [--no-limit-threads]
+                   [--max-tasks-per-child MAX_TASKS_PER_CHILD]
+                   [--affinity {none,per-gpu}]
+                   [--mother-manifest MOTHER_MANIFEST] [--with-mother]
+                   [--mother-rank MOTHER_RANK]
+__main__.py: error: --mother-manifest / --with-mother / --mother-rank 只能与 xhard 字面值的 --difficulty 一起用
+usage: __main__.py [-h] --output-dir OUTPUT_DIR [--env ENV]
+                   [--episodes EPISODES] [--episode-start EPISODE_START]
+                   [--workers WORKERS] [--gpus GPUS]
+                   [--difficulty DIFFICULTY_RATIO]
+                   [--layout {heldout,test,train,val}]
+                   [--max-attempts MAX_ATTEMPTS] [--no-limit-threads]
+                   [--max-tasks-per-child MAX_TASKS_PER_CHILD]
+                   [--affinity {none,per-gpu}]
+                   [--mother-manifest MOTHER_MANIFEST] [--with-mother]
+                   [--mother-rank MOTHER_RANK]
+__main__.py: error: --mother-manifest / --with-mother / --mother-rank 只能与 xhard 字面值的 --difficulty 一起用
+usage: __main__.py [-h] --output-dir OUTPUT_DIR [--env ENV]
+                   [--episodes EPISODES] [--episode-start EPISODE_START]
+                   [--workers WORKERS] [--gpus GPUS]
+                   [--difficulty DIFFICULTY_RATIO]
+                   [--layout {heldout,test,train,val}]
+                   [--max-attempts MAX_ATTEMPTS] [--no-limit-threads]
+                   [--max-tasks-per-child MAX_TASKS_PER_CHILD]
+                   [--affinity {none,per-gpu}]
+                   [--mother-manifest MOTHER_MANIFEST] [--with-mother]
+                   [--mother-rank MOTHER_RANK]
+__main__.py: error: --mother-manifest / --with-mother / --mother-rank 只能与 xhard 字面值的 --difficulty 一起用
+.
+XHARD_JOBS=PASS jobs=52 mothers=16 attempt0=1
+........    BinFill/episode_7 [xhard12] seed 4701 failed (SceneGenerationError)，固定 seed 不重试
+    PickXtimes/episode_7 [hard] seed 1700 failed (KeyError)，固定 seed 不重试
+    StopCube/episode_59 [xhard14] seed 7900 遇基础设施故障（RuntimeError），原卡片退回队列
+    RouteStick/episode_7 [xhard20] seed 16700 遇基础设施故障（RuntimeError），原卡片退回队列
+    PatternLock/episode_7 [hard] seed 15700 遇基础设施故障（None），原卡片退回队列
+    StopCube/episode_59 [xhard14] seed 7900 遇基础设施故障（RuntimeError），原卡片退回队列
+    RouteStick/episode_7 [xhard20] seed 16700 遇基础设施故障（None），原卡片退回队列
+    PatternLock/episode_7 [hard] seed 15700 遇基础设施故障（None），原卡片退回队列
+    StopCube/episode_59 [xhard14] seed 7900 failed (RuntimeError)，固定 seed 不重试
+[1/5] RouteStick/episode_7 succeeded with seed 16700 (attempt 0, 0.0s)
+    PatternLock/episode_7 [hard] seed 15700 failed (None)，固定 seed 不重试
+.    VideoPlaceOrder/episode_7 [xhard16] seed 11705 遇基础设施故障（BrokenProcessPool），原卡片退回队列
+    GPU 0 的进程池已损坏，正在重建
+[1/2] VideoRepick/episode_46 succeeded with seed 13600 (attempt 0, 0.0s)
+[2/2] VideoPlaceOrder/episode_7 succeeded with seed 11705 (attempt 0, 0.0s)
+.
+=============================== warnings summary ===============================
+../../../../../../../data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+../../../../../../../data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+32 passed, 2 deselected, 2 warnings in 3.41s

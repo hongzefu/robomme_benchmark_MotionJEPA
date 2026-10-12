@@ -921,6 +921,7 @@ a { color:var(--accent); }
 </table>
 <h3 id="cpu-results-1012">2026-10-12 实施结果：CPU 阶段，合并闸门待裁决</h3>
 <p>用户已于 2026-10-12 对本计划明确「同意开工」。阶段 A 已以 <code>1599fedd</code>（2.77）提交推送；C1、C3、C4、C2 在独立工作树完成并通过固定提交静态复审，尚未合入主分支。临时组合短测实测 <strong>375 通过、4 失败、2 跳过，9.63 秒</strong>；改动前为 281 通过、同样 4 失败、2 跳过，7.23 秒。四项均为既有任务文案与旧步骤错误处理断言，受保护源码未改。<code>XHARD_CORE_SHORT=FAIL baseline_failures=4 new_failures=0</code>，未自行放宽为 PASS；已请用户裁定是否采用保留四项基线失败的对照闸门，答复前不合并、不启动 GPU。完整版本、命令、审查修复和原始短测日志见 <a href="docs/xhard-doc/xhard-1012-collision-smoke/result.md">CPU 阶段留档</a>。D0、GPU 冒烟和阶段 E 全量尚未运行；本子节是实施状态追加，不改写上方计划判据。</p>
+<p><strong>核心闸门追加裁决</strong>：用户随后答复「采用基线对照闸门，保留这 4 项失败」。自本裁决起，<code>XHARD_CORE_SHORT</code> 合并验收要求 pytest 失败集合与上述四项基线失败完全相同，其他原有及新增用例全部通过；原始退出 1 与先前 FAIL 证据照录，新增失败不得放宽。C3 生成器与 C4 工具的 <code>mother-rank</code> 接口及测试互相依赖，主会话将二者一次整合后验收，保留两分支所有子提交。</p>
 <h3>4.1 阶段 E 的规模与耗时</h3>
 <p>规模（只取官方 train metadata ep0–99，K12；train metadata 已于 2.69（<code>52877e2a</code>）恢复为官方 100 条，各任务 hard / medium 25 条；ep 列表从 <code>3521be0c</code> 版 <code>src/robomme/env_metadata/train/</code> 的 ep0–99 范围只读取出，主会话曾在 aspen 用 <code>/data/hongzefu/data_0226</code> 官方 metadata 核过来源难度 24/24/24 条，vail 无该参考集（P3，清单用 <code>--no-verify</code>）；本轮按 K13 每任务只取前 10 个；R11 <code>mother_seeds.py::MIN_EPISODE=6</code>「episode ≥ 6 避开 FailRecover」照旧，所以 VideoUnmaskSwap ep3/seed5300、ButtonUnmaskSwap ep3/seed7300、VideoRepick ep2/seed9200 不进清单）：</p>
 <table>

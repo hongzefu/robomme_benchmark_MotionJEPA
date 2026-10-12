@@ -1,0 +1,132 @@
+.........BinFill	ep=7	seed=4701	rank=0	hard	unverified
+BinFill	ep=15	seed=5501	rank=1	hard	unverified
+PickXtimes	ep=7	seed=1700	rank=0	hard	unverified
+PickXtimes	ep=11	seed=2100	rank=1	hard	unverified
+SwingXtimes	ep=7	seed=3700	rank=0	hard	unverified
+SwingXtimes	ep=11	seed=4101	rank=1	hard	unverified
+StopCube	ep=59	seed=7900	rank=0	hard	unverified
+StopCube	ep=83	seed=10300	rank=1	hard	unverified
+VideoUnmask	ep=7	seed=6700	rank=0	hard	unverified
+VideoUnmask	ep=11	seed=7100	rank=1	hard	unverified
+ButtonUnmask	ep=7	seed=8700	rank=0	hard	unverified
+ButtonUnmask	ep=11	seed=9100	rank=1	hard	unverified
+VideoUnmaskSwap	ep=7	seed=5700	rank=0	hard	unverified
+VideoUnmaskSwap	ep=11	seed=6100	rank=1	hard	unverified
+ButtonUnmaskSwap	ep=7	seed=7700	rank=0	hard	unverified
+ButtonUnmaskSwap	ep=27	seed=9700	rank=1	hard	unverified
+PickHighlight	ep=7	seed=12700	rank=0	hard	unverified
+PickHighlight	ep=11	seed=13100	rank=1	hard	unverified
+VideoRepick	ep=46	seed=13600	rank=0	medium	unverified
+VideoRepick	ep=86	seed=17600	rank=1	medium	unverified
+VideoPlaceButton	ep=7	seed=10701	rank=0	hard	unverified
+VideoPlaceButton	ep=11	seed=11100	rank=1	hard	unverified
+VideoPlaceOrder	ep=7	seed=11705	rank=0	hard	unverified
+VideoPlaceOrder	ep=15	seed=12501	rank=1	hard	unverified
+MoveCube	ep=7	seed=14700	rank=0	hard	unverified
+MoveCube	ep=11	seed=15100	rank=1	hard	unverified
+InsertPeg	ep=7	seed=13700	rank=0	hard	unverified
+InsertPeg	ep=11	seed=14100	rank=1	hard	unverified
+PatternLock	ep=7	seed=15700	rank=0	hard	unverified
+PatternLock	ep=15	seed=16500	rank=1	hard	unverified
+RouteStick	ep=7	seed=16700	rank=0	hard	unverified
+RouteStick	ep=39	seed=19900	rank=1	hard	unverified
+MOTHER_SEED_VERIFY=INFO match=0 total=32
+XHARD_MOTHER_NO_FAILRECOVER=PASS seeds=32 min_episode=7
+XHARD_MOTHER_OFFICIAL=PASS seeds=32 max_episode=86
+............
+XHARD_BASELINE_EQ=PASS argv_sets=6 jobs_compared=3253 jobs_diff=0 names_diff=0
+.usage: __main__.py [-h] --output-dir OUTPUT_DIR [--env ENV]
+                   [--episodes EPISODES] [--episode-start EPISODE_START]
+                   [--workers WORKERS] [--gpus GPUS]
+                   [--difficulty DIFFICULTY_RATIO]
+                   [--layout {heldout,test,train,val}]
+                   [--max-attempts MAX_ATTEMPTS] [--no-limit-threads]
+                   [--max-tasks-per-child MAX_TASKS_PER_CHILD]
+                   [--affinity {none,per-gpu}]
+                   [--mother-manifest MOTHER_MANIFEST] [--with-mother]
+                   [--mother-rank {0,1}]
+__main__.py: error: --mother-manifest / --with-mother / --mother-rank 只能与 xhard 字面值的 --difficulty 一起用
+usage: __main__.py [-h] --output-dir OUTPUT_DIR [--env ENV]
+                   [--episodes EPISODES] [--episode-start EPISODE_START]
+                   [--workers WORKERS] [--gpus GPUS]
+                   [--difficulty DIFFICULTY_RATIO]
+                   [--layout {heldout,test,train,val}]
+                   [--max-attempts MAX_ATTEMPTS] [--no-limit-threads]
+                   [--max-tasks-per-child MAX_TASKS_PER_CHILD]
+                   [--affinity {none,per-gpu}]
+                   [--mother-manifest MOTHER_MANIFEST] [--with-mother]
+                   [--mother-rank {0,1}]
+__main__.py: error: --mother-manifest / --with-mother / --mother-rank 只能与 xhard 字面值的 --difficulty 一起用
+usage: __main__.py [-h] --output-dir OUTPUT_DIR [--env ENV]
+                   [--episodes EPISODES] [--episode-start EPISODE_START]
+                   [--workers WORKERS] [--gpus GPUS]
+                   [--difficulty DIFFICULTY_RATIO]
+                   [--layout {heldout,test,train,val}]
+                   [--max-attempts MAX_ATTEMPTS] [--no-limit-threads]
+                   [--max-tasks-per-child MAX_TASKS_PER_CHILD]
+                   [--affinity {none,per-gpu}]
+                   [--mother-manifest MOTHER_MANIFEST] [--with-mother]
+                   [--mother-rank {0,1}]
+__main__.py: error: --mother-manifest / --with-mother / --mother-rank 只能与 xhard 字面值的 --difficulty 一起用
+.
+XHARD_JOBS=PASS jobs=52 mothers=16 attempt0=1
+....usage: __main__.py [-h] --output-dir OUTPUT_DIR [--env ENV]
+                   [--episodes EPISODES] [--episode-start EPISODE_START]
+                   [--workers WORKERS] [--gpus GPUS]
+                   [--difficulty DIFFICULTY_RATIO]
+                   [--layout {heldout,test,train,val}]
+                   [--max-attempts MAX_ATTEMPTS] [--no-limit-threads]
+                   [--max-tasks-per-child MAX_TASKS_PER_CHILD]
+                   [--affinity {none,per-gpu}]
+                   [--mother-manifest MOTHER_MANIFEST] [--with-mother]
+                   [--mother-rank {0,1}]
+__main__.py: error: --difficulty 不能把 xhard 值与旧比例参数混用：'211,xhard12'
+usage: __main__.py [-h] --output-dir OUTPUT_DIR [--env ENV]
+                   [--episodes EPISODES] [--episode-start EPISODE_START]
+                   [--workers WORKERS] [--gpus GPUS]
+                   [--difficulty DIFFICULTY_RATIO]
+                   [--layout {heldout,test,train,val}]
+                   [--max-attempts MAX_ATTEMPTS] [--no-limit-threads]
+                   [--max-tasks-per-child MAX_TASKS_PER_CHILD]
+                   [--affinity {none,per-gpu}]
+                   [--mother-manifest MOTHER_MANIFEST] [--with-mother]
+                   [--mother-rank {0,1}]
+__main__.py: error: xhard 模式必须提供 --mother-manifest
+usage: __main__.py [-h] --output-dir OUTPUT_DIR [--env ENV]
+                   [--episodes EPISODES] [--episode-start EPISODE_START]
+                   [--workers WORKERS] [--gpus GPUS]
+                   [--difficulty DIFFICULTY_RATIO]
+                   [--layout {heldout,test,train,val}]
+                   [--max-attempts MAX_ATTEMPTS] [--no-limit-threads]
+                   [--max-tasks-per-child MAX_TASKS_PER_CHILD]
+                   [--affinity {none,per-gpu}]
+                   [--mother-manifest MOTHER_MANIFEST] [--with-mother]
+                   [--mother-rank {0,1}]
+__main__.py: error: argument --mother-rank: invalid choice: -1 (choose from 0, 1)
+.....    BinFill/episode_7 [xhard12] seed 4701 failed (SceneGenerationError)，固定 seed 不重试
+    PickXtimes/episode_7 [hard] seed 1700 failed (KeyError)，固定 seed 不重试
+    StopCube/episode_59 [xhard14] seed 7900 遇基础设施故障（RuntimeError），原卡片退回队列
+    RouteStick/episode_7 [xhard20] seed 16700 遇基础设施故障（RuntimeError），原卡片退回队列
+    PatternLock/episode_7 [hard] seed 15700 遇基础设施故障（None），原卡片退回队列
+    StopCube/episode_59 [xhard14] seed 7900 遇基础设施故障（RuntimeError），原卡片退回队列
+    RouteStick/episode_7 [xhard20] seed 16700 遇基础设施故障（None），原卡片退回队列
+    PatternLock/episode_7 [hard] seed 15700 遇基础设施故障（None），原卡片退回队列
+    StopCube/episode_59 [xhard14] seed 7900 failed (RuntimeError)，固定 seed 不重试
+[1/5] RouteStick/episode_7 succeeded with seed 16700 (attempt 0, 0.0s)
+    PatternLock/episode_7 [hard] seed 15700 failed (None)，固定 seed 不重试
+.    VideoPlaceOrder/episode_7 [xhard16] seed 11705 遇基础设施故障（BrokenProcessPool），原卡片退回队列
+    GPU 0 的进程池已损坏，正在重建
+[1/2] VideoRepick/episode_46 succeeded with seed 13600 (attempt 0, 0.0s)
+[2/2] VideoPlaceOrder/episode_7 succeeded with seed 11705 (attempt 0, 0.0s)
+........................
+=============================== warnings summary ===============================
+../../../../../../../data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+../../../../../../../data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+57 passed, 2 warnings in 4.22s
