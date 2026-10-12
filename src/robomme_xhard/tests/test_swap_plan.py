@@ -357,3 +357,129 @@ def test_parent_exception_is_not_swallowed(monkeypatch, method):
     with pytest.raises(ValueError, match="父类自身错误"):
         env.step(1)
     assert env._xhard_fatal is None
+
+
+# ── 方案 X′：段起点期望四元数重放父类 float32 归一化 ─────────────────────────────
+class PoseActor:
+    """只提供父类 swap_flat_two_lane 用到的 pose 读取与 set_pose，记录真实写入。"""
+
+    def __init__(self, name, p, q, shapes):
+        self.name, self.shapes = name, shapes
+        self.p = np.asarray(p, dtype=np.float32)
+        self.q = np.asarray(q, dtype=np.float32)
+        self.written = []
+
+    @property
+    def pose(self):
+        return SimpleNamespace(p=self.p.copy(), q=self.q.copy())
+
+    def set_pose(self, pose):
+        self.written.append(np.asarray(pose.q, np.float32))
+        self.p = np.asarray(pose.p, dtype=np.float32)
+        self.q = np.asarray(pose.q, dtype=np.float32)
+
+
+# 非平凡偏航四元数，float32 范数恰为 1；[1,0,0,0] 加一个刻度在 float64 正规化后会被抹平，区分不出。
+QA_UNIT = np.array([0.989905059337616, 0.0, 0.0, 0.14173220098018646], dtype=np.float32)
+QB_YAW = np.array([np.cos(0.3), 0, 0, np.sin(0.3)], dtype=np.float32)
+
+
+def parent_q_cases():
+    """范数恰为 1、首分量多一个 float32 刻度、少一个刻度三组缓存 qa。"""
+    assert np.linalg.norm(QA_UNIT) == np.float32(1)
+    up = QA_UNIT.copy()
+    up[0] = np.nextafter(up[0], np.float32(2))
+    down = QA_UNIT.copy()
+    down[0] = np.nextafter(down[0], np.float32(0))
+    return {"unit": QA_UNIT.copy(), "up": up, "down": down}
+
+
+def run_parent_start(qa, qb, env=None):
+    """在 cur_step == start_step < end_step 下调用真实父类函数一次。"""
+    from robomme.robomme_env.utils.statechange import swap_flat_two_lane
+    shapes = bc.cube_shape_specs(0.005)
+    a = PoseActor("bin_0", [-.05, 0, .005], qa, shapes)
+    b = PoseActor("bin_1", [.05, 0, .005], qb, shapes)
+    env = env if env is not None else SimpleNamespace()
+    swap_flat_two_lane(env, a, b, start_step=10, end_step=20, cur_step=10)
+    return env, a, b
+
+
+@pytest.mark.parametrize("case", ["unit", "up", "down"])
+def test_parent_start_q_matches_real_parent_write(case):
+    qa = parent_q_cases()[case]
+    env, a, b = run_parent_start(qa, QB_YAW)
+    cache = env._two_lane_swaps[(id(a), id(b), 10, 20)]
+    assert cache["qa"].dtype == np.float32
+    assert len(a.written) == len(b.written) == 1
+    assert np.array_equal(sp.parent_start_q(cache["qa"], cache["qb"]), a.written[0])
+    assert np.array_equal(sp.parent_start_q(cache["qb"], cache["qa"]), b.written[0])
+    assert sp.parent_start_q(cache["qa"], cache["qb"]).dtype == np.float32
+
+
+def test_parent_start_q_distinguishes_one_ulp_from_cache():
+    qa = parent_q_cases()["up"]
+    env, a, b = run_parent_start(qa, QB_YAW)
+    cache = env._two_lane_swaps[(id(a), id(b), 10, 20)]
+    assert not np.array_equal(sp.parent_start_q(cache["qa"], cache["qb"]), cache["qa"])
+    # 判据 float64 正规化后，旧期望（缓存原值）同样与真实写入不同，即方案 X 的误报来源。
+    assert not np.array_equal(bc.ObjectState("a", [0, 0, 0], cache["qa"], ()).q,
+                              bc.ObjectState("a", [0, 0, 0], a.written[0], ()).q)
+
+
+def parent_runtime_env(monkeypatch):
+    """端到端：父类在 env 上真实捕获缓存并写入段起点，再交给 mixin 比较。"""
+    env = runtime_env(monkeypatch, [state(0, (-.05, 0)), state(1, (.05, 0))])
+    env.elapsed_steps = 10
+    _, a, b = run_parent_start(parent_q_cases()["up"], QB_YAW, env)
+    env.actors = [a, b]
+    env.swap_pair1_idx1, env.swap_pair1_idx2 = a, b
+    env.swap_schedule = [(a, b, 10, 20)]
+    return env, a, b
+
+
+def test_endpoint_evidence_accepts_parent_replay(monkeypatch):
+    env, a, b = parent_runtime_env(monkeypatch)
+    actual = [bc.object_state_from_actor(x, f"bin_{i}") for i, x in enumerate((a, b))]
+    match, evidence = env._endpoint_evidence(0, *actual)
+    assert match is True and evidence["mismatches"] == []
+    assert evidence["expected_start_raw_q"]["a"] == a.written[0].tolist()
+    assert evidence["expected_start_raw_q"]["b"] == b.written[0].tolist()
+    assert evidence["cached_raw_q"]["a"] != evidence["expected_start_raw_q"]["a"]
+    assert {"actual", "cached", "mismatches", "delta", "actual_raw_q", "cached_raw_q",
+            "phase", "expected_start_raw_q"} <= set(evidence)
+    env._check_segment_start(0)
+    assert env._xhard_fatal is None
+    assert env._xhard_runtime_checks[-1]["endpoint_match"] is True
+
+
+@pytest.mark.parametrize("kind", ["position", "extra_ulp"])
+def test_endpoint_evidence_rejects_real_difference_after_replay(monkeypatch, kind):
+    env, a, b = parent_runtime_env(monkeypatch)
+    if kind == "position":
+        a.p = a.p.astype(np.float64)
+        a.p[2] += 1e-6
+        key = "a_p"
+    else:
+        # 归一化解释不了的额外一个 float32 刻度。
+        a.q = a.q.copy()
+        a.q[3] = np.nextafter(a.q[3], np.float32(1))
+        key = "a_q"
+    actual = [bc.object_state_from_actor(x, f"bin_{i}") for i, x in enumerate((a, b))]
+    match, evidence = env._endpoint_evidence(0, *actual)
+    assert match is False and evidence["mismatches"] == [key]
+    env._check_segment_start(0)
+    assert env._xhard_fatal["check"] == "endpoint_binding"
+
+
+def test_parent_start_q_verdict_line(capsys):
+    """三组锁定用例汇总成判定行。"""
+    passed = 0
+    for qa in parent_q_cases().values():
+        env, a, b = run_parent_start(qa, QB_YAW)
+        cache = env._two_lane_swaps[(id(a), id(b), 10, 20)]
+        passed += int(np.array_equal(sp.parent_start_q(cache["qa"], cache["qb"]), a.written[0]) and
+                      np.array_equal(sp.parent_start_q(cache["qb"], cache["qa"]), b.written[0]))
+    assert passed == 3
+    with capsys.disabled():
+        print(f"\nXHARD_PARENT_START_Q=PASS cases={passed}")

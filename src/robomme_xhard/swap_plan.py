@@ -70,6 +70,29 @@ def plan_swaps(states, bystanders, swap_times, generator):
     return SwapPlan(pairs, usage, initial_gap, initiated, partnered)
 
 
+def parent_start_q(q_self, q_other):
+    """重放父类在交换段起点真实写入的四元数，作为端点比较的期望值。
+
+    锚点 ``src/robomme/robomme_env/utils/statechange.py::swap_flat_two_lane``：父类在
+    ``cur_step == start_step`` 时先把当前 q 以 ``np.asarray(..., dtype=np.float32).flatten()``
+    存进 ``_two_lane_swaps[key]["qa"/"qb"]``，随后同一调用按 ``alpha = 0.0`` 走插值分支
+    ``q_self * (1 - alpha) + q_other * alpha``，范数大于 ``1e-6`` 时再除以范数，最后
+    ``set_pose``；SAPIEN 不再二次归一化。缓存 q 的 float32 范数不恰为 1 时，真实写入与缓存
+    相差一个 float32 刻度，所以这里逐字照抄父类的 alpha 计算、混合、范数守卫与除法，
+    期望值仍只来自缓存，不读取实际位姿。A 传 ``(qa, qb)``，B 传 ``(qb, qa)``。
+    """
+    q_self = np.asarray(q_self, dtype=np.float32).flatten()
+    q_other = np.asarray(q_other, dtype=np.float32).flatten()
+    # 段起点 cur_step == start_step，父类 alpha 经 clip 与 smoothstep 后仍是 Python 的 0.0。
+    alpha = float(np.clip(0.0, 0.0, 1.0))
+    alpha = alpha * alpha * (3.0 - 2.0 * alpha)
+    q = q_self * (1 - alpha) + q_other * alpha
+    norm = np.linalg.norm(q)
+    if norm > 1e-6:
+        q = q / norm
+    return q
+
+
 def certify_swap_plan(env, actors, bystanders, name_prefix):
     """在父类建场完成后证明并预写全部配对，独立流不掺入档位。"""
     if len(actors) < 2:
@@ -162,8 +185,11 @@ class SwapCollisionMixin:
         diagnostics = {"phase": "before_physics", "actual_raw_q": {"a": raw_q(row[0]), "b": raw_q(row[1])}}
         if cache is None:
             return False, {"actual": actual, "cached": None, **diagnostics}
-        ca = bc.ObjectState(a.name, [cache["ax"], cache["ay"], cache["az"]], cache["qa"], a.shapes)
-        cb = bc.ObjectState(b.name, [cache["bx"], cache["by"], cache["bz"]], cache["qb"], b.shapes)
+        # 段起点父类写入的是缓存 q 经一次 float32 混合与归一化的结果，位置则就是缓存值。
+        qa_start = parent_start_q(cache["qa"], cache["qb"])
+        qb_start = parent_start_q(cache["qb"], cache["qa"])
+        ca = bc.ObjectState(a.name, [cache["ax"], cache["ay"], cache["az"]], qa_start, a.shapes)
+        cb = bc.ObjectState(b.name, [cache["bx"], cache["by"], cache["bz"]], qb_start, b.shapes)
         cached = {"a_p": ca.p.tolist(), "a_q": ca.q.tolist(), "b_p": cb.p.tolist(), "b_q": cb.q.tolist()}
         # 原始四元数均按判据的归一化语义转换后比较，不改变几何容差。
         mismatches = [key for key in actual if not np.array_equal(actual[key], cached[key])]
@@ -172,7 +198,8 @@ class SwapCollisionMixin:
         return not mismatches, {"actual": actual, "cached": cached, "mismatches": mismatches, **diagnostics,
                                 "delta": delta,
                                 "cached_raw_q": {"a": bc._to_numpy(cache["qa"]).tolist(),
-                                                 "b": bc._to_numpy(cache["qb"]).tolist()}}
+                                                 "b": bc._to_numpy(cache["qb"]).tolist()},
+                                "expected_start_raw_q": {"a": qa_start.tolist(), "b": qb_start.tolist()}}
 
     def _check_segment_start(self, k):
         if getattr(self, "_xhard_fatal", None) is not None:
