@@ -113,8 +113,14 @@ def test_certify_rejects_initial_and_too_few(monkeypatch):
 
 class Parent:
     def step(self, action):
+        self._before_control_step()
+        for _ in range(3):
+            self._before_simulation_step()
+            self._after_simulation_step()
         self.elapsed_steps += 1
         return action
+    def _before_control_step(self):
+        pass
     def _before_simulation_step(self):
         self.before_called = True
     def _after_simulation_step(self):
@@ -130,6 +136,8 @@ def runtime_env(monkeypatch, actors=None):
     monkeypatch.setattr(bc, "object_state_from_actor", fake_read)
     env = Env()
     env.actors = actors or list(rectangle().values())
+    for actor in env.actors:
+        actor.pose = SimpleNamespace(q=actor.q)
     env.elapsed_steps = 11
     env.swap_pair1_idx1, env.swap_pair1_idx2 = env.actors[0], env.actors[1]
     env.swap_schedule = [(env.actors[0], env.actors[1], 10, 20)]
@@ -206,18 +214,53 @@ def test_runtime_guard_records_unexpected_check_exception(monkeypatch):
     assert env._xhard_fatal["check"] == "uncertified"
 
 
-def test_segment_start_uses_refreshed_schedule_and_completed_step(monkeypatch):
+def test_segment_start_uses_refreshed_schedule_and_current_step(monkeypatch):
     env = runtime_env(monkeypatch)
     env.elapsed_steps = 30
     seen = []
     def step(parent_self, action):
         parent_self.swap_schedule = [(env.actors[0], env.actors[1], 30, 40)]
-        parent_self.elapsed_steps += 1
-        return action
+        parent_self.static_flag = True
+        return original_step(parent_self, action)
+    original_step = Parent.step
+    env.static_flag = False
     monkeypatch.setattr(Parent, "step", step)
-    env._check_segment_start = lambda k: seen.append((k, env.elapsed_steps-1))
+    env._check_segment_start = lambda k: seen.append((k, env.elapsed_steps))
     env.step(1)
     assert seen == [(0, 30)]
+
+
+def test_control_hook_once_before_physics_shared_boundary_and_no_state(monkeypatch):
+    env = runtime_env(monkeypatch)
+    env.elapsed_steps = 10
+    env.swap_schedule = [(env.actors[0], env.actors[1], 10, 11),
+                         (env.actors[1], env.actors[0], 11, 12)]
+    events = []
+    env._check_segment_start = lambda k: events.append(("start", k, env.elapsed_steps))
+    env._substep_check = lambda stage: events.append((stage, env.elapsed_steps))
+    monkeypatch.setattr(Parent, "_before_control_step", lambda self: events.append(("parent", self.elapsed_steps)))
+    keys = set(vars(env))
+    env.step(None)
+    env.step(None)
+    assert [r for r in events if r[0] == "start"] == [("start", 0, 10), ("start", 1, 11)]
+    assert events[:3] == [("parent", 10), ("start", 0, 10), ("substep_before", 10)]
+    assert events[8:11] == [("parent", 11), ("start", 1, 11), ("substep_before", 11)]
+    assert set(vars(env)) - keys == {"before_called", "after_called"}
+    assert "step" not in sp.SwapCollisionMixin.__dict__
+    assert "reset" not in sp.SwapCollisionMixin.__dict__
+    assert "_initialize_episode" not in sp.SwapCollisionMixin.__dict__
+
+
+def test_small_quaternion_difference_rejected_and_step_evidence(monkeypatch):
+    env = runtime_env(monkeypatch, [state(0, (-.05, 0)), state(1, (.05, 0))])
+    env.elapsed_steps = 10
+    cache_endpoints(env)
+    env.actors[0].q[1] += 1e-12
+    env.step(None)
+    assert env._xhard_fatal["check"] == "endpoint_binding"
+    assert env._xhard_fatal["control_step"] == 10
+    assert all(r["control_step"] == 10 and r["phase"] == "before_physics" for r in env._xhard_runtime_checks)
+    assert "a_q" in env._xhard_runtime_checks[-1]["endpoints"]["mismatches"]
 
 
 def test_outside_window_does_not_read_geometry(monkeypatch):
@@ -240,11 +283,13 @@ def test_repick_placeholder_does_not_enter_window(monkeypatch):
     assert env._xhard_runtime_checks == []
 
 
-def test_parent_exception_is_not_swallowed(monkeypatch):
+@pytest.mark.parametrize("method", ["step", "_before_control_step", "_before_simulation_step", "_after_simulation_step"])
+def test_parent_exception_is_not_swallowed(monkeypatch, method):
     env = runtime_env(monkeypatch)
     def broken(*args):
         raise ValueError("父类自身错误")
-    monkeypatch.setattr(Parent, "step", broken)
+    env.elapsed_steps = 1
+    monkeypatch.setattr(Parent, method, broken)
     with pytest.raises(ValueError, match="父类自身错误"):
         env.step(1)
     assert env._xhard_fatal is None

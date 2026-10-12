@@ -131,14 +131,12 @@ class SwapCollisionMixin:
                                rejection=rejection, detail={"exception_type": type(exc).__name__, "message": str(exc)},
                                check="uncertified")
 
-    def step(self, action):
-        out = super().step(action)
-        if hasattr(self, "_xhard_swap_plan") and getattr(self, "_xhard_fatal", None) is None:
-            # 父类已落定上一段并缓存本段端点；控制步计数此时已加一。
-            k = self._swap_segment_index_at(int(self.elapsed_steps) - 1)
-            if k is not None:
-                self._runtime_guard("segment_start", self._check_segment_start, k)
-        return out
+    def _before_control_step(self):
+        super()._before_control_step()
+        # 父类已应用本段起点，首个物理子步尚未发生；此时就是本步步号。
+        k = self._swap_segment_index_at(int(self.elapsed_steps))
+        if k is not None:
+            self._runtime_guard("segment_start", self._check_segment_start, k)
 
     def _before_simulation_step(self):
         super()._before_simulation_step()
@@ -158,14 +156,18 @@ class SwapCollisionMixin:
         row = self.swap_schedule[k]
         cache = getattr(self, "_two_lane_swaps", {}).get((id(row[0]), id(row[1]), int(row[2]), int(row[3])))
         actual = {"a_p": a.p.tolist(), "a_q": a.q.tolist(), "b_p": b.p.tolist(), "b_q": b.q.tolist()}
+        def raw_q(actor):
+            pose = actor.pose if hasattr(actor, "pose") else actor.get_pose()
+            return bc._to_numpy(pose.q)[:4].tolist()
+        diagnostics = {"phase": "before_physics", "actual_raw_q": {"a": raw_q(row[0]), "b": raw_q(row[1])}}
         if cache is None:
-            return False, {"actual": actual, "cached": None}
+            return False, {"actual": actual, "cached": None, **diagnostics}
         ca = bc.ObjectState(a.name, [cache["ax"], cache["ay"], cache["az"]], cache["qa"], a.shapes)
         cb = bc.ObjectState(b.name, [cache["bx"], cache["by"], cache["bz"]], cache["qb"], b.shapes)
         cached = {"a_p": ca.p.tolist(), "a_q": ca.q.tolist(), "b_p": cb.p.tolist(), "b_q": cb.q.tolist()}
         # 原始四元数均按判据的归一化语义转换后比较，不改变几何容差。
         mismatches = [key for key in actual if not np.array_equal(actual[key], cached[key])]
-        return not mismatches, {"actual": actual, "cached": cached, "mismatches": mismatches,
+        return not mismatches, {"actual": actual, "cached": cached, "mismatches": mismatches, **diagnostics,
                                 "cached_raw_q": {"a": bc._to_numpy(cache["qa"]).tolist(),
                                                  "b": bc._to_numpy(cache["qb"]).tolist()}}
 
@@ -179,21 +181,21 @@ class SwapCollisionMixin:
         b = next(i for i, actor in enumerate(actors) if actor is expected)
         recomputed, table = bc.nearest_partner_index(states[a].p, [(i, s.p) for i, s in enumerate(states) if i != a])
         detail = dict(initiator=a, expected=b, recomputed=recomputed, distances=table)
-        self._xhard_runtime_checks.append(dict(kind="swap_binding", control_step=int(self.elapsed_steps)-1,
+        self._xhard_runtime_checks.append(dict(kind="swap_binding", control_step=int(self.elapsed_steps), phase="before_physics",
                                                 sweep_index=k, **detail))
         if recomputed != b:
             self._record_fatal("SwapBindingError", "segment_start", k, detail=detail, check="binding")
             return
         match, endpoints = self._endpoint_evidence(k, states[a], states[b])
         if not match:
-            self._xhard_runtime_checks.append(dict(kind="swap_sweep", control_step=int(self.elapsed_steps)-1,
+            self._xhard_runtime_checks.append(dict(kind="swap_sweep", control_step=int(self.elapsed_steps), phase="before_physics",
                                                     sweep_index=k, endpoint_match=False, endpoints=endpoints))
             self._record_fatal("SwapBindingError", "segment_start", k, detail=endpoints, check="endpoint_binding")
             return
         gap, rejection = bc.check_swap_sweep(states[a], states[b],
                                              [s for i, s in enumerate(states) if i not in (a, b)] + others,
                                              sweep_index=k, stage="segment_start")
-        self._xhard_runtime_checks.append(dict(kind="swap_sweep", control_step=int(self.elapsed_steps)-1,
+        self._xhard_runtime_checks.append(dict(kind="swap_sweep", control_step=int(self.elapsed_steps), phase="before_physics",
                                                 sweep_index=k, gap_lower_bound=gap, endpoint_match=match,
                                                 endpoints=endpoints, rejection=None if rejection is None else rejection.as_dict()))
         if rejection is not None:
