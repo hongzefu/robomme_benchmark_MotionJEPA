@@ -752,32 +752,38 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <li><b>原本执行不到</b>：新档的动作序列、作用对象或次数，原代码在任何 difficulty、任何 seed 下都产生不了。</li>
 <li><b>参数越界</b>：只是取值超过原代码的取值域，单独列出，不算新物体或新动作。</li>
 </ul>
-<p>结论：<b>16 个环境都没有扩充物体。</b>“原本执行不到的动作”不只 VideoPlaceButton 一个，共 7 个环境，分两类，见表后。</p>
+<p><b>口径补注（2026-10-12）</b>：用户对口径的决定原话「只记参数越界，不计新动作；另外列原配置无法生成的次数。」据此把两类分清：</p>
+<ul>
+<li><b>结构扩展</b>：需要突破原代码写死的上限或分支才能产生——调度只有 1/2/3 三个分支（<code>_refresh_swap_schedule</code>）、<code>range(5)</code> 这类结构常量、<code>pick&gt;1</code> 时只生成两抓、<code>is_any_button_pressed_removelist</code> 的一次性判据、原合法配置从不执行的对象操作。</li>
+<li><b>参数越界</b>：通用循环本身不变，只是取值超出原 config 的取值域。</li>
+</ul>
+<p>表中「原本执行不到的动作」一列按<b>结构扩展</b>统计，共 7 个环境：StopCube（k=6、7）、VideoUnmask、ButtonUnmask、VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick、VideoPlaceButton。PickXtimes、SwingXtimes、BinFill、PickHighlight、PatternLock、RouteStick 的次数虽然原配置生成不了，但走的是原有通用循环，只记「参数越界」。结构扩展的行若取值同时超出原取值域，「参数越界」列也记「是」。</p>
+<p>结论：<b>14 个有新档的环境都没有扩充可操作物体（MoveCube、InsertPeg 无新档）。</b>“原本执行不到的动作”不只 VideoPlaceButton 一个，共 7 个环境，分两类，见表后。</p>
 <table>
 <tr><th>编号</th><th>任务</th><th>新档配置（现行）</th><th>扩充物体</th><th>原本执行不到的动作</th><th>参数越界</th><th>依据要点</th></tr>
-<tr><td>1.1</td><td>BinFill</td><td>K=5/6/7/8/9</td><td>否</td><td>否</td><td>是</td><td>原 hard 场景生成 10～12 个方块（<code>config_hard["spawn_cubes"]=[10,12]</code>），K=9 不超库存；动作仍是“抓起 → 放进桶”循环加按按钮；原目标总数 <code>put_in_numbers=[3,5]</code>，K=6～9 越界</td></tr>
+<tr><td>1.1</td><td>BinFill</td><td>K=5/6/7/8/9</td><td>否</td><td>否</td><td>是</td><td>原 hard 场景生成 10～12 个方块（<code>config_hard["spawn_cubes"]=[10,12]</code>）；库存不足时 <code>allocate_targets</code> 抛 <code>SceneGenerationError</code>，不换 seed；动作仍是“抓起 → 放进桶”循环加按按钮；原目标总数 <code>put_in_numbers=[3,5]</code>，K=6～9 越界</td></tr>
 <tr><td>1.2</td><td>PickXtimes</td><td>n=6/7/8/9/10</td><td>否</td><td>否</td><td>是</td><td>原 hard 是 4～5 次；序数词表 <code>get_subgoal_with_index</code> 上限为 tenth，n=10 正好用满</td></tr>
 <tr><td>1.3</td><td>SwingXtimes</td><td>4/5/7/8/9 往返</td><td>否</td><td>否</td><td>是</td><td>原各档最多 3 次往返；同一对左右摆动重复更多次</td></tr>
-<tr><td>1.4</td><td>StopCube</td><td>k=4/5/6（间隔 80），xhard18 为间隔 60、k=7</td><td>否</td><td><b>是（k=6、7）</b></td><td>是</td><td>原 <code>step()</code> 中 <code>range(5)</code> 写死，方块最多运动 5 段，<code>stop_time</code> 原取值 2～5；第 6、7 段运动和在第 6、7 次经过时按按钮，原代码做不到。k=4、5 在原范围内；间隔 60、80 都是原取值</td></tr>
-<tr><td>2.1</td><td>VideoUnmask</td><td>xhard14：p=3</td><td>否</td><td><b>是</b></td><td>是</td><td>第三个容器和第三种颜色的方块原本就生成（<code>spawned_bins[:3]</code>）；但原 <code>pick</code> 最多为 2，bin_2 只在误抓判负里出现，“放下 bin_1 → 抓 bin_2”作为正确动作原本不会出现</td></tr>
-<tr><td>2.2</td><td>ButtonUnmask</td><td>xhard14：p=3</td><td>否</td><td><b>是</b></td><td>是</td><td>同 2.1</td></tr>
-<tr><td>2.3</td><td>VideoUnmaskSwap</td><td>S=4/5/7/9/11</td><td>否</td><td><b>是</b></td><td>是</td><td>原交换次数 1～3，<code>_refresh_swap_schedule</code> 只实现 1、2、3 三个分支，<code>swap_pair</code> 只有三组；第 4 次及以后的交换原本不会出现</td></tr>
-<tr><td>2.4</td><td>ButtonUnmaskSwap</td><td>P/S=3/4、4/6、4/8、5/10、6/12</td><td>否</td><td><b>是</b></td><td>是</td><td>原按钮固定按 2 次，按过的按钮会被移出可按列表（<code>is_any_button_pressed_removelist</code>），不能重复按；交换最多 3 次。多次交替按压和第 4 次及以后的交换，原本都不会出现</td></tr>
-<tr><td>3.1</td><td>PickHighlight</td><td>spawn 6，pickup 4/5/6</td><td>否</td><td>否</td><td>是</td><td>spawn=6 等于原 hard；原 pickup 最大为 3；pickup=6 时没有干扰方块</td></tr>
+<tr><td>1.4</td><td>StopCube</td><td>k=4/5/6（间隔 80），xhard18 为间隔 60、k=7</td><td>否</td><td><b>是（k=6、7）</b></td><td>是</td><td>原 <code>step()</code> 中 <code>range(5)</code> 写死，方块最多运动 5 段，<code>stop_time</code> 原取值 2～5；第 6、7 段运动和在第 6、7 次经过时按按钮，原代码做不到。k=4、5 在原范围内；间隔 60、80 都是原取值。<code>range(5)</code> 是结构常量（属结构扩展）；xhard18 为 k=7、间隔 60</td></tr>
+<tr><td>2.1</td><td>VideoUnmask</td><td>xhard14：p=3</td><td>否</td><td><b>是</b></td><td>是</td><td>第三个容器和第三种颜色的方块原本就生成（<code>spawned_bins[:3]</code>）；但原 <code>pick</code> 最多为 2，bin_2 只在误抓判负里出现，“放下 bin_1 → 抓 bin_2”作为正确动作原本不会出现。第三抓同时属于“作用对象”（bin_2）与“次数”（第三抓）两类，甲乙两类并非互斥</td></tr>
+<tr><td>2.2</td><td>ButtonUnmask</td><td>xhard14：p=3</td><td>否</td><td><b>是</b></td><td>是</td><td>同 2.1（第三抓同样兼属“作用对象”与“次数”两类）</td></tr>
+<tr><td>2.3</td><td>VideoUnmaskSwap</td><td>S=4/5/7/9/11</td><td>否</td><td><b>是</b></td><td>是</td><td>原交换次数 1～3，<code>_refresh_swap_schedule</code> 只实现 1、2、3 三个分支，<code>swap_pair</code> 只有 3 个发起者槽位（搭档由 <code>step</code> 运行时取最近邻）；第 4 次及以后的交换原本不会出现</td></tr>
+<tr><td>2.4</td><td>ButtonUnmaskSwap</td><td>P/S=3/4、4/6、4/8、5/10、6/12</td><td>否</td><td><b>是</b></td><td>是</td><td>原按钮固定按 2 次，按过的按钮会被移出可按列表（<code>is_any_button_pressed_removelist</code>），不能重复按——重复按同一按钮受这条一次性判据限制，属结构扩展；交换最多 3 次。多次交替按压和第 4 次及以后的交换，原本都不会出现</td></tr>
+<tr><td>3.1</td><td>PickHighlight</td><td>spawn 6，pickup 4/5/6</td><td>否</td><td>否</td><td>是</td><td>spawn=6 等于原 hard；原 pickup 最大为 3；pickup=6 时没有干扰方块。高亮是无碰撞的圆盘 visual actor，原最多 3 个、新档最多 6 个；可操作方块不增。若“物体”含全部 actor，则视觉标记数量有扩充</td></tr>
 <tr><td>3.2</td><td>VideoRepick</td><td>medium 三块，R=2，S=5/7/10/13/15</td><td>否</td><td><b>是</b></td><td>是</td><td>原交换次数 medium 为 2～3，代码只支持 1～3；R=2 在原范围 1～3 内</td></tr>
-<tr><td>3.3</td><td>VideoPlaceButton</td><td>a=1（前或后各 50%），a=2（前后各一组）</td><td>否</td><td><b>是</b></td><td>否</td><td>4 个目标原本都生成（<code>targets=4</code>）；但三档的 <code>additional_place</code> 都是 False，演示只放 2 次、落在 2 个目标上。放到 target_2、target_3（a=2 时共放四次）按原配置执行不到。原代码里有这条分支（<code>pre_flag</code>/<code>post_flag</code>），只是没有任何档位开启</td></tr>
+<tr><td>3.3</td><td>VideoPlaceButton</td><td>a=1（前或后各 50%），a=2（前后各一组）</td><td>否</td><td><b>是</b></td><td>否</td><td>4 个目标原本都生成（<code>targets=4</code>）；但三档的 <code>additional_place</code> 都是 False，演示只放 2 次、落在 2 个目标上。放到 target_2、target_3（a=2 时共放四次）按原配置执行不到。前侧组与原 <code>pre_flag</code> 分支一致；后侧组是同类原语，但插在放 target_1 之后，而原 <code>post_flag</code> 分支在 target_1 之前；原配置没有任何档位开启这两条分支</td></tr>
 <tr><td>3.4</td><td>VideoPlaceOrder</td><td>xhard12：N=3→4</td><td>否</td><td>否</td><td>否</td><td>原 <code>num_targets_to_pick</code> 的取值包含 4，第 4 个目标原本就在场景里；“前三项加第四项”是原环境的合法排列之一</td></tr>
-<tr><td>4.1</td><td>MoveCube</td><td>只有母档</td><td>否</td><td>否</td><td>否</td><td>网站与计划里没有为它安排新档</td></tr>
-<tr><td>4.2</td><td>InsertPeg</td><td>只有母档</td><td>否</td><td>否</td><td>否</td><td>同上</td></tr>
-<tr><td>4.3</td><td>PatternLock</td><td>L=7/8/9/10/11</td><td>否</td><td>否</td><td>是</td><td>仍是 5×5 网格、8 邻接、不重复节点；原 hard 的 length 为 [4,8]，L=9～11 越界</td></tr>
-<tr><td>4.4</td><td>RouteStick</td><td>S=6/7/8/9/10</td><td>否</td><td>否</td><td>是</td><td>按钮固定 5 个，相邻游走、允许折返；原 hard 为 4～7 条边，S=8～10 越界</td></tr>
+<tr><td>4.1</td><td>MoveCube</td><td>只有母档</td><td>不适用（无新档）</td><td>不适用（无新档）</td><td>不适用（无新档）</td><td><code>src/robomme_xhard/configs.py::XHARD_TASKS</code> 显式排除 MoveCube、InsertPeg，没有新档</td></tr>
+<tr><td>4.2</td><td>InsertPeg</td><td>只有母档</td><td>不适用（无新档）</td><td>不适用（无新档）</td><td>不适用（无新档）</td><td>同上</td></tr>
+<tr><td>4.3</td><td>PatternLock</td><td>L=7/8/9/10/11</td><td>否</td><td>否</td><td>是</td><td>仍是 5×5 网格、8 邻接、不重复节点；原 hard 的 length 为 [4,8]，L=9～11 越界。原采样耗尽时会保留末路径，故不能断言任何 seed 绝不会产生 L&gt;8；按正常接受域判参数越界</td></tr>
+<tr><td>4.4</td><td>RouteStick</td><td>S=6/7/8/9/10</td><td>否</td><td>否</td><td>是</td><td>1×9 位置格：5 个路径按钮 + 4 个障碍方块，不变；相邻游走、允许折返；原 hard 为 4～7 条边，S=8～10 越界</td></tr>
 </table>
 <p><b>“原本执行不到”的两类：</b></p>
 <ul>
 <li><b>甲类：作用对象原本从不被这样操作。</b>
   <ul>
   <li>VideoUnmask、ButtonUnmask：抓 bin_2。</li>
-  <li>VideoPlaceButton：演示放到 target_2、target_3。原代码有该分支但从未启用。</li>
+  <li>VideoPlaceButton：演示放到 target_2、target_3。前侧组同原 <code>pre_flag</code> 分支；后侧组是同类原语但位置在 target_1 之后，与原 <code>post_flag</code> 不同；原配置从未启用。</li>
   </ul>
 </li>
 <li><b>乙类：同一种动作的次数超过原代码写死的上限。</b>
@@ -789,7 +795,9 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
   动作原语本身是原有的，只是原代码在结构上产生不了这么多次。
 </li>
 </ul>
+<p>甲乙两类并非互斥：VideoUnmask、ButtonUnmask 的第三抓既是“作用对象”（bin_2）也是“次数”（第三抓）。两类合起来即上文口径补注里的“结构扩展”。</p>
 <p>上述 7 个环境的这些档经用户裁决全部保留（原话「1 全部保留」）；用户此前预期是“只有 VideoPlaceButton 会有”。</p>
+<p><b>2026-10-12 审计补注</b>：1012 计划 K4「空容器当发起者」——原 hard 第 3 个发起者本就可能是空容器 bin_3，新规则只是让第 1、2 段以及 S≥4 时的发起者也可以是空容器，属于原有行为的取值放宽，不属结构扩展，不改 2.3、2.4 两行的判定。</p>
 
 <h2 id="p1-h5">五、H5 产物一致性检验（xhard12～xhard20 全档，2026-10-11）</h2>
 <section id="p1-h5-plain">
