@@ -49,7 +49,7 @@ a { color:var(--accent); }
 <h1>1012-swap-collision-plan.html — 交换类 xhard 任务移植 v2.1 碰撞检测 + 发起者均匀化 + 全量派生成功率</h1>
 <blockquote>
 <p><strong>权威性与锚点</strong>：本文件是本轮唯一权威计划。工作副本 <code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>、分支 <code>newtask-v3-MotionJepa1006</code>；本次时序修订以 <strong><code>2dce9e8d3b13f062297abefe39aaee8d38be144f</code>（2.84）</strong>为代码基线，原移植阶段已实现至 2.82。失败起跑锚点为 <code>09900b371cfe5d643d704b93485267a6a585ea59</code>；早期规划锚点 <code>3521be0c</code> 仅供下方历史记录追溯。外部依赖仍钉 <code>ce72b04fdb7806dbc98de2baa3c92118b98e6902</code> 的 <code>src/robomme/robomme_env/utils/bin_collision.py</code>，导入文件 SHA256 <code>bbe87eec3c36ab54e703a6ff741a5fdd3217c11e2a1541eb95d8f013c852302b</code>。commit 体例 <code>&lt;大&gt;.&lt;小&gt; &lt;中文描述&gt;</code>，从最近一次接续。
-<strong>本次授权边界</strong>：用户对「是否先修订计划，把段起点检查移到首个物理子步之前，保留逐位判据与每子步检测？」答复「同意」，本轮只修订此 HTML。原开工令对应旧版；修改后的完整计划须再次呈现并获无修改的开工认可，才能改代码或跑 GPU。本次拟新增两个控制步状态字段，具体覆盖边界见 K14 与第二部分 T1 写集；不新增父类 <code>reset</code> / <code>_initialize_episode</code> 覆写。阶段 E 仍按 P5/D6 在正常冒烟后报规模、耗时与磁盘，再单独取得批次确认。</p>
+<strong>本次授权边界</strong>：用户对「是否先修订计划，把段起点检查移到首个物理子步之前，保留逐位判据与每子步检测？」答复「同意」，本轮只修订此 HTML。原开工令对应旧版；修改后的完整计划须再次呈现并获无修改的开工认可，才能改代码或跑 GPU。<strong>2026-10-12 第三次修订（方案 X）</strong>：用户看过主会话时序图后原话「选 X 开始修复」——段起点复核改放在 ManiSkill 每控制步只调一次的 <code>_before_control_step</code> 钩子里，<strong>不新增任何状态字段</strong>、删除 <code>step</code> 覆写；覆盖边界见 K14 与第二部分 T1 写集；不新增父类 <code>reset</code> / <code>_initialize_episode</code> 覆写。按正本第 2 条，计划被修改后须再次完整呈现并获无修改认可，「选 X 开始修复」本身不作为改代码的开工令。阶段 E 仍按 P5/D6 在正常冒烟后报规模、耗时与磁盘，再单独取得批次确认。</p>
 <p><strong>本版修订</strong>：按 2026-10-12 审计（锚点 <code>3521be0c</code>）订正规模数字、段起点时序、旁观者口径、runbook 与判定行；审计列出的 D1–D7 用户已于 2026-10-12 逐条裁决，原话与落实位置见文末「八、用户裁决（2026-10-12 审计后）」，正文按裁决改写。<strong>2026-10-12 第二次修订（迁入 sled-vail 后）</strong>：按用户同日原话「这里不对 你应该用vail 每张卡20个worker左右并行跑 规模对半砍 都只要10个母seed」「本仓库现在用的 scripts/data-generation-newSeed/generate_dataset_newseed.py 我说的是参考这个的并行 多worker分配！」「a 用单卡w32」（K13、D8），阶段 E 规模改为每任务 10 个母 seed（30 母 seed、150 张 xhard 卡 + 30 张母卡 = 180 张卡）；并行照生成器 <code>_run_jobs</code> 现有的每卡一池分配方式，worker 数按 <code>scripts/data-generation-newSeed/CLAUDE.md</code> 在 vail 上的标定取单卡 <code>--gpus 0 --workers 32</code>；4.1、runbook、分配表 R1、风险 R7、裁决 D6/D8 与总览图同步改写。</p>
 </blockquote>
 <p><strong>当前修订概要</strong>：三任务拒绝送达已在 120.47 秒内通过；reset 配对与五档前缀也已通过。真实端点检查在 VideoUnmaskSwap seed5700 的第 1 段失败：执行控制步 64 后，返回计数已为 65，两个对象的 <code>a_p/a_q/b_p/b_q</code> 均与积分前缓存不逐位相等。当前默认配置是 <strong>单环境 CPU PhysX + GPU 渲染</strong>，不是 GPU 物理模拟。本修订只把检查移到父类已应用起点、首个 <code>scene.step()</code> 尚未执行的钩子中，保持原判据；四元数写入读回仍待实测，不保证修改后必过。原始失败与实测不改写，见第四节结果子节。</p>
@@ -119,7 +119,7 @@ a { color:var(--accent); }
 </tr>
 <tr>
 <td>K8</td>
-<td>三项 P1 覆盖已批：子类覆写 <code>step</code>、覆写 <code>_before/_after_simulation_step</code>、子类覆写父类已算好的 <code>swap_pair{1..3}_idx1</code>。本次仍只调整这三个获准方法的检查时序；新增控制步字段另在 K14 点名待批，不增加其他父类方法覆写</td>
+<td>三项 P1 覆盖已批：子类覆写 <code>step</code>、覆写 <code>_before/_after_simulation_step</code>、子类覆写父类已算好的 <code>swap_pair{1..3}_idx1</code>。方案 X 把其中「覆写 <code>step</code>」一项撤掉（Mixin 不再覆写 step），改为覆写 <code>_before_control_step</code>，该新覆写在 K14 点名待批；<code>_before/_after_simulation_step</code> 与 idx1 覆写不变</td>
 <td>裁决 4</td>
 </tr>
 <tr>
@@ -155,7 +155,7 @@ a { color:var(--accent); }
 </tbody>
 </table>
 <h2 id="h3">二、机制：加了哪些函数、各自干什么</h2>
-<p id="k14"><strong>K14（本次时序修订，待完整计划开工认可）</strong>：仅在 <code>SwapCollisionMixin</code> 中新增 <code>_xhard_control_step</code>（当前调用的控制步，空闲为 <code>None</code>）与 <code>_xhard_first_substep_pending</code>（该调用的首个物理子步标志）。<code>step</code> 进入时设置、<code>finally</code> 清空；首个 before 钩子入口先消费标志，再调用父类钩子与复核。没有跨 episode 的 checked 集合，因此不新增 reset 覆写。保证限于单环境、非并发、非重入的正常 <code>step</code> 调用；父类异常后若外部另行调用同一步，应重新证明，不能宣称跨异常重试只查一次。</p>
+<p id="k14"><strong>K14（方案 X，待完整计划开工认可）</strong>：<code>SwapCollisionMixin</code> 覆写 <code>_before_control_step()</code>：先 <code>super()</code>，再 <code>k = _swap_segment_index_at(int(self.elapsed_steps))</code>（不减一），k 非 None 时经 <code>_runtime_guard</code> 调 <code>_check_segment_start(k)</code>。ManiSkill <code>BaseEnv::_step_action</code> 保证该钩子每控制步恰好调用一次、位于父类 set_pose 之后、首个 <code>scene.step()</code> 之前（<code>src/robomme/</code> 无任何类覆写它，主会话与审查代理 2026-10-12 分别核实），因此<strong>不需要</strong>控制步字段、一次性标志或 <code>finally</code> 清理；原 <code>step</code> 覆写整个删除。P1 批准项：新批「覆写 <code>_before_control_step</code>」一项，撤回「覆写 <code>step</code>」一项，总数不增。此方案由 sonnet 审查代理与 codex 的「首个 <code>_before_simulation_step</code> + 两字段」方案对比后裁定等价且更简（唯一差别是早于 <code>agent.before_simulation_step</code>，该调用只动机器人侧，不动物体位姿）。</p>
 <p>一句话版：<strong>reset 时用纯几何把 S 段交换全部预演一遍并证明不撞，把配对写死；运行时只做复核。</strong> 新代码分三层：vendored 判据（不改）、新写的规划函数（<code>swap_plan.py</code>）、挂到三个子类上的混入类。下面逐个说清每个函数的输入、输出、在哪被调用、失败时做什么。</p>
 <h3>2.1 第一层：vendored 判据（<code>src/robomme_xhard/collision/bin_collision.py</code>，逐字节来自 v2.1，不改）</h3>
 <table>
@@ -297,16 +297,16 @@ a { color:var(--accent); }
 
   <!-- ② 橙 -->
   <rect x="850" y="156" width="440" height="68" rx="4" fill="#fde2c8" stroke="#d9772a"/>
-  <text x="862" y="176" fill="#222">② 首个 _before_simulation_step：先消费一次性标志</text>
+  <text x="862" y="176" fill="#222">② _before_control_step（每控制步恰好一次）</text>
   <text x="862" y="194" fill="#222">读真实起点：最近邻绑定、实际 p/q 与缓存逐位相等</text>
-  <text x="862" y="212" fill="#222">再整段重证（含其余交换对象）；全部在积分前</text>
+  <text x="862" y="212" fill="#222">再整段重证（含其余交换对象）；首个 scene.step 之前</text>
   <line x1="1290" y1="190" x2="1326" y2="190" stroke="#c0392b" stroke-width="2" marker-end="url(#arrRed)"/>
   <line x1="1070" y1="224" x2="1070" y2="238" stroke="#444" stroke-width="1.5" marker-end="url(#arrDark)"/>
 
   <!-- ③ 橙 -->
   <rect x="850" y="238" width="440" height="68" rx="4" fill="#fde2c8" stroke="#d9772a"/>
   <text x="862" y="258" fill="#222">③ 每个物理子步前：substep_before 静态检查</text>
-  <text x="862" y="276" fill="#222">控制步上下文有效且处于交换窗 [start,end]</text>
+  <text x="862" y="276" fill="#222">elapsed_steps 处于交换窗 [start,end] 内才检查</text>
   <text x="862" y="294" fill="#222">check_bin_layout：全部交换对象，不扩到全场景</text>
   <line x1="1290" y1="272" x2="1326" y2="272" stroke="#c0392b" stroke-width="2" marker-end="url(#arrRed)"/>
   <line x1="1070" y1="306" x2="1070" y2="320" stroke="#444" stroke-width="1.5" marker-end="url(#arrDark)"/>
@@ -347,7 +347,7 @@ a { color:var(--accent); }
   <rect x="430" y="780" width="16" height="16" fill="#eee" stroke="#999"/>
   <text x="452" y="793" fill="#333">沿用父类 / v2.1，不改</text>
   <rect x="640" y="780" width="16" height="16" fill="#fdecea" stroke="#c0392b"/>
-  <text x="662" y="793" fill="#333">失败只记首条 fatal；②仅在段起点首子步复核，③⑤每子步执行</text>
+  <text x="662" y="793" fill="#333">失败只记首条 fatal；②每控制步一次（段起点时复核），③⑤每子步执行</text>
 </svg><figcaption>图 1　reset 阶段与运行阶段的两组碰撞检测流程（绿为新增、橙为检测、灰为沿用父类）</figcaption></figure>
 <h3>2.2 第二层：新写的规划函数（<code>src/robomme_xhard/swap_plan.py</code>）</h3>
 <table>
@@ -423,9 +423,9 @@ a { color:var(--accent); }
 <td>子步钩子内</td>
 </tr>
 <tr>
-<td><code>step(action)</code>（覆写，K8）</td>
-<td>进入时保存 <code>_xhard_control_step = int(elapsed_steps)</code>、置首子步标志为真；只转发父类 <code>step</code>，删除返回后的段起点检查；<code>finally</code> 将两字段恢复为 <code>None/False</code>。父类异常原样传播，复核类异常只由 guard 留 fatal</td>
-<td>每个控制步</td>
+<td><code>_before_control_step()</code>（覆写，K14）</td>
+<td>先 <code>super()._before_control_step()</code>；再 <code>k = _swap_segment_index_at(int(elapsed_steps))</code>，k 非 None 时经 <code>_runtime_guard</code> 调 <code>_check_segment_start(k)</code>。此刻父类已 set_pose、首个 <code>scene.step</code> 未跑、<code>elapsed_steps</code> 仍等于本步步号。原 <code>step</code> 覆写删除；父类异常原样传播，复核类异常只由 guard 留 fatal</td>
+<td>每个控制步恰好一次</td>
 </tr>
 <tr>
 <td><code>_check_segment_start(k)</code></td>
@@ -434,12 +434,12 @@ a { color:var(--accent); }
 </tr>
 <tr>
 <td><code>_record_fatal(error_type, stage, k, rejection=None, detail=None)</code></td>
-<td>只在 <code>_xhard_fatal is None</code> 时写入首条：<code>{error_type, stage, check, k, rejection: rejection.as_dict(), detail, control_step}</code>；之后所有复核直接跳过</td>
+<td>只在 <code>_xhard_fatal is None</code> 时写入首条：<code>{error_type, stage, check, k, rejection: rejection.as_dict(), detail, control_step=int(elapsed_steps)}</code>（整个 step 内 <code>elapsed_steps</code> 恒为本步步号，不减一）；之后所有复核直接跳过</td>
 <td>②-a / ②-b 判失败时</td>
 </tr>
 <tr>
 <td><code>_before_simulation_step()</code> / <code>_after_simulation_step()</code>（覆写，K8）</td>
-<td>before 钩子入口保存并立即消费首子步标志，然后调用父类钩子；首子步按现行 schedule 做段起点复核，再执行每子步静态检查。after 钩子仍每子步检查。控制步上下文为空时两种复核都跳过，父类钩子照常；父类钩子不放进异常 guard</td>
+<td>两钩子都只做：先 <code>super()</code>，再经 <code>_runtime_guard</code> 执行每子步静态检查 <code>_substep_check(stage)</code>；不再承担段起点复核，无标志、无上下文判断；父类钩子不放进异常 guard</td>
 <td>每个物理子步前后</td>
 </tr>
 <tr>
@@ -449,8 +449,8 @@ a { color:var(--accent); }
 </tr>
 </tbody>
 </table>
-<p><strong>段起点复核的新时序</strong>：父类 <code>step</code> 已先刷新调度，依次落定上一段、捕获下一段端点并以 alpha=0 应用 pose；ManiSkill <code>BaseEnv::_step_action</code> 随后才进入内部子步循环，其顺序为 <code>agent.before_simulation_step → env._before_simulation_step → scene.step → env._after_simulation_step</code>。因此本次在首个 env before 钩子中复核，不在完整 step 返回后比较。此时控制步就是进入时保存的 <code>elapsed_steps</code>，<strong>不减一</strong>；段起点、子步与 fatal 证据统一使用该值。VideoRepick 的动态起点已由父类在同一次调用内更新，钩子须读现行 schedule，不能在外层 step 进入时缓存占位 400。首子步标志在调用父类钩子前消费，避免钩子同步重入重复检查；后续每子步静态检查不受该标志短路。</p>
-<p><strong>保证与未验证边界</strong>：默认 <code>num_envs=1, sim_backend=auto, render_backend=gpu</code> 解析为 <code>physx_cpu</code>，故此处 actor 读数不涉及 GPU 物理 fetch；不更改默认配置，也不外推到 CUDA 物理多环境。<code>_endpoint_evidence</code> 仍从真实 actor 读位姿，与父类缓存经同一 <code>ObjectState</code> 正规化后用 <code>np.array_equal</code> 比较，不改 EPS、不引容差、不忽略 q、不改用缓存自证。即便积分前，float32 归一化与 SAPIEN 写入读回仍可能产生差异；仍失败则保存完整 JSON 并停止，不继续 smoke。现有普通非重建 reset 的旧 fatal、场景及 VideoRepick 标志复位语义不在本轮修复；生成器每卡新建环境，<code>certify_swap_plan</code> 成功时照旧清证据。两控制步字段由 <code>finally</code> 清空，不留下跨 reset 的一次性集合。</p>
+<p><strong>段起点复核的新时序（方案 X）</strong>：父类 <code>step</code> 先刷新调度，依次落定上一段、捕获下一段端点并以 alpha=0 应用 pose，然后才 <code>super().step()</code>；ManiSkill <code>BaseEnv::_step_action</code> 的顺序为 <code>_before_control_step → 循环{agent.before_simulation_step → env._before_simulation_step → scene.step → env._after_simulation_step} → _after_control_step</code>，回到 <code>BaseEnv.step</code> 后才 <code>_elapsed_steps += 1</code>。所以 <code>_before_control_step</code> 恰好落在「父类已 set_pose、第一次物理积分未发生」的窗口，且每控制步只被调一次；此时 <code>elapsed_steps</code> 就是本步步号，<strong>不减一</strong>。VideoRepick 的动态起点已由父类在同一次调用内更新，钩子读现行 schedule 即拿到真实起点。每子步的 before/after 静态检查与此无关、照旧每子步执行。</p>
+<p><strong>保证与未验证边界</strong>：默认 <code>num_envs=1, sim_backend=auto, render_backend=gpu</code> 解析为 <code>physx_cpu</code>，故此处 actor 读数不涉及 GPU 物理 fetch；不更改默认配置，也不外推到 CUDA 物理多环境。<code>_endpoint_evidence</code> 仍从真实 actor 读位姿，与父类缓存经同一 <code>ObjectState</code> 正规化后用 <code>np.array_equal</code> 比较，不改 EPS、不引容差、不忽略 q、不改用缓存自证。即便积分前，float32 归一化与 SAPIEN 写入读回仍可能产生差异；仍失败则保存完整 JSON 并停止，不继续 smoke。现有普通非重建 reset 的旧 fatal、场景及 VideoRepick 标志复位语义不在本轮修复；生成器每卡新建环境，<code>certify_swap_plan</code> 成功时照旧清证据。Mixin 不新增实例状态，reset 不会调用 <code>_before_control_step</code>（全仓库与 mani_skill 内只有 <code>_step_action</code> 调它）。</p>
 <p><strong>运行期失败为什么不抛异常（D2 甲）</strong>：运行期复核若在 step 或子步内抛错，会遇到三条吞异常或卡死的路径（R9）。所以运行期复核只把首条证据写进 <code>env._xhard_fatal</code>、仿真照常、此后不再复核；生成器 <code>_worker</code> 在 episode 执行结束后、写结果行之前检查 <code>getattr(env.unwrapped, "_xhard_fatal", None)</code>，非空即判 <code>ok=False</code>、<code>failure_class=task</code>。闸门 <code>XHARD_FATAL_CATCH</code> 证明这条路确实接得住。</p>
 <h3>2.4 两个异常（<code>src/robomme_xhard/collision/__init__.py</code>）</h3>
 <table>
@@ -804,16 +804,16 @@ a { color:var(--accent); }
 <td><code>XHARD_SEG_START_ALIGN=PASS segs=&lt;n&gt; mismatches=0</code></td>
 <td>段起点证书输入与父类端点一致</td>
 <td>GPU 测试：在混入里记录每段起点证书输入的 p/q，与父类 <code>_two_lane_swaps</code> 缓存端点逐项比对（含相邻段公共边界步；VideoRepick 用真实 start）</td>
-<td>首个 before 钩子发生在本控制步第一次物理积分前；段起点只查一次，前后静态复核仍每子步执行，真实 actor 与缓存逐项精确一致</td>
+<td><code>_before_control_step</code> 发生在本控制步第一次物理积分前；段起点每控制步只查一次，前后静态复核仍每子步执行，真实 actor 与缓存逐项精确一致</td>
 </tr>
-<tr><td><code>XHARD_TIMING_CPU=PASS</code></td><td>首子步时序与计数</td><td>CPU 假父类模拟多物理子步、同步 before 钩子重入、积分后位姿改变、相邻段落定；断言段起点发生在首个积分前且只调用一次，静态 before/after 仍每子步调用</td><td>排除只挪代码但多次复核、错读旧 schedule 或漏掉静态复核的回归</td></tr>
-<tr><td><code>XHARD_CONTROL_CONTEXT=PASS</code></td><td>状态生命周期与异常</td><td>父类 step/钩子异常仍传播；finally 使两个字段恢复 None/False；无上下文的 reset 模拟钩子不留复核；所有证据步号等于正在执行的控制步</td><td>只保证本次正常单环境非重入调用，不以此宣称普通 reset 复用父类语义已修复</td></tr>
+<tr><td><code>XHARD_TIMING_CPU=PASS</code></td><td>控制步钩子时序与计数</td><td>CPU 假父类按 ManiSkill 顺序模拟 <code>_before_control_step</code> + 多物理子步，积分后改位姿、相邻段先落定再捕获、VR 动态起点；断言段起点复核发生在首个积分前、每控制步恰好一次、步号 = start（不减一），静态 before/after 仍每子步调用</td><td>排除错读旧 schedule、步号差一或漏掉静态复核的回归</td></tr>
+<tr><td><code>XHARD_CONTROL_CONTEXT=PASS</code></td><td>无状态与异常传播</td><td>父类 step/钩子异常仍原样传播；Mixin 不新增任何实例属性（<code>vars(env)</code> 前后差集为空）；<code>step</code> 不再被 Mixin 覆写（<code>cls.step is not SwapCollisionMixin.step</code> 且 Mixin 无 step 属性）；所有证据步号等于正在执行的控制步</td><td>只保证单环境正常调用，不以此宣称普通 reset 复用父类语义已修复</td></tr>
 <tr><td><code>XHARD_EVIDENCE_JSON=PASS files=&lt;n&gt;</code></td><td>失败数值完整留存</td><td>在 GPU 断言前写完整 JSON，包含 before 阶段实际/缓存/原始 q/逐键差异与代码锚点；CPU 构造极小 q 差异验证不舍入、仍拒绝，读取 JSON 能还原该差异</td><td>GPU 再次失败时可定位浮点读写，不再依赖被截断的 pytest 字典；此判定不等于端点 PASS</td></tr>
 <tr>
 <td><code>XHARD_FATAL_NORAISE=PASS</code></td>
 <td>运行期复核失败时不 raise（CPU）</td>
 <td>纯 CPU 单测：假父类真实调钩子，由复核函数判失败或抛异常；另独立构造父类 step/钩子异常，核对传播</td>
-<td>复核失败只写首条 <code>_xhard_fatal</code>，控制步继续前进；父类本身异常仍传播、finally 清上下文，两类错误不能混为一谈</td>
+<td>复核失败只写首条 <code>_xhard_fatal</code>，控制步继续前进；父类本身异常仍传播，两类错误不能混为一谈</td>
 </tr>
 <tr>
 <td><code>XHARD_FATAL_CATCH=PASS tasks=3 hang=0</code></td>
@@ -907,9 +907,9 @@ a { color:var(--accent); }
 </tr>
 <tr>
 <td>T1 本次时序修复（待开工）</td>
-<td>只改 <code>swap_plan.py</code>、<code>test_swap_plan.py</code>、<code>test_swap_collision_gpu.py</code>：控制步上下文与首子步标志、before 钩子起点证明、统一步号、断言前完整 JSON 留证。CPU 定向测和核心基线对照通过、固定提交审查及合并后，先用 VideoUnmaskSwap seed5700 一张 xhard12 卡验证首起点与共享端点；通过后才跑剩余 GPU 契约，排除已通过的首探针用例。失败即停，不换 seed</td>
-<td>写入型 <code>gpt-6.1-sol</code> 独立 worktree；独立 <code>gpt-6.1-sol</code> 审查；GPU 由主会话串行执行</td>
-<td>首子步证据必须发生在第一次物理积分前、步号等于 start，每正常控制步调用起点复核恰好一次；原四字段仍逐项精确一致</td>
+<td>只改 <code>swap_plan.py</code>、<code>test_swap_plan.py</code>、<code>test_swap_collision_gpu.py</code>：段起点复核移入 <code>_before_control_step</code>、删除 step 覆写、步号不减一、断言前完整 JSON 留证。CPU 定向测和核心基线对照通过、固定提交审查及合并后，先用 VideoUnmaskSwap seed5700 一张 xhard12 卡验证首起点与共享端点；通过后才跑剩余 GPU 契约，排除已通过的首探针用例。失败即停，不换 seed</td>
+<td>本轮宿主为 Claude Code：写入型 <code>opus</code> 独立 worktree；独立 <code>sonnet</code> 只读审查；GPU 由主会话串行执行</td>
+<td>段起点证据必须发生在第一次物理积分前、步号等于 start，每控制步调用起点复核恰好一次；原四字段仍逐项精确一致</td>
 <td><code>XHARD_TIMING_CPU</code>、<code>XHARD_CONTROL_CONTEXT</code>、<code>XHARD_CORE_SHORT</code>、<code>XHARD_P1_ZERO</code>、<code>XHARD_SEG_START_ALIGN</code>、<code>XHARD_EVIDENCE_JSON</code></td>
 </tr>
 <tr>
@@ -998,7 +998,7 @@ a { color:var(--accent); }
 <li>产物根 <code>artifacts/xhard/xhard-1012-coll/full/</code>（<code>mother/</code>、<code>xhard12..20/</code>、<code>episode_results.jsonl</code>、<code>run_summary.json</code>），视频 <code>artifacts/xhard/xhard-1012-coll/report/per_episode_strip/</code>，留档 <code>docs/xhard-doc/xhard-1012-coll/</code>（<code>launch.md</code> 起跑前写、<code>result.md</code> 跑完写、<code>records/</code> 放清洗日志、汇总、sha256 清单）。</li>
 </ul>
 <h2 id="h6">五、子代理分工与合并（简述）</h2>
-<p>阶段 A–C 的原分工已完成，原子提交均保留。本次只有一个写入任务 T1：用 <code>gpt-6.1-sol</code> 在以当前基线建立的独立 worktree 改检测模块和两份测试，同一文件只有此代理写入。另一名 <code>gpt-6.1-sol</code> 审固定 BASE/TIP，失败交原写者续修；主会话核写集、用 <code>--no-ff</code> 保留所有子提交，合并后做核心基线对照与 P1 零 diff，通过才推送。主会话负责 GPU 串行闸门、监听与产物归属；运行代理不得改代码。阶段 E 的 R1 仍只在正常 smoke 通过且用户另批 180 卡后起跑。图 3 按当前剩余工作重画；主会话直接维护 SVG 并渲染位图目视复查。</p>
+<p>阶段 A–C 的原分工已完成，原子提交均保留。本次只有一个写入任务 T1：本轮宿主为 Claude Code，用 <code>opus</code> 在以当前基线建立的独立 worktree 改检测模块和两份测试，同一文件只有此代理写入。另派一名 <code>sonnet</code> 只读审固定 BASE/TIP，失败交原写者续修；主会话核写集、用 <code>--no-ff</code> 保留所有子提交，合并后做核心基线对照与 P1 零 diff，通过才推送。主会话负责 GPU 串行闸门、监听与产物归属；运行代理不得改代码。阶段 E 的 R1 仍只在正常 smoke 通过且用户另批 180 卡后起跑。图 3 按当前剩余工作重画；主会话直接维护 SVG 并渲染位图目视复查。</p>
 <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 740" font-family="Noto Sans CJK SC, sans-serif" font-size="14">
 <title>当前剩余时序修订、验收与全量批次顺序</title>
 <defs><marker id="tfOk" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#52606d"/></marker><marker id="tfErr" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#c0392b"/></marker></defs>
@@ -1012,8 +1012,8 @@ a { color:var(--accent); }
 <text x="44" y="185">GPU 端点失败，待本修订开工</text>
 <rect x="420" y="90" width="330" height="110" rx="6" fill="#dbe9ff" stroke="#3b6fc4" stroke-width="1.5"/>
 <text x="434" y="113" font-size="15" font-weight="bold">T1：时序代码与两份测试</text>
-<text x="434" y="137">gpt-6.1-sol，独立 worktree</text>
-<text x="434" y="161">首子步证明、步号、完整 JSON</text>
+<text x="434" y="137">opus，独立 worktree</text>
+<text x="434" y="161">控制步钩子、步号、完整 JSON</text>
 <text x="434" y="185">仅检测模块与两份测试可写</text>
 <rect x="810" y="90" width="330" height="110" rx="6" fill="#e4f5e1" stroke="#3a9d4f" stroke-width="1.5"/>
 <text x="824" y="113" font-size="15" font-weight="bold">独立审查与主会话整合</text>
@@ -1047,7 +1047,7 @@ a { color:var(--accent); }
 <text x="434" y="535">未获该批次确认不得起跑</text>
 <rect x="810" y="440" width="330" height="110" rx="6" fill="#dbe9ff" stroke="#3b6fc4" stroke-width="1.5"/>
 <text x="824" y="463" font-size="15" font-weight="bold">阶段 E：全量与六列视频</text>
-<text x="824" y="487">Beta 后运行型 gpt-6.1-sol 起跑</text>
+<text x="824" y="487">Beta 后运行型 opus 起跑</text>
 <text x="824" y="511">GPU0 / 32 worker，主会话监听</text>
 <text x="824" y="535">成功率表、逐 episode 视频、留档</text>
 <g fill="none" stroke="#52606d" stroke-width="1.8" marker-end="url(#tfOk)">
@@ -1081,7 +1081,7 @@ a { color:var(--accent); }
 <li>R0-5 子代理只在 worktree 写，不 push；每条 git 单独一次 Bash；不起 &gt;5 分钟任务；worktree 内不跑 <code>gym.make</code>。</li>
 <li>R0-6 生成器只改 <code>_worker</code> 的证据复制与失败字段结构化保存（见本节「失败字段契约」），分类逻辑、<code>retryable</code>、attempt、seed 公式逐字节不变；另在 episode 结束后检查 <code>_xhard_fatal</code>（D2 甲）；这些都属 P2 允许范围（D3 已批）。</li>
 <li>R0-7 生成一律本机执行（AGENTS.md P7）：不设计任何 GreatLakes 生成机制，不写 sbatch、srun、占位 job、集群提交器或集群校验 job；smoke 与全量只用本机 detached tmux、固定 <code>--gpus 0</code>，GPU0 被他人占满即停下问用户，不自行换卡、不上集群。用户 2026-10-12 原话「就本仓库的这个生成计划不要再做任何的gl生成的机制都使用本机来生成」「改为在本机用gpu0」。</li>
-<li>R0-8 本次 T1 仅三个文件、两个新增状态字段；不再执行已完成的 S0/C1/C2/C3/C4 移植，不改生成器或其他测试，不新增 <code>reset/_initialize_episode/_before_control_step</code> 覆写、不复位父类 VR 标志、不改输入配置。当前用户仅同意修订 HTML，全部代码/GPU命令等新开工令；K14 两字段须在该次明确批准清单内。</li>
+<li>R0-8 本次 T1 仅三个文件、零新增状态字段；不再执行已完成的 S0/C1/C2/C3/C4 移植，不改生成器或其他测试，不新增 <code>reset/_initialize_episode</code> 覆写、不复位父类 VR 标志、不改输入配置。唯一新增覆写是 <code>_before_control_step</code>（K14），同时删除 <code>step</code> 覆写。用户已选方案 X（「选 X 开始修复」），全部代码/GPU 命令仍等本修订计划的无修改开工认可。</li>
 </ul>
 <h2 id="h9">一、逐文件改动清单</h2>
 <h3><code>src/robomme_xhard/collision/bin_collision.py</code></h3>
@@ -1119,8 +1119,7 @@ def certify_swap_plan(env, actors: list, bystanders: list, name_prefix: str) -&g
     # gen = torch.Generator(); gen.manual_seed(int(env.seed) + SWAP_PLAN_SEED_OFFSET)
     # plan = plan_swaps(...)；for k,(a,b,..) in enumerate(plan.pairs,1): setattr(env,f&quot;swap_pair{k}_idx1&quot;,actors[a]); setattr(env,f&quot;swap_pair{k}_idx2&quot;,actors[b])
     # env._xhard_swap_plan = plan.as_dict(); env._xhard_runtime_checks = []; env._xhard_fatal = None
-    # env._refresh_swap_schedule()；成功后新增控制步空闲状态：None / False
-    # env._xhard_control_step = None; env._xhard_first_substep_pending = False
+    # env._refresh_swap_schedule()；方案 X 不新增任何实例状态
 
 class SwapCollisionMixin:
     swap_name_prefix = &quot;bin_&quot;
@@ -1132,33 +1131,23 @@ class SwapCollisionMixin:
         if self._xhard_fatal is None:                      # 只记第一条；之后不再复核
             self._xhard_fatal = dict(error_type=error_type, stage=stage, check=check, k=k,
                                      rejection=None if rejection is None else rejection.as_dict(),
-                                     detail=detail, control_step=int(self._xhard_control_step))
-    def step(self, action):
-        self._xhard_control_step = int(self.elapsed_steps)
-        self._xhard_first_substep_pending = True
-        try:
-            return super().step(action)                  # 仍由父类先刷新调度、应用动画，再进入物理循环
-        finally:
-            self._xhard_control_step = None              # 父类异常也清上下文，不吞父类异常
-            self._xhard_first_substep_pending = False
+                                     detail=detail, control_step=int(self.elapsed_steps))  # step 内恒为本步步号
+    # 不覆写 step：父类 step 先 swap_flat_two_lane 应用 alpha=0 起点，再 super().step() 进入 BaseEnv._step_action
+    def _before_control_step(self):
+        super()._before_control_step()                     # ManiSkill 每控制步恰好调一次，位于首个 scene.step 之前
+        k = self._swap_segment_index_at(int(self.elapsed_steps))   # 读父类已刷新的真实 schedule，不减一
+        if k is not None:
+            self._runtime_guard(&quot;segment_start&quot;, self._check_segment_start, k)
     def _before_simulation_step(self):
-        first = bool(getattr(self, &quot;_xhard_first_substep_pending&quot;, False))
-        self._xhard_first_substep_pending = False         # 调父类钩子前消费，防止同步钩子重入重复查起点
         super()._before_simulation_step()
-        control_step = getattr(self, &quot;_xhard_control_step&quot;, None)
-        if control_step is not None and first:
-            k = self._swap_segment_index_at(control_step) # 此处读已刷新的真实 schedule，不减一
-            if k is not None:
-                self._runtime_guard(&quot;segment_start&quot;, self._check_segment_start, k)
         self._runtime_guard(&quot;substep_before&quot;, self._substep_check, &quot;substep_before&quot;)
     def _after_simulation_step(self):
         super()._after_simulation_step()
         self._runtime_guard(&quot;substep_after&quot;, self._substep_check, &quot;substep_after&quot;)
-    # _runtime_guard 新增控制步上下文为空的跳过条件；仍先检查 plan 是否就绪与 fatal。
-    # 仅包复核函数；父类 step / 钩子均不放进 guard。
+    # _runtime_guard 只检查 plan 是否就绪与 fatal 是否已记；仅包复核函数，父类钩子不放进 guard。
 </code></pre>
-<p><code>_check_segment_start(k)</code> 仅由本控制步首个 before 钩子调用，标注 <code>phase="before_physics"</code>，所有 <code>control_step</code> 用 <code>_xhard_control_step</code>。保持原最近邻绑定、真实 actor 端点正规化后逐项精确比较、实际位姿整段扫掠；旁观者仍包括本段其余交换对象，绑定或扫掠拒绝仍只记录首条 fatal。<code>_endpoint_evidence</code> 只追加实际原始 q 与阶段诊断字段，不改变比较：p 为三维 float64、q 为四维正规化 float64，每对象仅位姿 56 字节；缓存原始 q 是父类 float32 读数。q 与 −q 即使表示同旋转，逐位不同仍按既定判据拒绝。</p>
-<p>VideoRepick 在父类 <code>step</code> 内先按 swap 任务更新 <code>start_step</code> 和 schedule，再进入 BaseEnv 的物理循环，所以 before 钩子可读真实起点。仍以 <code>static_flag=False</code> 屏蔽占位窗口；不新增复位此父类字段的覆盖。不支持把同步重入或多线程并发 <code>step</code> 当正常运行，若需此形态须另立范围。</p>
+<p><code>_check_segment_start(k)</code> 仅由 <code>_before_control_step</code> 调用，标注 <code>phase="before_physics"</code>，所有 <code>control_step</code> 用 <code>int(self.elapsed_steps)</code>。保持原最近邻绑定、真实 actor 端点正规化后逐项精确比较、实际位姿整段扫掠；旁观者仍包括本段其余交换对象，绑定或扫掠拒绝仍只记录首条 fatal。<code>_endpoint_evidence</code> 只追加实际原始 q 与阶段诊断字段，不改变比较：p 为三维 float64、q 为四维正规化 float64，每对象仅位姿 56 字节；缓存原始 q 是父类 float32 读数。q 与 −q 即使表示同旋转，逐位不同仍按既定判据拒绝。</p>
+<p>VideoRepick 在父类 <code>step</code> 内先按 swap 任务更新 <code>start_step</code> 和 schedule，再进入 BaseEnv 的物理循环，所以 <code>_before_control_step</code> 可读真实起点。仍以 <code>static_flag=False</code> 屏蔽占位窗口；不新增复位此父类字段的覆盖。</p>
 <p><strong>完整 JSON 留证</strong>：GPU 测试在断言前、失败时 close 前，写到唯一的 <code>artifacts/tests/swap-timing-1012/&lt;运行戳&gt;/&lt;任务&gt;/&lt;用例&gt;.json</code>：固定提交、任务/seed/档位、真实 schedule 的 actor 序号与窗口、<code>gpu_sim_enabled</code>、完整 runtime_checks/fatal、<code>actual/cached/actual_raw_q/cached_raw_q/mismatches</code>、before 阶段步号与一次性计数。保留浮点完整往返精度，不只留 pytest 缩略文本；非有限值显式标签留存。不能把返回后另读的 q 冒充 before 的原始 q。测试 helper 可记录积分后的状态作诊断，但不将其设为与缓存相等的验收项。</p>
 <p><code>_substep_check(stage)</code>：<code>if not self._in_swap_window(): return</code>；<code>check_bin_layout(states, stage=stage)</code>；拒绝 → <code>_record_fatal("SwapCollisionError", stage, k, rejection=rej, check="layout")</code>，不 raise。</p>
 <h3>三个子类（<code>src/robomme_xhard/envs/*.py</code>）</h3>
@@ -1250,7 +1239,7 @@ if fatal:
 </table>
 <p>验收 <code>XHARD_FAIL_FIELDS=PASS hops=5</code>（CPU，构造失败行逐跳断言）。</p>
 <h3>测试</h3>
-<p><strong>本次仅维护两份测试</strong>：<code>test_swap_plan.py</code> 新增多子步只查一次、父类 before 钩子同步重入只查一次、父类物理积分发生在起点证明后、相邻段先落定再捕获、父类 step/钩子异常传播且 finally 清上下文、无上下文的 reset 模拟钩子不产复核、VR 动态起点、微小 q 差异仍拒绝与全证据步号一致。<code>test_swap_collision_gpu.py</code> 增加断言前完整 JSON、before 阶段与首起点/共享边界一次性计数；保留真实物理步、reset、五档前缀与故障注入用例。其余测试及生成器送达测试冻结，只在新时序后重跑。不得为新机制通过而削弱端点等式。</p>
+<p><strong>本次仅维护两份测试</strong>：<code>test_swap_plan.py</code> 的假父类改为按 ManiSkill 顺序调 <code>_before_control_step</code> 再跑多个子步，新增：多子步下起点复核每控制步恰好一次、父类物理积分发生在起点证明后、相邻段先落定再捕获、父类 step/钩子异常传播、Mixin 不新增实例属性且不覆写 step、VR 动态起点、微小 q 差异仍拒绝与全证据步号一致（不减一）；原先直接调 <code>_before_simulation_step()</code> 触发起点复核的用例改为先调 <code>_before_control_step()</code>。<code>test_swap_collision_gpu.py</code> 增加断言前完整 JSON、<code>_before_control_step</code> 阶段与首起点/共享边界一次性计数，「钩子未被父类覆写」断言加 <code>_before_control_step</code> 一条；保留真实物理步、reset、五档前缀与故障注入用例。其余测试及生成器送达测试冻结，只在新时序后重跑。不得为新机制通过而削弱端点等式。</p>
 <ul>
 <li><code>test_bin_collision_vendored.py</code>：<code>git show ce72b04f:tests/lightweight/test_bin_collision.py</code>，<code>from robomme.robomme_env.utils import bin_collision</code> → <code>from robomme_xhard.collision import bin_collision</code>；追加 <code>test_vendored_sha256_matches_record</code>（读 <code>VENDORED.md</code> 记录值）。</li>
 <li><code>test_swap_plan.py</code>（纯 CPU，SimpleNamespace）：</li>
@@ -1272,13 +1261,13 @@ if fatal:
 <li><code>test_contract.py</code>（C4）：失败字段逐跳契约 <code>XHARD_FAIL_FIELDS</code>。</li>
 </ul>
 <h2 id="h10">二、子代理分配表</h2>
-<p>本次 Codex 派发按第 26 条显式选模型：写入/规划/运行/审查 <code>gpt-6.1-sol</code>，只读探索 <code>gpt-6-luna</code>；配置已核 <code>max_concurrent_threads_per_session=32</code>，不把配置等同实际并发验证。新代码工作树必须在修订计划获批后从确定 clean HEAD 建立，写者不 push。环境借主 <code>.venv</code> 且 <code>--no-sync</code>，<code>UV_CACHE_DIR=/home/hongzefu/.cache/uv</code>，<code>PYTHONPATH=&lt;worktree&gt;/src</code>，先核实际导入位置；派发前核实际根目录、分支、HEAD 和 porcelain，不沿用旧 <code>?? .nonexistent</code> 的历史状态。</p>
+<p>本轮宿主为 Claude Code，按第 26 条与 <code>CLAUDE.md</code> 计划执行模式显式选模型：写入 <code>opus</code>（<code>isolation: "worktree"</code>）、审查 <code>sonnet</code>（只读、钉死 BASE/TIP）、探索 <code>haiku</code>。写入 worktree 从本修订计划提交后的 clean HEAD 分出（<code>worktree.baseRef=head</code> 已核 64/64/head），写者不 push。环境借主 <code>.venv</code> 且 <code>--no-sync</code>：<code>UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src</code>，先打印 <code>robomme_xhard.__file__</code> 核实落在 worktree；派发前核主检出 porcelain 与 <code>git worktree list</code>。</p>
 <table><thead><tr><th>任务 / 模型</th><th>目标与可写集合</th><th>禁触 / 契约</th><th>依赖与整合</th><th>验收位置与命令</th><th>资源与归属</th></tr></thead><tbody>
-<tr><td>T1 / <code>gpt-6.1-sol</code></td><td><code>src/robomme_xhard/swap_plan.py</code>、<code>src/robomme_xhard/tests/test_swap_plan.py</code>、<code>src/robomme_xhard/tests/test_swap_collision_gpu.py</code>；仅时序、两个字段、步号与留证</td><td>禁触 <code>src/robomme/</code>、<code>collision/</code>、env 子类、生成器、tools、配置/依赖及其他测试；保留 <code>_check_segment_start(self,k)</code> 签名与 fatal 字段</td><td>从本修订代码锚点或只含批准文档的新 HEAD 建独立 <code>codex/</code> 工作树；唯一三文件写者，<code>sub/T1:</code> 提交；固定 BASE/TIP 审查后 <code>--no-ff</code> 整合</td><td>工作树 CPU：<code>timeout 280s uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_plan.py -q</code>；主检出核心基线对照与 P1；<code>XHARD_TIMING_CPU/XHARD_CONTROL_CONTEXT</code></td><td>GPU=0（不占用），无端口；不跑 GPU；HTML 归主会话，不进写集</td></tr>
-<tr><td>T-R / 独立 <code>gpt-6.1-sol</code></td><td>只读固定提交，审三文件的时序、等式、异常、步号与边界</td><td>无可写路径；不跑仓库脚本或读取后续 ref</td><td>每个 T1 修复末端重新固定审查，失败交原写者；主会话核字节和合并后测试</td><td><code>PRE_MERGE_REVIEW=PASS base= tip= findings=0</code>；主会话 <code>POST_MERGE_REVIEW</code></td><td>无 GPU、端口和产物</td></tr>
+<tr><td>T1 / Claude <code>opus</code>（worktree）</td><td><code>src/robomme_xhard/swap_plan.py</code>、<code>src/robomme_xhard/tests/test_swap_plan.py</code>、<code>src/robomme_xhard/tests/test_swap_collision_gpu.py</code>；仅 <code>_before_control_step</code> 覆写、删 step 覆写、步号不减一、测试与留证</td><td>禁触 <code>src/robomme/</code>、<code>collision/</code>、env 子类、生成器、tools、配置/依赖及其他测试；保留 <code>_check_segment_start(self,k)</code> 签名与 fatal 字段</td><td>从本修订计划提交后的 clean HEAD 建独立 <code>.claude/worktrees/</code> 工作树；唯一三文件写者，<code>sub/T1:</code> 提交；固定 BASE/TIP 审查后 <code>--no-ff</code> 整合</td><td>工作树 CPU：<code>UV_PROJECT_ENVIRONMENT=&lt;主 .venv&gt; PYTHONPATH=&lt;worktree&gt;/src timeout 280s uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_plan.py -q</code>；主检出核心基线对照与 P1；<code>XHARD_TIMING_CPU/XHARD_CONTROL_CONTEXT</code></td><td>GPU=0（不占用），无端口；不跑 GPU；HTML 归主会话，不进写集</td></tr>
+<tr><td>T-R / 独立 Claude <code>sonnet</code>（只读）</td><td>只读固定提交，审三文件的时序、等式、异常、步号与边界</td><td>无可写路径；不跑仓库脚本或读取后续 ref</td><td>每个 T1 修复末端重新固定审查，失败交原写者；主会话核字节和合并后测试</td><td><code>PRE_MERGE_REVIEW=PASS base= tip= findings=0</code>；主会话 <code>POST_MERGE_REVIEW</code></td><td>无 GPU、端口和产物</td></tr>
 <tr><td>T-G / 主会话</td><td>本机 GPU0 串行首探针、其余契约、D0与正常 smoke；只写指定 <code>artifacts/</code> 和留档</td><td>运行期间不改代码/参数/依赖，不降级、不换 seed；失败后只保留与诊断</td><td>T1 审查、整合和 clean HEAD 通过后起；先单卡单任务，再剩余契约，再 D0、smoke</td><td>完整命令见新 runbook；最长单闸门 280 秒，D0 300 秒；任何 FAIL 即停，重试上限 0</td><td>单进程/GPU0，无端口；<code>xh-coll-timing-probe-1012</code>、<code>xh-coll-timing-contract-1012</code>、<code>xh-coll-timing-d0-1012</code>；主会话拥有日志、JSON、预算与清理</td></tr>
 </tbody></table>
-<p>下表为原移植阶段的历史分工与阶段 E 的既定资源表；A–C 已完成，不再次派发、不据旧角色名调用模型。当前修复写集以上表 T1 为准，阶段 E 的运行型 R1 在本宿主用 <code>gpt-6.1-sol</code>，仍须单独批次放行。</p>
+<p>下表为原移植阶段的历史分工与阶段 E 的既定资源表；A–C 已完成，不再次派发、不据旧角色名调用模型。当前修复写集以上表 T1 为准，阶段 E 的运行型 R1 在本宿主（Claude Code）用 <code>opus</code>，仍须单独批次放行。</p>
 <table>
 <thead>
 <tr>
@@ -1443,7 +1432,7 @@ uv run --no-sync python -m robomme_xhard.tools.summarize --root artifacts/xhard/
 uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifacts/xhard/xhard-1012-coll/full --out-dir artifacts/xhard/xhard-1012-coll/report/per_episode_strip --seeds artifacts/xhard/xhard-1012-coll/mother_seeds_all.json   # → EPISODE_STRIP_VIDEO=PASS videos=
 </code></pre>
 <h2 id="h13">五、风险登记</h2>
-<p><strong>本次风险 R10-T</strong>：物理积分前仍可能有 float32 四元数归一化、SAPIEN 写入读回、q 与 −q 表示导致的逐位差异。必须实测首探针并保存原始字段；失败不改成 allclose、不换旋转矩阵作新判据、不缓存自证、不继续后续测试。普通非重建 reset 或同步/并发重入 step 的语义问题保持为独立范围，不在 T1 顺手修。</p>
+<p><strong>本次风险 R10-T</strong>：物理积分前仍可能有 float32 四元数归一化、SAPIEN 写入读回、q 与 −q 表示导致的逐位差异。必须实测首探针并保存原始字段；失败不改成 allclose、不换旋转矩阵作新判据、不缓存自证、不继续后续测试。普通非重建 reset 的语义问题保持为独立范围，不在 T1 顺手修。</p>
 <table>
 <thead>
 <tr>
@@ -1506,7 +1495,7 @@ uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifa
 </tbody>
 </table>
 <h2 id="h14">六、盲区诚实清单</h2>
-<p>首 before 钩子确实位于 CPU PhysX 的 <code>scene.step</code> 之前由源码证实；端点逐位通过、一次性标志的动态行为与完整 JSON 尚未验证。下方原始漂移数据未量化，历史通过的 D0 不代替新时序送达验证。默认渲染用 GPU，物理用 CPU；没有 CUDA 物理多环境的支持结论。</p>
+<p><code>_before_control_step</code> 位于父类 set_pose 之后、CPU PhysX 首个 <code>scene.step</code> 之前且每控制步只调一次，由 <code>sapien_env.py::_step_action</code> 源码证实；端点逐位通过与完整 JSON 尚未验证。下方原始漂移数据未量化，历史通过的 D0 不代替新时序送达验证。默认渲染用 GPU，物理用 CPU；没有 CUDA 物理多环境的支持结论。</p>
 <ul>
 <li>退化（理想矩形只换短边两对、偶数段净回原位）来自 K2，本轮不改；真实 ±4.25 cm 中心抖动下的比例只有子代理简化蒙特卡洛估计（约 83%～88% 样本净恒等；统计量：偶数段数下最终净置换为恒等的样本比例。与 2.5 的「约 82% 完美匹配」不是同一统计量，后者是随机布局下最近邻构成互为最近完美匹配的比例；两者均为子代理简化蒙特卡洛、未实测），<strong>未实测</strong>。D1 已裁决「接受」：结果统计逐卡报净置换是否为恒等，并按任务 × 档位给出恒等比例。</li>
 <li>D4 已裁决：碰撞保证范围限定为「参与交换的对象之间（含本段其余交换对象）」；按钮、机械臂（含夹爪）、桌面不入判据，作为盲区明列；验收与留档都不得泛称「全场景无碰撞」。</li>
@@ -1586,7 +1575,13 @@ uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifa
 <td>D9</td>
 <td>GPU 首段端点失败后的时序修订</td>
 <td>针对「是否先修订计划，把段起点检查移到首个物理子步之前，保留逐位判据与每子步检测？」答复「同意」</td>
-<td>本轮仅修订 HTML。K14 明列两个控制步临时字段，T1 仅三个文件、无新父类 reset 覆写；完整修订计划呈现后须再获开工认可，不能将本次「同意」算作修复代码或 GPU 起跑授权</td>
+<td>本轮仅修订 HTML（codex 方案 B：首个 <code>_before_simulation_step</code> + 两个状态字段）；该版本随后被 D10 的方案 X 取代</td>
+</tr>
+<tr>
+<td>D10</td>
+<td>更简方案 X 取代 codex 方案 B</td>
+<td>「能不能有一些更加简单的解决方案 检查codex是否overthink」「你让我看不懂了 展开画图解释」「选 X 开始修复」</td>
+<td><strong>已裁决</strong>（K14）：段起点复核放 <code>_before_control_step</code>，零新增状态字段，删 step 覆写；P1 新批 <code>_before_control_step</code> 覆写、撤回 step 覆写。主会话 sonnet 审查代理核对 codex 修订无事实错误但 overthink（<code>PRE_MERGE_REVIEW=PASS base=2dce9e8d tip=6e7714d0 findings=4</code>）。本次只修订 HTML；改代码与 GPU 仍等本修订计划的无修改开工认可</td>
 </tr>
 </tbody>
 </table>
