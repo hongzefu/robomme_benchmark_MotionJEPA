@@ -63,6 +63,7 @@ a { color:var(--accent); }
 <li>四项裁决：「1 同意 并且这个是新特性（空容器可当发起者）2 随机（并列时）3 算搭档（次数计发起+搭档）4 同意（三项 P1 覆盖）」「写html plan」</li>
 <li>「对每个现在有的hard seed进行派生 看看成功率多少 所有的难度都要尝试 xhard12到xhard20 还是一样生成合并到mp4给我」（实施步骤的最后阶段，见第四节阶段 E）</li>
 <li>「六、全量派生与成功率统计 … 这个也是四、实施步骤的一部分啊 把它写清楚清楚连贯 不要递增堆砌」</li>
+<li>「现在xhard12到20 swap对象是独立的吗」→ 答：同一母 seed 下五档是前缀关系；用户：「不要独立 就现在这样更好了」（K11）</li>
 <li>目标：能通过检测的样本交换动作与现在相同；会穿模的样本在 reset 或运行中被判 failure 剔除（固定 seed、不重试）；发起者分布均匀且不连续动同一对。做完后对三个任务现有全部母 seed 派生五档，给出成功率表与逐 episode 六列横排视频。</li>
 </ul>
 <hr />
@@ -128,6 +129,11 @@ a { color:var(--accent); }
 <td>K10</td>
 <td>每子步复核的约十倍耗时已接受；smoke 实测记录开销倍数</td>
 <td>用户「每子步复核」</td>
+</tr>
+<tr>
+<td>K11</td>
+<td>同一母 seed 下五档<strong>不独立、保持前缀关系</strong>：xhard14 的前 5 段 = xhard12 的 5 段，依此类推。实现上 <code>select_initiator</code> 的独立 Generator 只用 <code>seed + SWAP_PLAN_SEED_OFFSET</code>，<strong>不掺档位标签</strong>；按段顺序抽并列项，前 S 段逐段相同</td>
+<td>用户 10-12：「不要独立 就现在这样更好了」</td>
 </tr>
 </tbody>
 </table>
@@ -1149,6 +1155,7 @@ evidence = {k: copy.deepcopy(getattr(u, a)) for k, a in ((&quot;swap_plan&quot;,
 <li><code>test_plan_rejects_sweep_collision_raises_scene_error</code>（三对象一字排开、中间旁观者 → <code>SwapCollisionError</code> 且 <code>isinstance(SceneGenerationError)</code>）</li>
 <li><code>test_certify_prefills_all_pairs_and_schedule</code>（fake env 有 <code>seed</code>、<code>swap_times</code>、<code>_refresh_swap_schedule</code>；用 <code>ObjectState</code> 直接注入绕过 actor）</li>
 <li><code>test_segment_start_binding_mismatch_raises</code></li>
+<li><code>test_plan_prefix_across_tiers</code>（K11）：同一布局、同一 seed，S=4/5/7/9/11 的 <code>plan_swaps</code> 结果两两满足「短的是长的前缀」（发起者与搭档逐段相等）</li>
 <li><code>test_swap_collision_gpu.py</code>（<code>@pytest.mark.gpu</code>）：三任务 × xhard12，母 seed 用 <code>test_s2_configs.MOTHER_RANK0_SEEDS</code>；断言 <code>all(getattr(u,f"swap_pair{k}_idx2") is not None for k in 1..S)</code>、<code>len(u._xhard_swap_plan["pairs"]) == S</code>、<code>u._xhard_runtime_checks == []</code>。</li>
 <li><code>test_jobs.py</code> 新增：<code>_worker</code> 结果行在有/无证据属性时的字段存在性（mock <code>record_env</code>）。</li>
 </ul>
