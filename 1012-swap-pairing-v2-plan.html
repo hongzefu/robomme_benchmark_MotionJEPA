@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1012-swap-pairing-v2-plan — 交换配对 v2：可行槽对图 G + 负载均衡，从 v1 之前重新开始</title>
+<style>
+:root { --fg:#1f2328; --muted:#59636e; --bg:#ffffff; --border:#d1d9e0; --code:#f6f8fa; --accent:#0969da; --quote:#eef4fb; }
+html { scroll-behavior:smooth; }
+body { margin:0; background:var(--bg); color:var(--fg); font-family:"Noto Sans CJK SC","PingFang SC","Microsoft YaHei",-apple-system,"Segoe UI",sans-serif; font-size:15px; line-height:1.7; }
+.wrap { display:flex; gap:32px; max-width:1500px; margin:0 auto; padding:24px 16px; }
+nav.toc { position:sticky; top:0; align-self:flex-start; max-height:100vh; overflow:auto; width:260px; flex:none; font-size:13px; border-right:1px solid var(--border); padding-right:12px; }
+nav.toc li.lv2 { padding-left:12px; } nav.toc li.lv3 { padding-left:24px; font-size:12px; }
+nav.toc ul { list-style:none; padding-left:12px; margin:4px 0; }
+nav.toc > ul { padding-left:0; }
+nav.toc a { color:var(--muted); text-decoration:none; }
+nav.toc a:hover { color:var(--accent); }
+main { flex:1; min-width:0; }
+h1 { font-size:1.9em; border-bottom:2px solid var(--border); padding-bottom:.3em; margin-top:1.6em; }
+h1:first-child { margin-top:0; font-size:1.5em; }
+h2 { font-size:1.45em; border-bottom:1px solid var(--border); padding-bottom:.25em; margin-top:1.6em; }
+h3 { font-size:1.15em; margin-top:1.4em; }
+blockquote { margin:0 0 1em; padding:8px 16px; background:var(--quote); border-left:4px solid var(--accent); }
+blockquote p { margin:.4em 0; }
+code { font-family:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace; font-size:.9em; background:var(--code); padding:1px 5px; border-radius:4px; }
+pre { background:var(--code); border:1px solid var(--border); border-radius:6px; padding:12px 14px; overflow:auto; line-height:1.45; }
+pre code { background:none; padding:0; font-size:.85em; }
+table { border-collapse:collapse; width:100%; margin:1em 0; font-size:.92em; }
+td code, th code { white-space:normal; word-break:break-all; }
+td { word-break:break-word; }
+th, td { border:1px solid var(--border); padding:6px 10px; vertical-align:top; }
+th { background:var(--code); text-align:left; }
+tr:nth-child(even) td { background:#fafbfc; }
+figure { margin:1.2em 0; padding:12px; border:1px solid var(--border); border-radius:8px; background:#fff; }
+figure svg { width:100%; height:auto; display:block; }
+figure figcaption { color:var(--muted); font-size:.9em; margin-top:8px; text-align:center; }
+img { max-width:100%; height:auto; border:1px solid var(--border); }
+details { margin:1em 0; }
+details summary { cursor:pointer; color:var(--muted); }
+a { color:var(--accent); }
+@media (max-width: 960px) { .wrap { flex-direction:column; } nav.toc { position:static; width:auto; max-height:none; border-right:0; } }
+@media print { nav.toc { display:none; } }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<nav class="toc"><ul>
+<li class="lv2"><a href="#h0">〇、为什么改</a></li>
+<li class="lv1"><a href="#p1">第一部分（给人看）</a></li>
+<li class="lv2"><a href="#h1">一、一句话与已定口径</a></li>
+<li class="lv2"><a href="#h2">二、实测：新策略在已有 seed 上长什么样</a></li>
+<li class="lv2"><a href="#h3">三、机制：改哪些函数、各干什么</a></li>
+<li class="lv2"><a href="#h4">四、验收判定行</a></li>
+<li class="lv2"><a href="#h5">五、实施步骤</a></li>
+<li class="lv2"><a href="#h6">六、子代理分工与合并（简述）</a></li>
+<li class="lv1"><a href="#p2">第二部分（技术细节，供 agent 追踪）</a></li>
+<li class="lv2"><a href="#t0">〇、红线</a></li>
+<li class="lv2"><a href="#t1">一、逐文件改动清单</a></li>
+<li class="lv2"><a href="#t2">二、子代理分配表</a></li>
+<li class="lv2"><a href="#t3">三、闸门总表</a></li>
+<li class="lv2"><a href="#t4">四、runbook（主会话）</a></li>
+<li class="lv2"><a href="#t5">五、风险登记</a></li>
+<li class="lv2"><a href="#t6">六、盲区诚实清单</a></li>
+<li class="lv2"><a href="#t7">七、留档与 commit 纪律</a></li>
+</ul></nav>
+<main>
+<h1>1012-swap-pairing-v2-plan.html — 交换配对 v2：可行槽对图 G + 负载均衡，从 v1 之前重新开始</h1>
+<blockquote>
+<p><strong>权威性与锚点</strong>：本文件是交换配对 v2 的唯一权威计划，从零写成，不在 <a href="1012-swap-collision-plan.html"><code>1012-swap-collision-plan.html</code></a>（下称 v1 计划）上增量修改；v1 计划原样保留为历史，不再修订。工作副本 <code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>、分支 <code>newtask-v3-MotionJepa1006</code>（sled-vail，环境 B）。写计划时 HEAD 为 <code>3083af74</code>（2.93，v1 全量结论）；<strong>v2 代码基线</strong>是 v1 动代码之前的 <code>0ec9951b</code>（2.76）。外部锚点：V9 配对算法取自 <code>origin/newtaskRelease-taskV9</code> 的 <code>5f4f2f9c</code>，文件 <code>src/robomme_hard/robomme_env/utils/swap_uniform.py</code>（sha256 <code>f4a1a8c08c629e8924ff1a0d37e9acdd4c7bcfee32ba7be80cf18e6328d85821</code>）；碰撞判据仍是 <code>newtask-v2.1refractor@ce72b04f</code> 的 <code>bin_collision.py</code>（sha256 <code>bbe87eec3c36ab54e703a6ff741a5fdd3217c11e2a1541eb95d8f013c852302b</code>）。</p>
+<p><strong>commit 体例</strong>：主线 <code>&lt;大&gt;.&lt;小&gt; 中文描述</code> 从 2.94 接续（本计划提交即 2.94）；子代理提交 <code>sub/&lt;编号&gt;: </code> 前缀，经 <code>--no-ff</code> 合并。<strong>只前进、不改写历史</strong>：不 <code>reset</code>、不 <code>rebase</code>、不 <code>--force</code>。</p>
+<p><strong>授权边界</strong>：本轮只交这份 HTML 和实测探针留档。用户对本计划不改而明确说「开工」后，才开始撤回提交与改代码；全量 180 卡另按 P5 在 smoke 后单独报批。</p>
+</blockquote>
+
+<h2 id="h0">〇、为什么改</h2>
+<ul>
+<li>v1（2.77–2.93）的交换配对是「发起者取参与最少者 → 搭档取最近邻 → 再查碰撞」。全量 <code>xhard-1012-coll</code> 165/180：VideoUnmaskSwap seed 9300、ButtonUnmaskSwap seed 10500 在第 0 段最近邻对子就扫掠接触（-1.70 mm、-0.44 mm），VideoRepick seed 11200 因运行期最近邻绑定差 1.5 mm 被判失败；每个都五档连带剔除。</li>
+<li>v1 代码从 2.77 到 2.92 经过方案 X、X′ 等多轮补丁。用户要求 v2 不在其上叠加，回到 <code>0ec9951b</code> 的代码字节，再用干净的增量 commit 重建。</li>
+<li>V9 分支的做法是「先查后选」：reset 时把所有槽对的整段扫掠都判一遍，得到可行槽对图 G，只在 G 的边里挑，搭档可以不是最近邻，并按参与次数做负载均衡。</li>
+</ul>
+
+<h1 id="p1">第一部分（给人看）</h1>
+
+<h2 id="h1">一、一句话与已定口径</h2>
+<p><strong>一句话</strong>：代码先整体退回 <code>0ec9951b</code>；重建时碰撞判据、运行期复核、生成器与工具按 v1 最终版原样恢复，<strong>只把配对换成「可行槽对图 G + V9 负载均衡贪心」</strong>，口径 B：每个槽至少有一条可行边，否则整卡剔除。</p>
+<p>用户原话（逐字）：</p>
+<ul>
+<li>「给出方案 只改变交换策略 预先对 4 个槽位的 6 种两两组合各做一次连续碰撞检查，得到可行图 G，只在 G 的边里挑。搭档可以不是最近邻，比如对角线 然后尽可能负债均衡」</li>
+<li>「不要在这个的基础上做增量 然后重新做计划v2 这个计划的修改 要从 回到v1修改前 用git增量commit的形式 重新开始 不要叠屎山 给出方案 html」</li>
+<li>「你找一两个现在已有的测试一下。新的这个策略会是什么样子你换一个简单的图2D的图来告诉我」（结果见第二节）</li>
+<li>「用b 写html」（选口径 B：每个槽至少一条可行边）</li>
+</ul>
+<table>
+<tr><th>编号</th><th>已定口径</th><th>依据</th></tr>
+<tr><td style="white-space:nowrap">K1</td><td>代码从 <code>0ec9951b</code> 重来：一个前进的撤回提交，把 <code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code> 与 <code>src/robomme_xhard/</code> 恢复成 <code>0ec9951b</code> 的字节，并删除其后新增的 10 个文件；docs 留档、AGENTS/CLAUDE、v1 计划不动</td><td>用户原话第 2 条；第三节、第二部分一</td></tr>
+<tr><td style="white-space:nowrap">K2</td><td>G 的判定：reset 时对全部无序槽对各调一次 <code>bin_collision.check_swap_sweep</code>，其余对象静止在各自槽。VideoUnmaskSwap、ButtonUnmaskSwap 有 4 个槽，判 6 次；VideoRepick 有 3 个方块，判 3 次</td><td>用户原话第 1 条；3.1</td></tr>
+<tr><td style="white-space:nowrap">K3</td><td><strong>口径 B</strong>：G 里每个槽度数 ≥ 1（V9 <code>isolated_slots(adj) == []</code>）。不满足就抛 <code>SwapCollisionError(stage="graph")</code>，整卡剔除、固定 seed、不重试。不要求连通（V9 要求，用户没选）</td><td>「用b」；第二节实测</td></tr>
+<tr><td style="white-space:nowrap">K4</td><td>配对算法：V9 <code>swap_uniform.py</code> 逐字节引入，调用 <code>plan_balanced_swaps(adj, S_max, gen, score="max_sum", budget=20, accept_range=1, forbid_undo=True)</code>。在 G 的边里取两个占用者参与次数「较大值最小，再比和」的一对；不许紧接着换回上一对；整条序列极差大于 1 就换随机数重排，最多 20 次</td><td>3.2</td></tr>
+<tr><td style="white-space:nowrap">K5</td><td>五档前缀关系保留：每个母 seed 按该任务的最大段数 S_max 只规划一次（VideoUnmaskSwap 11、ButtonUnmaskSwap 12、VideoRepick 15，取自 <code>configs.TIER_CONFIGS</code>），各档取前 S 段</td><td>v1 K11 已批；3.2</td></tr>
+<tr><td style="white-space:nowrap">K6</td><td>随机流独立：<code>torch.Generator().manual_seed(seed + 0x53574150)</code>，不碰父类随机流；不像 V9 那样从主流追加抽种子</td><td>P1/P2；3.2</td></tr>
+<tr><td style="white-space:nowrap">K7</td><td>同形断言：交换对象的盒体集合必须逐盒一致，否则不能按「槽」算 G，抛 <code>SceneGenerationError</code>。实测三个 seed 全部同形</td><td>3.1</td></tr>
+<tr><td style="white-space:nowrap">K8</td><td>逐段再证：规划出的每一段仍按当时真实占用者跑一次 <code>check_swap_sweep</code>。同形下必然与 G 一致；不一致即拒绝，并标为「G 与逐段不符」</td><td>3.2</td></tr>
+<tr><td style="white-space:nowrap">K9</td><td>运行期复核沿用 v1 最终语义：子步布局检查、段起点端点逐位比较（含 X′ 父类 float32 归一化重放）、段起点整段重证。<strong>删去最近邻绑定</strong>，因为搭档不再是最近邻；改为<strong>槽位绑定</strong>：每个交换对象实际 xy 最近的槽必须等于计划占用的槽，且离该槽中心的距离小于最小槽间距的一半</td><td>3.3</td></tr>
+<tr><td style="white-space:nowrap">K10</td><td>母档（hard）不变，仍是官方父类的随机 2–3 次、最近邻配对；只改 xhard 五档。<code>src/robomme/</code> 零 diff</td><td>P1、P2</td></tr>
+<tr><td style="white-space:nowrap">K11</td><td>v1 已批口径全部沿用：D2 运行期失败只记 <code>_xhard_fatal</code>、不抛异常；D4 保证范围只限交换对象之间；D5 基础设施崩溃卡隔离；D7 六列视频版式；D8 30 母 seed、180 卡、GPU0 <code>--workers 32</code>；P5 smoke 后对全量单独报批</td><td>v1 计划第八节</td></tr>
+</table>
+
+<h2 id="h2">二、实测：新策略在已有 seed 上长什么样</h2>
+<p>只读探针，没改仓库代码。用当前 HEAD 的 xhard20 环境 reset 出真实布局，在进程内把 <code>certify_swap_plan</code> 换成记录器，避免 v1 在 reset 时抛错。G 用 <code>bin_collision.check_swap_sweep</code> 判，配对用 V9 <code>swap_uniform.py</code> 原样计算。GPU0 单进程，三个 seed 共约 1 分钟。脚本、JSON 与图都在 <a href="docs/xhard-doc/xhard-1012-swap-v2-probe/"><code>docs/xhard-doc/xhard-1012-swap-v2-probe/</code></a>。</p>
+<figure><img src="docs/xhard-doc/xhard-1012-swap-v2-probe/probe_g.png" alt="三个 seed 的可行槽对图俯视"><figcaption>图 2　俯视 2D：色块是 4 个容器的槽位（按实际朝向），绿实线 = 整段扫掠无接触、可选，红虚线 = 会撞、排除，数字是最小间隙（负为穿入深度）；下方是 v1 与新策略的槽对序列和每个容器的参与次数</figcaption></figure>
+<table>
+<tr><th>编号</th><th>任务 / seed</th><th>G（6 对里可行）</th><th>v1 最近邻</th><th>新策略</th><th>口径 B 结论</th></tr>
+<tr><td>2.3</td><td>VideoUnmaskSwap 5700</td><td>4 对（01、03、12、23），连成一圈；对角 02、13 会撞（-0.3、-1.0 mm）</td><td>能过；只在 12、03 两对之间来回，参与 <code>[5,6,6,5]</code></td><td>4 种槽对都用上，参与 <code>[5,5,6,6]</code>，极差 1，第 1 次就接受</td><td>通过</td></tr>
+<tr><td>2.3</td><td>VideoUnmaskSwap 9300</td><td>2 对（03 +37.8 mm、12 +12.9 mm），互不相通</td><td>第 0 段接触，剔除</td><td>只能在 03、12 两对之间轮换，参与 <code>[6,5,5,6]</code>，极差 1</td><td><strong>通过</strong>（每个槽都有边）</td></tr>
+<tr><td>2.4</td><td>ButtonUnmaskSwap 10500</td><td>2 对（02 +20.5 mm、12 +22.7 mm），槽 3 和谁换都会撞（-0.1 到 -3.0 mm）</td><td>第 0 段接触，剔除</td><td>能排，但槽 3 全程不动，参与 <code>[8,8,8,0]</code></td><td><strong>仍剔除</strong>（槽 3 孤立）</td></tr>
+</table>
+<p>结论：新策略在布局宽裕时用到更多不同的对子，例如 5700 从 2 种变成 4 种，最多和最少只差 1。v1 被剔的两张里，口径 B 救回 9300，10500 仍剔。很多不可行的对子只差 0.1–0.5 mm，判据没有放宽余量，本计划也不放宽。VideoRepick 11200 当时是被最近邻绑定判掉的，这条检查在 v2 中删除；它能否通过要等阶段 D 的 smoke 实跑，现在没有证据。</p>
+
+<h2 id="h3">三、机制：改哪些函数、各干什么</h2>
+<h3>3.1 可行槽对图 G</h3>
+<p><strong>定义</strong>：交换段结束时两个对象精确对换位置（xy）和朝向，各自保留高度。所以一局里对象占据的位姿集合（槽）不变，变的只是谁占哪个槽；两个对象交换的扫掠几何只取决于它们所占的无序槽对。容器同形（K7）时，G 在 reset 时算一次，整局有效。</p>
+<p><strong>锚点</strong>：<code>src/robomme_xhard/swap_plan.py::slot_graph(states)</code> 调 <code>swap_uniform.slot_pair_graph(n, feasible)</code>，其中 <code>feasible(a, b)</code> 是 <code>bc.check_swap_sweep(states[a], states[b], [其余槽], sweep_index=-1, stage="graph")</code> 无拒绝。同时返回每对的 <code>gap</code>（可行为下界，不可行为拒绝的 <code>gap_m</code>），写进 <code>_xhard_swap_plan["graph"]</code>。</p>
+<p><strong>口径 B</strong>：<code>swap_plan.py::require_every_slot_covered(adj)</code> 在 <code>swap_uniform.isolated_slots(adj)</code> 非空时抛 <code>SwapCollisionError(rejection, "graph")</code>，rejection 记孤立槽号及其各对的 gap。B 也保证贪心不会无路可走：n=4 时每个槽有边，至少 2 条边；n=3 时至少 2 条边，去掉上一对后仍有候选。</p>
+<p>⚠ <strong>陷阱</strong>：G 只证明「这一对动、其余静止在槽上」时无接触。运行期对象相对槽有毫米级漂移（v1 的 11200 差 1.5 mm），所以运行期仍保留段起点整段重证与子步检查（K9），不能只凭 G 放行。</p>
+
+<h3>3.2 负载均衡配对（V9 S5，逐字节引入）</h3>
+<pre><code># swap_plan.py::certify_swap_plan(env, actors, bystanders, prefix)
+states = [bc.object_state_from_actor(a, f"{prefix}{i}") for i, a in enumerate(actors)]
+check_bin_layout(states + others)               # 初态，v1 原样
+assert_same_shapes(states)                      # K7，不同形 → SceneGenerationError
+adj, gaps = slot_graph(states)                  # K2
+require_every_slot_covered(adj, gaps)           # K3 口径 B
+gen  = torch.Generator().manual_seed(env.seed + 0x53574150)        # K6
+full = su.plan_balanced_swaps(adj, S_max(task), gen, score="max_sum",
+                              budget=20, accept_range=1, forbid_undo=True)   # K4、K5
+for k, (a, b) in enumerate(full.pairs[:env.swap_times]):          # 取前 S 段
+    replay_sweep_with_real_occupants(k, a, b)   # K8，逐段再证并更新占用
+    env.swap_pair{k+1}_idx1, _idx2 = actors[a], actors[b]          # 预写，父类 step 不再找最近邻
+env._refresh_swap_schedule(); env._xhard_swap_plan = {...}</code></pre>
+<p>父类 <code>VideoUnmaskSwap.step</code> 只在 <code>swap_pair{i}_idx2 is None</code> 时找最近邻，预写后这个分支不会触发（已读源码核实）。<code>swap_flat_two_lane</code> 对 A、B 对称：互换发起方后，两条弯道几何相同，所以 V9 随机决定谁当发起者不改变 G 的判定。</p>
+<p><strong>收益（实测）</strong>：5700 用到的槽对从 2 种增至 4 种，极差保持 1；9300 从「剔除」变为可排。</p>
+
+<h3>3.3 运行期复核：只换「绑定」这一项</h3>
+<table>
+<tr><th>检查点</th><th>v1 最终（3083af74）</th><th>v2</th></tr>
+<tr><td>段起点·绑定</td><td><code>nearest_partner_index</code> 重算最近邻，必须等于计划搭档（<code>SwapBindingError</code>, check=<code>binding</code>）</td><td><strong>槽位绑定</strong> <code>_slot_binding_evidence(k)</code>：每个交换对象实际 xy 最近的槽 = 计划占用槽，且距离 &lt; 最小槽间距 / 2（<code>SwapBindingError</code>, check=<code>slot_binding</code>，记录各对象漂移 mm）</td></tr>
+<tr><td>段起点·端点</td><td><code>_endpoint_evidence</code> + <code>parent_start_q</code>（X′），四字段 <code>np.array_equal</code></td><td>同语义，一次写成，不分两次补丁</td></tr>
+<tr><td>段起点·重证</td><td>真实状态 <code>check_swap_sweep</code></td><td>原样</td></tr>
+<tr><td>子步</td><td><code>_before/_after_simulation_step</code> 窗内 <code>check_bin_layout</code></td><td>原样</td></tr>
+<tr><td>送达</td><td>只记首条 <code>_xhard_fatal</code>，不抛异常（D2）</td><td>原样</td></tr>
+</table>
+
+<h3>3.4 改动一览</h3>
+<table>
+<tr><th>文件</th><th>锚点</th><th>v2 怎么来</th></tr>
+<tr><td><code>src/robomme_xhard/collision/{bin_collision.py,__init__.py,VENDORED.md}</code></td><td>判据与错误类</td><td>从 <code>3083af74</code> 字节恢复（判据本身逐字节未改，sha 不变）</td></tr>
+<tr><td><code>src/robomme_xhard/collision/swap_uniform.py</code>（新）</td><td><code>plan_balanced_swaps</code> 等</td><td>从 V9 <code>5f4f2f9c</code> 逐字节引入，<code>VENDORED.md</code> 追加一条来源</td></tr>
+<tr><td><code>src/robomme_xhard/swap_plan.py</code></td><td><code>slot_graph</code>、<code>require_every_slot_covered</code>、<code>certify_swap_plan</code>、<code>SwapCollisionMixin</code></td><td><strong>重写</strong>：规划部分换成 3.1/3.2；运行期部分按 3.3，删最近邻绑定、加槽位绑定</td></tr>
+<tr><td><code>src/robomme_xhard/envs/{video_unmask_swap,button_unmask_swap,video_repick}.py</code></td><td><code>_load_scene</code> 接线</td><td>按 v1 最终版的接线重写，<code>certify_swap_plan</code> 签名不变（S_max 在其内部查表）</td></tr>
+<tr><td>生成器 <code>generate_dataset_newseed.py</code>、<code>jobs.py</code>、<code>tools/{layout,summarize,mother_seeds,episode_strip_video}.py</code></td><td>失败证据、隔离、母 seed、汇总、视频</td><td>从 <code>3083af74</code> 字节恢复（与配对无关）；<code>summarize</code> 已认 <code>SwapBindingError</code>，无需改</td></tr>
+<tr><td><code>src/robomme_xhard/tests/</code></td><td>v1 新增与修改的测试</td><td>与配对无关的字节恢复；<code>test_swap_plan.py</code> 重写（第二部分一）</td></tr>
+</table>
+
+<h2 id="h4">四、验收判定行</h2>
+<table>
+<tr><th>判定行</th><th>查什么</th><th>怎么查</th><th>过了说明什么</th></tr>
+<tr><td><code>REVERT_V1=PASS paths=2 diff=0 removed=10</code></td><td>撤回提交后两条代码路径与 <code>0ec9951b</code> 字节一致</td><td><code>git diff --quiet 0ec9951b -- scripts/data-generation-newSeed/generate_dataset_newseed.py src/robomme_xhard</code></td><td>v2 起点就是 v1 之前的代码，没有残留补丁</td></tr>
+<tr><td><code>SRC_ROBOMME_ZERO_DIFF=PASS</code></td><td>P1</td><td><code>git diff --quiet HEAD -- src/robomme/</code>（每次合并后）</td><td>官方代码一字未动</td></tr>
+<tr><td><code>VENDOR_BYTES=PASS files=2</code></td><td>两份引入文件的 sha256</td><td><code>sha256sum</code> 对 <code>bbe87eec…</code>、<code>f4a1a8c0…</code></td><td>判据与配对算法和来源逐字节相同</td></tr>
+<tr><td><code>RESTORE_V1_FINAL=PASS files=N diff=0</code></td><td>字节恢复类文件与 <code>3083af74</code> 一致</td><td>逐文件 <code>git diff --quiet 3083af74 -- &lt;文件&gt;</code></td><td>只有配对相关文件是新写的</td></tr>
+<tr><td><code>SWAP_PLAN_V2_CPU=PASS</code></td><td>纯函数单测：G 构造、口径 B 拒绝、对角搭档可选、禁撤销、前缀、可复现、同形断言、槽位绑定</td><td><code>pytest src/robomme_xhard/tests/test_swap_plan.py -q</code></td><td>规划逻辑与口径一致</td></tr>
+<tr><td>核心短测（P4 覆盖口径）</td><td>全仓轻量测试</td><td><code>timeout 280s uv run --no-sync python -m pytest tests/lightweight/ src/robomme_xhard/tests -m 'not gpu and not slow' -q</code></td><td>无回归；失败数不超过 v1 记录的基线已知失败</td></tr>
+<tr><td><code>XHARD_FATAL_CATCH=PASS tasks=3 hang=0</code></td><td>运行期失败能送达生成器</td><td><code>test_fatal_catch.py</code>（GPU0）</td><td>D2 送达链路完好</td></tr>
+<tr><td><code>SWAP_V2_GRAPH_SCAN=INFO seeds=30 b_pass=x b_reject=y</code></td><td>30 个母 seed 的 G 与口径 B 预判（只 reset，不 rollout）</td><td>阶段 D 探针，xhard20 布局</td><td>全量前就知道剔除数；不作 PASS/FAIL 门槛</td></tr>
+<tr><td><code>SWAP_V2_SMOKE=PASS cards=4</code></td><td>5700、9300、10500、11200 各一张 xhard20</td><td>GPU0 单 worker</td><td>5700、9300 成功；10500 在 reset 阶段以 <code>stage=graph</code> 剔除；11200 如实报结果</td></tr>
+<tr><td><code>XHARD_FULL_DERIVE=DONE cards=180 ok=… coll=… other=0</code></td><td>全量</td><td>生成器 + summarize</td><td>剔除均有 G 或运行期证据</td></tr>
+<tr><td><code>EPISODE_STRIP_VIDEO=PASS videos=30</code></td><td>六列视频</td><td>episode_strip_video</td><td>D7 版式</td></tr>
+</table>
+
+<h2 id="h5">五、实施步骤</h2>
+<table>
+<tr><th>阶段</th><th>内容</th><th>判据</th></tr>
+<tr><td>R</td><td>撤回提交 2.95：代码路径恢复 <code>0ec9951b</code> 字节，删 10 个新增文件</td><td><code>REVERT_V1</code>、核心短测（记录基线）</td></tr>
+<tr><td>A</td><td>并行：S1 判据与 V9 算法引入；S4 生成器与工具字节恢复</td><td><code>VENDOR_BYTES</code>、<code>RESTORE_V1_FINAL</code></td></tr>
+<tr><td>B</td><td>并行：S2 <code>swap_plan.py</code> 重写与单测；S3 三个子类接线与 GPU 契约测试</td><td><code>SWAP_PLAN_V2_CPU</code></td></tr>
+<tr><td>C</td><td>按 R→S1→S4→S2→S3 逐个 <code>--no-ff</code> 合并，每次合并前后各审一次</td><td><code>PRE/POST_MERGE_REVIEW</code>、<code>SRC_ROBOMME_ZERO_DIFF</code>、核心短测</td></tr>
+<tr><td>D</td><td>GPU：契约测试 → <code>XHARD_FATAL_CATCH</code> → G 扫描（30 seed，只 reset）→ 4 卡 smoke</td><td><code>XHARD_FATAL_CATCH</code>、<code>SWAP_V2_GRAPH_SCAN</code>、<code>SWAP_V2_SMOKE</code></td></tr>
+<tr><td>E</td><td>报批后：Beta 提交 → 全量 180 卡 <code>xhard-1012-swapv2</code> → 汇总、视频、留档</td><td><code>XHARD_FULL_DERIVE</code>、<code>EPISODE_STRIP_VIDEO</code></td></tr>
+</table>
+
+<h2 id="h6">六、子代理分工与合并（简述）</h2>
+<p>撤回提交 R 交给一个写入型子代理在独立 worktree 里做，主会话审完后先合入，后面所有分支都从合入后的 HEAD 分出。之后分两拨：S1（判据与 V9 算法，纯字节恢复与引入）和 S4（生成器与工具字节恢复）互不相干，同时派；S1 合入后再同时派 S2（重写 <code>swap_plan.py</code>）和 S3（三个子类接线），两者按 3.2 写死的 <code>certify_swap_plan(env, actors, bystanders, prefix)</code> 签名对接。每次合并前，主会话核对改动文件不越出可写集合，并派一个只读审查代理审 <code>BASE..TIP</code>；合并后跑短测并核对 <code>src/robomme/</code> 零 diff，通过即 push。GPU 验收、G 扫描、smoke 和全量都在合并后由主会话或运行型子代理在主检出串行跑。</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" font-family="Noto Sans CJK SC, sans-serif" font-size="13">
+  <defs>
+    <marker id="ah-grey" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#777"/></marker>
+    <marker id="ah-blue" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker>
+    <marker id="ah-orange" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#ea580c"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="560" fill="#ffffff"/>
+
+  <!-- 第一层：v1 历史主干 + 撤回提交 R -->
+  <!-- A: 0ec9951b -->
+  <rect x="30" y="102" width="140" height="56" rx="4" fill="#eeeeee" stroke="#888" stroke-width="1.5"/>
+  <text x="100" y="126" text-anchor="middle" fill="#111">0ec9951b（2.76）</text>
+  <text x="100" y="144" text-anchor="middle" fill="#111">v1 改代码之前</text>
+
+  <!-- B1: v1 代码提交区间（虚线框） -->
+  <rect x="220" y="93" width="175" height="74" rx="4" fill="#f4f4f4" stroke="#888" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="307.5" y="117" text-anchor="middle" fill="#111">v1 代码提交 2.77–2.92</text>
+  <text x="307.5" y="135" text-anchor="middle" fill="#111">（交换碰撞 + 最近邻配对</text>
+  <text x="307.5" y="153" text-anchor="middle" fill="#111">+ 方案 X′）</text>
+
+  <!-- B2: 3083af74 -->
+  <rect x="445" y="102" width="140" height="56" rx="4" fill="#eeeeee" stroke="#888" stroke-width="1.5"/>
+  <text x="515" y="126" text-anchor="middle" fill="#111">3083af74（2.93）</text>
+  <text x="515" y="144" text-anchor="middle" fill="#111">v1 全量 165/180</text>
+
+  <text x="402.5" y="205" text-anchor="middle" fill="#666">v1 历史：提交保留、不改写</text>
+
+  <!-- R: 撤回提交 -->
+  <rect x="635" y="75" width="260" height="110" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="765" y="99" text-anchor="middle" fill="#111">R：撤回提交</text>
+  <text x="765" y="117" text-anchor="middle" fill="#111">代码路径恢复成 0ec9951b 的字节</text>
+  <text x="765" y="135" text-anchor="middle" fill="#111">（generate_dataset_newseed.py、</text>
+  <text x="765" y="153" text-anchor="middle" fill="#111">src/robomme_xhard/）</text>
+  <text x="765" y="171" text-anchor="middle" fill="#111">docs 留档保留</text>
+
+  <!-- 主干实线箭头 -->
+  <path d="M170 130 H220" stroke="#777" stroke-width="1.6" fill="none" marker-end="url(#ah-grey)"/>
+  <path d="M395 130 H445" stroke="#777" stroke-width="1.6" fill="none" marker-end="url(#ah-grey)"/>
+  <path d="M585 130 H635" stroke="#777" stroke-width="1.6" fill="none" marker-end="url(#ah-grey)"/>
+
+  <!-- A → R 的正交虚线箭头（向上、水平、向下贴到 R 顶边） -->
+  <path d="M100 102 V40 H765 V75" stroke="#2563eb" stroke-width="1.6" fill="none" stroke-dasharray="6 4" marker-end="url(#ah-blue)"/>
+  <text x="432" y="33" text-anchor="middle" fill="#2563eb">恢复字节，不改写历史（v2 从 v1 之前重新开始）</text>
+
+  <!-- R → 第二层：下行、左行到总线、分两路进 S1 / S4 -->
+  <path d="M765 185 V222 H25 V490 H50" stroke="#2563eb" stroke-width="1.6" fill="none" marker-end="url(#ah-blue)"/>
+  <path d="M25 300 H50" stroke="#2563eb" stroke-width="1.6" fill="none" marker-end="url(#ah-blue)"/>
+  <text x="40" y="242" fill="#2563eb">R 之后派发两条并行子任务</text>
+
+  <!-- 第二层：新增子任务（橙） -->
+  <!-- S1 -->
+  <rect x="50" y="254" width="220" height="92" rx="4" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="160" y="278" text-anchor="middle" fill="#111">S1 判据：</text>
+  <text x="160" y="296" text-anchor="middle" fill="#111">bin_collision.py 原样恢复</text>
+  <text x="160" y="314" text-anchor="middle" fill="#111">+ 引入 V9 swap_uniform.py</text>
+  <text x="160" y="332" text-anchor="middle" fill="#111">（字节一致）</text>
+
+  <!-- S4 -->
+  <rect x="50" y="462" width="220" height="56" rx="4" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="160" y="486" text-anchor="middle" fill="#111">S4 生成器与工具：</text>
+  <text x="160" y="504" text-anchor="middle" fill="#111">v1 最终版原样恢复</text>
+
+  <!-- S2 -->
+  <rect x="350" y="263" width="200" height="74" rx="4" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="450" y="287" text-anchor="middle" fill="#111">S2 配对规划：</text>
+  <text x="450" y="305" text-anchor="middle" fill="#111">可行槽对图 G + 负载均衡贪心</text>
+  <text x="450" y="323" text-anchor="middle" fill="#111">（swap_plan.py 重写）</text>
+
+  <!-- S3 -->
+  <rect x="350" y="372" width="200" height="56" rx="4" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="450" y="396" text-anchor="middle" fill="#111">S3 环境接线：</text>
+  <text x="450" y="414" text-anchor="middle" fill="#111">三个子类 + 槽位绑定复核</text>
+  <text x="450" y="448" text-anchor="middle" fill="#666">S2、S3 并行，同一接口契约</text>
+
+  <!-- S1 → S2 / S3 -->
+  <path d="M270 300 H350" stroke="#ea580c" stroke-width="1.6" fill="none" marker-end="url(#ah-orange)"/>
+  <path d="M310 300 V400 H350" stroke="#ea580c" stroke-width="1.6" fill="none" marker-end="url(#ah-orange)"/>
+  <text x="310" y="290" text-anchor="middle" fill="#ea580c">依赖 S1</text>
+
+  <!-- 验收（绿） -->
+  <rect x="640" y="254" width="160" height="264" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="720" y="364" text-anchor="middle" fill="#111">整合 → smoke</text>
+  <text x="720" y="382" text-anchor="middle" fill="#111">（9300/10500/11200</text>
+  <text x="720" y="400" text-anchor="middle" fill="#111">三个旧失败 seed）</text>
+  <text x="720" y="418" text-anchor="middle" fill="#111">→ 全量 180 卡</text>
+
+  <!-- 合并箭头 -->
+  <path d="M550 300 H640" stroke="#ea580c" stroke-width="1.6" fill="none" marker-end="url(#ah-orange)"/>
+  <text x="595" y="290" text-anchor="middle" fill="#ea580c">--no-ff</text>
+  <path d="M550 400 H640" stroke="#ea580c" stroke-width="1.6" fill="none" marker-end="url(#ah-orange)"/>
+  <text x="595" y="390" text-anchor="middle" fill="#ea580c">--no-ff</text>
+  <path d="M270 490 H640" stroke="#ea580c" stroke-width="1.6" fill="none" marker-end="url(#ah-orange)"/>
+  <text x="455" y="480" text-anchor="middle" fill="#ea580c">--no-ff</text>
+
+  <!-- 图例 -->
+  <text x="830" y="262" fill="#111" font-weight="bold">图例</text>
+  <rect x="830" y="276" width="18" height="12" fill="#eeeeee" stroke="#888"/>
+  <text x="856" y="287" fill="#111">灰 = v1 历史（不动）</text>
+  <rect x="830" y="301" width="18" height="12" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="856" y="312" fill="#111">蓝 = 撤回</text>
+  <rect x="830" y="326" width="18" height="12" fill="#ffedd5" stroke="#ea580c"/>
+  <text x="856" y="337" fill="#111">橙 = 新增子任务</text>
+  <rect x="830" y="351" width="18" height="12" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="856" y="362" fill="#111">绿 = 验收</text>
+</svg>
+<figcaption>图 1　v2 的提交链路：v1 历史保留不动，撤回提交恢复字节，之后只有前进的增量提交（S1→S2/S3 是依赖，不是合并）</figcaption></figure>
+<p>逐文件、逐函数的细节见第二部分。</p>
+
+<h1 id="p2">第二部分（技术细节，供 agent 追踪）</h1>
+
+<h2 id="t0">〇、红线</h2>
+<ol>
+<li><strong>R0-1</strong>　<code>src/robomme/</code> 零 diff，不覆盖其中任何方法（P1）。v2 的覆盖点与 v1 已批的 K8′ 相同（预写 <code>swap_pair{k}_idx*</code>、混入改变 MRO、新增 <code>_xhard_*</code> 属性），新增的只有 <code>_xhard_swap_plan["graph"]</code> 字段和 <code>check="slot_binding"</code> 取值。</li>
+<li><strong>R0-2</strong>　历史只前进：禁止 <code>git reset</code>、<code>rebase</code>、<code>push --force</code>、<code>commit --amend</code>。撤回用「<code>git checkout 0ec9951b -- &lt;两条路径&gt;</code> + 逐个 <code>git rm</code>」做成一个普通提交，不用 <code>git revert</code> 逐个反做 v1 的合并提交（避免一串反向合并）。</li>
+<li><strong>R0-3</strong>　docs 下 v1 留档（<code>docs/xhard-doc/xhard-1012-coll*</code>）、<code>1012-swap-collision-plan.html</code>、AGENTS.md、CLAUDE.md 不在撤回范围。</li>
+<li><strong>R0-4</strong>　两份引入文件逐字节不改（<code>bin_collision.py</code>、<code>swap_uniform.py</code>）；行为差异只能写在 <code>swap_plan.py</code>。</li>
+<li><strong>R0-5</strong>　判据不放宽：<code>EPS_M=1e-6</code> 不变，不加安全余量，不因 0.1 mm 级接触改判。</li>
+<li><strong>R0-6</strong>　失败不换 seed、不重试（P2）；G 不满足 B 即整卡剔除。</li>
+<li><strong>R0-7</strong>　生成只在本机 GPU0（P7），tmux 前缀 <code>xh-</code>；全量 180 卡须在 smoke 后单独报批（P5）。</li>
+</ol>
+
+<h2 id="t1">一、逐文件改动清单</h2>
+<h3>1.1 撤回提交 R（2.95）</h3>
+<pre><code>git checkout 0ec9951b -- scripts/data-generation-newSeed/generate_dataset_newseed.py src/robomme_xhard
+git rm src/robomme_xhard/collision/VENDORED.md src/robomme_xhard/collision/__init__.py \
+       src/robomme_xhard/collision/bin_collision.py src/robomme_xhard/swap_plan.py \
+       src/robomme_xhard/tests/test_bin_collision_vendored.py src/robomme_xhard/tests/test_collision_tools.py \
+       src/robomme_xhard/tests/test_fatal_catch.py src/robomme_xhard/tests/test_swap_collision_gpu.py \
+       src/robomme_xhard/tests/test_swap_plan.py src/robomme_xhard/tests/test_worker_evidence.py
+# 共 10 个 git rm（新增清单 12 项中另 2 项为 collision/ 目录随之清空，按实际 git diff --diff-filter=A 复核）
+git diff --quiet 0ec9951b -- scripts/data-generation-newSeed/generate_dataset_newseed.py src/robomme_xhard &amp;&amp; echo REVERT_V1=PASS</code></pre>
+<p><code>git diff --name-status 0ec9951b 3083af74 -- src scripts tests</code> 实列新增（A）10 个、修改（M）13 个文件，全部在这两条路径内；上面 <code>git rm</code> 恰为 10 个 A。23 个文件在 v2 中的去向：S1 认领 4 个，S2 认领 2 个，S3 认领 7 个，S4 认领 10 个，无遗漏、无重叠。</p>
+
+<h3>1.2 S1：判据与配对算法</h3>
+<ul>
+<li><code>collision/bin_collision.py</code>、<code>collision/__init__.py</code>、<code>tests/test_bin_collision_vendored.py</code>：<code>git show 3083af74:&lt;路径&gt; &gt; &lt;路径&gt;</code>，字节恢复。</li>
+<li><code>collision/swap_uniform.py</code>：<code>git show 5f4f2f9c:src/robomme_hard/robomme_env/utils/swap_uniform.py</code>，字节引入（只依赖 <code>torch</code>，无仓库内 import）。</li>
+<li><code>collision/VENDORED.md</code>：恢复 v1 原文，并追加第二条来源（仓库、分支 <code>newtaskRelease-taskV9</code>、提交 <code>5f4f2f9c</code>、来源路径、sha256、导入日期 2026-10-12）。</li>
+<li>新增 <code>tests/test_swap_uniform_vendored.py</code>：sha 断言、<code>slot_pair_graph</code>/<code>isolated_slots</code>/<code>plan_balanced_swaps</code> 在 4 槽环、两对互斥、3 槽三个形状上的确定性输出。</li>
+</ul>
+<h3>1.3 S2：<code>swap_plan.py</code> 重写</h3>
+<ul>
+<li>常量：<code>SWAP_PLAN_SEED_OFFSET = 0x53574150</code>；<code>PLAN_SCORE="max_sum"</code>、<code>PLAN_BUDGET=20</code>、<code>PLAN_ACCEPT_RANGE=1</code>。</li>
+<li><code>max_swap_count(task)</code>：<code>max(cfg["swap_count"] for cfg in TIER_CONFIGS[task].values())</code>（11/12/15）。</li>
+<li><code>assert_same_shapes(states)</code>：逐盒比较 <code>half</code>、<code>local_p</code>、<code>local_q</code>（<code>np.array_equal</code>），不一致抛 <code>SceneGenerationError</code>。</li>
+<li><code>slot_graph(states)</code> → <code>(adj, gaps)</code>；<code>require_every_slot_covered(adj, gaps)</code>。</li>
+<li><code>SwapPlan</code> 字段：<code>pairs</code>（<code>[a, b, distance, gap]</code>，与 v1 同形，<code>summarize</code>、<code>test_collision_tools</code> 照读）、<code>usage</code>、<code>initiator_usage</code>、<code>partner_usage</code>、<code>initial_gap</code>，新增 <code>slot_pairs</code>、<code>graph</code>（<code>adj</code>、<code>gaps</code>）、<code>s_max</code>、<code>spread_full</code>、<code>spread_prefix</code>、<code>tries</code>。</li>
+<li><code>certify_swap_plan(env, actors, bystanders, name_prefix)</code>：按 3.2 伪码；签名与 v1 相同。</li>
+<li><code>parent_start_q</code>、<code>_endpoint_evidence</code>、<code>_substep_check</code>、<code>_runtime_guard</code>、三个钩子：按 v1 最终语义写（可直接取 <code>3083af74</code> 版本的函数体）。</li>
+<li><code>_check_segment_start(k)</code>：顺序为槽位绑定 → 端点 → 重证。槽位绑定的槽中心取 <code>_xhard_swap_plan</code> 里 reset 时记下的槽 xy；占用表按 <code>slot_pairs[:k]</code> 推演。</li>
+<li><code>tests/test_swap_plan.py</code> 重写，保留 v1 中与配对无关的用例（端点、X′、钩子时序、送达、窗口），删去 <code>select_initiator</code> 与最近邻绑定用例，新增：口径 B 孤立槽拒绝、9300 形布局（两对互斥）可排、对角边被选中、禁撤销、前缀一致（S=4 是 S=11 的前缀）、同 seed 可复现、K8 不一致拒绝、槽位绑定在漂移 &lt; 半间距时通过、≥ 半间距时记 fatal。</li>
+</ul>
+<h3>1.4 S3：三个子类</h3>
+<ul>
+<li><code>envs/video_unmask_swap.py</code>、<code>button_unmask_swap.py</code>、<code>video_repick.py</code>：以 <code>3083af74</code> 版本为底，接线不变（<code>_load_scene</code> 末尾 <code>certify_swap_plan</code>，<code>_swap_actors</code>、<code>_bystander_actors</code>、<code>_refresh_swap_schedule</code>）；docstring 中「搭档取最近邻」改为 G + 负载均衡说明。</li>
+<li><code>tests/test_swap_collision_gpu.py</code>：以 v1 版本为底，<code>test_reset_certifies_all_pairs</code> 去掉对最近邻的断言，增加「每段槽对 ∈ G」「孤立槽 seed（10500）reset 抛 <code>SwapCollisionError</code> stage=graph」；<code>test_fatal_catch.py</code>、<code>test_s2_configs.py</code>、<code>test_contract.py</code> 字节恢复。</li>
+</ul>
+<h3>1.5 S4：生成器与工具</h3>
+<p>字节恢复自 <code>3083af74</code>：<code>generate_dataset_newseed.py</code>、<code>jobs.py</code>、<code>tools/layout.py</code>、<code>tools/summarize.py</code>、<code>tools/mother_seeds.py</code>、<code>tools/episode_strip_video.py</code>，测试 <code>test_jobs.py</code>、<code>test_episode_strip_video.py</code>、<code>test_worker_evidence.py</code>、<code>test_collision_tools.py</code>。判定行 <code>RESTORE_V1_FINAL</code>。</p>
+
+<h2 id="t2">二、子代理分配表</h2>
+<table>
+<tr><th>编号</th><th>目标</th><th>可写集合</th><th>禁触</th><th>契约与依赖</th><th>合并顺序</th><th>验收（worktree 内，CPU）</th><th>资源</th></tr>
+<tr><td>R</td><td>撤回到 <code>0ec9951b</code></td><td>上述两条路径</td><td>docs、根目录文件、<code>src/robomme/</code></td><td>基线 <code>3083af74</code>（或 2.94 计划提交）</td><td>1</td><td><code>REVERT_V1=PASS</code></td><td>无</td></tr>
+<tr><td>S1</td><td>判据 + V9 算法引入</td><td><code>src/robomme_xhard/collision/**</code>、<code>tests/test_bin_collision_vendored.py</code>、<code>tests/test_swap_uniform_vendored.py</code></td><td>其余</td><td>依赖 R</td><td>2</td><td><code>VENDOR_BYTES</code>、两份测试通过</td><td>无</td></tr>
+<tr><td>S4</td><td>生成器与工具恢复</td><td>1.5 所列 10 个文件</td><td>其余</td><td>依赖 R；与 S1 并行</td><td>3</td><td><code>RESTORE_V1_FINAL</code>、对应测试通过（<code>test_collision_tools.py</code> 待 S2 合入后在主检出复跑）</td><td>无</td></tr>
+<tr><td>S2</td><td><code>swap_plan.py</code> 重写</td><td><code>src/robomme_xhard/swap_plan.py</code>、<code>tests/test_swap_plan.py</code></td><td><code>collision/**</code>、<code>envs/**</code></td><td>依赖 S1；对 S3 提供 3.2 签名</td><td>4</td><td><code>SWAP_PLAN_V2_CPU</code></td><td>无</td></tr>
+<tr><td>S3</td><td>三子类接线</td><td>三个 <code>envs/*.py</code>、<code>tests/{test_swap_collision_gpu,test_fatal_catch,test_s2_configs,test_contract}.py</code></td><td><code>swap_plan.py</code>、<code>collision/**</code></td><td>依赖 S1；与 S2 并行</td><td>5</td><td>CPU 用例（MRO、接口）通过；GPU 用例留主会话</td><td>无</td></tr>
+<tr><td>主会话</td><td>合并、GPU 验收、扫描、smoke、留档</td><td>合并提交、<code>docs/xhard-doc/xhard-1012-swapv2*</code></td><td>—</td><td>全部合入后</td><td>—</td><td>阶段 D 判定行</td><td>GPU0；tmux <code>xh-swapv2-*</code></td></tr>
+<tr><td>运行型</td><td>全量 180 卡</td><td>只写产物与日志</td><td>一切源码</td><td>报批后</td><td>—</td><td>起跑判据：首个 <code>succeeded with seed</code></td><td>GPU0，<code>--workers 32</code>，tmux <code>xh-swapv2-full-1012</code></td></tr>
+</table>
+<p>环境取法：<code>UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -m pytest …</code>，先打印 <code>robomme_xhard.__file__</code>，确认它落在 worktree 内。共享文件归属：<code>VENDORED.md</code> 归 S1；<code>test_collision_tools.py</code> 归 S4。</p>
+
+<h2 id="t3">三、闸门总表</h2>
+<table>
+<tr><th>闸门</th><th>时点</th><th>不过怎么办</th></tr>
+<tr><td><code>REVERT_V1</code></td><td>R 合并前</td><td>交回 R 续改</td></tr>
+<tr><td><code>VENDOR_BYTES</code> / <code>RESTORE_V1_FINAL</code></td><td>S1 / S4 合并前</td><td>交回续改，不手改引入文件</td></tr>
+<tr><td><code>SWAP_PLAN_V2_CPU</code></td><td>S2 合并前</td><td>交回 S2</td></tr>
+<tr><td><code>SRC_ROBOMME_ZERO_DIFF</code> + 核心短测</td><td>每次合并后</td><td>停止后续合并、不 push，交用户</td></tr>
+<tr><td>GPU 契约 + <code>XHARD_FATAL_CATCH</code></td><td>阶段 D 首步</td><td>停，报证据</td></tr>
+<tr><td><code>SWAP_V2_GRAPH_SCAN</code></td><td>阶段 D</td><td>只报数，不设门槛；若 B 剔除超过 30 个母 seed 的 20%，先交用户再 smoke</td></tr>
+<tr><td><code>SWAP_V2_SMOKE</code></td><td>阶段 D 末</td><td>按第 2 条执行中调整规则停下重审</td></tr>
+<tr><td>全量报批</td><td>smoke 后</td><td>未获明确批准不起跑</td></tr>
+</table>
+
+<h2 id="t4">四、runbook（主会话）</h2>
+<pre><code># D1 GPU 契约与送达（GPU0）
+CUDA_VISIBLE_DEVICES=0 timeout 600 uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py src/robomme_xhard/tests/test_fatal_catch.py -m gpu -q 2&gt;&amp;1 | tee artifacts/logs/xh-swapv2-d1-1012.log
+
+# D2 G 扫描：30 母 seed，只 reset（探针脚本落 docs/xhard-doc/xhard-1012-swapv2/records/）
+tmux new-session -d -s xh-swapv2-scan-1012 "set -o pipefail; cd /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006; CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 uv run --no-sync python docs/xhard-doc/xhard-1012-swapv2/records/graph_scan.py --manifest docs/xhard-doc/xhard-1012-coll/records/mother_seeds_all.json 2&gt;&amp;1 | tee artifacts/logs/xh-swapv2-scan-1012.log; echo \"EXIT_CODE=\$?\" &gt;&gt; artifacts/logs/xh-swapv2-scan-1012.log"
+
+# D3 smoke：4 张 xhard20，单 worker
+uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py \
+  --env VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick --difficulty xhard20 \
+  --mother-manifest artifacts/xhard/xhard-1012-swapv2/smoke_seeds.json \
+  --gpus 0 --workers 1 --output-dir artifacts/xhard/xhard-1012-swapv2/smoke
+# smoke_seeds.json 从 mother_seeds_all.json 摘出 5700、9300（VUS）、10500（BUS）、11200（VR）
+
+# E 全量（报批后，Beta 提交后，运行型子代理起）
+tmux new-session -d -s xh-swapv2-full-1012 "set -o pipefail; cd /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006; PYTHONUNBUFFERED=1 uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py --env VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick --difficulty xhard12,xhard14,xhard16,xhard18,xhard20 --mother-manifest artifacts/xhard/xhard-1012-swapv2/mother_seeds_all.json --with-mother --gpus 0 --workers 32 --output-dir artifacts/xhard/xhard-1012-swapv2/full 2&gt;&amp;1 | tee artifacts/logs/xh-swapv2-full-1012.log; echo \"EXIT_CODE=\$?\" &gt;&gt; artifacts/logs/xh-swapv2-full-1012.log"</code></pre>
+<p>Monitor 过滤：<code>succeeded with seed|EXIT_CODE=|SwapCollisionError|SwapBindingError|failed|进程池已损坏|ERROR:|Traceback|BrokenProcessPool|svulkan2|out of memory|NO RECORD</code>，一份日志挂一个 Monitor。停止条件沿用 v1 ⑤：进程池损坏、墙钟超过 1 小时、GPU0 被占满，或任一任务 <code>SwapBindingError</code> 超过 10%。</p>
+
+<h2 id="t5">五、风险登记</h2>
+<table>
+<tr><th>编号</th><th>风险</th><th>处置</th></tr>
+<tr><td>X1</td><td>非最近邻搭档的弯道更长，对角交换路径可能贴近按钮、机械臂（判据盲区，见第六节）</td><td>smoke 与全量视频目视抽查对角段；不扩大判据范围（D4）</td></tr>
+<tr><td>X2</td><td>槽位绑定的「半间距」阈值在槽很近时过严或过松</td><td>记录每段漂移 mm 分布；超过阈值即按 D2 记 fatal，不调阈值，交用户</td></tr>
+<tr><td>X3</td><td>V9 重排 20 次仍极差 &gt; 1（如 10500 型被 B 挡在前；口径 B 下仍可能出现）</td><td>取极差最小的一条，<code>spread_full</code>、<code>spread_prefix</code> 写进证据，汇总报分布</td></tr>
+<tr><td>X4</td><td>恢复 S4 时 <code>3083af74</code> 的生成器隐含依赖 v1 <code>SwapPlan</code> 字段</td><td>S2 保持 <code>pairs</code>、<code>usage</code>、<code>initiator_usage</code>、<code>partner_usage</code> 同名同形；合并后主检出复跑 <code>test_collision_tools.py</code>、<code>test_worker_evidence.py</code></td></tr>
+<tr><td>X5</td><td>撤回提交后到 S 系列合入前，主线代码处于「无碰撞检测」的 v0 状态</td><td>这期间不跑任何生成；阶段 D 只在全部合入后开始</td></tr>
+<tr><td>X6</td><td>五档前缀依赖 S_max 规划；以后改 <code>TIER_CONFIGS</code> 的最大段数会改变所有档位的配对</td><td><code>s_max</code> 写进证据；测试钉住 11/12/15</td></tr>
+</table>
+
+<h2 id="t6">六、盲区诚实清单</h2>
+<ul>
+<li>G 与运行期检查只覆盖交换对象之间（D4）；按钮、机械臂、桌面不在判据内。</li>
+<li>口径 B 不保证连通：像 9300 这类布局只会在两对之间来回轮换，D1 的「净置换恒等」比例可能上升，汇总照报。</li>
+<li>30 个母 seed 的 G 分布目前只测了 3 个；剔除数要到阶段 D 扫描才知道。</li>
+<li>VideoRepick 11200 在 v2 下能否成功未验证。</li>
+<li>V9 引入的是纯函数；V9 环境里的外环干扰、提速、pick 改动都不引入。</li>
+</ul>
+
+<h2 id="t7">七、留档与 commit 纪律</h2>
+<ul>
+<li>2.94：本计划 + 探针留档 <code>docs/xhard-doc/xhard-1012-swap-v2-probe/</code>（<code>probe_g.py</code>、<code>plot_g.py</code>、<code>probe_g.json</code>、<code>probe_g.png</code>）。</li>
+<li>2.95：撤回提交 R（合并）；其后每个 S 子任务一个 <code>sub/…</code> 提交加一个 <code>--no-ff</code> 合并提交，按项目版本号递增，合并 body 写第 11 条六项与 <code>PRE_MERGE_REVIEW</code> 行。</li>
+<li>阶段 D 结果写 <code>docs/xhard-doc/xhard-1012-swapv2-smoke/</code>；全量按第 13 条两段式写 <code>docs/xhard-doc/xhard-1012-swapv2/</code>（<code>launch.md</code> 在 Beta 提交时写，<code>result.md</code> 跑完补）。</li>
+<li>每次提交后立即 push；子代理分支不 push。</li>
+</ul>
+</main>
+</div>
+</body>
+</html>
