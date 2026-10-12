@@ -1,0 +1,264 @@
+{
+  "version": 1,
+  "rule": "计划固定配置参照子集（MoveCube/InsertPeg 取全体）∩ difficulty=SOURCE_DIFFICULTY ∩ episode>=6（R11），episode 升序前 2 个；rank 0 锁定给最终版",
+  "metadata_dir": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/src/robomme/env_metadata/train",
+  "verify_source": "/data/hongzefu/data_0226",
+  "tasks": {
+    "BinFill": [
+      {
+        "episode": 7,
+        "seed": 4701,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 15,
+        "seed": 5501,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "PickXtimes": [
+      {
+        "episode": 7,
+        "seed": 1700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 11,
+        "seed": 2100,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "SwingXtimes": [
+      {
+        "episode": 7,
+        "seed": 3700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 11,
+        "seed": 4101,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "StopCube": [
+      {
+        "episode": 59,
+        "seed": 7900,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 83,
+        "seed": 10300,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "VideoUnmask": [
+      {
+        "episode": 7,
+        "seed": 6700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 11,
+        "seed": 7100,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "ButtonUnmask": [
+      {
+        "episode": 7,
+        "seed": 8700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 11,
+        "seed": 9100,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "VideoUnmaskSwap": [
+      {
+        "episode": 7,
+        "seed": 5700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 11,
+        "seed": 6100,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "ButtonUnmaskSwap": [
+      {
+        "episode": 7,
+        "seed": 7700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 27,
+        "seed": 9700,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "PickHighlight": [
+      {
+        "episode": 7,
+        "seed": 12700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 11,
+        "seed": 13100,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "VideoRepick": [
+      {
+        "episode": 46,
+        "seed": 13600,
+        "source_difficulty": "medium",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 86,
+        "seed": 17600,
+        "source_difficulty": "medium",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "VideoPlaceButton": [
+      {
+        "episode": 7,
+        "seed": 10701,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 11,
+        "seed": 11100,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "VideoPlaceOrder": [
+      {
+        "episode": 7,
+        "seed": 11705,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 15,
+        "seed": 12501,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "MoveCube": [
+      {
+        "episode": 7,
+        "seed": 14700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 11,
+        "seed": 15100,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "InsertPeg": [
+      {
+        "episode": 7,
+        "seed": 13700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 11,
+        "seed": 14100,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "PatternLock": [
+      {
+        "episode": 7,
+        "seed": 15700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 15,
+        "seed": 16500,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ],
+    "RouteStick": [
+      {
+        "episode": 7,
+        "seed": 16700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "match"
+      },
+      {
+        "episode": 39,
+        "seed": 19900,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "match"
+      }
+    ]
+  }
+}

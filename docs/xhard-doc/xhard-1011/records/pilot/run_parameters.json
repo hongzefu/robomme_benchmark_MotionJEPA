@@ -1,0 +1,46 @@
+{
+  "mode": "xhard",
+  "output_dir": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1011/pilot",
+  "env": "all",
+  "tasks": [
+    "BinFill",
+    "PickXtimes",
+    "SwingXtimes",
+    "StopCube",
+    "VideoUnmask",
+    "ButtonUnmask",
+    "VideoUnmaskSwap",
+    "ButtonUnmaskSwap",
+    "PickHighlight",
+    "VideoRepick",
+    "VideoPlaceButton",
+    "VideoPlaceOrder",
+    "MoveCube",
+    "InsertPeg",
+    "PatternLock",
+    "RouteStick"
+  ],
+  "workers": 4,
+  "gpus": [
+    "1"
+  ],
+  "difficulty": [
+    "xhard12",
+    "xhard14",
+    "xhard16",
+    "xhard18",
+    "xhard20"
+  ],
+  "mother_manifest": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1011/mother_seeds.json",
+  "with_mother": true,
+  "mother_rank": null,
+  "card_count": 136,
+  "xhard_card_count": 104,
+  "mother_card_count": 32,
+  "attempt": 0,
+  "retry_on_failure": false,
+  "limit_threads": true,
+  "max_tasks_per_child": 8,
+  "affinity": "none",
+  "save_video_for_recording": true
+}

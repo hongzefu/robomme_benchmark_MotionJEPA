@@ -1,0 +1,47 @@
+choice 空值比例（母档 vs 派生档）：
+  BinFill: mother 0.000 (0/1779)  xhard 0.000 (0/7610)
+  ButtonUnmask: mother 0.000 (0/775)  xhard 0.000 (0/1076)
+  ButtonUnmaskSwap: mother 0.000 (0/898)  xhard 0.000 (0/7261)
+  InsertPeg: mother 0.000 (0/980)  xhard 0.000 (0/0)
+  MoveCube: mother 0.117 (90/769)  xhard 0.000 (0/0)
+  PatternLock: mother 0.000 (0/692)  xhard 0.000 (0/5452)
+  PickHighlight: mother 0.000 (0/1113)  xhard 0.000 (0/5127)
+  PickXtimes: mother 0.000 (0/1719)  xhard 0.000 (0/12973)
+  RouteStick: mother 0.000 (0/1000)  xhard 0.000 (0/8000)
+  StopCube: mother 0.000 (0/476)  xhard 0.000 (0/3224)
+  SwingXtimes: mother 0.000 (0/990)  xhard 0.000 (0/8047)
+  VideoPlaceButton: mother 0.197 (376/1904)  xhard 0.156 (757/4859)
+  VideoPlaceOrder: mother 0.104 (232/2230)  xhard 0.092 (232/2522)
+  VideoRepick: mother 0.227 (326/1434)  xhard 0.514 (5842/11359)  <-- 高于母档
+  VideoUnmask: mother 0.203 (132/651)  xhard 0.135 (132/976)
+  VideoUnmaskSwap: mother 0.404 (336/831)  xhard 0.625 (4260/6813)  <-- 高于母档
+XHARD_CHOICE_GROUNDING=FAIL files=10 button_steps=4362 empty=0 tasks_over_mother=2
+8 帧严格遗漏（最长一档）： task seed level T units unit_miss swaps swap_miss
+   BinFill 4701 xhard20 1608 10 3 0 0 miss=3
+   PickXtimes 1700 xhard20 1710 11 4 0 0 miss=4
+   PickXtimes 2100 xhard20 1494 11 4 0 0 miss=4
+   SwingXtimes 3700 xhard20 1005 21 14 0 0 miss=14
+   SwingXtimes 4101 xhard20 1017 21 14 0 0 miss=14
+   StopCube 7900 xhard20 475 3 1 0 0 miss=1
+   StopCube 10300 xhard20 481 3 1 0 0 miss=1
+   VideoUnmask 6700 xhard14 498 3 0 0 0 miss=0
+   VideoUnmask 7100 xhard14 478 3 0 0 0 miss=0
+   ButtonUnmask 8700 xhard14 535 4 0 0 0 miss=0
+   ButtonUnmask 9100 xhard14 541 4 0 0 0 miss=0
+   VideoUnmaskSwap 5700 xhard20 883 2 1 11 7 miss=8
+   VideoUnmaskSwap 6100 xhard20 873 2 1 11 7 miss=8
+   ButtonUnmaskSwap 7700 xhard20 908 8 2 12 7 miss=9
+   ButtonUnmaskSwap 9700 xhard20 909 8 2 12 7 miss=9
+   PickHighlight 12700 xhard18 988 7 1 0 0 miss=1
+   PickHighlight 13100 xhard18 1032 7 1 0 0 miss=1
+   VideoRepick 13600 xhard20 1382 3 2 0 0 miss=2
+   VideoRepick 17600 xhard20 1348 3 2 0 0 miss=2
+   VideoPlaceButton 10701 xhard14 1265 1 0 1 1 miss=1
+   VideoPlaceButton 11100 xhard14 1329 1 0 1 1 miss=1
+   VideoPlaceOrder 11705 xhard12 1281 1 0 1 1 miss=1
+   VideoPlaceOrder 12501 xhard12 1241 1 0 1 1 miss=1
+   PatternLock 15700 xhard20 704 9 6 0 0 miss=6
+   PatternLock 16500 xhard20 596 8 5 0 0 miss=5
+   RouteStick 16700 xhard20 1000 7 4 0 0 miss=4
+   RouteStick 19900 xhard20 1000 10 7 0 0 miss=7
+XHARD_8FRAME_LONGEST=FAIL tasks=14 episodes=27 zero_miss=4
