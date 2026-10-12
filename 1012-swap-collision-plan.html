@@ -63,6 +63,7 @@ a { color:var(--accent); }
 <li>四项裁决：「1 同意 并且这个是新特性（空容器可当发起者）2 随机（并列时）3 算搭档（次数计发起+搭档）4 同意（三项 P1 覆盖）」「写html plan」</li>
 <li>「对每个现在有的hard seed进行派生 看看成功率多少 所有的难度都要尝试 xhard12到xhard20 还是一样生成合并到mp4给我」（实施步骤的最后阶段，见第四节阶段 E）</li>
 <li>「六、全量派生与成功率统计 … 这个也是四、实施步骤的一部分啊 把它写清楚清楚连贯 不要递增堆砌」</li>
+<li>「母 seed为什么有这么多 只从train metadata的hard派生啊？？」「train metadata为什么会有400个 哪里来的？ 官方…不是只有100个吗」「删除新的metadata 现在直接做 metadata只保留官方的 然后调整计划」（K12）</li>
 <li>「现在xhard12到20 swap对象是独立的吗」→ 答：同一母 seed 下五档是前缀关系；用户：「不要独立 就现在这样更好了」（K11）</li>
 <li>目标：配对按 K2/K3 在 reset 时重新规划并写死（K3 改变了配对序列，交换动作<strong>不</strong>与现在相同）；会穿模的样本在 reset 或运行中被判 failure 剔除（固定 seed、不重试）；发起者「发起 + 搭档」总参与次数尽量均衡，N ≥ 3 时相邻两段不动同一对（细节与限制见 2.5）。做完后对三个任务现有全部母 seed 派生五档，给出成功率表与逐 episode 六列横排视频。</li>
 </ul>
@@ -139,6 +140,11 @@ a { color:var(--accent); }
 <td>K11</td>
 <td>同一母 seed 下五档<strong>不独立、保持前缀关系</strong>。段数按任务（xhard12/14/16/18/20，<code>src/robomme_xhard/configs.py::TIER_CONFIGS</code>）：VideoUnmaskSwap S=4/5/7/9/11；ButtonUnmaskSwap S=4/6/8/10/12（P=3/4/4/5/6）；VideoRepick S=5/7/10/13/15。<strong>低档的全部 S 段 = 高档的前 S 段</strong>。实现上 <code>select_initiator</code> 的独立 Generator 只用 <code>seed + SWAP_PLAN_SEED_OFFSET</code>，<strong>不掺档位标签</strong>；按段顺序抽并列项。推论：某档 reset 失败 ⟹ 更高档同段同样失败，各档成功率单调不增、<strong>彼此非独立</strong>。判定 <code>XHARD_TIER_PREFIX</code></td>
 <td>用户 10-12：「不要独立 就现在这样更好了」</td>
+</tr>
+<tr>
+<td>K12</td>
+<td>母 seed <strong>只取官方 train metadata（ep0–99）</strong>。官方 train metadata 每任务 100 条（ep0–99），其中 hard 25 条；本机官方参考集 <code>/data/hongzefu/data_0226</code>。本仓库提交 <code>052841ae</code>（2.8.1）曾把 VideoUnmask、ButtonUnmask、VideoUnmaskSwap、ButtonUnmaskSwap 四任务扩到 400 条（ep100–399、新 seed），<strong>该扩充已撤回</strong>：train metadata 已于 2.69 恢复为官方 100 条（版本号以主会话合并结果为准）。xhard-1011 用的 rank0 / rank1 母 seed（ep7 / 11 / 27 / 46 / 86）都在官方范围内，不受影响。C4 另加防线：所有母 seed 的 episode ≤ 99，超出即报错（<code>XHARD_MOTHER_OFFICIAL</code>）</td>
+<td>用户 10-12：「母 seed为什么有这么多 只从train metadata的hard派生啊？？」「train metadata为什么会有400个 哪里来的？ 官方…不是只有100个吗」「删除新的metadata 现在直接做 metadata只保留官方的 然后调整计划」</td>
 </tr>
 </tbody>
 </table>
@@ -667,12 +673,12 @@ a { color:var(--accent); }
 <tr>
 <td><code>src/robomme_xhard/jobs.py</code></td>
 <td><code>VALID_RANKS</code>、<code>validate_manifest</code></td>
-<td>放开 rank 到任意非负整数且任务内唯一（第四节阶段 E 全量派生每任务最多 99 个 rank）</td>
+<td>放开 rank 到任意非负整数且任务内唯一（第四节阶段 E 全量派生每任务 24 个 rank）</td>
 </tr>
 <tr>
 <td><code>src/robomme_xhard/tools/mother_seeds.py</code></td>
 <td><code>build_manifest</code> 新增 <code>--all</code></td>
-<td>全量模式：每任务取来源难度<strong>全部</strong> episode ≥ 6 的 seed，rank 按 episode 升序编号</td>
+<td>全量模式：每任务取来源难度<strong>全部</strong> episode ≥ 6 的官方 seed（ep ≤ 99，K12），rank 按 episode 升序编号；任一母 seed episode &gt; 99 即报错</td>
 </tr>
 <tr>
 <td><code>src/robomme_xhard/tools/layout.py</code></td>
@@ -736,7 +742,13 @@ a { color:var(--accent); }
 <td><code>XHARD_MOTHER_ALL=PASS tasks=3 seeds=&lt;n&gt;</code></td>
 <td>全量母清单</td>
 <td><code>uv run --no-sync python -m robomme_xhard.tools.mother_seeds --all --tasks VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick --out &lt;json&gt;</code>；<code>jobs.validate_manifest</code> 接受多 rank</td>
-<td>三任务全部母 seed 进清单（预期 99 + 99 + 24 = 222，按 <code>mother_seeds.py::MIN_EPISODE=6</code> 排除 VUS ep3/seed5300、BUS ep3/seed7300、VR ep2/seed9200）</td>
+<td>三任务全部官方母 seed 进清单（预期 24 + 24 + 24 = 72，按 <code>mother_seeds.py::MIN_EPISODE=6</code> 排除 VUS ep3/seed5300、BUS ep3/seed7300、VR ep2/seed9200）</td>
+</tr>
+<tr>
+<td><code>XHARD_MOTHER_OFFICIAL=PASS seeds=72</code></td>
+<td>母 seed 只来自官方 train metadata（K12）</td>
+<td><code>mother_seeds --all</code> 内断言清单中所有母 seed 的 <code>episode &lt;= 99</code>，超出即报错；CPU 单测另构造 ep100 记录确认会报错</td>
+<td>没有 <code>052841ae</code> 那类扩充记录混入；72 个母 seed 全在官方 ep0–99 内</td>
 </tr>
 <tr>
 <td><code>XHARD_P1_ZERO=PASS</code></td>
@@ -831,7 +843,7 @@ a { color:var(--accent); }
 </tbody>
 </table>
 <h2 id="h5">四、实施步骤：从拷贝判据到全量派生出视频</h2>
-<p>整条线分五个阶段，前四个阶段是把碰撞检测装进三个子类并证明它能跑，第五阶段才是用户要的结果：<strong>对三个交换任务现有的全部母 seed（VideoUnmaskSwap 99、ButtonUnmaskSwap 99、VideoRepick 24，共 222）各派生 xhard12 ～ xhard20 五档，统计成功率，并像 xhard-1011 那样每条 episode 出一支六列横排视频</strong>。每个阶段的产出直接作为下一阶段的输入，判据引用第三节。</p>
+<p>整条线分五个阶段，前四个阶段是把碰撞检测装进三个子类并证明它能跑，第五阶段才是用户要的结果：<strong>对三个交换任务现有的全部母 seed（只取官方 train metadata，K12：VideoUnmaskSwap 24、ButtonUnmaskSwap 24、VideoRepick 24，共 72）各派生 xhard12 ～ xhard20 五档，统计成功率，并像 xhard-1011 那样每条 episode 出一支六列横排视频</strong>。每个阶段的产出直接作为下一阶段的输入，判据引用第三节。</p>
 <table>
 <thead>
 <tr>
@@ -855,7 +867,7 @@ a { color:var(--accent); }
 <td>C1 写 <code>swap_plan.py</code>（第二节 2.2/2.3 的全部函数）与两份 CPU 测试；C3 让生成器把 <code>swap_plan</code> / <code>runtime_checks</code> 写进结果行；C4 放开母清单到全部 seed（<code>mother_seeds.py --all</code>、<code>jobs.py</code> 多 rank）、让 <code>layout.py</code> 保留失败字段、拼接视频工具给失败卡画灰底、汇总脚本加 <code>error_type</code> / <code>stage</code> 列</td>
 <td>三个 opus worktree 子代理</td>
 <td>三个分支各自审查后按 C1 → C3 → C4 逐个 <code>--no-ff</code> 合入主分支</td>
-<td><code>XHARD_COLL_CPU</code>、<code>XHARD_SWAPPLAN_CPU</code>、<code>XHARD_MOTHER_ALL</code>、<code>XHARD_FAIL_FIELDS</code>、C3 的证据测试，每次合并后 <code>XHARD_CORE_SHORT</code> + <code>XHARD_P1_ZERO</code></td>
+<td><code>XHARD_COLL_CPU</code>、<code>XHARD_SWAPPLAN_CPU</code>、<code>XHARD_MOTHER_ALL</code>、<code>XHARD_MOTHER_OFFICIAL</code>、<code>XHARD_FAIL_FIELDS</code>、C3 的证据测试，每次合并后 <code>XHARD_CORE_SHORT</code> + <code>XHARD_P1_ZERO</code></td>
 </tr>
 <tr>
 <td>C 子类接线</td>
@@ -880,7 +892,7 @@ a { color:var(--accent); }
 </tr>
 <tr>
 <td>E 全量派生、成功率、视频</td>
-<td>① 用 C4 的 <code>--all</code> 出三任务全量母清单；② 向用户报规模、按 <code>ratio</code> 算出的耗时与按实测字节数算出的磁盘，取得对这一批的确认（P5）；③ Beta commit（第 13 条）后由运行型子代理 R1 起 tmux <code>xh-coll-full-1012</code>，1110 张 xhard 卡 + 222 张母卡，12 worker 单卡；④ 主会话 Monitor 盯到 <code>EXIT_CODE=</code>；⑤ <code>summarize.py</code> 出任务 × 档位成功率表；⑥ <code>episode_strip_video</code> 按 xhard-1011 <code>per_episode_strip</code> 版式出 ≤ 222 支六列横排视频（D7，不出合一总视频）；⑦ 两段式留档 <code>docs/xhard-doc/xhard-1012-coll/</code>，结果子节追加到本计划</td>
+<td>① 用 C4 的 <code>--all</code> 出三任务全量母清单；② 向用户报规模、按 <code>ratio</code> 算出的耗时与按实测字节数算出的磁盘，取得对这一批的确认（P5）；③ Beta commit（第 13 条）后由运行型子代理 R1 起 tmux <code>xh-coll-full-1012</code>，360 张 xhard 卡 + 72 张母卡，12 worker 单卡；④ 主会话 Monitor 盯到 <code>EXIT_CODE=</code>；⑤ <code>summarize.py</code> 出任务 × 档位成功率表；⑥ <code>episode_strip_video</code> 按 xhard-1011 <code>per_episode_strip</code> 版式出 ≤ 72 支六列横排视频（D7，不出合一总视频）；⑦ 两段式留档 <code>docs/xhard-doc/xhard-1012-coll/</code>，结果子节追加到本计划</td>
 <td>主会话 + R1</td>
 <td>交付：成功率表 + 视频目录 + 留档</td>
 <td><code>XHARD_FULL_DERIVE</code>、<code>EPISODE_STRIP_VIDEO</code></td>
@@ -888,7 +900,7 @@ a { color:var(--accent); }
 </tbody>
 </table>
 <h3>4.1 阶段 E 的规模与耗时</h3>
-<p>规模（只读核实 <code>src/robomme/env_metadata/train/</code>；R11 <code>mother_seeds.py::MIN_EPISODE=6</code>「episode ≥ 6 避开 FailRecover」照旧，所以 VideoUnmaskSwap ep3/seed5300、ButtonUnmaskSwap ep3/seed7300、VideoRepick ep2/seed9200 不进清单）：</p>
+<p>规模（只取官方 train metadata ep0–99，K12；train metadata 已于 2.69 恢复为官方 100 条，各任务 hard / medium 25 条；ep 列表从 <code>3521be0c</code> 版 <code>src/robomme/env_metadata/train/</code> 的 ep0–99 范围只读取出，主会话另用 <code>/data/hongzefu/data_0226</code> 官方 metadata 核过 24/24/24；R11 <code>mother_seeds.py::MIN_EPISODE=6</code>「episode ≥ 6 避开 FailRecover」照旧，所以 VideoUnmaskSwap ep3/seed5300、ButtonUnmaskSwap ep3/seed7300、VideoRepick ep2/seed9200 不进清单）：</p>
 <table>
 <thead>
 <tr>
@@ -904,23 +916,23 @@ a { color:var(--accent); }
 <tr>
 <td>2.3 VideoUnmaskSwap</td>
 <td>hard</td>
-<td>99（ep 7, 11, …, 399，attempt 全为 0）</td>
-<td>495</td>
-<td>99</td>
-<td>594</td>
+<td>24（ep 7, 11, 15, …, 99，步长 4，attempt 全为 0；排除 ep3/seed5300）</td>
+<td>120</td>
+<td>24</td>
+<td>144</td>
 </tr>
 <tr>
 <td>2.4 ButtonUnmaskSwap</td>
 <td>hard</td>
-<td>99（排除 ep3/seed7300）</td>
-<td>495</td>
-<td>99</td>
-<td>594</td>
+<td>24（ep 7, 11, 15, …, 99，步长 4；排除 ep3/seed7300）</td>
+<td>120</td>
+<td>24</td>
+<td>144</td>
 </tr>
 <tr>
 <td>3.2 VideoRepick</td>
 <td>medium</td>
-<td>24（ep 6, …, 98；排除 ep2/seed9200）</td>
+<td>24（ep 6, 10, 14, …, 98，步长 4；排除 ep2/seed9200）</td>
 <td>120</td>
 <td>24</td>
 <td>144</td>
@@ -928,14 +940,14 @@ a { color:var(--accent); }
 <tr>
 <td>合计</td>
 <td></td>
-<td>222</td>
-<td>1110</td>
-<td>222</td>
-<td><strong>1332 张卡</strong></td>
+<td>72</td>
+<td>360</td>
+<td>72</td>
+<td><strong>432 张卡</strong></td>
 </tr>
 </tbody>
 </table>
-<p>耗时：xhard-1011 无碰撞检测时同任务单卡 wall 实测为 VideoUnmaskSwap 29→56 s（母档→xhard20）、ButtonUnmaskSwap 31→58 s、VideoRepick 49→91 s，每母 seed 六卡合计分别 248 / 267 / 411 s，全量基线 ≈ 99×248 + 99×267 + 24×411 ≈ 60 800 卡·秒，12 worker 约 1.4 h 墙钟。母卡走原类没有子步检查，xhard 卡每子步两次 SAT；v2.1 注明单样本约慢十倍，按 3～10 倍估 <strong>4～14 h</strong>，阶段 D 的 <code>ratio</code> 出来后换成实测数再报给用户。产物 H5 每张 150～270 MB，1332 张约 200～360 GB（未含视频）；不预设放行阈值，改为：阶段 D smoke 实测每卡字节数 → 换算全量 + 30% 余量，起跑前 <code>df -h /data</code> 核对，并写进给用户的规模报告（P5、D6）。</p>
+<p>耗时：xhard-1011 无碰撞检测时同任务单卡 wall 实测为 VideoUnmaskSwap 29→56 s（母档→xhard20）、ButtonUnmaskSwap 31→58 s、VideoRepick 49→91 s，每母 seed 六卡合计分别 248 / 267 / 411 s，全量基线 ≈ 24×248 + 24×267 + 24×411 = 24×926 ≈ 22 200 卡·秒，12 worker 约 0.5 h 墙钟（换算依据：每任务母 seed 数 × 该任务六卡合计秒数，再除以 12 worker；三任务母 seed 数相同，故等于 24 × 三任务六卡合计秒数之和 ÷ 12）。母卡走原类没有子步检查，xhard 卡每子步两次 SAT；v2.1 注明单样本约慢十倍，按 3～10 倍估 <strong>1.5～5 h</strong>（0.5 h × 3～10），阶段 D 的 <code>ratio</code> 出来后换成实测数再报给用户。产物 H5 每张 150～270 MB，432 张约 65～117 GB（432 × 150～270 MB，未含视频）；不预设放行阈值，改为：阶段 D smoke 实测每卡字节数 → 换算全量 + 30% 余量，起跑前 <code>df -h /data</code> 核对，并写进给用户的规模报告（P5、D6）。</p>
 <h3>4.2 阶段 E 的成功率口径与视频</h3>
 <ul>
 <li>同一母 seed 下五档是前缀关系（K11），各档成功率单调不增、彼此非独立，汇总表据此解读。另逐卡报「净置换是否为恒等」，按任务 × 档位给出恒等比例（D1）。每张卡三类：<code>ok=True</code>；<code>ok=False, failure_class=task, error_type ∈ {SwapCollisionError, SwapBindingError}</code>（被碰撞判据剔除，再按 <code>stage</code> 细分 initial / sweep / segment_start / substep）；其他失败（planner 等，与本轮改动无关）。汇总表按任务 × 档位给卡数、成功数、成功率、碰撞剔除数（分 stage）、其他失败数，母卡成功率单列对照。</li>
@@ -1032,7 +1044,7 @@ a { color:var(--accent); }
     <text x="435" y="554">episode_strip_video.py 失败列</text>
     <text x="435" y="572">summarize.py / layout.py 失败字段</text>
     <text x="435" y="590">test_jobs.py / test_contract.py</text>
-    <text x="435" y="608">验收 XHARD_MOTHER_ALL 单测版</text>
+    <text x="435" y="608">验收 MOTHER_ALL / MOTHER_OFFICIAL</text>
   </g>
 
   <!-- 第 4 列：合并 C1/C3/C4 -->
@@ -1094,17 +1106,17 @@ a { color:var(--accent); }
     <text x="1317" y="256">Beta commit →</text>
     <text x="1317" y="274">运行型 R1（opus）起 tmux</text>
     <text x="1317" y="292">xh-coll-full-1012：</text>
-    <text x="1317" y="310">222 母 seed × 五档</text>
-    <text x="1317" y="328">= 1110 xhard 卡</text>
-    <text x="1317" y="346">+ 222 母卡</text>
+    <text x="1317" y="310">72 母 seed × 五档</text>
+    <text x="1317" y="328">= 360 xhard 卡</text>
+    <text x="1317" y="346">+ 72 母卡</text>
     <text x="1317" y="364">12 worker，GPU1</text>
-    <text x="1317" y="382">预计 4～14 h →</text>
+    <text x="1317" y="382">预计 1.5～5 h →</text>
     <text x="1317" y="400">主会话 Monitor →</text>
     <text x="1317" y="418">tools.summarize</text>
     <text x="1317" y="436">XHARD_FULL_DERIVE →</text>
     <text x="1317" y="454">tools.episode_strip_video</text>
     <text x="1317" y="472">EPISODE_STRIP_VIDEO</text>
-    <text x="1317" y="490">≤222 支 → 留档</text>
+    <text x="1317" y="490">≤72 支 → 留档</text>
     <text x="1317" y="508">docs/xhard-doc/</text>
     <text x="1317" y="526">xhard-1012-coll/</text>
   </g>
@@ -1228,7 +1240,7 @@ class SwapCollisionMixin:
 <h3><code>src/robomme_xhard/jobs.py</code> 与 <code>tools/mother_seeds.py</code>（阶段 E 全量派生）</h3>
 <ul>
 <li><code>jobs.py</code>：<code>VALID_RANKS = (0, 1)</code> 改为「任意非负整数、任务内唯一」；<code>validate_manifest</code> 相应放开；<code>--mother-rank</code> 语义不变（不传取全部）。</li>
-<li><code>mother_seeds.py</code>：新增 <code>--all</code>：忽略 <code>REFERENCE_SUBSETS</code> 与 <code>PER_TASK</code>，取来源难度全部 <code>episode &gt;= MIN_EPISODE</code> 的记录，rank 按 episode 升序 0…N−1；输出 JSON 顶层加 <code>"mode": "all"</code>；判定行 <code>XHARD_MOTHER_ALL=PASS tasks=3 seeds=&lt;n&gt;</code>。只对本轮三个任务出清单（<code>--tasks VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick</code>）。</li>
+<li><code>mother_seeds.py</code>：新增 <code>--all</code>：忽略 <code>REFERENCE_SUBSETS</code> 与 <code>PER_TASK</code>，取来源难度全部 <code>episode &gt;= MIN_EPISODE</code> 的记录，rank 按 episode 升序 0…N−1；输出 JSON 顶层加 <code>"mode": "all"</code>；判定行 <code>XHARD_MOTHER_ALL=PASS tasks=3 seeds=&lt;n&gt;</code>。train metadata 恢复为官方 100 条后天然只有 ep0–99；另加防线：断言清单中所有母 seed 的 <code>episode &lt;= 99</code>，超出即报错，判定行 <code>XHARD_MOTHER_OFFICIAL=PASS seeds=72</code>（K12）。只对本轮三个任务出清单（<code>--tasks VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick</code>）。</li>
 <li><code>tools/episode_strip_video.py</code>：失败卡列灰底文字从「缺档」改为「失败：&lt;error_type&gt;」（读 <code>episode_results.jsonl</code>），其余版式完全沿用 xhard-1011 <code>per_episode_strip</code>（D7）。</li>
 <li><code>tools/summarize.py</code>：追加 <code>error_type</code> / <code>stage</code> 列；成功率表另记发起 / 搭档 / 总参与次数分布（读 <code>swap_plan</code>）；逐卡算「净置换是否为恒等」（由 <code>swap_plan.pairs</code> 推演最终排列），按任务 × 档位给出恒等比例（D1）。</li>
 <li><code>tools/layout.py</code>：<code>_normalize_result</code> / <code>read_run_results</code> 保留失败字段（见下「失败字段契约」）。</li>
@@ -1393,7 +1405,7 @@ if fatal:
 <td><code>src/robomme/</code>、envs、<code>swap_plan.py</code>、生成器</td>
 <td>与 C1/C3 文件不相交，可并行；<code>test_jobs.py</code> 与 C3 共享 → 由 C4 单一 owner，C3 的一例测试改放 <code>tests/test_worker_evidence.py</code></td>
 <td>4（C3 之后）</td>
-<td>worktree：<code>test_jobs.py</code>、<code>test_contract.py</code> <code>-q -m 'not gpu'</code> → <code>XHARD_MOTHER_ALL</code> 单测版、<code>XHARD_FAIL_FIELDS</code></td>
+<td>worktree：<code>test_jobs.py</code>、<code>test_contract.py</code> <code>-q -m 'not gpu'</code> → <code>XHARD_MOTHER_ALL</code> 单测版、<code>XHARD_MOTHER_OFFICIAL</code>、<code>XHARD_FAIL_FIELDS</code></td>
 <td>CPU</td>
 <td>以上文件归 C4</td>
 </tr>
@@ -1424,10 +1436,10 @@ if fatal:
 <td>阶段 E 全量派生起跑：Beta commit 后按 runbook 起 tmux <code>xh-coll-full-1012</code>，验证起跑（日志出现首个 <code>succeeded with seed</code> 或首个 <code>SwapCollisionError</code>）即交回 tmux 名、日志路径、起跑时间</td>
 <td>只写 <code>artifacts/xhard/xhard-1012-coll/</code>、<code>artifacts/logs/</code>（程序正常产物）</td>
 <td>代码、配置、参数、启动脚本、依赖</td>
-<td>依赖全部合并 + <code>XHARD_FATAL_CATCH</code> 与 smoke 三条 PASS + 用户对规模、耗时与磁盘估算的确认（P5）。<strong>最长等待</strong>：起跑验证最多 10 分钟（首个 <code>succeeded with seed</code> 或首个碰撞拒绝行）；<strong>失败处置</strong>：起跑失败或 10 分钟无判据行即不重试，收集日志尾部与 <code>tmux ls</code> 交回主会话；<strong>重试上限 0</strong>；<strong>预算</strong>按第 3 条（1110 xhard 卡 + 222 母卡、单卡 GPU1、12 worker、耗时与磁盘以用户批准的规模报告为上限）</td>
+<td>依赖全部合并 + <code>XHARD_FATAL_CATCH</code> 与 smoke 三条 PASS + 用户对规模、耗时与磁盘估算的确认（P5）。<strong>最长等待</strong>：起跑验证最多 10 分钟（首个 <code>succeeded with seed</code> 或首个碰撞拒绝行）；<strong>失败处置</strong>：起跑失败或 10 分钟无判据行即不重试，收集日志尾部与 <code>tmux ls</code> 交回主会话；<strong>重试上限 0</strong>；<strong>预算</strong>按第 3 条（360 xhard 卡 + 72 母卡、单卡 GPU1、12 worker、耗时与磁盘以用户批准的规模报告为上限）</td>
 <td>7</td>
 <td>主会话 Monitor 盯日志；跑完 <code>summarize.py</code> → <code>XHARD_FULL_DERIVE</code>；<code>episode_strip_video.py</code> → <code>EPISODE_STRIP_VIDEO</code></td>
-<td>单卡 GPU1，12 worker，预计 4～14 h</td>
+<td>单卡 GPU1，12 worker，预计 1.5～5 h</td>
 <td>主会话</td>
 </tr>
 <tr>
@@ -1466,7 +1478,7 @@ ls -1 artifacts/xhard/xhard-1012-coll/full/_quarantine/ 2&gt;/dev/null   # 跑�
 
 # ---- 阶段 E 全量派生（smoke PASS、Beta commit、用户确认规模后）----
 uv run --no-sync python -m robomme_xhard.tools.mother_seeds --all --tasks VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick --out artifacts/xhard/xhard-1012-coll/mother_seeds_all.json
-df -h /data | tail -1   # 与「smoke 实测每卡字节数 × 1332 × 1.3」比对，结果写进给用户的规模报告
+df -h /data | tail -1   # 与「smoke 实测每卡字节数 × 432 × 1.3」比对，结果写进给用户的规模报告
 tmux new-session -d -s xh-coll-full-1012 &quot;set -o pipefail; cd /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006; PYTHONUNBUFFERED=1 uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py --env VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick --difficulty xhard12,xhard14,xhard16,xhard18,xhard20 --mother-manifest artifacts/xhard/xhard-1012-coll/mother_seeds_all.json --with-mother --gpus 1 --workers 12 --output-dir artifacts/xhard/xhard-1012-coll/full 2&gt;&amp;1 | tee artifacts/logs/xh-coll-full-1012.log; echo \&quot;EXIT_CODE=\$?\&quot; &gt;&gt; artifacts/logs/xh-coll-full-1012.log&quot;
 # 跑完
 uv run --no-sync python -m robomme_xhard.tools.summarize --root artifacts/xhard/xhard-1012-coll/full   # → XHARD_FULL_DERIVE=DONE cards= ok= coll= other=
@@ -1499,7 +1511,7 @@ uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifa
 </tr>
 <tr>
 <td>R7</td>
-<td>全量 1332 卡耗时 4～14 h、H5 约 200～360 GB（未含视频）</td>
+<td>全量 432 卡耗时 1.5～5 h、H5 约 65～117 GB（未含视频）</td>
 <td>smoke 先测倍数与每卡字节数，换算全量 + 30% 余量；起跑前 <code>df -h /data</code> 核对并写进规模报告；按 P5 向用户报规模与耗时并取得确认后再起；中途可按卡粒度中断（<code>episode_results.jsonl</code> 边跑边写）</td>
 </tr>
 <tr>
@@ -1596,7 +1608,7 @@ uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifa
 <td>D6</td>
 <td>全量批次放行</td>
 <td>（本轮未单独裁决）</td>
-<td>按 P5 执行：smoke 后按 1332 张卡与实测耗时、磁盘向用户报批，取得对这一批的明确决定后才起跑（阶段 E ②）</td>
+<td>按 P5 执行：smoke 后按 432 张卡与实测耗时、磁盘向用户报批，取得对这一批的明确决定后才起跑（阶段 E ②）</td>
 </tr>
 <tr>
 <td>D7</td>
