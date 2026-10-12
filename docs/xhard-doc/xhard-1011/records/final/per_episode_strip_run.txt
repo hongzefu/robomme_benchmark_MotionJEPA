@@ -1,0 +1,16 @@
+StopCube: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=1
+ButtonUnmask: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=4
+VideoUnmask: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=4
+SwingXtimes: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=0
+BinFill: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=0
+PickXtimes: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=0
+VideoUnmaskSwap: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=0
+PickHighlight: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=2
+ButtonUnmaskSwap: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=0
+MoveCube: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=5
+InsertPeg: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=5
+VideoRepick: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=0
+VideoPlaceButton: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=3
+VideoPlaceOrder: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=4
+PatternLock: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=0
+RouteStick: EPISODE_STRIP_VIDEO=PASS videos=1 columns=6 missing=0

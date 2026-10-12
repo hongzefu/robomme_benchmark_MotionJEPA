@@ -69,3 +69,13 @@ records/mother_seeds.json；records/first/（run_summary.json、first.summary.lo
 工具 `src/robomme_xhard/tools/episode_grid_video.py`（2.51 合入）：帧源为生成器保存的原版 mp4（RobommeRecordWrapper 生成时拼好的 goal、PLANNER/ONLINE、每行 5 画面含分割图、演示红框），原样不缩放；固定 2 列×3 行（母档|xhard12 / xhard14|xhard16 / xhard18|xhard20），缺档灰底 `MISSING TIER`；t=0 同步原速，短格停末帧标 `ENDED`；标签栏与写出直接调用原版 `_add_text_to_frame`、`_video_write_mp4`（30 fps、libx264、quality 8）。
 
 输出 `artifacts/xhard/xhard-1011/report/per_episode/` 16 支（每任务 rank0 母 seed 一支），画面 2560×2464，合计 1.1 GB；16 行判定均为 `EPISODE_GRID_VIDEO=PASS videos=1 cells=6`（missing 按缺档数 0～5，见 records/final/per_episode_run.txt），sha256 见 records/final/per_episode_sha256.txt。抽查 1.4 StopCube 第 300 帧：六格位置、标签、ENDED、MISSING TIER 与原版文字均清晰。
+
+## 逐 episode 六列横排前视视频（2026-10-12，取代上一节 2×3 版本）
+
+用户原话：「乱七八糟东西太多了所以说还是不要这么放了 就是你你做这个合集的时候最左边最左边第一张图片然后上方放上goal在goal上方再放上当的难度梯度表和对应的难度梯度旋钮 然后一字排开 横向放置 重新生成」「难度旋钮用中文表示」。
+
+工具 `src/robomme_xhard/tools/episode_strip_video.py`（2.53 合入）：每“任务＋episode”一支，六列一字横排（母档、xhard12～20，缺档灰底中文“缺档”），每列自上而下为中文难度与旋钮行（如 `xhard18 ｜ 交换次数 9 ｜ 761 步 ｜ 母档的 1.81 倍`，PIL + Noto CJK）、goal 英文全文（原版 `_add_text_to_frame`）、前视相机画面（H5 `obs/front_rgb` 放大到 512，演示段原版红框）；t=0 同步原速，短列停末帧标“结束”；写出调用原版 `_video_write_mp4`。
+
+输出 `artifacts/xhard/xhard-1011/report/per_episode_strip/` 16 支，宽 3072、高 656～720，合计 118 MB；16 行判定均为 `EPISODE_STRIP_VIDEO=PASS videos=1 columns=6`（records/final/per_episode_strip_run.txt），sha256 见 records/final/per_episode_strip_sha256.txt。抽查 2.3 VideoUnmaskSwap 第 450 帧：中文旋钮行无乱码、goal 完整、xhard18/20 演示段红框、母档“结束”。
+
+删除（R28）：被取代的 2×3 版本 `report/per_episode/` 16 支（约 1.1 GB）与其预览图已按清单删除，目录已移除；其 sha256 与判定行仍留在 records/final/per_episode_sha256.txt、per_episode_run.txt。
