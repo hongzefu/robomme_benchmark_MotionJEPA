@@ -77,3 +77,40 @@ def test_failure_evidence_and_net_identity_aggregate(tmp_path, summary):
 def test_identity_missing_evidence_is_unknown():
     assert summarize.net_identity(None) is None
     assert summarize.net_identity({"usage": [0, 0], "pairs": [[0, 5]]}) is None
+
+
+@pytest.mark.parametrize("completed", [None, True, False])
+@pytest.mark.parametrize("has_record", [False, True])
+def test_success_requires_independent_completion(tmp_path, completed, has_record):
+    import h5py
+
+    path = tmp_path / "xhard12/hdf5_files/VideoRepick_ep6_seed1.h5"
+    path.parent.mkdir(parents=True)
+    with h5py.File(path, "w") as handle:
+        episode = handle.create_group("episode_6")
+        setup = episode.create_group("setup")
+        setup.create_dataset("difficulty", data="xhard12")
+        setup.create_dataset("seed", data=1)
+        info = episode.create_group("timestep_0/info")
+        if completed is not None:
+            info.create_dataset("is_completed", data=completed)
+    if has_record:
+        card = {"task": "VideoRepick", "seed": 1, "mother_episode": 6,
+                "role": "xhard", "difficulty": "xhard12", "ok": True}
+        (tmp_path / "run_summary.json").write_text(json.dumps({"cards": [card]}))
+    row = summarize.collect(tmp_path)[0]
+    expected = None if has_record or completed is None else int(completed)
+    assert row["task_success"] == expected
+    assert row["last_completed"] is completed
+    assert summarize.aggregate([row])[0]["success"] == (expected == 1)
+    assert summarize.aggregate([row])[0]["unknown"] == (expected is None)
+
+
+def test_ok_alone_does_not_establish_task_success(tmp_path):
+    card = {"task": "VideoRepick", "seed": 1, "mother_episode": 6,
+            "role": "xhard", "difficulty": "xhard12", "ok": True}
+    (tmp_path / "episode_results.jsonl").write_text(json.dumps(card) + "\n")
+    result = layout.read_run_results(tmp_path)[0][("VideoRepick", 1, "xhard12")]
+    assert result["ok"] is True and result["task_success"] is None
+    row = summarize.collect(tmp_path)[0]
+    assert row["task_success"] is None

@@ -7,8 +7,9 @@
 - ``ratio_timesteps`` / ``ratio_windows``：相对同 task、同 seed 母档的倍数。
 - ``task_success`` / ``ok`` / ``failure_class``：权威来源依次为输出根下 ``run_summary.json`` 的
   ``cards[]``（role==mother→mother 档，role==xhard→difficulty 档）、根下 ``episode_results.jsonl``；
-  都没有时才推断——RecordWrapper 只在 episode 成功时写 H5 的 episode 组，故有该组记 1，只有
-  ``FAILED_`` 视频记 0，都没有记 None。失败卡即使既无 H5 也无视频也照样出行。
+  都没有时读 H5 末帧独立 ``info/is_completed``，明确真/假记 1/0，缺字段记 None；
+  只有 ``FAILED_`` 视频记推断失败 0。结果记录缺 task_success 时保持未知，不根据 ok 补值。
+  失败卡即使既无 H5 也无视频也照样出行。
 
 排序：TASK_ORDER → 母 seed（给 --seeds 时按清单 rank，否则 seed 升序）→ mother、xhard12..20。
 
@@ -106,7 +107,7 @@ def collect(root: Path, manifest: dict | None = None) -> list[dict]:
                     exec_timesteps=info["exec_timesteps"],
                     timesteps=info["timesteps"],
                     last_completed=info["last_completed"],
-                    task_success=1,
+                    task_success=None if info["last_completed"] is None else int(info["last_completed"]),
                 )
                 row["demo_windows"] = windows(info["demo_timesteps"])
                 row["exec_windows"] = windows(info["exec_timesteps"])
@@ -114,8 +115,7 @@ def collect(root: Path, manifest: dict | None = None) -> list[dict]:
         if rec is not None:
             # 生成器结果记录是 task_success / ok / failure_class 的权威来源
             row["ok"] = rec["ok"]
-            if rec["task_success"] is not None:
-                row["task_success"] = rec["task_success"]
+            row["task_success"] = rec["task_success"]
             row["failure_class"] = rec["failure_class"]
             row["error"] = rec["error"]
             row["result_source"] = rec["source"]
@@ -124,7 +124,7 @@ def collect(root: Path, manifest: dict | None = None) -> list[dict]:
         else:
             row["ok"] = None
             row["error"] = None
-            row["result_source"] = "h5" if row["task_success"] == 1 else None
+            row["result_source"] = "h5" if row["task_success"] is not None else None
             if row["task_success"] is None and art and art.failed_video:
                 row["task_success"] = 0
                 row["result_source"] = "failed_video"

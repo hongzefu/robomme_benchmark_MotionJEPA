@@ -198,7 +198,7 @@ def _level_of(record: dict) -> str | None:
 
 def _normalize_result(record: dict, source: str) -> dict:
     ok = bool(record.get("ok"))
-    success = record.get("task_success", ok if "ok" in record else None)
+    success = record.get("task_success")
     episode = record.get("mother_episode", record.get("episode"))
     out = {
         "ok": ok,
