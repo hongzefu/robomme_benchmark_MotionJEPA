@@ -1,0 +1,38 @@
+StopCube: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=1
+VideoUnmask: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=4
+SwingXtimes: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=0
+BinFill: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=0
+ButtonUnmask: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=4
+PickXtimes: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=0
+VideoUnmaskSwap: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=0
+ButtonUnmaskSwap: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=0
+PickHighlight: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=2
+MoveCube: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=5
+VideoPlaceButton: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=3
+VideoRepick: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=0
+InsertPeg: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=5
+VideoPlaceOrder: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=4
+PatternLock: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=0
+RouteStick: EPISODE_GRID_VIDEO=PASS videos=1 cells=6 missing=0
+total 1070868
+drwxrwxr-x 2 hongzefu hongzefu      4096 Oct 12 11:04 .
+drwxrwxr-x 3 hongzefu hongzefu      4096 Oct 12 11:02 ..
+-rw-rw-r-- 1 hongzefu hongzefu 159008913 Oct 12 11:03 1.1_BinFill_ep7_seed4701.mp4
+-rw-rw-r-- 1 hongzefu hongzefu 145492595 Oct 12 11:03 1.2_PickXtimes_ep7_seed1700.mp4
+-rw-rw-r-- 1 hongzefu hongzefu 111652323 Oct 12 11:03 1.3_SwingXtimes_ep7_seed3700.mp4
+-rw-rw-r-- 1 hongzefu hongzefu  16031282 Oct 12 11:02 1.4_StopCube_ep59_seed7900.mp4
+-rw-rw-r-- 1 hongzefu hongzefu  16005184 Oct 12 11:02 2.1_VideoUnmask_ep7_seed6700.mp4
+-rw-rw-r-- 1 hongzefu hongzefu  20879960 Oct 12 11:03 2.2_ButtonUnmask_ep7_seed8700.mp4
+-rw-rw-r-- 1 hongzefu hongzefu  51798010 Oct 12 11:03 2.3_VideoUnmaskSwap_ep7_seed5700.mp4
+-rw-rw-r-- 1 hongzefu hongzefu  85345755 Oct 12 11:03 2.4_ButtonUnmaskSwap_ep7_seed7700.mp4
+-rw-rw-r-- 1 hongzefu hongzefu  64672837 Oct 12 11:03 3.1_PickHighlight_ep7_seed12700.mp4
+-rw-rw-r-- 1 hongzefu hongzefu  92498135 Oct 12 11:04 3.2_VideoRepick_ep46_seed13600.mp4
+-rw-rw-r-- 1 hongzefu hongzefu  78707767 Oct 12 11:04 3.3_VideoPlaceButton_ep7_seed10701.mp4
+-rw-rw-r-- 1 hongzefu hongzefu  54430807 Oct 12 11:04 3.4_VideoPlaceOrder_ep7_seed11705.mp4
+-rw-rw-r-- 1 hongzefu hongzefu  11261199 Oct 12 11:04 4.1_MoveCube_ep7_seed14700.mp4
+-rw-rw-r-- 1 hongzefu hongzefu  13619056 Oct 12 11:04 4.2_InsertPeg_ep7_seed13700.mp4
+-rw-rw-r-- 1 hongzefu hongzefu  73834444 Oct 12 11:04 4.3_PatternLock_ep7_seed15700.mp4
+-rw-rw-r-- 1 hongzefu hongzefu 101282268 Oct 12 11:05 4.4_RouteStick_ep7_seed16700.mp4
+1.1G	/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1011/report/per_episode
+
+[exited with code 0]

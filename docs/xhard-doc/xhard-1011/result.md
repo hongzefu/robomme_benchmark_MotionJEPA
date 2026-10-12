@@ -61,3 +61,11 @@ sled-aspen，GPU 0（RTX A6000），12 worker，2026-10-12 10:37:05 EDT 起跑�
 ## ⑫ 归档文件清单
 
 records/mother_seeds.json；records/first/（run_summary.json、first.summary.log）；records/pilot/（run_summary.json、run_parameters.json、pilot.summary.log、pilot_summary.md/json、pilot_checks.py/txt、choice_exec.py/txt）；records/final/（run_summary.json、run_parameters.json、final.summary.log、final_summary.md/json、final_checks.txt、final_choice_exec.txt、final_sha256.txt、mother_seeds_rank0.json）。
+
+## 逐 episode 原版格式拼接视频（2026-10-12 补充）
+
+用户原话：「你不要只生成一份np4给我我要的是你参考原版的生成的格式就是原版上面会有Subgo goal这些内容 一个视频4l栏 带分割等等」「不过每一个task每个episode都分开生成……先告诉我你打算怎么分配这个视频然后再生成」「你找到原版视频的生成的这个代码逻辑继续保留原来的代码逻辑只是做五个图的拼接」「是照样用固定的 2×3（空格标缺档，位置统一）」「画面尺寸同意」「开始生成」。
+
+工具 `src/robomme_xhard/tools/episode_grid_video.py`（2.51 合入）：帧源为生成器保存的原版 mp4（RobommeRecordWrapper 生成时拼好的 goal、PLANNER/ONLINE、每行 5 画面含分割图、演示红框），原样不缩放；固定 2 列×3 行（母档|xhard12 / xhard14|xhard16 / xhard18|xhard20），缺档灰底 `MISSING TIER`；t=0 同步原速，短格停末帧标 `ENDED`；标签栏与写出直接调用原版 `_add_text_to_frame`、`_video_write_mp4`（30 fps、libx264、quality 8）。
+
+输出 `artifacts/xhard/xhard-1011/report/per_episode/` 16 支（每任务 rank0 母 seed 一支），画面 2560×2464，合计 1.1 GB；16 行判定均为 `EPISODE_GRID_VIDEO=PASS videos=1 cells=6`（missing 按缺档数 0～5，见 records/final/per_episode_run.txt），sha256 见 records/final/per_episode_sha256.txt。抽查 1.4 StopCube 第 300 帧：六格位置、标签、ENDED、MISSING TIER 与原版文字均清晰。
