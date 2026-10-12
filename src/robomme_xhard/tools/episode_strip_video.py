@@ -41,6 +41,7 @@ import numpy as np
 
 from ..configs import MOTHER_KNOBS, SOURCE_DIFFICULTY, TASK_ORDER, TIER_CONFIGS
 from .episode_grid_video import TASK_NUMBERS, _manifest_keys
+from .layout import read_run_results
 
 MOTHER = "mother"
 LEVELS: tuple[str, ...] = (MOTHER, "xhard12", "xhard14", "xhard16", "xhard18", "xhard20")
@@ -167,8 +168,24 @@ class CjkPainter:
         img = Image.new("RGB", (size, size), (GRAY, GRAY, GRAY))
         draw = ImageDraw.Draw(img)
         font = self.font(STATUS_FONT_SIZE)
-        left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
-        draw.text(((size - (right - left)) // 2 - left, (size - (bottom - top)) // 2 - top), text, font=font, fill=(255, 255, 255))
+        # 错误类型可能很长，逐字符折行，避免灰底标签溢出六列版式。
+        lines, current = [], ""
+        for char in text:
+            if current and font.getlength(current + char) > size - 32:
+                lines.append(current)
+                current = char
+            else:
+                current += char
+        if current:
+            lines.append(current)
+        if len(lines) == 1:
+            left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
+            draw.text(((size - (right - left)) // 2 - left, (size - (bottom - top)) // 2 - top), text, font=font, fill=(255, 255, 255))
+            return np.asarray(img).copy()
+        line_h = STATUS_FONT_SIZE + 12
+        for index, line in enumerate(lines):
+            left, top, right, bottom = draw.textbbox((0, 0), line, font=font)
+            draw.text(((size - (right - left)) // 2 - left, (size - len(lines) * line_h) // 2 + index * line_h - top), line, font=font, fill=(255, 255, 255))
         return np.asarray(img).copy()
 
 
@@ -256,6 +273,13 @@ def discover(root: Path) -> dict[tuple[str, int, int], Unit]:
             if level in u.cards:
                 raise ValueError(f"run_summary 中 {card['task']} ep{u.episode} seed{u.seed} {level} 出现多张卡片")
             u.cards[level] = card
+    else:
+        # 没有最终汇总时仍沿统一读取链保留逐卡失败，不能误标成无产物。
+        results, _ = read_run_results(root)
+        for (task, seed, level), record in results.items():
+            if task not in TASK_ORDER or record.get("episode") is None:
+                continue
+            unit(task, record["episode"], seed).cards[level] = record
 
     for level in LEVELS:
         hdir = root / level / "hdf5_files"
@@ -358,6 +382,7 @@ class Column:
     segments: list[str]  # 难度与旋钮行的各段（不含“结束”）
     goals: list[str]
     stream: H5FrameStream | None = None
+    failure_text: str | None = None
 
 
 def build_columns(u: Unit) -> list[Column]:
@@ -373,7 +398,9 @@ def build_columns(u: Unit) -> list[Column]:
         card = u.cards.get(level)
         path = u.h5.get(level)
         if card is not None and not card.get("ok"):
-            cols.append(Column(level, FAILED, segments + [STATUS_TEXT[FAILED]], []))
+            error_type = card.get("error_type")
+            label = f"失败：{error_type}" if error_type else STATUS_TEXT[FAILED]
+            cols.append(Column(level, FAILED, segments + [label], [], failure_text=label))
             continue
         if path is None:
             cols.append(Column(level, ABSENT, segments + [STATUS_TEXT[ABSENT]], []))
@@ -438,7 +465,7 @@ def build_layout(cols: list[Column], painter: CjkPainter) -> Layout:
     raw_goals = [goal_block(c.goals) for c in cols]
     goal_h = max(g.shape[0] for g in raw_goals)
     goals = [_pad_rows(g, goal_h) if g.shape[0] else np.zeros((goal_h, BODY, 3), np.uint8) for g in raw_goals]
-    statics = {i: painter.gray_body(STATUS_TEXT[c.status]) for i, c in enumerate(cols) if c.stream is None}
+    statics = {i: painter.gray_body(c.failure_text or STATUS_TEXT[c.status]) for i, c in enumerate(cols) if c.stream is None}
     return Layout(header_h, goal_h, headers, goals, statics)
 
 
