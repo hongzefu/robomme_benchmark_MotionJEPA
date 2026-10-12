@@ -1,5 +1,11 @@
 # 400ep 数据集：四个 Unmask 系 env 各 400 条（ep0–399）
 
+> **2026-10-12 用户指令（「删除新的metadata 现在直接做 metadata只保留官方的」）**：
+> train metadata 已恢复为官方 100 条，ep100–399 条目从 train metadata 删除
+> （`src/robomme/env_metadata/train/record_dataset_{VideoUnmask,ButtonUnmask,VideoUnmaskSwap,ButtonUnmaskSwap}_metadata.json`
+> 恢复为提交 052841ae 之前的版本，与 `/data/hongzefu/data_0226/` 官方 metadata 逐字段一致）；
+> 本目录产物与脚本作历史留档，不再是现行 train metadata 的一部分。下文「metadata 已写回」等描述均为 2026-08-18 当时的状态。
+
 > 状态：**已完成（2026-08-18）**。1600 条 h5 全部就位、终验全过、metadata 已写回。
 
 本目录沉淀 2026-08-18 这次数据集扩展的全部决策、复现步骤、过程 log 与结果，
