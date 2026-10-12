@@ -51,6 +51,7 @@ a { color:var(--accent); }
 <li class="lv2"><a href="#h1">一、一句话与已定口径</a></li>
 <li class="lv2"><a href="#h2">二、实测：新策略在已有 seed 上长什么样</a></li>
 <li class="lv2"><a href="#h3">三、机制：改哪些函数、各干什么</a></li>
+<li class="lv3"><a href="#h3-0">3.0 改前与改后：配对机制对比</a></li>
 <li class="lv2"><a href="#h4">四、验收判定行</a></li>
 <li class="lv2"><a href="#h5">五、实施步骤</a></li>
 <li class="lv2"><a href="#h6">六、子代理分工与合并（简述）</a></li>
@@ -89,6 +90,7 @@ a { color:var(--accent); }
 <li>「不要在这个的基础上做增量 然后重新做计划v2 这个计划的修改 要从 回到v1修改前 用git增量commit的形式 重新开始 不要叠屎山 给出方案 html」</li>
 <li>「你找一两个现在已有的测试一下。新的这个策略会是什么样子你换一个简单的图2D的图来告诉我」（结果见第二节）</li>
 <li>「用b 写html」（选口径 B：每个槽至少一条可行边）</li>
+<li>「这个也要写在里面就是这个机制也要写在里面改之前的机制和改之后的机制都要写在写一个流程图来比这个机制的区别」（见 3.0 与图 3）</li>
 </ul>
 <table>
 <tr><th>编号</th><th>已定口径</th><th>依据</th></tr>
@@ -117,6 +119,228 @@ a { color:var(--accent); }
 <p>结论：新策略在布局宽裕时用到更多不同的对子，例如 5700 从 2 种变成 4 种，最多和最少只差 1。v1 被剔的两张里，口径 B 救回 9300，10500 仍剔。很多不可行的对子只差 0.1–0.5 mm，判据没有放宽余量，本计划也不放宽。VideoRepick 11200 当时是被最近邻绑定判掉的，这条检查在 v2 中删除；它能否通过要等阶段 D 的 smoke 实跑，现在没有证据。</p>
 
 <h2 id="h3">三、机制：改哪些函数、各干什么</h2>
+<h3 id="h3-0">3.0 改前与改后：配对机制对比</h3>
+<p>两版的共同点：交换动作都是父类 <code>swap_flat_two_lane</code>（两个物体沿相反弯道同时对换，横向偏移 0.07，高度不变），每段 50 步，配对都在 reset 时由 <code>certify_swap_plan</code> 预写进 <code>swap_pair{k}_idx1/idx2</code>，运行期失败一律只记 <code>_xhard_fatal</code>。<strong>只有「这一段谁和谁换」的决定方式不同</strong>，见图 3 与下表。</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1165" width="1000" height="1165" font-family="Noto Sans CJK SC, sans-serif" font-size="14">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#37474f"/>
+    </marker>
+    <marker id="arrR" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c62828"/>
+    </marker>
+  </defs>
+  <style>
+    .box { fill:#f5f7fa; stroke:#546e7a; stroke-width:1.5; }
+    .loop { fill:#f5f7fa; stroke:#546e7a; stroke-width:1.5; stroke-dasharray:6 3; }
+    .v2 { fill:#fff3e0; stroke:#e65100; stroke-width:2.5; }
+    .dia { fill:#ffffff; stroke:#546e7a; stroke-width:1.5; }
+    .diaV2 { fill:#fff3e0; stroke:#e65100; stroke-width:2.5; }
+    .red { fill:#ffebee; stroke:#c62828; stroke-width:2; }
+    .hdr { fill:#eceff1; stroke:#90a4ae; stroke-width:1; stroke-dasharray:4 3; }
+    .t { fill:#212121; text-anchor:middle; dominant-baseline:middle; }
+    .tr { fill:#b71c1c; text-anchor:middle; dominant-baseline:middle; font-size:13px; }
+    .lb { fill:#37474f; font-size:13px; dominant-baseline:middle; }
+    .ln { fill:none; stroke:#37474f; stroke-width:1.5; marker-end:url(#arr); }
+    .lnR { fill:none; stroke:#c62828; stroke-width:1.5; marker-end:url(#arrR); }
+  </style>
+
+  <rect width="1000" height="1165" fill="#ffffff"/>
+  <line x1="500" y1="15" x2="500" y2="1105" stroke="#b0bec5" stroke-width="1" stroke-dasharray="4 4"/>
+
+  <!-- ===== 标题 ===== -->
+  <rect x="20" y="15" width="460" height="44" rx="6" fill="#cfd8e3" stroke="#455a64" stroke-width="1.5"/>
+  <text class="t" x="250" y="37" font-size="15" font-weight="bold">改前 v1：先选再查（最近邻）</text>
+  <rect x="520" y="15" width="460" height="44" rx="6" fill="#ffe0b2" stroke="#e65100" stroke-width="2"/>
+  <text class="t" x="750" y="37" font-size="15" font-weight="bold">改后 v2：先查再选（可行槽对图 G + 负载均衡）</text>
+
+  <!-- ===== 左栏：reset 阶段 certify_swap_plan ===== -->
+  <rect class="box" x="180" y="85" width="275" height="40" rx="4"/>
+  <text class="t" x="317.5" y="105">初态布局检查 check_bin_layout</text>
+  <path class="ln" d="M317.5,125 V147"/>
+
+  <rect class="loop" x="180" y="147" width="275" height="40" rx="4"/>
+  <text class="t" x="317.5" y="167">对第 k 段（k = 1..S）</text>
+  <path class="ln" d="M317.5,187 V209"/>
+
+  <rect class="box" x="180" y="209" width="275" height="74" rx="4"/>
+  <text class="t" x="317.5" y="227">选发起者：参与次数最少者，</text>
+  <text class="t" x="317.5" y="246">排除上一对的两个对象；平局用</text>
+  <text class="t" x="317.5" y="265">独立随机流（seed+0x53574150）</text>
+  <path class="ln" d="M317.5,283 V305"/>
+
+  <rect class="box" x="180" y="305" width="275" height="54" rx="4"/>
+  <text class="t" x="317.5" y="322.5">选搭档：离发起者最近的对象</text>
+  <text class="t" x="317.5" y="341.5">（nearest_partner_index）</text>
+  <path class="ln" d="M317.5,359 V381"/>
+
+  <polygon class="dia" points="317.5,381 455,426 317.5,471 180,426"/>
+  <text class="t" x="317.5" y="407">整段扫掠</text>
+  <text class="t" x="317.5" y="426">check_swap_sweep</text>
+  <text class="t" x="317.5" y="445">无接触？</text>
+
+  <!-- 否 → 左侧红框 -->
+  <path class="lnR" d="M180,426 H164"/>
+  <text class="lb" x="172" y="408" text-anchor="middle" fill="#b71c1c">否</text>
+  <rect class="red" x="6" y="386" width="158" height="80" rx="4"/>
+  <text class="tr" x="85" y="400.5">SwapCollisionError</text>
+  <text class="tr" x="85" y="417.5">整卡剔除</text>
+  <text class="tr" x="85" y="434.5">（例：seed 9300、</text>
+  <text class="tr" x="85" y="451.5">10500）</text>
+
+  <!-- 是 → 对换 -->
+  <path class="ln" d="M317.5,471 V493"/>
+  <text class="lb" x="324" y="482">是</text>
+  <rect class="box" x="180" y="493" width="275" height="54" rx="4"/>
+  <text class="t" x="317.5" y="510.5">两者对换位置，计数 +1，</text>
+  <text class="t" x="317.5" y="529.5">写 swap_pair{k}</text>
+
+  <!-- 回环：栏内侧通道 x=470 -->
+  <path class="ln" d="M455,520 H470 V167 H455"/>
+  <text class="lb" transform="translate(490,340) rotate(90)" text-anchor="middle">k+1，下一段</text>
+
+  <path class="ln" d="M317.5,547 V575"/>
+  <text class="lb" x="324" y="561">循环结束</text>
+  <rect class="box" x="180" y="575" width="275" height="40" rx="4"/>
+  <text class="t" x="317.5" y="595">预写全部配对</text>
+
+  <!-- ===== 左栏：运行期每段起点 ===== -->
+  <rect class="hdr" x="180" y="860" width="275" height="32" rx="16"/>
+  <text class="t" x="317.5" y="876" font-weight="bold">运行期每段起点（v1）</text>
+  <path class="ln" d="M317.5,892 V914"/>
+
+  <polygon class="dia" points="317.5,914 455,964 317.5,1014 180,964"/>
+  <text class="t" x="317.5" y="945">最近邻绑定：</text>
+  <text class="t" x="317.5" y="964">重算最近邻</text>
+  <text class="t" x="317.5" y="983">= 计划搭档？</text>
+
+  <path class="lnR" d="M180,964 H164"/>
+  <text class="lb" x="172" y="946" text-anchor="middle" fill="#b71c1c">否</text>
+  <rect class="red" x="6" y="932.5" width="158" height="63" rx="4"/>
+  <text class="tr" x="85" y="947">SwapBindingError</text>
+  <text class="tr" x="85" y="964">（例：seed 11200</text>
+  <text class="tr" x="85" y="981">差 1.5 mm）</text>
+
+  <path class="ln" d="M317.5,1014 V1040"/>
+  <text class="lb" x="324" y="1027">是</text>
+  <rect class="box" x="180" y="1040" width="275" height="54" rx="4"/>
+  <text class="t" x="317.5" y="1057.5">端点逐位比较（X′）→</text>
+  <text class="t" x="317.5" y="1076.5">整段重证 → 子步检查</text>
+
+  <!-- ===== 右栏：reset 阶段 ===== -->
+  <rect class="box" x="550" y="85" width="270" height="40" rx="4"/>
+  <text class="t" x="685" y="105">初态布局检查 check_bin_layout</text>
+  <path class="ln" d="M685,125 V147"/>
+
+  <rect class="v2" x="550" y="147" width="270" height="40" rx="4"/>
+  <text class="t" x="685" y="167">同形断言：所有容器盒体一致</text>
+  <path class="ln" d="M685,187 V209"/>
+
+  <rect class="v2" x="550" y="209" width="270" height="74" rx="4"/>
+  <text class="t" x="685" y="227">建 G：对每个无序槽对</text>
+  <text class="t" x="685" y="246">各判一次整段扫掠</text>
+  <text class="t" x="685" y="265">（4 槽 6 次，3 槽 3 次）</text>
+  <path class="ln" d="M685,283 V305"/>
+
+  <polygon class="diaV2" points="685,305 820,350 685,395 550,350"/>
+  <text class="t" x="685" y="340.5">口径 B：每个槽</text>
+  <text class="t" x="685" y="359.5">至少一条可行边？</text>
+
+  <!-- 否 → 右侧红框 -->
+  <path class="lnR" d="M820,350 H836"/>
+  <text class="lb" x="828" y="332" text-anchor="middle" fill="#b71c1c">否</text>
+  <rect class="red" x="836" y="301.5" width="158" height="97" rx="4"/>
+  <text class="tr" x="915" y="316">SwapCollisionError</text>
+  <text class="tr" x="915" y="333">(stage=graph)</text>
+  <text class="tr" x="915" y="350">整卡剔除</text>
+  <text class="tr" x="915" y="367">（例：seed 10500</text>
+  <text class="tr" x="915" y="384">槽 3 孤立）</text>
+
+  <path class="ln" d="M685,395 V417"/>
+  <text class="lb" x="692" y="406">是</text>
+  <rect class="v2" x="550" y="417" width="270" height="128" rx="4"/>
+  <text class="t" x="685" y="433.5">负载均衡贪心</text>
+  <text class="t" x="685" y="452.5">（V9 plan_balanced_swaps）</text>
+  <text class="t" x="685" y="471.5">按 S_max 一次排完：候选 =</text>
+  <text class="t" x="685" y="490.5">G 的边 − 上一次的槽对；</text>
+  <text class="t" x="685" y="509.5">取两占用者参与次数</text>
+  <text class="t" x="685" y="528.5">（较大值, 和）最小者；平局随机</text>
+  <path class="ln" d="M685,545 V567"/>
+
+  <polygon class="diaV2" points="685,567 820,607 685,647 550,607"/>
+  <text class="t" x="685" y="607">整条极差 ≤ 1？</text>
+
+  <!-- 否 → 回环：栏内侧通道 x=536 -->
+  <path class="ln" d="M550,607 H536 V481 H550"/>
+  <text class="lb" transform="translate(510,544) rotate(90)" text-anchor="middle">否且重排 &lt; 20 次</text>
+  <text class="lb" transform="translate(524,544) rotate(90)" text-anchor="middle">换随机数重排</text>
+
+  <path class="ln" d="M685,647 V675"/>
+  <text class="lb" x="692" y="661">是或已满 20 次（取极差最小）</text>
+  <rect class="v2" x="550" y="675" width="270" height="40" rx="4"/>
+  <text class="t" x="685" y="695">各档取前 S 段（五档前缀一致）</text>
+  <path class="ln" d="M685,715 V737"/>
+
+  <rect class="box" x="550" y="737" width="270" height="40" rx="4"/>
+  <text class="t" x="685" y="757">逐段用真实占用者再证一次扫掠</text>
+  <path class="ln" d="M685,777 V799"/>
+
+  <rect class="box" x="550" y="799" width="270" height="40" rx="4"/>
+  <text class="t" x="685" y="819">预写全部配对</text>
+
+  <!-- ===== 右栏：运行期每段起点 ===== -->
+  <rect class="hdr" x="550" y="860" width="270" height="32" rx="16"/>
+  <text class="t" x="685" y="876" font-weight="bold">运行期每段起点（v2）</text>
+  <path class="ln" d="M685,892 V914"/>
+
+  <polygon class="diaV2" points="685,914 820,964 685,1014 550,964"/>
+  <text class="t" x="685" y="945">槽位绑定：每个对象</text>
+  <text class="t" x="685" y="964">实际最近槽 = 计划槽，</text>
+  <text class="t" x="685" y="983">且漂移 &lt; 半槽间距？</text>
+
+  <path class="lnR" d="M820,964 H836"/>
+  <text class="lb" x="828" y="946" text-anchor="middle" fill="#b71c1c">否</text>
+  <rect class="red" x="836" y="932.5" width="158" height="63" rx="4"/>
+  <text class="tr" x="915" y="947">SwapBindingError</text>
+  <text class="tr" x="915" y="964">(check=</text>
+  <text class="tr" x="915" y="981">slot_binding)</text>
+
+  <path class="ln" d="M685,1014 V1040"/>
+  <text class="lb" x="692" y="1027">是</text>
+  <rect class="box" x="550" y="1040" width="270" height="54" rx="4"/>
+  <text class="t" x="685" y="1057.5">端点逐位比较（X′）→</text>
+  <text class="t" x="685" y="1076.5">整段重证 → 子步检查</text>
+
+  <!-- ===== 图例 ===== -->
+  <line x1="20" y1="1110" x2="980" y2="1110" stroke="#cfd8dc" stroke-width="1"/>
+  <rect class="box" x="40" y="1122" width="44" height="24" rx="3"/>
+  <text class="lb" x="92" y="1134">普通步骤</text>
+  <polygon class="dia" points="222,1122 252,1134 222,1146 192,1134"/>
+  <text class="lb" x="260" y="1134">判断菱形</text>
+  <rect class="red" x="360" y="1122" width="44" height="24" rx="3"/>
+  <text class="lb" x="412" y="1134">红色失败框（整卡剔除 / 绑定失败）</text>
+  <rect class="v2" x="660" y="1122" width="44" height="24" rx="3"/>
+  <text class="lb" x="712" y="1134">橙色粗描边：v2 新增或改动的步骤</text>
+</svg>
+<figcaption>图 3　配对机制流程对比：左为改前 v1（逐段先选再查，最近邻搭档），右为改后 v2（一次性先查后选，在可行槽对图 G 上做负载均衡）；红框为整卡剔除出口，橙色粗描边为 v2 新增或改动的步骤</figcaption></figure>
+<table>
+<tr><th>环节</th><th>改前 v1（<code>3083af74</code> 的 <code>swap_plan.py::plan_swaps</code>）</th><th>改后 v2（本计划）</th></tr>
+<tr><td>决定顺序</td><td>逐段：选一对 → 查这一对 → 撞了就整卡剔除</td><td>先把全部槽对查完（G）→ 只在不撞的对子里挑</td></tr>
+<tr><td>发起者</td><td><code>select_initiator</code>：参与次数最少者，排除上一对的两个对象；平局用独立随机流</td><td>不单独选发起者；以「一对」为单位挑，再用一次随机数定谁当发起者（几何对称，不影响碰撞）</td></tr>
+<tr><td>搭档</td><td>固定为离发起者最近的对象（<code>nearest_partner_index</code>）</td><td>G 里任意一条可行边，可以是对角或远处</td></tr>
+<tr><td>均衡</td><td>只看发起者的参与次数；搭档次数不计；一次贪心不重排</td><td>两个占用者都计：按（较大值, 和）取最小；整条极差 &gt; 1 就换随机数重排，最多 20 次</td></tr>
+<tr><td>不许换回</td><td>上一对的两个对象都不能当发起者</td><td>不许与上一次是同一槽对（<code>forbid_undo</code>）</td></tr>
+<tr><td>碰撞失败</td><td>选中的最近邻对子撞了 → <code>SwapCollisionError(stage=sweep)</code></td><td>有槽一条可行边都没有 → <code>SwapCollisionError(stage=graph)</code>；选出的对子按构造必不撞（K8 再证兜底）</td></tr>
+<tr><td>五档前缀</td><td>贪心逐段确定，天然是前缀</td><td>按 S_max 一次排完、各档截前 S 段</td></tr>
+<tr><td>运行期绑定</td><td>段起点重算最近邻，必须等于计划搭档</td><td>段起点核对每个对象仍在计划槽上（漂移 &lt; 半槽间距）</td></tr>
+</table>
+<p><strong>结合图 2 读一遍（seed 5700，前三段）</strong>：</p>
+<ul>
+<li><strong>v1</strong>：第 1 段四个对象参与次数都是 0，随机抽到槽 2 的对象当发起者，它的最近邻在槽 1，于是换 21。第 2 段排除刚换过的两个对象，剩下槽 0、槽 3 的对象；抽到槽 0，最近邻是槽 3，于是换 03。之后一直在 21、03 两对之间交替（图 2 左下序列 <code>21 03 21 03 12 03 …</code>），对角 02、13 和外圈 01、23 从不出现，参与 <code>[5,6,6,5]</code>。</li>
+<li><strong>v2</strong>：先判出 G = {01, 03, 12, 23}（图 2 左上绿线），02（-0.3 mm）、13（-1.0 mm）被排除。第 1 段四条边得分都是 (0,0)，随机抽中 12。第 2 段去掉 12，在 01、03、23 中，03 两端的占用者都还是 0 次，得分 (0,0) 最小，于是换 03。第 3 段去掉 03，01、12、23 三条边得分都是 (1,2)，随机抽中 12。整条用到 4 种槽对，参与 <code>[5,5,6,6]</code>，第 1 次就满足极差 ≤ 1。</li>
+<li><strong>seed 9300</strong>：v1 第 0 段抽到的最近邻对子撞了（-1.7 mm），整卡剔除。v2 的 G 只有 03 和 12 两条边，每个槽都有边，口径 B 通过，于是在两对之间轮换，参与 <code>[6,5,5,6]</code>。</li>
+<li><strong>seed 10500</strong>：v2 的 G 只有 02 和 12，槽 3 与任何槽都撞（-0.1 到 -3.0 mm），口径 B 在 reset 阶段直接剔除。不剔的话槽 3 的容器全程不动，参与 <code>[8,8,8,0]</code>。</li>
+</ul>
 <h3>3.1 可行槽对图 G</h3>
 <p><strong>定义</strong>：交换段结束时两个对象精确对换位置（xy）和朝向，各自保留高度。所以一局里对象占据的位姿集合（槽）不变，变的只是谁占哪个槽；两个对象交换的扫掠几何只取决于它们所占的无序槽对。容器同形（K7）时，G 在 reset 时算一次，整局有效。</p>
 <p><strong>锚点</strong>：<code>src/robomme_xhard/swap_plan.py::slot_graph(states)</code> 调 <code>swap_uniform.slot_pair_graph(n, feasible)</code>，其中 <code>feasible(a, b)</code> 是 <code>bc.check_swap_sweep(states[a], states[b], [其余槽], sweep_index=-1, stage="graph")</code> 无拒绝。同时返回每对的 <code>gap</code>（可行为下界，不可行为拒绝的 <code>gap_m</code>），写进 <code>_xhard_swap_plan["graph"]</code>。</p>
