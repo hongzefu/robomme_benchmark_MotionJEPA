@@ -311,6 +311,42 @@ def test_videoplacebutton():
     assert "where it was placed immediately after the button was pressed" in result[1]
 
 
+def _vpb_expected_mother(color, lang):
+    """母档 VideoPlaceButton 四句的改前字面文本（逐字照抄改前源码）。"""
+    last = (
+        f"watch the video carefully, then place the {color} cube on the target where it was last placed before the button was pressed"
+        if lang == "before"
+        else f"watch the video carefully, then place the {color} cube on the target where it was first placed after the button was pressed"
+    )
+    return [
+        f"watch the video carefully, then place the {color} cube on the target right {lang} the button was pressed",
+        f"watch the video carefully, and place the {color} cube on the target where it was placed immediately {lang} the button was pressed",
+        f"watch the video carefully, then place the {color} cube on the target where it was previously placed {lang} the button was pressed",
+        last,
+    ]
+
+
+def test_videoplacebutton_mother_unchanged():
+    """母档（无 xhard_label）四句与改前逐字相同。"""
+    for lang in ("before", "after"):
+        s = _make_self(target_color_name="red", target_target_language=lang)
+        assert _call("VideoPlaceButton", s) == _vpb_expected_mother("red", lang)
+
+
+def test_videoplacebutton_xhard_drops_third_goal():
+    """xhard 档（有 xhard_label）去掉第 3 句「previously placed」，其余三句保持原文与顺序。"""
+    for lang in ("before", "after"):
+        s = _make_self(
+            unwrapped_attrs={"xhard_label": "xhard20"},
+            target_color_name="red",
+            target_target_language=lang,
+        )
+        result = _call("VideoPlaceButton", s)
+        assert all("previously placed" not in g for g in result)
+        exp = _vpb_expected_mother("red", lang)
+        assert result == [exp[0], exp[1], exp[3]]
+
+
 # ── VideoPlaceOrder: 1 branch ──
 
 def test_videoplaceorder():
