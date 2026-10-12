@@ -143,7 +143,7 @@ a { color:var(--accent); }
 </tr>
 <tr>
 <td>K12</td>
-<td>母 seed <strong>只取官方 train metadata（ep0–99）</strong>。官方 train metadata 每任务 100 条（ep0–99），其中 hard 25 条；本机官方参考集 <code>/data/hongzefu/data_0226</code>。本仓库提交 <code>052841ae</code>（2.8.1）曾把 VideoUnmask、ButtonUnmask、VideoUnmaskSwap、ButtonUnmaskSwap 四任务扩到 400 条（ep100–399、新 seed），<strong>该扩充已撤回</strong>：train metadata 已于 2.69 恢复为官方 100 条（版本号以主会话合并结果为准）。xhard-1011 用的 rank0 / rank1 母 seed（ep7 / 11 / 27 / 46 / 86）都在官方范围内，不受影响。C4 另加防线：所有母 seed 的 episode ≤ 99，超出即报错（<code>XHARD_MOTHER_OFFICIAL</code>）</td>
+<td>母 seed <strong>只取官方 train metadata（ep0–99）</strong>。官方 train metadata 每任务 100 条（ep0–99），其中 hard 25 条；本机官方参考集 <code>/data/hongzefu/data_0226</code>。本仓库提交 <code>052841ae</code>（2.8.1）曾把 VideoUnmask、ButtonUnmask、VideoUnmaskSwap、ButtonUnmaskSwap 四任务扩到 400 条（ep100–399、新 seed），<strong>该扩充已撤回</strong>：train metadata 已于 2.69（<code>52877e2a</code>）恢复为官方 100 条。xhard-1011 用的 rank0 / rank1 母 seed（ep7 / 11 / 27 / 46 / 86）都在官方范围内，不受影响。C4 另加防线：所有母 seed 的 episode ≤ 99，超出即报错（<code>XHARD_MOTHER_OFFICIAL</code>）</td>
 <td>用户 10-12：「母 seed为什么有这么多 只从train metadata的hard派生啊？？」「train metadata为什么会有400个 哪里来的？ 官方…不是只有100个吗」「删除新的metadata 现在直接做 metadata只保留官方的 然后调整计划」</td>
 </tr>
 </tbody>
@@ -195,7 +195,7 @@ a { color:var(--accent); }
 <td>—</td>
 <td>数据类：<code>reason</code>（contact / numerical_boundary / uncertified）、<code>stage</code>、两个对象与盒体名、<code>gap_m</code>、路径参数 <code>s</code>、二分深度等</td>
 <td>失败证据，<code>.summary()</code> 给人看、<code>.as_dict()</code> 进结果行</td>
-<td>所有抛错携带</td>
+<td>reset 抛出的 <code>SwapCollisionError</code> 携带；运行期写进 <code>_xhard_fatal.rejection</code>（不抛）</td>
 </tr>
 </tbody>
 </table>
@@ -468,7 +468,7 @@ a { color:var(--accent); }
 </table>
 <p>两者都是 <code>SceneGenerationError</code> 子类。reset 阶段抛出的 <code>SwapCollisionError</code> 发生在 <code>gym.make</code>/<code>reset</code> 内，直接抵达 <code>_worker</code>，现有的 <code>retryable</code> 判断把它归为 <code>failure_class="task"</code>、<code>ok=False</code>。运行期失败不以异常形式出现，由 <code>_worker</code> 读 <code>_xhard_fatal</code> 判同样的 task 失败（D2）。xhard 卡固定 seed、不重试（K6）；不改生成器的分类逻辑。</p>
 <h3>2.5 发起者规则示例（hard 四容器理想矩形 15×20 cm，忽略中心抖动，S=6）</h3>
-<p>按生成序，region4 四个角点为 (−0.05, ±0.1)、(0.1, ±0.1)，短边（15 cm）配对是 <strong>{0,3} 与 {1,2}</strong>；容器中心每轴抖动 <strong>±4.25 cm</strong>（<code>region_half_size</code> 0.07 − 容器半宽 0.0275），不是 ±7 cm。理想矩形下最近邻为 0↔3、1↔2；真实抖动布局约 82% 构成「互为最近」的完美匹配（子代理简化蒙特卡洛，<strong>未实测</strong>）。</p>
+<p>按生成序，region4 四个角点为 (−0.05, ±0.1)、(0.1, ±0.1)，短边（15 cm）配对是 <strong>{0,3} 与 {1,2}</strong>；容器中心每轴抖动 <strong>±4.25 cm</strong>（<code>region_half_size</code> 0.07 − 容器半宽 0.0275），不是 ±7 cm。理想矩形下最近邻为 0↔3、1↔2；真实抖动布局约 82% 构成「互为最近」的完美匹配（统计量：随机布局下最近邻构成互为最近完美匹配的比例；子代理简化蒙特卡洛，<strong>未实测</strong>）。注意它与盲区里「约 83%～88% 样本净恒等」是两个不同的统计量，后者是偶数段数下最终净置换为恒等的样本比例，同样为子代理简化蒙特卡洛、未实测。</p>
 <table>
 <thead>
 <tr>
@@ -701,9 +701,24 @@ a { color:var(--accent); }
 <td>三任务 xhard12 <code>gym.make</code> + <code>reset</code>：S 个 idx2 非 None、计划段数 = S；同一母 seed 五档 <code>_xhard_swap_plan.pairs</code> 前缀一致（K11）</td>
 </tr>
 <tr>
-<td><code>src/robomme_xhard/tests/test_jobs.py</code></td>
+<td><code>src/robomme_xhard/tests/test_jobs.py</code>（C4）</td>
 <td>追加</td>
-<td>证据字段存在性；manifest 多 rank 校验</td>
+<td>manifest 多 rank 校验；<code>--all</code> 清单与 episode ≤ 99 防线（<code>XHARD_MOTHER_ALL</code> 单测版、<code>XHARD_MOTHER_OFFICIAL</code>）</td>
+</tr>
+<tr>
+<td><code>src/robomme_xhard/tests/test_contract.py</code>（C4）</td>
+<td>追加</td>
+<td>失败字段逐跳契约，覆盖 <code>tools/layout.py::_normalize_result</code> / <code>read_run_results</code>、<code>summarize</code>、视频失败列文字（<code>XHARD_FAIL_FIELDS</code>）</td>
+</tr>
+<tr>
+<td><code>src/robomme_xhard/tests/test_worker_evidence.py</code>（新，C3）</td>
+<td>—</td>
+<td><code>_worker</code> 证据字段存在性、<code>gym.make</code> 内抛错时证据取自异常对象、<code>_xhard_fatal</code> 非空判 <code>ok=False</code> / <code>failure_class=task</code></td>
+</tr>
+<tr>
+<td><code>src/robomme_xhard/tests/test_fatal_catch.py</code>（新，C3，<code>gpu</code>）</td>
+<td>—</td>
+<td>阶段 D0 闸门：第 2 段起点注入必拒，完整 <code>_worker</code> 路径，<code>timeout 300</code>（<code>XHARD_FATAL_CATCH</code>）</td>
 </tr>
 </tbody>
 </table>
@@ -736,7 +751,7 @@ a { color:var(--accent); }
 <td><code>XHARD_SWAPPLAN_CPU=PASS</code></td>
 <td>发起者 / 搭档 / 预演 / 异常</td>
 <td><code>… pytest src/robomme_xhard/tests/test_swap_plan.py -q</code></td>
-<td>对称布局均匀（S=11,N=4 → 总参与次数差 ≤ 1）、N ≥ 3 相邻段不重对、N=3 确定性轮转、N=2 回退、并列随机同 seed 可复现、五档前缀、拒绝抛 <code>SceneGenerationError</code> 子类、绑定不一致抛错、「端点安全、中途穿过第三对象」的合成反例在段起点被拒</td>
+<td>对称布局均匀（S=11,N=4 → 总参与次数差 ≤ 1）、N ≥ 3 相邻段不重对、N=3 确定性轮转、N=2 回退、并列随机同 seed 可复现、五档前缀、reset 规划拒绝抛 <code>SceneGenerationError</code> 子类、运行期绑定不一致只记 <code>_xhard_fatal</code>（不抛）、「端点安全、中途穿过第三对象」的合成反例在段起点被拒</td>
 </tr>
 <tr>
 <td><code>XHARD_MOTHER_ALL=PASS tasks=3 seeds=&lt;n&gt;</code></td>
@@ -900,7 +915,7 @@ a { color:var(--accent); }
 </tbody>
 </table>
 <h3>4.1 阶段 E 的规模与耗时</h3>
-<p>规模（只取官方 train metadata ep0–99，K12；train metadata 已于 2.69 恢复为官方 100 条，各任务 hard / medium 25 条；ep 列表从 <code>3521be0c</code> 版 <code>src/robomme/env_metadata/train/</code> 的 ep0–99 范围只读取出，主会话另用 <code>/data/hongzefu/data_0226</code> 官方 metadata 核过 24/24/24；R11 <code>mother_seeds.py::MIN_EPISODE=6</code>「episode ≥ 6 避开 FailRecover」照旧，所以 VideoUnmaskSwap ep3/seed5300、ButtonUnmaskSwap ep3/seed7300、VideoRepick ep2/seed9200 不进清单）：</p>
+<p>规模（只取官方 train metadata ep0–99，K12；train metadata 已于 2.69（<code>52877e2a</code>）恢复为官方 100 条，各任务 hard / medium 25 条；ep 列表从 <code>3521be0c</code> 版 <code>src/robomme/env_metadata/train/</code> 的 ep0–99 范围只读取出，主会话另用 <code>/data/hongzefu/data_0226</code> 官方 metadata 核过 24/24/24；R11 <code>mother_seeds.py::MIN_EPISODE=6</code>「episode ≥ 6 避开 FailRecover」照旧，所以 VideoUnmaskSwap ep3/seed5300、ButtonUnmaskSwap ep3/seed7300、VideoRepick ep2/seed9200 不进清单）：</p>
 <table>
 <thead>
 <tr>
@@ -916,7 +931,7 @@ a { color:var(--accent); }
 <tr>
 <td>2.3 VideoUnmaskSwap</td>
 <td>hard</td>
-<td>24（ep 7, 11, 15, …, 99，步长 4，attempt 全为 0；排除 ep3/seed5300）</td>
+<td>24（ep 7, 11, 15, …, 99，步长 4，attempt 固定为 0（P2）；排除 ep3/seed5300）</td>
 <td>120</td>
 <td>24</td>
 <td>144</td>
@@ -1157,7 +1172,7 @@ a { color:var(--accent); }
 <ul>
 <li>R0-1 <code>src/robomme/</code> 零 diff（P1）；K8 三项覆盖只许在 <code>src/robomme_xhard/</code> 子类/混入里做。</li>
 <li>R0-2 vendored 文件逐字节不改；要改判据回正本改（第 24 条）。阈值常量不加开关。</li>
-<li>R0-3 不换 seed、不换布局、不换搭档：任何检测失败只能抛 <code>SceneGenerationError</code> 子类。</li>
+<li>R0-3 不换 seed、不换布局、不换搭档；reset 阶段（<code>certify_swap_plan</code>）失败抛 <code>SceneGenerationError</code> 子类；运行期（段起点、子步）失败一律不抛，只记 <code>env._xhard_fatal</code>，由 <code>_worker</code> 在 episode 结束后判 failure（D2）。</li>
 <li>R0-4 父类 <code>_load_scene</code> 的随机流不得被扰动：<code>certify_swap_plan</code> 只在 <code>super()._load_scene</code> 返回后运行，用独立 Generator。</li>
 <li>R0-5 子代理只在 worktree 写，不 push；每条 git 单独一次 Bash；不起 &gt;5 分钟任务；worktree 内不跑 <code>gym.make</code>。</li>
 <li>R0-6 生成器只改 <code>_worker</code> 的证据复制与失败字段结构化保存（见本节「失败字段契约」），分类逻辑、<code>retryable</code>、attempt、seed 公式逐字节不变；另在 episode 结束后检查 <code>_xhard_fatal</code>（D2 甲）；这些都属 P2 允许范围（D3 已批）。</li>
@@ -1325,7 +1340,7 @@ if fatal:
 <li><code>test_plan_rectangle_pairs_short_edge</code>（K2 退化记录：理想矩形下配对只在短边 {0,3} / {1,2}）</li>
 <li><code>test_plan_rejects_sweep_collision_raises_scene_error</code>（三对象一字排开、中间旁观者 → <code>SwapCollisionError</code> 且 <code>isinstance(SceneGenerationError)</code>）</li>
 <li><code>test_certify_prefills_all_pairs_and_schedule</code>（fake env 有 <code>seed</code>、<code>swap_times</code>、<code>_refresh_swap_schedule</code>；用 <code>ObjectState</code> 直接注入绕过 actor）</li>
-<li><code>test_segment_start_binding_mismatch_raises</code></li>
+<li><code>test_segment_start_binding_mismatch_records_fatal</code>：段起点绑定不一致时不 raise，只写 <code>_xhard_fatal</code>（<code>error_type=SwapBindingError</code>、<code>stage=segment_start</code>）</li>
 <li><code>test_segment_start_rejects_third_object_crossing</code>：合成反例「a、b 端点都安全，但弯道中途穿过第三个交换对象」，必须在段起点被拒（旁观者含其余交换对象）</li>
 <li><code>test_plan_n3_rotation</code>：N=3 时候选池恒 1 个，k ≥ 2 发起者确定性轮转，只断言相邻对不同</li>
 <li><code>test_usage_counts_split</code>：证据里发起 / 搭档 / 总参与次数分开记</li>
@@ -1510,6 +1525,21 @@ uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifa
 <td><strong>已核实（2026-10-12 探针）</strong>：<code>button_left/right</code> 是 <code>PhysxArticulation</code>，<code>shape_specs_from_actor</code> 报 <code>uncertified</code>；三任务 <code>_bystander_actors()</code> 一律返回 <code>[]</code>，按钮不入判据</td>
 </tr>
 <tr>
+<td>R4</td>
+<td><code>select_initiator</code> 的独立 Generator 若与父类流冲突</td>
+<td>只在 <code>super()._load_scene</code> 返回后创建；<code>test_randint_stream_unchanged_by_fixed_range</code> 类测试保留</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>父类 <code>spawn_random_bin</code> 失败静默 <code>break</code>，容器 &lt;4</td>
+<td>已有 <code>test_unmask_fails_loud_without_three_bins</code> 思路；<code>certify_swap_plan</code> 对 N&lt;2 抛错</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>MRO：<code>SwapCollisionMixin.step</code> 必须先于 ButtonUnmaskSwapXHard 现有逻辑</td>
+<td>混入放基类列表最前；C2 的 CPU 测试断言 MRO 顺序</td>
+</tr>
+<tr>
 <td>R7</td>
 <td>全量 432 卡耗时 1.5～5 h、H5 约 65～117 GB（未含视频）</td>
 <td>smoke 先测倍数与每卡字节数，换算全量 + 30% 余量；起跑前 <code>df -h /data</code> 核对并写进规模报告；按 P5 向用户报规模与耗时并取得确认后再起；中途可按卡粒度中断（<code>episode_results.jsonl</code> 边跑边写）</td>
@@ -1529,26 +1559,11 @@ uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifa
 <td>worker 写完 H5、回传前崩溃（基础设施故障），同卡重跑会覆盖已写产物</td>
 <td>D5「隔离保留 最后问人工」：该卡已写产物整体移到 <code>&lt;输出根&gt;/_quarantine/&lt;卡名&gt;/</code> 保留，不覆盖、不自动重跑；本轮结束时由主会话列清单交用户处置</td>
 </tr>
-<tr>
-<td>R4</td>
-<td><code>select_initiator</code> 的独立 Generator 若与父类流冲突</td>
-<td>只在 <code>super()._load_scene</code> 返回后创建；<code>test_randint_stream_unchanged_by_fixed_range</code> 类测试保留</td>
-</tr>
-<tr>
-<td>R5</td>
-<td>父类 <code>spawn_random_bin</code> 失败静默 <code>break</code>，容器 &lt;4</td>
-<td>已有 <code>test_unmask_fails_loud_without_three_bins</code> 思路；<code>certify_swap_plan</code> 对 N&lt;2 抛错</td>
-</tr>
-<tr>
-<td>R6</td>
-<td>MRO：<code>SwapCollisionMixin.step</code> 必须先于 ButtonUnmaskSwapXHard 现有逻辑</td>
-<td>混入放基类列表最前；C2 的 CPU 测试断言 MRO 顺序</td>
-</tr>
 </tbody>
 </table>
 <h2 id="h14">六、盲区诚实清单</h2>
 <ul>
-<li>退化（理想矩形只换短边两对、偶数段净回原位）来自 K2，本轮不改；真实 ±4.25 cm 中心抖动下的比例只有子代理简化蒙特卡洛估计（约 83%～88% 样本净恒等），<strong>未实测</strong>。D1 已裁决「接受」：结果统计逐卡报净置换是否为恒等，并按任务 × 档位给出恒等比例。</li>
+<li>退化（理想矩形只换短边两对、偶数段净回原位）来自 K2，本轮不改；真实 ±4.25 cm 中心抖动下的比例只有子代理简化蒙特卡洛估计（约 83%～88% 样本净恒等；统计量：偶数段数下最终净置换为恒等的样本比例。与 2.5 的「约 82% 完美匹配」不是同一统计量，后者是随机布局下最近邻构成互为最近完美匹配的比例；两者均为子代理简化蒙特卡洛、未实测），<strong>未实测</strong>。D1 已裁决「接受」：结果统计逐卡报净置换是否为恒等，并按任务 × 档位给出恒等比例。</li>
 <li>D4 已裁决：碰撞保证范围限定为「参与交换的对象之间（含本段其余交换对象）」；按钮、机械臂（含夹爪）、桌面不入判据，作为盲区明列；验收与留档都不得泛称「全场景无碰撞」。</li>
 <li>按钮不在碰撞判据里（R3 已核实是 <code>PhysxArticulation</code>）。ButtonUnmaskSwap：按钮与容器扫掠区简化蒙特卡洛约 1/4000 擦边（子代理估算，未实测），只能说「几乎不相交」。VideoRepick：按钮由 <code>VideoRepick::_load_scene</code> 中 <code>build_button(center_xy=(-0.2,0), randomize_range=(0.1,0.1))</code> 生成，方块扫掠范围（线形布局 (0, ±0.15) 随机旋转 0～180° + 抖动 + 7 cm 弯道）<strong>可与之重叠</strong>，不能写「位置远」；按 D4 不手写盒体，这一重叠作为盲区保留。</li>
 <li>全量派生的成功率是「当前代码 + 碰撞判据」下的数字，母卡走原类无检测；两者不是同一判据下的对照。</li>
