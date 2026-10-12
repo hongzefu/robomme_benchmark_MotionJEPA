@@ -302,7 +302,7 @@ def _raw_summary(path: Path, job: EpisodeJob) -> dict[str, Any]:
             raise DatasetGenerationError("; ".join(errors))
         if done is not True:
             raise DatasetGenerationError(f"{path}/{name}: 末帧 is_completed 不为真")
-    return {"h5_path": str(path), "timestep_count": len(timesteps)}
+    return {"h5_path": str(path), "timestep_count": len(timesteps), "task_success": done}
 
 
 def _h5_path(output_root: Path, job: EpisodeJob) -> Path:
@@ -432,6 +432,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
             "recovery_mode": job.recovery_mode,
             "bound": dict(_BOUND),
             "ok": False,
+            "task_success": False,
             "failure_class": "code",
             "error_type": type(exc).__name__,
             "error": str(exc),
@@ -560,6 +561,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
         return {
             **base,
             "ok": False,
+            "task_success": False,
             "failure_class": "task" if isinstance(caught, retryable) else "code",
             "error_type": type(caught).__name__,
             "error": str(caught),
@@ -577,6 +579,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
         return {
             **base,
             "ok": False,
+            "task_success": False,
             "failure_class": "task" if isinstance(exc, retryable) else "code",
             "error_type": type(exc).__name__,
             "error": str(exc),
@@ -619,28 +622,15 @@ def _mark_failed_artifacts(job: EpisodeJob) -> list[str]:
 
 
 def _quarantine_written_card(job: EpisodeJob) -> dict[str, Any]:
-    """只隔离已有 episode 内容的崩溃卡；没有已写 H5 时沿用普通 infra 重试。"""
+    """隔离已有 H5 内容或同卡视频的崩溃卡；只有无证据空壳沿用 infra 重试。"""
     if not job.fixed_seed:
         return {}
     root = Path(job.output_root)
     raw = _h5_path(root, job)
     if raw.is_symlink():
         raise DatasetGenerationError(f"隔离 H5 不能是符号链接：{raw}")
-    if not raw.is_file():
-        return {}
-    try:
-        with h5py.File(raw, "r") as handle:
-            if f"episode_{job.episode}" not in handle:
-                return {}
-    except OSError:
-        # 损坏或半写的非空文件也保留，不能把无法读取当作没有写过。
-        if raw.stat().st_size == 0:
-            return {}
     stem = raw.stem
-    destination = root.parent / "_quarantine" / f"{root.name}_{stem}"
-    if destination.parent.is_symlink() or destination.exists() or destination.is_symlink():
-        raise DatasetGenerationError(f"隔离目标已存在，禁止覆盖：{destination}")
-    paths = [raw]
+    paths = [raw] if raw.is_file() else []
     videos = root / "videos"
     if videos.is_symlink():
         raise DatasetGenerationError(f"隔离视频目录不能是符号链接：{videos}")
@@ -648,6 +638,20 @@ def _quarantine_written_card(job: EpisodeJob) -> dict[str, Any]:
         prefixes = (stem + "_", "FAILED_" + stem + "_",
                     "success_NO_OBJECT_" + stem + "_", "FAILED_NO_OBJECT_" + stem + "_")
         paths.extend(p for p in videos.iterdir() if p.is_file() and p.name.startswith(prefixes))
+    # 视频可能已写完或只写一半，而 H5 仍是可读空壳；先收齐视频再判定。
+    written = any(path.parent == videos for path in paths)
+    if raw.is_file():
+        try:
+            with h5py.File(raw, "r") as handle:
+                written = written or f"episode_{job.episode}" in handle
+        except OSError:
+            # 损坏或半写的非空文件也保留，不能把无法读取当作没有写过。
+            written = written or raw.stat().st_size > 0
+    if not written:
+        return {}
+    destination = root.parent / "_quarantine" / f"{root.name}_{stem}"
+    if destination.parent.is_symlink() or destination.exists() or destination.is_symlink():
+        raise DatasetGenerationError(f"隔离目标已存在，禁止覆盖：{destination}")
     for path in paths:
         if path.is_symlink():
             raise DatasetGenerationError(f"隔离产物不能是符号链接：{path}")
@@ -700,6 +704,7 @@ def _synth_failure(job: EpisodeJob, exc: BaseException, failure_class: str) -> d
         "difficulty": job.difficulty,
         "recovery_mode": job.recovery_mode,
         "ok": False,
+        "task_success": False,
         "failure_class": failure_class,
         "error_type": type(exc).__name__,
         "error": str(exc),
@@ -1277,8 +1282,8 @@ def _generate_xhard(
                 "seed": job.seed,
                 "attempt": job.attempt,
                 "ok": ok,
-                # 成功判定与旧模式同口径：跑完 task_list 且 evaluate 的 success 真、fail 假
-                "task_success": ok,
+                # 独立任务字段来自真实终态检查；缺字段保持未知，不从执行状态推导。
+                "task_success": result.get("task_success"),
                 "timesteps": result.get("timestep_count") if ok else None,
                 "h5": result.get("h5_path") if ok else None,
                 "failure_class": None if ok else result.get("failure_class", "missing"),
