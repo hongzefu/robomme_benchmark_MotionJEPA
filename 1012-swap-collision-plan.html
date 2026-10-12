@@ -945,6 +945,36 @@ a { color:var(--accent); }
 <p>用户本次原话「/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/1012-swap-collision-plan.html 按照最新计划 继续执行完」。T1 按方案 X 仅修改三文件：删除 <code>step</code> 覆写，段起点检查移入 <code>_before_control_step</code>，零新增实例状态，端点逐位等式和每子步检测不变。两个 <code>sub/T1</code> 提交经独立复审后保留并合入 <strong><code>b7be8956e8399b33ea6fe7d889107f7a94e80ec8</code>（2.89）</strong>，已推送。主检出 CPU 实测 381 通过、四项获准保留的基线失败、2 跳过，8.72 秒；失败集合无增减，<code>XHARD_CORE_SHORT=PASS baseline_failures=4 new_failures=0 pytest_exit=1 passed=381</code>，<code>src/robomme/</code> 与 vendored 判据未改。</p>
 <p>唯一 GPU 首探针从该 clean HEAD 于 17:56:49 EDT 在 sled-vail GPU0 启动，VideoUnmaskSwap seed5700、xhard12、单环境 CPU PhysX 与 GPU 渲染。控制步 64 的第 0 段端点和扫掠通过；控制步 114 的共享端点最近邻绑定通过，但仅 <code>a_q</code> 逐位不一致，最大 float64 正规化分量差 <strong><code>4.043450074764365e-09</code></strong>，其余 <code>a_p/b_p/b_q</code> 完全一致。测试 1 失败、17 排除、14.94 秒，<code>EXIT_CODE=1</code>。<code>XHARD_SEG_START_ALIGN=FAIL task=VideoUnmaskSwap seed=5700 segment=1 control_step=114 mismatches=a_q</code>；起点钩子各调用一次，失败前 before/after 子步检测各 250 次。完整数值 JSON 共 115 份，<code>XHARD_EVIDENCE_JSON=PASS files=115</code>。</p>
 <p>对已保存数据离线重放父类起点的 float32 归一化，结果逐位等于实际原始四元数；缓存原始 q 范数为 1.0000001192092896。该计算只说明本样本的数值变化可复现，不能据此改判据。失败为 <code>SwapBindingError / endpoint_binding</code>，该段 <code>rejection=null</code>、尚未运行实际扫掠，不记成已证实碰撞。按 R10-T/runbook 已停止其余契约、新时序 D0、正常 smoke、180 卡全量与视频，没有重试、换 seed 或放宽等式。完整 SHA、命令、两份关键数值快照、115 份原始 JSON 的 SHA256 清单、独立诊断审查与下一步裁决边界见 <a href="docs/xhard-doc/xhard-1012-collision-smoke/result.md">方案 X 最新结果留档</a>。端点契约若需改变，必须先修订完整计划交用户重新审查；本次只追加实测，没有改写原计划。</p>
+<h3 id="endpoint-contract-y-1012">2026-10-12 修订（方案 X′，待用户审查）：端点比较前先重放父类起点的 float32 归一化，仍逐位比较</h3>
+<p><strong>用户原话</strong>（看完 4e-9 差异的解释后）：「比较前先对缓存做一遍和父类完全相同的 float32 归一化，然后仍然逐位比较。 同意 继续做」「然后做全量的生成」。按 <code>AGENTS.md</code> 第 2 条「执行中调整计划」，这是端点契约（接口层）变化，本节为完整修订，<strong>用户对本节明确说「开工」后才实施</strong>；方案 X 已获批的时序（<code>_before_control_step</code>、零新增状态、每子步检测）不变。</p>
+<p><strong>为什么要改</strong>：父类 <code>src/robomme/robomme_env/utils/statechange.py::swap_flat_two_lane</code> 在段起点（<code>cur_step == start_step</code>）先把物体当前 q 按 float32 存进 <code>_two_lane_swaps[key]["qa"/"qb"]</code>，随后同一调用里按 <code>alpha=0.0</code> 走插值分支：<code>qa_current = qa0*(1-alpha) + qb0*alpha</code>，<code>np.linalg.norm</code> 大于 <code>1e-6</code> 时再除以范数，最后 <code>set_pose(sapien.Pose(..., q=qa_current))</code>。所以段起点真实写入的 q 是「缓存 q 经一次 float32 归一化」，而不是缓存 q 本身。缓存 q 的 float32 范数恰为 1.0 时两者逐位相同（第 0 段控制步 64 即此情形），范数差一个刻度（seed5700 第 1 段 <code>a_q</code> 范数 1.0000001192092896）时读回差一个 float32 刻度 1.19e-7，判据 float64 正规化后剩 4.04e-9。2026-10-12 在 vail 实测 <code>sapien.Pose(q=[1.0000001,0,0,0])</code> 读回仍为 <code>1.0000001</code>，即 SAPIEN 不再二次归一化；三个子任务（VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick）的交换都调用同一 <code>swap_flat_two_lane</code>（源码 grep 核实）。</p>
+<table>
+<thead><tr><th>项</th><th>方案 X（现行，已实测 FAIL）</th><th>方案 X′（本修订）</th></tr></thead>
+<tbody>
+<tr><td>期望端点 q</td><td>缓存原始 <code>qa</code>/<code>qb</code> 直接进 <code>bc.ObjectState</code></td><td>新函数 <code>swap_plan.py::parent_start_q(q_self, q_other)</code> 逐字照抄父类 <code>alpha=0.0</code> 的 float32 混合与归一化（含 <code>&gt; 1e-6</code> 守卫）；A 用 <code>(qa, qb)</code>，B 用 <code>(qb, qa)</code>，结果再进 <code>bc.ObjectState</code></td></tr>
+<tr><td>位置 <code>a_p</code>/<code>b_p</code></td><td>缓存 <code>ax/ay/az</code> 等</td><td>不变（实测已逐位通过；<code>alpha=0</code> 时父类位置表达式退化为缓存值）</td></tr>
+<tr><td>比较方式</td><td>四字段 <code>np.array_equal</code></td><td><strong>不变</strong>：四字段 <code>np.array_equal</code>，不引入任何容差</td></tr>
+<tr><td>期望值来源</td><td>只来自缓存</td><td>仍只来自缓存，<strong>不读实际位姿</strong>，不构成自证循环；真实偏移（物理积分、外力、写错物体）照样逐位拒绝</td></tr>
+<tr><td>证据 JSON</td><td><code>cached_raw_q</code>、<code>actual_raw_q</code>、<code>delta</code></td><td>另加 <code>expected_start_raw_q</code>（重放后的 float32 原值），原字段保留</td></tr>
+<tr><td>阈值、最近邻、扫掠、子步检测、fatal 处理</td><td colspan="2">完全不变</td></tr>
+<tr><td><code>src/robomme/</code></td><td colspan="2">零 diff（P1）；只在 <code>robomme_xhard</code> 内算期望值，不覆盖、不 patch 父类行为</td></tr>
+</tbody>
+</table>
+<p><strong>防止照抄走样的锁定测试</strong>：CPU 测试直接调用真实的 <code>statechange.swap_flat_two_lane</code>（假物体只记录 <code>set_pose</code> 收到的 <code>sapien.Pose.q</code>），在 <code>cur_step == start_step</code> 喂入三组 q（范数恰为 1、多一个刻度、少一个刻度），断言 <code>parent_start_q</code> 输出与父类真实写入逐位相同；另断言「多一个刻度」时新旧期望确实不同（证明测试能区分）、加 1e-6 位置偏移仍被拒绝。父类以后若改公式，这条测试会先红。判定行 <code>XHARD_PARENT_START_Q=PASS cases=3</code>。</p>
+<p><strong>子代理与合并</strong>：T2 一个写入型 <code>opus</code> 独立 worktree，可写集合只有 <code>src/robomme_xhard/swap_plan.py</code>、<code>src/robomme_xhard/tests/test_swap_plan.py</code>；提交前缀 <code>sub/T2: </code>。独立 <code>sonnet</code> 审查固定 BASE/TIP，PASS 后主会话 <code>--no-ff</code> 合并，跑 <code>XHARD_TIMING_CPU</code>、<code>XHARD_PARENT_START_Q</code>、<code>XHARD_CORE_SHORT</code>（基线 4 项失败对照）、<code>XHARD_P1_ZERO</code>，推送后从 clean HEAD 起 GPU。</p>
+<p><strong>后续步骤（全部本机 GPU0，P7；任一 FAIL 即停、保留证据交用户，不换 seed、不放宽）</strong>：</p>
+<table>
+<thead><tr><th>步</th><th>内容</th><th>判据</th></tr></thead>
+<tbody>
+<tr><td>Y1</td><td>重跑同一首探针（VideoUnmaskSwap seed5700 xhard12，命令同方案 X 接续结果，新证据根 <code>artifacts/tests/swap-timing/run-&lt;新随机号&gt;</code>，tmux <code>xh-coll-timing-probe2-1012</code>）</td><td><code>XHARD_SEG_START_ALIGN=PASS segs=&lt;n&gt; mismatches=0</code>、<code>XHARD_EVIDENCE_JSON=PASS</code></td></tr>
+<tr><td>Y2</td><td>剩余 GPU 契约（<code>test_swap_collision_gpu.py -m gpu</code>，排除 Y1 已过用例）</td><td>原计划第三节对应判定行</td></tr>
+<tr><td>Y3</td><td>D0：<code>test_fatal_catch.py</code>（三任务各一张 xhard20，第 2 段起点注入必拒）</td><td><code>XHARD_FATAL_CATCH=PASS tasks=3 hang=0</code></td></tr>
+<tr><td>Y4</td><td>阶段 D 正常 smoke：三任务各一张 xhard20 卡、单 worker</td><td><code>XHARD_SMOKE_E2E</code> 等阶段 D 判定行；记录 <code>XHARD_COLL_OVERHEAD</code> 与每卡字节数</td></tr>
+<tr><td>Y5</td><td>阶段 E 全量：4.1 定死的 180 张卡（30 母 seed × 母档 + xhard12/14/16/18/20），<code>--gpus 0 --workers 32</code>，Beta commit 后由运行型子代理 R1 起 tmux <code>xh-coll-full-1012</code>，主会话 Monitor 到 <code>EXIT_CODE=</code>，再出成功率表与六列视频（4.2）</td><td><code>XHARD_FULL_DERIVE</code>、<code>EPISODE_STRIP_VIDEO</code></td></tr>
+</tbody>
+</table>
+<p><strong>D6 全量放行的处理</strong>：用户本轮「然后做全量的生成」作为对 4.1 这一批 180 张卡的明确决定（P5）。Y4 smoke 通过后主会话按实测耗时比与每卡字节数算出全量耗时和磁盘，<strong>在汇报中写出但不再停等</strong>；只有当估算超出 4.1 量级（墙钟超过 1 小时或磁盘超过 <code>/data</code> 可用空间的 10%）或 GPU0 被他人占满时才停下问用户。规模不得超过 180 张，不加额外 reset 对拍或 rollout。</p>
+<p><strong>未验证与风险</strong>：只在 seed5700 一个样本上复现了「一次 float32 归一化」就是全部差异；其他 seed、任务若还存在别的写入路径差异（如 q 与 −q），Y1/Y2/Y4/Y5 会照样以 <code>endpoint_binding</code> 拒绝并停下，不会被静默放过。全量中若出现此类拒绝，它会作为 <code>SwapBindingError</code> 卡计入失败统计；若单个任务该类拒绝超过该任务卡数的 10%，主会话停下交用户，不自行解释为碰撞。</p>
 <h3>4.1 阶段 E 的规模与耗时</h3>
 <p>规模（只取官方 train metadata ep0–99，K12；train metadata 已于 2.69（<code>52877e2a</code>）恢复为官方 100 条，各任务 hard / medium 25 条；ep 列表从 <code>3521be0c</code> 版 <code>src/robomme/env_metadata/train/</code> 的 ep0–99 范围只读取出，主会话曾在 aspen 用 <code>/data/hongzefu/data_0226</code> 官方 metadata 核过来源难度 24/24/24 条，vail 无该参考集（P3，清单用 <code>--no-verify</code>）；本轮按 K13 每任务只取前 10 个；R11 <code>mother_seeds.py::MIN_EPISODE=6</code>「episode ≥ 6 避开 FailRecover」照旧，所以 VideoUnmaskSwap ep3/seed5300、ButtonUnmaskSwap ep3/seed7300、VideoRepick ep2/seed9200 不进清单）：</p>
 <table>
@@ -1586,6 +1616,12 @@ uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifa
 <td>更简方案 X 取代 codex 方案 B</td>
 <td>「能不能有一些更加简单的解决方案 检查codex是否overthink」「你让我看不懂了 展开画图解释」「选 X 开始修复」</td>
 <td><strong>已裁决</strong>（K14）：段起点复核放 <code>_before_control_step</code>，零新增状态字段，删 step 覆写；P1 新批 <code>_before_control_step</code> 覆写、撤回 step 覆写。主会话 sonnet 审查代理核对 codex 修订无事实错误但 overthink（<code>PRE_MERGE_REVIEW=PASS base=2dce9e8d tip=6e7714d0 findings=4</code>）。本次只修订 HTML；改代码与 GPU 仍等本修订计划的无修改开工认可</td>
+</tr>
+<tr>
+<td>D11</td>
+<td>端点契约改为「重放父类起点 float32 归一化后仍逐位比较」，并放行全量</td>
+<td>「比较前先对缓存做一遍和父类完全相同的 float32 归一化，然后仍然逐位比较。 同意 继续做」「然后做全量的生成」</td>
+<td><strong>待审查</strong>：完整修订见 <a href="#endpoint-contract-y-1012">方案 X′</a>，用户明确「开工」后实施 T2 并按 Y1–Y5 推进到 180 卡全量</td>
 </tr>
 </tbody>
 </table>
