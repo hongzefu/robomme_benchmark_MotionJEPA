@@ -95,3 +95,25 @@ V4 判定：读 `artifacts/vail-repro-1012/run_summary.json`，三卡都要 `ok=
 ## 四、留档与 commit
 - V5 走 `sub/V5:` 子代理提交，主会话用 `--no-ff` 合并，subject 按 `git log` 最近一次接续。合并后核心短测通过，并且 `SYNC_SUMMARY=PASS` 后立即 push。
 - 本方案已原样存进仓库根目录 `1012-migrate-vail-plan.md`（用户说「写方案md 不用html了」，2.73 提交），vail 上 clone 后即可读到。
+
+## 实施结果（2026-10-12）
+
+用户原话（按时间顺序）：「给出方案 把这个仓库整体搬迁到vail也是 data hongzefu」「现在这些生成的产物应该都不需要了……那边只需要一个git然后重新生成」「写方案md 不用html了」「不用继续这个碰撞计划就是你只要做好迁移就好了碰撞计划我在那边再确定再开工」「信任 vail 的主机密钥 同意」「把aspen上的网页就是这个仓库相关的网页也搬到vail 上 产物需要的产物也搬过去」。
+
+| 步 | 判定行 | 实测 |
+|---|---|---|
+| V0 | 环境判定完成，结论写入 AGENTS 第 0 条「环境 B：sled-vail」列 | hostname `sled-vail`；`/nfs/turbo/coe-chaijy-unreplicated/hongzefu` 存在；`/data/hongzefu` 存在；`~/.ssh/config` 存在，含 `Host github.com`、`gitlab.eecs.umich.edu`、`greatlakes`、`sled-aspen`（有集群别名，但按 P7 生成不走集群）；GPU 2 × NVIDIA RTX 6000 Ada Generation（46068 MiB），GPU0 已用 1286 MiB、利用率 0～4%，GPU1 空闲；micromamba 有；`nproc=32`；内存 377 GB（可用约 331 GB）；`/data` 为 `/dev/nvme1n1p1` 14T、可用 6.4T；uv 0.10.2（`~/.local/bin/uv`）；gh 已登录 hongzefu；tmux、git 2.43.0；vail **没有**官方参考集 `/data/hongzefu/data_0226`（只有 `data_0225`、`data_0226-test-1`、`data-0306` 等）；AgentMetaRules 正本 clone 在 `/data/hongzefu/AgentMetaRules-hongzefu`；`~/.claude/settings.json` 已是 64/64/head |
+| V1 | clone 完成，HEAD `528e2f65`，工作区干净 | clone 到 `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`。aspen→vail ssh：用户 2026-10-12 同意信任 vail 主机密钥，并在 vail `authorized_keys` 加入 aspen 公钥（`SHA256:1n8+Fgjt4Xf1C1gSAGrOvtISHabjvqqyTWYYjpHCYgk`） |
+| V2 | `ENV_EDITABLE=PASS` | tmux `xh-migrate-sync` 跑 `uv sync --frozen --extra dev`，`EXIT_CODE=0`，Installed 111 packages；`robomme`、`robomme_xhard` 指向 vail 仓库 `src/`，`mani_skill` 在 `.venv` |
+| V3 | `CORE_SHORT=PASS failed=4` | 4 failed, 281 passed, 2 skipped；4 个均为既有失败（test_TaskGoal 两条、test_step_error_handling 两条），无新增失败 |
+| V4 | `VAIL_REPRO=PASS` | vail GPU0 重跑 VideoPlaceButton 三卡（seed 10701，manifest 用 git 内 `docs/xhard-doc/xhard-1011/records/mother_seeds.json`，`--workers 3`，输出 `artifacts/vail-repro-1012`），`EXIT_CODE=0`，3/3 成功，timesteps 958 / 1132 / 1265 与 aspen 逐一相同；goal 句数母卡 4（含 previously placed 1 句），xhard12 / xhard14 各 3（0 句） |
+| V5 | 本提交（`sub/V5:`），判定见合并提交的 `SYNC_SUMMARY` 与 h1 计数 | AGENTS 第 0 条加环境 B 列、冲突即停改为两环境表述；P3 补 vail 无 `data_0226`、`mother_seeds` 用 `--no-verify`；覆盖第 8 条补 vail 有集群别名但 P7 优先；CLAUDE.md 项目专属补充按环境区分 Skill 调用；`1012-swap-collision-plan.html` 三处资源说明加 vail 注记；本节；xhard-1011 留档补同步说明 |
+| V6 | 不在本次范围 | 碰撞计划由用户在 vail 上另行确定、另下开工令 |
+
+**网页同步**：aspen 的 tmux `xh-plan-web`（`http.server 8092 --directory artifacts/plan-site`）与 `xh-vis-web`（`http.server 8090 --directory artifacts/vis-site`）两个站点目录（plan-site 119 MB 含 16 支视频、vis-site 96 KB，共 25 个文件，无符号链接、无站外引用）已 rsync 到 vail 同路径，vail 上以同名 tmux、同端口起服务；从 aspen 访问 http://sled-vail.eecs.umich.edu:8092/ 、http://sled-vail.eecs.umich.edu:8092/review.html 、http://sled-vail.eecs.umich.edu:8090/ 均 200，`index.html`、`review.html` 与一支视频逐字节一致。
+
+**产物同步**：`artifacts/xhard/xhard-1011/report`（183 MB，含 `per_episode_strip`、`final_compare.mp4`、summary）与 `artifacts/xhard/xhard-1011/vpbfix-1012/report`（8.7 MB）已 rsync 到 vail 同路径。Claude 记忆目录（9 个文件）已同步到 vail 同路径。
+
+**未搬内容**：xhard-1011 的 H5（约 36 GB）未搬，仍在 aspen；其余 `artifacts/` 产物未搬，按用户「那边只需要一个git然后重新生成」需要时在 vail 重新生成。
+
+**aspen 侧保留项（均未动）**：主检出、`artifacts/`、Codex worktree 的未提交改动、`.nonexistent`、aspen 上的网页服务 `xh-plan-web` / `xh-vis-web`（用户未要求停）。
