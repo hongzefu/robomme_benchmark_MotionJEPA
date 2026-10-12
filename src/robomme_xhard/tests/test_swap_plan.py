@@ -1,6 +1,9 @@
 """纯 CPU 的规划、端点绑定与运行失败留证测试，不创建仿真环境。"""
 
 from types import SimpleNamespace
+import json
+from pathlib import Path
+import subprocess
 import numpy as np
 import pytest
 import torch
@@ -113,8 +116,14 @@ def test_certify_rejects_initial_and_too_few(monkeypatch):
 
 class Parent:
     def step(self, action):
+        self._before_control_step()
+        for _ in range(3):
+            self._before_simulation_step()
+            self._after_simulation_step()
         self.elapsed_steps += 1
         return action
+    def _before_control_step(self):
+        pass
     def _before_simulation_step(self):
         self.before_called = True
     def _after_simulation_step(self):
@@ -130,12 +139,16 @@ def runtime_env(monkeypatch, actors=None):
     monkeypatch.setattr(bc, "object_state_from_actor", fake_read)
     env = Env()
     env.actors = actors or list(rectangle().values())
+    for actor in env.actors:
+        actor.pose = SimpleNamespace(q=actor.q)
     env.elapsed_steps = 11
     env.swap_pair1_idx1, env.swap_pair1_idx2 = env.actors[0], env.actors[1]
     env.swap_schedule = [(env.actors[0], env.actors[1], 10, 20)]
     env._xhard_swap_plan = {}
     env._xhard_runtime_checks = []
     env._xhard_fatal = None
+    env.before_called = False
+    env.after_called = False
     return env
 
 
@@ -206,18 +219,112 @@ def test_runtime_guard_records_unexpected_check_exception(monkeypatch):
     assert env._xhard_fatal["check"] == "uncertified"
 
 
-def test_segment_start_uses_refreshed_schedule_and_completed_step(monkeypatch):
+def test_segment_start_uses_refreshed_schedule_and_current_step(monkeypatch):
     env = runtime_env(monkeypatch)
     env.elapsed_steps = 30
     seen = []
     def step(parent_self, action):
         parent_self.swap_schedule = [(env.actors[0], env.actors[1], 30, 40)]
-        parent_self.elapsed_steps += 1
-        return action
+        parent_self.static_flag = True
+        return original_step(parent_self, action)
+    original_step = Parent.step
+    env.static_flag = False
     monkeypatch.setattr(Parent, "step", step)
-    env._check_segment_start = lambda k: seen.append((k, env.elapsed_steps-1))
+    env._check_segment_start = lambda k: seen.append((k, env.elapsed_steps))
     env.step(1)
     assert seen == [(0, 30)]
+
+
+def test_control_hook_once_before_physics_shared_boundary_and_no_state(monkeypatch):
+    env = runtime_env(monkeypatch)
+    env.elapsed_steps = 10
+    env.swap_schedule = [(env.actors[0], env.actors[1], 10, 11),
+                         (env.actors[1], env.actors[0], 11, 12)]
+    events = []
+    env._check_segment_start = lambda k: events.append(("start", k, env.elapsed_steps))
+    env._substep_check = lambda stage: events.append((stage, env.elapsed_steps))
+    monkeypatch.setattr(Parent, "_before_control_step", lambda self: events.append(("parent", self.elapsed_steps)))
+    keys = set(vars(env))
+    env.step(None)
+    env.step(None)
+    assert [r for r in events if r[0] == "start"] == [("start", 0, 10), ("start", 1, 11)]
+    assert events[:3] == [("parent", 10), ("start", 0, 10), ("substep_before", 10)]
+    assert events[8:11] == [("parent", 11), ("start", 1, 11), ("substep_before", 11)]
+    assert set(vars(env)) - keys == set()
+    assert "step" not in sp.SwapCollisionMixin.__dict__
+    assert "reset" not in sp.SwapCollisionMixin.__dict__
+    assert "_initialize_episode" not in sp.SwapCollisionMixin.__dict__
+
+
+def test_small_quaternion_difference_rejected_and_step_evidence(monkeypatch, tmp_path):
+    env = runtime_env(monkeypatch, [state(0, (-.05, 0)), state(1, (.05, 0))])
+    env.elapsed_steps = 10
+    cache_endpoints(env)
+    env.actors[0].q[1] += 1e-12
+    env.step(None)
+    assert env._xhard_fatal["check"] == "endpoint_binding"
+    assert env._xhard_fatal["control_step"] == 10
+    assert all(r["control_step"] == 10 and r["phase"] == "before_physics" for r in env._xhard_runtime_checks)
+    assert "a_q" in env._xhard_runtime_checks[-1]["endpoints"]["mismatches"]
+    path = tmp_path / "tiny-q.json"
+    evidence = dict(env._xhard_runtime_checks[-1], git_commit=subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=Path(__file__).resolve().parents[3], text=True).strip())
+    path.write_text(json.dumps(evidence), encoding="utf-8")
+    restored = json.loads(path.read_text(encoding="utf-8"))
+    assert restored["git_commit"] == evidence["git_commit"] and len(restored["git_commit"]) == 40
+    endpoints = restored["endpoints"]
+    assert endpoints == env._xhard_runtime_checks[-1]["endpoints"]
+    assert endpoints["actual_raw_q"]["a"] != endpoints["cached_raw_q"]["a"]
+    assert endpoints["delta"]["a_q"][1] != 0
+    assert set(endpoints["delta"]) == {"a_p", "a_q", "b_p", "b_q"}
+
+
+def test_real_check_before_integrating_pose_and_shared_cache(monkeypatch):
+    env = runtime_env(monkeypatch, [state(0, (-.05, 0)), state(1, (.05, 0))])
+    env.elapsed_steps = 10
+    a, b = env.actors
+    env.swap_schedule = [(a, b, 10, 11), (b, a, 11, 12)]
+    env.swap_pair2_idx1, env.swap_pair2_idx2 = b, a
+    events = []
+    original_step = Parent.step
+    def refresh_and_step(self, action):
+        # 模拟父类先落定上一段，再捕获新段端点并应用 alpha=0。
+        if self.elapsed_steps == 11:
+            a.p[:2], b.p[:2] = b.p[:2].copy(), a.p[:2].copy()
+            a.q[1] = b.q[1] = 0
+            events.append("落定上一段")
+        first, second, start, end = self.swap_schedule[self.elapsed_steps - 10]
+        self._two_lane_swaps[(id(first), id(second), start, end)] = dict(
+            ax=first.p[0], ay=first.p[1], az=first.p[2], qa=first.q.copy(),
+            bx=second.p[0], by=second.p[1], bz=second.p[2], qb=second.q.copy())
+        events.append("捕获本段")
+        return original_step(self, action)
+    def integrate(self):
+        # 第一个物理子步修改位姿，若段起点检查后移就会逐位失败。
+        a.p[2] += 1e-5
+        a.q[1] += 1e-12
+        events.append("物理积分")
+    env._two_lane_swaps = {}
+    monkeypatch.setattr(Parent, "step", refresh_and_step)
+    monkeypatch.setattr(Parent, "_after_simulation_step", integrate)
+    monkeypatch.setattr(env, "_substep_check", lambda stage: None)
+    keys = set(vars(env))
+    env.step(None)
+    assert env._xhard_fatal is None
+    assert env._xhard_runtime_checks[-1]["endpoint_match"] is True
+    # 同一份真实检查在积分后必拒，证明它不能移到 step 返回后。
+    env._check_segment_start(0)
+    assert env._xhard_fatal["check"] == "endpoint_binding"
+    env._xhard_fatal = None
+    env._xhard_runtime_checks = env._xhard_runtime_checks[:2]
+    env.step(None)
+    assert env._xhard_fatal is None
+    sweeps = [r for r in env._xhard_runtime_checks if r["kind"] == "swap_sweep"]
+    assert [(r["sweep_index"], r["control_step"]) for r in sweeps] == [(0, 10), (1, 11)]
+    assert all(r["endpoint_match"] and r["phase"] == "before_physics" for r in sweeps)
+    assert events[:2] == ["捕获本段", "物理积分"]
+    assert events[4:6] == ["落定上一段", "捕获本段"]
+    assert set(vars(env)) == keys
 
 
 def test_outside_window_does_not_read_geometry(monkeypatch):
@@ -240,11 +347,13 @@ def test_repick_placeholder_does_not_enter_window(monkeypatch):
     assert env._xhard_runtime_checks == []
 
 
-def test_parent_exception_is_not_swallowed(monkeypatch):
+@pytest.mark.parametrize("method", ["step", "_before_control_step", "_before_simulation_step", "_after_simulation_step"])
+def test_parent_exception_is_not_swallowed(monkeypatch, method):
     env = runtime_env(monkeypatch)
     def broken(*args):
         raise ValueError("父类自身错误")
-    monkeypatch.setattr(Parent, "step", broken)
+    env.elapsed_steps = 1
+    monkeypatch.setattr(Parent, method, broken)
     with pytest.raises(ValueError, match="父类自身错误"):
         env.step(1)
     assert env._xhard_fatal is None

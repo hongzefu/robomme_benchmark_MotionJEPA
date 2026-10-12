@@ -6,6 +6,10 @@
 """
 
 from types import SimpleNamespace
+from pathlib import Path
+import json
+import os
+import subprocess
 
 import numpy as np
 import pytest
@@ -34,7 +38,11 @@ TIERS = ("xhard12", "xhard14", "xhard16", "xhard18", "xhard20")
 def test_cpu_mro_and_actor_interfaces(task, cls, seed, attr, prefix):
     assert cls.__mro__[1:3] == (SwapCollisionMixin, XHardMixin)
     assert cls.__mro__[3].__name__ == task
-    assert cls.step is SwapCollisionMixin.step
+    assert "step" not in SwapCollisionMixin.__dict__
+    assert cls.step is cls.__mro__[3].step
+    assert cls._before_control_step is SwapCollisionMixin._before_control_step
+    assert all("_before_control_step" not in base.__dict__ for base in cls.__mro__[2:-1]
+               if base.__name__ != "BaseEnv")
     assert cls._before_simulation_step is SwapCollisionMixin._before_simulation_step
     assert cls._after_simulation_step is SwapCollisionMixin._after_simulation_step
     assert cls.swap_name_prefix == prefix
@@ -100,24 +108,53 @@ def _enter_exchange_window(u, task):
     return int(u.swap_schedule[0][2])
 
 
+def _write_timing_evidence(u, task, seed, start, hooks):
+    # 只消费主会话给出的唯一目录，绝不在工作树或默认路径制造产物。
+    root = Path(os.environ["XHARD_TIMING_EVIDENCE_ROOT"]).resolve()
+    artifacts = Path(__file__).resolve().parents[3] / "artifacts"
+    assert root.is_relative_to(artifacts.resolve()) and root != artifacts.resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    evidence = dict(task=task, seed=seed, tier="xhard12", start=start,
+                    git_commit=subprocess.check_output(
+                        ["git", "rev-parse", "HEAD"], cwd=Path(__file__).resolve().parents[3], text=True).strip(),
+                    current_step=int(u.elapsed_steps), phase="before_physics", hooks=hooks,
+                    fatal=u._xhard_fatal, runtime_checks=u._xhard_runtime_checks,
+                    sim_backend=str(u.backend.sim_backend), gpu_sim_enabled=bool(u.gpu_sim_enabled),
+                    schedule=[[int(row[2]), int(row[3])] for row in u.swap_schedule])
+    path = root / f"{task}-seed{seed}-step{int(u.elapsed_steps)}.json"
+    path.write_text(json.dumps(evidence, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 @pytest.mark.gpu
 @pytest.mark.parametrize("task,cls,seed,attr,prefix", CASES)
-def test_real_step_first_start_and_shared_endpoint(task, cls, seed, attr, prefix):
+def test_real_step_first_start_and_shared_endpoint(monkeypatch, task, cls, seed, attr, prefix):
     env = _make(task, seed)
     try:
         env.reset(seed=seed)
         u = env.unwrapped
         start = _enter_exchange_window(u, task)
+        hooks = []
+        original = SwapCollisionMixin._before_control_step
+        def traced(self):
+            hooks.append(dict(control_step=int(self.elapsed_steps), phase="before_physics"))
+            return original(self)
+        monkeypatch.setattr(SwapCollisionMixin, "_before_control_step", traced)
         # 真正逐步推进，含首次起点与 50 步后的相邻共享端点；不跳改 elapsed_steps。
         while int(u.elapsed_steps) <= start + 50:
-            u.step(None)
+            try:
+                u.step(None)
+            finally:
+                _write_timing_evidence(u, task, seed, start, hooks)
             assert u._xhard_fatal is None, u._xhard_fatal
         assert u.swap_schedule[0][2] == start
         assert u.swap_schedule[0][3] == u.swap_schedule[1][2] == start + 50
         sweeps = [r for r in u._xhard_runtime_checks if r["kind"] == "swap_sweep"]
         assert [r["sweep_index"] for r in sweeps] == [0, 1]
         assert [r["control_step"] for r in sweeps] == [start, start + 50]
+        assert [r["control_step"] for r in hooks].count(start) == 1
+        assert [r["control_step"] for r in hooks].count(start + 50) == 1
         for row in sweeps:
+            assert row["phase"] == "before_physics"
             assert row["endpoint_match"] and row["rejection"] is None
             assert row["endpoints"]["mismatches"] == []
             for key in ("a_p", "a_q", "b_p", "b_q"):
