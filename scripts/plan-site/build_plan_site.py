@@ -1,9 +1,10 @@
 """把根目录单文件计划 HTML 拆成托管网页（分页），输出到 artifacts/plan-site/。
 
-页面：index（引言、口径、三行概要、导航）/ interface（接口怎么改）/ envs（逐环境与长度）/ goals（逐任务总目标对照）/ review（逐环境物体与动作审查）/ h5（H5 产物一致性检验）/ details（第二部分技术细节）。
+页面：index（引言、口径、三行概要、导航）/ impl（实施结果，仅当根目录存在 1012-xhard12-env-impl.html 时生成）/ interface（接口怎么改）/ envs（逐环境与长度）/ goals（逐任务总目标对照）/ review（逐环境物体与动作审查）/ h5（H5 产物一致性检验）/ details（第二部分技术细节）。
 根计划里以 base64 内联的 PNG 还原成相对路径引用（data-src），图片另行复制；envs 页的数轴（V2 参照与 V3 各任务的中位条）
 由 scripts/plan-site/align_section.py 以「内联数据 + timeline_board.js」直接写在根计划里，本脚本只切页、不再注入。
-只读计划文件与 vis 下的图片，不改仓库任何文件；托管命令见 vis/README.md 同款：
+实施页的 <video> 引用改写为其 data-site-src（videos/<文件名>），对应 mp4 从 --videos-src 复制到站点 videos/，源文件缺失即报错退出。
+只读计划文件、实施文件、vis 下的图片与视频源目录，不改仓库任何文件；托管命令见 vis/README.md 同款：
   uv run --no-sync python -m http.server 8092 --bind 0.0.0.0 --directory artifacts/plan-site
 """
 from __future__ import annotations
@@ -15,6 +16,9 @@ import shutil
 import sys
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
+IMPL_NAV = ("impl.html", "实施结果")
+IMPL_CARD = "实施结果（10-12）"
+GITHUB_BLOB = "https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/newtask-v3-MotionJepa1006"
 NAV = [("index.html", "首页"), ("interface.html", "一、接口怎么改"), ("envs.html", "二、逐环境怎么改与长度对齐"), ("goals.html", "三、逐任务 goal 对照"), ("review.html", "四、逐环境物体与动作审查"), ("h5.html", "五、H5 产物一致性检验"), ("details.html", "技术细节（第二部分）")]
 
 
@@ -26,7 +30,29 @@ def section(doc: str, start_pat: str, end_pat: str) -> str:
     return doc[a.start(): a.end() + b.start()]
 
 
-def build(plan: pathlib.Path, out: pathlib.Path) -> list[str]:
+def site_videos(body: str) -> tuple[str, list[str]]:
+    """把 <video ... src="..." data-site-src="videos/x.mp4"> 的 src 改写为 data-site-src，返回改写后正文与视频文件名。"""
+    names: list[str] = []
+
+    def fix(m: re.Match) -> str:
+        tag = m.group(0)
+        site = re.search(r'data-site-src="([^"]+)"', tag)
+        if not site:
+            sys.exit(f"实施页 <video> 缺 data-site-src：{tag[:120]}")
+        rel = site.group(1)
+        if not rel.startswith("videos/") or "/" in rel[len("videos/"):]:
+            sys.exit(f"data-site-src 必须形如 videos/<文件名>：{rel}")
+        names.append(rel[len("videos/"):])
+        return re.sub(r'\ssrc="[^"]*"', f' src="{rel}"', tag, count=1)
+
+    return re.sub(r"<video\b[^>]*>", fix, body), names
+
+
+def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = None,
+          videos_src: pathlib.Path | None = None) -> list[str]:
+    nav_items = list(NAV)
+    if impl is not None:
+        nav_items.insert(1, IMPL_NAV)
     doc = plan.read_text(encoding="utf-8")
     # base64 内联图还原成相对路径（站点按路径复制图片，页面不背几 MB 的 base64）
     doc = re.sub(r'src="data:image/[^"]*"\s+data-src="([^"]+)"', r'src="\1"', doc)
@@ -50,7 +76,7 @@ def build(plan: pathlib.Path, out: pathlib.Path) -> list[str]:
     h5 = section(main, r"<h2 id=\"p1-h5\">", r"<h2 id=\"p1-_6\">")  # 五、H5 产物一致性检验
     sec5 = section(main, r"<h2 id=\"p1-_6\">", r"<h1 id=\"[^\"]*\">第二部分")  # 五、三行
     part2 = main[re.search(r"<h1 id=\"[^\"]*\">第二部分", main).start():]
-    cards = "".join(f'<div class="card"><a href="{h}">{t}</a></div>' for h, t in NAV[1:])
+    cards = "".join(f'<div class="card"><a href="{h}">{IMPL_CARD if (h, t) == IMPL_NAV else t}</a></div>' for h, t in nav_items[1:])
     index_body = intro + sec1 + sec5 + f'<h2 id="nav">页面</h2><div class="cards">{cards}</div>'
     if '<section id="homepage-current-plan">' in main:
         # 首页优先展示本轮简明计划，历史接口和规模只保留为折叠参考。
@@ -66,14 +92,39 @@ def build(plan: pathlib.Path, out: pathlib.Path) -> list[str]:
         "h5.html": h5,
         "details.html": part2,
     }
+    heads = {name: head for name in pages}
+    videos: list[str] = []
+    if impl is not None:
+        idoc = impl.read_text(encoding="utf-8")
+        ihead = idoc[: idoc.index("<body>")]
+        # 站点导航与卡片样式（上面注入计划 head 的那一段）同样补进实施页的 <style>
+        a0 = head.index("nav.top {")
+        site_css = head[a0: head.index("</style>", a0) + len("</style>")]
+        ihead = ihead.replace("</style>", site_css, 1)
+        ibody, videos = site_videos(section(idoc, r"<main>", r"</main>")[len("<main>"):])
+        # 站点里没有根计划与 docs/：计划链接指回站点首页，留档链接指向远端分支上的同路径文件
+        ibody = ibody.replace('href="1006-xhard12-env-plan.html"', 'href="index.html"')
+        ibody = re.sub(r'href="(docs/[^"]+)"', rf'href="{GITHUB_BLOB}/\1"', ibody)
+        pages = {"impl.html": ibody, **pages}
+        heads["impl.html"] = ihead
     out.mkdir(parents=True, exist_ok=True)
     written = []
     for name, body in pages.items():
         nav = '<nav class="top">' + "".join(
-            f'<a href="{h}" class="{"cur" if h == name else ""}">{t}</a>' for h, t in NAV) + "</nav>"
-        html = head + f'<body>\n<div class="wrap">\n<main>\n{nav}\n{body}\n</main>\n</div>\n</body>\n</html>\n'
+            f'<a href="{h}" class="{"cur" if h == name else ""}">{t}</a>' for h, t in nav_items) + "</nav>"
+        html = heads[name] + f'<body>\n<div class="wrap">\n<main>\n{nav}\n{body}\n</main>\n</div>\n</body>\n</html>\n'
         (out / name).write_text(html, encoding="utf-8")
         written.append(name)
+    if videos:
+        assert videos_src is not None
+        for fn in videos:
+            src = videos_src / fn
+            if not src.is_file():
+                sys.exit(f"视频源文件缺失：{src}")
+            dst = out / "videos" / fn
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+            written.append("videos/" + fn)
     # 页面内引用的仓库相对路径图片，按原相对路径复制到站点目录
     for rel in sorted(set(re.findall(r'src="((?:vis|docs)/[^"]+\.(?:png|jpg|svg))"', "".join(pages.values())))):
         src = REPO / rel
@@ -89,10 +140,17 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--plan", default=str(REPO / "1006-xhard12-env-plan.html"))
     ap.add_argument("--out", default=str(REPO / "artifacts" / "plan-site"))
+    ap.add_argument("--impl", default=str(REPO / "1012-xhard12-env-impl.html"),
+                    help="实施结果 HTML；文件不存在或传空串时不生成 impl.html，其余分页与旧版逐字节相同")
+    ap.add_argument("--videos-src", default=str(REPO / "artifacts" / "xhard" / "xhard-1011" / "report" / "per_episode_strip"),
+                    help="实施页视频的源目录（按文件名查找）")
     a = ap.parse_args()
-    written = build(pathlib.Path(a.plan), pathlib.Path(a.out))
+    impl = pathlib.Path(a.impl) if a.impl and pathlib.Path(a.impl).is_file() else None
+    written = build(pathlib.Path(a.plan), pathlib.Path(a.out), impl, pathlib.Path(a.videos_src))
     pages = [w for w in written if w.endswith(".html")]
-    print(f"PLAN_SITE=OK pages={len(pages)} images={len(written) - len(pages)} out={a.out}")
+    videos = [w for w in written if w.startswith("videos/")]
+    images = len(written) - len(pages) - len(videos)
+    print(f"PLAN_SITE=OK pages={len(pages)} images={images} videos={len(videos)} out={a.out}")
 
 
 if __name__ == "__main__":
