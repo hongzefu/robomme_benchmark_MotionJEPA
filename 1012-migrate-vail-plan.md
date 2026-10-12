@@ -8,7 +8,7 @@
 
 ## 一、一句话与已定口径
 
-**一句话**：在 vail 的 `/data/hongzefu/` 下重新 clone 同一个分支，用 `uv sync --frozen` 重建环境，再补上 vail 的运行环境判据表。之后按 1012 碰撞计划从 S0 开始，在 vail 上重新生成。aspen 上的产物一律不搬。
+**一句话**：在 vail 的 `/data/hongzefu/` 下重新 clone 同一个分支，用 `uv sync --frozen` 重建环境，再补上 vail 的运行环境判据表，迁移即告完成。aspen 上的产物一律不搬；1012 碰撞计划不在本次范围，由用户在 vail 上另行确定再开工。
 
 | # | 口径 | 依据 |
 |---|---|---|
@@ -46,12 +46,12 @@
 | V3 | 核心短测 | `CORE_SHORT=PASS failed=4`：只有已知的 4 个既有失败（test_TaskGoal 两条、test_step_error_handling 两条），没有新增失败 |
 | V4 | 跨机复现冒烟：在 vail 上重跑今天的 VideoPlaceButton 三卡（母卡、xhard12、xhard14，seed 10701），固定 `--gpus 0`。约 1 分钟，不需要 tmux | `VAIL_REPRO=PASS`：3/3 成功，timesteps 为 958/1132/1265，和 aspen 一致；xhard 档 goal 为 3 句 |
 | V5 | 文档补齐并提交推送：AGENTS 第 0 条加「环境 B：sled-vail」一列（以 V0 实测为准）；P3 补一句「vail 没有官方参考集，生成母 seed 清单用 `--no-verify`」；CLAUDE.md 项目专属补充里的「本机 sled-aspen 无集群访问」改成按环境区分；1012 计划里 aspen 专属的事实（16 核、12 worker、GPU1 被他人占用）加注「vail 以 V0 实测为准，worker 数在 smoke 时按 vail 核数重新标定」 | `SYNC_SUMMARY=PASS`；两个 h1 计数仍为 2 |
-| V6 | 继续 1012 碰撞计划：等你对 1012 计划下开工令，然后从 S0 开始，全部在 vail 上跑 | 按 1012 计划自己的判定行 |
+| V6 | **不在本次范围**。用户 2026-10-12 原话：「不用继续这个碰撞计划就是你只要做好迁移就好了碰撞计划我在那边再确定再开工」。迁移做完即止，碰撞计划由用户在 vail 上另行确定、另下开工令 | — |
 
 **子代理分工（简述）**：
 - V0～V4 由主会话在 vail 上串行做。这些步骤是一路依赖下来的，而且要用 GPU，拆开没有好处。
 - V5 只改文档，交给一个写入型子代理在 worktree 里改，审查后用 `--no-ff` 合并、推送。
-- V6 按 1012 计划原来的分配表执行。
+- V6 不在本次范围（见上表）。
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -93,5 +93,5 @@ V4 判定：读 `artifacts/vail-repro-1012/run_summary.json`，三卡都要 `ok=
 - xhard-1011 的产物留在 aspen，vail 上没有。以后要对比的话，在 vail 用同一条命令重新生成。
 
 ## 四、留档与 commit
-- V5 走 `sub/V5:` 子代理提交，主会话用 `--no-ff` 合并，subject 接续 `2.74`。合并后核心短测通过，并且 `SYNC_SUMMARY=PASS` 后立即 push。
+- V5 走 `sub/V5:` 子代理提交，主会话用 `--no-ff` 合并，subject 按 `git log` 最近一次接续。合并后核心短测通过，并且 `SYNC_SUMMARY=PASS` 后立即 push。
 - 本方案已原样存进仓库根目录 `1012-migrate-vail-plan.md`（用户说「写方案md 不用html了」，2.73 提交），vail 上 clone 后即可读到。
