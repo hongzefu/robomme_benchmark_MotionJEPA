@@ -1,0 +1,136 @@
+{
+  "task": "VideoUnmaskSwap",
+  "episode": 7,
+  "attempt": 0,
+  "seed": 5700,
+  "difficulty": "xhard20",
+  "recovery_mode": null,
+  "bound": {},
+  "phases": {
+    "make_s": 4.836,
+    "reset_s": 0.009,
+    "solve_s": 21.714,
+    "close_s": 5.715
+  },
+  "wall_s": 32.285,
+  "started_at": 1791838201.2783263,
+  "finished_at": 1791838233.5630531,
+  "peak_rss_mb": 4938.8,
+  "card_role": "xhard",
+  "make_name": "VideoUnmaskSwapXHard",
+  "source_difficulty": "hard",
+  "mother_episode": 7,
+  "swap_plan": {
+    "pairs": [
+      [
+        2,
+        1,
+        0.14151166601557003,
+        0.0373971010027756
+      ],
+      [
+        0,
+        3,
+        0.11657477069861387,
+        0.017596208954631723
+      ],
+      [
+        1,
+        2,
+        0.14151166601557003,
+        0.0373971010027756
+      ],
+      [
+        3,
+        0,
+        0.11657477069861387,
+        0.017596208954631723
+      ],
+      [
+        1,
+        2,
+        0.14151166601557003,
+        0.0373971010027756
+      ],
+      [
+        0,
+        3,
+        0.11657477069861387,
+        0.017596208954631723
+      ],
+      [
+        1,
+        2,
+        0.14151166601557003,
+        0.037397101002775594
+      ],
+      [
+        3,
+        0,
+        0.11657477069861387,
+        0.017596208954631723
+      ],
+      [
+        2,
+        1,
+        0.14151166601557003,
+        0.037397101002775594
+      ],
+      [
+        3,
+        0,
+        0.11657477069861387,
+        0.017596208954631726
+      ],
+      [
+        2,
+        1,
+        0.14151166601557003,
+        0.03739710100277559
+      ]
+    ],
+    "usage": [
+      5,
+      6,
+      6,
+      5
+    ],
+    "initial_gap": 0.04457073108978247,
+    "initiator_usage": [
+      2,
+      3,
+      3,
+      3
+    ],
+    "partner_usage": [
+      3,
+      3,
+      3,
+      2
+    ]
+  },
+  "runtime_checks": [],
+  "ok": false,
+  "task_success": false,
+  "failure_class": "task",
+  "error_type": "SwapCollisionError",
+  "stage": "segment_start",
+  "rejection": null,
+  "detail": {
+    "error_type": "SwapCollisionError",
+    "stage": "segment_start",
+    "check": "sweep_actual",
+    "k": 1,
+    "rejection": null,
+    "detail": {
+      "injected": true
+    },
+    "control_step": 115
+  },
+  "error": "运行期复核拒绝：SwapCollisionError (segment_start)",
+  "traceback": null,
+  "failed_artifacts": [
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/VideoUnmaskSwap/hdf5_files/FAILED_VideoUnmaskSwap_ep7_seed5700.h5",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/VideoUnmaskSwap/videos/FAILED_VideoUnmaskSwap_ep7_seed5700_xhard20_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ]
+}

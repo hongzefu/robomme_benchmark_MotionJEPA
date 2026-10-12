@@ -1,0 +1,66 @@
+{
+  "run_commit": "09900b371cfe5d643d704b93485267a6a585ea59",
+  "kind": "fatal_injection",
+  "files": [
+    {
+      "task": "VideoUnmaskSwap",
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/VideoUnmaskSwap/worker_result.json",
+      "bytes": 2844,
+      "sha256": "81bd7a1a5053a278fdd7b98595f83f67dbf543408c8c7d274a7d636601e4fb27"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/VideoUnmaskSwap/hdf5_files/FAILED_VideoUnmaskSwap_ep7_seed5700.h5",
+      "bytes": 588646200,
+      "sha256": "00f1721d555407ecabd7dba765cf56fe8827262cc8a4673452fe7088eaba58d0"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/VideoUnmaskSwap/videos/FAILED_VideoUnmaskSwap_ep7_seed5700_xhard20_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+      "bytes": 9276987,
+      "sha256": "372081969ca2b32eae264118acbc9edd7c72ea37a8a57bdff68372b765c32b50"
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/ButtonUnmaskSwap/worker_result.json",
+      "bytes": 2997,
+      "sha256": "1950cfab070092d63bc0fa34c8d806c6093bc64303dc20cee57bf975ec28dd7d"
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/ButtonUnmaskSwap/hdf5_files/FAILED_ButtonUnmaskSwap_ep7_seed7700.h5",
+      "bytes": 604737168,
+      "sha256": "893e4c111771647ec6244f8eb96b6b7e83b084fdb7da693221a911f5b0cec4d9"
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/ButtonUnmaskSwap/videos/FAILED_ButtonUnmaskSwap_ep7_seed7700_xhard20_press_the_first_button_then_the_second_button_then_the_first_button_then_the_second_button_then_the_first_button_and_then_the_second_button_after_all_twelve_swa__HASH__50a5159d1d1a.mp4",
+      "bytes": 17112082,
+      "sha256": "31665c08b9e921d76643b43d35e50282280ec847a1ba7bd0de7bb9c3b49b3f9a"
+    },
+    {
+      "task": "VideoRepick",
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/VideoRepick/worker_result.json",
+      "bytes": 3596,
+      "sha256": "07ee0fb35f1f00765787e90088289ae6dffc864056e924f75a0eb81e7d767622"
+    },
+    {
+      "task": "VideoRepick",
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/VideoRepick/hdf5_files/FAILED_VideoRepick_ep46_seed13600.h5",
+      "bytes": 926639192,
+      "sha256": "a4ec4cd3a03f3b8140687b5bc4ed5b53512be6a3d3340be956466adfaaf5d8cd"
+    },
+    {
+      "task": "VideoRepick",
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/VideoRepick/videos/FAILED_success_NO_OBJECT_VideoRepick_ep46_seed13600_xhard20_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4",
+      "bytes": 181506,
+      "sha256": "c81abfcd8a774d86f31d6b5279529801ccae0b4bd3139fd12c512a67f23fb7da"
+    },
+    {
+      "task": "VideoRepick",
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/VideoRepick/videos/FAILED_VideoRepick_ep46_seed13600_xhard20_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4",
+      "bytes": 17743331,
+      "sha256": "ffab05075abcac88165ae24deff8851e1cad6e44eb1ee094cd10ea37ead484fa"
+    }
+  ]
+}

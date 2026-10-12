@@ -1,0 +1,158 @@
+{
+  "task": "VideoRepick",
+  "episode": 46,
+  "attempt": 0,
+  "seed": 13600,
+  "difficulty": "xhard20",
+  "recovery_mode": null,
+  "bound": {},
+  "phases": {
+    "make_s": 1.576,
+    "reset_s": 0.01,
+    "solve_s": 37.453,
+    "close_s": 8.187
+  },
+  "wall_s": 47.232,
+  "started_at": 1791838271.8428023,
+  "finished_at": 1791838319.0747957,
+  "peak_rss_mb": 7305.7,
+  "card_role": "xhard",
+  "make_name": "VideoRepickXHard",
+  "source_difficulty": "medium",
+  "mother_episode": 46,
+  "swap_plan": {
+    "pairs": [
+      [
+        1,
+        2,
+        0.09814581639005632,
+        0.0406193237344839
+      ],
+      [
+        0,
+        1,
+        0.130204170724807,
+        0.04096801015098622
+      ],
+      [
+        2,
+        0,
+        0.09814581639005632,
+        0.0406193237344839
+      ],
+      [
+        1,
+        2,
+        0.130204170724807,
+        0.04096801015098622
+      ],
+      [
+        0,
+        1,
+        0.09814581639005632,
+        0.0406193237344839
+      ],
+      [
+        2,
+        0,
+        0.130204170724807,
+        0.04096801015098622
+      ],
+      [
+        1,
+        2,
+        0.09814581639005632,
+        0.0406193237344839
+      ],
+      [
+        0,
+        1,
+        0.130204170724807,
+        0.04096801015098622
+      ],
+      [
+        2,
+        0,
+        0.09814581639005632,
+        0.0406193237344839
+      ],
+      [
+        1,
+        2,
+        0.130204170724807,
+        0.04096801015098622
+      ],
+      [
+        0,
+        1,
+        0.09814581639005632,
+        0.0406193237344839
+      ],
+      [
+        2,
+        0,
+        0.130204170724807,
+        0.04096801015098622
+      ],
+      [
+        1,
+        2,
+        0.09814581639005632,
+        0.0406193237344839
+      ],
+      [
+        0,
+        1,
+        0.130204170724807,
+        0.04096801015098622
+      ],
+      [
+        2,
+        0,
+        0.09814581639005632,
+        0.0406193237344839
+      ]
+    ],
+    "usage": [
+      10,
+      10,
+      10
+    ],
+    "initial_gap": 0.028863785635875328,
+    "initiator_usage": [
+      5,
+      5,
+      5
+    ],
+    "partner_usage": [
+      5,
+      5,
+      5
+    ]
+  },
+  "runtime_checks": [],
+  "ok": false,
+  "task_success": false,
+  "failure_class": "task",
+  "error_type": "SwapCollisionError",
+  "stage": "segment_start",
+  "rejection": null,
+  "detail": {
+    "error_type": "SwapCollisionError",
+    "stage": "segment_start",
+    "check": "sweep_actual",
+    "k": 1,
+    "rejection": null,
+    "detail": {
+      "injected": true
+    },
+    "control_step": 271
+  },
+  "error": "运行期复核拒绝：SwapCollisionError (segment_start)",
+  "traceback": null,
+  "failed_artifacts": [
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/VideoRepick/hdf5_files/FAILED_VideoRepick_ep46_seed13600.h5",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/VideoRepick/videos/FAILED_success_NO_OBJECT_VideoRepick_ep46_seed13600_xhard20_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/VideoRepick/videos/FAILED_VideoRepick_ep46_seed13600_xhard20_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4"
+  ]
+}

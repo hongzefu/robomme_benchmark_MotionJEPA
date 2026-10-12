@@ -1,0 +1,45 @@
+09900b371cfe5d643d704b93485267a6a585ea59
+......F
+=================================== FAILURES ===================================
+_ test_real_step_first_start_and_shared_endpoint[VideoUnmaskSwap-VideoUnmaskSwapXHard-5700-spawned_bins-bin_] _
+
+task = 'VideoUnmaskSwap'
+cls = <class 'robomme_xhard.envs.video_unmask_swap.VideoUnmaskSwapXHard'>
+seed = 5700, attr = 'spawned_bins', prefix = 'bin_'
+
+    @pytest.mark.gpu
+    @pytest.mark.parametrize("task,cls,seed,attr,prefix", CASES)
+    def test_real_step_first_start_and_shared_endpoint(task, cls, seed, attr, prefix):
+        env = _make(task, seed)
+        try:
+            env.reset(seed=seed)
+            u = env.unwrapped
+            start = _enter_exchange_window(u, task)
+            # 真正逐步推进，含首次起点与 50 步后的相邻共享端点；不跳改 elapsed_steps。
+            while int(u.elapsed_steps) <= start + 50:
+                u.step(None)
+>               assert u._xhard_fatal is None, u._xhard_fatal
+E               AssertionError: {'check': 'endpoint_binding', 'control_step': 65, 'detail': {'actual': {'a_p': [-0.1276194453239441, 0.024742327630519...85049057, 4.1864394006552175e-05]}, 'mismatches': ['a_p', 'a_q', 'b_p', 'b_q']}, 'error_type': 'SwapBindingError', ...}
+E               assert {'check': 'endpoint_binding', 'control_step': 65, 'detail': {'actual': {'a_p': [-0.1276194453239441, 0.024742327630519...85049057, 4.1864394006552175e-05]}, 'mismatches': ['a_p', 'a_q', 'b_p', 'b_q']}, 'error_type': 'SwapBindingError', ...} is None
+E                +  where {'check': 'endpoint_binding', 'control_step': 65, 'detail': {'actual': {'a_p': [-0.1276194453239441, 0.024742327630519...85049057, 4.1864394006552175e-05]}, 'mismatches': ['a_p', 'a_q', 'b_p', 'b_q']}, 'error_type': 'SwapBindingError', ...} = <robomme_xhard.envs.video_unmask_swap.VideoUnmaskSwapXHard object at 0x75b250b60d50>._xhard_fatal
+
+src/robomme_xhard/tests/test_swap_collision_gpu.py:114: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+src/robomme_xhard/tests/test_swap_collision_gpu.py: 114 warnings
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/mani_skill/utils/geometry/trimesh_utils.py:113: DeprecationWarning: component.pose can be ambiguous thus deprecated. It is equivalent to component.entity_pose, which should be used instead
+    T = component.pose.to_transformation_matrix()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED src/robomme_xhard/tests/test_swap_collision_gpu.py::test_real_step_first_start_and_shared_endpoint[VideoUnmaskSwap-VideoUnmaskSwapXHard-5700-spawned_bins-bin_]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 6 passed, 3 deselected, 116 warnings in 41.10s
+EXIT_CODE=1

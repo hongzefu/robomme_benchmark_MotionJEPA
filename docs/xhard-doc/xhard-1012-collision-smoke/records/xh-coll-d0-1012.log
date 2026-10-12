@@ -1,0 +1,78 @@
+09900b371cfe5d643d704b93485267a6a585ea59
+XHARD_FATAL_CATCH=PASS tasks=3 hang=0 evidence=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954
+screw plan failed
+screw plan failed
+screw plan failed
+.
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+src/robomme_xhard/tests/test_fatal_catch.py: 25 warnings
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/mani_skill/utils/geometry/trimesh_utils.py:113: DeprecationWarning: component.pose can be ambiguous thus deprecated. It is equivalent to component.entity_pose, which should be used instead
+    T = component.pose.to_transformation_matrix()
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.elapsed_steps to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.elapsed_steps` for environment variables or `env.get_wrapper_attr('elapsed_steps')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.current_task_name_online to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.current_task_name_online` for environment variables or `env.get_wrapper_attr('current_task_name_online')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.segmentation_id_map to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.segmentation_id_map` for environment variables or `env.get_wrapper_attr('segmentation_id_map')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.current_segment to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.current_segment` for environment variables or `env.get_wrapper_attr('current_segment')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.current_task_name to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.current_task_name` for environment variables or `env.get_wrapper_attr('current_task_name')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.spawned_bins to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.spawned_bins` for environment variables or `env.get_wrapper_attr('spawned_bins')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.current_segment_online to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.current_segment_online` for environment variables or `env.get_wrapper_attr('current_segment_online')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.current_task_demonstration to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.current_task_demonstration` for environment variables or `env.get_wrapper_attr('current_task_demonstration')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.pick_times to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.pick_times` for environment variables or `env.get_wrapper_attr('pick_times')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.agent to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.agent` for environment variables or `env.get_wrapper_attr('agent')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.use_demonstrationwrapper to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.use_demonstrationwrapper` for environment variables or `env.get_wrapper_attr('use_demonstrationwrapper')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.use_fail_planner to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.use_fail_planner` for environment variables or `env.get_wrapper_attr('use_fail_planner')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.spawned_cubes to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.spawned_cubes` for environment variables or `env.get_wrapper_attr('spawned_cubes')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+src/robomme_xhard/tests/test_fatal_catch.py::test_fatal_catch_three_tasks
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.num_repeats to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.num_repeats` for environment variables or `env.get_wrapper_attr('num_repeats')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 41 warnings in 120.47s (0:02:00)
+EXIT_CODE=0

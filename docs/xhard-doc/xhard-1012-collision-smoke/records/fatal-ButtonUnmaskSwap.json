@@ -1,0 +1,142 @@
+{
+  "task": "ButtonUnmaskSwap",
+  "episode": 7,
+  "attempt": 0,
+  "seed": 7700,
+  "difficulty": "xhard20",
+  "recovery_mode": null,
+  "bound": {},
+  "phases": {
+    "make_s": 4.941,
+    "reset_s": 0.01,
+    "solve_s": 28.637,
+    "close_s": 4.68
+  },
+  "wall_s": 38.273,
+  "started_at": 1791838233.5667005,
+  "finished_at": 1791838271.8394487,
+  "peak_rss_mb": 5295.4,
+  "card_role": "xhard",
+  "make_name": "ButtonUnmaskSwapXHard",
+  "source_difficulty": "hard",
+  "mother_episode": 7,
+  "swap_plan": {
+    "pairs": [
+      [
+        0,
+        3,
+        0.11721788126003024,
+        0.02598481412773854
+      ],
+      [
+        1,
+        2,
+        0.10883667840463743,
+        0.012133529928545748
+      ],
+      [
+        0,
+        3,
+        0.11721788126003024,
+        0.025984814127738544
+      ],
+      [
+        2,
+        1,
+        0.10883667840463743,
+        0.01213352992854571
+      ],
+      [
+        0,
+        3,
+        0.11721788126003024,
+        0.02598481412773854
+      ],
+      [
+        1,
+        2,
+        0.10883667840463743,
+        0.01213352992854571
+      ],
+      [
+        3,
+        0,
+        0.11721788126003024,
+        0.02598481412773854
+      ],
+      [
+        1,
+        2,
+        0.10883667840463743,
+        0.012133529928545713
+      ],
+      [
+        3,
+        0,
+        0.11721788126003024,
+        0.025984814127738544
+      ],
+      [
+        1,
+        2,
+        0.10883667840463743,
+        0.01213352992854571
+      ],
+      [
+        0,
+        3,
+        0.11721788126003024,
+        0.025984814127738544
+      ],
+      [
+        1,
+        2,
+        0.10883667840463743,
+        0.012133529928545713
+      ]
+    ],
+    "usage": [
+      6,
+      6,
+      6,
+      6
+    ],
+    "initial_gap": 0.03605474354164194,
+    "initiator_usage": [
+      4,
+      5,
+      1,
+      2
+    ],
+    "partner_usage": [
+      2,
+      1,
+      5,
+      4
+    ]
+  },
+  "runtime_checks": [],
+  "ok": false,
+  "task_success": false,
+  "failure_class": "task",
+  "error_type": "SwapCollisionError",
+  "stage": "segment_start",
+  "rejection": null,
+  "detail": {
+    "error_type": "SwapCollisionError",
+    "stage": "segment_start",
+    "check": "sweep_actual",
+    "k": 1,
+    "rejection": null,
+    "detail": {
+      "injected": true
+    },
+    "control_step": 115
+  },
+  "error": "运行期复核拒绝：SwapCollisionError (segment_start)",
+  "traceback": null,
+  "failed_artifacts": [
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/ButtonUnmaskSwap/hdf5_files/FAILED_ButtonUnmaskSwap_ep7_seed7700.h5",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/tests/fatal-catch/run-1791838201278127954/ButtonUnmaskSwap/videos/FAILED_ButtonUnmaskSwap_ep7_seed7700_xhard20_press_the_first_button_then_the_second_button_then_the_first_button_then_the_second_button_then_the_first_button_and_then_the_second_button_after_all_twelve_swa__HASH__50a5159d1d1a.mp4"
+  ]
+}

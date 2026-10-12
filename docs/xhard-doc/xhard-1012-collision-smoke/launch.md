@@ -21,7 +21,7 @@ tmux new-session -d -s xh-coll-d0-1012 \
 
 ## 监听、判据与失败处置
 
-本轮已规划 tmux 名称：`xh-coll-d0-1012`。其他 GPU 契约与三任务冒烟会话尚未启动，启动时另记完整名称。主会话通过该会话精确 pane PID 的 `tail --pid=<PID> -F` 监听日志，关注 `XHARD_`、`FAILED`、异常与 `EXIT_CODE=`，不忙轮询，不全局清理 tmux。
+实际启动清单：`xh-coll-d0-1012`（pane PID 3504414）、`xh-coll-gpu-contract-1012`（pane PID 3510094）。第二会话同样核 clean HEAD 后，用 `timeout 280s uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py -q -s -m gpu -x`，日志 `artifacts/logs/xh-coll-gpu-contract-1012.log`，环境变量同 D0。主会话通过每个会话精确 pane PID 的 `tail --pid=<PID> -F` 监听日志，关注 `XHARD_`、`FAILED`、异常与 `EXIT_CODE=`，不忙轮询，不全局清理 tmux。D0 已退出 0；真实契约已退出 1，后续正常冒烟会话没有启动。
 
 - 起跑核对：HEAD 与已提交版本相同，porcelain 空；日志出现测试启动或第一条任务结果。
 - D0 验收：`XHARD_FATAL_CATCH=PASS tasks=3 hang=0` 且 `EXIT_CODE=0`；GPU 使用只是设备与执行条件，独立任务成功字段仍按注入预期为 false。
