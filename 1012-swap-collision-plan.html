@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1012-swap-collision-plan — 交换类 xhard 任务移植 v2.1 碰撞检测 + 发起者均匀化</title>
+<style>
+:root { --fg:#1f2328; --muted:#59636e; --bg:#ffffff; --border:#d1d9e0; --code:#f6f8fa; --accent:#0969da; --quote:#eef4fb; }
+html { scroll-behavior:smooth; }
+body { margin:0; background:var(--bg); color:var(--fg); font-family:"Noto Sans CJK SC","PingFang SC","Microsoft YaHei",-apple-system,"Segoe UI",sans-serif; font-size:15px; line-height:1.7; }
+.wrap { display:flex; gap:32px; max-width:1500px; margin:0 auto; padding:24px 16px; }
+nav.toc { position:sticky; top:0; align-self:flex-start; max-height:100vh; overflow:auto; width:260px; flex:none; font-size:13px; border-right:1px solid var(--border); padding-right:12px; }
+nav.toc li.lv2 { padding-left:12px; } nav.toc li.lv3 { padding-left:24px; font-size:12px; }
+nav.toc ul { list-style:none; padding-left:12px; margin:4px 0; }
+nav.toc > ul { padding-left:0; }
+nav.toc a { color:var(--muted); text-decoration:none; }
+nav.toc a:hover { color:var(--accent); }
+main { flex:1; min-width:0; }
+h1 { font-size:1.9em; border-bottom:2px solid var(--border); padding-bottom:.3em; margin-top:1.6em; }
+h1:first-child { margin-top:0; font-size:1.5em; }
+h2 { font-size:1.45em; border-bottom:1px solid var(--border); padding-bottom:.25em; margin-top:1.6em; }
+h3 { font-size:1.15em; margin-top:1.4em; }
+blockquote { margin:0 0 1em; padding:8px 16px; background:var(--quote); border-left:4px solid var(--accent); }
+blockquote p { margin:.4em 0; }
+code { font-family:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace; font-size:.9em; background:var(--code); padding:1px 5px; border-radius:4px; }
+pre { background:var(--code); border:1px solid var(--border); border-radius:6px; padding:12px 14px; overflow:auto; line-height:1.45; }
+pre code { background:none; padding:0; font-size:.85em; }
+table { border-collapse:collapse; width:100%; margin:1em 0; font-size:.92em; }
+td code, th code { white-space:normal; word-break:break-all; }
+td { word-break:break-word; }
+th, td { border:1px solid var(--border); padding:6px 10px; vertical-align:top; }
+th { background:var(--code); text-align:left; }
+tr:nth-child(even) td { background:#fafbfc; }
+figure { margin:1.2em 0; padding:12px; border:1px solid var(--border); border-radius:8px; background:#fff; }
+figure svg { width:100%; height:auto; display:block; }
+figure figcaption { color:var(--muted); font-size:.9em; margin-top:8px; text-align:center; }
+img { max-width:100%; height:auto; border:1px solid var(--border); }
+details { margin:1em 0; }
+details summary { cursor:pointer; color:var(--muted); }
+a { color:var(--accent); }
+@media (max-width: 960px) { .wrap { flex-direction:column; } nav.toc { position:static; width:auto; max-height:none; border-right:0; } }
+@media print { nav.toc { display:none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc"><ul><li class="lv2"><a href="#h0">〇、为什么改（引言）</a></li><li class="lv1"><a href="#h1">第一部分（给人看）</a></li><li class="lv2"><a href="#h2">一、一句话与已定口径</a></li><li class="lv2"><a href="#h3">二、机制</a></li><li class="lv2"><a href="#h4">三、验收判定行</a></li><li class="lv2"><a href="#h5">四、实施步骤</a></li><li class="lv2"><a href="#h6">五、子代理分工与合并（简述）</a></li><li class="lv1"><a href="#h7">第二部分（技术细节，供 agent 追踪）</a></li><li class="lv2"><a href="#h8">〇、红线</a></li><li class="lv2"><a href="#h9">一、逐文件改动清单</a></li><li class="lv2"><a href="#h10">二、子代理分配表</a></li><li class="lv2"><a href="#h11">三、闸门总表</a></li><li class="lv2"><a href="#h12">四、runbook（主会话）</a></li><li class="lv2"><a href="#h13">五、风险登记</a></li><li class="lv2"><a href="#h14">六、盲区诚实清单</a></li><li class="lv2"><a href="#h15">七、留档与 commit 纪律</a></li></ul></nav>
+<main>
+<h1>1012-swap-collision-plan.html — 交换类 xhard 任务移植 v2.1 碰撞检测 + 发起者均匀化</h1>
+<blockquote>
+<p><strong>权威性与锚点</strong>：本文件是本轮唯一权威计划，代码锚点 <code>a512b889</code>（2.56）之后的工作副本 <code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>，分支 <code>newtask-v3-MotionJepa1006</code>；外部依赖锚点：<code>origin/newtask-v2.1refractor</code> commit <code>ce72b04fdb7806dbc98de2baa3c92118b98e6902</code> 的 <code>src/robomme/robomme_env/utils/bin_collision.py</code>（sha256 <code>bbe87eec…302b</code>）。commit 编号体例 <code>&lt;大&gt;.&lt;小&gt; &lt;中文描述&gt;</code>，从 2.58 接续。
+<strong>授权边界</strong>：本计划 2026-10-12 经用户按 plan 文件逐字批准（ExitPlanMode，未提修改），视为开工令；后续每次合并与 GPU 验收按本计划第二部分执行，范围外一律不做。</p>
+<p>本文件是 plan mode 的工具管理文件。获批后第一步（S0-HTML）把同一内容写成仓库根目录单文件 HTML <code>1012-swap-collision-plan.html</code>（两个 <code>&lt;h1&gt;</code>、图由 opus 子代理画内联 SVG），再按第 11 条提交推送；之后的实施以 HTML 为权威计划。本文件只规划不实施。</p>
+</blockquote>
+<h2 id="h0">〇、为什么改（引言）</h2>
+<ul>
+<li>本分支 VideoUnmaskSwap / ButtonUnmaskSwap / VideoRepick 的交换动作用 <code>swap_flat_two_lane</code> 直接 <code>set_pose</code> 传送，<strong>没有任何碰撞检测</strong>，移动对象穿过第三个对象不报错、样本照常录制（2026-10-12 只读核查，已写进 <code>readme.md</code> 第九节）。</li>
+<li>远端 <code>origin/newtask-v2.1refractor</code>（commit <code>ce72b04f</code>）有一套纯几何判据 <code>utils/bin_collision.py</code>（899 行，只依赖 numpy），但绑在「离线规格注入」管线上。</li>
+<li>用户 2026-10-12 决定的口径（原话逐字）：</li>
+<li>「把v2.1的碰撞检测移植到v3 出个计划 最好不要离线传入 最好是在创建的过程中_load_scene再定」</li>
+<li>「在_load_scene先进行certify_swap_plan 配对逻辑完全照搬v2.1 … 如果无法生成 就报告failure 在正式执行的时候 也加入碰撞 如果碰撞也报failure」「每子步复核」</li>
+<li>「重新设定v3改 还是加入两组碰撞检测 一组初始化检测 一组执行中 还是找最近邻 但是发起需要尽可能均匀 发起者的选择尽可能不选择刚换过的两个 除非别无选择」</li>
+<li>四项裁决：「1 同意 并且这个是新特性（空容器可当发起者）2 随机（并列时）3 算搭档（次数计发起+搭档）4 同意（三项 P1 覆盖）」「写html plan」</li>
+<li>目标：能通过检测的样本交换动作与现在相同；会穿模的样本在 reset 或运行中被判 failure 剔除（固定 seed、不重试）；发起者分布均匀且不连续动同一对。</li>
+</ul>
+<hr />
+<h1 id="h1">第一部分（给人看）</h1>
+<h2 id="h2">一、一句话与已定口径</h2>
+<p><strong>一句话</strong>：在三个交换类 xhard 子类的 <code>_load_scene</code> 末尾加 <code>certify_swap_plan()</code>，读容器实际碰撞盒，按「发起者均匀 + 避开刚换过的两个 → 搭档最近邻 → 整段路径证明」逐段推演 S 次并把配对一次写死；运行时在每段起点和每个物理子步再复核；任一处证不出分离即抛错报 failure。判据模块从 v2.1 原样 vendoring 进 <code>src/robomme_xhard/</code>，<code>src/robomme/</code> 零 diff。</p>
+<p>已定口径（编号供后文引用）：</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>口径</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K1</td>
+<td>不离线传规格，一切在 <code>_load_scene</code> 内决定</td>
+<td>用户 10-12</td>
+</tr>
+<tr>
+<td>K2</td>
+<td>搭档规则不变：当前位姿表里离发起者最近者，严格小于、等距取生成序号小者（照抄 v2.1 <code>_nearest_partner</code>）</td>
+<td>用户「还是找最近邻」</td>
+</tr>
+<tr>
+<td>K3</td>
+<td>发起者新规则：候选池 = 全部对象 − 上一段的 {发起者, 搭档}；候选池空才回退全部；取「至今参与次数（发起 + 搭档）」最少者；并列用子类独立 <code>torch.Generator</code> 随机</td>
+<td>用户四项裁决 1/2/3</td>
+</tr>
+<tr>
+<td>K4</td>
+<td>空容器（hard 档 3 号）允许当发起者，属新特性</td>
+<td>裁决 1</td>
+</tr>
+<tr>
+<td>K5</td>
+<td>两组检测：reset 时（初态静态 + 每段路径连续）、运行时（段起点绑定 + 整段重证、交换窗内每子步静态）</td>
+<td>用户「两组碰撞检测」「每子步复核」</td>
+</tr>
+<tr>
+<td>K6</td>
+<td>任一检测不过 → 抛 <code>SceneGenerationError</code> 的子类 → 生成器 <code>failure_class=task</code>、<code>ok=False</code>，固定 seed 不重试、不换搭档、不换布局</td>
+<td>用户「报告failure」+ P2 attempt=0</td>
+</tr>
+<tr>
+<td>K7</td>
+<td>判据代码从 <code>ce72b04f:src/robomme/robomme_env/utils/bin_collision.py</code> <strong>逐字节</strong> vendoring，阈值常量不改（<code>EPS_M=1e-6</code>、<code>MAX_DEPTH=20</code>、<code>MAX_INTERVALS=4096</code>）</td>
+<td>第 24 条 vendoring；v2.1「不提供放宽阈值的开关」</td>
+</tr>
+<tr>
+<td>K8</td>
+<td>三项 P1 覆盖已批：子类覆写 <code>step</code>、覆写 <code>_before/_after_simulation_step</code>、子类覆写父类已算好的 <code>swap_pair{1..3}_idx1</code></td>
+<td>裁决 4</td>
+</tr>
+<tr>
+<td>K9</td>
+<td>覆盖任务：VideoUnmaskSwap、ButtonUnmaskSwap（交换容器）、VideoRepick（交换方块，medium 三方块）</td>
+<td>本轮范围</td>
+</tr>
+<tr>
+<td>K10</td>
+<td>每子步复核的约十倍耗时已接受；smoke 实测记录开销倍数</td>
+<td>用户「每子步复核」</td>
+</tr>
+</tbody>
+</table>
+<h2 id="h3">二、机制</h2>
+<h3>2.1 reset 阶段：<code>certify_swap_plan()</code>（新增，<code>src/robomme_xhard/swap_plan.py</code>）</h3>
+<p>在三个子类 <code>_load_scene</code> 里 <code>super()._load_scene(options)</code> 与现有 <code>check_swap_count(self)</code> 之后调用：</p>
+<ol>
+<li><strong>取对象</strong>：<code>actors = self.spawned_bins</code>（VideoRepick 为 <code>self.spawned_cubes</code>），按生成序号编号 <code>bin_0..bin_{N-1}</code>；旁观者候选另含 ButtonUnmaskSwap 的 <code>button_left/right</code>、VideoRepick 的 <code>button_left</code>（见风险 R3：按钮碰撞体若非盒体则不入旁观者）。</li>
+<li><strong>读实际碰撞盒</strong>：<code>object_state_from_actor(actor, name)</code>（vendored）。</li>
+<li><strong>检测①-a 初态</strong>：<code>check_bin_layout(states, stage="initial")</code>，拒绝即 <code>raise SwapCollisionError(rejection)</code>。</li>
+<li><strong>逐段推演 k = 1…S</strong>（<code>plan_swaps()</code>，复刻 v2.1 <code>_simulate_swaps</code>，换掉发起者来源）：
+   - 发起者 <code>idx1[k] = select_initiator(usage, excluded={idx1[k-1], idx2[k-1]}, gen)</code>（K3/K4）。
+   - 搭档 <code>idx2[k] = nearest_partner(idx1[k], xy)</code>（K2）。
+   - <strong>检测①-b 路径</strong>：<code>check_swap_sweep(cur[idx1], cur[idx2], bystanders, sweep_index=k-1)</code>，拒绝即抛错。
+   - <code>usage[idx1] += 1; usage[idx2] += 1</code>；位姿表互换（A 落到 B 的 xy 并接手 B 的 q，z 各自保留，与 <code>swap_flat_two_lane</code> 收尾一致）。</li>
+<li><strong>写死配对</strong>：<code>setattr(self, f"swap_pair{k}_idx1", actors[idx1[k]])</code>、同理 idx2，k=1..S（覆写父类前三个 idx1，K8）；<code>self._refresh_swap_schedule()</code>。父类 <code>step</code> 看到 idx2 非 None 就不再现算。</li>
+<li><strong>留证</strong>：<code>self._xhard_swap_plan = {"pairs":[{k, initiator, partner, distance_m, min_gap_m}], "usage":[...], "initial_gap_m":…}</code>、<code>self._xhard_runtime_checks = []</code>。</li>
+</ol>
+<p>独立随机流：<code>gen = torch.Generator(); gen.manual_seed(int(self.seed) + 0x53_57_41_50)</code>（常量 <code>SWAP_PLAN_SEED_OFFSET</code>），只用于 K3 的并列抽样，不触碰父类 <code>_load_scene</code> 的局部 generator（它已经用完返回）。</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 820" font-family="'Noto Sans CJK SC', sans-serif" font-size="13">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#555"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#c0392b"/></marker>
+</defs>
+<rect width="1400" height="820" fill="#fff"/>
+<text x="700" y="30" text-anchor="middle" font-size="15" font-weight="bold">交换类 xhard 任务的碰撞检测流程总览：reset 阶段与运行阶段</text>
+<text x="300" y="58" text-anchor="middle" font-size="15" font-weight="bold">reset 阶段：子类 _load_scene</text>
+<text x="1020" y="58" text-anchor="middle" font-size="15" font-weight="bold">运行阶段：SwapCollisionMixin</text>
+<g stroke-width="1.5">
+<rect x="40" y="70" width="520" height="44" rx="6" fill="#eee" stroke="#999"/>
+<rect x="40" y="134" width="520" height="44" rx="6" fill="#e4f5e1" stroke="#3a9d4f"/>
+<rect x="40" y="198" width="520" height="44" rx="6" fill="#fde2c8" stroke="#d9772a"/>
+<rect x="30" y="262" width="540" height="330" rx="8" fill="none" stroke="#3a9d4f" stroke-dasharray="6 4"/>
+<rect x="50" y="290" width="500" height="88" rx="6" fill="#e4f5e1" stroke="#3a9d4f"/>
+<rect x="50" y="394" width="500" height="44" rx="6" fill="#eee" stroke="#999"/>
+<rect x="50" y="454" width="500" height="44" rx="6" fill="#fde2c8" stroke="#d9772a"/>
+<rect x="40" y="612" width="520" height="62" rx="6" fill="#dbe9ff" stroke="#3b6fc4"/>
+<rect x="760" y="70" width="520" height="44" rx="6" fill="#eee" stroke="#999"/>
+<rect x="760" y="140" width="520" height="80" rx="6" fill="#fde2c8" stroke="#d9772a"/>
+<rect x="760" y="246" width="520" height="62" rx="6" fill="#fde2c8" stroke="#d9772a"/>
+<rect x="760" y="334" width="520" height="44" rx="6" fill="#eee" stroke="#999"/>
+<rect x="760" y="404" width="520" height="44" rx="6" fill="#eee" stroke="#999"/>
+</g>
+<text x="52" y="90">1. super()._load_scene()：摆 4 个容器、放方块、</text>
+<text x="52" y="107">父类抽自己的 idx1（沿用，不改）</text>
+<text x="52" y="154">2. certify_swap_plan(env, actors, bystanders)</text>
+<text x="52" y="171">object_state_from_actor 读实际碰撞盒</text>
+<text x="52" y="218">3. 检测①-a check_bin_layout(stage="initial")</text>
+<text x="52" y="235">全部对象两两 SAT，间隙 &gt; 1 µm</text>
+<text x="44" y="282" fill="#3a9d4f" font-weight="bold">4. k = 1..S 逐段推演</text>
+<text x="62" y="309">a. select_initiator：候选池 = 全部 − 上段 {发起者, 搭档}</text>
+<text x="62" y="327">空则回退全部；取参与次数（发起+搭档）最少者</text>
+<text x="62" y="345">并列用独立 torch.Generator(seed+OFFSET) 随机</text>
+<text x="62" y="414">b. nearest_partner：当前位姿表最近邻，严格小于、</text>
+<text x="62" y="431">等距取序号小者（照抄 v2.1）</text>
+<text x="62" y="474">c. 检测①-b check_swap_sweep</text>
+<text x="62" y="491">整段弯道区间二分证明分离（含旁观者）</text>
+<text x="62" y="530" font-size="13" fill="#555">usage[a]+=1, usage[b]+=1；位姿表互换</text>
+<text x="62" y="560" font-size="13" fill="#555">↺ 下一段 k+1</text>
+<text x="52" y="634">5. 写死 swap_pair{k}_idx1 / idx2（k=1..S）</text>
+<text x="52" y="652">_refresh_swap_schedule()；留证 _xhard_swap_plan</text>
+<text x="772" y="90">1. 前 64 步抬放演示、方块落入</text>
+<text x="772" y="107">（父类，不改；窗外不查子步）</text>
+<text x="772" y="160">2. 检测②-a 段起点（覆写 step，super().step 之前）</text>
+<text x="772" y="178">实际位姿重算最近邻 == 写死的 idx2[k]</text>
+<text x="772" y="196">否则 SwapBindingError；</text>
+<text x="772" y="213">再 check_swap_sweep 整段重证</text>
+<text x="772" y="266">3. 检测②-b 每子步（覆写 _before/_after_simulation_step）</text>
+<text x="772" y="284">仅交换窗 [start,end] 内，全场 check_bin_layout</text>
+<text x="772" y="301">(stage=substep_before/after)</text>
+<text x="772" y="354">4. swap_flat_two_lane 用写死的配对执行（父类，不改）</text>
+<text x="772" y="424">5. 父类 step 看到 idx2 非 None 不再现算</text>
+<g stroke="#555" stroke-width="1.5" marker-end="url(#a)" fill="none">
+<line x1="300" y1="114" x2="300" y2="132"/><line x1="300" y1="178" x2="300" y2="196"/>
+<line x1="300" y1="242" x2="300" y2="288"/><line x1="300" y1="378" x2="300" y2="392"/>
+<line x1="300" y1="438" x2="300" y2="452"/><line x1="300" y1="592" x2="300" y2="610"/>
+<line x1="1020" y1="114" x2="1020" y2="138"/><line x1="1020" y1="220" x2="1020" y2="244"/>
+<line x1="1020" y1="308" x2="1020" y2="332"/><line x1="1020" y1="378" x2="1020" y2="402"/>
+<path d="M560,643 C660,643 660,92 758,92"/>
+</g>
+<text x="590" y="380" font-size="13" fill="#3b6fc4">env.reset 完成</text>
+<g stroke="#c0392b" stroke-width="1.8" fill="none" marker-end="url(#r)">
+<path d="M560,220 L610,220 L610,480 L540,700"/>
+<path d="M550,476 L610,480"/>
+<path d="M1280,180 L1320,180 L1320,520 L1240,520"/>
+<path d="M1280,277 L1320,277"/>
+</g>
+<text x="300" y="712" text-anchor="middle" fill="#c0392b" font-size="14">raise SwapCollisionError(SceneGenerationError)</text>
+<text x="300" y="732" text-anchor="middle" fill="#c0392b" font-size="14">→ 生成器 failure_class=task，固定 seed 不重试</text>
+<text x="1020" y="515" text-anchor="middle" fill="#c0392b" font-size="14">raise → 样本 failure</text>
+<text x="1020" y="535" text-anchor="middle" fill="#c0392b" font-size="14">attempt 固定 0</text>
+<rect x="30" y="760" width="1340" height="44" rx="6" fill="#eee" stroke="#999"/>
+<text x="700" y="787" text-anchor="middle" font-size="13">判据模块 src/robomme_xhard/collision/bin_collision.py 逐字节 vendoring 自 v2.1 ce72b04f；src/robomme/ 零 diff；覆盖 VideoUnmaskSwap / ButtonUnmaskSwap / VideoRepick 三个 xhard 子类</text>
+</svg><figcaption>图 1　reset 阶段与运行阶段的两组碰撞检测流程（绿为新增、橙为检测、灰为沿用父类）</figcaption></figure>
+
+<h3>2.2 发起者规则示例（hard 四容器长方形 15×20 cm，忽略 ±7 cm 偏移，S=6）</h3>
+<p>容器 0、1 在短边一侧，2、3 在另一侧；最近邻恒为 0↔1、2↔3。</p>
+<table>
+<thead>
+<tr>
+<th>k</th>
+<th>上段刚换过</th>
+<th>候选池</th>
+<th>usage [0,1,2,3]</th>
+<th>idx1</th>
+<th>idx2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>—</td>
+<td>{0,1,2,3}</td>
+<td>[0,0,0,0] 并列随机→设 2</td>
+<td>2</td>
+<td>3</td>
+</tr>
+<tr>
+<td>2</td>
+<td>{2,3}</td>
+<td>{0,1}</td>
+<td>[0,0,1,1] 并列随机→设 1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>{1,0}</td>
+<td>{2,3}</td>
+<td>[1,1,1,1] 并列随机→设 3</td>
+<td>3</td>
+<td>2</td>
+</tr>
+<tr>
+<td>4</td>
+<td>{3,2}</td>
+<td>{0,1}</td>
+<td>[1,1,2,2] 并列随机→设 0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>5</td>
+<td>{0,1}</td>
+<td>{2,3}</td>
+<td>[2,2,2,2] 并列随机→设 2</td>
+<td>2</td>
+<td>3</td>
+</tr>
+<tr>
+<td>6</td>
+<td>{2,3}</td>
+<td>{0,1}</td>
+<td>[2,2,3,3] → 并列随机</td>
+<td>0 或 1</td>
+<td>1 或 0</td>
+</tr>
+</tbody>
+</table>
+<p>效果：相邻两段永远落在不同的一对上；S=11、N=4 时每对象参与次数差 ≤ 1。<strong>仍保留的退化</strong>（来自 K2，本轮不改）：长方形里只有短边两对互换，两段一轮后位置回到原处。</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 740" font-family="Noto Sans CJK SC, sans-serif" font-size="14">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2c3e50"/></marker>
+  </defs>
+  <rect width="1400" height="740" fill="#ffffff"/>
+  <text x="700" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#1a1a1a">发起者选择新规则示例：hard 四容器长方形、S=6</text>
+
+  <!-- 左侧：长方形与容器 -->
+  <text x="230" y="70" text-anchor="middle" font-size="15" font-weight="bold" fill="#333">容器布局（20 cm × 15 cm，按比例）</text>
+  <line x1="70" y1="88" x2="390" y2="88" stroke="#2c3e50" stroke-width="1.5" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  <text x="230" y="102" text-anchor="middle" font-size="13" fill="#2c3e50">20 cm（长边，永不配对）</text>
+  <rect x="70" y="120" width="320" height="240" fill="#fafafa" stroke="#888" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <line x1="70" y1="120" x2="390" y2="360" stroke="#ccc" stroke-width="1" stroke-dasharray="3 4"/>
+  <line x1="390" y1="120" x2="70" y2="360" stroke="#ccc" stroke-width="1" stroke-dasharray="3 4"/>
+  <text x="230" y="232" text-anchor="middle" font-size="13" fill="#999">对角线：永不配对</text>
+  <!-- 最近邻双向箭头 -->
+  <line x1="32" y1="146" x2="32" y2="334" stroke="#1e6b2e" stroke-width="2.5" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  <text x="22" y="240" text-anchor="middle" font-size="13" fill="#1e6b2e" transform="rotate(-90 22 240)">0↔1 · 15 cm</text>
+  <line x1="428" y1="146" x2="428" y2="334" stroke="#1e6b2e" stroke-width="2.5" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  <text x="442" y="240" text-anchor="middle" font-size="13" fill="#1e6b2e" transform="rotate(90 442 240)">2↔3 · 15 cm</text>
+  <!-- 容器 -->
+  <circle cx="70" cy="360" r="22" fill="#cfe3f7" stroke="#2c6fb5" stroke-width="2"/>
+  <text x="70" y="365" text-anchor="middle" font-size="15" font-weight="bold">0</text>
+  <circle cx="70" cy="120" r="22" fill="#cfe3f7" stroke="#2c6fb5" stroke-width="2"/>
+  <text x="70" y="125" text-anchor="middle" font-size="15" font-weight="bold">1</text>
+  <circle cx="390" cy="120" r="22" fill="#cfe3f7" stroke="#2c6fb5" stroke-width="2"/>
+  <text x="390" y="125" text-anchor="middle" font-size="15" font-weight="bold">2</text>
+  <circle cx="390" cy="360" r="22" fill="#ffffff" stroke="#2c6fb5" stroke-width="2" stroke-dasharray="4 3"/>
+  <text x="390" y="365" text-anchor="middle" font-size="15" font-weight="bold">3</text>
+  <text x="390" y="402" text-anchor="end" font-size="13" fill="#c0392b">空，新特性：也可发起</text>
+  <circle cx="80" cy="398" r="7" fill="#cfe3f7" stroke="#2c6fb5"/>
+  <text x="92" y="403" font-size="13" fill="#333">有方块</text>
+  <text x="40" y="440" font-size="13" fill="#333">最近邻规则（K2）不变：长方形里只会沿短边配对；</text>
+  <text x="40" y="460" font-size="13" fill="#333">对角线、长边永不配对</text>
+
+  <!-- 右侧：表格 -->
+  <g font-size="13">
+    <rect x="470" y="60" width="900" height="36" fill="#2c3e50"/>
+    <g fill="#ffffff" font-weight="bold" text-anchor="middle">
+      <text x="490" y="83">k</text><text x="555" y="83">上段刚换过</text><text x="650" y="83">候选池</text>
+      <text x="810" y="83">usage [0,1,2,3]</text><text x="965" y="83">发起者 idx1</text><text x="1055" y="83">搭档 idx2</text><text x="1235" y="83">说明</text>
+    </g>
+    <rect x="470" y="96" width="900" height="36" fill="#ffffff"/>
+    <rect x="470" y="132" width="900" height="36" fill="#eef3f8"/>
+    <rect x="470" y="168" width="900" height="36" fill="#ffffff"/>
+    <rect x="470" y="204" width="900" height="36" fill="#eef3f8"/>
+    <rect x="470" y="240" width="900" height="36" fill="#ffffff"/>
+    <rect x="470" y="276" width="900" height="36" fill="#eef3f8"/>
+    <rect x="470" y="60" width="900" height="252" fill="none" stroke="#999"/>
+    <g stroke="#ccc">
+      <line x1="510" y1="60" x2="510" y2="312"/><line x1="600" y1="60" x2="600" y2="312"/><line x1="700" y1="60" x2="700" y2="312"/>
+      <line x1="920" y1="60" x2="920" y2="312"/><line x1="1010" y1="60" x2="1010" y2="312"/><line x1="1100" y1="60" x2="1100" y2="312"/>
+    </g>
+    <g text-anchor="middle" fill="#1a1a1a">
+      <text x="490" y="119">1</text><text x="555" y="119">—</text><text x="650" y="119">{0,1,2,3}</text><text x="810" y="119">[0,0,0,0] 并列→随机，设 2</text><text x="965" y="119">2</text><text x="1055" y="119">3</text>
+      <text x="490" y="155">2</text><text x="555" y="155">{2,3}</text><text x="650" y="155">{0,1}</text><text x="810" y="155">[0,0,1,1] 并列→随机，设 1</text><text x="965" y="155">1</text><text x="1055" y="155">0</text>
+      <text x="490" y="191">3</text><text x="555" y="191">{1,0}</text><text x="650" y="191">{2,3}</text><text x="810" y="191">[1,1,1,1] 并列→随机，设 3</text><text x="965" y="191">3</text><text x="1055" y="191">2</text>
+      <text x="490" y="227">4</text><text x="555" y="227">{3,2}</text><text x="650" y="227">{0,1}</text><text x="810" y="227">[1,1,2,2] 并列→随机，设 0</text><text x="965" y="227">0</text><text x="1055" y="227">1</text>
+      <text x="490" y="263">5</text><text x="555" y="263">{0,1}</text><text x="650" y="263">{2,3}</text><text x="810" y="263">[2,2,2,2] 并列→随机，设 2</text><text x="965" y="263">2</text><text x="1055" y="263">3</text>
+      <text x="490" y="299">6</text><text x="555" y="299">{2,3}</text><text x="650" y="299">{0,1}</text><text x="810" y="299">[2,2,3,3] 并列→随机</text><text x="965" y="299">0 或 1</text><text x="1055" y="299">1 或 0</text>
+      <text x="1235" y="119">首段全随机</text><text x="1235" y="155">避开刚换过的 2、3</text>
+      <text x="1235" y="191">—</text><text x="1235" y="227">—</text><text x="1235" y="263">—</text><text x="1235" y="299">—</text>
+    </g>
+  </g>
+  <g font-size="14">
+    <text x="470" y="345" fill="#1e6b2e">✔ 相邻两段永远落在不同的一对上；S=11、N=4 时每个容器参与次数（发起+搭档）之差 ≤ 1</text>
+    <text x="470" y="372" fill="#1e6b2e">✔ 并列用子类独立 torch.Generator(seed + SWAP_PLAN_SEED_OFFSET) 抽，跨 episode 均匀、同 seed 可复现</text>
+    <text x="470" y="399" fill="#c0392b">✘ 仍保留的退化（来自最近邻，本轮不改）：两段一轮后位置回到原处；</text>
+    <text x="490" y="420" fill="#c0392b">示例忽略每容器 ±7 cm 随机偏移，实际最近邻可能偏离短边</text>
+  </g>
+
+  <!-- 底部对比条 -->
+  <rect x="40" y="520" width="1330" height="190" rx="8" fill="#fdf3f2" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="60" y="550" font-size="15" font-weight="bold" fill="#c0392b">对比：v3 当前规则</text>
+  <text x="60" y="578" font-size="14" fill="#333">发起者 = 父类随机三个 + 第 k≥4 次循环复用 (k−1)%3+1；示例发起者序列：</text>
+  <g font-size="14" text-anchor="middle" font-weight="bold">
+    <rect x="80" y="600" width="60" height="36" fill="#cfe3f7" stroke="#2c6fb5"/><text x="110" y="623">0</text>
+    <rect x="160" y="600" width="60" height="36" fill="#f6c9c3" stroke="#c0392b"/><text x="190" y="623">1</text>
+    <rect x="240" y="600" width="60" height="36" fill="#cfe3f7" stroke="#2c6fb5"/><text x="270" y="623">3</text>
+    <rect x="320" y="600" width="60" height="36" fill="#cfe3f7" stroke="#2c6fb5"/><text x="350" y="623">0</text>
+    <rect x="400" y="600" width="60" height="36" fill="#f6c9c3" stroke="#c0392b"/><text x="430" y="623">1</text>
+    <rect x="480" y="600" width="60" height="36" fill="#cfe3f7" stroke="#2c6fb5"/><text x="510" y="623">3</text>
+  </g>
+  <g font-size="13" text-anchor="middle" fill="#666">
+    <text x="110" y="656">段 1：0→1</text><text x="190" y="656">段 2：1→0</text><text x="270" y="656">段 3</text>
+    <text x="350" y="656">段 4</text><text x="430" y="656">段 5</text><text x="510" y="656">段 6</text>
+  </g>
+  <text x="580" y="623" font-size="14" fill="#c0392b">← 第 2 段 1→0 与第 1 段 0→1 是同一对，立刻换回原处</text>
+  <text x="80" y="690" font-size="13" fill="#666">（复用父类三个发起者，不看 usage，也不避开上段刚换过的那一对）</text>
+</svg><figcaption>图 2　发起者新规则在 hard 四容器长方形上的逐段示例（S=6），底部对比 v3 当前规则</figcaption></figure>
+
+<h3>2.3 运行阶段（<code>SwapCollisionMixin</code>，K5/K8）</h3>
+<ul>
+<li><strong>检测②-a 段起点</strong>（覆写 <code>step</code>，在 <code>super().step(action)</code> 之前）：当 <code>elapsed_steps == swap_schedule[k][2]</code>：① 用实际位姿重算 <code>idx1[k]</code> 的最近邻，必须等于写死的 <code>idx2[k]</code>，不等抛 <code>SwapBindingError</code>（不现场换搭档）；② 从实际位姿 <code>check_swap_sweep</code> 整段重证，拒绝抛 <code>SwapCollisionError</code>。对应 v2.1 <code>_verify_swap_binding</code> + <code>_check_swap_sweep_from_actual</code>。</li>
+<li><strong>检测②-b 每子步</strong>（覆写 <code>_before_simulation_step</code> / <code>_after_simulation_step</code>，先调 <code>super()</code>）：仅当 <code>elapsed_steps</code> 落在某段 <code>[start, end]</code> 内，对全部对象做 <code>check_bin_layout(stage="substep_before"/"substep_after")</code>，拒绝抛错；通过只追加 <code>min_g_m</code>。</li>
+<li>全部结果追加进 <code>self._xhard_runtime_checks</code>。</li>
+</ul>
+<h3>2.4 失败如何变成 failure（K6）</h3>
+<ul>
+<li><code>SwapCollisionError(SceneGenerationError)</code>、<code>SwapBindingError(SceneGenerationError)</code> 定义在 <code>src/robomme_xhard/collision/__init__.py</code>，携带 <code>rejection.as_dict()</code>。</li>
+<li><code>_load_scene</code> 在 <code>gym.make</code> 内触发，生成器 <code>_worker</code> 的 try 块包住 <code>gym.make</code>/<code>reset</code>/<code>_execute_tasks</code>；<code>SceneGenerationError</code> 在 <code>retryable</code> 元组里 → <code>failure_class="task"</code>；xhard 卡 <code>fixed_seed</code> → 直接 <code>exhausted</code>、「固定 seed 不重试」。不改生成器的分类逻辑。</li>
+<li>生成器唯一改动：<code>finally</code> 里 <code>record_env.close()</code> 之前，若 <code>unwrapped</code> 有 <code>_xhard_swap_plan</code> / <code>_xhard_runtime_checks</code> 就复制进结果行字段 <code>swap_plan</code>、<code>runtime_checks</code>（成功与失败行都带）。</li>
+</ul>
+<h3>2.5 改动一览</h3>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>锚点</th>
+<th>改什么</th>
+<th>关闭态</th>
+<th>开启态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/robomme_xhard/collision/bin_collision.py</code>（新）</td>
+<td>整文件</td>
+<td><code>git show ce72b04f:src/robomme/robomme_env/utils/bin_collision.py</code> 逐字节拷贝</td>
+<td>—</td>
+<td>提供 <code>check_bin_layout</code>、<code>check_swap_sweep</code>、<code>object_state_from_actor</code>、<code>nearest_partner_index</code> 等</td>
+</tr>
+<tr>
+<td><code>src/robomme_xhard/collision/__init__.py</code>（新）</td>
+<td>—</td>
+<td>再导出 + <code>SwapCollisionError</code> / <code>SwapBindingError</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>src/robomme_xhard/collision/VENDORED.md</code>（新）</td>
+<td>—</td>
+<td>来源 commit、文件 sha256、拷贝日期、未改声明</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>src/robomme_xhard/swap_plan.py</code>（新）</td>
+<td><code>select_initiator</code>、<code>nearest_partner</code>、<code>plan_swaps</code>、<code>certify_swap_plan</code>、<code>SwapCollisionMixin</code></td>
+<td>2.1/2.3 全部逻辑</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>src/robomme_xhard/envs/video_unmask_swap.py</code></td>
+<td><code>VideoUnmaskSwapXHard</code></td>
+<td>基类加 <code>SwapCollisionMixin</code>（MRO 最前）；<code>_load_scene</code> 末尾 <code>certify_swap_plan(self)</code>；<code>_swap_actors()</code> 返回 <code>spawned_bins</code>，<code>_bystander_actors()</code> 返回 []</td>
+<td>无开关：xhard 子类一律开</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>src/robomme_xhard/envs/button_unmask_swap.py</code></td>
+<td><code>ButtonUnmaskSwapXHard</code></td>
+<td>同上；<code>_bystander_actors()</code> 返回 <code>[button_left, button_right]</code>（R3）</td>
+<td>同上</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>src/robomme_xhard/envs/video_repick.py</code></td>
+<td><code>VideoRepickXHard</code></td>
+<td>同上；<code>_swap_actors()</code> 返回 <code>spawned_cubes</code>，<code>_bystander_actors()</code> 返回 <code>[button_left]</code>；名字前缀 <code>cube_</code></td>
+<td>同上</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code></td>
+<td><code>_worker</code> 的 <code>finally</code></td>
+<td>复制两份证据进结果行</td>
+<td>无属性时不写字段</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>src/robomme_xhard/tests/test_bin_collision_vendored.py</code>（新）</td>
+<td>—</td>
+<td>v2.1 <code>tests/lightweight/test_bin_collision.py</code> 的 29 个测试改 import + sha256 对拍</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>src/robomme_xhard/tests/test_swap_plan.py</code>（新）</td>
+<td>—</td>
+<td>K2/K3/K4 规则、拒绝抛错、预填属性、绑定核验</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>src/robomme_xhard/tests/test_swap_collision_gpu.py</code>（新，<code>gpu</code>）</td>
+<td>—</td>
+<td>三任务 xhard12 <code>gym.make</code>+<code>reset</code>：S 个 idx2 非 None、<code>_xhard_swap_plan</code> 段数 = S</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>1012-swap-collision-plan.html</code>（新，根目录）</td>
+<td>—</td>
+<td>本计划 HTML 版</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><code>src/robomme/</code> 零 diff；<code>pyproject.toml</code>、<code>seed_layout.py</code>、<code>configs.py</code> 不动。</p>
+<h2 id="h4">三、验收判定行</h2>
+<table>
+<thead>
+<tr>
+<th>判定项</th>
+<th>查什么</th>
+<th>怎么查</th>
+<th>过了说明什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>XHARD_COLL_VENDOR=PASS sha=&lt;前 12&gt;</code></td>
+<td>vendoring 逐字节</td>
+<td><code>git show ce72b04f:src/robomme/robomme_env/utils/bin_collision.py \| sha256sum</code> 与 <code>sha256sum src/robomme_xhard/collision/bin_collision.py</code> 相等，且等于 <code>VENDORED.md</code> 记录值</td>
+<td>判据与 v2.1 同源，没有静默改阈值</td>
+</tr>
+<tr>
+<td><code>XHARD_COLL_CPU=PASS tests=29</code></td>
+<td>判据行为</td>
+<td><code>uv run --no-sync python -m pytest src/robomme_xhard/tests/test_bin_collision_vendored.py -q</code></td>
+<td>29 个 v2.1 测试在新位置全过</td>
+</tr>
+<tr>
+<td><code>XHARD_SWAPPLAN_CPU=PASS</code></td>
+<td>K2/K3/K4/K6 规则</td>
+<td><code>uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_plan.py -q</code></td>
+<td>均匀性（S=11,N=4 → max−min ≤ 1）、相邻不重对、N=2 回退、并列随机可复现、拒绝抛 <code>SceneGenerationError</code> 子类、绑定不一致抛错</td>
+</tr>
+<tr>
+<td><code>XHARD_P1_ZERO=PASS</code></td>
+<td>受保护目录</td>
+<td><code>git diff --quiet HEAD~N -- src/robomme/ &amp;&amp; echo PASS</code></td>
+<td>P1 守住</td>
+</tr>
+<tr>
+<td><code>XHARD_CORE_SHORT=PASS</code></td>
+<td>核心短测</td>
+<td><code>timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q</code> + <code>src/robomme_xhard/tests -m 'not gpu'</code></td>
+<td>没有打坏现有链路</td>
+</tr>
+<tr>
+<td><code>XHARD_COLL_GPU_RESET=PASS tasks=3</code></td>
+<td>reset 即定对</td>
+<td><code>uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py -q -m gpu</code>（主检出、合并后串行）</td>
+<td>三任务 xhard12 母 seed（5700/7700/13600）reset 后 S 个 idx2 非 None、计划段数 = S</td>
+</tr>
+<tr>
+<td><code>XHARD_COLL_SMOKE=PASS tasks=3 eps=3 ok=&lt;n&gt; rejected=&lt;m&gt;</code></td>
+<td>端到端</td>
+<td>生成器 xhard20 单任务单 episode ×3（tmux，命令见 runbook）</td>
+<td>结果行带 <code>swap_plan</code>/<code>runtime_checks</code>；<code>ok</code> 或 <code>failure_class=task</code> 且 <code>error_type ∈ {SwapCollisionError, SwapBindingError}</code>；没有 <code>code</code> 类失败</td>
+</tr>
+<tr>
+<td><code>XHARD_COLL_OVERHEAD ratio=&lt;x&gt;</code></td>
+<td>K10 耗时</td>
+<td>同 seed 同任务，smoke 的 <code>phases.solve_s</code> 对比 <code>docs/xhard-doc/xhard-1011</code> 同 seed 记录</td>
+<td>只记录，不设阈值</td>
+</tr>
+</tbody>
+</table>
+<h2 id="h5">四、实施步骤</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>内容</th>
+<th>判据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S0-HTML（主会话）</td>
+<td>写根目录 <code>1012-swap-collision-plan.html</code>（opus 子代理并行画 3 张 SVG：总览流程、发起者示例、子代理分工），<code>grep -c '&lt;h1[^&gt;]*&gt;第一部分\|&lt;h1[^&gt;]*&gt;第二部分'</code> = 2，commit <code>2.58</code> 并 push</td>
+<td>自检 = 2</td>
+</tr>
+<tr>
+<td>S0（主会话）</td>
+<td>vendoring 拷贝 + <code>VENDORED.md</code> + <code>collision/__init__.py</code>，commit</td>
+<td><code>XHARD_COLL_VENDOR</code></td>
+</tr>
+<tr>
+<td>C1（opus worktree）</td>
+<td><code>swap_plan.py</code> + <code>test_swap_plan.py</code> + <code>test_bin_collision_vendored.py</code></td>
+<td><code>XHARD_COLL_CPU</code>、<code>XHARD_SWAPPLAN_CPU</code></td>
+</tr>
+<tr>
+<td>C3（opus worktree，与 C1 并行）</td>
+<td>生成器 <code>finally</code> 复制证据 + <code>test_jobs.py</code> 新增一例</td>
+<td><code>test_jobs.py</code> 通过、<code>XHARD_BASELINE_EQ</code> 不变</td>
+</tr>
+<tr>
+<td>合并 C1、C3（各一审一合一 push）</td>
+<td>—</td>
+<td><code>POST_MERGE_REVIEW</code></td>
+</tr>
+<tr>
+<td>C2（opus worktree，依赖 C1）</td>
+<td>三个子类接线 + <code>test_swap_collision_gpu.py</code></td>
+<td>worktree 内 CPU：<code>test_s2_configs.py -m 'not gpu'</code> 仍过</td>
+</tr>
+<tr>
+<td>合并 C2</td>
+<td>—</td>
+<td><code>XHARD_P1_ZERO</code>、<code>XHARD_CORE_SHORT</code></td>
+</tr>
+<tr>
+<td>主会话串行 GPU</td>
+<td><code>XHARD_COLL_GPU_RESET</code> → smoke（tmux <code>xh-coll-smoke-*</code>）</td>
+<td><code>XHARD_COLL_SMOKE</code>、<code>XHARD_COLL_OVERHEAD</code></td>
+</tr>
+<tr>
+<td>留档</td>
+<td>smoke 若超 5 分钟按第 17 条留档 <code>docs/xhard-doc/xhard-1012-collision-smoke/</code>；结果子节追加进 HTML 计划</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="h6">五、子代理分工与合并（简述）</h2>
+<p>拆四块：S0 主会话做机械拷贝（公共契约，切不开）；C1 写规则与判据测试、C3 改生成器两行并加测试，两者文件不相交可并行；C2 给三个子类接线，依赖 C1 的函数签名，等 C1 合并后再派。每块在独立 worktree 写、<code>sub/&lt;编号&gt;:</code> 提交、不 push；主会话合并前复跑验收、派一个 sonnet 审查，<code>--no-ff</code> 合入后跑核心短测与 P1 零 diff，PASS 即 push。GPU 验收与 smoke 全部留给主会话在主检出串行跑。</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 620" font-family="Noto Sans CJK SC, sans-serif">
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker></defs>
+<rect width="1400" height="620" fill="#fff"/>
+<text x="700" y="32" text-anchor="middle" font-size="15" font-weight="bold" fill="#222">子代理分工与合并顺序</text>
+<g font-size="12" fill="#222">
+<rect x="15" y="190" width="190" height="200" rx="8" fill="#eee" stroke="#999" stroke-width="1.5"/>
+<text x="110" y="214" text-anchor="middle" font-size="14" font-weight="bold">S0-HTML（主会话）</text>
+<text x="25" y="244">根目录</text>
+<text x="25" y="262">1012-swap-collision-</text>
+<text x="25" y="280">plan.html</text>
+<text x="25" y="304">3 张 opus SVG</text>
+<text x="25" y="328">commit 2.58 → push</text>
+<rect x="225" y="150" width="230" height="280" rx="8" fill="#eee" stroke="#999" stroke-width="1.5"/>
+<text x="340" y="174" text-anchor="middle" font-size="14" font-weight="bold">S0（主会话）</text>
+<text x="235" y="200">vendoring：git show</text>
+<text x="235" y="218">ce72b04f:…/bin_collision.py</text>
+<text x="235" y="236">→ src/robomme_xhard/</text>
+<text x="235" y="254">collision/bin_collision.py</text>
+<text x="235" y="278">VENDORED.md 记 sha256</text>
+<text x="235" y="302">collision/__init__.py 定义</text>
+<text x="235" y="320">SwapCollisionError /</text>
+<text x="235" y="338">SwapBindingError</text>
+<text x="235" y="362">GPU 探针核按钮碰撞体</text>
+<text x="235" y="390" font-weight="bold">XHARD_COLL_VENDOR=PASS</text>
+<path d="M490,70 Q478,70 478,90 L478,275 Q478,290 466,290 Q478,290 478,305 L478,510 Q478,530 490,530" fill="none" stroke="#555" stroke-width="1.5"/>
+<text x="472" y="295" text-anchor="end" font-size="12" fill="#555">并行</text>
+<rect x="495" y="55" width="250" height="230" rx="8" fill="#e4f5e1" stroke="#3a9d4f" stroke-width="1.5"/>
+<text x="620" y="78" text-anchor="middle" font-size="14" font-weight="bold">C1（opus，worktree）</text>
+<text x="505" y="104">swap_plan.py：</text>
+<text x="505" y="122">select_initiator / nearest_partner</text>
+<text x="505" y="140">plan_swaps / certify_swap_plan</text>
+<text x="505" y="158">SwapCollisionMixin</text>
+<text x="505" y="180">+ test_swap_plan.py</text>
+<text x="505" y="198">+ test_bin_collision_vendored.py</text>
+<text x="505" y="224" font-weight="bold">验收：</text>
+<text x="505" y="242">XHARD_COLL_CPU=PASS tests=29</text>
+<text x="505" y="260">XHARD_SWAPPLAN_CPU=PASS</text>
+<rect x="495" y="305" width="250" height="225" rx="8" fill="#e4f5e1" stroke="#3a9d4f" stroke-width="1.5"/>
+<text x="620" y="328" text-anchor="middle" font-size="14" font-weight="bold">C3（opus，worktree）</text>
+<text x="505" y="354">generate_dataset_newseed.py</text>
+<text x="505" y="372">::_worker finally 复制</text>
+<text x="505" y="390">swap_plan / runtime_checks</text>
+<text x="505" y="408">进结果行</text>
+<text x="505" y="430">+ test_jobs.py 一例</text>
+<text x="505" y="456" font-weight="bold">验收：</text>
+<text x="505" y="474">test_jobs 通过</text>
+<text x="505" y="492">XHARD_BASELINE_EQ 不变</text>
+<rect x="765" y="170" width="200" height="240" rx="8" fill="#fde2c8" stroke="#d9772a" stroke-width="1.5"/>
+<text x="865" y="194" text-anchor="middle" font-size="14" font-weight="bold">合并 C1、C3</text>
+<text x="775" y="218">每个分支：</text>
+<text x="775" y="240">① 主检出复跑验收</text>
+<text x="775" y="262">② 一个 sonnet 审查</text>
+<text x="791" y="280">PRE_MERGE_REVIEW</text>
+<text x="775" y="302">③ git merge --no-ff</text>
+<text x="791" y="320">&lt;TIP sha&gt;</text>
+<text x="775" y="342">④ POST_MERGE_REVIEW</text>
+<text x="791" y="360">（核心短测 + P1 零 diff）</text>
+<text x="775" y="382">⑤ push → 删 worktree</text>
+<rect x="985" y="130" width="200" height="320" rx="8" fill="#e4f5e1" stroke="#3a9d4f" stroke-width="1.5"/>
+<text x="1085" y="152" text-anchor="middle" font-size="13" font-weight="bold">C2（opus，worktree）</text>
+<text x="1085" y="170" text-anchor="middle" font-size="12" fill="#555">依赖 C1 合并后</text>
+<text x="995" y="194">三子类接线：</text>
+<text x="995" y="212">video_unmask_swap.py</text>
+<text x="995" y="230">button_unmask_swap.py</text>
+<text x="995" y="248">video_repick.py</text>
+<text x="995" y="270">基类加 SwapCollisionMixin</text>
+<text x="995" y="288">_load_scene 末尾</text>
+<text x="995" y="306">  certify_swap_plan</text>
+<text x="995" y="324">_swap_actors /</text>
+<text x="995" y="342">  _bystander_actors</text>
+<text x="995" y="364">+ test_swap_collision_gpu.py</text>
+<text x="995" y="390">worktree 内只跑 CPU 测试</text>
+<text x="995" y="408">test_s2_configs.py</text>
+<rect x="1205" y="110" width="185" height="360" rx="8" fill="#fde2c8" stroke="#d9772a" stroke-width="1.5"/>
+<text x="1297" y="132" text-anchor="middle" font-size="13" font-weight="bold">合并 C2 →</text>
+<text x="1297" y="150" text-anchor="middle" font-size="13" font-weight="bold">主会话 GPU 串行</text>
+<text x="1213" y="176">XHARD_COLL_GPU_</text>
+<text x="1213" y="194">RESET=PASS tasks=3</text>
+<text x="1213" y="218">→ smoke：tmux</text>
+<text x="1213" y="236">xh-coll-smoke-&lt;task&gt; ×3</text>
+<text x="1213" y="254">xhard20 单 episode</text>
+<text x="1213" y="278">→ XHARD_COLL_SMOKE</text>
+<text x="1213" y="296">  XHARD_COLL_OVERHEAD</text>
+<text x="1213" y="320">→ 超 5 分钟留档</text>
+<text x="1213" y="338">docs/xhard-doc/</text>
+<text x="1213" y="356">xhard-1012-collision-</text>
+<text x="1213" y="374">smoke/</text>
+</g>
+<g stroke="#555" stroke-width="1.6" fill="none" marker-end="url(#a)">
+<line x1="205" y1="290" x2="223" y2="290"/>
+<line x1="455" y1="290" x2="464" y2="290"/>
+<line x1="745" y1="170" x2="763" y2="250"/>
+<line x1="745" y1="418" x2="763" y2="340"/>
+<line x1="965" y1="290" x2="983" y2="290"/>
+<line x1="1185" y1="290" x2="1203" y2="290"/>
+</g>
+<rect x="15" y="550" width="1375" height="58" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+<text x="28" y="573" font-size="12" fill="#333">写入型 model:"opus" + isolation:"worktree"，提交前缀 sub/&lt;编号&gt;:，不 push；审查 model:"sonnet" 只读钉 BASE/TIP；src/robomme/ 不进任何写集；</text>
+<text x="28" y="595" font-size="12" fill="#333">worktree 借主 .venv：UV_PROJECT_ENVIRONMENT=&lt;主检出&gt;/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync</text>
+</svg><figcaption>图 3　子代理分工与合并顺序：S0 主会话 → C1‖C3 并行 → 合并 → C2 → 合并 → GPU 串行验收</figcaption></figure>
+
+<hr />
+<h1 id="h7">第二部分（技术细节，供 agent 追踪）</h1>
+<h2 id="h8">〇、红线</h2>
+<ul>
+<li>R0-1 <code>src/robomme/</code> 零 diff（P1）；K8 三项覆盖只许在 <code>src/robomme_xhard/</code> 子类/混入里做。</li>
+<li>R0-2 vendored 文件逐字节不改；要改判据回正本改（第 24 条）。阈值常量不加开关。</li>
+<li>R0-3 不换 seed、不换布局、不换搭档：任何检测失败只能抛 <code>SceneGenerationError</code> 子类。</li>
+<li>R0-4 父类 <code>_load_scene</code> 的随机流不得被扰动：<code>certify_swap_plan</code> 只在 <code>super()._load_scene</code> 返回后运行，用独立 Generator。</li>
+<li>R0-5 子代理只在 worktree 写，不 push；每条 git 单独一次 Bash；不起 &gt;5 分钟任务；worktree 内不跑 <code>gym.make</code>。</li>
+<li>R0-6 生成器只改 <code>_worker</code> 的 <code>finally</code> 证据复制，分类逻辑、<code>retryable</code>、attempt、seed 公式逐字节不变。</li>
+</ul>
+<h2 id="h9">一、逐文件改动清单</h2>
+<h3><code>src/robomme_xhard/collision/bin_collision.py</code></h3>
+<p><code>git show ce72b04f:src/robomme/robomme_env/utils/bin_collision.py &gt; src/robomme_xhard/collision/bin_collision.py</code>。不加头注释（保证 sha 相等）。</p>
+<h3><code>src/robomme_xhard/collision/__init__.py</code></h3>
+<pre><code class="language-python">from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError
+from .bin_collision import *  # noqa
+from .bin_collision import CollisionRejection, nearest_partner_index, object_state_from_actor, check_bin_layout, check_swap_sweep
+
+class SwapCollisionError(SceneGenerationError):
+    def __init__(self, rejection: CollisionRejection, stage: str): ...  # str = rejection.summary(); self.rejection
+class SwapBindingError(SceneGenerationError):
+    def __init__(self, detail: dict): ...
+</code></pre>
+<h3><code>src/robomme_xhard/collision/VENDORED.md</code></h3>
+<p>中文：来源仓库/分支/commit <code>ce72b04f</code>、源路径、<code>sha256</code>、拷贝日期 2026-10-12、「未作任何修改；升级来源时显式记录新 commit 与差异」。</p>
+<h3><code>src/robomme_xhard/swap_plan.py</code></h3>
+<pre><code class="language-python">SWAP_PLAN_SEED_OFFSET = 0x53574150  # &quot;SWAP&quot;
+
+def select_initiator(usage: list[int], excluded: set[int], generator) -&gt; int:
+    pool = [i for i in range(len(usage)) if i not in excluded] or list(range(len(usage)))
+    least = min(usage[i] for i in pool); cands = [i for i in pool if usage[i] == least]
+    return cands[int(torch.randint(0, len(cands), (1,), generator=generator).item())]
+
+def nearest_partner(index: int, xy: dict[int, Sequence[float]]) -&gt; int   # 照抄 v2.1 specs.py::_nearest_partner
+
+def plan_swaps(states: dict[int, ObjectState], bystanders: list[ObjectState], swap_times: int, generator) -&gt; SwapPlan
+    # 逐段：select_initiator → nearest_partner → check_swap_sweep(cur[a], cur[b], 其余对象 + bystanders) → 拒绝即 raise SwapCollisionError(rej, &quot;sweep&quot;)
+    # usage[a]+=1; usage[b]+=1；位姿互换同 v2.1
+    # 返回 SwapPlan(pairs=[(a,b,distance,min_gap)], usage, initial_gap)
+
+def certify_swap_plan(env, actors: list, bystanders: list, name_prefix: str) -&gt; SwapPlan
+    # states = {i: object_state_from_actor(a, f&quot;{name_prefix}{i}&quot;)}；check_bin_layout(stage=&quot;initial&quot;) 拒绝即抛
+    # gen = torch.Generator(); gen.manual_seed(int(env.seed) + SWAP_PLAN_SEED_OFFSET)
+    # plan = plan_swaps(...)；for k,(a,b,..) in enumerate(plan.pairs,1): setattr(env,f&quot;swap_pair{k}_idx1&quot;,actors[a]); setattr(env,f&quot;swap_pair{k}_idx2&quot;,actors[b])
+    # env._xhard_swap_plan = plan.as_dict(); env._xhard_runtime_checks = []; env._refresh_swap_schedule()
+
+class SwapCollisionMixin:
+    swap_name_prefix = &quot;bin_&quot;
+    def _swap_actors(self) -&gt; list: raise NotImplementedError
+    def _bystander_actors(self) -&gt; list: return []
+    def _swap_segment_index_at(self, step) -&gt; int | None  # 返回 k-1 若 step == schedule[k][2]
+    def _in_swap_window(self) -&gt; bool                      # any(start &lt;= step &lt;= end)
+    def step(self, action):
+        k = self._swap_segment_index_at(int(self.elapsed_steps))
+        if k is not None: self._check_segment_start(k)     # 绑定 + 整段重证
+        return super().step(action)
+    def _before_simulation_step(self): super()._before_simulation_step(); self._substep_check(&quot;substep_before&quot;)
+    def _after_simulation_step(self):  super()._after_simulation_step();  self._substep_check(&quot;substep_after&quot;)
+</code></pre>
+<p><code>_check_segment_start(k)</code>：<code>initiator = getattr(self, f"swap_pair{k+1}_idx1")</code>、<code>expected = ..._idx2</code>；<code>recomputed, table = nearest_partner_index(pos(initiator), [(i,pos(a)) for i,a in enumerate(actors) if a is not initiator])</code>；<code>actors[recomputed] is not expected</code> → <code>SwapBindingError(detail)</code>；再 <code>check_swap_sweep(state[a], state[b], bystanders, sweep_index=k)</code> 拒绝 → <code>SwapCollisionError</code>。证据追加 <code>{"kind":"swap_binding"|"swap_sweep", "control_step", "sweep_index", "min_g_m", "rejection"}</code>。</p>
+<p><code>_substep_check(stage)</code>：<code>if not self._in_swap_window(): return</code>；<code>check_bin_layout(states, stage=stage)</code>；拒绝 → <code>SwapCollisionError</code>。</p>
+<h3>三个子类（<code>src/robomme_xhard/envs/*.py</code>）</h3>
+<ul>
+<li>类定义改为 <code>class VideoUnmaskSwapXHard(SwapCollisionMixin, XHardMixin, VideoUnmaskSwap)</code>（混入最前，<code>step</code>/钩子先于父类）。</li>
+<li><code>_load_scene</code>：现有 <code>check_swap_count(self)</code> 之后加 <code>certify_swap_plan(self, self._swap_actors(), self._bystander_actors(), self.swap_name_prefix)</code>。</li>
+<li><code>_swap_actors</code>：VUS/BUS → <code>list(self.spawned_bins)</code>；VR → <code>list(self.spawned_cubes)</code>，<code>swap_name_prefix="cube_"</code>。</li>
+<li><code>_bystander_actors</code>：VUS → <code>[]</code>；BUS → <code>[self.button_left, self.button_right]</code>；VR → <code>[self.button_left]</code>。按钮经 <code>shape_specs_from_actor</code> 若报 <code>uncertified</code>（非盒体），<code>certify_swap_plan</code> 内按 R3 处置：<strong>不静默跳过</strong>，抛 <code>SwapCollisionError</code>；S0 阶段先用 GPU 探针核实按钮碰撞体类型，若非盒体则改为 <code>_bystander_actors</code> 返回 <code>[]</code> 并在 HTML 计划「盲区」与 commit body 写明。</li>
+<li><code>clear_extended_swap_pairs</code> 已清第 4 次以后的属性；<code>certify_swap_plan</code> 覆写全部 1..S，所以 reset 重入安全。</li>
+<li>文档字符串更新：R6「配对先不动」作废，改写为 K2/K3。</li>
+</ul>
+<h3>生成器 <code>scripts/data-generation-newSeed/generate_dataset_newseed.py::_worker</code></h3>
+<p><code>finally:</code> 块内、<code>record_env.close()</code> 之前：</p>
+<pre><code class="language-python">u = getattr(record_env, &quot;unwrapped&quot;, None)
+evidence = {k: copy.deepcopy(getattr(u, a)) for k, a in ((&quot;swap_plan&quot;,&quot;_xhard_swap_plan&quot;),(&quot;runtime_checks&quot;,&quot;_xhard_runtime_checks&quot;)) if u is not None and hasattr(u, a)}
+</code></pre>
+<p><code>base</code> 字典加 <code>**evidence</code>。<code>record_env is None</code>（<code>gym.make</code> 内就抛）时无证据，仍是 task 类失败，错误文本带 <code>rejection.summary()</code>。</p>
+<h3>测试</h3>
+<ul>
+<li><code>test_bin_collision_vendored.py</code>：<code>git show ce72b04f:tests/lightweight/test_bin_collision.py</code>，<code>from robomme.robomme_env.utils import bin_collision</code> → <code>from robomme_xhard.collision import bin_collision</code>；追加 <code>test_vendored_sha256_matches_record</code>（读 <code>VENDORED.md</code> 记录值）。</li>
+<li><code>test_swap_plan.py</code>（纯 CPU，SimpleNamespace）：</li>
+<li><code>test_select_initiator_excludes_last_pair</code>、<code>test_select_initiator_fallback_when_pool_empty</code>（N=2）、<code>test_select_initiator_tie_random_reproducible</code>（同 seed 两次相同、不同 seed 可不同）</li>
+<li><code>test_plan_usage_uniform_s11_n4</code>（矩形四角，max−min ≤ 1，相邻段 {a,b} 不相交）</li>
+<li><code>test_plan_rectangle_pairs_short_edge</code>（K2 退化记录：配对只在 0↔1 / 2↔3）</li>
+<li><code>test_plan_rejects_sweep_collision_raises_scene_error</code>（三对象一字排开、中间旁观者 → <code>SwapCollisionError</code> 且 <code>isinstance(SceneGenerationError)</code>）</li>
+<li><code>test_certify_prefills_all_pairs_and_schedule</code>（fake env 有 <code>seed</code>、<code>swap_times</code>、<code>_refresh_swap_schedule</code>；用 <code>ObjectState</code> 直接注入绕过 actor）</li>
+<li><code>test_segment_start_binding_mismatch_raises</code></li>
+<li><code>test_swap_collision_gpu.py</code>（<code>@pytest.mark.gpu</code>）：三任务 × xhard12，母 seed 用 <code>test_s2_configs.MOTHER_RANK0_SEEDS</code>；断言 <code>all(getattr(u,f"swap_pair{k}_idx2") is not None for k in 1..S)</code>、<code>len(u._xhard_swap_plan["pairs"]) == S</code>、<code>u._xhard_runtime_checks == []</code>。</li>
+<li><code>test_jobs.py</code> 新增：<code>_worker</code> 结果行在有/无证据属性时的字段存在性（mock <code>record_env</code>）。</li>
+</ul>
+<h2 id="h10">二、子代理分配表</h2>
+<p>模型按第 26 条：写入 <code>opus</code> + <code>isolation:"worktree"</code>，审查 <code>sonnet</code>，探索 <code>haiku</code> 按需。worktree 环境：<code>UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync …</code>，先打印 <code>robomme_xhard.__file__</code> 落在 <code>&lt;worktree&gt;/src/</code>。派发前核对：<code>worktree.baseRef=head</code>（已核 64/64/head）、<code>git status --short --ignore-submodules=dirty -- . ':!docs/subagent-stats'</code> 只有他人 <code>?? .nonexistent</code>、<code>BASE=$(git rev-parse HEAD)</code>。</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>目标</th>
+<th>可写集合</th>
+<th>禁触</th>
+<th>契约/依赖</th>
+<th>合并顺序</th>
+<th>验收（在哪、怎么跑）</th>
+<th>资源</th>
+<th>共享归属</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S0-HTML（主会话）</td>
+<td>根目录 HTML 计划 + 3 张 opus SVG</td>
+<td><code>1012-swap-collision-plan.html</code></td>
+<td>其余</td>
+<td>画图子代理 <code>model:"opus"</code> 只交回 SVG 文本，不写文件</td>
+<td>1（commit 2.58）</td>
+<td><code>grep -c</code> = 2</td>
+<td>CPU</td>
+<td>主会话</td>
+</tr>
+<tr>
+<td>S0（主会话）</td>
+<td>vendoring + <code>__init__</code> + <code>VENDORED.md</code> + 按钮碰撞体 GPU 探针</td>
+<td><code>src/robomme_xhard/collision/*</code></td>
+<td>其余</td>
+<td>机械拷贝，公共契约</td>
+<td>2</td>
+<td><code>XHARD_COLL_VENDOR</code></td>
+<td>GPU 探针 &lt;1 min</td>
+<td>主会话</td>
+</tr>
+<tr>
+<td>C1（opus）</td>
+<td><code>swap_plan.py</code> + 两份 CPU 测试</td>
+<td><code>src/robomme_xhard/swap_plan.py</code>、<code>tests/test_swap_plan.py</code>、<code>tests/test_bin_collision_vendored.py</code></td>
+<td><code>src/robomme/</code>、envs、生成器</td>
+<td>依赖 S0；签名按第二部分一节</td>
+<td>3</td>
+<td>worktree：两份测试 <code>-q</code> → <code>XHARD_COLL_CPU</code>、<code>XHARD_SWAPPLAN_CPU</code></td>
+<td>CPU</td>
+<td>三文件归 C1</td>
+</tr>
+<tr>
+<td>C3（opus）</td>
+<td>生成器证据复制 + <code>test_jobs.py</code> 一例</td>
+<td><code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code>、<code>src/robomme_xhard/tests/test_jobs.py</code></td>
+<td><code>src/robomme/</code>、<code>seed_layout.py</code>、envs</td>
+<td>只改 <code>_worker</code> finally；与 C1 无交集可并行</td>
+<td>4</td>
+<td>worktree：<code>test_jobs.py -q -m 'not gpu'</code>；<code>XHARD_BASELINE_EQ</code> 不变</td>
+<td>CPU</td>
+<td>生成器归 C3</td>
+</tr>
+<tr>
+<td>C2（opus）</td>
+<td>三子类接线 + GPU 测试文件</td>
+<td><code>envs/video_unmask_swap.py</code>、<code>envs/button_unmask_swap.py</code>、<code>envs/video_repick.py</code>、<code>tests/test_swap_collision_gpu.py</code></td>
+<td><code>src/robomme/</code>、<code>swap_plan.py</code>、<code>collision/</code>、生成器</td>
+<td>依赖 C1 合并后的 HEAD；按钮旁观者按 S0 探针结论</td>
+<td>5</td>
+<td>worktree：<code>test_s2_configs.py -q -m 'not gpu'</code> 仍过；GPU 测试留主会话</td>
+<td>CPU</td>
+<td>四文件归 C2</td>
+</tr>
+<tr>
+<td>审查 ×3（sonnet，无 isolation）</td>
+<td>每个写入分支一审</td>
+<td>无</td>
+<td>—</td>
+<td>钉 <code>REVIEW_BASE/REVIEW_TIP</code> 只读</td>
+<td>各合并前</td>
+<td><code>PRE_MERGE_REVIEW=PASS …</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>主会话 GPU</td>
+<td><code>XHARD_COLL_GPU_RESET</code>、smoke、留档</td>
+<td><code>docs/xhard-doc/xhard-1012-collision-smoke/</code>、HTML 结果子节</td>
+<td>—</td>
+<td>全部合并后</td>
+<td>6</td>
+<td>见闸门</td>
+<td>单卡，tmux <code>xh-coll-smoke-&lt;task&gt;</code></td>
+<td>主会话</td>
+</tr>
+</tbody>
+</table>
+<h2 id="h11">三、闸门总表</h2>
+<p>见第一部分三节；另加合并闸门：每次 <code>PRE_MERGE_REVIEW=PASS base= tip= files= commits= findings=</code>、<code>POST_MERGE_REVIEW=PASS merge= tests= files=</code>；<code>SCOPE</code> 越界即 FAIL。</p>
+<h2 id="h12">四、runbook（主会话）</h2>
+<pre><code class="language-bash"># S0 vendoring
+mkdir -p src/robomme_xhard/collision
+git show ce72b04f:src/robomme/robomme_env/utils/bin_collision.py &gt; src/robomme_xhard/collision/bin_collision.py
+sha256sum src/robomme_xhard/collision/bin_collision.py   # 写进 VENDORED.md
+# 按钮碰撞体探针（GPU，&lt;1 min）
+uv run --no-sync python -c &quot;import gymnasium as gym, robomme.robomme_env, robomme_xhard; from robomme_xhard.collision import shape_specs_from_actor; e=gym.make('ButtonUnmaskSwapXHard',obs_mode='rgb+depth+segmentation',control_mode='pd_joint_pos',render_mode='rgb_array',reward_mode='dense',seed=7700,difficulty='xhard12'); e.reset(seed=7700); u=e.unwrapped; print(shape_specs_from_actor(u.button_left)); e.close()&quot;
+# 合并后 GPU
+uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py -q -m gpu
+# smoke（每任务一个 tmux，命令形态照 docs/xhard-doc/xhard-1011/launch.md 的单任务 smoke，--difficulty xhard20，--episodes 1）
+tmux new-session -d -s xh-coll-smoke-VUS &quot;set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py --env VideoUnmaskSwap --difficulty xhard20 --mother-manifest &lt;清单&gt; --episodes 1 --gpus 1 --workers 1 --output-dir artifacts/xhard-1012-collision-smoke/VUS 2&gt;&amp;1 | tee artifacts/logs/xh-coll-smoke-VUS.log; echo \&quot;EXIT_CODE=\$?\&quot; &gt;&gt; artifacts/logs/xh-coll-smoke-VUS.log&quot;
+# Monitor 过滤：succeeded with seed|EXIT_CODE=|SwapCollisionError|SwapBindingError|failed|Traceback|out of memory|NO RECORD
+</code></pre>
+<h2 id="h13">五、风险登记</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>风险</th>
+<th>处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>每子步 SAT 使单样本慢约十倍（v2.1 实测 47 s → 分钟级），xhard20 S=11 窗口更长</td>
+<td>用户已接受；smoke 记 <code>XHARD_COLL_OVERHEAD</code>，全量规模按第 P5 条另报</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>实际位姿与 reset 时推演有漂移（前 64 步抬放演示、方块落入），段起点绑定可能不等 → 样本失败</td>
+<td>按 K6 报 failure；smoke 统计 <code>SwapBindingError</code> 占比交用户</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>按钮碰撞体可能不是盒体 → <code>uncertified</code> 让所有样本被拒</td>
+<td>S0 探针先核；非盒体则按钮不入旁观者并写明</td>
+</tr>
+<tr>
+<td>R4</td>
+<td><code>select_initiator</code> 的独立 Generator 若与父类流冲突</td>
+<td>只在 <code>super()._load_scene</code> 返回后创建；<code>test_randint_stream_unchanged_by_fixed_range</code> 类测试保留</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>父类 <code>spawn_random_bin</code> 失败静默 <code>break</code>，容器 &lt;4</td>
+<td>已有 <code>test_unmask_fails_loud_without_three_bins</code> 思路；<code>certify_swap_plan</code> 对 N&lt;2 抛错</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>MRO：<code>SwapCollisionMixin.step</code> 必须先于 ButtonUnmaskSwapXHard 现有逻辑</td>
+<td>混入放基类列表最前；C2 的 CPU 测试断言 MRO 顺序</td>
+</tr>
+</tbody>
+</table>
+<h2 id="h14">六、盲区诚实清单</h2>
+<ul>
+<li>退化（只换短边两对、来回换回原处）来自 K2，本轮不改，未量化其在 ±7 cm 偏移下的实际比例。</li>
+<li>旁观者含方块（落在容器内的方块）与否：v2.1 只查容器；本轮同 v2.1 只查交换对象 + 按钮，方块随容器移动不单独建模。</li>
+<li>每子步检查只在交换窗内，窗外依赖初态检测与「按回原位」。</li>
+<li>未实跑前 R1 的倍数、R2 的失败率都是未知数。</li>
+</ul>
+<h2 id="h15">七、留档与 commit 纪律</h2>
+<ul>
+<li><code>2.58</code> HTML 计划；<code>2.59</code>… 每次合并一个 commit（<code>--no-ff</code>，body 含子代理报告摘录与两条 REVIEW 行）；smoke 超 5 分钟按第 17 条留档 <code>docs/xhard-doc/xhard-1012-collision-smoke/</code>（<code>launch.md</code>/<code>result.md</code>/<code>records/</code>），实测结果以子节追加进 HTML 计划步骤表之后，不改写原计划。</li>
+<li>每次 commit 后立即 push；<code>docs/subagent-stats/over-15min.jsonl</code> 可整文件带入。</li>
+</ul>
+</main>
+</div>
+</body>
+</html>
