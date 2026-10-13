@@ -2,8 +2,8 @@
 
 页面：index / interface / envs（环境梯度与实测视频合并页）/ goals / review / h5 / swap / details。
 impl.html 保留为兼容重定向，共八个导航正文页与一个重定向页。根计划的内联 PNG 按 data-src 复制，
-envs 页读取已核实的 env-results-data.json，保留原合成数轴为折叠历史参考。
-22 条媒体白名单相对于 --artifact-root 定位，复制到独立 videos/env-results/；缺源文件即拒绝构建。
+envs 页读取已核实的 env-results-data.json，只展示实测指标与真实分段数轴。
+16 条媒体白名单相对于 --artifact-root 定位，复制到独立 videos/env-results/；缺源文件即拒绝构建。
 只读计划、冻结快照与图片视频源，不改输入；托管命令见 vis/README.md 同款：
   uv run --no-sync python -m http.server 8092 --bind 0.0.0.0 --directory artifacts/plan-site
 """
@@ -127,7 +127,7 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
     pages = {
         "index.html": index_body,
         "interface.html": sec2,
-        "envs.html": render_env_results(data, sec34),
+        "envs.html": render_env_results(data),
         "goals.html": goals,
         "review.html": review,
         "h5.html": h5,

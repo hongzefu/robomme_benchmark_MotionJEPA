@@ -1,8 +1,9 @@
-"""统一环境页：冻结实测快照、历史梯度表解析与严格媒体白名单。"""
+"""统一环境页：真实录像指标、H5 时间轴与严格媒体白名单。"""
 from __future__ import annotations
 
 import html
 import json
+import math
 import pathlib
 import re
 
@@ -10,8 +11,7 @@ TASKS = ["BinFill", "PickXtimes", "SwingXtimes", "StopCube", "VideoUnmask", "But
          "VideoUnmaskSwap", "ButtonUnmaskSwap", "PickHighlight", "VideoRepick", "VideoPlaceButton",
          "VideoPlaceOrder", "MoveCube", "InsertPeg", "PatternLock", "RouteStick"]
 LEVELS = ["mother", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20"]
-SELECTED = {"VideoUnmaskSwap": [5700, 6100, 6900], "ButtonUnmaskSwap": [7700, 8100, 8900],
-            "VideoRepick": [9600, 11200, 11602]}
+SELECTED = {"VideoUnmaskSwap": [5700], "ButtonUnmaskSwap": [7700], "VideoRepick": [9600]}
 GROUPS = [("counting", "计数"), ("permanence", "永久性"), ("reference", "参考"), ("imitation", "模仿")]
 SOURCE_BASE = "https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/a43fa09c94317356091db6ba634a8f167b84ca13/"
 
@@ -21,40 +21,29 @@ def plain(value):
     return " ".join(html.unescape(re.sub(r"<[^>]+>", " ", value)).split())
 
 
-def expected_from_plan(doc):
+def configurations_from_plan(doc):
+    """只读取各档的配置键与旋钮，不读取长度或窗口参考数字。"""
     match = re.search(r'<table id="length-gradient-table">(.*?)</table>', doc, re.S)
     if not match:
-        raise ValueError("缺少 length-gradient-table")
+        raise ValueError("缺少配置梯度表")
     result = {}
     for task, body in re.findall(r'<tr data-task="([^"]+)">(.*?)</tr>', match[1], re.S):
         cells = re.findall(r'<td\b([^>]*)>(.*?)</td>', body, re.S)
         if len(cells) != 9:
-            raise ValueError(f"历史梯度列数错误：{task}")
+            raise ValueError(f"配置梯度列数错误：{task}")
         values = {}
         for level, (attrs, cell) in zip(LEVELS, cells[2:8]):
             config = re.search(r"data-(?:base-)?config='([^']+)'", attrs)
             if not config:
                 values[level] = None
                 continue
-            text = plain(cell)
-            lines = re.split(r"<br\s*/?>", cell, flags=re.I)
-            # 长度必须来自旋钮之后的独立数据行；不在整格中搜第一个数字。
-            length = re.match(r"(?:实测\s*)?([\d.]+)\s*timestep", plain(lines[1])) if len(lines) > 1 else None
-            origin_estimate = re.search(r"原估算约\s*([\d.]+)\s*timestep", text)
-            if re.search(r"实测\s*[\d.]+\s*timestep", text):
-                if not origin_estimate:
-                    raise ValueError(f"预计列混入实测且没有原估算：{task}/{level}")
-                length = origin_estimate
-            windows = re.search(r"/\s*([\d.]+)窗", plain(cell))
             label = re.search(r"<b>(.*?)</b>", cell, re.S)
-            if not length or not label:
-                raise ValueError(f"历史梯度缺少长度或旋钮：{task}/{level}")
-            values[level] = {"config": json.loads(html.unescape(config[1])), "knob": plain(label[1]),
-                             "timesteps": float(length[1]), "windows": float(windows[1]) if windows else None,
-                             "basis": "原估算近似值" if origin_estimate else ("固定母档参照中位" if level == "mother" else "固定样本集合成中位")}
+            if not label:
+                raise ValueError(f"配置梯度缺少旋钮：{task}/{level}")
+            values[level] = {"config": json.loads(html.unescape(config[1])), "knob": plain(label[1])}
         result[task] = values
     if list(result) != TASKS:
-        raise ValueError("历史梯度任务必须严格按官网 16 任务顺序排列")
+        raise ValueError("配置梯度任务必须严格按官网 16 任务顺序排列")
     return result
 
 
@@ -77,7 +66,7 @@ def select_rows(old_rows, v3_rows):
 
 
 def assemble(plan, old_rows, v3_rows, metric_rows):
-    expected = expected_from_plan(plan)
+    configurations = configurations_from_plan(plan)
     selected = select_rows(old_rows, v3_rows)
     metrics = {(r["task"], r["seed"], r["level"]): r for r in metric_rows}
     if len(metrics) != len(metric_rows):
@@ -92,7 +81,7 @@ def assemble(plan, old_rows, v3_rows, metric_rows):
         samples = []
         for seed in seeds:
             rows = [r for r in selected if r["task"] == task and r["seed"] == seed]
-            configured = {level for level, value in expected[task].items() if value is not None}
+            configured = {level for level, value in configurations[task].items() if value is not None}
             if {r["level"] for r in rows} != configured:
                 raise ValueError(f"实际档位与配置档位集合不符：{task}/{seed}")
             run = "xhard-1012-swapv3" if task in SELECTED else "xhard-1011"
@@ -117,22 +106,59 @@ def assemble(plan, old_rows, v3_rows, metric_rows):
                     elif task in {"VideoPlaceButton", "VideoPlaceOrder"}:
                         real_rows[row["level"]]["swap_reason"] = f"{task} 的交换事件到录像帧映射尚未验证，交换遗漏与合计未统计。"
                 real_rows[row["level"]]["h5"] = metric["h5"]
-                for key in ("frames", "swaps", "swap_intervals", "swap_provenance"):
+                for key in ("segments", "missed_units", "frames", "swaps", "swap_intervals", "swap_provenance"):
                     if key in metric:
                         real_rows[row["level"]][key] = metric[key]
             samples.append({"seed": seed, "episode": episode, "batch": batch, "run": run,
                             "video_source": f"{source_dir}/{filename}", "video": f"videos/env-results/{run}/{filename}",
                             "rows": real_rows})
-        tasks.append({"task": task, "number": number, "expected": expected[task], "samples": samples})
-    return {"schema": 1, "source_commit": "a43fa09c94317356091db6ba634a8f167b84ca13",
+        tasks.append({"task": task, "number": number, "configurations": configurations[task], "samples": samples})
+    return {"schema": 2, "source_commit": "a43fa09c94317356091db6ba634a8f167b84ca13",
             "selection": "成功演示选样；不代表全量成功率；只展示已有产物，不补生成。",
-            "expected_source": "1006-xhard12-env-plan.html#length-gradient-table",
             "metric_method": "只读 H5 info；以 is_subgoal_boundary 切段；窗口分别按完整 demo/exec 计算；8 帧索引取最近整数。",
             "tasks": tasks}
 
 
+def validate_timeline(row):
+    total, demo = row["timesteps"], row["demo_timesteps"]
+    if total <= 0 or demo < 0 or demo > total or row["exec_timesteps"] != total - demo:
+        raise ValueError("实测长度不一致")
+    window_count = lambda n: max(0, (n - 33) // 16 + 1)
+    if (row["demo_windows"] != window_count(demo) or row["exec_windows"] != window_count(total - demo)
+            or row["windows"] != row["demo_windows"] + row["exec_windows"]):
+        raise ValueError("实测窗口与完整演示／执行段不符")
+    cursor = 0
+    for segment in row["segments"]:
+        start, end = segment["start"], segment["end"]
+        if start != cursor or not start < end <= total or not isinstance(segment["text"], str):
+            raise ValueError("原始分段没有连续覆盖录像")
+        if (segment["demo"] and end > demo) or (not segment["demo"] and start < demo):
+            raise ValueError("原始分段跨过演示／执行边界")
+        cursor = end
+    if cursor != total:
+        raise ValueError("原始分段未覆盖至录像结尾")
+    frames = [math.floor(i * (total - 1) / 7 + .5) for i in range(8)]
+    if row["frames"] != frames or len(row["missed_units"]) != row["miss_units"]:
+        raise ValueError("采样帧或遗漏动作数不符")
+    for start, end, label in row["missed_units"]:
+        if not demo <= start < end <= total or any(start <= f < end for f in frames) or not isinstance(label, str):
+            raise ValueError("遗漏动作区间不符")
+    intervals = row.get("swap_intervals", [])
+    if row["miss_swaps"] is None:
+        if intervals or row["miss"] is not None:
+            raise ValueError("未知交换不得出现事件或总遗漏数")
+    else:
+        if any(not 0 <= a < b <= total for a, b in intervals):
+            raise ValueError("交换区间越界")
+        if len(intervals) != row.get("swaps", 0):
+            raise ValueError("交换区间数量不符")
+        missed = sum(not any(a <= f < b for f in frames) for a, b in intervals)
+        if row["miss_swaps"] != missed or row["miss"] != row["miss_units"] + missed:
+            raise ValueError("交换或总遗漏与区间不符")
+
+
 def validate_snapshot(data):
-    if data.get("schema") != 1 or [t["task"] for t in data["tasks"]] != TASKS:
+    if data.get("schema") != 2 or [t["task"] for t in data["tasks"]] != TASKS:
         raise ValueError("统一环境快照结构或任务顺序不符")
     count = 0
     for task in data["tasks"]:
@@ -142,10 +168,13 @@ def validate_snapshot(data):
             raise ValueError("V3 样本身份或顺序错误")
         if not expected_seeds and len(samples) != 1:
             raise ValueError("旧批次应展示一个已有样本")
-        if set(task["expected"]) != set(LEVELS):
+        if set(task["configurations"]) != set(LEVELS):
             raise ValueError("梯度必须显式保留六档")
+        for value in task["configurations"].values():
+            if value is not None and set(value) != {"config", "knob"}:
+                raise ValueError("配置只允许配置键与旋钮说明")
         for sample in samples:
-            configured = {k for k, v in task["expected"].items() if v is not None}
+            configured = {k for k, v in task["configurations"].items() if v is not None}
             if set(sample["rows"]) != configured:
                 raise ValueError("实测行集合与已配置档位不一致")
             for key in ("video", "video_source"):
@@ -154,9 +183,11 @@ def validate_snapshot(data):
                     raise ValueError("媒体路径越界")
             if not sample["video"].startswith("videos/env-results/"):
                 raise ValueError("媒体只能写入新命名空间")
+            for row in sample["rows"].values():
+                validate_timeline(row)
             count += 1
-    if count != 22:
-        raise ValueError(f"媒体白名单应为 22 条，实为 {count}")
+    if count != 16:
+        raise ValueError(f"媒体白名单应为 16 条，实为 {count}")
 
 
 def fmt(value):
@@ -167,54 +198,51 @@ def sample_note(sample):
     return " ".join(dict.fromkeys(row["swap_reason"] for row in sample["rows"].values()))
 
 
-def table_rows(task, sample):
-    rows = []
+def table_row(task, sample):
+    name = task["task"]
+    cells = [f'<tr data-task="{name}" data-seed="{sample["seed"]}"><th scope="row"><span class="task-number">{task["number"]}</span><strong>{name}</strong><small>母 seed {sample["seed"]}</small><span class="task-links"><a href="#timeline-{name}">数轴</a> · <a href="#v-{task["number"].replace(".", "-")}">视频</a></span></th>']
     for level in LEVELS:
-        label = "母档" if level == "mother" else level
-        expected = task["expected"][level]
-        if expected is None:
-            rows.append(f'<tr class="unconfigured"><th>{label}</th><td colspan="9">缺档：无独立配置</td></tr>')
+        configuration = task["configurations"][level]
+        if configuration is None:
+            cells.append(f'<td class="unconfigured" data-level="{level}" data-missing="true">缺档<small>无独立配置</small></td>')
             continue
         real = sample["rows"].get(level)
         if not real:
             raise ValueError("已配置档位缺少实测行")
-        cells = [html.escape(expected["knob"]), fmt(expected["timesteps"]),
-                 "待算" if expected["windows"] is None else fmt(expected["windows"]),
-                 f'{real["timesteps"]}<small>演示 {real["demo_timesteps"]} ＋ 执行 {real["exec_timesteps"]}</small>',
-                 f'{real["windows"]}<small>演示 {real["demo_windows"]} ＋ 执行 {real["exec_windows"]}</small>',
-                 f'{real["ratio_timesteps"]:.3f}×<small>窗口 {real["ratio_windows"]:.3f}×</small>',
-                 f'{real["miss_units"]} / {real["units"]}', fmt(real["miss_swaps"]), fmt(real["miss"])]
-        keys = ["knob", "expected-T", "expected-windows", "actual-T", "windows", "ratio", "miss-actions", "miss-swaps", "miss-total"]
-        rows.append(f'<tr data-level="{level}"><th>{label}</th>' + "".join(f'<td data-metric="{key}">{c}</td>' for key, c in zip(keys, cells)) + "</tr>")
-    return "".join(rows)
+        details = f'演示 {real["demo_timesteps"]} 帧 / {real["demo_windows"]} 窗；执行 {real["exec_timesteps"]} 帧 / {real["exec_windows"]} 窗；窗口倍率 {real["ratio_windows"]:.3f}×'
+        cells.append(f'<td data-level="{level}" data-missing="false" title="{details}"><span class="cell-knob" data-metric="knob">{html.escape(configuration["knob"])}</span><span class="cell-length"><b data-metric="actual-T">{real["timesteps"]}</b> 步 / <b data-metric="windows">{real["windows"]}</b> 窗</span><span class="cell-ratio" data-metric="ratio">{real["ratio_timesteps"]:.3f}×</span><span class="cell-miss">漏：动 <b data-metric="miss-actions">{real["miss_units"]}/{real["units"]}</b> · 换 <b data-metric="miss-swaps">{fmt(real["miss_swaps"])}</b> · 总 <b data-metric="miss-total">{fmt(real["miss"])}</b></span></td>')
+    return "".join(cells) + "</tr>"
 
 
-def render(data, history):
+def render(data):
     validate_snapshot(data)
     parts = ['<link rel="stylesheet" href="env-results.css">',
-             '<section class="env-intro" id="p1-final"><p class="eyebrow">16 个任务 · 22 组已有演示</p><h1 id="p1-videos">二、环境梯度与实测视频</h1>',
-             '<p>选择同一母 seed，对照母档与五个难度档的六列录像、实际长度、窗口数和 8 帧采样遗漏。只展示已有产物，不自动补生成。</p>',
-             '<div class="evidence-note"><strong>成功演示选样，不代表全量成功率。</strong>三个交换任务各展示 3 个全派生成功 seed，其余任务各 1 个。交换 V3 全量为 130 / 180 成功，50 个任务拒绝，详见 ',
+             '<section class="env-intro"><p class="eyebrow">16 个任务 · 16 个固定母 seed · 68 个实测身份</p><h1>二、环境梯度与实测视频</h1>',
+             '<p>先看所有任务的紧凑总表，再看 16 张数轴，最后看 16 个六列视频。每个任务固定一个已有母 seed，三处使用同一份实测数据。</p>',
+             '<div class="evidence-note"><strong>成功演示选样，不代表全量成功率。</strong>VideoUnmaskSwap 固定 seed 5700，ButtonUnmaskSwap 固定 7700，VideoRepick 固定 9600；其余任务沿用已有默认样本。交换 V3 全量为 130 / 180 成功，50 个任务拒绝，详见 ',
              f'<a href="{SOURCE_BASE}docs/xhard-doc/xhard-1012-swapv3/result.md">完整 V3 结果与拒绝报告</a>。</div>',
-             '<p class="method-note">历史预计／母档参照来自原计划：母档为固定参照集合中位，派生档通常为固定母子样本集合成中位；StopCube 的 xhard18 例外，使用原估算约 427 步（窗口未测），不把该格另列的单 seed 实测 423 步当预计。这些值并非当前选定 seed 的预测；请勿把两列差值解释为同 seed 预测误差。窗口按演示段与执行段分别计算后相加：w(L) = max(0, (L − 33) // 16 ＋ 1)，不按每个子目标断窗。</p>',
+             '<p class="method-note">长度与倍率均为同一 seed 的实测，倍率以其母档为分母；缺档没有独立配置。遗漏标记“动 / 换 / 总”分别表示动作、交换与合计；动作写作“遗漏数 / 动作总数”，未知项显示“未测”。</p>',
+             '<p class="method-note"><a href="env-results-data.json">查看冻结实测指标与分段</a> · <a href="env-results-media.json">查看 16 条媒体白名单</a></p></section>',
+             '<nav class="section-nav" aria-label="本页内容"><a href="#p1-final">紧凑总表</a><a href="#actual-timelines">16 张实测数轴</a><a href="#p1-videos">16 个实测视频</a></nav>',
+             '<section class="actual-overview" id="p1-final"><span id="p1-_4"></span><h2>所有任务的实测总表</h2><div class="table-scroll"><table class="compact-results"><thead><tr><th>任务 / 固定母 seed</th>' + ''.join(f'<th>{"母档" if level == "mother" else level}</th>' for level in LEVELS) + '</tr></thead><tbody>']
+    parts.extend(table_row(task, task["samples"][0]) for task in data["tasks"])
+    parts.append('</tbody></table></div></section>')
+    parts.extend(['<section class="timelines-block" id="actual-timelines"><h2>16 张实测数轴</h2>',
+             '<p class="method-note">每个任务的六档共用绝对 T 轴，以该 seed 最长一档为上限；缺档不绘制数据。33 帧窗口按步长 16，在完整演示段与执行段各自铺设：w(L) = max(0, (L − 33) // 16 ＋ 1)，不按子目标断窗。</p>',
              '<p class="method-note">8 帧索引为 floor(i × (T − 1) / 7 ＋ 0.5)。动作段按 H5 的 is_subgoal_boundary 切分，排除演示与完成尾段；按原表合并抓放，MoveCube、InsertPeg 每段独立。三个交换任务的 V3 派生档已核实控制步到录像索引映射，按逐交换 50 帧半开区间统计；它们的母档和两个 Place 任务的交换遗漏仍标“未测”。动作列为“遗漏 / 动作总数”。</p>',
-             '<p class="method-note"><a href="env-results-data.json">查看冻结指标与来源</a> · <a href="env-results-media.json">查看 22 条媒体白名单</a></p></section>',
-             '<nav class="category-nav" aria-label="任务分类">' + "".join(f'<a href="#v-{key}">{i+1} {name}</a>' for i, (key, name) in enumerate(GROUPS)) + '</nav>']
-    for i, task in enumerate(data["tasks"]):
-        if i % 4 == 0:
-            key, name = GROUPS[i // 4]
-            parts.append(f'<h2 class="category-title" id="v-{key}">{i//4+1} {name}</h2>')
+             '<p class="method-note">数轴中的原始子目标分段直接来自 H5 边界，与合并后的动作单元不同；红色覆盖表示被 8 帧遗漏的合并动作区间。悬停或点选分段、窗口、交换条可查看区间与标签；长标签不会挤进图内。</p>'])
+    for task in data["tasks"]:
         sample = task["samples"][0]
-        options = "".join(f'<option value="{s["seed"]}">母 seed {s["seed"]}</option>' for s in task["samples"])
-        disabled = " disabled" if len(task["samples"]) == 1 else ""
-        parts.append(f'<article class="env-card" id="v-{task["number"].replace(".", "-")}" data-task="{task["task"]}" data-seed="{sample["seed"]}"><header><div><span class="task-number">{task["number"]}</span><h3>{task["task"]}</h3></div><label>已有母 seed <select aria-label="{task["task"]} 母 seed"{disabled}>{options}</select></label></header>')
-        parts.append(f'<p class="sample-source" aria-live="polite">来源：{sample["batch"]} · seed {sample["seed"]} · episode {sample["episode"]}</p>')
+        parts.append(f'<article class="timeline-card" id="timeline-{task["task"]}" data-task="{task["task"]}" data-seed="{sample["seed"]}"><header><h3>{task["number"]} {task["task"]}</h3><span>母 seed {sample["seed"]} · <a href="#v-{task["number"].replace(".", "-")}">查看视频</a></span></header><div class="timeline-legend"><span class="legend-demo">演示</span><span class="legend-exec">执行</span><span class="legend-segment">原始分段</span><span class="legend-window">33 帧窗口</span><span class="legend-missed">遗漏动作</span><span class="legend-swap">已核实交换</span><span class="legend-frame">8 帧采样点</span></div><div class="actual-timeline" aria-label="实测时间轴"><noscript>启用 JavaScript 后可查看真实分段数轴，实测总表仍可直接阅读。</noscript></div><p class="timeline-detail" aria-live="polite">悬停或点选图中条带查看详情。</p><p class="swap-note">{html.escape(sample_note(sample))}</p></article>')
+    parts.append('</section><section class="videos-block" id="p1-videos"><h2>16 个实测视频</h2><p class="method-note">每任务一个已有六列视频，列顺序为母档、xhard12、xhard14、xhard16、xhard18、xhard20；缺档仍以影片中的空列表示。按需播放，不自动加载所有录像。</p>')
+    for i, task in enumerate(data["tasks"]):
+        sample = task["samples"][0]
+        if i % 4 == 0:
+            parts.append(f'<span class="legacy-anchor" id="v-{GROUPS[i // 4][0]}"></span>')
+        parts.append(f'<article class="video-card" id="v-{task["number"].replace(".", "-")}" data-task="{task["task"]}" data-seed="{sample["seed"]}"><header><h3>{task["number"]} {task["task"]}</h3><a href="#timeline-{task["task"]}">查看数轴</a></header><p class="sample-source">来源：{sample["batch"]} · seed {sample["seed"]} · episode {sample["episode"]}</p>')
         parts.append('<div class="strip-scroll"><div class="strip-content"><div class="video-levels">' + "".join(f'<span>{"母档" if l == "mother" else l}</span>' for l in LEVELS) + '</div>')
-        parts.append(f'<video controls preload="none" playsinline src="{sample["video"]}" aria-label="{task["task"]} seed {sample["seed"]} 六列对照视频"></video></div></div>')
-        parts.append('<div class="table-scroll"><table class="result-table"><thead><tr><th rowspan="2">档位</th><th rowspan="2">旋钮</th><th colspan="2">历史预计／母档参照</th><th colspan="3">所选 seed 实测</th><th colspan="3">8 帧遗漏</th></tr><tr><th>参考 T</th><th>参考窗</th><th>实际 T</th><th>实际窗</th><th>相对母档</th><th>动作</th><th>交换</th><th>合计</th></tr></thead><tbody>' + table_rows(task, sample) + '</tbody></table></div>')
-        reason = sample_note(sample)
-        parts.append(f'<p class="swap-note">{html.escape(reason)}</p></article>')
-    parts.append(f'<details class="historical-source"><summary>历史合成图与原计划说明（历史参考，不作为当前运行状态）</summary><p>以下保留原计划的合成图及完整说明；其中旧状态不代表本页选定样本的实际结果。<a href="{SOURCE_BASE}1012-xhard12-env-impl.html">查看完整原实施档案</a></p>{history}</details>')
+        parts.append(f'<video controls preload="none" playsinline src="{sample["video"]}" aria-label="{task["task"]} seed {sample["seed"]} 六列对照视频"></video></div></div></article>')
+    parts.append('</section>')
     payload = json.dumps(data, ensure_ascii=False).replace("<", "\\u003c")
     parts.append(f'<script id="env-results-data" type="application/json">{payload}</script><script src="env-results.js" defer></script>')
     return "".join(parts)
