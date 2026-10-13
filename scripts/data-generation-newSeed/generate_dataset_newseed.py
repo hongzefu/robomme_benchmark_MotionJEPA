@@ -51,6 +51,7 @@ if os.environ.get(LIMIT_THREADS_ENV, "1") != "0":
     _apply_thread_env("1")
 
 import argparse  # noqa: E402
+import copy  # noqa: E402
 import json  # noqa: E402
 import multiprocessing as mp  # noqa: E402
 import resource  # noqa: E402
@@ -301,7 +302,7 @@ def _raw_summary(path: Path, job: EpisodeJob) -> dict[str, Any]:
             raise DatasetGenerationError("; ".join(errors))
         if done is not True:
             raise DatasetGenerationError(f"{path}/{name}: 末帧 is_completed 不为真")
-    return {"h5_path": str(path), "timestep_count": len(timesteps)}
+    return {"h5_path": str(path), "timestep_count": len(timesteps), "task_success": done}
 
 
 def _h5_path(output_root: Path, job: EpisodeJob) -> Path:
@@ -391,6 +392,8 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
     record_env: Any | None = None
     caught: BaseException | None = None
     error_traceback: str | None = None
+    evidence: dict[str, Any] = {}
+    fatal: dict[str, Any] | None = None
 
     # import 单独成段：若这里失败，下面的 except 子句会因为异常类未定义而变成 NameError
     try:
@@ -429,6 +432,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
             "recovery_mode": job.recovery_mode,
             "bound": dict(_BOUND),
             "ok": False,
+            "task_success": False,
             "failure_class": "code",
             "error_type": type(exc).__name__,
             "error": str(exc),
@@ -503,6 +507,16 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
     finally:
         if record_env is not None:
             mark = time.monotonic()
+            if job.fixed_seed:
+                # close 可能释放或改写环境，证据必须在它之前独立复制。
+                u = record_env.unwrapped
+                evidence = {
+                    key: copy.deepcopy(getattr(u, attr))
+                    for key, attr in (("swap_plan", "_xhard_swap_plan"),
+                                      ("runtime_checks", "_xhard_runtime_checks"))
+                    if hasattr(u, attr)
+                }
+                fatal = copy.deepcopy(getattr(u, "_xhard_fatal", None))
             try:
                 # h5 落盘与 mp4 编码都发生在 close 里
                 record_env.close()
@@ -526,19 +540,33 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
         "finished_at": time.time(),
         "peak_rss_mb": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, 1),
         **_card_fields(job),
+        **evidence,
     }
+    if fatal:
+        # 首条运行期拒绝优先于后续 planner/close 错误；产物保留供人工检查。
+        return {
+            **base, "ok": False, "task_success": False, "failure_class": "task",
+            "error_type": fatal["error_type"], "stage": fatal["stage"],
+            "rejection": copy.deepcopy(fatal.get("rejection")), "detail": fatal,
+            "error": f"运行期复核拒绝：{fatal['error_type']} ({fatal['stage']})",
+            "traceback": error_traceback,
+            "failed_artifacts": _mark_failed_artifacts(job),
+        }
     if caught is not None:
         # 失败的 attempt 不写 h5 内容（RecordWrapper.py:1152 只在 episode_success 时写），
         # 但文件在 __init__ 里就被创建了，会留下几 KB 空壳 —— 删掉，
         # 让 hdf5_files/ 里只剩真正成功的轨迹。FAILED_ 视频保留作为失败演进的证据。
-        _discard_empty_h5(raw_path, job)
+        if not job.fixed_seed:
+            _discard_empty_h5(raw_path, job)
         return {
             **base,
             "ok": False,
+            "task_success": False,
             "failure_class": "task" if isinstance(caught, retryable) else "code",
             "error_type": type(caught).__name__,
             "error": str(caught),
             "traceback": error_traceback,
+            **_exception_evidence(caught, job),
         }
     try:
         summary = _raw_summary(raw_path, job)
@@ -546,15 +574,96 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
             raise DatasetGenerationError(f"{raw_path}: timestep 数为 0，视为失败")
         return {**base, "ok": True, **summary}
     except Exception as exc:
-        _discard_empty_h5(raw_path, job)
+        if not job.fixed_seed:
+            _discard_empty_h5(raw_path, job)
         return {
             **base,
             "ok": False,
+            "task_success": False,
             "failure_class": "task" if isinstance(exc, retryable) else "code",
             "error_type": type(exc).__name__,
             "error": str(exc),
             "traceback": traceback.format_exc(),
+            **_exception_evidence(exc, job),
         }
+
+
+def _exception_evidence(exc: BaseException, job: EpisodeJob) -> dict[str, Any]:
+    """仅给固定卡片复制结构化异常，不改变旧模式的分类及字段。"""
+    if not job.fixed_seed:
+        return {}
+    rejection = getattr(exc, "rejection", None)
+    return {
+        "task_success": False,
+        "stage": getattr(exc, "stage", None),
+        "rejection": copy.deepcopy(rejection.as_dict() if rejection is not None else None),
+        "detail": copy.deepcopy(getattr(exc, "detail", None)),
+    }
+
+
+def _mark_failed_artifacts(job: EpisodeJob) -> list[str]:
+    """只给本卡成功名产物加失败前缀，不让运行期拒绝被视频工具误认成成功。"""
+    root = Path(job.output_root)
+    raw = _h5_path(root, job)
+    paths = [raw] if raw.is_file() else []
+    videos = root / "videos"
+    if videos.is_symlink():
+        raise DatasetGenerationError(f"失败视频目录不能是符号链接：{videos}")
+    if videos.is_dir():
+        paths.extend(p for p in videos.iterdir() if p.is_file() and p.name.startswith(
+            (raw.stem + "_", "success_NO_OBJECT_" + raw.stem + "_")))
+    targets = [(p, p.with_name("FAILED_" + p.name)) for p in paths]
+    for source, target in targets:
+        if source.is_symlink() or target.exists() or target.is_symlink():
+            raise DatasetGenerationError(f"失败产物不能覆盖或穿透符号链接：{source} → {target}")
+    for source, target in targets:
+        source.rename(target)
+    return [str(target) for _, target in targets]
+
+
+def _quarantine_written_card(job: EpisodeJob) -> dict[str, Any]:
+    """隔离已有 H5 内容或同卡视频的崩溃卡；只有无证据空壳沿用 infra 重试。"""
+    if not job.fixed_seed:
+        return {}
+    root = Path(job.output_root)
+    raw = _h5_path(root, job)
+    if raw.is_symlink():
+        raise DatasetGenerationError(f"隔离 H5 不能是符号链接：{raw}")
+    stem = raw.stem
+    paths = [raw] if raw.is_file() else []
+    videos = root / "videos"
+    if videos.is_symlink():
+        raise DatasetGenerationError(f"隔离视频目录不能是符号链接：{videos}")
+    if videos.is_dir():
+        prefixes = (stem + "_", "FAILED_" + stem + "_",
+                    "success_NO_OBJECT_" + stem + "_", "FAILED_NO_OBJECT_" + stem + "_")
+        paths.extend(p for p in videos.iterdir() if p.is_file() and p.name.startswith(prefixes))
+    # 视频可能已写完或只写一半，而 H5 仍是可读空壳；先收齐视频再判定。
+    written = any(path.parent == videos for path in paths)
+    if raw.is_file():
+        try:
+            with h5py.File(raw, "r") as handle:
+                written = written or f"episode_{job.episode}" in handle
+        except OSError:
+            # 损坏或半写的非空文件也保留，不能把无法读取当作没有写过。
+            written = written or raw.stat().st_size > 0
+    if not written:
+        return {}
+    destination = root.parent / "_quarantine" / f"{root.name}_{stem}"
+    if destination.parent.is_symlink() or destination.exists() or destination.is_symlink():
+        raise DatasetGenerationError(f"隔离目标已存在，禁止覆盖：{destination}")
+    for path in paths:
+        if path.is_symlink():
+            raise DatasetGenerationError(f"隔离产物不能是符号链接：{path}")
+    destination.mkdir(parents=True)
+    moved = []
+    for path in paths:
+        target = destination / path.relative_to(root)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        path.rename(target)
+        moved.append(str(target))
+    return {"quarantined": True, "quarantine_path": str(destination),
+            "quarantine_files": moved, "task_success": False}
 
 
 def _discard_empty_h5(path: Path, job: EpisodeJob) -> None:
@@ -595,6 +704,7 @@ def _synth_failure(job: EpisodeJob, exc: BaseException, failure_class: str) -> d
         "difficulty": job.difficulty,
         "recovery_mode": job.recovery_mode,
         "ok": False,
+        "task_success": False,
         "failure_class": failure_class,
         "error_type": type(exc).__name__,
         "error": str(exc),
@@ -669,8 +779,10 @@ def _run_jobs(
                 except BrokenProcessPool as exc:
                     broken.add(gpu)
                     result = _synth_failure(job, exc, "infra")
+                    result.update(_quarantine_written_card(job))
                 except BaseException as exc:  # noqa: BLE001
                     result = _synth_failure(job, exc, "infra")
+                    result.update(_quarantine_written_card(job))
                 record(result)
                 key = (job.task, job.episode)
                 if job.fixed_seed:
@@ -689,7 +801,7 @@ def _run_jobs(
                 if job.fixed_seed:
                     # 固定 seed 卡片：正常失败与代码错误都是最终结果，不重试挑成功；
                     # 只有基础设施故障（池崩溃等）把原卡片原样退回，seed 与 attempt 不变
-                    if result.get("failure_class") == "infra":
+                    if result.get("failure_class") == "infra" and not result.get("quarantined"):
                         strikes[key] = strikes.get(key, 0) + 1
                         if strikes[key] < MAX_NON_TASK_STRIKES:
                             print(
@@ -742,7 +854,12 @@ def _run_jobs(
                         continue
                     inflight.pop(future)
                     capacity[gpu] += 1
-                    record(_synth_failure(job, RuntimeError("池重建，任务退回队列"), "infra"))
+                    result = _synth_failure(job, RuntimeError("池重建，任务退回队列"), "infra")
+                    result.update(_quarantine_written_card(job))
+                    record(result)
+                    if result.get("quarantined"):
+                        exhausted.append(result)
+                        continue
                     if job.fixed_seed:
                         # 固定 seed 卡片原样退回，不 bump（RL3）
                         pending.appendleft(job)
@@ -1155,6 +1272,7 @@ def _generate_xhard(
         ok = bool(result.get("ok"))
         cards_rows.append(
             {
+                **result,
                 "task": job.task,
                 "role": job.card_role,
                 "make_name": job.gym_id,
@@ -1164,8 +1282,8 @@ def _generate_xhard(
                 "seed": job.seed,
                 "attempt": job.attempt,
                 "ok": ok,
-                # 成功判定与旧模式同口径：跑完 task_list 且 evaluate 的 success 真、fail 假
-                "task_success": ok,
+                # 独立任务字段来自真实终态检查；缺字段保持未知，不从执行状态推导。
+                "task_success": result.get("task_success"),
                 "timesteps": result.get("timestep_count") if ok else None,
                 "h5": result.get("h5_path") if ok else None,
                 "failure_class": None if ok else result.get("failure_class", "missing"),
@@ -1251,10 +1369,11 @@ def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         "--mother-rank",
         type=int,
         default=None,
-        choices=(0, 1),
         help="xhard 模式：只取清单里该 rank 的母 seed；不传取全部",
     )
     args = parser.parse_args(argv)
+    if args.mother_rank is not None and args.mother_rank < 0:
+        parser.error("--mother-rank 必须是非负整数")
     if _is_xhard_request(args.difficulty_ratio):
         items = [item.strip().lower() for item in args.difficulty_ratio.split(",")]
         if any(not item.startswith("xhard") for item in items):
