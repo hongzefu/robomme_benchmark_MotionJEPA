@@ -294,7 +294,7 @@ a { color:var(--accent); }
 <tr><td><code>H5_SCHEMA=PASS files=100 steps=&lt;n&gt; missing=0 extra=0 dtype_shape=0</code></td><td>每文件每 timestep 的键集、dtype、shape 符合 golden（变长白名单只含 <code>setup/task_goal</code>）</td></tr>
 <tr><td><code>H5_CONTENT=PASS files=100 fails=0</code></td><td>timestep 连续；seed、difficulty 与文件名／metadata／独立预期一致；<code>is_completed</code> 末真且单调；<code>is_video_demo</code> 为前缀；<code>joint_action</code> 为 (8,) float64 有限值（字符串 <code>"None"</code> 记 FAIL）；首、中、末三个 timestep 的图像非常量；mp4 存在</td></tr>
 <tr><td><code>H5_COUNTS=PASS tasks=16 episodes=&lt;n&gt; per_tier_ok=1</code></td><td>每任务各档条数等于 3.1 表（smoke 二按 ep0–7 推算，全量按 400）</td></tr>
-<tr><td><code>PLAN_VS_RECORD=PASS files=&lt;n&gt; rules_expected=&lt;a&gt; rules_run=&lt;a&gt; mismatch=0 exempt=&lt;e&gt;</code></td><td>只对 xhard 样本：配置「应做几次」与 h5 subgoal 边界、<code>runtime_checks</code> 数出的「实际几次」一致；执行规则集合必须等于冻结的应查集合，豁免只能是用户批准的具名清单（K14）</td></tr>
+<tr><td><code>PLAN_VS_RECORD=PASS files=&lt;n&gt; rules_expected=&lt;a&gt; rules_run=&lt;a&gt; mismatch=0 exempt=&lt;e&gt;</code></td><td>只对 xhard 样本：配置「应做几次」与 h5 subgoal 边界、<code>runtime_checks</code> 数出的「实际几次」一致；执行规则与获批豁免共同覆盖冻结的应查集合，<code>rules_run</code> 计已处理项（含豁免），<code>exempt</code> 单独列出其中豁免数；豁免只能是用户批准的具名清单（K14）</td></tr>
 <tr><td><code>IDENTITY_AUDIT=PASS episodes=&lt;n&gt; missing=0 dup=0 unknown=0 mismatch=0</code></td><td>每任务 episode 集合恰为预期范围；每个成功身份唯一；difficulty 等于独立循环；seed 等于公式(task, episode, attempt)；attempt 从 0 连续演进；成功 JSONL、metadata、成功文件名三者一一对应；FailRecover 落点等于 3.1 表</td></tr>
 </table>
 
@@ -354,7 +354,7 @@ a { color:var(--accent); }
 <li><strong>R8</strong> 母清单 xhard 模式与 <code>--difficulty 211</code> 旧比例模式行为不变，由 <code>test_baseline_equivalence</code> 等现有用例守住；循环模式的新逻辑（池崩溃计数、<code>CRASHED_</code> 隔离、证据采集）只在循环模式生效。</li>
 <li><strong>R9</strong> 不改 <code>pyproject.toml</code>、不加依赖；校验工具只用 h5py、numpy、标准库，测速脚本沿用已有的 <code>psutil</code>。</li>
 <li><strong>R10</strong> 跨机器对拍只报数，不作闸门、不触发重跑（K7）。</li>
-<li><strong>R11</strong> P2 扩展（K17）：本计划可写范围为 <code>src/robomme_xhard/tools/</code>、<code>src/robomme_xhard/tests/</code>（新增）、<code>generate_dataset_newseed.py</code>、<code>seed_layout.py</code>、<code>utils/calibrate_parallelism.py</code>、<code>tests/lightweight/</code> 下三个新测试与 <code>test_seed_layout.py</code>、<code>scripts/data-generation-newSeed/CLAUDE.md</code>、<code>AGENTS.md</code>（环境 C 与 P7 条文）；其余一律不动。</li>
+<li><strong>R11</strong> P2 扩展（K17）：本计划可写范围为 <code>src/robomme_xhard/tools/</code>、<code>src/robomme_xhard/tests/</code>（新增）、<code>generate_dataset_newseed.py</code>、<code>seed_layout.py</code>、<code>utils/calibrate_parallelism.py</code>、<code>tests/lightweight/</code> 下两个新测试与 <code>test_seed_layout.py</code>、<code>scripts/data-generation-newSeed/CLAUDE.md</code>、<code>AGENTS.md</code>（环境 C 与 P7 条文）；其余一律不动。</li>
 <li><strong>R12</strong> 输出目录每轮唯一、存在即拒绝：起跑前 <code>test ! -e &lt;输出目录&gt;</code>；测速脚本对已存在的档目录拒绝而不是删除。</li>
 </ol>
 
@@ -427,7 +427,7 @@ a { color:var(--accent); }
 <tr><td>G1</td><td>每个 W 合并前</td><td><code>SCOPE=PASS</code>、<code>LIGHT_TESTS</code>、<code>PRE_MERGE_REVIEW</code></td><td>findings 交回原代理续改，第二轮只审增量；两轮仍 FAIL 交用户</td></tr>
 <tr><td>G2</td><td>每个 W 合并后</td><td><code>POST_MERGE_REVIEW=PASS merge=&lt;sha&gt; tests=&lt;结果&gt; files=&lt;n&gt;</code>、<code>PROTECTED</code></td><td>停止后续合并、不 push</td></tr>
 <tr><td>G3</td><td>smoke 一</td><td><code>SMOKE1</code></td><td>定位后 W2 续改</td></tr>
-<tr><td>G4</td><td>smoke 二 + 第一次校验</td><td><code>SMOKE2</code>、<code>IDENTITY_AUDIT</code>、四条校验判定行</td><td>某任务某档「实际尝试次数」（attempt+1，exhausted 按 100 计入）均值 ≥ 5 或有 exhausted，在报告中附每任务每档尝试次数表；校验 FAIL 只报告。不论结果，都停在步骤 5 等用户（K16）</td></tr>
+<tr><td>G4</td><td>smoke 二 + 第一次校验</td><td><code>SMOKE2</code>、<code>IDENTITY_AUDIT</code>、四条校验判定行</td><td>某任务某档「汇总尝试次数」（成功项为 attempt+1，耗尽项计 100）均值 ≥ 5 或有 exhausted，在报告中附每任务每档尝试次数表；校验 FAIL 只报告。不论结果，都停在步骤 5 等用户（K16）</td></tr>
 <tr><td>G5</td><td>AWS 接入</td><td><code>ENV_C</code></td><td>判据冲突或 HEAD 不等于约定 SHA 即停</td></tr>
 <tr><td>G6</td><td>探针与测速</td><td><code>MEM_PROBE</code>、<code>CALIB</code></td><td>探针失败或 L32 未跑完／无稳态窗口 → 停，交用户</td></tr>
 <tr><td>G7</td><td>全量</td><td><code>GEN_FULL</code></td><td><code>PARTIAL</code> 附清单交用户决定是否接受（K10）；<code>EXIT_CODE≠0</code> 查日志交用户</td></tr>
