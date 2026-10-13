@@ -254,6 +254,66 @@ def test_pool_collateral_crashes_count_strikes(gen, monkeypatch, tmp_path):
     assert all(p.name.startswith("CRASHED_") for p in (tmp_path / "hdf5_files").iterdir())
 
 
+@pytest.mark.parametrize("submit_break", [False, True])
+def test_default_rebuild_waits_for_late_artifacts_before_isolation(gen, monkeypatch, tmp_path, submit_break):
+    """复现 future 先报错、旧 worker 后落盘；重试前必须退出并移走这批产物。"""
+    pools = []
+    submitted = []
+    events = []
+
+    class Pool:
+        def __init__(self, **kwargs):
+            self.jobs = []
+            self.exited = False
+            self.index = len(pools)
+            pools.append(self)
+
+        def submit(self, func, job):
+            self.jobs.append(job)
+            submitted.append(job)
+            future = Future()
+            if self.index == 0:
+                if submit_break:
+                    raise gen.BrokenProcessPool("提交时发现旧池损坏")
+                future.set_exception(gen.BrokenProcessPool("先返回失败，旧 worker 尚未退出"))
+            else:
+                assert pools[0].exited, "重试派发时旧 worker 仍未退出"
+                for old_job in pools[0].jobs:
+                    raw = gen._h5_path(tmp_path, old_job)
+                    assert not raw.exists(), "隔离后出现了旧 attempt 的成功名 H5"
+                    assert not (tmp_path / "videos" / (raw.stem + "_video.mp4")).exists()
+                _write_artifacts(gen, job)
+                future.set_result({"task": job.task, "episode": job.episode,
+                                   "attempt": job.attempt, "seed": job.seed,
+                                   "difficulty": job.difficulty, "ok": True})
+                events.append("retry")
+            return future
+
+        def shutdown(self, **kwargs):
+            events.append(("shutdown", self.index, kwargs))
+            if self.index == 0 and kwargs.get("wait") and not self.exited:
+                assert kwargs.get("cancel_futures") is True
+                # 模拟管理线程在 join 返回前才完成旧 worker 的最后一次落盘。
+                for old_job in self.jobs:
+                    _write_artifacts(gen, old_job)
+                self.exited = True
+                events.append("old_workers_exited")
+
+    monkeypatch.setattr(gen, "ProcessPoolExecutor", Pool)
+    monkeypatch.setattr(gen, "wait", lambda futures, **kwargs: ({futures[0]}, set(futures[1:])))
+    jobs = [_job(gen, tmp_path, episode=e) for e in (0, 1)]
+    succeeded, exhausted = _run_pool(gen, tmp_path, jobs)
+    assert len(succeeded) == 2 and not exhausted
+    assert len(submitted) == 4
+    assert events.index("old_workers_exited") < events.index("retry")
+    records = [json.loads(line) for line in (tmp_path / "episode_results.jsonl").read_text().splitlines()]
+    crashes = [row for row in records if not row["ok"]]
+    assert len(crashes) == 2 and all(len(row["crashed_artifacts"]) == 2 for row in crashes)
+    assert all(Path(p).exists() for row in crashes for p in row["crashed_artifacts"])
+    successes = [p for p in (tmp_path / "hdf5_files").iterdir() if not p.name.startswith("CRASHED_")]
+    assert len(successes) == 2 and all("_seed" in p.name for p in successes)
+
+
 def test_non_task_failure_isolates_before_retry(gen, monkeypatch, tmp_path):
     _, submitted, _ = _fake_pools(gen, monkeypatch, kind="code")
     succeeded, exhausted = _run_pool(gen, tmp_path, [_job(gen, tmp_path)])

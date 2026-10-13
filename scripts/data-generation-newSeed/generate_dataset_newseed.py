@@ -891,6 +891,9 @@ def _run_jobs(
                 except BrokenProcessPool as exc:
                     if job.cycle_mode and stop_on_pool_crash:
                         stop_broken_pool(job, exc)
+                    if job.cycle_mode and gpu not in broken:
+                        # 管理线程先把 future 标为失败，再终止 worker；必须等它退出后才隔离。
+                        pools[gpu].shutdown(wait=True, cancel_futures=True)
                     broken.add(gpu)
                     result = _synth_failure(job, exc, "infra")
                     result.update(_quarantine_written_card(job))
