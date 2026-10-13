@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "mode": "all",
+  "all_seeds": true,
+  "limit": 10,
+  "rule": "来源难度全体∩ difficulty=SOURCE_DIFFICULTY ∩ 6<=episode<=99，episode 升序前 10 个",
+  "metadata_dir": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/src/robomme/env_metadata/train",
+  "verify_source": null,
+  "tasks": {
+    "VideoUnmaskSwap": [
+      {
+        "episode": 7,
+        "seed": 5700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "unverified"
+      },
+      {
+        "episode": 11,
+        "seed": 6100,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "unverified"
+      },
+      {
+        "episode": 15,
+        "seed": 6500,
+        "source_difficulty": "hard",
+        "rank": 2,
+        "verify": "unverified"
+      },
+      {
+        "episode": 19,
+        "seed": 6900,
+        "source_difficulty": "hard",
+        "rank": 3,
+        "verify": "unverified"
+      },
+      {
+        "episode": 23,
+        "seed": 7300,
+        "source_difficulty": "hard",
+        "rank": 4,
+        "verify": "unverified"
+      },
+      {
+        "episode": 27,
+        "seed": 7700,
+        "source_difficulty": "hard",
+        "rank": 5,
+        "verify": "unverified"
+      },
+      {
+        "episode": 31,
+        "seed": 8100,
+        "source_difficulty": "hard",
+        "rank": 6,
+        "verify": "unverified"
+      },
+      {
+        "episode": 35,
+        "seed": 8500,
+        "source_difficulty": "hard",
+        "rank": 7,
+        "verify": "unverified"
+      },
+      {
+        "episode": 39,
+        "seed": 8900,
+        "source_difficulty": "hard",
+        "rank": 8,
+        "verify": "unverified"
+      },
+      {
+        "episode": 43,
+        "seed": 9300,
+        "source_difficulty": "hard",
+        "rank": 9,
+        "verify": "unverified"
+      }
+    ],
+    "ButtonUnmaskSwap": [
+      {
+        "episode": 7,
+        "seed": 7700,
+        "source_difficulty": "hard",
+        "rank": 0,
+        "verify": "unverified"
+      },
+      {
+        "episode": 11,
+        "seed": 8100,
+        "source_difficulty": "hard",
+        "rank": 1,
+        "verify": "unverified"
+      },
+      {
+        "episode": 15,
+        "seed": 8500,
+        "source_difficulty": "hard",
+        "rank": 2,
+        "verify": "unverified"
+      },
+      {
+        "episode": 19,
+        "seed": 8900,
+        "source_difficulty": "hard",
+        "rank": 3,
+        "verify": "unverified"
+      },
+      {
+        "episode": 23,
+        "seed": 9300,
+        "source_difficulty": "hard",
+        "rank": 4,
+        "verify": "unverified"
+      },
+      {
+        "episode": 27,
+        "seed": 9700,
+        "source_difficulty": "hard",
+        "rank": 5,
+        "verify": "unverified"
+      },
+      {
+        "episode": 31,
+        "seed": 10100,
+        "source_difficulty": "hard",
+        "rank": 6,
+        "verify": "unverified"
+      },
+      {
+        "episode": 35,
+        "seed": 10500,
+        "source_difficulty": "hard",
+        "rank": 7,
+        "verify": "unverified"
+      },
+      {
+        "episode": 39,
+        "seed": 10900,
+        "source_difficulty": "hard",
+        "rank": 8,
+        "verify": "unverified"
+      },
+      {
+        "episode": 43,
+        "seed": 11300,
+        "source_difficulty": "hard",
+        "rank": 9,
+        "verify": "unverified"
+      }
+    ],
+    "VideoRepick": [
+      {
+        "episode": 6,
+        "seed": 9600,
+        "source_difficulty": "medium",
+        "rank": 0,
+        "verify": "unverified"
+      },
+      {
+        "episode": 10,
+        "seed": 10000,
+        "source_difficulty": "medium",
+        "rank": 1,
+        "verify": "unverified"
+      },
+      {
+        "episode": 14,
+        "seed": 10400,
+        "source_difficulty": "medium",
+        "rank": 2,
+        "verify": "unverified"
+      },
+      {
+        "episode": 18,
+        "seed": 10800,
+        "source_difficulty": "medium",
+        "rank": 3,
+        "verify": "unverified"
+      },
+      {
+        "episode": 22,
+        "seed": 11200,
+        "source_difficulty": "medium",
+        "rank": 4,
+        "verify": "unverified"
+      },
+      {
+        "episode": 26,
+        "seed": 11602,
+        "source_difficulty": "medium",
+        "rank": 5,
+        "verify": "unverified"
+      },
+      {
+        "episode": 30,
+        "seed": 12000,
+        "source_difficulty": "medium",
+        "rank": 6,
+        "verify": "unverified"
+      },
+      {
+        "episode": 34,
+        "seed": 12400,
+        "source_difficulty": "medium",
+        "rank": 7,
+        "verify": "unverified"
+      },
+      {
+        "episode": 38,
+        "seed": 12800,
+        "source_difficulty": "medium",
+        "rank": 8,
+        "verify": "unverified"
+      },
+      {
+        "episode": 42,
+        "seed": 13200,
+        "source_difficulty": "medium",
+        "rank": 9,
+        "verify": "unverified"
+      }
+    ]
+  }
+}

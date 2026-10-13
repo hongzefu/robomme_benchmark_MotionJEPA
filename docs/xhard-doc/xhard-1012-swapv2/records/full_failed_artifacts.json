@@ -1,0 +1,199 @@
+[
+  {
+    "task": "ButtonUnmaskSwap",
+    "seed": 10500,
+    "difficulty": "xhard12",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "seed": 10500,
+    "difficulty": "xhard14",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "seed": 10500,
+    "difficulty": "xhard16",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "seed": 10500,
+    "difficulty": "xhard18",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "seed": 10500,
+    "difficulty": "xhard20",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 10000,
+    "difficulty": "xhard12",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 10400,
+    "difficulty": "xhard12",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 10000,
+    "difficulty": "xhard14",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 10400,
+    "difficulty": "xhard14",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 10000,
+    "difficulty": "xhard16",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 10400,
+    "difficulty": "xhard16",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 10000,
+    "difficulty": "xhard18",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 10400,
+    "difficulty": "xhard18",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 12800,
+    "difficulty": "xhard12",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "segment_start",
+    "failed_artifacts": [
+      "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv2/full/xhard12/hdf5_files/FAILED_VideoRepick_ep38_seed12800.h5",
+      "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv2/full/xhard12/videos/FAILED_VideoRepick_ep38_seed12800_xhard12_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4"
+    ]
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 10000,
+    "difficulty": "xhard20",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 10400,
+    "difficulty": "xhard20",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "graph",
+    "failed_artifacts": null
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 12800,
+    "difficulty": "xhard14",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "segment_start",
+    "failed_artifacts": [
+      "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv2/full/xhard14/hdf5_files/FAILED_VideoRepick_ep38_seed12800.h5",
+      "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv2/full/xhard14/videos/FAILED_VideoRepick_ep38_seed12800_xhard14_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4"
+    ]
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 12800,
+    "difficulty": "xhard16",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "segment_start",
+    "failed_artifacts": [
+      "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv2/full/xhard16/hdf5_files/FAILED_VideoRepick_ep38_seed12800.h5",
+      "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv2/full/xhard16/videos/FAILED_success_NO_OBJECT_VideoRepick_ep38_seed12800_xhard16_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4",
+      "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv2/full/xhard16/videos/FAILED_VideoRepick_ep38_seed12800_xhard16_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4"
+    ]
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 12800,
+    "difficulty": "xhard18",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "segment_start",
+    "failed_artifacts": [
+      "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv2/full/xhard18/hdf5_files/FAILED_VideoRepick_ep38_seed12800.h5",
+      "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv2/full/xhard18/videos/FAILED_success_NO_OBJECT_VideoRepick_ep38_seed12800_xhard18_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4",
+      "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv2/full/xhard18/videos/FAILED_VideoRepick_ep38_seed12800_xhard18_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4"
+    ]
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 12800,
+    "difficulty": "xhard20",
+    "task_success": false,
+    "error_type": "SwapCollisionError",
+    "stage": "segment_start",
+    "failed_artifacts": [
+      "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv2/full/xhard20/hdf5_files/FAILED_VideoRepick_ep38_seed12800.h5",
+      "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv2/full/xhard20/videos/FAILED_VideoRepick_ep38_seed12800_xhard20_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4"
+    ]
+  }
+]

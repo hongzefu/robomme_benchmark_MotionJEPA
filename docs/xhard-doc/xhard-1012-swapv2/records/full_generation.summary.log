@@ -1,0 +1,337 @@
+SOURCE_HEAD=f98c779a2c3f086759d9fcc4663a06da7deec083
+2026-10-12T21:57:48-04:00
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[1/180] VideoUnmaskSwap/episode_11 succeeded with seed 6100 (attempt 0, 44.8s)
+[2/180] VideoUnmaskSwap/episode_39 succeeded with seed 8900 (attempt 0, 47.317s)
+[3/180] VideoUnmaskSwap/episode_35 succeeded with seed 8500 (attempt 0, 47.737s)
+[4/180] VideoUnmaskSwap/episode_7 succeeded with seed 5700 (attempt 0, 47.978s)
+[5/180] VideoUnmaskSwap/episode_23 succeeded with seed 7300 (attempt 0, 48.439s)
+[6/180] VideoUnmaskSwap/episode_19 succeeded with seed 6900 (attempt 0, 48.527s)
+[7/180] VideoUnmaskSwap/episode_27 succeeded with seed 7700 (attempt 0, 48.492s)
+[8/180] VideoUnmaskSwap/episode_43 succeeded with seed 9300 (attempt 0, 48.611s)
+[9/180] VideoUnmaskSwap/episode_31 succeeded with seed 8100 (attempt 0, 49.18s)
+[10/180] VideoUnmaskSwap/episode_15 succeeded with seed 6500 (attempt 0, 51.952s)
+[11/180] VideoUnmaskSwap/episode_35 succeeded with seed 8500 (attempt 0, 63.691s)
+[12/180] VideoUnmaskSwap/episode_11 succeeded with seed 6100 (attempt 0, 64.814s)
+[13/180] VideoUnmaskSwap/episode_23 succeeded with seed 7300 (attempt 0, 67.88s)
+screw plan failed
+screw plan failed
+screw plan failed
+[14/180] VideoUnmaskSwap/episode_31 succeeded with seed 8100 (attempt 0, 69.815s)
+[15/180] VideoUnmaskSwap/episode_27 succeeded with seed 7700 (attempt 0, 70.659s)
+[16/180] VideoUnmaskSwap/episode_35 succeeded with seed 8500 (attempt 0, 71.012s)
+[17/180] VideoUnmaskSwap/episode_11 succeeded with seed 6100 (attempt 0, 72.219s)
+[18/180] VideoUnmaskSwap/episode_23 succeeded with seed 7300 (attempt 0, 73.14s)
+[19/180] VideoUnmaskSwap/episode_31 succeeded with seed 8100 (attempt 0, 75.252s)
+[20/180] VideoUnmaskSwap/episode_19 succeeded with seed 6900 (attempt 0, 77.407s)
+[21/180] VideoUnmaskSwap/episode_39 succeeded with seed 8900 (attempt 0, 77.652s)
+[22/180] VideoUnmaskSwap/episode_27 succeeded with seed 7700 (attempt 0, 79.543s)
+[23/180] VideoUnmaskSwap/episode_43 succeeded with seed 9300 (attempt 0, 83.233s)
+[24/180] VideoUnmaskSwap/episode_39 succeeded with seed 8900 (attempt 0, 84.509s)
+[25/180] VideoUnmaskSwap/episode_11 succeeded with seed 6100 (attempt 0, 85.437s)
+[26/180] VideoUnmaskSwap/episode_19 succeeded with seed 6900 (attempt 0, 87.066s)
+[27/180] VideoUnmaskSwap/episode_7 succeeded with seed 5700 (attempt 0, 88.388s)
+[28/180] VideoUnmaskSwap/episode_43 succeeded with seed 9300 (attempt 0, 88.119s)
+[29/180] VideoUnmaskSwap/episode_15 succeeded with seed 6500 (attempt 0, 93.477s)
+[30/180] VideoUnmaskSwap/episode_7 succeeded with seed 5700 (attempt 0, 97.592s)
+[31/180] VideoUnmaskSwap/episode_15 succeeded with seed 6500 (attempt 0, 106.243s)
+[32/180] VideoUnmaskSwap/episode_7 succeeded with seed 5700 (attempt 0, 116.474s)
+[33/180] VideoUnmaskSwap/episode_35 succeeded with seed 8500 (attempt 0, 73.025s)
+[34/180] VideoUnmaskSwap/episode_23 succeeded with seed 7300 (attempt 0, 78.323s)
+[35/180] VideoUnmaskSwap/episode_31 succeeded with seed 8100 (attempt 0, 78.427s)
+[36/180] VideoUnmaskSwap/episode_27 succeeded with seed 7700 (attempt 0, 83.406s)
+[37/180] ButtonUnmaskSwap/episode_7 succeeded with seed 7700 (attempt 0, 38.429s)
+[38/180] VideoUnmaskSwap/episode_19 succeeded with seed 6900 (attempt 0, 90.577s)
+[39/180] VideoUnmaskSwap/episode_11 succeeded with seed 6100 (attempt 0, 86.259s)
+[40/180] ButtonUnmaskSwap/episode_11 succeeded with seed 8100 (attempt 0, 42.371s)
+[41/180] VideoUnmaskSwap/episode_39 succeeded with seed 8900 (attempt 0, 92.429s)
+[42/180] VideoUnmaskSwap/episode_43 succeeded with seed 9300 (attempt 0, 96.985s)
+[43/180] ButtonUnmaskSwap/episode_15 succeeded with seed 8500 (attempt 0, 42.899s)
+[44/180] VideoUnmaskSwap/episode_35 succeeded with seed 8500 (attempt 0, 82.616s)
+[45/180] VideoUnmaskSwap/episode_23 succeeded with seed 7300 (attempt 0, 87.979s)
+[46/180] ButtonUnmaskSwap/episode_19 succeeded with seed 8900 (attempt 0, 46.77s)
+[47/180] VideoUnmaskSwap/episode_15 succeeded with seed 6500 (attempt 0, 121.81s)
+[48/180] VideoUnmaskSwap/episode_27 succeeded with seed 7700 (attempt 0, 96.185s)
+[49/180] VideoUnmaskSwap/episode_31 succeeded with seed 8100 (attempt 0, 96.481s)
+[50/180] ButtonUnmaskSwap/episode_23 succeeded with seed 9300 (attempt 0, 47.749s)
+    ButtonUnmaskSwap/episode_35 [xhard12] seed 10500 failed (SwapCollisionError)，固定 seed 不重试
+[51/180] ButtonUnmaskSwap/episode_27 succeeded with seed 9700 (attempt 0, 46.892s)
+[52/180] ButtonUnmaskSwap/episode_31 succeeded with seed 10100 (attempt 0, 48.734s)
+[53/180] VideoUnmaskSwap/episode_11 succeeded with seed 6100 (attempt 0, 101.037s)
+[54/180] VideoUnmaskSwap/episode_19 succeeded with seed 6900 (attempt 0, 114.663s)
+[55/180] VideoUnmaskSwap/episode_39 succeeded with seed 8900 (attempt 0, 106.935s)
+[56/180] ButtonUnmaskSwap/episode_35 succeeded with seed 10500 (attempt 0, 50.605s)
+[57/180] ButtonUnmaskSwap/episode_39 succeeded with seed 10900 (attempt 0, 50.37s)
+[58/180] VideoUnmaskSwap/episode_23 succeeded with seed 7300 (attempt 0, 101.165s)
+    ButtonUnmaskSwap/episode_35 [xhard14] seed 10500 failed (SwapCollisionError)，固定 seed 不重试
+[59/180] VideoUnmaskSwap/episode_7 succeeded with seed 5700 (attempt 0, 138.231s)
+[60/180] ButtonUnmaskSwap/episode_43 succeeded with seed 11300 (attempt 0, 51.614s)
+[61/180] VideoUnmaskSwap/episode_35 succeeded with seed 8500 (attempt 0, 102.613s)
+[62/180] VideoUnmaskSwap/episode_43 succeeded with seed 9300 (attempt 0, 117.701s)
+[63/180] VideoUnmaskSwap/episode_31 succeeded with seed 8100 (attempt 0, 111.692s)
+[64/180] VideoUnmaskSwap/episode_27 succeeded with seed 7700 (attempt 0, 115.364s)
+    ButtonUnmaskSwap/episode_35 [xhard16] seed 10500 failed (SwapCollisionError)，固定 seed 不重试
+[65/180] VideoUnmaskSwap/episode_39 succeeded with seed 8900 (attempt 0, 124.874s)
+[66/180] VideoUnmaskSwap/episode_19 succeeded with seed 6900 (attempt 0, 132.87s)
+[67/180] VideoUnmaskSwap/episode_15 succeeded with seed 6500 (attempt 0, 150.204s)
+[68/180] ButtonUnmaskSwap/episode_19 succeeded with seed 8900 (attempt 0, 76.814s)
+[69/180] VideoUnmaskSwap/episode_43 succeeded with seed 9300 (attempt 0, 135.19s)
+[70/180] ButtonUnmaskSwap/episode_23 succeeded with seed 9300 (attempt 0, 78.614s)
+screw plan failed
+screw plan failed
+screw plan failed
+[71/180] VideoUnmaskSwap/episode_7 succeeded with seed 5700 (attempt 0, 157.299s)
+[72/180] ButtonUnmaskSwap/episode_11 succeeded with seed 8100 (attempt 0, 94.127s)
+[73/180] ButtonUnmaskSwap/episode_7 succeeded with seed 7700 (attempt 0, 97.478s)
+[74/180] ButtonUnmaskSwap/episode_31 succeeded with seed 10100 (attempt 0, 79.801s)
+    ButtonUnmaskSwap/episode_35 [xhard18] seed 10500 failed (SwapCollisionError)，固定 seed 不重试
+[75/180] ButtonUnmaskSwap/episode_27 succeeded with seed 9700 (attempt 0, 90.653s)
+[76/180] ButtonUnmaskSwap/episode_15 succeeded with seed 8500 (attempt 0, 104.69s)
+[77/180] ButtonUnmaskSwap/episode_43 succeeded with seed 11300 (attempt 0, 80.043s)
+screw plan failed
+screw plan failed
+screw plan failed
+[78/180] VideoUnmaskSwap/episode_15 succeeded with seed 6500 (attempt 0, 175.536s)
+[79/180] ButtonUnmaskSwap/episode_39 succeeded with seed 10900 (attempt 0, 91.275s)
+[80/180] ButtonUnmaskSwap/episode_19 succeeded with seed 8900 (attempt 0, 92.316s)
+[81/180] ButtonUnmaskSwap/episode_23 succeeded with seed 9300 (attempt 0, 98.478s)
+[82/180] ButtonUnmaskSwap/episode_31 succeeded with seed 10100 (attempt 0, 95.045s)
+[83/180] ButtonUnmaskSwap/episode_43 succeeded with seed 11300 (attempt 0, 93.551s)
+    ButtonUnmaskSwap/episode_35 [xhard20] seed 10500 failed (SwapCollisionError)，固定 seed 不重试
+screw plan failed
+screw plan failed
+screw plan failed
+[84/180] ButtonUnmaskSwap/episode_11 succeeded with seed 8100 (attempt 0, 116.368s)
+[85/180] ButtonUnmaskSwap/episode_39 succeeded with seed 10900 (attempt 0, 106.793s)
+[86/180] ButtonUnmaskSwap/episode_27 succeeded with seed 9700 (attempt 0, 109.803s)
+[87/180] ButtonUnmaskSwap/episode_19 succeeded with seed 8900 (attempt 0, 101.428s)
+[88/180] ButtonUnmaskSwap/episode_7 succeeded with seed 7700 (attempt 0, 127.783s)
+[89/180] ButtonUnmaskSwap/episode_23 succeeded with seed 9300 (attempt 0, 111.355s)
+[90/180] ButtonUnmaskSwap/episode_31 succeeded with seed 10100 (attempt 0, 106.622s)
+[91/180] ButtonUnmaskSwap/episode_15 succeeded with seed 8500 (attempt 0, 134.453s)
+[92/180] ButtonUnmaskSwap/episode_27 succeeded with seed 9700 (attempt 0, 129.765s)
+[93/180] ButtonUnmaskSwap/episode_43 succeeded with seed 11300 (attempt 0, 108.308s)
+screw plan failed
+screw plan failed
+screw plan failed
+[94/180] ButtonUnmaskSwap/episode_11 succeeded with seed 8100 (attempt 0, 140.873s)
+[95/180] ButtonUnmaskSwap/episode_7 succeeded with seed 7700 (attempt 0, 146.971s)
+[96/180] ButtonUnmaskSwap/episode_39 succeeded with seed 10900 (attempt 0, 129.169s)
+screw plan failed
+screw plan failed
+screw plan failed
+    VideoRepick/episode_10 [xhard12] seed 10000 failed (SwapCollisionError)，固定 seed 不重试
+[97/180] VideoRepick/episode_6 succeeded with seed 9600 (attempt 0, 53.421s)
+    VideoRepick/episode_14 [xhard12] seed 10400 failed (SwapCollisionError)，固定 seed 不重试
+[98/180] VideoRepick/episode_18 succeeded with seed 10800 (attempt 0, 52.134s)
+[99/180] ButtonUnmaskSwap/episode_19 succeeded with seed 8900 (attempt 0, 121.25s)
+[100/180] ButtonUnmaskSwap/episode_15 succeeded with seed 8500 (attempt 0, 164.098s)
+[101/180] ButtonUnmaskSwap/episode_23 succeeded with seed 9300 (attempt 0, 130.795s)
+[102/180] ButtonUnmaskSwap/episode_31 succeeded with seed 10100 (attempt 0, 125.293s)
+[103/180] VideoRepick/episode_26 succeeded with seed 11602 (attempt 0, 59.532s)
+[104/180] VideoRepick/episode_22 succeeded with seed 11200 (attempt 0, 67.234s)
+[105/180] VideoRepick/episode_14 succeeded with seed 10400 (attempt 0, 76.39s)
+[106/180] ButtonUnmaskSwap/episode_43 succeeded with seed 11300 (attempt 0, 126.297s)
+    VideoRepick/episode_10 [xhard14] seed 10000 failed (SwapCollisionError)，固定 seed 不重试
+    VideoRepick/episode_14 [xhard14] seed 10400 failed (SwapCollisionError)，固定 seed 不重试
+[107/180] VideoRepick/episode_10 succeeded with seed 10000 (attempt 0, 81.033s)
+[108/180] VideoRepick/episode_30 succeeded with seed 12000 (attempt 0, 69.041s)
+[109/180] VideoRepick/episode_38 succeeded with seed 12800 (attempt 0, 59.017s)
+[110/180] ButtonUnmaskSwap/episode_11 succeeded with seed 8100 (attempt 0, 168.39s)
+[111/180] VideoRepick/episode_34 succeeded with seed 12400 (attempt 0, 81.283s)
+[112/180] ButtonUnmaskSwap/episode_27 succeeded with seed 9700 (attempt 0, 155.271s)
+    VideoRepick/episode_10 [xhard16] seed 10000 failed (SwapCollisionError)，固定 seed 不重试
+    VideoRepick/episode_14 [xhard16] seed 10400 failed (SwapCollisionError)，固定 seed 不重试
+[113/180] ButtonUnmaskSwap/episode_7 succeeded with seed 7700 (attempt 0, 181.756s)
+[114/180] ButtonUnmaskSwap/episode_19 succeeded with seed 8900 (attempt 0, 142.466s)
+[115/180] ButtonUnmaskSwap/episode_39 succeeded with seed 10900 (attempt 0, 160.335s)
+[116/180] VideoRepick/episode_42 succeeded with seed 13200 (attempt 0, 84.325s)
+[117/180] ButtonUnmaskSwap/episode_23 succeeded with seed 9300 (attempt 0, 155.489s)
+[118/180] ButtonUnmaskSwap/episode_15 succeeded with seed 8500 (attempt 0, 198.818s)
+[119/180] VideoRepick/episode_6 succeeded with seed 9600 (attempt 0, 93.334s)
+[120/180] ButtonUnmaskSwap/episode_31 succeeded with seed 10100 (attempt 0, 151.606s)
+[121/180] VideoRepick/episode_18 succeeded with seed 10800 (attempt 0, 90.188s)
+    VideoRepick/episode_10 [xhard18] seed 10000 failed (SwapCollisionError)，固定 seed 不重试
+    VideoRepick/episode_14 [xhard18] seed 10400 failed (SwapCollisionError)，固定 seed 不重试
+[122/180] VideoRepick/episode_22 succeeded with seed 11200 (attempt 0, 95.424s)
+[123/180] VideoRepick/episode_26 succeeded with seed 11602 (attempt 0, 96.498s)
+[124/180] ButtonUnmaskSwap/episode_43 succeeded with seed 11300 (attempt 0, 158.858s)
+[125/180] VideoRepick/episode_30 succeeded with seed 12000 (attempt 0, 97.695s)
+[126/180] ButtonUnmaskSwap/episode_11 succeeded with seed 8100 (attempt 0, 199.51s)
+[127/180] VideoRepick/episode_34 succeeded with seed 12400 (attempt 0, 100.097s)
+    VideoRepick/episode_38 [xhard12] seed 12800 failed (SwapCollisionError)，固定 seed 不重试
+[128/180] ButtonUnmaskSwap/episode_27 succeeded with seed 9700 (attempt 0, 185.99s)
+    VideoRepick/episode_10 [xhard20] seed 10000 failed (SwapCollisionError)，固定 seed 不重试
+    VideoRepick/episode_14 [xhard20] seed 10400 failed (SwapCollisionError)，固定 seed 不重试
+[129/180] VideoRepick/episode_42 succeeded with seed 13200 (attempt 0, 99.523s)
+[130/180] ButtonUnmaskSwap/episode_7 succeeded with seed 7700 (attempt 0, 214.81s)
+[131/180] ButtonUnmaskSwap/episode_39 succeeded with seed 10900 (attempt 0, 191.756s)
+[132/180] VideoRepick/episode_6 succeeded with seed 9600 (attempt 0, 110.482s)
+[133/180] VideoRepick/episode_18 succeeded with seed 10800 (attempt 0, 109.759s)
+[134/180] VideoRepick/episode_30 succeeded with seed 12000 (attempt 0, 111.954s)
+[135/180] VideoRepick/episode_22 succeeded with seed 11200 (attempt 0, 113.645s)
+[136/180] ButtonUnmaskSwap/episode_15 succeeded with seed 8500 (attempt 0, 234.796s)
+[137/180] VideoRepick/episode_26 succeeded with seed 11602 (attempt 0, 114.851s)
+[138/180] VideoRepick/episode_34 succeeded with seed 12400 (attempt 0, 115.243s)
+    VideoRepick/episode_38 [xhard14] seed 12800 failed (SwapCollisionError)，固定 seed 不重试
+screw plan failed
+screw plan failed
+screw plan failed
+[139/180] VideoRepick/episode_42 succeeded with seed 13200 (attempt 0, 112.557s)
+[140/180] VideoRepick/episode_6 succeeded with seed 9600 (attempt 0, 127.44s)
+[141/180] VideoRepick/episode_18 succeeded with seed 10800 (attempt 0, 122.471s)
+[142/180] VideoRepick/episode_26 succeeded with seed 11602 (attempt 0, 125.363s)
+[143/180] VideoRepick/episode_22 succeeded with seed 11200 (attempt 0, 125.937s)
+[144/180] VideoRepick/episode_30 succeeded with seed 12000 (attempt 0, 124.96s)
+[145/180] VideoRepick/episode_34 succeeded with seed 12400 (attempt 0, 127.941s)
+    VideoRepick/episode_38 [xhard16] seed 12800 failed (SwapCollisionError)，固定 seed 不重试
+[146/180] VideoRepick/episode_42 succeeded with seed 13200 (attempt 0, 117.521s)
+[147/180] VideoRepick/episode_6 succeeded with seed 9600 (attempt 0, 124.747s)
+[148/180] VideoRepick/episode_22 succeeded with seed 11200 (attempt 0, 121.836s)
+[149/180] VideoRepick/episode_18 succeeded with seed 10800 (attempt 0, 124.612s)
+[150/180] VideoRepick/episode_30 succeeded with seed 12000 (attempt 0, 121.172s)
+[151/180] VideoRepick/episode_26 succeeded with seed 11602 (attempt 0, 123.015s)
+[152/180] VideoRepick/episode_34 succeeded with seed 12400 (attempt 0, 121.455s)
+    VideoRepick/episode_38 [xhard18] seed 12800 failed (SwapCollisionError)，固定 seed 不重试
+[153/180] VideoRepick/episode_42 succeeded with seed 13200 (attempt 0, 116.533s)
+[154/180] VideoRepick/episode_6 succeeded with seed 9600 (attempt 0, 117.046s)
+[155/180] VideoRepick/episode_18 succeeded with seed 10800 (attempt 0, 113.529s)
+[156/180] VideoRepick/episode_22 succeeded with seed 11200 (attempt 0, 113.164s)
+[157/180] VideoRepick/episode_26 succeeded with seed 11602 (attempt 0, 111.717s)
+[158/180] VideoRepick/episode_30 succeeded with seed 12000 (attempt 0, 109.58s)
+    VideoRepick/episode_38 [xhard20] seed 12800 failed (SwapCollisionError)，固定 seed 不重试
+[159/180] VideoRepick/episode_34 succeeded with seed 12400 (attempt 0, 109.686s)
+[160/180] VideoRepick/episode_42 succeeded with seed 13200 (attempt 0, 101.318s)
+RUN_SUMMARY {"requested_count": 180, "success_count": 160, "exhausted_count": 20, "elapsed_s": 601.1, "throughput_ep_per_min": 15.97, "peak_rss_mb": 7452.4}
+EXIT_CODE=1

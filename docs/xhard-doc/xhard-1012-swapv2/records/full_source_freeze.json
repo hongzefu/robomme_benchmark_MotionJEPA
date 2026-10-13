@@ -1,0 +1,7 @@
+{
+  "head": "f98c779a2c3f086759d9fcc4663a06da7deec083",
+  "clean_after_packaging": true,
+  "source_same_as_smoke": true,
+  "protected_zero_diff": true,
+  "mother_sha256": "56a0381bb78485a7373f6446a4a0007679c0aff3e5a0c347ad3c16528200e278"
+}

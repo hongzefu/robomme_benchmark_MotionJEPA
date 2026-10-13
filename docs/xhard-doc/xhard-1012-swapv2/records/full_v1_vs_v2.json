@@ -1,0 +1,7443 @@
+{
+  "audits": {
+    "v1": {
+      "summary": {
+        "expected": 180,
+        "seen": 180,
+        "missing": 0,
+        "dup": 0,
+        "unknown": 0,
+        "ok": 165,
+        "task_reject": 15,
+        "infra": 0,
+        "complete": true
+      },
+      "missing": [],
+      "duplicates": [],
+      "unknown_states": [],
+      "unexpected_identities": []
+    },
+    "v2": {
+      "summary": {
+        "expected": 180,
+        "seen": 180,
+        "missing": 0,
+        "dup": 0,
+        "unknown": 0,
+        "ok": 160,
+        "task_reject": 20,
+        "infra": 0,
+        "complete": true
+      },
+      "missing": [],
+      "duplicates": [],
+      "unknown_states": [],
+      "unexpected_identities": []
+    }
+  },
+  "rows": [
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 5700,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 421,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 421,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 5700,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 525,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 525,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 5700,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 563,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          3,
+          3,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 547,
+        "slot_pair_kinds": 3,
+        "usage": [
+          2,
+          2,
+          3,
+          3
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 5700,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 679,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          4,
+          4,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 678,
+        "slot_pair_kinds": 4,
+        "usage": [
+          3,
+          4,
+          4,
+          3
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 5700,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 761,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          5,
+          5,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 790,
+        "slot_pair_kinds": 4,
+        "usage": [
+          4,
+          5,
+          5,
+          4
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 5700,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 883,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          6,
+          6,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 871,
+        "slot_pair_kinds": 4,
+        "usage": [
+          5,
+          5,
+          6,
+          6
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 11,
+      "seed": 6100,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 410,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 410,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 11,
+      "seed": 6100,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 513,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 522,
+        "slot_pair_kinds": 4,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 11,
+      "seed": 6100,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 573,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          3,
+          3,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 577,
+        "slot_pair_kinds": 4,
+        "usage": [
+          2,
+          2,
+          3,
+          3
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 11,
+      "seed": 6100,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 667,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          4,
+          4,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 669,
+        "slot_pair_kinds": 4,
+        "usage": [
+          4,
+          3,
+          3,
+          4
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 11,
+      "seed": 6100,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 771,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          5,
+          5,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 769,
+        "slot_pair_kinds": 4,
+        "usage": [
+          5,
+          4,
+          4,
+          5
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 11,
+      "seed": 6100,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 871,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          6,
+          6,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 877,
+        "slot_pair_kinds": 4,
+        "usage": [
+          6,
+          6,
+          5,
+          5
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 6500,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 483,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 483,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 6500,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 514,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 514,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 6500,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 584,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          3,
+          3,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 576,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          2,
+          2,
+          3
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 6500,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 672,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          4,
+          4,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 681,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          3,
+          3,
+          4
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 6500,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 783,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          5,
+          5,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 774,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          4,
+          4,
+          5
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 6500,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 876,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          6,
+          6,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 884,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          5,
+          5,
+          6
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 19,
+      "seed": 6900,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 431,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 431,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 19,
+      "seed": 6900,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 527,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 527,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 19,
+      "seed": 6900,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 585,
+        "slot_pair_kinds": 3,
+        "usage": [
+          3,
+          3,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 569,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          3,
+          3,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 19,
+      "seed": 6900,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 663,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          4,
+          3,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 663,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          4,
+          3,
+          3
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 19,
+      "seed": 6900,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 781,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          6,
+          4,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 2,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 783,
+        "slot_pair_kinds": 4,
+        "usage": [
+          5,
+          5,
+          4,
+          4
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 19,
+      "seed": 6900,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 874,
+        "slot_pair_kinds": 3,
+        "usage": [
+          5,
+          7,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 2,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 880,
+        "slot_pair_kinds": 5,
+        "usage": [
+          5,
+          6,
+          5,
+          6
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 23,
+      "seed": 7300,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 437,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 437,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 23,
+      "seed": 7300,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 533,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 533,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 23,
+      "seed": 7300,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 587,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          2,
+          2,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 584,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          3,
+          3,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 23,
+      "seed": 7300,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 680,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          3,
+          3,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 683,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          4,
+          4,
+          3
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 23,
+      "seed": 7300,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 785,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          4,
+          4,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 782,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          5,
+          5,
+          4
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 23,
+      "seed": 7300,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 884,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          5,
+          5,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 861,
+        "slot_pair_kinds": 3,
+        "usage": [
+          6,
+          6,
+          5,
+          5
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 27,
+      "seed": 7700,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 457,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 457,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 27,
+      "seed": 7700,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 534,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 524,
+        "slot_pair_kinds": 4,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 27,
+      "seed": 7700,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 559,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          2,
+          2,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 571,
+        "slot_pair_kinds": 4,
+        "usage": [
+          2,
+          2,
+          3,
+          3
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 27,
+      "seed": 7700,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 693,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          3,
+          3,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 670,
+        "slot_pair_kinds": 4,
+        "usage": [
+          3,
+          3,
+          4,
+          4
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 27,
+      "seed": 7700,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 757,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          4,
+          4,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 758,
+        "slot_pair_kinds": 4,
+        "usage": [
+          4,
+          5,
+          5,
+          4
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 27,
+      "seed": 7700,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 897,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          5,
+          5,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 883,
+        "slot_pair_kinds": 4,
+        "usage": [
+          6,
+          6,
+          5,
+          5
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 31,
+      "seed": 8100,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 461,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 461,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 31,
+      "seed": 8100,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 519,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 548,
+        "slot_pair_kinds": 4,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 31,
+      "seed": 8100,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 610,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          3,
+          3,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 587,
+        "slot_pair_kinds": 4,
+        "usage": [
+          2,
+          3,
+          3,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 31,
+      "seed": 8100,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 685,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          4,
+          4,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 669,
+        "slot_pair_kinds": 4,
+        "usage": [
+          4,
+          4,
+          3,
+          3
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 31,
+      "seed": 8100,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 808,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          5,
+          5,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 808,
+        "slot_pair_kinds": 4,
+        "usage": [
+          4,
+          5,
+          5,
+          4
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 31,
+      "seed": 8100,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 889,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          6,
+          6,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 889,
+        "slot_pair_kinds": 4,
+        "usage": [
+          5,
+          6,
+          6,
+          5
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 35,
+      "seed": 8500,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 427,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 427,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 35,
+      "seed": 8500,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 519,
+        "slot_pair_kinds": 3,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 530,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 35,
+      "seed": 8500,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 568,
+        "slot_pair_kinds": 3,
+        "usage": [
+          2,
+          2,
+          3,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 602,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          3,
+          3
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 35,
+      "seed": 8500,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 686,
+        "slot_pair_kinds": 3,
+        "usage": [
+          3,
+          3,
+          4,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 695,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          4,
+          4
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 35,
+      "seed": 8500,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 775,
+        "slot_pair_kinds": 3,
+        "usage": [
+          5,
+          4,
+          4,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 771,
+        "slot_pair_kinds": 3,
+        "usage": [
+          5,
+          4,
+          5,
+          4
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 35,
+      "seed": 8500,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 849,
+        "slot_pair_kinds": 3,
+        "usage": [
+          6,
+          5,
+          5,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 904,
+        "slot_pair_kinds": 5,
+        "usage": [
+          6,
+          5,
+          6,
+          5
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 39,
+      "seed": 8900,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 428,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 428,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 39,
+      "seed": 8900,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 531,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 550,
+        "slot_pair_kinds": 4,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 39,
+      "seed": 8900,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 581,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          2,
+          2,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 565,
+        "slot_pair_kinds": 4,
+        "usage": [
+          3,
+          3,
+          2,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 39,
+      "seed": 8900,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 665,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          3,
+          3,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 677,
+        "slot_pair_kinds": 4,
+        "usage": [
+          3,
+          4,
+          4,
+          3
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 39,
+      "seed": 8900,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 779,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          4,
+          4,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 767,
+        "slot_pair_kinds": 4,
+        "usage": [
+          4,
+          5,
+          5,
+          4
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 39,
+      "seed": 8900,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 869,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          5,
+          5,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 881,
+        "slot_pair_kinds": 4,
+        "usage": [
+          5,
+          6,
+          6,
+          5
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 43,
+      "seed": 9300,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 432,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 432,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 43,
+      "seed": 9300,
+      "level": "xhard12",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "sweep",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 543,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 1,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 43,
+      "seed": 9300,
+      "level": "xhard14",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "sweep",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 568,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          2,
+          2,
+          3
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 43,
+      "seed": 9300,
+      "level": "xhard16",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "sweep",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 686,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          3,
+          3,
+          4
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 43,
+      "seed": 9300,
+      "level": "xhard18",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "sweep",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 766,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          4,
+          4,
+          5
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 43,
+      "seed": 9300,
+      "level": "xhard20",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "sweep",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 890,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          5,
+          5,
+          6
+        ],
+        "spread_full": 1,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 7700,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 451,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 451,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 7700,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 549,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 551,
+        "slot_pair_kinds": 3,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 7700,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 646,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 648,
+        "slot_pair_kinds": 3,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 7700,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 709,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 699,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          5,
+          3,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 2,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 7700,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 813,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 814,
+        "slot_pair_kinds": 3,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 7700,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 907,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 908,
+        "slot_pair_kinds": 3,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 11,
+      "seed": 8100,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 454,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 454,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 11,
+      "seed": 8100,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 546,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 546,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 11,
+      "seed": 8100,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 645,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 645,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          3,
+          3,
+          2
+        ],
+        "spread_full": 0,
+        "spread_prefix": 2,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 11,
+      "seed": 8100,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 719,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 739,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 11,
+      "seed": 8100,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 822,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 819,
+        "slot_pair_kinds": 3,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 11,
+      "seed": 8100,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 917,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 937,
+        "slot_pair_kinds": 3,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 8500,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 458,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 458,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 8500,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 545,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 546,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 8500,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 646,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 647,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 8500,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 723,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 718,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 8500,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 815,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 810,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 8500,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 918,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 919,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 19,
+      "seed": 8900,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 451,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 451,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 19,
+      "seed": 8900,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 541,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 550,
+        "slot_pair_kinds": 3,
+        "usage": [
+          2,
+          3,
+          1,
+          2
+        ],
+        "spread_full": 0,
+        "spread_prefix": 2,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 19,
+      "seed": 8900,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 668,
+        "slot_pair_kinds": 3,
+        "usage": [
+          3,
+          2,
+          3,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 2,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 641,
+        "slot_pair_kinds": 3,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 19,
+      "seed": 8900,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 707,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          3,
+          4,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 2,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 694,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 19,
+      "seed": 8900,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 809,
+        "slot_pair_kinds": 3,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 809,
+        "slot_pair_kinds": 3,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 19,
+      "seed": 8900,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 895,
+        "slot_pair_kinds": 3,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 894,
+        "slot_pair_kinds": 3,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 23,
+      "seed": 9300,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 473,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 473,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 23,
+      "seed": 9300,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 558,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 559,
+        "slot_pair_kinds": 4,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 23,
+      "seed": 9300,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 649,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 660,
+        "slot_pair_kinds": 4,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 23,
+      "seed": 9300,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 729,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 729,
+        "slot_pair_kinds": 4,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 23,
+      "seed": 9300,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 832,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 813,
+        "slot_pair_kinds": 4,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 23,
+      "seed": 9300,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 930,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 931,
+        "slot_pair_kinds": 4,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 27,
+      "seed": 9700,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 447,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 447,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 27,
+      "seed": 9700,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 551,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 550,
+        "slot_pair_kinds": 3,
+        "usage": [
+          2,
+          1,
+          3,
+          2
+        ],
+        "spread_full": 0,
+        "spread_prefix": 2,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 27,
+      "seed": 9700,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 654,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 635,
+        "slot_pair_kinds": 3,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 27,
+      "seed": 9700,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 705,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 719,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 27,
+      "seed": 9700,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 820,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 811,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          5,
+          5,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 2,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 27,
+      "seed": 9700,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 904,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 909,
+        "slot_pair_kinds": 3,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 31,
+      "seed": 10100,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 460,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 460,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 31,
+      "seed": 10100,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 565,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 574,
+        "slot_pair_kinds": 3,
+        "usage": [
+          2,
+          3,
+          1,
+          2
+        ],
+        "spread_full": 0,
+        "spread_prefix": 2,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 31,
+      "seed": 10100,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 657,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 650,
+        "slot_pair_kinds": 3,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 31,
+      "seed": 10100,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 718,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 710,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 31,
+      "seed": 10100,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 809,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 810,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          5,
+          5,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 2,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 31,
+      "seed": 10100,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 917,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 914,
+        "slot_pair_kinds": 3,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 35,
+      "seed": 10500,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 472,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 472,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 35,
+      "seed": 10500,
+      "level": "xhard12",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "sweep",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 35,
+      "seed": 10500,
+      "level": "xhard14",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "sweep",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 35,
+      "seed": 10500,
+      "level": "xhard16",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "sweep",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 35,
+      "seed": 10500,
+      "level": "xhard18",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "sweep",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 35,
+      "seed": 10500,
+      "level": "xhard20",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "sweep",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 39,
+      "seed": 10900,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 466,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 466,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 39,
+      "seed": 10900,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 551,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 562,
+        "slot_pair_kinds": 4,
+        "usage": [
+          1,
+          2,
+          3,
+          2
+        ],
+        "spread_full": 0,
+        "spread_prefix": 2,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 39,
+      "seed": 10900,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 657,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 640,
+        "slot_pair_kinds": 4,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 39,
+      "seed": 10900,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 721,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 726,
+        "slot_pair_kinds": 4,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 39,
+      "seed": 10900,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 834,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 817,
+        "slot_pair_kinds": 4,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 39,
+      "seed": 10900,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 926,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 930,
+        "slot_pair_kinds": 4,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 43,
+      "seed": 11300,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 463,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 463,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 43,
+      "seed": 11300,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 542,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 542,
+        "slot_pair_kinds": 2,
+        "usage": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 43,
+      "seed": 11300,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 666,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 666,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 43,
+      "seed": 11300,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 702,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 702,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 43,
+      "seed": 11300,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 824,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 813,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          5,
+          5,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 2,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 43,
+      "seed": 11300,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 898,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": true
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 950,
+        "slot_pair_kinds": 3,
+        "usage": [
+          6,
+          6,
+          6,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 6,
+      "seed": 9600,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 581,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 581,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 6,
+      "seed": 9600,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 880,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          4,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 880,
+        "slot_pair_kinds": 3,
+        "usage": [
+          3,
+          3,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 6,
+      "seed": 9600,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 981,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 983,
+        "slot_pair_kinds": 3,
+        "usage": [
+          5,
+          4,
+          5
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 6,
+      "seed": 9600,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1144,
+        "slot_pair_kinds": 2,
+        "usage": [
+          7,
+          7,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1145,
+        "slot_pair_kinds": 3,
+        "usage": [
+          7,
+          6,
+          7
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 6,
+      "seed": 9600,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1305,
+        "slot_pair_kinds": 2,
+        "usage": [
+          9,
+          9,
+          8
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1307,
+        "slot_pair_kinds": 3,
+        "usage": [
+          9,
+          8,
+          9
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 6,
+      "seed": 9600,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1360,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1359,
+        "slot_pair_kinds": 3,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 10,
+      "seed": 10000,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 887,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 887,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 10,
+      "seed": 10000,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 866,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          4,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 10,
+      "seed": 10000,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 972,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 10,
+      "seed": 10000,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1136,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          7,
+          7
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 10,
+      "seed": 10000,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1290,
+        "slot_pair_kinds": 2,
+        "usage": [
+          8,
+          9,
+          9
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 10,
+      "seed": 10000,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1330,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 14,
+      "seed": 10400,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 845,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 845,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 14,
+      "seed": 10400,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 901,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          3,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 14,
+      "seed": 10400,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 984,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          4,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 14,
+      "seed": 10400,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1170,
+        "slot_pair_kinds": 2,
+        "usage": [
+          7,
+          6,
+          7
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 14,
+      "seed": 10400,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1254,
+        "slot_pair_kinds": 2,
+        "usage": [
+          9,
+          8,
+          9
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 14,
+      "seed": 10400,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1362,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "graph",
+        "timestep": null,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 18,
+      "seed": 10800,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 588,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 588,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 18,
+      "seed": 10800,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 870,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 851,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 18,
+      "seed": 10800,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 971,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          4,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 977,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 18,
+      "seed": 10800,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1140,
+        "slot_pair_kinds": 2,
+        "usage": [
+          7,
+          6,
+          7
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1139,
+        "slot_pair_kinds": 2,
+        "usage": [
+          7,
+          7,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 18,
+      "seed": 10800,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1296,
+        "slot_pair_kinds": 2,
+        "usage": [
+          9,
+          8,
+          9
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1301,
+        "slot_pair_kinds": 2,
+        "usage": [
+          9,
+          9,
+          8
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 18,
+      "seed": 10800,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1337,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1350,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 22,
+      "seed": 11200,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 747,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 747,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 22,
+      "seed": 11200,
+      "level": "xhard12",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapBindingError",
+        "stage": "segment_start",
+        "timestep": null,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 880,
+        "slot_pair_kinds": 3,
+        "usage": [
+          3,
+          3,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 22,
+      "seed": 11200,
+      "level": "xhard14",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapBindingError",
+        "stage": "segment_start",
+        "timestep": null,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 963,
+        "slot_pair_kinds": 3,
+        "usage": [
+          5,
+          4,
+          5
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 22,
+      "seed": 11200,
+      "level": "xhard16",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapBindingError",
+        "stage": "segment_start",
+        "timestep": null,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          7,
+          7
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1146,
+        "slot_pair_kinds": 3,
+        "usage": [
+          6,
+          7,
+          7
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 22,
+      "seed": 11200,
+      "level": "xhard18",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapBindingError",
+        "stage": "segment_start",
+        "timestep": null,
+        "slot_pair_kinds": 2,
+        "usage": [
+          8,
+          9,
+          9
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1233,
+        "slot_pair_kinds": 3,
+        "usage": [
+          8,
+          9,
+          9
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 22,
+      "seed": 11200,
+      "level": "xhard20",
+      "v1": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapBindingError",
+        "stage": "segment_start",
+        "timestep": null,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1367,
+        "slot_pair_kinds": 3,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 26,
+      "seed": 11602,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 632,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 632,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 26,
+      "seed": 11602,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 889,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          4,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 887,
+        "slot_pair_kinds": 3,
+        "usage": [
+          3,
+          4,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 26,
+      "seed": 11602,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 995,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 997,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          5,
+          5
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 26,
+      "seed": 11602,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1157,
+        "slot_pair_kinds": 2,
+        "usage": [
+          7,
+          7,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1130,
+        "slot_pair_kinds": 3,
+        "usage": [
+          6,
+          7,
+          7
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 26,
+      "seed": 11602,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1319,
+        "slot_pair_kinds": 2,
+        "usage": [
+          9,
+          9,
+          8
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1321,
+        "slot_pair_kinds": 3,
+        "usage": [
+          8,
+          9,
+          9
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 26,
+      "seed": 11602,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1346,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1346,
+        "slot_pair_kinds": 3,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 30,
+      "seed": 12000,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 740,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 740,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 30,
+      "seed": 12000,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 878,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          4,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 878,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 30,
+      "seed": 12000,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 982,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          5,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 956,
+        "slot_pair_kinds": 3,
+        "usage": [
+          5,
+          5,
+          4
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 30,
+      "seed": 12000,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1143,
+        "slot_pair_kinds": 2,
+        "usage": [
+          7,
+          7,
+          6
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1148,
+        "slot_pair_kinds": 3,
+        "usage": [
+          7,
+          7,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": true
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 30,
+      "seed": 12000,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1306,
+        "slot_pair_kinds": 2,
+        "usage": [
+          9,
+          9,
+          8
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1306,
+        "slot_pair_kinds": 3,
+        "usage": [
+          8,
+          9,
+          9
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 30,
+      "seed": 12000,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1334,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1334,
+        "slot_pair_kinds": 3,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 34,
+      "seed": 12400,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 865,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 865,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 34,
+      "seed": 12400,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 897,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          4,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 898,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 34,
+      "seed": 12400,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1006,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1005,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          4,
+          5
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 34,
+      "seed": 12400,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1155,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          7,
+          7
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1167,
+        "slot_pair_kinds": 2,
+        "usage": [
+          7,
+          6,
+          7
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 34,
+      "seed": 12400,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1276,
+        "slot_pair_kinds": 2,
+        "usage": [
+          8,
+          9,
+          9
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1275,
+        "slot_pair_kinds": 2,
+        "usage": [
+          9,
+          8,
+          9
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 34,
+      "seed": 12400,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1371,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1371,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 38,
+      "seed": 12800,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 572,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 572,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 38,
+      "seed": 12800,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 853,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          3,
+          4
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "segment_start",
+        "timestep": null,
+        "slot_pair_kinds": 3,
+        "usage": [
+          4,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 38,
+      "seed": 12800,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 996,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "segment_start",
+        "timestep": null,
+        "slot_pair_kinds": 3,
+        "usage": [
+          5,
+          4,
+          5
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 38,
+      "seed": 12800,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1158,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          7,
+          7
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "segment_start",
+        "timestep": null,
+        "slot_pair_kinds": 3,
+        "usage": [
+          7,
+          7,
+          6
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 38,
+      "seed": 12800,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1320,
+        "slot_pair_kinds": 2,
+        "usage": [
+          8,
+          9,
+          9
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "segment_start",
+        "timestep": null,
+        "slot_pair_kinds": 3,
+        "usage": [
+          9,
+          8,
+          9
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 38,
+      "seed": 12800,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1369,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "task_reject",
+        "task_success": false,
+        "ok": false,
+        "error_type": "SwapCollisionError",
+        "stage": "segment_start",
+        "timestep": null,
+        "slot_pair_kinds": 3,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 42,
+      "seed": 13200,
+      "level": "mother",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 848,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 848,
+        "slot_pair_kinds": null,
+        "usage": null,
+        "spread_full": null,
+        "spread_prefix": null,
+        "net_identity": null
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 42,
+      "seed": 13200,
+      "level": "xhard12",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 861,
+        "slot_pair_kinds": 2,
+        "usage": [
+          3,
+          4,
+          3
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 871,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          3,
+          3
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 42,
+      "seed": 13200,
+      "level": "xhard14",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 988,
+        "slot_pair_kinds": 2,
+        "usage": [
+          4,
+          5,
+          5
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 969,
+        "slot_pair_kinds": 2,
+        "usage": [
+          5,
+          4,
+          5
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 42,
+      "seed": 13200,
+      "level": "xhard16",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1140,
+        "slot_pair_kinds": 2,
+        "usage": [
+          6,
+          7,
+          7
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1131,
+        "slot_pair_kinds": 2,
+        "usage": [
+          7,
+          6,
+          7
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 42,
+      "seed": 13200,
+      "level": "xhard18",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1312,
+        "slot_pair_kinds": 2,
+        "usage": [
+          8,
+          9,
+          9
+        ],
+        "spread_full": null,
+        "spread_prefix": 1,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1293,
+        "slot_pair_kinds": 2,
+        "usage": [
+          9,
+          8,
+          9
+        ],
+        "spread_full": 0,
+        "spread_prefix": 1,
+        "net_identity": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 42,
+      "seed": 13200,
+      "level": "xhard20",
+      "v1": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1357,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": null,
+        "spread_prefix": 0,
+        "net_identity": false
+      },
+      "v2": {
+        "state": "ok",
+        "task_success": true,
+        "ok": true,
+        "error_type": null,
+        "stage": null,
+        "timestep": 1357,
+        "slot_pair_kinds": 2,
+        "usage": [
+          10,
+          10,
+          10
+        ],
+        "spread_full": 0,
+        "spread_prefix": 0,
+        "net_identity": false
+      }
+    }
+  ],
+  "distributions": {
+    "v1": {
+      "VideoUnmaskSwap/mother": {
+        "spread_prefix": {},
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 0,
+        "net_identity_ratio": null
+      },
+      "VideoUnmaskSwap/xhard12": {
+        "spread_prefix": {
+          "0": 9
+        },
+        "spread_full": {},
+        "net_identity_count": 8,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.8888888888888888
+      },
+      "VideoUnmaskSwap/xhard14": {
+        "spread_prefix": {
+          "1": 9
+        },
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.0
+      },
+      "VideoUnmaskSwap/xhard16": {
+        "spread_prefix": {
+          "1": 9
+        },
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.0
+      },
+      "VideoUnmaskSwap/xhard18": {
+        "spread_prefix": {
+          "1": 8,
+          "2": 1
+        },
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.0
+      },
+      "VideoUnmaskSwap/xhard20": {
+        "spread_prefix": {
+          "1": 8,
+          "2": 1
+        },
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.0
+      },
+      "ButtonUnmaskSwap/mother": {
+        "spread_prefix": {},
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 0,
+        "net_identity_ratio": null
+      },
+      "ButtonUnmaskSwap/xhard12": {
+        "spread_prefix": {
+          "0": 9
+        },
+        "spread_full": {},
+        "net_identity_count": 9,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 1.0
+      },
+      "ButtonUnmaskSwap/xhard14": {
+        "spread_prefix": {
+          "0": 8,
+          "2": 1
+        },
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.0
+      },
+      "ButtonUnmaskSwap/xhard16": {
+        "spread_prefix": {
+          "0": 8,
+          "2": 1
+        },
+        "spread_full": {},
+        "net_identity_count": 8,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.8888888888888888
+      },
+      "ButtonUnmaskSwap/xhard18": {
+        "spread_prefix": {
+          "0": 9
+        },
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.0
+      },
+      "ButtonUnmaskSwap/xhard20": {
+        "spread_prefix": {
+          "0": 9
+        },
+        "spread_full": {},
+        "net_identity_count": 8,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.8888888888888888
+      },
+      "VideoRepick/mother": {
+        "spread_prefix": {},
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 0,
+        "net_identity_ratio": null
+      },
+      "VideoRepick/xhard12": {
+        "spread_prefix": {
+          "1": 10
+        },
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 10,
+        "net_identity_ratio": 0.0
+      },
+      "VideoRepick/xhard14": {
+        "spread_prefix": {
+          "1": 10
+        },
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 10,
+        "net_identity_ratio": 0.0
+      },
+      "VideoRepick/xhard16": {
+        "spread_prefix": {
+          "1": 10
+        },
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 10,
+        "net_identity_ratio": 0.0
+      },
+      "VideoRepick/xhard18": {
+        "spread_prefix": {
+          "1": 10
+        },
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 10,
+        "net_identity_ratio": 0.0
+      },
+      "VideoRepick/xhard20": {
+        "spread_prefix": {
+          "0": 10
+        },
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 10,
+        "net_identity_ratio": 0.0
+      }
+    },
+    "v2": {
+      "VideoUnmaskSwap/mother": {
+        "spread_prefix": {},
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 0,
+        "net_identity_ratio": null
+      },
+      "VideoUnmaskSwap/xhard12": {
+        "spread_prefix": {
+          "0": 10
+        },
+        "spread_full": {
+          "1": 10
+        },
+        "net_identity_count": 6,
+        "net_identity_denominator": 10,
+        "net_identity_ratio": 0.6
+      },
+      "VideoUnmaskSwap/xhard14": {
+        "spread_prefix": {
+          "1": 10
+        },
+        "spread_full": {
+          "1": 10
+        },
+        "net_identity_count": 0,
+        "net_identity_denominator": 10,
+        "net_identity_ratio": 0.0
+      },
+      "VideoUnmaskSwap/xhard16": {
+        "spread_prefix": {
+          "1": 10
+        },
+        "spread_full": {
+          "1": 10
+        },
+        "net_identity_count": 0,
+        "net_identity_denominator": 10,
+        "net_identity_ratio": 0.0
+      },
+      "VideoUnmaskSwap/xhard18": {
+        "spread_prefix": {
+          "1": 10
+        },
+        "spread_full": {
+          "1": 10
+        },
+        "net_identity_count": 0,
+        "net_identity_denominator": 10,
+        "net_identity_ratio": 0.0
+      },
+      "VideoUnmaskSwap/xhard20": {
+        "spread_prefix": {
+          "1": 10
+        },
+        "spread_full": {
+          "1": 10
+        },
+        "net_identity_count": 0,
+        "net_identity_denominator": 10,
+        "net_identity_ratio": 0.0
+      },
+      "ButtonUnmaskSwap/mother": {
+        "spread_prefix": {},
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 0,
+        "net_identity_ratio": null
+      },
+      "ButtonUnmaskSwap/xhard12": {
+        "spread_prefix": {
+          "0": 5,
+          "2": 4
+        },
+        "spread_full": {
+          "0": 9
+        },
+        "net_identity_count": 3,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.3333333333333333
+      },
+      "ButtonUnmaskSwap/xhard14": {
+        "spread_prefix": {
+          "0": 8,
+          "2": 1
+        },
+        "spread_full": {
+          "0": 9
+        },
+        "net_identity_count": 0,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.0
+      },
+      "ButtonUnmaskSwap/xhard16": {
+        "spread_prefix": {
+          "2": 1,
+          "0": 8
+        },
+        "spread_full": {
+          "0": 9
+        },
+        "net_identity_count": 3,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.3333333333333333
+      },
+      "ButtonUnmaskSwap/xhard18": {
+        "spread_prefix": {
+          "0": 6,
+          "2": 3
+        },
+        "spread_full": {
+          "0": 9
+        },
+        "net_identity_count": 0,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.0
+      },
+      "ButtonUnmaskSwap/xhard20": {
+        "spread_prefix": {
+          "0": 9
+        },
+        "spread_full": {
+          "0": 9
+        },
+        "net_identity_count": 5,
+        "net_identity_denominator": 9,
+        "net_identity_ratio": 0.5555555555555556
+      },
+      "VideoRepick/mother": {
+        "spread_prefix": {},
+        "spread_full": {},
+        "net_identity_count": 0,
+        "net_identity_denominator": 0,
+        "net_identity_ratio": null
+      },
+      "VideoRepick/xhard12": {
+        "spread_prefix": {
+          "1": 8
+        },
+        "spread_full": {
+          "0": 8
+        },
+        "net_identity_count": 0,
+        "net_identity_denominator": 8,
+        "net_identity_ratio": 0.0
+      },
+      "VideoRepick/xhard14": {
+        "spread_prefix": {
+          "1": 8
+        },
+        "spread_full": {
+          "0": 8
+        },
+        "net_identity_count": 0,
+        "net_identity_denominator": 8,
+        "net_identity_ratio": 0.0
+      },
+      "VideoRepick/xhard16": {
+        "spread_prefix": {
+          "1": 8
+        },
+        "spread_full": {
+          "0": 8
+        },
+        "net_identity_count": 1,
+        "net_identity_denominator": 8,
+        "net_identity_ratio": 0.125
+      },
+      "VideoRepick/xhard18": {
+        "spread_prefix": {
+          "1": 8
+        },
+        "spread_full": {
+          "0": 8
+        },
+        "net_identity_count": 0,
+        "net_identity_denominator": 8,
+        "net_identity_ratio": 0.0
+      },
+      "VideoRepick/xhard20": {
+        "spread_prefix": {
+          "0": 8
+        },
+        "spread_full": {
+          "0": 8
+        },
+        "net_identity_count": 0,
+        "net_identity_denominator": 8,
+        "net_identity_ratio": 0.0
+      }
+    }
+  },
+  "seeds": 30,
+  "rows_count": 180
+}

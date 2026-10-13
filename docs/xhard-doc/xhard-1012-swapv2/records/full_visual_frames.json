@@ -1,0 +1,38 @@
+[
+  {
+    "path": "artifacts/xhard/xhard-1012-swapv2/full-visual/bus10500-step0.png",
+    "bytes": 514372,
+    "sha256": "da3e946e327f9e39f4f91b20ddc8d7b0dc00c4b94f7900f0d5310d97dcdb4294",
+    "review": "主会话已读取位图，标题与画面对齐，无截断或重叠；失败列灰底占位"
+  },
+  {
+    "path": "artifacts/xhard/xhard-1012-swapv2/full-visual/bus7700-step0.png",
+    "bytes": 782527,
+    "sha256": "e5559085d7480172326159415d850a638138916593f6500cfb232881a7dd65e7",
+    "review": "主会话已读取位图，标题与画面对齐，无截断或重叠；失败列灰底占位"
+  },
+  {
+    "path": "artifacts/xhard/xhard-1012-swapv2/full-visual/vr11200-step450.png",
+    "bytes": 702260,
+    "sha256": "d07695401af6735f440bab6d05c30e91a4c1d7fcc0698b5939dd7137dcf8dbec",
+    "review": "主会话已读取位图，标题与画面对齐，无截断或重叠；失败列灰底占位"
+  },
+  {
+    "path": "artifacts/xhard/xhard-1012-swapv2/full-visual/vr12800-step0.png",
+    "bytes": 498408,
+    "sha256": "abf3aee12362fca27301f1ea85983a63050c14e445d017b09f1863706cd4d4fc",
+    "review": "主会话已读取位图，标题与画面对齐，无截断或重叠；失败列灰底占位"
+  },
+  {
+    "path": "artifacts/xhard/xhard-1012-swapv2/full-visual/vus5700-step189.png",
+    "bytes": 913338,
+    "sha256": "2f04c0262919ad5b0348f7f7ebd437d69951a9de9f6b0bde996f369b5c35419e",
+    "review": "主会话已读取位图，标题与画面对齐，无截断或重叠；失败列灰底占位"
+  },
+  {
+    "path": "artifacts/xhard/xhard-1012-swapv2/full-visual/vus9300-step189.png",
+    "bytes": 923857,
+    "sha256": "32bedeb06fc79e0c1563d120998c985e371024e79a1d5117b15590be04134545",
+    "review": "主会话已读取位图，标题与画面对齐，无截断或重叠；失败列灰底占位"
+  }
+]
