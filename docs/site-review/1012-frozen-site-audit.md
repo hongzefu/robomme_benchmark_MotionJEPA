@@ -111,3 +111,19 @@ PY
 ## 不同证据不能合并计数
 
 历史审查脚本的52个样本与两对HF样本已删除，其结论只能按旧样本范围引用。正式xhard-1011的68卡、VideoPlaceButton修版3卡、旧碰撞第一版165/180和配对第二版冒烟三成功H5属于不同批次。相同录像器只是来源依据，不能推出全部字段或训练兼容性必然相同。新配对全量的完成与否由其独立留档负责，本页只呈现冻结点已有证据。
+
+## 页面制作、复审与浏览器验证
+
+两位Astra分别制作交换说明与第二至第五页内容，使用独立工作树。Sol只读复审结果：`CONTENT_REVIEW=PASS base=f98c779a2c3f086759d9fcc4663a06da7deec083 tip=6173e009 blocking=0`；交换页初审发现一条措辞混淆，将母来源2至3次与父类调度支持1至3次分开后，`SWAP_PAGE_REVIEW=PASS base=a1988e9a85998f18c94a56e4a59533988c1ad640 tip=807323b63316f48f21ae1753c0c68e98da4fd5a1 findings=0`。主会话最终另统一分页标题与导航编号、结构扩展定义，不变更任务机制。
+
+构建使用独立工作树的 `scripts/plan-site/build_plan_site.py`，输出主仓库 `artifacts/site-review-1012/preview/`；视频仅复制到预览目录，发布清单不含视频。构建退出0，`PLAN_SITE=OK pages=9 images=1 videos=16 documents=1`。
+
+真实浏览器检查命令（临时依赖环境，不改项目依赖）：
+
+```bash
+UV_CACHE_DIR=/home/hongzefu/.cache/uv uv run --no-project --with playwright python artifacts/site-review-1012/browser_check.py --site artifacts/site-review-1012/preview --shots artifacts/site-review-1012/shots-delivery
+```
+
+`BROWSER_SITE=PASS pages=9`，退出0：九页HTTP可达，统一导航可点击；站内链接和锚点无缺失、图片无失败、JavaScript异常0、桌面页面无横向溢出；新交换页390像素移动视口无溢出。历史折叠可开关，展开后的数轴SVG有内容，BinFill勾选能实际隐藏并恢复相应历史任务。检查报告为 `artifacts/site-review-1012/shots-delivery/browser-report.json`。
+
+主会话亲自查看图2、图3的浏览器位图，并查看第二至第五页、历史数轴与移动端截图。两图原有内容和图注逐字保留：图2完整figure SHA256为 `6621e595f642d592ffc99bd379565e570a1b8e095cced53ee4143c82198feaf5`，图3为 `9fd33a3f576c97764ed72b6d049aa8d903670d79b08b243695495b26f3c5b397`；PNG为 `87accf58fded447421cf31b84cc355a7c6d353a925d94e881448958625879994`。流程箭头无新增交叉、框文字未裁切、图例与图注一致；俯视图中槽对边的交叉表示几何连接，不是流程箭头。首次浏览器检查发现旧首页参考文档404和移动引用框长版本号换行问题，均修复后复测通过。

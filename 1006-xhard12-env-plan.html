@@ -166,7 +166,52 @@ a { color:var(--accent); }
 <figcaption>图 2　gym.make 之后：子类文件改哪里、原类与 wrapper 一字不改、id 怎么从 "…XHard1" 变回原名（蓝框标 id 的值）；保留原图框架，下方橙色区域补充本轮五级难度传递。</figcaption>
 </figure>
 
-<h2 id="p1-_4">三、对齐原则（两条）</h2>
+<h2 id="p1-_4">三、现行环境与五档配置</h2>
+<p><b>现状核对锚点：</b><code>f98c779a2c3f086759d9fcc4663a06da7deec083</code>。本页维护展示，不改变实施方案。14 个任务共 52 个有效派生配置，另有 16 个母档；缺档就是没有配置，不复制邻档。VideoRepick 母档为 medium，其余为 hard。档名表示目标倍数，不保证真实步数恰好达到该倍数或逐档单调。</p>
+<p>取值依据 <code>src/robomme_xhard/configs.py::MOTHER_KNOBS / TIER_CONFIGS</code>；机制依据 <code>src/robomme_xhard/envs/</code> 各任务子类。<b>允许已批准的参数越界和结构扩展</b>，不增加可操作物体；两者的区别见 <a href="#p1-review">逐环境审查</a>。三项交换任务已改为 <a href="1012-swap-pairing-v2-plan.html">v2 可行配对</a>，旧交换时长不能充当新实现的实测。</p>
+<div class="gradient-scroll"><table><thead><tr><th>编号／任务</th><th>固定母档</th><th>xhard12</th><th>xhard14</th><th>xhard16</th><th>xhard18</th><th>xhard20</th><th>现行机制与子目标变化</th></tr></thead><tbody>
+<tr><td>1.1 BinFill</td><td>K=4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>按实际库存分配三色目标，合计 K；不足即拒绝、不换 seed。每增一块增加抓起和放桶，末按钮保留。</td></tr>
+<tr><td>1.2 PickXtimes</td><td>n=5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>同一方块抓放 n 次，任务项 2n+1；序数连续增加。</td></tr>
+<tr><td>1.3 SwingXtimes</td><td>n=3</td><td>4</td><td>5</td><td>7</td><td>8</td><td>9</td><td>每次往返含向右、向左两移，任务项 2n+3。</td></tr>
+<tr><td>1.4 StopCube</td><td>k=3，I=80</td><td>—</td><td>4/80</td><td>5/80</td><td>7/60</td><td>6/80</td><td>格内为 k/I；运动段扩为 max(5,k)。I×(k−0.5) 只是时点参考，不是 H5 总步数。</td></tr>
+<tr><td>2.1 VideoUnmask</td><td>抓2</td><td>—</td><td>抓3</td><td>—</td><td>—</td><td>—</td><td>增加放下第二容器和抓第三容器；第三色来自 color_names[2]。</td></tr>
+<tr><td>2.2 ButtonUnmask</td><td>按1、抓2</td><td>—</td><td>抓3</td><td>—</td><td>—</td><td>—</td><td>前面仍只按一次；第三抓使用已有容器，不新增物体。</td></tr>
+<tr><td>2.3 VideoUnmaskSwap</td><td>S=2</td><td>4</td><td>5</td><td>7</td><td>9</td><td>11</td><td>现行 v2 预先规划可行配对，不再运行时取最近邻；两抓尾段保留。</td></tr>
+<tr><td>2.4 ButtonUnmaskSwap</td><td>P/S=2/3</td><td>3/4</td><td>4/6</td><td>4/8</td><td>5/10</td><td>6/12</td><td>右起交替 P 次；正确侧上升沿且另一侧未按才计数。第一抓求解器等交换结束，无独立等待任务项。</td></tr>
+<tr><td>3.1 PickHighlight</td><td>6块，抓3</td><td>抓4</td><td>—</td><td>抓5</td><td>抓6</td><td>—</td><td>共 2p 个任务项；最后一块抓起结束，无末次放桌或按钮；抓6时无干扰块。</td></tr>
+<tr><td>3.2 VideoRepick</td><td>medium，S=2/R=2</td><td>5</td><td>7</td><td>10</td><td>13</td><td>15</td><td>三块，重抓 R=2 不变；只列交换 S。现行 v2 配对见新页。</td></tr>
+<tr><td>3.3 VideoPlaceButton</td><td>额外0组</td><td>1组</td><td>2组</td><td>—</td><td>—</td><td>—</td><td>1组时前后各50%概率，有限批不保证恰半；2组时前后各一组。后组在 target_1 后，母答案保留。</td></tr>
+<tr><td>3.4 VideoPlaceOrder</td><td>N=3</td><td>4</td><td>—</td><td>—</td><td>—</td><td>—</td><td>演示追加唯一剩余目标，保留前三项和答案序号；执行仍只放正确目标。</td></tr>
+<tr><td>4.1 MoveCube</td><td>hard</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>仅母档；动作可能杆移、闭爪推或抓放，保持同一方式。</td></tr>
+<tr><td>4.2 InsertPeg</td><td>hard</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>仅母档；保持同一 peg、抓取端与插入侧。</td></tr>
+<tr><td>4.3 PatternLock</td><td>L=6，5×5</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>八邻接、不重复节点；同 seed 重采整路径，不保母路径或跨档前缀；长度不足拒绝。</td></tr>
+<tr><td>4.4 RouteStick</td><td>边数5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>访问节点数为边数+1，允许重复；1×9位置格，5路径按钮位置和4障碍位置；重采整路径。</td></tr>
+</tbody></table></div>
+<h3>已完成的单 seed 实测：1011 批次</h3>
+<p>每行只有一个母 seed，单位为 timestep，括号为同 seed 母档倍数；<b>不是全部 seed 的中位数</b>。来源 <a href="docs/xhard-doc/xhard-1011/result.md">1011 结果记录</a>。VideoPlaceButton 以 vpbfix-1012 三卡修版为准，步数不变。三项交换任务的下列数字属于旧配对历史，现行 v2 另见表后。</p>
+<div class="gradient-scroll"><table><thead><tr><th>编号／任务</th><th>seed</th><th>母档</th><th>xhard12</th><th>xhard14</th><th>xhard16</th><th>xhard18</th><th>xhard20</th></tr></thead><tbody>
+<tr><td>1.1 BinFill</td><td>4701</td><td>785</td><td>941（×1.20）</td><td>1105（×1.41）</td><td>1315（×1.68）</td><td>1463（×1.86）</td><td>1608（×2.05）</td></tr>
+<tr><td>1.2 PickXtimes</td><td>1700</td><td>897</td><td>1052（×1.17）</td><td>1206（×1.34）</td><td>1365（×1.52）</td><td>1538（×1.72）</td><td>1710（×1.91）</td></tr>
+<tr><td>1.3 SwingXtimes</td><td>3700</td><td>504</td><td>587（×1.17）</td><td>671（×1.33）</td><td>838（×1.66）</td><td>922（×1.83）</td><td>1005（×1.99）</td></tr>
+<tr><td>1.4 StopCube</td><td>7900</td><td>235</td><td>—</td><td>313（×1.33）</td><td>391（×1.66）</td><td>421（×1.79）</td><td>475（×2.02）</td></tr>
+<tr><td>2.1 VideoUnmask</td><td>6700</td><td>338</td><td>—</td><td>498（×1.47）</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>2.2 ButtonUnmask</td><td>8700</td><td>377</td><td>—</td><td>535（×1.42）</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>2.3 VideoUnmaskSwap</td><td>5700</td><td>421</td><td>517（×1.23）</td><td>583（×1.39）</td><td>679（×1.61）</td><td>761（×1.81）</td><td>883（×2.10）</td></tr>
+<tr><td>2.4 ButtonUnmaskSwap</td><td>7700</td><td>451</td><td>549（×1.22）</td><td>643（×1.43）</td><td>712（×1.58）</td><td>808（×1.79）</td><td>908（×2.01）</td></tr>
+<tr><td>3.1 PickHighlight</td><td>12700</td><td>530</td><td>670（×1.26）</td><td>—</td><td>823（×1.55）</td><td>988（×1.86）</td><td>—</td></tr>
+<tr><td>3.2 VideoRepick</td><td>13600</td><td>734</td><td>904（×1.23）</td><td>996（×1.36）</td><td>1158（×1.58）</td><td>1320（×1.80）</td><td>1382（×1.88）</td></tr>
+<tr><td>3.3 VideoPlaceButton</td><td>10701</td><td>958</td><td>1132（×1.18）</td><td>1265（×1.32）</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>3.4 VideoPlaceOrder</td><td>11705</td><td>1131</td><td>1281（×1.13）</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>4.1 MoveCube</td><td>14700</td><td>512</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>4.2 InsertPeg</td><td>13700</td><td>486</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>4.3 PatternLock</td><td>15700</td><td>358</td><td>424（×1.18）</td><td>538（×1.50）</td><td>512（×1.43）</td><td>646（×1.80）</td><td>704（×1.97）</td></tr>
+<tr><td>4.4 RouteStick</td><td>16700</td><td>500</td><td>600（×1.20）</td><td>700（×1.40）</td><td>800（×1.60）</td><td>900（×1.80）</td><td>1000（×2.00）</td></tr>
+</tbody></table></div>
+<p><b>已知限制：</b>PatternLock seed15700 的 xhard16 为512步，短于 xhard14 的538步；VideoUnmask、ButtonUnmask 最长档的8帧遗漏均为0，用户已决定保留。不能写成“全部逐档单调”或“全部必漏”。</p>
+<p><b>v2 独立证据：</b><a href="docs/xhard-doc/xhard-1012-swapv2-smoke/result.md">四身份 smoke</a>中 VideoUnmaskSwap seed5700/9300 为871/890步，VideoRepick seed11200为1367步；ButtonUnmaskSwap seed10500在可行图阶段正常拒绝，无成功H5。三条成功不代表全量完成。生成器实际退出1，<code>task_success=3 graph_reject=1 infra=0</code>。</p>
+<details class="historical-section"><summary>历史方案与估算（展开）：旧单档候选、段长合成、四.1～四.7；不是当前实测</summary>
+<p><b>阅读边界：</b>以下完整保留原计划与历史证据，包括其中的“本次”“待验”“未实施”等原时态；它们只描述当时，当前配置与结果以上方为准。旧单档、合成数轴和旧配对不能用于宣布现行动态验收通过。</p>
+<h3>历史对齐原则（原文）</h3>
 <ol class="lead">
 <li><b>旋钮只调长度</b>：每任务固定 1.0 倍中位母档（四.7），每个目标倍数只取一组唯一整数配置，允许略高或略低。两倍硬上界已作废（R4）：SwingXtimes 2.004、StopCube 2.013、VideoUnmaskSwap 2.051 与 BinFill K=9 保留。补缺档只在原有物体与原有 subgoal 上排列组合，不新生成物体、不取原参数域外的新值（R15）。VideoRepick 保持 medium 例外；V2 倍数仅作参照。</li>
 <li><b>长度定了再验</b>：8 帧遗漏只查每任务最长一档（R18：有 xhard20 的查 xhard20；VideoUnmask、ButtonUnmask、VideoPlaceButton 查 xhard14；PickHighlight 查 xhard18；VideoPlaceOrder 查 xhard12；MoveCube、InsertPeg 不查），拿起加放下算一个，每次swap算一个；无法满足时如实报告，不为制造遗漏突破原机制。</li>
@@ -680,7 +725,31 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
   });
 })();
 </script>
-<h2 id="p1-goals">五、goal 原文与拟修改稿对照</h2>
+</details>
+<h2 id="p1-goals">五、现行总目标与子目标对照</h2>
+<p><b>以下为冻结源码的现行模板，不是拟稿，也不是本轮H5中的颜色实例。</b>权威源为 <code>src/robomme/robomme_env/utils/task_goal.py::get_language_goal</code>（锚点 <code>f98c779a2c3f086759d9fcc4663a06da7deec083</code>）。花括号为运行时字段或文字占位符；只展示固定母档及有效派生档适用的分支。技术文本保持源码英文，中文解释语义与变化。</p>
+<p><b>总目标</b>是 <code>setup/task_goal</code> 的候选句列表；<b>子目标</b>来自环境 <code>task_list</code> 的逐项动作与判据。总目标句数不等于子目标数，目标文字相同也不代表演示路径相同。子目标变化按下表说明，完整旋钮见 <a href="#p1-_4">现行配置</a>。</p>
+<div class="goal-originals">
+<h3>1.1 BinFill</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>put {颜色计数列表} into the bin, then press the button to stop</code><code>put {颜色计数列表} into the bin and press the button to stop</code></td><td><code>put {颜色计数列表} into the bin, then press the button to stop</code><code>put {颜色计数列表} into the bin and press the button to stop</code></td></tr></tbody></table><p>{颜色计数列表}按 red、blue、green 顺序，只含非零目标；单复数随计数变化，三色用逗号和 and 连接，两色只用 and，一色直接写该项。合计母档4，派生5～9；不是所有档都写 nine。 <b>子目标：</b>按实际库存分配三色目标，合计 K；不足即拒绝、不换 seed。每增一块增加抓起和放桶，末按钮保留。</p>
+<h3>1.2 PickXtimes</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>pick up the {target_color} cube and place it on the target, repeating this action {word} times, then press the button to stop</code><code>pick up the {target_color} cube and place it on the target, repeating this pick-and-place action {word} times, then press the button to stop</code></td><td><code>pick up the {target_color} cube and place it on the target, repeating this action {word} times, then press the button to stop</code><code>pick up the {target_color} cube and place it on the target, repeating this pick-and-place action {word} times, then press the button to stop</code></td></tr></tbody></table><p>{word}由 num_repeats 转英文：母档 five，派生 six/seven/eight/nine/ten；{target_color}为真实目标颜色。 <b>子目标：</b>同一方块抓放 n 次，任务项 2n+1；序数连续增加。</p>
+<h3>1.3 SwingXtimes</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>pick up the {target_color} cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion {word} times, finally press the button to stop</code><code>pick up the {target_color} cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion {word} times, then put down the cube and press the button to stop</code></td><td><code>pick up the {target_color} cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion {word} times, finally press the button to stop</code><code>pick up the {target_color} cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion {word} times, then put down the cube and press the button to stop</code></td></tr></tbody></table><p>{word}母档 three，派生 four/five/seven/eight/nine；保留源码 back-and-forth 与 right-to-left 两种句型。 <b>子目标：</b>每次往返含向右、向左两移，任务项 2n+3。</p>
+<h3>1.4 StopCube</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>press the button to stop the cube just as it reaches the target for the {word} time</code><code>press the button to stop the cube exactly at the target on its {word} visit</code></td><td><code>press the button to stop the cube just as it reaches the target for the {word} time</code><code>press the button to stop the cube exactly at the target on its {word} visit</code></td></tr></tbody></table><p>{word}为序数：母档 third；xhard14/16/18/20 依次 fourth/fifth/seventh/sixth；xhard12 缺档。 <b>子目标：</b>格内为 k/I；运动段扩为 max(5,k)。I×(k−0.5) 只是时点参考，不是 H5 总步数。</p>
+<h3>2.1 VideoUnmask</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>watch the video carefully, then pick up the container hiding the {cube_0_color} cube, finally pick up another container hiding the {cube_1_color} cube</code></td><td><code>watch the video carefully, then pick up the container hiding the {cube_0_color} cube, then pick up another container hiding the {cube_1_color} cube, put down that container, finally pick up another container hiding the {cube_2_color} cube</code></td></tr></tbody></table><p>{cube_0_color}/{cube_1_color}/{cube_2_color}来自实际 color_names；母两抓、仅 xhard14 三抓。原两抓间已有放下，第三抓前另加放下。 <b>子目标：</b>增加放下第二容器和抓第三容器；第三色来自 color_names[2]。</p>
+<h3>2.2 ButtonUnmask</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>first press the button, then pick up the container hiding the {cube_0_color} cube, finally pick up another container hiding the {cube_1_color} cube</code></td><td><code>first press the button, then pick up the container hiding the {cube_0_color} cube, then pick up another container hiding the {cube_1_color} cube, put down that container, finally pick up another container hiding the {cube_2_color} cube</code></td></tr></tbody></table><p>颜色同上；母档与派生都先按一次按钮，仅 xhard14 三抓。 <b>子目标：</b>前面仍只按一次；第三抓使用已有容器，不新增物体。</p>
+<h3>2.3 VideoUnmaskSwap</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>watch the video carefully, then pick up the container hiding the {cube_0_color} cube, finally pick up another container hiding the {cube_1_color} cube</code></td><td><code>watch the video carefully, then pick up the container hiding the {cube_0_color} cube, finally pick up another container hiding the {cube_1_color} cube</code></td></tr></tbody></table><p>母档与所有派生均两抓，目标句不变；演示交换次数与 v2 可行配对变化不增加目标候选句。 <b>子目标：</b>现行 v2 预先规划可行配对，不再运行时取最近邻；两抓尾段保留。</p>
+<h3>2.4 ButtonUnmaskSwap</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>first press both buttons on the table, then pick up the container hiding the {cube_0_color} cube, finally pick up another container hiding the {cube_1_color} cube</code></td><td><code>{press_phrase}; after all {swap_word} swaps have finished, pick up the container hiding the {cube_0_color} cube, put down the container, then pick up another container hiding the {cube_1_color} cube</code></td></tr></tbody></table><p>{press_phrase}由 xhard_knobs[press_count] 生成：first为右、second为左，交替P次，中间用 then，末项用 and then；{swap_word}为实际S的英文数词。等待由首抓求解器实现，不是独立 task_list 项或首抓 func 的强制判据。 <b>子目标：</b>右起交替 P 次；正确侧上升沿且另一侧未按才计数。第一抓求解器等交换结束，无独立等待任务项。</p>
+<h3>3.1 PickHighlight</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>first press the button, then pick up all cubes that have been highlighteted with white areas on the table</code><code>first press the button, then pick up all highlighted cubes, finally press the button again to stop</code></td><td><code>first press the button, then pick up all cubes that have been highlighteted with white areas on the table</code><code>first press the button, then pick up all highlighted cubes</code></td></tr></tbody></table><p>第一句保留源码拼写 highlighteted；派生第二句去掉不存在的末按钮。母档旧第二句仍原样保留，不代表真实多按一次。 <b>子目标：</b>共 2p 个任务项；最后一块抓起结束，无末次放桌或按钮；抓6时无干扰块。</p>
+<h3>3.2 VideoRepick</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for {word} times, finally put it down and press the button to stop</code><code>watch the video carefully, then pick up the same cube that was previously picked up twice, and finally press the button to stop</code><code>watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube twice, finally press the button to stop</code></td><td><code>watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for {word} times, finally put it down and press the button to stop</code><code>watch the video carefully, then pick up the same cube that was previously picked up twice, and finally press the button to stop</code><code>watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube twice, finally press the button to stop</code></td></tr></tbody></table><p>母档 medium 与所有派生 R=2，第一句 {word}=two；三句均完整列出。S变化影响演示，不改变重抓次数或这些句子。 <b>子目标：</b>三块，重抓 R=2 不变；只列交换 S。现行 v2 配对见新页。</p>
+<h3>3.3 VideoPlaceButton</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>watch the video carefully, then place the {target_color_name} cube on the target right {target_target_language} the button was pressed</code><code>watch the video carefully, and place the {target_color_name} cube on the target where it was placed immediately {target_target_language} the button was pressed</code><code>watch the video carefully, then place the {target_color_name} cube on the target where it was previously placed {target_target_language} the button was pressed</code><code>watch the video carefully, then place the {target_color_name} cube on the target where it was last placed before the button was pressed</code><code>watch the video carefully, then place the {target_color_name} cube on the target where it was first placed after the button was pressed</code></td><td><code>watch the video carefully, then place the {target_color_name} cube on the target right {target_target_language} the button was pressed</code><code>watch the video carefully, and place the {target_color_name} cube on the target where it was placed immediately {target_target_language} the button was pressed</code><code>watch the video carefully, then place the {target_color_name} cube on the target where it was last placed before the button was pressed</code><code>watch the video carefully, then place the {target_color_name} cube on the target where it was first placed after the button was pressed</code></td></tr></tbody></table><p>{target_target_language}=before/after；最后两个模板二选一：before选 last placed before，after选 first placed after。因此母档实际4句、派生实际3句。派生删除 previously placed 句；以 vpbfix-1012 为准。 <b>子目标：</b>1组时前后各50%概率，有限批不保证恰半；2组时前后各一组。后组在 target_1 后，母答案保留。</p>
+<h3>3.4 VideoPlaceOrder</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>watch the video carefully, then place the {target_color_name} cube on the {num} target it was previously placed on</code><code>watch the video carefully and place the {target_color_name} cube on the {num} target where it was placed</code></td><td><code>watch the video carefully, then place the {target_color_name} cube on the {num} target it was previously placed on</code><code>watch the video carefully and place the {target_color_name} cube on the {num} target where it was placed</code></td></tr></tbody></table><p>{num}是保留的答案序数，{target_color_name}为真实颜色；演示目标由3增至4，不是执行依次放完4处。 <b>子目标：</b>演示追加唯一剩余目标，保留前三项和答案序号；执行仍只放正确目标。</p>
+<h3>4.1 MoveCube</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>watch the video carefully, then move the cube to the target in the same manner as before</code><code>watch the video carefully, then move the cube to the target in the same manner shown in the video</code></td><td>无派生档，不把母档标成新档。</td></tr></tbody></table><p>只有hard母档，无派生。两句均保留同一移动方式约束。 <b>子目标：</b>仅母档；动作可能杆移、闭爪推或抓放，保持同一方式。</p>
+<h3>4.2 InsertPeg</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box</code><code>watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video</code></td><td>无派生档，不把母档标成新档。</td></tr></tbody></table><p>只有hard母档，无派生。两句均约束同一peg、同端、同侧。 <b>子目标：</b>仅母档；保持同一 peg、抓取端与插入侧。</p>
+<h3>4.3 PatternLock</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>watch the video carefully, then use the stick attached to the robot to retrace the same pattern</code><code>watch the video carefully, then use the stick attached to the robot to retrace the same pattern shown in the video</code></td><td><code>watch the video carefully, then use the stick attached to the robot to retrace the same pattern</code><code>watch the video carefully, then use the stick attached to the robot to retrace the same pattern shown in the video</code></td></tr></tbody></table><p>所有有效档目标两句不变，首字母 watch 为小写；子目标是杆触达网格，不是按按钮关节。 <b>子目标：</b>八邻接、不重复节点；同 seed 重采整路径，不保母路径或跨档前缀；长度不足拒绝。</p>
+<h3>4.4 RouteStick</h3><table class="goal-compare"><thead><tr><th>固定母档模板</th><th>有效派生档模板</th></tr></thead><tbody><tr><td><code>watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path</code><code>watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video</code></td><td><code>watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path</code><code>watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video</code></td></tr></tbody></table><p>所有有效档目标两句不变，首字母 watch 为小写；子目标增加路径边，允许重访节点。 <b>子目标：</b>访问节点数为边数+1，允许重复；1×9位置格，5路径按钮位置和4障碍位置；重采整路径。</p>
+</div>
+<p>上述是源码语义核对，不是对所有 seed 的语言与动作动态验收。三项交换任务的规划与验证边界见 <a href="1012-swap-pairing-v2-plan.html">交换配对 v2</a>。</p>
+<details class="historical-section"><summary>历史目标示例（展开）：官方样本与旧拟稿，颜色及数量不是当前固定母 seed 的实物证据</summary>
+<p><b>历史阅读边界：</b>以下保留旧样本、旧文字与旧状态，不作为现行模板；VideoRepick 缺句、VideoPlaceButton 旧四句派生等均以上方冻结源码对照为准。</p>
 <p>只比较各任务的总目标文字。左栏为真实母回合的英文原文，右栏为英文拟修改稿；有差异的文字高亮，中文注释只解释修改处。拟稿尚未实施。</p>
 <p><strong>10-11 裁决（R10）：</strong>goal 对照基准改为当前 <code>task_goal.py</code> 的输出，不再以官方 h5 原文为基准；下表左栏的官方原文只作参考，实施验收以当前代码输出为准。</p>
 <p>来源：本机官方参考集 <code style="overflow-wrap:anywhere">/data/hongzefu/data_0226/record_dataset_&lt;Task&gt;.h5</code> 的 <code>setup/task_goal</code>（未核HF revision）。花括号内为待实际目标确定的颜色或数量。</p>
@@ -745,11 +814,14 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <section class="goal-originals" data-goal-task="RouteStick" id="goal-task-routestick"><h4>4.4 RouteStick</h4><p class="goal-episode">episode_95 · seed 25500 · hard</p><p class="goal-status">总目标文字：无区别</p><table class="goal-compare" data-cols="3"><thead><tr><th>英文goal原文（全部备选句）</th><th>英文goal拟修改稿（计划）</th><th>只注释改动</th></tr></thead><tbody><tr><td class="sub-original"><code data-original="goal" data-index="0">Watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path</code></td><td class="proposed"><code data-proposed="goal" data-index="0">Watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path</code></td><td></td></tr>
 <tr><td class="sub-original"><code data-original="goal" data-index="1">watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video</code></td><td class="proposed"><code data-proposed="goal" data-index="1">watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video</code></td><td></td></tr></tbody></table>
 </section>
-<h2 id="p1-review">逐环境审查：是否扩充物体、是否执行原本执行不到的动作（2026-10-11）</h2>
+</details>
+<h2 id="p1-review">逐环境审查：物体、结构扩展与参数越界</h2>
+<p>本表核对冻结源码 <code>f98c779a2c3f086759d9fcc4663a06da7deec083</code>，是静态机制审查，不是动态生成全部通过。结构扩展与参数越界分列；原有动作原语重复更多次，不自动算新动作。历史用户裁决保留在表后。</p>
+<p><b>现行交换规则补充：</b>VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick 使用独立随机流规划最长档配对，短档取前缀；搭档由可行图选择，不再按运行时最近邻。新增旁观障碍检查不等于新增物体。配置、认证与失败边界见 <a href="1012-swap-pairing-v2-plan.html">交换配对 v2</a>；这三行同时包含配对规则变化，不能只理解成增加次数。</p>
 <p>判定口径：</p>
 <ul>
 <li><b>扩充物体</b>：新档是否生成了原环境在任何 difficulty、任何 seed 下都不会出现的物体。</li>
-<li><b>原本执行不到</b>：新档的动作序列、作用对象或次数，原代码在任何 difficulty、任何 seed 下都产生不了。</li>
+<li><b>原本执行不到（结构扩展）</b>：必须突破原代码写死的调度上限、一次性判据或动作分支，才能产生的正确动作。通用循环只增加次数的情形记在“参数越界”，不在本列重复计为结构扩展。</li>
 <li><b>参数越界</b>：只是取值超过原代码的取值域，单独列出，不算新物体或新动作。</li>
 </ul>
 <p><b>口径补注（2026-10-12）</b>：用户对口径的决定原话「只记参数越界，不计新动作；另外列原配置无法生成的次数。」据此把两类分清：</p>
@@ -761,7 +833,7 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <p>结论：<b>14 个有新档的环境都没有扩充可操作物体（MoveCube、InsertPeg 无新档）。</b>“原本执行不到的动作”不只 VideoPlaceButton 一个，共 7 个环境，分两类，见表后。</p>
 <table>
 <tr><th>编号</th><th>任务</th><th>新档配置（现行）</th><th>扩充物体</th><th>原本执行不到的动作</th><th>参数越界</th><th>依据要点</th></tr>
-<tr><td>1.1</td><td>BinFill</td><td>K=5/6/7/8/9</td><td>否</td><td>否</td><td>是</td><td>原 hard 场景生成 10～12 个方块（<code>config_hard["spawn_cubes"]=[10,12]</code>）；库存不足时 <code>allocate_targets</code> 抛 <code>SceneGenerationError</code>，不换 seed；动作仍是“抓起 → 放进桶”循环加按按钮；原目标总数 <code>put_in_numbers=[3,5]</code>，K=6～9 越界</td></tr>
+<tr><td>1.1</td><td>BinFill</td><td>K=5/6/7/8/9</td><td>否</td><td>否</td><td>是</td><td>原 hard 计划生成10～12块（<code>config_hard["spawn_cubes"]=[10,12]</code>），实际库存以成功生成的列表为准；库存不足时 <code>allocate_targets</code> 抛 <code>SceneGenerationError</code>，不换 seed；动作仍是“抓起 → 放进桶”循环加按按钮；原目标总数 <code>put_in_numbers=[3,5]</code>，K=6～9 越界</td></tr>
 <tr><td>1.2</td><td>PickXtimes</td><td>n=6/7/8/9/10</td><td>否</td><td>否</td><td>是</td><td>原 hard 是 4～5 次；序数词表 <code>get_subgoal_with_index</code> 上限为 tenth，n=10 正好用满</td></tr>
 <tr><td>1.3</td><td>SwingXtimes</td><td>4/5/7/8/9 往返</td><td>否</td><td>否</td><td>是</td><td>原各档最多 3 次往返；同一对左右摆动重复更多次</td></tr>
 <tr><td>1.4</td><td>StopCube</td><td>k=4/5/6（间隔 80），xhard18 为间隔 60、k=7</td><td>否</td><td><b>是（k=6、7）</b></td><td>是</td><td>原 <code>step()</code> 中 <code>range(5)</code> 写死，方块最多运动 5 段，<code>stop_time</code> 原取值 2～5；第 6、7 段运动和在第 6、7 次经过时按按钮，原代码做不到。k=4、5 在原范围内；间隔 60、80 都是原取值。<code>range(5)</code> 是结构常量（属结构扩展）；xhard18 为 k=7、间隔 60</td></tr>
@@ -776,7 +848,7 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <tr><td>4.1</td><td>MoveCube</td><td>只有母档</td><td>不适用（无新档）</td><td>不适用（无新档）</td><td>不适用（无新档）</td><td><code>src/robomme_xhard/configs.py::XHARD_TASKS</code> 显式排除 MoveCube、InsertPeg，没有新档</td></tr>
 <tr><td>4.2</td><td>InsertPeg</td><td>只有母档</td><td>不适用（无新档）</td><td>不适用（无新档）</td><td>不适用（无新档）</td><td>同上</td></tr>
 <tr><td>4.3</td><td>PatternLock</td><td>L=7/8/9/10/11</td><td>否</td><td>否</td><td>是</td><td>仍是 5×5 网格、8 邻接、不重复节点；原 hard 的 length 为 [4,8]，L=9～11 越界。原采样耗尽时会保留末路径，故不能断言任何 seed 绝不会产生 L&gt;8；按正常接受域判参数越界</td></tr>
-<tr><td>4.4</td><td>RouteStick</td><td>S=6/7/8/9/10</td><td>否</td><td>否</td><td>是</td><td>1×9 位置格：5 个路径按钮 + 4 个障碍方块，不变；相邻游走、允许折返；原 hard 为 4～7 条边，S=8～10 越界</td></tr>
+<tr><td>4.4</td><td>RouteStick</td><td>S=6/7/8/9/10</td><td>否</td><td>否</td><td>是</td><td>1×9位置格：路径按钮位于[0,2,4,6,8]，另有4个障碍位置；<code>buttons_grid</code> 实际创建9个目标actor，不把5个路径按钮位置当成总actor数；相邻游走、允许折返；原 hard 为 4～7 条边，S=8～10 越界</td></tr>
 </table>
 <p><b>“原本执行不到”的两类：</b></p>
 <ul>
@@ -799,7 +871,27 @@ table.kv td:first-child { white-space:nowrap; width:11em; }
 <p>上述 7 个环境的这些档经用户裁决全部保留（原话「1 全部保留」）；用户此前预期是“只有 VideoPlaceButton 会有”。</p>
 <p><b>2026-10-12 审计补注</b>：1012 计划 K4「空容器当发起者」——原 hard 第 3 个发起者本就可能是空容器 bin_3，新规则只是让第 1、2 段以及 S≥4 时的发起者也可以是空容器，属于原有行为的取值放宽，不属结构扩展，不改 2.3、2.4 两行的判定。</p>
 
-<h2 id="p1-h5">五、H5 产物一致性检验（xhard12～xhard20 全档，2026-10-11）</h2>
+<h2 id="p1-h5">五、H5 已验证什么，尚未验证什么</h2>
+<p><b>结论：当前证据支持“首步结构一致＋逐步标记遍历”，不支持“全文件全字段完全一致”或“可以直接训练”。</b>相同录像器提供代码来源依据，不能代替实物比较；格式相容也不等于 MotionJEPA 白名单、建库或训练已经通过。</p>
+<p>冻结源码为 <code>f98c779a2c3f086759d9fcc4663a06da7deec083</code>。已实现 <code>src/robomme_xhard/</code> 和生成器开关；派生 H5 的 <code>setup/difficulty</code> 写真实 xhard 标签。母档 VideoRepick 为 medium，其余为 hard；<code>source_difficulty</code> 属卡片／metadata 来源信息，不是另一个 H5 dataset。受保护目录已有获批目标分支改动，不能再写“src/robomme 零改动”。</p>
+<h3>先分清四批历史证据</h3>
+<table><thead><tr><th>批次</th><th>样本与检查</th><th>结论的边界</th></tr></thead><tbody>
+<tr><td>10-11 审查脚本样本</td><td>52个派生样本；剔除 <code>*_raw</code>、<code>fail_recover_*</code>，目标句列表允许变长；历史 <code>XHARD_VS_OFFICIAL_KEYSET=PASS files=52 pass=52</code></td><td>样本已删除，不能现场复验；24个有演示样本扫描通过，28个无演示样本被 <code>d&gt;0</code> 拒绝，不是52个全部能训练。历史HF两对样本同样已删除，只保留 files=2 的历史结论。</td></tr>
+<tr><td>xhard-1011 正式批次</td><td>52派生＋16母档，<code>XHARD_FINAL=PASS configs=52 mothers=16</code>；标签、seed、非空等检查</td><td>不是重复做了所有字段对官方原件的比较；其中三项交换任务还是旧配对。原始运行退出0。</td></tr>
+<tr><td>VideoPlaceButton 修版</td><td>vpbfix-1012 共3卡，同seed10701，958／1132／1265步，退出0</td><td>母目标4句、两派生3句；旧final派生仍4句，以修版为准，不覆盖历史数字。</td></tr>
+<tr><td>交换配对 v2 smoke</td><td>4个身份，3成功H5、1图拒绝；<code>SMOKE_H5=PASS files=3 labels=3 completion=3 rgb_contract=3</code></td><td>仅 VideoUnmaskSwap 两条、VideoRepick 一条成功；ButtonUnmaskSwap 没有成功H5。生成器退出1；不是全键或全量验收。旧碰撞v1的165/180不属于此批。</td></tr>
+</tbody></table>
+<h3>本轮只读实物复核：71文件</h3>
+<p>在 sled-aspen 只读打开已完成的 <code>artifacts/xhard/xhard-1011/final/</code> 68文件和 <code>vpbfix-1012/</code> 3文件；没有读取运行中的 v2 全量目录，没有读取图像像素。原命令、范围、输出及限制见 <a href="docs/site-review/1012-frozen-site-audit.md">冻结审查与H5实物证据</a>。</p>
+<table><thead><tr><th>检查层</th><th>实测结果</th><th>没有证明什么</th></tr></thead><tbody>
+<tr><td>可读性与时间步结构</td><td><code>H5_READ=PASS files=71 elapsed_seconds=18.304</code>，退出0；命令断言每文件单episode，timestep连续。</td><td>该尾行没有强断言全部下游训练契约；其余结果来自逐文件打印后的人工汇总。</td></tr>
+<tr><td>首步基本字段与逐步标记</td><td>71文件首步 front_rgb 均256×256×3、uint8；演示和完成标记首步均标量bool。逐步遍历标记，均存在首完成位置c且 c+2≤T；52正式派生中24有非空演示前缀、28无演示。</td><td>未读像素内容，未比所有时间步的所有字段、动作数值或数据dtype；不意味着28个无演示文件能通过要求 d&gt;0 的扫描器。</td></tr>
+<tr><td>首步完整dataset结构</td><td><code>FIRST_TIMESTEP_SCHEMA=PASS files=54</code>，差异列表 <code>[]</code>，退出0；52正式派生＋2修版派生，与同任务母档比较首步全部dataset键、dtype、shape。</td><td>比较对象是同任务母档，不是官方参考集；不是全时间步、全数值、v2全量一致性。</td></tr>
+<tr><td>setup结构例外</td><td>唯一dtype/shape差异：VideoPlaceButton修版目标列表从母档 <code>object (4,)</code> 变为派生 <code>object (3,)</code>。</td><td>这是明确的shape变化，不能称“全部shape完全相同”；删除歧义候选句是已批准语义修订。</td></tr>
+</tbody></table>
+<p><b>训练边界：</b>本轮未执行 MotionJEPA 真实扫描入口、来源锁、白名单、建库或训练。历史 <code>MJ_SCAN_VIDEO_TASKS=PASS files=24</code> 只代表那个扫描阶段；<code>MJ_SCAN_NO_DEMO_TASKS=FAIL files=28 official_same=demo0</code>、历史白名单／来源锁失败仍保留，未在本轮修复。历史退出139是非零退出，不能说完全不影响。训练可用性必须由后续明确授权的入口验证判定。</p>
+<details class="historical-section"><summary>历史H5说明与原始判定行（展开）：保留证据，不作当前全量或训练兼容性结论</summary>
+<p><b>历史阅读边界：</b>以下整段保留当时问答、样本和判定行。其中“尚无新包”“difficulty仍hard”“50档”“完全相同”“直接训练”等旧陈述不再作为现行事实；当前范围与纠正以上方为准。旧样本已删除的检查不可重放，不把历史文件数与本轮71文件相加。</p>
 <section id="p1-h5-plain">
 <p class="muted"><small>来源：用户原话「http://sled-aspen.eecs.umich.edu:8092/h5.html没看懂这一部分是给人干的告诉我为什么是一致」「改，写进第五节最前面」</small></p>
 <h3>这一节回答什么</h3>
@@ -998,6 +1090,7 @@ WHITELIST=FAIL</code></pre>
 <li><b>产物去留</b>：已按用户“19删除同意”与“除了最终产物都要删除。 我说的是计划内的 不是现在 但是现在也删除”（R28）删除 <code>artifacts/audit-1011/</code> 下的 H5（含本轮 52 档与 VideoRepick <code>tmp_rec</code>）、<code>artifacts/h5-smoke-1011/</code>、<code>artifacts/hf-v2-sample/</code>，合计约 41 GB；审查脚本、日志、json 共 27 MB 保留作证据。</li>
 </ul>
 
+</details>
 <h2 id="p1-_6">六、验收、步骤、子代理（三行）</h2>
 <ul>
 <li><strong>验收</strong>：52 个配置唯一、difficulty 写 xhard 值并另存 source_difficulty、同 seed 不换 seed、母档同 seed 重生成、避开 FailRecover、录像非空、不新增物体、8 帧只查每任务最长一档、保护目录只含已批的 task_goal.py 四分支、ButtonUnmaskSwap 按钮步骤 choice 非空（R27 方案甲）、每阶段验收后删净中间产物（R28）；两倍上界作废（R4）只作统计。判定行见第二部分三节“现行闸门”，不以 INFO 统计代替通过。</li>

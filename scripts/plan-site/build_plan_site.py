@@ -135,6 +135,13 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         'href="#p1-review"', 'href="review.html#p1-review"')
     pages["goals.html"] = pages["goals.html"].replace(
         'href="#p1-_4"', 'href="envs.html#p1-_4"')
+    # 分页编号跟随站点导航；根计划仍保留自身的章节编号。
+    pages["envs.html"] = pages["envs.html"].replace(
+        '<h2 id="p1-_4">三、现行环境与五档配置</h2>',
+        '<h2 id="p1-_4">二、现行环境与五档配置</h2>')
+    pages["goals.html"] = pages["goals.html"].replace(
+        '<h2 id="p1-goals">五、现行总目标与子目标对照</h2>',
+        '<h2 id="p1-goals">三、现行总目标与子目标对照</h2>')
     # 新正文的两份运行档案固定到审查基线；实施页保留其既有链接规则。
     for rel in ("docs/xhard-doc/xhard-1011/result.md",
                 "docs/xhard-doc/xhard-1012-swapv2-smoke/result.md"):
