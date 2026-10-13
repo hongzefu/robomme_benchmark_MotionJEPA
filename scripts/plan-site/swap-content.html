@@ -1,0 +1,66 @@
+<h1 id="swap">六、交换机制调整</h1>
+<p>原 xhard 方案通过增加交换次数拉长任务；配对 v2 在这些次数之上，进一步调整“谁和谁交换”：先排除会碰撞的槽对，再让可交换的对象尽量均衡地参与。它只作用于下面三个任务的派生档，母档保留原规则。</p>
+<blockquote>
+<p><strong>当前说明的固定源码版本：</strong><code>f98c779a2c3f086759d9fcc4663a06da7deec083</code>。</p>
+<p><strong>已验证到四张样本：</strong>18 项 GPU 契约验证通过；四张 xhard20 样本中 3 张任务成功、1 张因可行图有孤立槽被正常拒绝，得到 3 份 H5。<strong>尚未完成全量验收。</strong>图 2 是更早的三 seed 规划探针，不是这次四张样本或全量生成的结果。</p>
+</blockquote>
+
+<h2 id="scope">涉及哪些任务</h2>
+<p>下面各档依次为 xhard12、xhard14、xhard16、xhard18、xhard20；S 表示交换次数，P 表示按钮按压次数。配对 v2 不新增物体，也没有再提高这些既有次数。</p>
+<table>
+<thead><tr><th>官网编号与任务</th><th>原有物体与母档</th><th>五个派生档的次数</th><th>保留的任务流程</th></tr></thead>
+<tbody>
+<tr><td>2.3 VideoUnmaskSwap</td><td>hard：4 个容器、3 色隐藏块</td><td>S = 4 / 5 / 7 / 9 / 11</td><td>观看交换后两次抓取，交换演示变长</td></tr>
+<tr><td>2.4 ButtonUnmaskSwap</td><td>hard：4 个容器、3 色隐藏块、2 个按钮</td><td>P/S = 3/4、4/6、4/8、5/10、6/12</td><td>沿用 xhard 的右起左右交替按压；按住不重复计数，错侧或双按不推进；生成求解器在首次抓取前等待末次交换落定，保留两抓尾段</td></tr>
+<tr><td>3.2 VideoRepick</td><td>medium：3 个同色方块、1 个按钮</td><td>S = 5 / 7 / 10 / 13 / 15；重抓次数固定 2</td><td>沿用重抓流程，交换演示变长</td></tr>
+</tbody></table>
+<p>次数扩展与配对调整是两层变化：S 超出这三个母来源档位原有的 2–3 次范围；父类调度仅实现 1–3 次。v2 允许非最近邻搭档，但不代表每个 seed 或每一段都一定会选到非最近邻。派生档的详细长度见<a href="envs.html">二、逐环境怎么改与长度对齐</a>，任务目标见<a href="goals.html">三、逐任务 goal 对照</a>。</p>
+
+<h2 id="mechanism">从“先选再查”到“先查再选”</h2>
+<p><strong>槽位</strong>是对象交换前后可占据的位置与朝向。两个对象完成对换后，槽位集合不变，变化的是哪个对象占哪个槽。v2 先认证全部无序槽对，组成可行槽对图 G，再在图中选择一整条交换序列。</p>
+<table>
+<thead><tr><th>机制</th><th>配对 v1</th><th>配对 v2</th></tr></thead>
+<tbody>
+<tr><td>碰撞与选对顺序</td><td>先选参与较少的发起者，再选最近邻搭档；选定后查扫掠，失败即拒绝</td><td>先查全部槽对的整段扫掠，仅从可行边中选对；检查包含其余交换对象与按钮包络</td></tr>
+<tr><td>怎样均衡</td><td>双方总参与次数都会累加，但只用发起者的次数挑发起者；搭档仍由最近邻决定</td><td>用两个槽当前占用者的次数打分：先比较两者较大值，再比较两者之和，取最小；平分随机选</td></tr>
+<tr><td>避免立即换回</td><td>选发起者时尽量排除上一对对象</td><td>明确禁止紧接着使用同一个无序槽对</td></tr>
+<tr><td>全序列与各档</td><td>按当前档的次数逐段选择</td><td>按该任务最长档规划；同一 seed、同一初始布局下，短档使用相同序列的前缀</td></tr>
+<tr><td>运行期绑定</td><td>重新找最近邻，检查是否还是预定搭档</td><td>检查预定对象是否仍在预期槽位，并核对段端点及实际扫掠；不再以最近邻身份作绑定判据</td></tr>
+</tbody></table>
+<p><strong>均衡是优化目标，不是保证：</strong>整条最长序列的参与次数极差 ≤ 1 时采用；否则继续换随机数重新排整条，最多尝试 20 条。若仍达不到，返回其中极差最小的第一条，不会为了均衡无限重试，也不保证短档前缀的极差 ≤ 1。</p>
+<p><strong>固定槽位图有前提：</strong>各交换对象必须同形、初始等高；当前实现逐项严格检查碰撞盒尺寸、局部位置与朝向及初始高度，不满足就抛 <code>SceneGenerationError</code>，没有动态换图兜底。每个槽至少要有一条可行边，否则在 <code>graph</code> 阶段拒绝；图可以不连通，例如两个互不相通但各自可交换的对子。</p>
+<p><strong>借用了 V9 的算法，没有整体照搬 V9：</strong>这里使用其可行图与均衡规划算法，三个任务统一采用 <code>max_sum</code> 打分、不要求图连通；随机流独立固定为 <code>seed + 0x53574150</code>，不从父类主随机流追加抽种子，也不掺入档位。可行图仍按本仓库实际几何与按钮包络认证。</p>
+
+<h2 id="probe">图 2：三个 seed 的历史规划探针</h2>
+<p>保留下图的原图与原图注，用来解释可行边和参与次数。5700 的可用对子增加；9300 的两条边虽不连通，但每个槽都有边。<strong>右下 10500 的序列与参与次数 [8,8,8,0] 属于历史宽松条件探针：</strong>图中“只要求有边”仅要求整张图存在可行边；当前口径 B 要求<strong>每个槽都有边</strong>，10500 因槽 3 孤立会在规划前拒绝，不会执行图中这条序列。图中的规划序列和数字仅属于这次历史探针，不能当作后续全量结果。</p>
+{{SWAP_FIGURE_2}}
+
+<h2 id="comparison">图 3：两版配对流程</h2>
+<p>下图原样保留 v1/v2 的结构对比；左侧的旧版也会累计双方参与次数。右侧“极差 ≤ 1”的判断是有限次重排的提前接受条件，达到 20 次仍未满足时取最好的一条。</p>
+{{SWAP_FIGURE_3}}
+
+<h2 id="runtime">执行时保留什么、检查什么</h2>
+<p>交换运动仍使用原来的 <code>swap_flat_two_lane</code>：两个对象沿相反弯道同时对换，每段 50 步、横向偏移 0.07 米、高度不变。v2 改的是配对、认证及绑定，没有新增运动动作，也没有改抓取和按压动作本身。</p>
+<p>按钮按真实底座与按帽构成保守包络；运行时即使按帽下沉，仍按未按下的顶面检查。建场时由根位姿与关节父子变换推导按帽位姿，避免读取尚未初始化好的子连杆世界位姿。交换段起点重新认证实际扫掠，子步检查实际布局。</p>
+<p><strong>运行期失败只记录首条 <code>_xhard_fatal</code>，不即时抛异常打断仿真。</strong>生成器再读取这个标记，将该样本判为失败并记录原因；“仿真继续走”不表示样本合格。建场时的前提或可行图拒绝则发生在轨迹执行之前。碰撞保证覆盖交换对象之间及交换对象与按钮之间，<strong>机械臂、桌面不在这一保证范围内</strong>。</p>
+
+<h2 id="evidence">目前有多少实测证据</h2>
+<p>以下是固定版本中已归档的阶段 D 后续结果；实际运行源码为 <code>e6e2d1e5d2ab6a428b271d92cd0e476480c59a68</code>。18 项 GPU 验证退出 0；四张样本的验收通过，但生成器因包含一张正常拒绝样本而退出 1。</p>
+<table>
+<thead><tr><th>任务／seed</th><th>xhard20 结果</th><th>产物帧数</th></tr></thead>
+<tbody>
+<tr><td>2.3 VideoUnmaskSwap 5700</td><td>任务成功</td><td>871</td></tr>
+<tr><td>2.3 VideoUnmaskSwap 9300</td><td>任务成功</td><td>890</td></tr>
+<tr><td>2.4 ButtonUnmaskSwap 10500</td><td>可行图有孤立槽，正常拒绝；未换 seed</td><td>无 H5</td></tr>
+<tr><td>3.2 VideoRepick 11200</td><td>任务成功</td><td>1367</td></tr>
+</tbody></table>
+<p><code>GPU_CONTRACT=PASS tests=18</code>；<code>SWAP_V2_SMOKE=PASS cards=4 task_success=3 graph_reject=1 infra=0 generator_exit=1</code>；<code>SMOKE_H5=PASS files=3 labels=3 completion=3 rgb_contract=3</code>。三份 H5 的标签、完成标志和首帧图像格式通过核对，不等同于全量逐字段一致性验证。</p>
+<p>冻结证据：<a href="https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/f98c779a2c3f086759d9fcc4663a06da7deec083/src/robomme_xhard/configs.py">档位次数与母档配置</a> · <a href="https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/f98c779a2c3f086759d9fcc4663a06da7deec083/src/robomme_xhard/swap_plan.py">配对、按钮包络与运行检查</a> · <a href="https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/f98c779a2c3f086759d9fcc4663a06da7deec083/src/robomme_xhard/collision/swap_uniform.py">均衡算法与 20 次预算</a> · <a href="https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/f98c779a2c3f086759d9fcc4663a06da7deec083/docs/xhard-doc/xhard-1012-swapv2-smoke/result.md">四张样本及 H5 结果</a> · <a href="https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/3083af74af0539f269ab61b1b3d980e9237c8d51/src/robomme_xhard/swap_plan.py">旧版双方计数逻辑</a>。</p>
+
+<h2 id="limits">保留与未完成的边界</h2>
+<ul>
+<li>母档、物体数量、交换双弯道、每段 50 步及 0.07 米偏移保留；按钮任务的既有交替按压规则也保留。</li>
+<li>有限重排不保证极差一定 ≤ 1；图不要求连通，也不保证对象能去到所有槽位。</li>
+<li>三张成功样本与一张预期拒绝证明了本次小规模验证结果；全量成功数、全量 H5 一致性和新一轮完整视频尚未验收。</li>
+<li>原有视频保持其原来的来源与结论；图 2 的历史探针、图 3 的机制示意都不替代全量实测。H5 的独立检查见<a href="h5.html">五、H5 产物一致性检验</a>。</li>
+</ul>

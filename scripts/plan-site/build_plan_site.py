@@ -1,6 +1,6 @@
 """把根目录单文件计划 HTML 拆成托管网页（分页），输出到 artifacts/plan-site/。
 
-页面：index（引言、口径、三行概要、导航）/ impl（实施结果，仅当根目录存在 1012-xhard12-env-impl.html 时生成）/ interface（接口怎么改）/ envs（逐环境与长度）/ goals（逐任务总目标对照）/ review（逐环境物体与动作审查）/ h5（H5 产物一致性检验）/ details（第二部分技术细节）。
+页面：index（引言、口径、三行概要、导航）/ impl（实施结果，仅当根目录存在 1012-xhard12-env-impl.html 时生成）/ interface（接口怎么改）/ envs（逐环境与长度）/ goals（逐任务总目标对照）/ review（逐环境物体与动作审查）/ h5（H5 产物一致性检验）/ swap（交换机制调整）/ details（第二部分技术细节）。
 根计划里以 base64 内联的 PNG 还原成相对路径引用（data-src），图片另行复制；envs 页的数轴（V2 参照与 V3 各任务的中位条）
 由 scripts/plan-site/align_section.py 以「内联数据 + timeline_board.js」直接写在根计划里，本脚本只切页、不再注入。
 实施页的 <video> 引用改写为其 data-site-src（videos/<文件名>），对应 mp4 从 --videos-src 复制到站点 videos/，源文件缺失即报错退出。
@@ -19,7 +19,23 @@ REPO = pathlib.Path(__file__).resolve().parents[2]
 IMPL_NAV = ("impl.html", "实施结果")
 IMPL_CARD = "实施结果（10-12）"
 GITHUB_BLOB = "https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/newtask-v3-MotionJepa1006"
-NAV = [("index.html", "首页"), ("interface.html", "一、接口怎么改"), ("envs.html", "二、逐环境怎么改与长度对齐"), ("goals.html", "三、逐任务 goal 对照"), ("review.html", "四、逐环境物体与动作审查"), ("h5.html", "五、H5 产物一致性检验"), ("details.html", "技术细节（第二部分）")]
+NAV = [("index.html", "首页"), ("interface.html", "一、接口怎么改"), ("envs.html", "二、逐环境怎么改与长度对齐"), ("goals.html", "三、逐任务 goal 对照"), ("review.html", "四、逐环境物体与动作审查"), ("h5.html", "五、H5 产物一致性检验"), ("swap.html", "六、交换机制调整"), ("details.html", "技术细节（第二部分）")]
+
+
+def swap_body(content: pathlib.Path, plan: pathlib.Path) -> str:
+    """只提取指定两幅原图及图注，不重新序列化、不修改其字节。"""
+    doc = plan.read_bytes().decode("utf-8")
+    figures = re.findall(r"<figure\b[^>]*>.*?</figure>", doc, flags=re.S)
+    body = content.read_bytes().decode("utf-8")
+    for token, marker in (
+        ("{{SWAP_FIGURE_2}}", 'src="docs/xhard-doc/xhard-1012-swap-v2-probe/probe_g.png"'),
+        ("{{SWAP_FIGURE_3}}", "<figcaption>图 3　配对机制流程对比："),
+    ):
+        matches = [figure for figure in figures if marker in figure]
+        if len(matches) != 1 or body.count(token) != 1:
+            raise ValueError(f"交换页原图提取数量不符：{token} 原图={len(matches)} 占位符={body.count(token)}")
+        body = body.replace(token, matches[0])
+    return body
 
 
 def section(doc: str, start_pat: str, end_pat: str) -> str:
@@ -49,7 +65,8 @@ def site_videos(body: str) -> tuple[str, list[str]]:
 
 
 def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = None,
-          videos_src: pathlib.Path | None = None) -> list[str]:
+          videos_src: pathlib.Path | None = None, *, swap_content: pathlib.Path | None = None,
+          swap_plan: pathlib.Path | None = None) -> list[str]:
     nav_items = list(NAV)
     if impl is not None:
         nav_items.insert(1, IMPL_NAV)
@@ -61,6 +78,7 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         "nav.top { display:flex; gap:18px; flex-wrap:wrap; padding:10px 0 14px; border-bottom:2px solid var(--border); margin-bottom:18px; font-size:15px; }\n"
         "nav.top a { color:var(--muted); text-decoration:none; padding:4px 8px; border-radius:6px; }\n"
         "nav.top a.cur { color:#fff; background:var(--accent); }\n"
+        "blockquote code { overflow-wrap:anywhere; }\n"
         ".cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin:18px 0; }\n"
         ".card { border:1px solid var(--border); border-radius:8px; padding:14px 16px; }\n"
         ".card a { font-weight:600; font-size:1.05em; }\n</style>"))
@@ -90,9 +108,12 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         "goals.html": goals,
         "review.html": review,
         "h5.html": h5,
+        "swap.html": swap_body(swap_content or REPO / "scripts/plan-site/swap-content.html",
+                               swap_plan or REPO / "1012-swap-pairing-v2-plan.html"),
         "details.html": part2,
     }
     heads = {name: head for name in pages}
+    heads["swap.html"] = re.sub(r"<title>.*?</title>", "<title>六、交换机制调整 — RoboMME xhard</title>", head, flags=re.S)
     videos: list[str] = []
     if impl is not None:
         idoc = impl.read_text(encoding="utf-8")
@@ -107,6 +128,35 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         ibody = re.sub(r'href="(docs/[^"]+)"', rf'href="{GITHUB_BLOB}/\1"', ibody)
         pages = {"impl.html": ibody, **pages}
         heads["impl.html"] = ihead
+    # 原计划的锚点与说明页不同，统一落在新页首页，避免保留失效锚点。
+    pages = {name: re.sub(r'href="1012-swap-pairing-v2-plan\.html(?:#[^"]*)?"',
+                          'href="swap.html"', body) for name, body in pages.items()}
+    pages["envs.html"] = pages["envs.html"].replace(
+        'href="#p1-review"', 'href="review.html#p1-review"')
+    pages["goals.html"] = pages["goals.html"].replace(
+        'href="#p1-_4"', 'href="envs.html#p1-_4"')
+    # 分页编号跟随站点导航；根计划仍保留自身的章节编号。
+    pages["envs.html"] = pages["envs.html"].replace(
+        '<h2 id="p1-_4">三、现行环境与五档配置</h2>',
+        '<h2 id="p1-_4">二、现行环境与五档配置</h2>')
+    pages["goals.html"] = pages["goals.html"].replace(
+        '<h2 id="p1-goals">五、现行总目标与子目标对照</h2>',
+        '<h2 id="p1-goals">三、现行总目标与子目标对照</h2>')
+    # 新正文的两份运行档案固定到审查基线；实施页保留其既有链接规则。
+    for rel in ("docs/xhard-doc/xhard-1011/result.md",
+                "docs/xhard-doc/xhard-1012-swapv2-smoke/result.md"):
+        frozen = ("https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/"
+                  "f98c779a2c3f086759d9fcc4663a06da7deec083/" + rel)
+        pages = {name: body if name == "impl.html" else body.replace(
+            f'href="{rel}"', f'href="{frozen}"') for name, body in pages.items()}
+    # 首页历史参照不随站点复制；只改这一条已知引用，冻结到本轮源码版本。
+    reference = "1006-xhard12-prev-training-and-task-plan.md"
+    frozen_reference = (
+        "https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/"
+        "f98c779a2c3f086759d9fcc4663a06da7deec083/" + reference
+    )
+    pages["index.html"] = pages["index.html"].replace(
+        f'href="{reference}"', f'href="{frozen_reference}"')
     out.mkdir(parents=True, exist_ok=True)
     written = []
     for name, body in pages.items():
@@ -133,6 +183,17 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
         written.append(rel)
+    # 仅发布明确列出的站内证据，不遍历 docs，也不依赖尚未推送的远端提交。
+    for rel in ("docs/site-review/1012-frozen-site-audit.md",):
+        if f'href="{rel}"' not in "".join(pages.values()):
+            continue
+        src = REPO / rel
+        if not src.is_file():
+            raise FileNotFoundError(f"站内证据源文件缺失：{src}")
+        dst = out / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
+        written.append(rel)
     return written
 
 
@@ -141,16 +202,22 @@ def main() -> None:
     ap.add_argument("--plan", default=str(REPO / "1006-xhard12-env-plan.html"))
     ap.add_argument("--out", default=str(REPO / "artifacts" / "plan-site"))
     ap.add_argument("--impl", default=str(REPO / "1012-xhard12-env-impl.html"),
-                    help="实施结果 HTML；文件不存在或传空串时不生成 impl.html，其余分页与旧版逐字节相同")
+                    help="实施结果 HTML；文件不存在或传空串时不生成 impl.html")
+    ap.add_argument("--swap-content", default=str(REPO / "scripts/plan-site/swap-content.html"),
+                    help="交换页正文片段，含两幅原图占位符")
+    ap.add_argument("--swap-plan", default=str(REPO / "1012-swap-pairing-v2-plan.html"),
+                    help="只读取图 2、图 3 及原图注的来源计划")
     ap.add_argument("--videos-src", default=str(REPO / "artifacts" / "xhard" / "xhard-1011" / "report" / "per_episode_strip"),
                     help="实施页视频的源目录（按文件名查找）")
     a = ap.parse_args()
     impl = pathlib.Path(a.impl) if a.impl and pathlib.Path(a.impl).is_file() else None
-    written = build(pathlib.Path(a.plan), pathlib.Path(a.out), impl, pathlib.Path(a.videos_src))
+    written = build(pathlib.Path(a.plan), pathlib.Path(a.out), impl, pathlib.Path(a.videos_src),
+                    swap_content=pathlib.Path(a.swap_content), swap_plan=pathlib.Path(a.swap_plan))
     pages = [w for w in written if w.endswith(".html")]
     videos = [w for w in written if w.startswith("videos/")]
-    images = len(written) - len(pages) - len(videos)
-    print(f"PLAN_SITE=OK pages={len(pages)} images={images} videos={len(videos)} out={a.out}")
+    images = sum(w.endswith((".png", ".jpg", ".svg")) for w in written)
+    documents = len(written) - len(pages) - len(videos) - images
+    print(f"PLAN_SITE=OK pages={len(pages)} images={images} videos={len(videos)} documents={documents} out={a.out}")
 
 
 if __name__ == "__main__":
