@@ -22,8 +22,9 @@ GITHUB_BLOB = "https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/new
 NAV = [("index.html", "首页"), ("interface.html", "一、接口怎么改"), ("envs.html", "二、逐环境怎么改与长度对齐"), ("goals.html", "三、逐任务 goal 对照"), ("review.html", "四、逐环境物体与动作审查"), ("h5.html", "五、H5 产物一致性检验"), ("swap.html", "六、交换机制调整"), ("details.html", "技术细节（第二部分）")]
 
 
-def swap_body(content: pathlib.Path, plan: pathlib.Path) -> str:
-    """只提取指定两幅原图及图注，不重新序列化、不修改其字节。"""
+def swap_body(content: pathlib.Path, plan: pathlib.Path,
+              v3_plan: pathlib.Path | None = None) -> str:
+    """提取 V3 流程图及两幅历史原图；旧正文的两参数调用仍可用。"""
     doc = plan.read_bytes().decode("utf-8")
     figures = re.findall(r"<figure\b[^>]*>.*?</figure>", doc, flags=re.S)
     body = content.read_bytes().decode("utf-8")
@@ -32,6 +33,14 @@ def swap_body(content: pathlib.Path, plan: pathlib.Path) -> str:
         ("{{SWAP_FIGURE_3}}", "<figcaption>图 3　配对机制流程对比："),
     ):
         matches = [figure for figure in figures if marker in figure]
+        if len(matches) != 1 or body.count(token) != 1:
+            raise ValueError(f"交换页原图提取数量不符：{token} 原图={len(matches)} 占位符={body.count(token)}")
+        body = body.replace(token, matches[0])
+    token = "{{SWAP_V3_FIGURE_1}}"
+    if token in body or v3_plan is not None:
+        v3_doc = (v3_plan or REPO / "1012-swap-min3kinds-v3-plan.html").read_bytes().decode("utf-8")
+        matches = [figure for figure in re.findall(r"<figure\b[^>]*>.*?</figure>", v3_doc, flags=re.S)
+                   if "<figcaption>图 1　配对机制流程对比：" in figure]
         if len(matches) != 1 or body.count(token) != 1:
             raise ValueError(f"交换页原图提取数量不符：{token} 原图={len(matches)} 占位符={body.count(token)}")
         body = body.replace(token, matches[0])
@@ -66,7 +75,8 @@ def site_videos(body: str) -> tuple[str, list[str]]:
 
 def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = None,
           videos_src: pathlib.Path | None = None, *, swap_content: pathlib.Path | None = None,
-          swap_plan: pathlib.Path | None = None) -> list[str]:
+          swap_plan: pathlib.Path | None = None,
+          swap_v3_plan: pathlib.Path | None = None) -> list[str]:
     nav_items = list(NAV)
     if impl is not None:
         nav_items.insert(1, IMPL_NAV)
@@ -109,7 +119,7 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         "review.html": review,
         "h5.html": h5,
         "swap.html": swap_body(swap_content or REPO / "scripts/plan-site/swap-content.html",
-                               swap_plan or REPO / "1012-swap-pairing-v2-plan.html"),
+                               swap_plan or REPO / "1012-swap-pairing-v2-plan.html", swap_v3_plan),
         "details.html": part2,
     }
     heads = {name: head for name in pages}
@@ -129,7 +139,7 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         pages = {"impl.html": ibody, **pages}
         heads["impl.html"] = ihead
     # 原计划的锚点与说明页不同，统一落在新页首页，避免保留失效锚点。
-    pages = {name: re.sub(r'href="1012-swap-pairing-v2-plan\.html(?:#[^"]*)?"',
+    pages = {name: re.sub(r'href="1012-swap-(?:pairing-v2|min3kinds-v3)-plan\.html(?:#[^"]*)?"',
                           'href="swap.html"', body) for name, body in pages.items()}
     pages["envs.html"] = pages["envs.html"].replace(
         'href="#p1-review"', 'href="review.html#p1-review"')
@@ -149,6 +159,13 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
                   "f98c779a2c3f086759d9fcc4663a06da7deec083/" + rel)
         pages = {name: body if name == "impl.html" else body.replace(
             f'href="{rel}"', f'href="{frozen}"') for name, body in pages.items()}
+    # V3 结果使用本轮固定提交；旧图、旧运行与实施页链接保留各自身份。
+    v3_blob = ("https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/"
+               "522125e29906d03595a562e51c1898291da2f15f/")
+    pages = {name: body if name == "impl.html" else re.sub(
+        r'href="(docs/xhard-doc/xhard-1012-swapv3/[^"]+)"',
+        lambda match: f'href="{v3_blob}{match.group(1)}"', body)
+        for name, body in pages.items()}
     # 首页历史参照不随站点复制；只改这一条已知引用，冻结到本轮源码版本。
     reference = "1006-xhard12-prev-training-and-task-plan.md"
     frozen_reference = (
@@ -204,15 +221,18 @@ def main() -> None:
     ap.add_argument("--impl", default=str(REPO / "1012-xhard12-env-impl.html"),
                     help="实施结果 HTML；文件不存在或传空串时不生成 impl.html")
     ap.add_argument("--swap-content", default=str(REPO / "scripts/plan-site/swap-content.html"),
-                    help="交换页正文片段，含两幅原图占位符")
+                    help="交换页正文片段，含 V3 流程图与两幅历史原图占位符")
     ap.add_argument("--swap-plan", default=str(REPO / "1012-swap-pairing-v2-plan.html"),
                     help="只读取图 2、图 3 及原图注的来源计划")
+    ap.add_argument("--swap-v3-plan", default=None,
+                    help="V3 图 1 来源计划；省略时按正文占位符自动读取仓库内现行计划")
     ap.add_argument("--videos-src", default=str(REPO / "artifacts" / "xhard" / "xhard-1011" / "report" / "per_episode_strip"),
                     help="实施页视频的源目录（按文件名查找）")
     a = ap.parse_args()
     impl = pathlib.Path(a.impl) if a.impl and pathlib.Path(a.impl).is_file() else None
     written = build(pathlib.Path(a.plan), pathlib.Path(a.out), impl, pathlib.Path(a.videos_src),
-                    swap_content=pathlib.Path(a.swap_content), swap_plan=pathlib.Path(a.swap_plan))
+                    swap_content=pathlib.Path(a.swap_content), swap_plan=pathlib.Path(a.swap_plan),
+                    swap_v3_plan=pathlib.Path(a.swap_v3_plan) if a.swap_v3_plan else None)
     pages = [w for w in written if w.endswith(".html")]
     videos = [w for w in written if w.startswith("videos/")]
     images = sum(w.endswith((".png", ".jpg", ".svg")) for w in written)
