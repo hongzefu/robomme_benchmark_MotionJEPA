@@ -62,3 +62,25 @@ git show 3083af74:src/robomme_xhard/tools/layout.py
 文档检查：`git diff --check` 通过；规定的两个一级标题计数为二；相对链接与锚点存在。用一次性 Playwright 环境验证目录六个跳转、三个图像加载、页面零异常和无水平溢出，`PLAN_DOCUMENT=PASS parts=2 figures=3 toc_clicks=6 page_errors=0`。主会话目视检查三张图及文首、修订裁决截图：箭头落点正常，框与文字无重叠、无截断和缺字，颜色说明一致；没有改图的几何，仅给图一增加历史范围说明。截图位于 `artifacts/plan-review/swapv2-revision-1012-final/`，机器可读摘要存于 `records/plan_document_validation.json`。`IMPLEMENTATION_STOPPED=PASS code_diff=0`，源码、测试与依赖没有本轮修改。
 
 独立固定提交审查 `STATIC_REVISION_REVIEW=PASS`，锚点 `4259009737c295da6338c3d576649f53e27ac443`，确认文件归属、十一文件集合、接续步骤、成功字段语义及重新批准边界一致。随后文档复核补足原提交纪律漏写的 W2-c，并把 K14 的中间态表述明确为原 X5 的禁生成约束，没有改变执行口径。完整提交差异检查发现归档日志六行行尾空白，文档记录仅去掉行尾空白，原日志 `artifacts/logs/xh-swapv2-w1-core-1012.log` 保持原样。修整提交 2.95.2，后续 W1-d 合并编号顺延为 2.95.3；仍待用户审查，不恢复实施。
+
+## 2.95.2 获批后的 W1-d 接续
+
+用户原话：「同意修订后的 2.95.2 计划，开工继续。有重大口径调整一律停工问我，全量仍在 smoke 后单独报批。」批准基线为 `dbe74421087f08ae30310e1aed7c944434ca5399`，工作区干净。环境再次符合 sled-vail 环境 B，SSH 别名和并发配置符合规则；GPU0 使用 1286 MiB / 46068 MiB，利用率零。本阶段仅 CPU。
+
+原 W1 修改代理在其独立工作树快进到批准基线，仅从 `3083af74` 原样恢复 `src/robomme_xhard/tests/test_contract.py`，提交 `09b22e778171f774e77a88d777c1ff72e9d275ba`。定向测试一项通过，2.69 秒，退出零；包路径命中独立工作树。独立审查 `PRE_MERGE_REVIEW=PASS`，主会话复核来源字节与保护目录零差异，再以 `--no-ff` 合并为 `e5879c798deceb29c524840c969cedfd5a734e7c`（2.95.3）。三个原子提交和前次失败合并保持原样。
+
+- `W1_FIXTURE_BYTES=PASS files=1 diff=0`。
+- `RESTORE_V1_FINAL=PASS files=11 diff=0`。
+- `SRC_ROBOMME_ZERO_DIFF=PASS base=0ec9951b`。
+- `W1_FIXTURE_TEST=PASS tests=1 exit=0 seconds=2.69`。
+- `CORE_SHORT=PASS new_failures=0 baseline_failures=4 resolved_fixture=1`。
+
+合并后使用前述相同核心命令，实测 `4 failed, 354 passed, 2 skipped, 118 deselected, 2 warnings in 7.69s`，pytest 退出 1；逐节点比较确认四项失败与固定基线完全相同，新失败为零，前次夹具失败已解决。此处不把 pytest 退出 1 写成退出零，也不将有基线失败的整套测试称为全部通过。通过计划的节点差异闸门后立即 push；远端已从 `9d133d92` 快进到 `e5879c79`。定向与核心日志归档为 `records/w1_d_fixture.txt`、`records/w1_d_core.txt`，节点比对为 `records/w1_d_core_nodes.json`；原始日志保持在各自 `artifacts/logs/`。
+
+## W2 派发前停止：静态前提失败处理存在冲突
+
+只读核对锚点 `e5879c798deceb29c524840c969cedfd5a734e7c`。计划第一部分 K7 明确规定：交换对象盒体集合不同形时抛 `SceneGenerationError`；3.1 与第二部分 1.3 的 `same_shapes/same_height` 却规定前提不满足时不报错，记录 `graph_static=false` 并继续逐段重算可行性。反例为任意两个对象的 `half` 不同：K7 要求立即拒绝，另一处要求继续认证，不能同时实现。仅高度不同并不直接违反 K7，但动态分支的设计也需与最终选择一致。
+
+独立审查确认计划没有明确文本优先级；U1–U13、V1–V3 和本次夹具恢复裁决也没有选择这一分支。固定 V9 的 `plan_balanced_swaps(adj, ...)` 接收固定邻接矩阵，没有形状、高度或动态图参数，无法由该函数代用户裁决。
+
+依据本轮用户「有重大口径调整一律停工问我」与规则第 2 条的失败处理变更边界，主会话在派发 W2 之前停止实施，等待用户决定：静态前提不满足时立即拒绝，或保留动态认证并另明确其重算与选对规则。此处只记录候选，不修改权威计划、不自行选取语义。W2 管理工作树已创建于 `/home/hongzefu/.codex/remote-control-host/worktrees/swapv2-w2/robomme_benchmark_newtask-v3-MotionJepa1006`，基线为上述 2.95.3；没有派 W2 代理，没有写入配对代码，也没有 GPU 契约、四卡 smoke 或全量。本轮没有启动 tmux，用户其他会话不动。
