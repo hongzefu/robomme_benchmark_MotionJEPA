@@ -13,6 +13,7 @@
 from __future__ import annotations
 
 import sys
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -96,6 +97,25 @@ def parse_difficulty_ratio(ratio: str) -> tuple[str, ...]:
     for name, count in zip(DIFFICULTY_ORDER, counts):
         cycle.extend([name] * count)
     return tuple(cycle)
+
+
+def parse_difficulty_cycle(text: str, xhard_values: Iterable[str]) -> tuple[str, ...]:
+    """解析显式难度循环，保留调用者给定的顺序与重复档。"""
+    cycle = tuple(item.strip().lower() for item in text.split(","))
+    allowed = set(DIFFICULTY_ORDER) | set(xhard_values)
+    for name in cycle:
+        if name not in allowed:
+            raise SeedLayoutError(f"难度循环含非法项：{name!r}；可选 {sorted(allowed)}")
+    return cycle
+
+
+def filter_cycle(cycle: tuple[str, ...], available_xhard: Iterable[str]) -> tuple[str, ...]:
+    """剔除当前任务缺失的 xhard 档，保留顺序与重复档。"""
+    available = set(available_xhard)
+    effective = tuple(name for name in cycle if name in DIFFICULTY_ORDER or name in available)
+    if not effective:
+        raise SeedLayoutError("任务的有效难度循环不能为空")
+    return effective
 
 
 def difficulty_for(episode: int, cycle: tuple[str, ...]) -> str:

@@ -26,8 +26,13 @@ sys.path.insert(0, str(REPO_ROOT / "scripts" / "data-generation-newSeed"))
 
 from seed_layout import (  # noqa: E402
     DEFAULT_LAYOUT,
+    DIFFICULTY_ORDER,
+    SeedLayoutError,
+    difficulty_for,
     env_code,
+    filter_cycle,
     get_layout,
+    parse_difficulty_cycle,
     parse_difficulty_ratio,
     plan_episodes,
 )
@@ -76,6 +81,73 @@ def test_env_codes_match_canonical_order() -> None:
 
 def test_difficulty_ratio_211_expands_to_expected_cycle() -> None:
     assert parse_difficulty_ratio("211") == ("easy", "easy", "medium", "hard")
+
+
+XHARD_VALUES = ("xhard12", "xhard14", "xhard16", "xhard18", "xhard20")
+MIXED_CYCLE = ("easy", "medium", "hard", *XHARD_VALUES)
+
+
+def test_parse_difficulty_cycle_accepts_eight_tiers_and_normalizes() -> None:
+    text = " EASY , Medium , HARD , XHARD12 , xhard14 , Xhard16 , xhard18 , xhard20 "
+    assert parse_difficulty_cycle(text, XHARD_VALUES) == MIXED_CYCLE
+    assert DIFFICULTY_ORDER == ("easy", "medium", "hard")
+
+
+def test_parse_difficulty_cycle_preserves_order_and_repeated_tiers() -> None:
+    assert parse_difficulty_cycle("xhard14,easy,xhard14,hard,easy", XHARD_VALUES) == (
+        "xhard14", "easy", "xhard14", "hard", "easy"
+    )
+
+
+@pytest.mark.parametrize("text", ["", " ", ",", "easy,", ",hard", "easy,,hard", "unknown", "xhard13"])
+def test_parse_difficulty_cycle_rejects_empty_or_invalid_items(text: str) -> None:
+    with pytest.raises(SeedLayoutError):
+        parse_difficulty_cycle(text, XHARD_VALUES)
+
+
+def test_parse_difficulty_cycle_uses_supplied_xhard_values() -> None:
+    assert parse_difficulty_cycle("easy,xhard14", ("xhard14",)) == ("easy", "xhard14")
+    with pytest.raises(SeedLayoutError):
+        parse_difficulty_cycle("xhard12", ("xhard14",))
+
+
+@pytest.mark.parametrize(
+    "task, available_xhard, expected",
+    [
+        ("VideoUnmask", ("xhard14",), ("easy", "medium", "hard", "xhard14")),
+        ("MoveCube", (), ("easy", "medium", "hard")),
+    ],
+)
+def test_filter_cycle_removes_missing_task_tiers(
+    task: str, available_xhard: tuple[str, ...], expected: tuple[str, ...]
+) -> None:
+    assert filter_cycle(MIXED_CYCLE, available_xhard) == expected, task
+
+
+def test_filter_cycle_preserves_order_and_repeated_tiers() -> None:
+    cycle = ("xhard12", "hard", "xhard14", "easy", "xhard14", "hard")
+    assert filter_cycle(cycle, ("xhard14",)) == ("hard", "xhard14", "easy", "xhard14", "hard")
+
+
+@pytest.mark.parametrize("cycle", [(), ("xhard12",), ("xhard12", "xhard20")])
+def test_filter_cycle_rejects_empty_result(cycle: tuple[str, ...]) -> None:
+    with pytest.raises(SeedLayoutError):
+        filter_cycle(cycle, ("xhard14",))
+
+
+@pytest.mark.parametrize(
+    "available_xhard, expected",
+    [
+        (XHARD_VALUES, MIXED_CYCLE * 2),
+        (("xhard14",), ("easy", "medium", "hard", "xhard14") * 4),
+        ((), ("easy", "medium", "hard") * 5 + ("easy",)),
+    ],
+)
+def test_mixed_cycle_episode_0_to_15_sequence(
+    available_xhard: tuple[str, ...], expected: tuple[str, ...]
+) -> None:
+    cycle = filter_cycle(parse_difficulty_cycle(",".join(MIXED_CYCLE), XHARD_VALUES), available_xhard)
+    assert tuple(difficulty_for(episode, cycle) for episode in range(16)) == expected
 
 
 @pytest.mark.parametrize("task", TARGET_TASKS)
