@@ -282,81 +282,105 @@ def run_cell(cell: Cell, root: Path, env: str, episodes: int, difficulty: str, k
     started = time.monotonic()
     aborted_by = None
     termination = None
-    process = subprocess.Popen(command, cwd=str(REPO_ROOT), stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT, text=True, bufsize=1,
-                               start_new_session=True, env={**os.environ, "PYTHONUNBUFFERED": "1"})
+    def interrupt(signum: int, _frame: Any) -> None:
+        nonlocal aborted_by
+        aborted_by = f"signal:{signal.Signals(signum).name}"
 
-    def tee() -> None:
-        assert process.stdout is not None
-        with (output / "generate.log").open("w", encoding="utf-8") as log:
-            for line in process.stdout:
-                log.write(line)
-                log.flush()
-                print(line, end="", flush=True)
-
-    log_thread = threading.Thread(target=tee, daemon=True)
-    log_thread.start()
+    previous_handlers = {}
     try:
-        sampler.start(process.pid)
-        while process.poll() is None:
-            if time.monotonic() - started >= timeout_s:
-                aborted_by = "timeout"
-            elif psutil.virtual_memory().available / 2**30 < mem_guard_gb:
-                aborted_by = "mem_guard"
-            if aborted_by:
-                print(f"档 {cell.name} aborted_by={aborted_by}", flush=True)
+        for signum in (signal.SIGTERM, signal.SIGHUP):
+            previous_handlers[signum] = signal.signal(signum, interrupt)
+        process = subprocess.Popen(command, cwd=str(REPO_ROOT), stdout=subprocess.PIPE,
+                                   stderr=subprocess.STDOUT, text=True, bufsize=1,
+                                   start_new_session=True, env={**os.environ, "PYTHONUNBUFFERED": "1"})
+
+        def tee() -> None:
+            assert process.stdout is not None
+            with (output / "generate.log").open("w", encoding="utf-8") as log:
+                for line in process.stdout:
+                    log.write(line)
+                    log.flush()
+                    print(line, end="", flush=True)
+
+        log_thread = threading.Thread(target=tee, daemon=True)
+        log_thread.start()
+        try:
+            sampler.start(process.pid)
+            while process.poll() is None:
+                if not aborted_by and time.monotonic() - started >= timeout_s:
+                    aborted_by = "timeout"
+                elif not aborted_by and psutil.virtual_memory().available / 2**30 < mem_guard_gb:
+                    aborted_by = "mem_guard"
+                if aborted_by:
+                    print(f"档 {cell.name} aborted_by={aborted_by}", flush=True)
+                    termination = terminate_group(process)
+                    break
+                try:
+                    process.wait(timeout=0.5)
+                except subprocess.TimeoutExpired:
+                    continue
+            if process.returncode == 3 and not aborted_by:
+                aborted_by = "pool_crash"
+            # 父进程先退出也须收掉进程组里尚存的 worker。
+            if termination is None:
                 termination = terminate_group(process)
-                break
-            try:
-                process.wait(timeout=0.5)
-            except subprocess.TimeoutExpired:
-                continue
-        if process.returncode == 3:
-            aborted_by = "pool_crash"
-        # 父进程先退出也须收掉进程组里尚存的 worker。
-        if termination is None:
-            termination = terminate_group(process)
+        finally:
+            if process.poll() is None or _group_processes(process.pid):
+                terminate_group(process)
+            sampler.stop()
+            log_thread.join(timeout=5)
+        elapsed = time.monotonic() - started
+        parse_error = None
+        try:
+            results = _read_jsonl(output / "episode_results.jsonl")
+        except json.JSONDecodeError as exc:
+            if not aborted_by:
+                raise
+            # 中止后的坏尾行仍保留原字节；整份记录不再用于计数或测速。
+            results = []
+            parse_error = {"file": str(output / "episode_results.jsonl"),
+                           "message": str(exc), "line": exc.lineno, "column": exc.colno,
+                           "position": exc.pos}
+            print(f"档 {cell.name} 结果解析失败 aborted_by={aborted_by} parse_error={parse_error}", flush=True)
+        generated = json.loads((output / "run_summary.json").read_text(encoding="utf-8")) if (output / "run_summary.json").exists() else {}
+        if generated.get("stopped_by") and not aborted_by:
+            aborted_by = generated["stopped_by"]
+        success = sum(bool(item.get("ok")) for item in results)
+        requested = len(_tasks(env)) * episodes
+        complete = (process.returncode == 0 and not aborted_by and not parse_error and success == requested
+                    and generated.get("requested_count") == requested
+                    and generated.get("success_count") == requested
+                    and generated.get("exhausted_count") == 0)
+        steady = _steady_window(results, cell.workers)
+        summary = {"cell": cell.name, "workers": cell.workers, "gpus": cell.gpus,
+                   "limit_threads": cell.limit_threads, "returncode": process.returncode,
+                   "wall_s": elapsed, "attempts": len(results) if not parse_error else None,
+                   "success": success if not parse_error else None, "parse_error": parse_error,
+                   "requested": requested, "complete": complete, "aborted_by": aborted_by,
+                   "stopped_by": generated.get("stopped_by"), "termination": termination,
+                   "failed_attempts": len(results) - success if not parse_error else None,
+                   "gross_throughput_ep_per_min": success / elapsed * 60 if elapsed > 0 and not parse_error else None,
+                   "steady": steady,
+                   "tiers_completed": sorted({item.get("difficulty") for item in results if item.get("ok") and item.get("difficulty")}),
+                   "resources": _resource_summary(sampler.rows, steady.get("t_start"), steady.get("t_end"), sampler.gpu_rows, results),
+                   "peak_worker_rss_mb": max([sampler.peak_worker_rss_mb, generated.get("peak_rss_mb") or 0,
+                                              *(item.get("peak_rss_mb") or 0 for item in results)]),
+                   "gpu_peaks": {gpu: {"mem_mb": max((row["mem_mb"] for row in sampler.gpu_rows if str(row["index"]) == gpu), default=0),
+                                       "total_mb": min((row["total_mb"] for row in sampler.gpu_rows if str(row["index"]) == gpu), default=0)}
+                                 for gpu in cell.gpu_ids}}
+        _write_json(output / "cell_summary.json", summary)
+        _write_json(output / "resource_samples.json", {"cpu_memory": sampler.rows, "gpus": sampler.gpu_rows})
+        print(f"档 {cell.name} 完成 complete={complete} aborted_by={aborted_by} 稳态吞吐={steady.get('throughput_ep_per_min')}", flush=True)
+        if not keep:
+            for name in ("hdf5_files", "videos"):
+                target = output / name
+                if target.is_dir() and not target.is_symlink():
+                    shutil.rmtree(target)
+        return summary
     finally:
-        if process.poll() is None or _group_processes(process.pid):
-            terminate_group(process)
-        sampler.stop()
-        log_thread.join(timeout=5)
-    elapsed = time.monotonic() - started
-    results = _read_jsonl(output / "episode_results.jsonl")
-    generated = json.loads((output / "run_summary.json").read_text(encoding="utf-8")) if (output / "run_summary.json").exists() else {}
-    if generated.get("stopped_by"):
-        aborted_by = generated["stopped_by"]
-    success = sum(bool(item.get("ok")) for item in results)
-    requested = len(_tasks(env)) * episodes
-    complete = (process.returncode == 0 and not aborted_by and success == requested
-                and generated.get("requested_count") == requested
-                and generated.get("success_count") == requested
-                and generated.get("exhausted_count") == 0)
-    steady = _steady_window(results, cell.workers)
-    summary = {"cell": cell.name, "workers": cell.workers, "gpus": cell.gpus,
-               "limit_threads": cell.limit_threads, "returncode": process.returncode,
-               "wall_s": elapsed, "attempts": len(results), "success": success,
-               "requested": requested, "complete": complete, "aborted_by": aborted_by,
-               "stopped_by": generated.get("stopped_by"), "termination": termination,
-               "failed_attempts": len(results) - success,
-               "gross_throughput_ep_per_min": success / elapsed * 60 if elapsed > 0 else None,
-               "steady": steady,
-               "tiers_completed": sorted({item.get("difficulty") for item in results if item.get("ok") and item.get("difficulty")}),
-               "resources": _resource_summary(sampler.rows, steady.get("t_start"), steady.get("t_end"), sampler.gpu_rows, results),
-               "peak_worker_rss_mb": max([sampler.peak_worker_rss_mb, generated.get("peak_rss_mb") or 0,
-                                          *(item.get("peak_rss_mb") or 0 for item in results)]),
-               "gpu_peaks": {gpu: {"mem_mb": max((row["mem_mb"] for row in sampler.gpu_rows if str(row["index"]) == gpu), default=0),
-                                   "total_mb": min((row["total_mb"] for row in sampler.gpu_rows if str(row["index"]) == gpu), default=0)}
-                             for gpu in cell.gpu_ids}}
-    _write_json(output / "cell_summary.json", summary)
-    _write_json(output / "resource_samples.json", {"cpu_memory": sampler.rows, "gpus": sampler.gpu_rows})
-    print(f"档 {cell.name} 完成 complete={complete} aborted_by={aborted_by} 稳态吞吐={steady.get('throughput_ep_per_min')}", flush=True)
-    if not keep:
-        for name in ("hdf5_files", "videos"):
-            target = output / name
-            if target.is_dir() and not target.is_symlink():
-                shutil.rmtree(target)
-    return summary
+        for signum, previous in previous_handlers.items():
+            signal.signal(signum, previous)
+
 
 
 def memory_admitted(cell: Cell, probe: dict[str, Any], available_gb: float,
@@ -475,7 +499,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                            mem_margin=args.mem_margin, **common) if probe_ok else []
     best = choose_best(summaries)
     l32 = next((item for item in summaries if item["workers"] == 32), None)
-    passed = bool(probe_ok and best and l32 and choose_best([l32]))
+    passed = bool(probe_ok and best and l32 and choose_best([l32])
+                  and not any(item.get("parse_error") or str(item.get("aborted_by", "")).startswith("signal:")
+                              for item in summaries))
     skipped = ",".join(item["cell"] for item in summaries if item.get("skipped_by")) or "none"
     crashed = next((item["workers"] for item in summaries if item.get("aborted_by") == "pool_crash"), "none")
     context["calib_line"] = (f"CALIB={'PASS' if passed else 'FAIL'} probe_rss_gb={probe['rss_gb']} probe_vram_gb={probe['vram_gb']} "

@@ -276,3 +276,135 @@ def test_main_rejects_small_jobs_before_probe(monkeypatch, tmp_path):
     with pytest.raises(SystemExit) as caught:
         calib.main(["--root", str(tmp_path), "--episodes", "1"])
     assert caught.value.code == 2
+
+
+@pytest.mark.parametrize("signum", [signal.SIGTERM, signal.SIGHUP])
+def test_outer_signal_cleans_exact_child_group_and_keeps_other_group(tmp_path, signum):
+    # 外层测速进程与生成器各为独立会话，另起旁组验证没有全局杀进程。
+    child_code = """
+import json, os, subprocess, sys, time
+from pathlib import Path
+p = Path(sys.argv[1])
+child = subprocess.Popen([sys.executable, '-u', '-c', 'import os,time; print(os.getpid(), flush=True); time.sleep(60)'],
+                         stdout=subprocess.PIPE, text=True)
+worker_pid = int(child.stdout.readline())
+(p/'identities.json').write_text(json.dumps(dict(generator_pid=os.getpid(), pgid=os.getpgrp(), worker_pid=worker_pid)))
+print('假生成器及 worker 就绪', flush=True)
+time.sleep(60)
+"""
+    launcher = f"""
+import importlib.util, json, sys
+from pathlib import Path
+from types import SimpleNamespace
+spec = importlib.util.spec_from_file_location('signal_calib', {str(SPEC.origin)!r})
+c = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = c
+spec.loader.exec_module(c)
+class Sampler:
+    def __init__(self, gpus):
+        self.rows = []
+        self.gpu_rows = []
+        self.peak_worker_rss_mb = 0
+    def start(self, pid):
+        pass
+    def stop(self):
+        pass
+c.ResourceSampler = Sampler
+c.psutil.virtual_memory = lambda: SimpleNamespace(available=1000*2**30)
+c._command = lambda *args: [sys.executable, '-u', '-c', {child_code!r}, str(args[1])]
+summary = c.run_cell(c.Cell('T', 1, '0', True), Path(sys.argv[1]), 'BinFill', 4, '211', True)
+sys.exit(1 if summary['aborted_by'] else 0)
+"""
+    outer = subprocess.Popen([sys.executable, "-u", "-c", launcher, str(tmp_path)],
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                             start_new_session=True)
+    other = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"],
+                             start_new_session=True)
+    identities = None
+    try:
+        identity_file = tmp_path / "T" / "identities.json"
+        deadline = time.monotonic() + 5
+        while not identity_file.exists() and time.monotonic() < deadline and outer.poll() is None:
+            time.sleep(0.01)
+        identities = json.loads(identity_file.read_text())
+        assert identities["pgid"] == identities["generator_pid"] != outer.pid
+        assert os.getpgid(identities["worker_pid"]) == identities["pgid"]
+        os.kill(outer.pid, signum)
+        stdout, _ = outer.communicate(timeout=5)
+        assert outer.returncode == 1
+        summary = json.loads((tmp_path / "T" / "cell_summary.json").read_text())
+        assert summary["aborted_by"] == f"signal:{signal.Signals(signum).name}"
+        assert summary["termination"]["pgid"] == identities["pgid"]
+        assert summary["termination"]["zero_residual"]
+        assert not summary["complete"]
+        assert calib._group_processes(identities["pgid"]) == []
+        assert other.poll() is None and os.getpgid(other.pid) == other.pid
+        assert "假生成器及 worker 就绪" in stdout
+        assert (tmp_path / "T" / "generate.log").exists()
+        assert (tmp_path / "T" / "resource_samples.json").exists()
+        print(f"CALIB_SIGNAL_CLEANUP=PASS signal={signal.Signals(signum).name} outer_pid={outer.pid} "
+              f"generator_pgid={identities['pgid']} worker_pid={identities['worker_pid']} "
+              f"other_pgid={other.pid} remaining=0 other_alive=1 evidence={tmp_path / 'T'}")
+    finally:
+        if identities and calib._group_processes(identities["pgid"]):
+            os.killpg(identities["pgid"], signal.SIGKILL)
+        if outer.poll() is None:
+            calib.terminate_group(outer, grace_s=0)
+        calib.terminate_group(other, grace_s=0)
+
+
+def test_aborted_truncated_jsonl_persists_error_and_stops_ladder(monkeypatch, tmp_path, cpu_only):
+    # 正常首行也不挑出来当成功：整份记录失去完整性，原字节必须保留。
+    _fake_command(monkeypatch, """
+import json, sys
+from pathlib import Path
+p = Path(sys.argv[1])
+(p/'episode_results.jsonl').write_text('{"ok":true,"finished_at":1,"wall_s":1}\\n{"ok":')
+(p/'run_summary.json').write_text(json.dumps(dict(stopped_by='pool_crash')))
+print('进程池已损坏 stopped_by=pool_crash', flush=True)
+sys.exit(3)
+""")
+    rows = calib.run_ladder(calib.parse_cells(calib.DEFAULT_CELLS), tmp_path,
+                            {"rss_gb": 1, "vram_gb": 1, "gpu_gb": 80},
+                            env="all", episodes=24, difficulty="211", keep=True,
+                            mem_margin=1.2, mem_guard_gb=40)
+    assert len(rows) == 1 and not (tmp_path / "L64").exists()
+    output = tmp_path / "L32"
+    summary = json.loads((output / "cell_summary.json").read_text())
+    assert summary["aborted_by"] == "pool_crash"
+    assert summary["parse_error"]["file"] == str(output / "episode_results.jsonl")
+    assert summary["parse_error"]["message"]
+    assert summary["success"] is None and summary["attempts"] is None
+    assert summary["termination"]["zero_residual"] and not summary["complete"]
+    assert summary["steady"]["throughput_ep_per_min"] is None
+    assert (output / "episode_results.jsonl").read_text().endswith('{"ok":')
+    assert (output / "resource_samples.json").exists()
+    assert calib.choose_best(rows) is None
+    print(f"CALIB_TRUNCATED_JSONL=PASS aborted_by={summary['aborted_by']} "
+          f"complete=0 parse_error=1 cells_run=1 remaining=0 evidence={output}")
+
+
+def test_non_aborted_bad_jsonl_still_raises(monkeypatch, tmp_path, cpu_only):
+    _fake_command(monkeypatch, """
+import sys
+from pathlib import Path
+(Path(sys.argv[1])/'episode_results.jsonl').write_text('{"ok":')
+""")
+    with pytest.raises(json.JSONDecodeError):
+        calib.run_cell(calib.Cell("T", 1, "0", True), tmp_path, "BinFill", 4, "211", True)
+    assert not (tmp_path / "T" / "cell_summary.json").exists()
+
+
+@pytest.mark.parametrize("cause", ["parse_error", "signal:SIGTERM"])
+def test_main_integrity_or_signal_abort_fails_even_after_good_l32(monkeypatch, tmp_path, cpu_only, cause):
+    monkeypatch.setattr(calib, "run_cell", lambda *args, **kwargs: {
+        "cell": "P8", "workers": 8, "gpus": "0", "complete": True,
+        "tiers_completed": ["xhard18", "xhard20"], "peak_worker_rss_mb": 8192,
+        "gpu_peaks": {"0": {"mem_mb": 8192, "total_mb": 81920}}
+    })
+    bad = {**_eligible(64), "complete": False, "aborted_by": "pool_crash" if cause == "parse_error" else cause,
+           "parse_error": {"message": "截断"} if cause == "parse_error" else None}
+    monkeypatch.setattr(calib, "run_ladder", lambda *args, **kwargs: [_eligible(32), bad])
+    assert calib.main(["--root", str(tmp_path), "--difficulty-cycle", ",".join(calib.MIXED_CYCLE)]) == 1
+    payload = json.loads((tmp_path / "calibration.json").read_text())
+    assert payload["context"]["calib_line"].startswith("CALIB=FAIL ")
