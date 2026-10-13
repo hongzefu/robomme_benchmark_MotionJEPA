@@ -88,3 +88,15 @@ records/mother_seeds.json；records/first/（run_summary.json、first.summary.lo
 2. **交换类三任务待取代**：2.3 VideoUnmaskSwap、2.4 ButtonUnmaskSwap、3.2 VideoRepick 本档的卡是无碰撞检测版本，将在 1012 碰撞版（[`1012-swap-collision-plan.html`](../../../1012-swap-collision-plan.html)）跑完后被取代，届时再更新本节。
 3. **train metadata 恢复官方 100 条**：2.69（`52877e2a`）把四 Unmask 系 train metadata 恢复为官方 ep0–99；本档所用母 seed（ep7 / 11 / 27 / 46 / 86 等）均在官方 ep0–99 内，不受影响。
 4. **迁移 vail（2026-10-12）**：本档 `artifacts/xhard/xhard-1011/report` 与 `vpbfix-1012/report` 已同步到 sled-vail 同路径；H5 未搬，仍在 aspen（[`1012-migrate-vail-plan.md`](../../../1012-migrate-vail-plan.md)「实施结果」）。
+
+## 2026-10-13 补注（蓝色）
+
+<span style="color:#1d4ed8">用户原话：「全部照改，补注也加」「你修改的内容用蓝色。让我能够一下子能看出来哪些是修改后的。」本小节为 2026-10-13 审计（锚点 b7bf8b11）后的补注，以上原文一字未改。</span>
+
+<span style="color:#1d4ed8">1. **结论的适用范围**：「⑪ 结论与下一步」中“52 档 xhard 与 16 条母档最终产物齐备，可作 MotionJEPA 全任务训练数据的 xhard 档输入”保留为 2026-10-11 当时的范围表述。现行理解限定为：生成产物齐备，作为后续训练接入验证的候选数据。</span>
+
+<span style="color:#1d4ed8">2. **训练接入未验证**：MotionJEPA 真实扫描入口、白名单、来源锁、建库与训练均未验证；历史 `MJ_SCAN_VIDEO_TASKS=PASS files=24` 只代表 10-11 审查样本的扫描阶段，不是本档产物的训练验收。</span>
+
+<span style="color:#1d4ed8">3. **交换三任务已被取代**：2.3 VideoUnmaskSwap、2.4 ButtonUnmaskSwap、3.2 VideoRepick 在本档的母档与派生档（共 18 个 H5）已被 xhard-1012-swapv3 取代（V3 全量 180 身份：130 成功、50 正常拒绝、infra=0，见 [`../xhard-1012-swapv3/full-result.md`](../xhard-1012-swapv3/full-result.md)），不再作为现行交换产物。</span>
+
+<span style="color:#1d4ed8">4. **七个无演示任务不满足 d>0**：BinFill、PickXtimes、SwingXtimes、StopCube、ButtonUnmask、ButtonUnmaskSwap、PickHighlight 的演示长度为 0，不满足 MotionJEPA `scan_episode` 要求的非空演示前缀（d>0）；官方同任务原件同样如此，属任务性质。</span>
