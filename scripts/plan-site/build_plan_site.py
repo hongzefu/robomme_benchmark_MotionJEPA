@@ -78,6 +78,7 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         "nav.top { display:flex; gap:18px; flex-wrap:wrap; padding:10px 0 14px; border-bottom:2px solid var(--border); margin-bottom:18px; font-size:15px; }\n"
         "nav.top a { color:var(--muted); text-decoration:none; padding:4px 8px; border-radius:6px; }\n"
         "nav.top a.cur { color:#fff; background:var(--accent); }\n"
+        "blockquote code { overflow-wrap:anywhere; }\n"
         ".cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin:18px 0; }\n"
         ".card { border:1px solid var(--border); border-radius:8px; padding:14px 16px; }\n"
         ".card a { font-weight:600; font-size:1.05em; }\n</style>"))
