@@ -51,7 +51,84 @@ def test_graph_isolated_rejected():
     assert "孤立槽=[2]" in exc.value.rejection.detail
 
 
+def adjacency(size, edges):
+    """按无序边构造对称图，测试不依赖真实扫掠耗时。"""
+    adj = [[False]*size for _ in range(size)]
+    for a, b in edges:
+        adj[a][b] = adj[b][a] = True
+    return adj
+
+
+def test_min_pair_kinds_two_edges_rejected():
+    adj = adjacency(4, [(0, 3), (1, 2)])
+    before = [row[:] for row in adj]
+    gaps = {"0-3": .01, "1-2": .02}
+    sp.require_every_slot_covered(adj, gaps)
+    with pytest.raises(SwapCollisionError) as caught:
+        sp.require_min_pair_kinds(adj, gaps)
+    assert caught.value.stage == "graph"
+    detail = caught.value.rejection.detail
+    assert detail.startswith("可行槽对不足=2/3; 原始边证据=")
+    evidence = json.loads(detail.split("原始边证据=", 1)[1])
+    assert set(evidence) == {"gate", "feasible_edges", "required", "gaps", "rejected_edges"}
+    assert evidence["feasible_edges"] == [[0, 3], [1, 2]]
+    assert evidence["required"] == 3 and evidence["gate"] == "min_pair_kinds"
+    assert evidence["gaps"] == gaps and evidence["rejected_edges"] == {}
+    assert adj == before
+
+
+@pytest.mark.parametrize("size,edges", [(3, [(0, 1), (0, 2), (1, 2)]),
+                                       (4, [(0, 1), (1, 2), (2, 3)])])
+def test_min_pair_kinds_three_edges_pass(size, edges):
+    assert sp.MIN_SWAP_PAIR_KINDS == 3
+    sp.require_min_pair_kinds(adjacency(size, edges), {})
+
+
+@pytest.mark.parametrize("reasons,expected", [
+    (["contact"], "contact"),
+    (["contact", "numerical_boundary"], "numerical_boundary"),
+    (["contact", "numerical_boundary", "uncertified"], "uncertified"),
+])
+def test_min_pair_kinds_reason_aggregation(reasons, expected):
+    gaps = sp._GraphGaps()
+    gaps.rejections = {str(i): bc.CollisionRejection(reason, "graph", "a", "b", 0, 0).as_dict()
+                       for i, reason in enumerate(reasons)}
+    with pytest.raises(SwapCollisionError) as caught:
+        sp.require_min_pair_kinds(adjacency(4, [(0, 3), (1, 2)]), gaps)
+    assert caught.value.rejection.reason == expected
+    evidence = json.loads(caught.value.rejection.detail.split("原始边证据=", 1)[1])
+    assert evidence["rejected_edges"] == gaps.rejections
+    with pytest.raises(SwapCollisionError) as isolated:
+        sp.require_every_slot_covered(adjacency(4, [(0, 2), (1, 2)]), gaps)
+    assert isolated.value.rejection.reason == expected
+
+
+def test_isolated_checked_before_kinds(monkeypatch):
+    monkeypatch.setattr(sp, "slot_graph", lambda *args: (adjacency(4, [(0, 2), (1, 2)]), {}))
+    with pytest.raises(SwapCollisionError) as caught:
+        sp.plan_swaps(rectangle(), [], 4, generator(), s_max=11)
+    assert caught.value.stage == "graph"
+    assert caught.value.rejection.detail.startswith("孤立槽=")
+
+
+def test_kinds_gate_does_not_consume_stream(monkeypatch):
+    adj = adjacency(4, [(0, 1), (0, 3), (1, 2), (2, 3)])
+    monkeypatch.setattr(sp, "slot_graph", lambda *args: (adj, {}))
+    monkeypatch.setattr(bc, "check_swap_sweep", lambda *args, **kwargs: (.01, None))
+    stream = generator()
+    plan = sp.plan_swaps(rectangle(), [], 4, stream, s_max=11)
+    after = stream.get_state().clone()
+    monkeypatch.setattr(sp, "require_min_pair_kinds", lambda *a, **k: None)
+    old_stream = generator()
+    old = sp.plan_swaps(rectangle(), [], 4, old_stream, s_max=11)
+    assert plan.pairs == old.pairs and plan.slot_pairs == old.slot_pairs
+    assert plan.as_dict() == old.as_dict()
+    assert torch.equal(after, old_stream.get_state())
+    assert plan.graph["feasible_edges"] == [[0, 1], [0, 3], [1, 2], [2, 3]]
+
+
 def test_disconnected_graph_diagonal_prefix_and_reproducibility(monkeypatch):
+    monkeypatch.setattr(sp, "require_min_pair_kinds", lambda *a, **k: None)
     adj = [[False]*4 for _ in range(4)]
     for a, b in ((0, 2), (1, 3)):
         adj[a][b] = adj[b][a] = True
@@ -86,6 +163,7 @@ def test_static_slots_reject_any_difference(key):
 
 
 def test_k8_inconsistent_rejected(monkeypatch):
+    monkeypatch.setattr(sp, "require_min_pair_kinds", lambda *a, **k: None)
     monkeypatch.setattr(sp, "slot_graph", lambda *args: ([[False, True], [True, False]], {}))
     rejection = bc.CollisionRejection("contact", "sweep", "0", "1", 0, 0, -.01)
     monkeypatch.setattr(bc, "check_swap_sweep", lambda *args, **kwargs: (-.01, rejection))
@@ -593,10 +671,10 @@ def test_graph_rejection_preserves_original_edges_once(monkeypatch, reason, stag
 
 def test_success_graph_serialization_has_only_numeric_gaps():
     plan = sp.plan_swaps(rectangle(), [], 4, generator(), s_max=11)
-    assert set(plan.graph) == {"adj", "gaps"}
+    assert set(plan.graph) == {"adj", "gaps", "feasible_edges"}
     assert type(plan.graph["gaps"]) is dict
     assert not hasattr(plan.graph["gaps"], "rejections")
-    assert set(plan.as_dict()["graph"]) == {"adj", "gaps"}
+    assert set(plan.as_dict()["graph"]) == {"adj", "gaps", "feasible_edges"}
     restored = json.loads(json.dumps(plan.as_dict()))
     assert restored["graph"] == plan.graph
 

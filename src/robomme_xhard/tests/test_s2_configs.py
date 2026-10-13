@@ -385,12 +385,12 @@ GPU_CASES = [
 ]
 
 
-# 每任务用正式母 seed 清单的 rank0 seed（来源：``robomme_xhard.tools.mother_seeds.build_manifest``，
-# 即 ``src/robomme/env_metadata/train/`` 官方 train metadata 按 REFERENCE_SUBSETS 选出的 rank=0 条目；
-# 2026-10-11 核对一致），替换此前统一使用的占位 seed 12900。
+# 其余四任务沿用参考子集 rank0 seed；VideoRepick 取 v2／v3 全量 mother_seeds_all.json
+# 的 rank0（episode 6 / seed 9600）。原参考子集 rank0 为 13600，G 仅两条边，会被 v3 拒绝；
+# 证据见 docs/xhard-doc/xhard-1012-swapv3/records/graph_scan_13600.json。
 MOTHER_RANK0_SEEDS = {
     "VideoUnmask": 6700, "ButtonUnmask": 8700, "VideoUnmaskSwap": 5700,
-    "ButtonUnmaskSwap": 7700, "VideoRepick": 13600,
+    "ButtonUnmaskSwap": 7700, "VideoRepick": 9600,
 }
 
 
