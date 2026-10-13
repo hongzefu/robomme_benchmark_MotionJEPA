@@ -130,6 +130,14 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
     # 原计划的锚点与说明页不同，统一落在新页首页，避免保留失效锚点。
     pages = {name: re.sub(r'href="1012-swap-pairing-v2-plan\.html(?:#[^"]*)?"',
                           'href="swap.html"', body) for name, body in pages.items()}
+    # 首页历史参照不随站点复制；只改这一条已知引用，冻结到本轮源码版本。
+    reference = "1006-xhard12-prev-training-and-task-plan.md"
+    frozen_reference = (
+        "https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/"
+        "f98c779a2c3f086759d9fcc4663a06da7deec083/" + reference
+    )
+    pages["index.html"] = pages["index.html"].replace(
+        f'href="{reference}"', f'href="{frozen_reference}"')
     out.mkdir(parents=True, exist_ok=True)
     written = []
     for name, body in pages.items():
