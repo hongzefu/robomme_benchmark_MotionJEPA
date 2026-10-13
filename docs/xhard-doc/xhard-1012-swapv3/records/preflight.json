@@ -1,0 +1,55 @@
+{
+  "base": "b8d7d451fbf689ba0008bb5d9a8e97459f25dbd9",
+  "v2_audit": {
+    "summary": {
+      "expected": 180,
+      "seen": 180,
+      "missing": 0,
+      "dup": 0,
+      "unknown": 0,
+      "ok": 160,
+      "task_reject": 20,
+      "infra": 0,
+      "complete": true
+    },
+    "missing": [],
+    "duplicates": [],
+    "unknown_states": [],
+    "unexpected_identities": []
+  },
+  "expected_plan_cards": 105,
+  "new_reject_seeds": [
+    [
+      "ButtonUnmaskSwap",
+      8500
+    ],
+    [
+      "VideoRepick",
+      10800
+    ],
+    [
+      "VideoRepick",
+      12400
+    ],
+    [
+      "VideoRepick",
+      13200
+    ],
+    [
+      "VideoUnmaskSwap",
+      6500
+    ],
+    [
+      "VideoUnmaskSwap",
+      9300
+    ]
+  ],
+  "plan_edge_counts": {
+    "5": 15,
+    "4": 40,
+    "2": 30,
+    "3": 50
+  },
+  "mother_manifest_sha256": "56a0381bb78485a7373f6446a4a0007679c0aff3e5a0c347ad3c16528200e278",
+  "preflight_note": "首条人工只读统计误把布尔邻接矩阵当邻居列表，断言失败、未写文件；按既有graph_edges重读后通过。未发生生成故障。"
+}

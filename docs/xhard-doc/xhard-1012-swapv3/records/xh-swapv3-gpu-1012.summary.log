@@ -1,0 +1,89 @@
+SOURCE_HEAD=e39795183752f5afe0ddca2ecf77a95b0a8753f6
+2026-10-12T23:44:59-04:00
+PHASE=GPU_CONTRACT
+.................F
+=================================== FAILURES ===================================
+____________ test_button_pose_loadtime_matches_initialized_geometry ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78cbc472b290>
+
+    @pytest.mark.gpu
+    def test_button_pose_loadtime_matches_initialized_geometry(monkeypatch):
+        """认证时捕获推导值，reset 后以真实子连杆世界位姿独立对照三个按钮。"""
+        captured = {}
+        original = sp.button_shape_poses
+        def capture(articulation):
+            base_pose, cap_pose = original(articulation)
+            captured[id(articulation)] = (np.asarray(cap_pose.p, dtype=np.float64).copy(),
+                                          np.asarray(cap_pose.q, dtype=np.float64).copy())
+            return base_pose, cap_pose
+        monkeypatch.setattr(sp, "button_shape_poses", capture)
+        buttons, max_dp, max_angle = 0, 0., 0.
+        for task, seed, expected_count in (("ButtonUnmaskSwap", 7700, 2), ("VideoRepick", 9600, 1)):
+            env = _make(task, seed)
+            try:
+                captured.clear()
+>               env.reset(seed=seed, options={"reconfigure": True})
+
+src/robomme_xhard/tests/test_swap_collision_gpu.py:279:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv/lib/python3.11/site-packages/gymnasium/core.py:467: in reset
+    return self.env.reset(seed=seed, options=options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/gymnasium/wrappers/order_enforcing.py:61: in reset
+    return self.env.reset(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py:909: in reset
+    self._reconfigure(options)
+.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py:743: in _reconfigure
+    self._load_scene(options)
+src/robomme_xhard/envs/video_repick.py:55: in _load_scene
+    certify_swap_plan(self, self._swap_actors(), self._bystander_actors(), self.swap_name_prefix)
+src/robomme_xhard/swap_plan.py:283: in certify_swap_plan
+    plan = plan_swaps(states, others, int(env.swap_times), generator,
+src/robomme_xhard/swap_plan.py:219: in plan_swaps
+    require_min_pair_kinds(adj, gaps)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+adj = [[False, False, True], [False, False, True], [True, True, False]]
+gaps = {'0-1': -0.0007714178513457924, '0-2': 0.05904029323411775, '1-2': 0.062077976439141064}
+minimum = 3
+
+    def require_min_pair_kinds(adj, gaps, minimum=MIN_SWAP_PAIR_KINDS):
+        """口径甲：可行无序槽对少于 minimum 种即整卡剔除；只读 adj，不碰随机流。"""
+        edges = su.graph_edges(adj)
+        if len(edges) >= int(minimum):
+            return
+        rejections = getattr(gaps, "rejections", {})
+        reasons = {item["reason"] for item in rejections.values()}
+        reason = ("uncertified" if "uncertified" in reasons else
+                  "numerical_boundary" if "numerical_boundary" in reasons else "contact")
+        evidence = dict(gate="min_pair_kinds", feasible_edges=[list(e) for e in edges],
+                        required=int(minimum), gaps=dict(gaps), rejected_edges=rejections)
+        rejection = bc.CollisionRejection(
+            reason=reason, stage="graph", object_a="slots", object_b="slots",
+            shape_a=-1, shape_b=-1,
+            detail=f"可行槽对不足={len(edges)}/{int(minimum)}; 原始边证据=" + json.dumps(evidence, ensure_ascii=False))
+>       raise SwapCollisionError(rejection, "graph")
+E       robomme_xhard.collision.SwapCollisionError: 碰撞排除[contact] graph 对象 slots(形状-1) 与 slots(形状-1) g=n/a 可行槽对不足=2/3; 原始边证据={"gate": "min_pair_kinds", "feasible_edges": [[0, 2], [1, 2]], "required": 3, "gaps": {"0-1": -0.0007714178513457924, "0-2": 0.05904029323411775, "1-2": 0.062077976439141064}, "rejected_edges": {"0-1": {"reason": "contact", "stage": "graph", "object_a": "cube_1", "object_b": "cube_2", "shape_a": 0, "shape_b": 0, "gap_m": -0.0007714178513457924, "s": 0.5, "sweep_index": -1, "interval_low": 0.0, "interval_high": 1.0, "depth": 0, "intervals_used": 3, "detail": "中点判定"}}}
+
+src/robomme_xhard/swap_plan.py:207: SwapCollisionError
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+src/robomme_xhard/tests/test_swap_collision_gpu.py: 234 warnings
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/mani_skill/utils/geometry/trimesh_utils.py:113: DeprecationWarning: component.pose can be ambiguous thus deprecated. It is equivalent to component.entity_pose, which should be used instead
+    T = component.pose.to_transformation_matrix()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+==================================== PASSES ====================================
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 17 passed, 3 deselected, 236 warnings in 130.40s (0:02:10)
+GPU_CONTRACT_EXIT_CODE=1
+EXIT_CODE=1

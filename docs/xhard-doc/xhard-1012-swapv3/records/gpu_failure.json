@@ -1,0 +1,101 @@
+{
+  "source_head": "e39795183752f5afe0ddca2ecf77a95b0a8753f6",
+  "plan_base": "b8d7d451fbf689ba0008bb5d9a8e97459f25dbd9",
+  "status": "FAIL",
+  "cases": 19,
+  "passed": 17,
+  "failed": 1,
+  "not_run": 1,
+  "pytest_seconds": 130.4,
+  "exit_code": 1,
+  "failed_node": "src/robomme_xhard/tests/test_swap_collision_gpu.py::test_button_pose_loadtime_matches_initialized_geometry",
+  "failure_seed": 9600,
+  "failure_stage": "graph",
+  "rejection": {
+    "gate": "min_pair_kinds",
+    "feasible_edges": [
+      [
+        0,
+        2
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "required": 3,
+    "gaps": {
+      "0-1": -0.0007714178513457924,
+      "0-2": 0.05904029323411775,
+      "1-2": 0.062077976439141064
+    },
+    "rejected_edges": {
+      "0-1": {
+        "reason": "contact",
+        "stage": "graph",
+        "object_a": "cube_1",
+        "object_b": "cube_2",
+        "shape_a": 0,
+        "shape_b": 0,
+        "gap_m": -0.0007714178513457924,
+        "s": 0.5,
+        "sweep_index": -1,
+        "interval_low": 0.0,
+        "interval_high": 1.0,
+        "depth": 0,
+        "intervals_used": 3,
+        "detail": "中点判定"
+      }
+    }
+  },
+  "old_first_build": {
+    "graph": {
+      "adj": [
+        [
+          false,
+          true,
+          true
+        ],
+        [
+          true,
+          false,
+          true
+        ],
+        [
+          true,
+          true,
+          false
+        ]
+      ],
+      "gaps": {
+        "0-1": 0.05536625130738181,
+        "0-2": 0.023652389036570326,
+        "1-2": 0.021672875459535626
+      }
+    },
+    "slots": [
+      [
+        -0.06959806382656097,
+        0.0520981028676033
+      ],
+      [
+        0.08295441418886185,
+        0.030002901330590248
+      ],
+      [
+        -0.034355223178863525,
+        -0.12785547971725464
+      ]
+    ]
+  },
+  "evidence_files": 281,
+  "evidence_by_task": {
+    "VideoUnmaskSwap": 115,
+    "ButtonUnmaskSwap": 115,
+    "VideoRepick": 51
+  },
+  "attempts": 1,
+  "s2_started": false,
+  "smoke_started": false,
+  "full_started": false
+}
