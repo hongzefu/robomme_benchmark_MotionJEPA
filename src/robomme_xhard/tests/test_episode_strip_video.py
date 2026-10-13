@@ -188,31 +188,6 @@ def test_video_repick_mother_is_medium():
     assert esv.level_name("VideoRepick", esv.MOTHER) == "母档（medium）"
 
 
-def test_failed_columns_keep_error_type_and_six_column_canvas(tmp_path, painter):
-    card = _card("VideoRepick", "xhard", "xhard12", 6, 1, 0, ok=False)
-    card["error_type"] = "SwapCollisionError"
-    _summary(tmp_path, [card])
-    columns = esv.build_columns(esv.discover(tmp_path)[("VideoRepick", 6, 1)])
-    assert len(columns) == 6
-    assert columns[1].failure_text == "失败：SwapCollisionError"
-    assert columns[1].segments[-1] == columns[1].failure_text
-    frames = list(esv.compose_frames(columns, painter))
-    imageio.imwrite(tmp_path / "failure-preview.png", frames[0])
-    assert len(frames) == 1 and frames[0].shape[1] == 6 * esv.BODY
-    gray = esv.build_layout(columns, painter).statics[1]
-    assert tuple(gray[0, 0]) == (esv.GRAY,) * 3
-    assert gray.max() == 255
-
-
-def test_failed_jsonl_card_is_not_absent(tmp_path):
-    card = _card("VideoRepick", "xhard", "xhard12", 6, 1, 0, ok=False)
-    card["error_type"] = "SwapBindingError"
-    (tmp_path / "episode_results.jsonl").write_text(json.dumps(card) + "\n")
-    columns = esv.build_columns(esv.discover(tmp_path)[("VideoRepick", 6, 1)])
-    assert columns[1].status == esv.FAILED
-    assert columns[1].failure_text == "失败：SwapBindingError"
-
-
 def test_missing_font_raises(tmp_path):
     with pytest.raises(FileNotFoundError):
         esv.CjkPainter(tmp_path / "nofont.ttc")

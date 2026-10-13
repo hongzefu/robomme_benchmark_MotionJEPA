@@ -8,7 +8,7 @@
 
     {"version": 1,
      "tasks": {"<Task>": [{"episode": <int>, "seed": <int>,
-                           "source_difficulty": "hard"|"medium", "rank": <非负整数>}, ...]}}
+                           "source_difficulty": "hard"|"medium", "rank": 0|1}, ...]}}
 
 卡片身份 = (task, mother_episode, seed, difficulty)；attempt 恒为 0，失败不换 seed（RL3）。
 xhard 卡写 ``<output>/<difficulty>/``，母卡写 ``<output>/mother/``（RL9）。
@@ -27,6 +27,7 @@ MANIFEST_VERSION = 1
 MOTHER_SUBDIR = "mother"
 ROLE_XHARD = "xhard"
 ROLE_MOTHER = "mother"
+VALID_RANKS = (0, 1)
 
 
 class XHardJobError(ValueError):
@@ -134,12 +135,12 @@ def validate_manifest(data: Any) -> dict[str, list[dict[str, Any]]]:
                 entry["source_difficulty"],
                 entry["rank"],
             )
-            if not _strict_int(episode) or not 0 <= episode <= 99:
-                raise XHardJobError(f"{where}: 官方母 episode 必须在 0–99，收到 {episode!r}")
+            if not _strict_int(episode) or episode < 0:
+                raise XHardJobError(f"{where}: episode 必须是非负整数，收到 {episode!r}")
             if not _strict_int(seed) or seed < 0:
                 raise XHardJobError(f"{where}: seed 必须是非负整数，收到 {seed!r}")
-            if not _strict_int(rank) or rank < 0:
-                raise XHardJobError(f"{where}: rank 必须是非负整数，收到 {rank!r}")
+            if not _strict_int(rank) or rank not in VALID_RANKS:
+                raise XHardJobError(f"{where}: rank 必须是 {VALID_RANKS} 之一，收到 {rank!r}")
             if source != SOURCE_DIFFICULTY[task]:
                 raise XHardJobError(
                     f"{where}: source_difficulty 应为 {SOURCE_DIFFICULTY[task]!r}，收到 {source!r}"
@@ -193,8 +194,8 @@ def expand_cards(
         raise XHardJobError(f"difficulty 有重复项：{requested}")
     if not requested and not with_mother:
         raise XHardJobError("既没有请求 xhard 档也没有 --with-mother，没有可生成的卡片")
-    if mother_rank is not None and (not _strict_int(mother_rank) or mother_rank < 0):
-        raise XHardJobError(f"mother_rank 必须是非负整数，收到 {mother_rank!r}")
+    if mother_rank is not None and (not _strict_int(mother_rank) or mother_rank not in VALID_RANKS):
+        raise XHardJobError(f"mother_rank 必须是 {VALID_RANKS} 之一，收到 {mother_rank!r}")
 
     if tasks is None:
         selected = [task for task in TASK_ORDER if task in manifest]

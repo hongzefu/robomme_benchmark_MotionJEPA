@@ -419,8 +419,8 @@ def _s3_root(tmp_path: Path, with_summary: bool = True) -> Path:
     ]
     # 根下 jsonl 与 run_summary 矛盾（xhard14 记 ok=true），用来证明 run_summary 优先
     jsonl = [
-        {"task": "PickXtimes", "episode": 7, "seed": 1700, "difficulty": "xhard14", "card_role": "xhard", "ok": True, "task_success": 1},
-        {"task": "PickXtimes", "episode": 7, "seed": 1700, "difficulty": "xhard18", "card_role": "xhard", "ok": False, "task_success": 0, "failure_class": "task"},
+        {"task": "PickXtimes", "episode": 7, "seed": 1700, "difficulty": "xhard14", "card_role": "xhard", "ok": True},
+        {"task": "PickXtimes", "episode": 7, "seed": 1700, "difficulty": "xhard18", "card_role": "xhard", "ok": False, "failure_class": "task"},
     ]
     root.mkdir(parents=True, exist_ok=True)
     (root / "episode_results.jsonl").write_text("\n".join(json.dumps(r) for r in jsonl) + "\n")

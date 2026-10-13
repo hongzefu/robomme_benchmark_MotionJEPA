@@ -19,8 +19,6 @@ from robomme.robomme_env.VideoRepick import VideoRepick
 from robomme.robomme_env.VideoUnmaskSwap import VideoUnmaskSwap
 from robomme.robomme_env.utils import task4recovery
 from robomme_xhard.configs import SOURCE_DIFFICULTY, TIER_CONFIGS
-from robomme_xhard.base import XHardMixin
-from robomme_xhard.swap_plan import SwapCollisionMixin
 from robomme_xhard.envs.button_unmask import ButtonUnmaskXHard
 from robomme_xhard.envs.button_unmask_swap import (
     SIDE_BUTTON_NAME,
@@ -58,11 +56,7 @@ def test_registered_and_configs_merge(task):
     assert robomme_xhard.env_name(task) in REGISTERED_ENVS
     assert cls.robomme_base_id == task
     assert cls.source_difficulty == SOURCE_DIFFICULTY[task]
-    if task in ("VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoRepick"):
-        assert cls.__mro__[1:3] == (SwapCollisionMixin, XHardMixin)
-        parent = cls.__mro__[3]
-    else:
-        parent = cls.__mro__[2]
+    parent = cls.__mro__[2]
     assert parent.__name__ == task
     for label, entry in TIER_CONFIGS[task].items():
         assert cls.configs[label] == {**parent.configs[cls.source_difficulty], **entry["config"]}

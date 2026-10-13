@@ -285,8 +285,7 @@ def test_manifest_validation_errors(tmp_path):
     m = json.loads(json.dumps(good)); m["tasks"]["BinFill"][0]["source_difficulty"] = "medium"; broken.append(m)
     m = json.loads(json.dumps(good)); m["tasks"]["VideoRepick"][0]["source_difficulty"] = "hard"; broken.append(m)
     m = json.loads(json.dumps(good)); m["tasks"]["BinFill"][1]["rank"] = 0; broken.append(m)
-    m = json.loads(json.dumps(good)); m["tasks"]["BinFill"][0]["rank"] = -1; broken.append(m)
-    m = json.loads(json.dumps(good)); m["tasks"]["BinFill"][0]["episode"] = 100; broken.append(m)
+    m = json.loads(json.dumps(good)); m["tasks"]["BinFill"][0]["rank"] = 2; broken.append(m)
     m = json.loads(json.dumps(good)); m["tasks"]["BinFill"][0]["seed"] = True; broken.append(m)
     m = json.loads(json.dumps(good)); del m["tasks"]["BinFill"][0]["episode"]; broken.append(m)
     for data in broken:
@@ -321,7 +320,7 @@ def test_generator_cli_xhard(new_gen, tmp_path):
     with pytest.raises(SystemExit):  # xhard 模式缺清单
         new_gen._args(["--output-dir", "o", "--difficulty", "xhard12"])
     with pytest.raises(SystemExit):  # rank 越界
-        new_gen._args(["--output-dir", "o", "--difficulty", "xhard12", "--mother-manifest", "m", "--mother-rank", "-1"])
+        new_gen._args(["--output-dir", "o", "--difficulty", "xhard12", "--mother-manifest", "m", "--mother-rank", "2"])
 
 
 def test_generator_xhard_mode(new_gen, monkeypatch, tmp_path):
