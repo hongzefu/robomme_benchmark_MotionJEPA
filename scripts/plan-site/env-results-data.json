@@ -12,37 +12,37 @@
           "config": {
             "count": 4
           },
-          "knob": "K=4块"
+          "knob": "K=4块入桶"
         },
         "xhard12": {
           "config": {
             "count": 5
           },
-          "knob": "K=5块"
+          "knob": "K=5块入桶"
         },
         "xhard14": {
           "config": {
             "count": 6
           },
-          "knob": "K=6块"
+          "knob": "K=6块入桶"
         },
         "xhard16": {
           "config": {
             "count": 7
           },
-          "knob": "K=7块"
+          "knob": "K=7块入桶"
         },
         "xhard18": {
           "config": {
             "count": 8
           },
-          "knob": "K=8块"
+          "knob": "K=8块入桶"
         },
         "xhard20": {
           "config": {
             "count": 9
           },
-          "knob": "K=9块"
+          "knob": "K=9块入桶"
         }
       },
       "samples": [
@@ -836,37 +836,37 @@
           "config": {
             "count": 5
           },
-          "knob": "n=5次"
+          "knob": "n=5次抓放"
         },
         "xhard12": {
           "config": {
             "count": 6
           },
-          "knob": "n=6次"
+          "knob": "n=6次抓放"
         },
         "xhard14": {
           "config": {
             "count": 7
           },
-          "knob": "n=7次"
+          "knob": "n=7次抓放"
         },
         "xhard16": {
           "config": {
             "count": 8
           },
-          "knob": "n=8次"
+          "knob": "n=8次抓放"
         },
         "xhard18": {
           "config": {
             "count": 9
           },
-          "knob": "n=9次"
+          "knob": "n=9次抓放"
         },
         "xhard20": {
           "config": {
             "count": 10
           },
-          "knob": "n=10次"
+          "knob": "n=10次抓放"
         }
       },
       "samples": [
@@ -1757,37 +1757,37 @@
           "config": {
             "count": 3
           },
-          "knob": "n=3往返"
+          "knob": "n=3次左右往返"
         },
         "xhard12": {
           "config": {
             "count": 4
           },
-          "knob": "n=4往返"
+          "knob": "n=4次左右往返"
         },
         "xhard14": {
           "config": {
             "count": 5
           },
-          "knob": "n=5往返"
+          "knob": "n=5次左右往返"
         },
         "xhard16": {
           "config": {
             "count": 7
           },
-          "knob": "n=7往返"
+          "knob": "n=7次左右往返"
         },
         "xhard18": {
           "config": {
             "count": 8
           },
-          "knob": "n=8往返"
+          "knob": "n=8次左右往返"
         },
         "xhard20": {
           "config": {
             "count": 9
           },
-          "knob": "n=9往返"
+          "knob": "n=9次左右往返"
         }
       },
       "samples": [
@@ -2642,7 +2642,7 @@
             "k": 3,
             "mi": 80
           },
-          "knob": "k=3；间隔=80"
+          "knob": "k=第3次经过；单程=80步"
         },
         "xhard12": null,
         "xhard14": {
@@ -2650,28 +2650,28 @@
             "k": 4,
             "mi": 80
           },
-          "knob": "k=4；间隔=80"
+          "knob": "k=第4次经过；单程=80步"
         },
         "xhard16": {
           "config": {
             "k": 5,
             "mi": 80
           },
-          "knob": "k=5；间隔=80"
+          "knob": "k=第5次经过；单程=80步"
         },
         "xhard18": {
           "config": {
             "k": 7,
             "mi": 60
           },
-          "knob": "k=7；间隔=60"
+          "knob": "k=第7次经过；单程=60步"
         },
         "xhard20": {
           "config": {
             "k": 6,
             "mi": 80
           },
-          "knob": "k=6；间隔=80"
+          "knob": "k=第6次经过；单程=80步"
         }
       },
       "samples": [
@@ -3055,14 +3055,14 @@
           "config": {
             "pick": 2
           },
-          "knob": "p=2抓"
+          "knob": "p=2次抓容器"
         },
         "xhard12": null,
         "xhard14": {
           "config": {
             "pick": 3
           },
-          "knob": "p=3抓"
+          "knob": "p=3次抓容器"
         },
         "xhard16": null,
         "xhard18": null,
@@ -3219,14 +3219,14 @@
           "config": {
             "pick": 2
           },
-          "knob": "p=2抓"
+          "knob": "p=2次抓容器"
         },
         "xhard12": null,
         "xhard14": {
           "config": {
             "pick": 3
           },
-          "knob": "p=3抓"
+          "knob": "p=3次抓容器"
         },
         "xhard16": null,
         "xhard18": null,
@@ -3993,42 +3993,42 @@
             "press": 2,
             "swap": 3
           },
-          "knob": "P=2；S=3"
+          "knob": "P=2次按按钮；S=3次交换"
         },
         "xhard12": {
           "config": {
             "press": 3,
             "swap": 4
           },
-          "knob": "P=3；S=4"
+          "knob": "P=3次按按钮；S=4次交换"
         },
         "xhard14": {
           "config": {
             "press": 4,
             "swap": 6
           },
-          "knob": "P=4；S=6"
+          "knob": "P=4次按按钮；S=6次交换"
         },
         "xhard16": {
           "config": {
             "press": 4,
             "swap": 8
           },
-          "knob": "P=4；S=8"
+          "knob": "P=4次按按钮；S=8次交换"
         },
         "xhard18": {
           "config": {
             "press": 5,
             "swap": 10
           },
-          "knob": "P=5；S=10"
+          "knob": "P=5次按按钮；S=10次交换"
         },
         "xhard20": {
           "config": {
             "press": 6,
             "swap": 12
           },
-          "knob": "P=6；S=12"
+          "knob": "P=6次按按钮；S=12次交换"
         }
       },
       "samples": [
@@ -4748,26 +4748,26 @@
           "config": {
             "count": 3
           },
-          "knob": "pickup=3；spawn=6"
+          "knob": "pickup=3个高亮块；spawn=6个方块"
         },
         "xhard12": {
           "config": {
             "count": 4
           },
-          "knob": "pickup=4；spawn=6"
+          "knob": "pickup=4个高亮块；spawn=6个方块"
         },
         "xhard14": null,
         "xhard16": {
           "config": {
             "count": 5
           },
-          "knob": "pickup=5；spawn=6"
+          "knob": "pickup=5个高亮块；spawn=6个方块"
         },
         "xhard18": {
           "config": {
             "count": 6
           },
-          "knob": "pickup=6；spawn=6"
+          "knob": "pickup=6个高亮块；spawn=6个方块"
         },
         "xhard20": null
       },
@@ -5167,42 +5167,42 @@
             "swap": 2,
             "repeat": 2
           },
-          "knob": "S=2；重抓R=2"
+          "knob": "S=2次交换；R=2次重抓"
         },
         "xhard12": {
           "config": {
             "swap": 5,
             "repeat": 2
           },
-          "knob": "S=5；重抓R=2"
+          "knob": "S=5次交换；R=2次重抓"
         },
         "xhard14": {
           "config": {
             "swap": 7,
             "repeat": 2
           },
-          "knob": "S=7；重抓R=2"
+          "knob": "S=7次交换；R=2次重抓"
         },
         "xhard16": {
           "config": {
             "swap": 10,
             "repeat": 2
           },
-          "knob": "S=10；重抓R=2"
+          "knob": "S=10次交换；R=2次重抓"
         },
         "xhard18": {
           "config": {
             "swap": 13,
             "repeat": 2
           },
-          "knob": "S=13；重抓R=2"
+          "knob": "S=13次交换；R=2次重抓"
         },
         "xhard20": {
           "config": {
             "swap": 15,
             "repeat": 2
           },
-          "knob": "S=15；重抓R=2"
+          "knob": "S=15次交换；R=2次重抓"
         }
       },
       "samples": [
@@ -6293,20 +6293,20 @@
           "config": {
             "extra": 0
           },
-          "knob": "a=0组"
+          "knob": "a=0组额外抓放"
         },
         "xhard12": {
           "config": {
             "extra": 1,
             "pre_probability": 0.5
           },
-          "knob": "a=1组（前/后各50%）"
+          "knob": "a=1组额外抓放（演示按键前或后，各50%概率）"
         },
         "xhard14": {
           "config": {
             "extra": 2
           },
-          "knob": "a=2组（前后各1）"
+          "knob": "a=2组额外抓放（演示按键前后各1组）"
         },
         "xhard16": null,
         "xhard18": null,
@@ -6672,13 +6672,13 @@
           "config": {
             "targets": 3
           },
-          "knob": "N=3个不同目标"
+          "knob": "N=3个演示放置目标"
         },
         "xhard12": {
           "config": {
             "targets": 4
           },
-          "knob": "N=4个不同目标"
+          "knob": "N=4个演示放置目标"
         },
         "xhard14": null,
         "xhard16": null,
@@ -7128,37 +7128,37 @@
           "config": {
             "length": 6
           },
-          "knob": "L=6节点；grid=5"
+          "knob": "L=6个路径节点；grid=5×5网格"
         },
         "xhard12": {
           "config": {
             "length": 7
           },
-          "knob": "L=7节点；grid=5"
+          "knob": "L=7个路径节点；grid=5×5网格"
         },
         "xhard14": {
           "config": {
             "length": 8
           },
-          "knob": "L=8节点；grid=5"
+          "knob": "L=8个路径节点；grid=5×5网格"
         },
         "xhard16": {
           "config": {
             "length": 9
           },
-          "knob": "L=9节点；grid=5"
+          "knob": "L=9个路径节点；grid=5×5网格"
         },
         "xhard18": {
           "config": {
             "length": 10
           },
-          "knob": "L=10节点；grid=5"
+          "knob": "L=10个路径节点；grid=5×5网格"
         },
         "xhard20": {
           "config": {
             "length": 11
           },
-          "knob": "L=11节点；grid=5"
+          "knob": "L=11个路径节点；grid=5×5网格"
         }
       },
       "samples": [
@@ -8073,37 +8073,37 @@
           "config": {
             "length": 5
           },
-          "knob": "S=5条边"
+          "knob": "S=5段绕杆路径"
         },
         "xhard12": {
           "config": {
             "length": 6
           },
-          "knob": "S=6条边"
+          "knob": "S=6段绕杆路径"
         },
         "xhard14": {
           "config": {
             "length": 7
           },
-          "knob": "S=7条边"
+          "knob": "S=7段绕杆路径"
         },
         "xhard16": {
           "config": {
             "length": 8
           },
-          "knob": "S=8条边"
+          "knob": "S=8段绕杆路径"
         },
         "xhard18": {
           "config": {
             "length": 9
           },
-          "knob": "S=9条边"
+          "knob": "S=9段绕杆路径"
         },
         "xhard20": {
           "config": {
             "length": 10
           },
-          "knob": "S=10条边"
+          "knob": "S=10段绕杆路径"
         }
       },
       "samples": [

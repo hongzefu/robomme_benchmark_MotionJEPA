@@ -228,9 +228,9 @@ def render(data):
     parts.extend(table_row(task, task["samples"][0]) for task in data["tasks"])
     parts.append('</tbody></table></div></section>')
     parts.extend(['<section class="timelines-block" id="actual-timelines"><h2>16 张实测数轴</h2>',
-             '<p class="method-note">每个任务的六档共用绝对 T 轴，以该 seed 最长一档为上限；缺档不绘制数据。33 帧窗口按步长 16，在完整演示段与执行段各自铺设：w(L) = max(0, (L − 33) // 16 ＋ 1)，不按子目标断窗。</p>',
+             '<p class="method-note">每张数轴只显示母档与同一 seed 实测 T 最长的派生档，两行共用绝对 T 轴；长度相同时按固定档序选择较早的一档。MoveCube、InsertPeg 没有派生档，只显示母档。33 帧窗口按步长 16，在完整演示段与执行段各自铺设：w(L) = max(0, (L − 33) // 16 ＋ 1)，不按子目标断窗。</p>',
              '<p class="method-note">8 帧索引为 floor(i × (T − 1) / 7 ＋ 0.5)。动作段按 H5 的 is_subgoal_boundary 切分，排除演示与完成尾段；按原表合并抓放，MoveCube、InsertPeg 每段独立。三个交换任务的 V3 派生档已核实控制步到录像索引映射，按逐交换 50 帧半开区间统计；它们的母档和两个 Place 任务的交换遗漏仍标“未测”。动作列为“遗漏 / 动作总数”。</p>',
-             '<p class="method-note">数轴中的原始子目标分段直接来自 H5 边界，与合并后的动作单元不同；红色覆盖表示被 8 帧遗漏的合并动作区间。悬停或点选分段、窗口、交换条可查看区间与标签；长标签不会挤进图内。</p>'])
+             '<p class="method-note">原始子目标分段用“抓块、放目标、按键”等中文短标签表示，完整文案与区间可悬停或点选查看。原始分段直接来自 H5 边界，与合并后的动作单元不同；红色覆盖表示被 8 帧遗漏的合并动作区间。窄段的短标签放在条带下方，不改变时间比例。</p>'])
     for task in data["tasks"]:
         sample = task["samples"][0]
         parts.append(f'<article class="timeline-card" id="timeline-{task["task"]}" data-task="{task["task"]}" data-seed="{sample["seed"]}"><header><h3>{task["number"]} {task["task"]}</h3><span>母 seed {sample["seed"]} · <a href="#v-{task["number"].replace(".", "-")}">查看视频</a></span></header><div class="timeline-legend"><span class="legend-demo">演示</span><span class="legend-exec">执行</span><span class="legend-segment">原始分段</span><span class="legend-window">33 帧窗口</span><span class="legend-missed">遗漏动作</span><span class="legend-swap">已核实交换</span><span class="legend-frame">8 帧采样点</span></div><div class="actual-timeline" aria-label="实测时间轴"><noscript>启用 JavaScript 后可查看真实分段数轴，实测总表仍可直接阅读。</noscript></div><p class="timeline-detail" aria-live="polite">悬停或点选图中条带查看详情。</p><p class="swap-note">{html.escape(sample_note(sample))}</p></article>')

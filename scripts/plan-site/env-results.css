@@ -49,7 +49,8 @@
 .actual-timeline svg .timeline-phase-label{fill:#20465b;font-size:10px}
 .timeline-subgoal-0{fill:#cbd5e1}.timeline-subgoal-1{fill:#aabccd}
 .timeline-subgoal{stroke:#fff;stroke-width:.7}
-.actual-timeline svg .timeline-segment-number{font-size:10px;fill:#243b50}
+.actual-timeline svg .timeline-segment-label{font-size:10px;fill:#243b50;pointer-events:auto}
+.timeline-label-guide{stroke:#75899b;stroke-width:.8;pointer-events:none}
 .timeline-missed-unit{fill:#e76068;fill-opacity:.52;stroke:#ca4752;stroke-width:1}
 .timeline-window{fill:#5f67bd;fill-opacity:.85}
 .timeline-swap{fill:#eab956;stroke:#fff;stroke-width:.7}
