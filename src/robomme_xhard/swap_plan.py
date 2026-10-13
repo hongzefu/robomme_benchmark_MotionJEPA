@@ -1,4 +1,4 @@
-"""可行槽对图、独立均衡规划与保持父类时序的运行期证明。"""
+"""可行槽对图、独立均衡规划与保持父类时序的运行期证明；口径甲：可行槽对至少三种。"""
 
 from dataclasses import dataclass, asdict, replace
 import json
