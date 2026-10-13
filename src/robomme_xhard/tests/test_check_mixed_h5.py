@@ -123,6 +123,30 @@ def test_full_fixture_four_pass_and_boundary_duplicates(tmp_path):
     assert report["plan"]["exempt"] == 0
 
 
+def test_unreadable_h5_cannot_pass_schema(tmp_path):
+    root = write_products(tmp_path / "unreadable")
+    first_h5(root).write_bytes(b"broken HDF5")
+    report = run_check(root)
+    assert not report["schema"]["pass"]
+    assert report["schema"]["missing"] == 1
+    assert report["samples"][0]["schema_errors"][0]["error"]
+    assert report["samples"][0]["content_errors"]
+
+
+def test_forged_base_label_and_unreadable_h5_cannot_erase_expected_rules(tmp_path):
+    root = write_products(tmp_path / "disguised")
+    rows = checker.read_products(root)["results"]
+    rows[0]["difficulty"] = "easy"
+    rewrite_results(root, rows)
+    first_h5(root).write_bytes(b"broken HDF5")
+    report = run_check(root)
+    assert not report["plan"]["pass"]
+    assert report["plan"]["files"] == 1
+    assert report["plan"]["rules_expected"] == 3
+    assert report["plan"]["rules_run"] == 0
+    assert report["plan"]["mismatch"] == 3
+
+
 @pytest.mark.parametrize("task", ("VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoRepick", "VideoPlaceButton"))
 def test_known_rules_real_h5(tmp_path, task):
     root = write_products(tmp_path / task, tasks=(task,))
@@ -286,6 +310,8 @@ def test_first_per_tier_sample_is_independent_and_100(tmp_path):
     identities = [(task, ep) for task in TASK_ORDER for ep in range(len(checker.effective_cycle(task, FULL_CYCLE)))]
     assert len(identities) == 100
     assert sum(checker.expected_identity(task, ep, 0, FULL_CYCLE)["difficulty"] in DIFFICULTIES for task, ep in identities) == 52
+    assert sum(len(rules.EXPECTED_CHECKS[task]) for task, ep in identities
+               if checker.expected_identity(task, ep, 0, FULL_CYCLE)["difficulty"] in DIFFICULTIES) == 80
     root = write_products(tmp_path / "first", cycle=("easy", "hard"), episodes=5)
     report = run_check(root, cycle=("easy", "hard"), episodes=5)
     assert report["pass"]

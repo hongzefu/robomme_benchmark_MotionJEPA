@@ -362,8 +362,8 @@ def check_file(file_row, record, metadata, golden, cycle):
                 result["semantic"] = semantic_checks(task, target["difficulty"], boundaries, record)
     except (OSError, KeyError, ValueError, TypeError, IndexError) as exc:
         result["content_errors"].append(f"无法完整读取校验：{exc}")
-        # 缺少键导致中断时仍明确记录 schema 失败，而不能只让内容失败。
-        if isinstance(exc, KeyError) and not any(result["schema"].values()):
+        # 文件不可读或缺少键使结构未能完整检查，必须同时记录结构失败。
+        if isinstance(exc, (OSError, KeyError)) and not any(result["schema"].values()):
             result["schema"]["missing"] += 1
             result["schema_errors"].append({"error": str(exc)})
     return result
@@ -439,6 +439,7 @@ def check_dataset(output_dir, golden_dir, cycle, episodes, sample="first-per-tie
                 target[(row.get("task"), row.get("episode"))].append(row)
     selected = []
     missing_samples = []
+    expected_xhard = {}
     for task in tasks:
         seen = set()
         tiers = effective_cycle(task, cycle)
@@ -448,6 +449,8 @@ def check_dataset(output_dir, golden_dir, cycle, episodes, sample="first-per-tie
                 continue
             seen.add(tier)
             key = (task, ep)
+            if tier in DIFFICULTIES:
+                expected_xhard[key] = len(EXPECTED_CHECKS[task])
             if len(files[key]) != 1 or len(success[key]) != 1:
                 missing_samples.append(f"{key} 首条样本缺失或重复")
                 continue
@@ -461,11 +464,12 @@ def check_dataset(output_dir, golden_dir, cycle, episodes, sample="first-per-tie
     schema["pass"] = not any(schema[kind] for kind in ("missing", "extra", "dtype_shape"))
     content = {"files": len(samples), "fails": sum(bool(row["content_errors"]) for row in samples) + len(missing_samples)}
     content["pass"] = content["fails"] == 0
-    semantics = [row["semantic"] for row in samples if row["semantic"] is not None]
-    plan = {"files": len(semantics), **{key: sum(item[key] for item in semantics)
-              for key in ("rules_expected", "rules_run", "mismatch", "exempt")}}
-    missing_semantics = sum(row["difficulty"] in DIFFICULTIES and row["semantic"] is None for row in samples)
-    plan["mismatch"] += missing_semantics + len(missing_samples)
+    semantics = {(row["task"], row["episode"]): row["semantic"] for row in samples
+                 if (row["task"], row["episode"]) in expected_xhard and row["semantic"] is not None}
+    # 应查集合在读产物前由有效循环与身份冻结，产物 difficulty 与读取失败不能缩小它。
+    plan = {"files": len(expected_xhard), "rules_expected": sum(expected_xhard.values()),
+            **{key: sum(item[key] for item in semantics.values()) for key in ("rules_run", "mismatch", "exempt")}}
+    plan["mismatch"] += sum(expected_xhard[key] for key in set(expected_xhard) - set(semantics))
     plan["pass"] = plan["mismatch"] == 0 and plan["rules_expected"] == plan["rules_run"]
     report = {"schema": schema, "content": content,
               "counts": check_counts(products, cycle, episode_start, episodes, tasks), "plan": plan,
