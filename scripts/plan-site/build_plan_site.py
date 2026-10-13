@@ -1,6 +1,6 @@
 """把根目录单文件计划 HTML 拆成托管网页（分页），输出到 artifacts/plan-site/。
 
-页面：index（引言、口径、三行概要、导航）/ impl（实施结果，仅当根目录存在 1012-xhard12-env-impl.html 时生成）/ interface（接口怎么改）/ envs（逐环境与长度）/ goals（逐任务总目标对照）/ review（逐环境物体与动作审查）/ h5（H5 产物一致性检验）/ details（第二部分技术细节）。
+页面：index（引言、口径、三行概要、导航）/ impl（实施结果，仅当根目录存在 1012-xhard12-env-impl.html 时生成）/ interface（接口怎么改）/ envs（逐环境与长度）/ goals（逐任务总目标对照）/ review（逐环境物体与动作审查）/ h5（H5 产物一致性检验）/ swap（交换机制调整）/ details（第二部分技术细节）。
 根计划里以 base64 内联的 PNG 还原成相对路径引用（data-src），图片另行复制；envs 页的数轴（V2 参照与 V3 各任务的中位条）
 由 scripts/plan-site/align_section.py 以「内联数据 + timeline_board.js」直接写在根计划里，本脚本只切页、不再注入。
 实施页的 <video> 引用改写为其 data-site-src（videos/<文件名>），对应 mp4 从 --videos-src 复制到站点 videos/，源文件缺失即报错退出。
@@ -19,7 +19,23 @@ REPO = pathlib.Path(__file__).resolve().parents[2]
 IMPL_NAV = ("impl.html", "实施结果")
 IMPL_CARD = "实施结果（10-12）"
 GITHUB_BLOB = "https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/newtask-v3-MotionJepa1006"
-NAV = [("index.html", "首页"), ("interface.html", "一、接口怎么改"), ("envs.html", "二、逐环境怎么改与长度对齐"), ("goals.html", "三、逐任务 goal 对照"), ("review.html", "四、逐环境物体与动作审查"), ("h5.html", "五、H5 产物一致性检验"), ("details.html", "技术细节（第二部分）")]
+NAV = [("index.html", "首页"), ("interface.html", "一、接口怎么改"), ("envs.html", "二、逐环境怎么改与长度对齐"), ("goals.html", "三、逐任务 goal 对照"), ("review.html", "四、逐环境物体与动作审查"), ("h5.html", "五、H5 产物一致性检验"), ("swap.html", "六、交换机制调整"), ("details.html", "技术细节（第二部分）")]
+
+
+def swap_body(content: pathlib.Path, plan: pathlib.Path) -> str:
+    """只提取指定两幅原图及图注，不重新序列化、不修改其字节。"""
+    doc = plan.read_bytes().decode("utf-8")
+    figures = re.findall(r"<figure\b[^>]*>.*?</figure>", doc, flags=re.S)
+    body = content.read_bytes().decode("utf-8")
+    for token, marker in (
+        ("{{SWAP_FIGURE_2}}", 'src="docs/xhard-doc/xhard-1012-swap-v2-probe/probe_g.png"'),
+        ("{{SWAP_FIGURE_3}}", "<figcaption>图 3　配对机制流程对比："),
+    ):
+        matches = [figure for figure in figures if marker in figure]
+        if len(matches) != 1 or body.count(token) != 1:
+            raise ValueError(f"交换页原图提取数量不符：{token} 原图={len(matches)} 占位符={body.count(token)}")
+        body = body.replace(token, matches[0])
+    return body
 
 
 def section(doc: str, start_pat: str, end_pat: str) -> str:
@@ -49,7 +65,8 @@ def site_videos(body: str) -> tuple[str, list[str]]:
 
 
 def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = None,
-          videos_src: pathlib.Path | None = None) -> list[str]:
+          videos_src: pathlib.Path | None = None, *, swap_content: pathlib.Path | None = None,
+          swap_plan: pathlib.Path | None = None) -> list[str]:
     nav_items = list(NAV)
     if impl is not None:
         nav_items.insert(1, IMPL_NAV)
@@ -90,9 +107,12 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         "goals.html": goals,
         "review.html": review,
         "h5.html": h5,
+        "swap.html": swap_body(swap_content or REPO / "scripts/plan-site/swap-content.html",
+                               swap_plan or REPO / "1012-swap-pairing-v2-plan.html"),
         "details.html": part2,
     }
     heads = {name: head for name in pages}
+    heads["swap.html"] = re.sub(r"<title>.*?</title>", "<title>六、交换机制调整 — RoboMME xhard</title>", head, flags=re.S)
     videos: list[str] = []
     if impl is not None:
         idoc = impl.read_text(encoding="utf-8")
@@ -141,12 +161,17 @@ def main() -> None:
     ap.add_argument("--plan", default=str(REPO / "1006-xhard12-env-plan.html"))
     ap.add_argument("--out", default=str(REPO / "artifacts" / "plan-site"))
     ap.add_argument("--impl", default=str(REPO / "1012-xhard12-env-impl.html"),
-                    help="实施结果 HTML；文件不存在或传空串时不生成 impl.html，其余分页与旧版逐字节相同")
+                    help="实施结果 HTML；文件不存在或传空串时不生成 impl.html")
+    ap.add_argument("--swap-content", default=str(REPO / "scripts/plan-site/swap-content.html"),
+                    help="交换页正文片段，含两幅原图占位符")
+    ap.add_argument("--swap-plan", default=str(REPO / "1012-swap-pairing-v2-plan.html"),
+                    help="只读取图 2、图 3 及原图注的来源计划")
     ap.add_argument("--videos-src", default=str(REPO / "artifacts" / "xhard" / "xhard-1011" / "report" / "per_episode_strip"),
                     help="实施页视频的源目录（按文件名查找）")
     a = ap.parse_args()
     impl = pathlib.Path(a.impl) if a.impl and pathlib.Path(a.impl).is_file() else None
-    written = build(pathlib.Path(a.plan), pathlib.Path(a.out), impl, pathlib.Path(a.videos_src))
+    written = build(pathlib.Path(a.plan), pathlib.Path(a.out), impl, pathlib.Path(a.videos_src),
+                    swap_content=pathlib.Path(a.swap_content), swap_plan=pathlib.Path(a.swap_plan))
     pages = [w for w in written if w.endswith(".html")]
     videos = [w for w in written if w.startswith("videos/")]
     images = len(written) - len(pages) - len(videos)
