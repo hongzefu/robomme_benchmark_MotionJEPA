@@ -31,3 +31,32 @@ W1 工作树基线 `a00efbe1c00569934f12f4dd398d2a8b0e20e118`，分支 `codex/sw
 ## 事件与边界
 
 归档 `.log` 被仓库全局忽略，因此原始日志改以 `.txt` 留档，没有改变日志内容或忽略配置。没有机制、接口、失败处理、预算与验收口径调整。下一步按批准计划合并 W1、核心短测，再派 W2。
+
+## W1 合并后停止：核心短测新增失败
+
+W1 已按计划合并为 `df4c30780569c9083c0f98c94f44b6a1493f155e`（2.95，保留三项子提交）。运行命令：
+
+```bash
+UV_CACHE_DIR=/home/hongzefu/.cache/uv timeout 280s uv run --no-sync python -m pytest tests/lightweight/ src/robomme_xhard/tests -m 'not gpu and not slow' -q -rf
+```
+
+结果为 `5 failed, 353 passed, 2 skipped, 118 deselected, 2 warnings in 8.09s`、`EXIT_CODE=1`。逐节点比对计划指定的基线日志，四个原有失败完全相同，新增唯一失败为 `src/robomme_xhard/tests/test_contract.py::test_s3_layout_fallback_to_root_jsonl`。实际 `task_success=None`，测试断言为 `0`。`CORE_SHORT=FAIL new_failures=1`，完整日志 `records/w1_core.txt`，节点差异 `records/w1_core_nodes.json`。
+
+只读定位：W1-a 把 `test_contract.py` 恢复到 `0ec9951b`，其中 `_s3_root` 的两条 JSONL 测试记录没有独立 `task_success` 字段；W1-c 把 `tools/layout.py` 恢复到 `3083af74`，`_canonical_result` 遇到缺失成功字段保持 `None`。计划把 `test_contract.py` 恢复到 `3083af74` 放在 W2-b，因而 W1 阶段的工具与测试夹具版本不配套。两个历史版本的测试只差上述两条记录新增 `task_success=1/0`，并没有修改断言。复核命令：
+
+```bash
+git diff 0ec9951b 3083af74 -- src/robomme_xhard/tests/test_contract.py
+git show 3083af74:src/robomme_xhard/tools/layout.py
+```
+
+按计划闸门「停止后续合并、不 push，交用户」已停止实施；W2 未派，GPU 契约、四卡生成及全量均未启动。本轮冻结、预扫 tmux 均已自然退出；没有停止或改动用户其他会话。W1 合并及三个子提交共四项只留本地，上游停在 `9d133d92`（2.94.8），这是合并后验收失败的明确例外。停止证据保存在本工作区，未将失败合并推到远端。
+
+候选处置：修订计划，把原属 W2-b 的 `test_contract.py` 原样恢复提前至 W1 的后续修补，重新独立审查并运行同一核心短测，保持成功字段语义和全部断言不变。此处仅记录候选，不执行；待用户裁决与修订计划完整审查后继续。
+
+## 用户批准修订计划，实施继续停止
+
+用户在停工问题中选择原话：「修订计划，重新交我审查」。本轮仅修订 `1012-swap-pairing-v2-plan.html`，把 `test_contract.py` 的文件归属从 W2-b 移到 W1，最终工具恢复集合由十文件变为十一文件。已执行的 W1 三提交和失败合并保持原样；计划新增 W1-d 单文件恢复、独立审查、整合后原核心短测三步。修订版及本档案提交为 2.95.1，等待完整用户审查和重新开工令；不修改测试夹具、不运行核心短测或 GPU、不推送失败合并。
+
+正文保留两个规定的一级标题，更新第一部分口径、验收与步骤，第二部分逐文件集合、代理唯一归属、闸门、接续命令、风险与提交纪律。原图保留，仅明确图一为首次实施的历史示意，本次接续按 A′ 表与命令。文档验证仅检查链接、结构、目录点击、页面报错及截图，不执行仓库测试或生成命令。
+
+文档检查：`git diff --check` 通过；规定的两个一级标题计数为二；相对链接与锚点存在。用一次性 Playwright 环境验证目录六个跳转、三个图像加载、页面零异常和无水平溢出，`PLAN_DOCUMENT=PASS parts=2 figures=3 toc_clicks=6 page_errors=0`。主会话目视检查三张图及文首、修订裁决截图：箭头落点正常，框与文字无重叠、无截断和缺字，颜色说明一致；没有改图的几何，仅给图一增加历史范围说明。截图位于 `artifacts/plan-review/swapv2-revision-1012-final/`，机器可读摘要存于 `records/plan_document_validation.json`。`IMPLEMENTATION_STOPPED=PASS code_diff=0`，源码、测试与依赖没有本轮修改。

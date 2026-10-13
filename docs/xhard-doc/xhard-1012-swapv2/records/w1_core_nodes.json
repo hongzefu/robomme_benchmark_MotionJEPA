@@ -1,0 +1,20 @@
+{
+  "base_failed_nodes": [
+    "tests/lightweight/test_TaskGoal.py::test_swingxtimes_multiple",
+    "tests/lightweight/test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal",
+    "tests/lightweight/test_step_error_handling.py::test_scripts_use_status_check_not_bare_try_except",
+    "tests/lightweight/test_step_error_handling.py::test_step_error_returns_status_error"
+  ],
+  "failed_nodes": [
+    "src/robomme_xhard/tests/test_contract.py::test_s3_layout_fallback_to_root_jsonl",
+    "tests/lightweight/test_TaskGoal.py::test_swingxtimes_multiple",
+    "tests/lightweight/test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal",
+    "tests/lightweight/test_step_error_handling.py::test_scripts_use_status_check_not_bare_try_except",
+    "tests/lightweight/test_step_error_handling.py::test_step_error_returns_status_error"
+  ],
+  "new_failed_nodes": [
+    "src/robomme_xhard/tests/test_contract.py::test_s3_layout_fallback_to_root_jsonl"
+  ],
+  "resolved_nodes": [],
+  "merge_sha": "df4c30780569c9083c0f98c94f44b6a1493f155e"
+}
