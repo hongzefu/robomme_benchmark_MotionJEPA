@@ -47,25 +47,26 @@ a { color:var(--accent); }
 <li><a href="#h0">〇、为什么做</a></li>
 <li><a href="#p1">第一部分（给人看）</a></li>
 <li class="lv2"><a href="#h1">一、一句话方案与已定口径</a></li>
-<li class="lv2"><a href="#h2">二、全部运行一览：本机与新机器各做什么</a></li>
+<li class="lv2"><a href="#h2">二、全部运行一览</a></li>
 <li class="lv2"><a href="#h3">三、机制</a></li>
-<li class="lv3"><a href="#h3-1">3.1 八档循环与每任务有效循环</a></li>
-<li class="lv3"><a href="#h3-2">3.2 xhard 走公式 seed：作业、子类、重试</a></li>
-<li class="lv3"><a href="#h3-3">3.3 H5 校验：100 个样本、四条判定行</a></li>
-<li class="lv3"><a href="#h3-4">3.4 多 worker 测速：32／48／64／128 阶梯</a></li>
-<li class="lv3"><a href="#h3-5">3.5 新机器接入</a></li>
+<li class="lv3"><a href="#h3-1">3.1 八档循环、缺档与 FailRecover</a></li>
+<li class="lv3"><a href="#h3-2">3.2 xhard 走公式 seed</a></li>
+<li class="lv3"><a href="#h3-3">3.3 H5 校验</a></li>
+<li class="lv3"><a href="#h3-4">3.4 多 GPU 测速阶梯</a></li>
+<li class="lv3"><a href="#h3-5">3.5 新机器（AWS 8×A100）接入</a></li>
 <li class="lv2"><a href="#h4">四、验收判定行</a></li>
 <li class="lv2"><a href="#h5">五、实施步骤</a></li>
 <li class="lv2"><a href="#h6">六、子代理分工与合并（简述）</a></li>
 <li><a href="#p2">第二部分（技术细节，供 agent 追踪）</a></li>
 <li class="lv2"><a href="#t0">〇、红线</a></li>
-<li class="lv2"><a href="#t1">一、逐文件改动清单</a></li>
-<li class="lv2"><a href="#t2">二、子代理分配表</a></li>
-<li class="lv2"><a href="#t3">三、闸门总表</a></li>
-<li class="lv2"><a href="#t4">四、runbook</a></li>
-<li class="lv2"><a href="#t5">五、风险登记</a></li>
-<li class="lv2"><a href="#t6">六、盲区诚实清单</a></li>
-<li class="lv2"><a href="#t7">七、留档与 commit 纪律</a></li>
+<li class="lv2"><a href="#t1">一、机制细节</a></li>
+<li class="lv2"><a href="#t2">二、逐文件改动清单</a></li>
+<li class="lv2"><a href="#t3">三、子代理分配表</a></li>
+<li class="lv2"><a href="#t4">四、闸门总表</a></li>
+<li class="lv2"><a href="#t5">五、runbook</a></li>
+<li class="lv2"><a href="#t6">六、风险登记</a></li>
+<li class="lv2"><a href="#t7">七、盲区诚实清单</a></li>
+<li class="lv2"><a href="#t8">八、留档与 commit 纪律</a></li>
 </ul>
 </nav>
 <main>
@@ -73,93 +74,61 @@ a { color:var(--accent); }
 <h1>1013-mixed8-400ep-plan.html — 八档难度循环 400 条全任务数据集：生成器扩展、H5 校验、多 worker 测速</h1>
 
 <blockquote>
-<p><strong>权威性</strong>：本文件是「八档难度循环 400 条数据集」的唯一现行计划。此前的 <a href="1006-xhard12-env-plan.html">1006-xhard12-env-plan.html</a>（母 seed 派生 xhard）与 1012 系列碰撞／配对计划保留为 xhard 子类与配置表的来源，其「从母 seed 派生」的生成方式不再是全量数据集的生成方式。</p>
-<p><strong>代码锚点</strong>：工作副本 <code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>，分支 <code>newtask-v3-MotionJepa1006</code>，本计划撰写时 HEAD = <code>b7bf8b11</code>（2.107）。生成器 <code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code>（1416 行），seed 公式 <code>scripts/data-generation-newSeed/seed_layout.py</code>，xhard 子类 <code>src/robomme_xhard/</code>（配置表 <code>configs.py</code> 52 个有效「任务 × 档」格子）。</p>
-<p><strong>commit 体例</strong>：<code>&lt;大&gt;.&lt;小&gt; 中文描述</code>，本计划为 2.108，之后按 <code>git log</code> 接续；写入型子代理提交固定前缀 <code>sub/&lt;编号&gt;: </code>。</p>
-<p><strong>外部依赖锚点</strong>：ManiSkill 钉 <code>07be6fbc</code>（<code>pyproject.toml</code> 的 <code>[tool.uv.sources]</code>），不动；<code>src/robomme/</code> 零改动（P1）。</p>
-<p><strong>授权边界</strong>：本文件只规划不实施。开工令以 AGENTS.md 第 2 条为准：计划呈现后用户不改而直接认可才动手；开工前先派一个独立审查子代理审计划自相矛盾（<code>PLAN_CONSISTENCY_REVIEW</code>）。本机（sled-vail）只做代码实现与小规模验证，不跑测速阶梯与全量；测速与全量换新机器，新机器开工前须先按 AGENTS.md 第 0 条补判据表。</p>
+<p><strong>权威性</strong>：本文件是「八档难度循环 400 条数据集」的唯一现行计划；<a href="1006-xhard12-env-plan.html">1006 计划</a>与 1012 系列只作 xhard 子类与配置表的来源，「从母 seed 派生」不再是全量生成方式。</p>
+<p><strong>代码锚点</strong>：<code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>，分支 <code>newtask-v3-MotionJepa1006</code>，撰写时 HEAD <code>6ce0bb66</code>（2.110）。生成器 <code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code>，seed 公式 <code>seed_layout.py</code>，xhard 子类 <code>src/robomme_xhard/</code>。原版数据集本机副本 <code>/data/hongzefu/robomme_data_h5/</code>（HF <code>Yinpei/robomme_data_h5</code> revision <code>a5e4e25</code>，AGENTS.md P3）。</p>
+<p><strong>commit 体例</strong>：<code>&lt;大&gt;.&lt;小&gt; 中文描述</code>，本计划修订为 2.111；子代理提交前缀 <code>sub/&lt;编号&gt;: </code>。<strong>外部依赖</strong>：ManiSkill 钉 <code>07be6fbc</code> 不动；<code>src/robomme/</code> 零改动（P1）。</p>
+<p><strong>授权边界</strong>：只规划不实施。开工令按 AGENTS.md 第 2 条；开工前先派审查子代理出 <code>PLAN_CONSISTENCY_REVIEW</code>。本机 sled-vail 只做代码实现、smoke 与 100 样本校验；测速与全量换 AWS 8×A100 机器，开工前先补 AGENTS.md 第 0 条环境 C 列。</p>
 </blockquote>
 
 <h2 id="h0">〇、为什么做</h2>
-<p>现行 xhard 生成（1006 计划）是「从官方 hard 的母 seed 派生 xhard12…xhard20」，母清单每任务只有 2 个 seed（三个 swap 任务 10 个），到今天跑过的最大一轮是 180 张卡、130 成功；它从来没有对准过「每任务 400 条」。用户要的最终数据集是另一种形态：每任务 400 条，easy／medium／hard／xhard12…xhard20 八档固定均分，xhard 不再从母 seed 派生，而是和其他档一样按 seed 公式自算。已有的旧比例模式（<code>--difficulty 211</code>、`episode*100+attempt`、失败换 seed）已经具备 400 条接续、重试、进程池、metadata 全部骨架，只差「难度循环允许 xhard 值」和「xhard 作业走 <code>&lt;Task&gt;XHard</code> 子类」两处；因此本计划不另起生成器，只扩展它。</p>
-<p>同时补两件配套：① 一套简版 H5 校验（结构、内容、计数、规划对录像的语义闭环），只对每任务每档第一条共 100 个文件做；② 多 worker 测速工具改成从 32 向上的阶梯并带护栏，供新机器选 worker 数。压缩按用户决定不做。</p>
+<p>现行 xhard 生成从官方 hard 母 seed 派生，母清单每任务只有 2 个 seed，最大一轮 180 张卡，从未对准「每任务 400 条」。用户要的数据集是每任务 400 条、easy／medium／hard／xhard12…xhard20 八档固定均分、xhard 也按 seed 公式自算。旧比例模式已具备 400 条接续、重试、进程池、metadata 骨架，只差「循环允许 xhard 值」与「xhard 作业走 <code>&lt;Task&gt;XHard</code>」两处，因此只扩展生成器。配套一套简版 H5 校验（100 个样本、四条判定行）和一套多 GPU 测速阶梯。压缩不做。</p>
 
 <h1 id="p1">第一部分（给人看）</h1>
 
 <h2 id="h1">一、一句话方案与已定口径</h2>
-<p><strong>一句话</strong>：把生成器的难度循环从三档扩成八档 <code>[easy, medium, hard, xhard12, xhard14, xhard16, xhard18, xhard20]</code>，按 <code>episode % len(该任务有效循环)</code> 取档，seed 照旧 <code>env_code×1000 + episode×100 + attempt</code>，每任务 ep0–399 一轮出齐 400 条；xhard 作业改用 <code>&lt;Task&gt;XHard</code> 子类但 seed 与重试和其他档完全一样；本机只实现与小规模验证，新机器做测速阶梯与全量，全量后对 100 个样本跑四条 H5 判定行。</p>
-
+<p><strong>一句话</strong>：难度循环从三档扩成八档 <code>[easy, medium, hard, xhard12, xhard14, xhard16, xhard18, xhard20]</code>，按 <code>episode % len(该任务有效循环)</code> 取档，seed 照旧 <code>env_code×1000 + episode×100 + attempt</code>，每任务 ep0–399 一轮 400 条；xhard 用子类但 seed 与重试和其他档一样；FailRecover 只落在 easy／medium／hard；本机实现并校验 100 个样本，AWS 8×A100 做测速与全量后再校验一次。</p>
 <table>
-<tr><th style="width:6%">编号</th><th style="width:44%">已定口径（用户原话逐字保留）</th><th>落点</th></tr>
-<tr><td>K1</td><td>「EasyMedHardXHard 的一二到 20 都用这个 seed 的计算方式来派生然后生成 400 个然后每一个难度都都固定」</td><td>3.1 八档循环；3.2 公式 seed</td></tr>
-<tr><td>K2</td><td>「压缩我们就先不搞了」</td><td>产物保持无压缩、每 episode 一个 h5（3.2 末）</td></tr>
-<tr><td>K3</td><td>「同意你的这个处理」——对应四条推荐：xhard 按公式 <code>attempt+1</code> 重试（本计划对 P8 的显式例外）；缺档剔掉、剩余档均分 400；MoveCube 与 InsertPeg 接受只有三档；沿用 <code>train</code> 布局、不与官方 seed 集合对齐</td><td>3.1 缺档表；3.2 重试；第二部分红线 R3</td></tr>
-<tr><td>K4</td><td>「同意按照这个循环来做」</td><td>3.1</td></tr>
-<tr><td>K5</td><td>「类似这样的 h5 校验机制 … 简单做即可」；「H5 的校验只做了每个任务每个难度第一条」</td><td>3.3：100 个样本</td></tr>
-<tr><td>K6</td><td>「同意加入」（规划 JSON 对录像的语义闭环）</td><td>3.3 判定行 <code>PLAN_VS_RECORD</code></td></tr>
-<tr><td>K7</td><td>「multi worker 的测速」；「测速的跨度大一些。从现在 32 开始往外推」「你这个差距太小了只测 32、48、64、128 这几档」</td><td>3.4：32／48／64／128 阶梯</td></tr>
-<tr><td>K8</td><td>「在本机只做 H5 校验。以及测速的实现以及新的这个 generatedatasetnewseed 的实现不做全量的生成我要换一台机器做全量的生成」「换机器重新做测速和全量的生成」</td><td>二、运行一览；3.5 新机器接入</td></tr>
-<tr><td>K9</td><td>未答项按推荐默认写入，用户审本文件时可改：golden schema 从本生成器 smoke 二的 hard episode 导出；校验 FAIL 的文件只报告不动</td><td>3.3</td></tr>
+<tr><th style="width:5%">编号</th><th>已定口径（用户原话）</th><th style="width:22%">落点</th></tr>
+<tr><td>K1</td><td>「EasyMedHardXHard 的一二到 20 都用这个 seed 的计算方式来派生然后生成 400 个然后每一个难度都都固定」「同意按照这个循环来做」</td><td>3.1、3.2</td></tr>
+<tr><td>K2</td><td>「压缩我们就先不搞了」</td><td>产物无压缩、每 episode 一个 h5</td></tr>
+<tr><td>K3</td><td>「同意你的这个处理」：xhard 按公式 <code>attempt+1</code> 重试（本计划对 P8 的显式例外）；缺档剔掉、剩余档均分；MoveCube／InsertPeg 只有三档；沿用 <code>train</code> 布局、不与官方 seed 对齐</td><td>3.1、红线 R3</td></tr>
+<tr><td>K4</td><td>「h5 校验机制 … 简单做即可」「H5 的校验只做了每个任务每个难度第一条」「同意加入」（规划对录像的语义闭环）；「您在本机完成这一百个样本的生成并且进行判定。然后换新机器再做一次」</td><td>3.3</td></tr>
+<tr><td>K5</td><td>「测速的跨度大一些。从现在 32 开始往外推」「只测 32、48、64、128 这几档」「不能只用 GPU0 而是用更多的 GPU … 新机器是 AWS 8 乘以 A100，所以这个功能你一定要支持」</td><td>3.4</td></tr>
+<tr><td>K6</td><td>「在本机只做 H5 校验。以及测速的实现以及新的 generate_dataset_newseed 的实现不做全量的生成」「换机器重新做测速和全量的生成」</td><td>二、3.5</td></tr>
+<tr><td>K7</td><td>「FailRecover 是否能全部放在 easy medium hard 内」→「1 同意」（按 base 档序号分配，前 3 条 z、再 3 条 xy，xhard 不设）；「2 同意但不作为闸门」（跨机器同 seed 对拍只报数）；「3 同意」（多卡档位）；「golden … 为什么不是从原版数据集来」→ golden 改从原版副本导出；「第二台机器上还需要下载原版数据集吗」→ 不需要，只要 git 里的 golden JSON</td><td>3.1、3.3、3.4、3.5</td></tr>
+<tr><td>K8</td><td>「第一部分还是太长了再缩减一些细节」；「实施的 commit 图不再画 SVG」</td><td>本文件结构</td></tr>
+<tr><td>K9</td><td>未答项按推荐默认：校验 FAIL 的文件只报告不动；AWS 实例按 p4d.24xlarge 假设；1.2–1.6 TB 产物持久化落点待用户定</td><td>3.3、3.5、盲区</td></tr>
 </table>
 
-<h2 id="h2">二、全部运行一览：本机与新机器各做什么</h2>
-<p>整个计划分两台机器、六个阶段。本机（sled-vail）承担 S0–S1 的代码与小规模验证；S2–S5 在新机器。smoke 二在本机跑的理由是：它是代码改动的真实验证（AGENTS.md 第 4 条），128 条约 15 分钟，而且它产出的 ep0–7 恰好就是 H5 校验的 100 个样本身份，可以在本机把校验工具演练一遍。</p>
-
+<h2 id="h2">二、全部运行一览</h2>
 <table>
-<tr><th>阶段</th><th>机器</th><th>内容</th><th>规模与耗时（估）</th><th>产物</th><th>判定行</th></tr>
-<tr><td>S0</td><td>vail</td><td>四个写入型子代理 W1–W4 改代码，逐个审查合并</td><td>代码约 600 行，核心短测 &lt;5 分钟</td><td>commit 2.109–2.112</td><td><code>LIGHT_TESTS</code>、<code>PRE/POST_MERGE_REVIEW</code></td></tr>
-<tr><td>S1a</td><td>vail GPU0</td><td>smoke 一：单任务 ep3（八档下为 xhard12）单 worker</td><td>1 条，约 1 分钟</td><td><code>artifacts/mixed8/smoke1/</code></td><td><code>SMOKE1</code></td></tr>
-<tr><td>S1b</td><td>vail GPU0</td><td>smoke 二：16 任务各 ep0–7，32 worker；导出 golden schema；填 12 个任务的 subgoal 计数规则；演练 H5 校验</td><td>128 条，约 15 分钟（xhard 重试另计）</td><td><code>artifacts/mixed8/smoke2/</code>、<code>src/robomme_xhard/tools/golden_schema/*.json</code></td><td><code>SMOKE2</code>、四条 <code>H5_*</code>（演练）</td></tr>
-<tr><td>S2</td><td>新机器</td><td>接入：环境判定、补 AGENTS.md 环境 C 列、clone、<code>uv sync</code>、editable 核验、渲染探针、smoke 一复跑</td><td>约 1 小时（含依赖下载）</td><td>AGENTS.md 判据表 commit</td><td><code>ENV_C</code>、<code>SMOKE1</code></td></tr>
-<tr><td>S3</td><td>新机器</td><td>测速阶梯 32／48／64／128，每档 16 任务各 4 条</td><td>4 档 × 64 条，约 25–35 分钟</td><td><code>artifacts/mixed8/calib/calibration.md</code></td><td><code>CALIB</code></td></tr>
-<tr><td>S4</td><td>新机器</td><td>Beta commit → tmux 全量 16 任务 ep0–399，W* worker</td><td>6400 条，按 S3 实测估 5–8 小时；无压缩约 1.2–1.6 TB</td><td><code>artifacts/mixed8/full/</code></td><td><code>GEN_FULL</code></td></tr>
-<tr><td>S5</td><td>新机器</td><td>H5 校验 100 样本；留档 <code>docs/xhard-doc/mixed8-&lt;MMDD&gt;/</code>；commit／push</td><td>校验约 2 分钟（CPU）</td><td>留档三件套</td><td><code>H5_SCHEMA</code>、<code>H5_CONTENT</code>、<code>H5_COUNTS</code>、<code>PLAN_VS_RECORD</code></td></tr>
+<tr><th>阶段</th><th>机器</th><th>内容</th><th>规模／耗时（估）</th><th>判定行</th></tr>
+<tr><td>S0</td><td>vail</td><td>W1–W4 改代码，逐个审查合并</td><td>约 600 行代码，核心短测 &lt;5 分钟</td><td><code>LIGHT_TESTS</code>、<code>PRE/POST_MERGE_REVIEW</code></td></tr>
+<tr><td>S1a</td><td>vail GPU0</td><td>smoke 一：单任务 ep3（xhard12）单 worker</td><td>1 条，约 1 分钟</td><td><code>SMOKE1</code></td></tr>
+<tr><td>S1b</td><td>vail GPU0</td><td>smoke 二：16 任务 ep0–7，32 worker；它含全部 100 个校验样本</td><td>128 条，约 15 分钟加重试</td><td><code>SMOKE2</code></td></tr>
+<tr><td>S1c</td><td>vail</td><td>W5 填语义闭环规则；<strong>正式</strong>校验 100 样本</td><td>校验约 1 分钟</td><td>四条 <code>H5_*</code>（第一次）</td></tr>
+<tr><td>S2</td><td>AWS</td><td>接入：环境判定、补环境 C 列与 P7 覆盖、clone、<code>uv sync</code>、渲染探针、复跑 smoke 一</td><td>约 1 小时</td><td><code>ENV_C</code>、<code>SMOKE1</code></td></tr>
+<tr><td>S3</td><td>AWS 多卡</td><td>测速阶梯 32／48／64／128 worker 分布到 4–8 张卡</td><td>4 档 × 64 条，约 25–35 分钟</td><td><code>CALIB</code></td></tr>
+<tr><td>S4</td><td>AWS 多卡</td><td>Beta commit → tmux 全量 16 任务 ep0–399，W* worker</td><td>6400 条，按 S3 实测估；无压缩 1.2–1.6 TB</td><td><code>GEN_FULL</code></td></tr>
+<tr><td>S5</td><td>AWS</td><td>校验 100 样本（第二次）；跨机器对拍只报数；留档；commit／push</td><td>约 2 分钟</td><td>四条 <code>H5_*</code>；<code>XMACHINE_JOINT_DIFF</code>（不设闸门）</td></tr>
 </table>
-
 
 <h2 id="h3">三、机制</h2>
 
-<h3 id="h3-1">3.1 八档循环与每任务有效循环</h3>
-<p><strong>定义</strong>：新增 CLI 参数 <code>--difficulty-cycle</code>，取值为逗号分隔的难度名列表，允许重复（将来加权只需重复写）；与现有 <code>--difficulty</code>（三位数字或 xhard 字面值）互斥，二者同时出现 <code>parser.error</code>。解析函数 <code>seed_layout.parse_difficulty_cycle(text, xhard_values)</code> 只接受 <code>easy／medium／hard</code> 与传入的五个 xhard 值，其余报 <code>SeedLayoutError</code>；现有 <code>parse_difficulty_ratio</code> 与 <code>211</code> 语义一字不动。</p>
-<p><strong>有效循环</strong>：每个任务把 <code>TIER_CONFIGS[task]</code> 里不存在的 xhard 档从全局循环里剔掉，得到自己的循环；难度按 <code>cycle_task[episode % len(cycle_task)]</code> 取。纯函数 <code>seed_layout.filter_cycle(cycle, available_xhard)</code> 负责剔除，生成器负责从配置表取 <code>available_xhard</code>。400 条下的分布：</p>
+<h3 id="h3-1">3.1 八档循环、缺档与 FailRecover</h3>
+<p>新参数 <code>--difficulty-cycle easy,medium,hard,xhard12,…,xhard20</code>，与现有 <code>--difficulty</code> 互斥。每个任务把配置表里没有的 xhard 档剔掉得到自己的有效循环，按 <code>episode % len</code> 取档；总数恒为 400。FailRecover 不再按 episode 号，而是按该任务 base 档（easy／medium／hard）episode 的序号：前 3 条 <code>z</code>、接下来 3 条 <code>xy</code>，xhard 一律不设，官方「3 加 3」的数量保持。</p>
 <table>
-<tr><th>任务（官网顺序）</th><th>可用 xhard 档</th><th>有效循环长度</th><th>每档条数</th></tr>
-<tr><td>1.1 BinFill、1.2 PickXtimes、1.3 SwingXtimes</td><td>12／14／16／18／20</td><td>8</td><td>50</td></tr>
-<tr><td>1.4 StopCube</td><td>14／16／18／20</td><td>7</td><td>58／57／57／57／57／57／57（ep0 起依次）</td></tr>
-<tr><td>2.1 VideoUnmask、2.2 ButtonUnmask</td><td>14</td><td>4</td><td>100</td></tr>
-<tr><td>2.3 VideoUnmaskSwap、2.4 ButtonUnmaskSwap</td><td>12／14／16／18／20</td><td>8</td><td>50</td></tr>
-<tr><td>3.1 PickHighlight</td><td>12／16／18</td><td>6</td><td>67／67／67／67／66／66</td></tr>
-<tr><td>3.2 VideoRepick</td><td>12／14／16／18／20</td><td>8</td><td>50</td></tr>
-<tr><td>3.3 VideoPlaceButton</td><td>12／14</td><td>5</td><td>80</td></tr>
-<tr><td>3.4 VideoPlaceOrder</td><td>12</td><td>4</td><td>100</td></tr>
-<tr><td>4.1 MoveCube、4.2 InsertPeg</td><td>无</td><td>3</td><td>134／133／133</td></tr>
-<tr><td>4.3 PatternLock、4.4 RouteStick</td><td>12／14／16／18／20</td><td>8</td><td>50</td></tr>
+<tr><th>任务（官网顺序）</th><th>可用 xhard 档</th><th>循环长度</th><th>每档条数</th><th>z／xy 落在</th></tr>
+<tr><td>BinFill、PickXtimes、SwingXtimes、VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick、PatternLock、RouteStick</td><td>12／14／16／18／20</td><td>8</td><td>50</td><td>ep0–2／ep8–10</td></tr>
+<tr><td>StopCube</td><td>14／16／18／20</td><td>7</td><td>58 或 57</td><td>ep0–2／ep7–9</td></tr>
+<tr><td>PickHighlight</td><td>12／16／18</td><td>6</td><td>67 或 66</td><td>ep0–2／ep6–8</td></tr>
+<tr><td>VideoPlaceButton</td><td>12／14</td><td>5</td><td>80</td><td>ep0–2／ep5–7</td></tr>
+<tr><td>VideoUnmask、ButtonUnmask（只 14）、VideoPlaceOrder（只 12）</td><td>单档</td><td>4</td><td>100</td><td>ep0–2／ep4–6</td></tr>
+<tr><td>MoveCube、InsertPeg</td><td>无</td><td>3</td><td>134 或 133</td><td>ep0–2／ep3–5（与骨架相同）</td></tr>
 </table>
-<p><strong>episode 到难度的数轴演示</strong>（前 16 条）：</p>
-<table>
-<tr><th>episode</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td></tr>
-<tr><th>8 档任务</th><td>easy</td><td>med</td><td>hard</td><td>x12</td><td>x14</td><td>x16</td><td>x18</td><td>x20</td><td>easy</td><td>med</td><td>hard</td><td>x12</td><td>x14</td><td>x16</td><td>x18</td><td>x20</td></tr>
-<tr><th>VideoUnmask（4）</th><td>easy</td><td>med</td><td>hard</td><td>x14</td><td>easy</td><td>med</td><td>hard</td><td>x14</td><td>easy</td><td>med</td><td>hard</td><td>x14</td><td>easy</td><td>med</td><td>hard</td><td>x14</td></tr>
-<tr><th>MoveCube（3）</th><td>easy</td><td>med</td><td>hard</td><td>easy</td><td>med</td><td>hard</td><td>easy</td><td>med</td><td>hard</td><td>easy</td><td>med</td><td>hard</td><td>easy</td><td>med</td><td>hard</td><td>easy</td></tr>
-<tr><th>FailRecover（骨架）</th><td>z</td><td>z</td><td>z</td><td>xy</td><td>xy</td><td>xy</td><td>无</td><td>无</td><td>无</td><td>无</td><td>无</td><td>无</td><td>无</td><td>无</td><td>无</td><td>无</td></tr>
-</table>
-<div class="warn"><strong>⚠ 陷阱与反例</strong>：① <code>EpisodeJob.recovery_mode</code> 按 episode 号分档（ep0–2 <code>z</code>、ep3–5 <code>xy</code>），与骨架逐字相同、不改；八档下 ep3–5 恰好是 xhard12／14／16 的第一条，它们带 <code>xy</code> 失败恢复模式，这是骨架既有行为，H5 校验样本里会包含它们。② seed 公式里 <code>episode×100</code> 的跨度大于 <code>env_block=1000</code>，不同任务的 seed 数值会重叠（BinFill ep10 与 PickXtimes ep0 都是 2000），400 条先例（<code>scripts/400ep-dataset/</code>）已如此，seed 只需任务内唯一。③ ep0–99 的难度与官方 train metadata（211 循环）不同，这批数据按全新数据集对待（K3）。④ 最大可能 seed = 16×1000 + 399×100 + 99 = 55999，低于 test 布局的 offset 500000，现有护栏直接通过。</div>
 
-<h3 id="h3-2">3.2 xhard 走公式 seed：作业、子类、重试</h3>
-<p><strong>作业</strong>：<code>EpisodeJob</code> 新增只读属性 <code>is_xhard</code>（难度在五个 xhard 值内）；<code>gym_id</code> 改为「<code>make_name</code> 优先，否则 xhard → <code>f"{task}XHard"</code>，否则 <code>task</code>」。母清单模式的三个字段 <code>card_role／make_name／source_difficulty</code> 在本模式保持 <code>None</code>，因此 <code>fixed_seed</code> 为假，调度循环自动走「失败 <code>bump</code> 换 seed」的旧分支，母清单模式一行不改。</p>
-<p><strong>子类</strong>：worker 内 <code>gym.make(job.gym_id, difficulty=job.difficulty, seed=job.seed, …)</code>，<code>XHardMixin.__init__</code> 收到 <code>xhard14</code> 这类值后把母配置复制再叠 <code>TIER_CONFIGS</code> 旋钮，父类 <code>self.difficulty</code> 被属性拦截成 xhard 值，录像器写入 <code>setup/difficulty</code> 就是 <code>xhard14</code>；<code>spec.id</code> 报原任务名，四个 wrapper 不改。<code>import robomme_xhard</code> 的开关：<code>_pool_init</code> 的 <code>xhard_mode</code> 在「全局循环含 xhard」时为真，<code>_worker</code> 内改为 <code>job.card_role is not None or job.is_xhard</code>；两处导入位置仍在绑卡与 <code>import robomme.robomme_env</code> 之后（P2）。</p>
-<p><strong>父进程取可用档不触发包初始化</strong>：<code>robomme_xhard/__init__.py</code> 会连带导入 <code>envs</code> 与 ManiSkill 栈；生成器父进程只需要 <code>configs.py</code> 这张纯数据表，因此用 <code>importlib.util.spec_from_file_location</code> 把 <code>src/robomme_xhard/configs.py</code> 作为独立模块加载（它只有 <code>from __future__</code>，无包内相对导入，2026-10-13 核实），读 <code>DIFFICULTIES</code> 与 <code>TIER_CONFIGS</code> 的键，不在父进程 <code>import robomme_xhard</code>。</p>
-<p><strong>失败处理</strong>（与旧比例模式逐字相同）：</p>
-<table>
-<tr><th>结果</th><th>处置</th><th>产物</th></tr>
-<tr><td>成功</td><td>写 <code>episode_results.jsonl</code>，进 metadata</td><td><code>hdf5_files/{task}_ep{N}_seed{M}.h5</code>、<code>videos/*.mp4</code></td></tr>
-<tr><td>任务性失败：<code>SceneGenerationError／FailsafeTimeout／PlannerExhausted／ScrewPlanFailure／DatasetGenerationError</code></td><td><code>attempt+1</code>、seed+1 重新入队，上限 <code>--max-attempts</code></td><td>空壳 h5 删除，<code>FAILED_</code> 视频保留</td></tr>
-<tr><td>xhard 运行期拒绝（<code>_xhard_fatal</code>，<code>failure_class="task"</code>）</td><td>同上，<code>attempt+1</code></td><td>已写内容的 h5 与视频加 <code>FAILED_</code> 前缀保留（<code>_mark_failed_artifacts</code>，与 1012 行为一致）</td></tr>
-<tr><td>非任务性失败（代码异常、池崩溃）</td><td>同一 episode 连续 3 次即放弃，记 <code>exhausted</code></td><td>无</td></tr>
-</table>
-<p><strong>证据采集</strong>：<code>_worker</code> 的 <code>finally</code> 里对 <code>swap_plan／runtime_checks／_xhard_fatal</code> 的采集条件从 <code>job.fixed_seed</code> 扩为 <code>job.fixed_seed or job.is_xhard</code>，使 <code>episode_results.jsonl</code> 里每条 xhard 成功记录都带 <code>swap_plan</code>（3.3 的语义闭环要读它）。</p>
-<p><strong>产物形态</strong>（K2）：每 episode 一个无压缩 h5，顶层 <code>episode_N</code> → <code>setup</code> + <code>timestep_k</code>；实测 ButtonUnmaskSwap xhard14 一条 660 timestep 419.7 MB，dataset 原始字节和 412.7 MB，<code>chunks=None、compression=None</code>。合并仍按需用 <code>merge_episode_h5.py</code>，一轮 400 条编号连续不撞号。</p>
-
+<h3 id="h3-2">3.2 xhard 走公式 seed</h3>
+<p>xhard 作业的 <code>gym_id</code> 为 <code>&lt;Task&gt;XHard</code>，其余字段与 easy／medium／hard 作业完全相同：seed 由公式算、失败 <code>attempt+1</code> 换 seed、非任务性失败连续 3 次放弃。子类把母配置复制后叠旋钮，录像器写进 h5 的 <code>setup/difficulty</code> 就是 <code>xhard14</code> 这类值；母清单模式与旧比例模式一行不改。产物形态不变：每 episode 一个无压缩 h5（实测 xhard14 一条 660 timestep 约 420 MB）。</p>
 <figure>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 602" width="1180" height="602" font-family='"Noto Sans CJK SC","PingFang SC","Microsoft YaHei",sans-serif'>
 <defs><marker id="arrB" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="9" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#1a56db"/></marker><marker id="arrR" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="9" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#c0392b"/></marker><marker id="arrG" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="9" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#5f6368"/></marker></defs>
@@ -297,144 +266,144 @@ a { color:var(--accent); }
 <figcaption>图 1：八档难度循环下一条 episode 的数据链路（主流程、任务性失败回流、非任务性失败放弃各走独立通道）。</figcaption>
 </figure>
 
-<h3 id="h3-3">3.3 H5 校验：100 个样本、四条判定行</h3>
-<p><strong>样本</strong>（K5）：每任务每个有效档取 episode 号最小的一条成功记录，共 8×8 + 7 + 6 + 5 + 4×3 + 3×2 = 100 个文件；按 3.1 的循环它们就是各任务的 ep0–7（StopCube 为 ep0–6，以此类推），总体量约 25–40 GB。新工具 <code>src/robomme_xhard/tools/check_mixed_h5.py</code>（不在受保护目录），<code>--sample first-per-tier</code> 为默认，另提供 <code>--sample all</code> 备用。</p>
+<h3 id="h3-3">3.3 H5 校验</h3>
+<p>样本是每任务每个有效档的第一条，共 100 个文件，正好落在 smoke 二的 ep0–7 里，所以本机先正式判一次，AWS 全量后对它自己的 100 个再判一次；两台机器同 seed 的 100 条另做 <code>joint_action</code> 逐元素对拍，只报最大差、不设闸门。golden schema 从原版副本 <code>/data/hongzefu/robomme_data_h5/</code> 每任务 <code>episode_0</code> 导出一次并提交进 git，剔除上游 <code>68a65a0</code> 删掉的 8 个字段并把清单写进 golden；AWS 上不需要原版，只用这 16 份 JSON。FAIL 只报告不动文件。</p>
 <table>
-<tr><th>判定行</th><th>查什么</th><th>怎么查</th><th>过了说明什么</th></tr>
-<tr><td><code>H5_SCHEMA=PASS files=100 steps=&lt;n&gt; missing=0 extra=0 dtype_shape=0</code></td><td>每文件每 timestep 的键集、dtype、shape 与 golden schema 相等</td><td>golden 为每任务一份 JSON（<code>tools/golden_schema/&lt;task&gt;.json</code>），由 <code>check_mixed_h5.py export-golden</code> 从 smoke 二的 hard episode（ep2）一次导出：记 <code>setup</code> 与 timestep 下每个 dataset 的 shape 与「观察到的 dtype 集合」；比对时 dtype ∈ 集合、shape 相等；<code>action/waypoint_action</code> 已知 float32／float64 交替，由导出时的集合覆盖</td><td>新路径（<code>&lt;Task&gt;XHard</code>）录出的结构与本生成器 hard 档逐 timestep 一致；8 月那轮已证明本生成器结构是官方的真子集（少 8 个被上游 <code>68a65a0</code> 删除的字段）</td></tr>
-<tr><td><code>H5_CONTENT=PASS files=100 fails=0</code></td><td>timestep 连续 0…T-1；<code>setup/seed</code> = 文件名 seed = metadata；<code>setup/difficulty</code> = metadata = 有效循环在该 episode 的档；<code>is_completed</code> 末步为真且单调；<code>is_video_demo</code> 为前缀；<code>joint_action</code> (8,) float64 全有限；<code>front_rgb</code> 首、中、末三帧非常量；配套 mp4 存在</td><td>复用 <code>validate_generated_dataset_contract.py</code> 的 <code>timestep_indices</code>、<code>inspect_episode_terminal</code>；像素只读三帧</td><td>内容层不变量成立，不是只有结构合法</td></tr>
-<tr><td><code>H5_COUNTS=PASS tasks=16 episodes=6400 per_tier_ok=1</code></td><td>每任务 400 条、每任务各档条数等于 3.1 表；文件数 = metadata 条数 = <code>success_count</code></td><td>只读 metadata 与目录列表，对全集而非样本</td><td>循环与剔档在全量上按设计落地</td></tr>
-<tr><td><code>PLAN_VS_RECORD=PASS files=&lt;xhard 样本数&gt; mismatch=0 skip=&lt;n&gt;</code></td><td>规划／配置里「应该做几次」与 h5 里 subgoal 边界数出的「实际做了几次」一致（K6）</td><td>规则表 <code>SUBGOAL_RULES[task]</code>：正则匹配 <code>info/simple_subgoal</code> 在 <code>is_subgoal_boundary</code> 为真处的文本，计数与 <code>episode_results.jsonl</code> 同身份记录的旋钮或 <code>swap_plan</code> 比；见下表</td><td>生成器没有静默少做一次按压／抓取／交换；结构与内容全过而数据对不上难度定义的错误能被抓住</td></tr>
+<tr><th>判定行</th><th>查什么</th></tr>
+<tr><td><code>H5_SCHEMA=PASS files=100 steps=&lt;n&gt; missing=0 extra=0 dtype_shape=0</code></td><td>每文件每 timestep 的键集、dtype、shape 等于 golden</td></tr>
+<tr><td><code>H5_CONTENT=PASS files=100 fails=0</code></td><td>timestep 连续；seed、difficulty 与文件名／metadata／循环一致；<code>is_completed</code> 末真且单调；<code>is_video_demo</code> 为前缀；<code>joint_action</code> (8,) float64 有限；首中末三帧非常量；mp4 存在</td></tr>
+<tr><td><code>H5_COUNTS=PASS tasks=16 episodes=&lt;n&gt; per_tier_ok=1</code></td><td>每任务各档条数等于 3.1 表（smoke 二按 8 条口径，全量按 400）</td></tr>
+<tr><td><code>PLAN_VS_RECORD=PASS files=&lt;xhard 样本&gt; mismatch=0 skip=0</code></td><td>规划／配置里「应做几次」与 h5 subgoal 边界数出的「实际几次」一致；只对 xhard 档，规则表见第二部分</td></tr>
 </table>
-<p><strong>语义闭环的规则表</strong>（只对 xhard 档做，旋钮是 <code>configs.py</code> 文档声明的公共契约；easy／medium／hard 的期望值来自父类各自的配置键、不在本轮范围，记 <code>skip</code>）。本机现有 h5 只覆盖四个任务，其 subgoal 文本已核实；其余任务的正则在 smoke 二后由 <code>--dump-subgoals</code> 打出的文本清单填入（W5），填入前该任务记 <code>skip</code>：</p>
-<table>
-<tr><th>任务</th><th>h5 里数什么（正则，匹配 subgoal 边界文本）</th><th>和什么比</th><th>状态</th></tr>
-<tr><td>ButtonUnmaskSwap</td><td><code>^press the (first|second) button$</code> 计数；<code>^pick up the container</code> 计数</td><td><code>press_count</code>；<code>pick_count</code> 来自母配置</td><td>已核实（ep23 xhard14：4 次按压、2 次抓容器）</td></tr>
-<tr><td>VideoUnmaskSwap</td><td><code>^pick up the container</code> 计数</td><td><code>pick_count</code></td><td>已核实</td></tr>
-<tr><td>VideoRepick</td><td><code>^pick up the correct cube for the .* time$</code> 计数</td><td><code>repick_count</code></td><td>已核实（3 次）</td></tr>
-<tr><td>VideoPlaceButton</td><td><code>^pick up the cube$</code> 计数减母档基线</td><td><code>extra_groups</code></td><td>已核实文本，基线数待 smoke 二定</td></tr>
-<tr><td>VideoUnmaskSwap／ButtonUnmaskSwap／VideoRepick 的交换次数</td><td>不从 h5 数（交换发生在演示段，subgoal 不标）</td><td><code>len(swap_plan.pairs)</code> 对 <code>swap_count</code>（规划 JSON 对配置）</td><td>已核实（ep23：6 对 = S 6）</td></tr>
-<tr><td>BinFill、PickXtimes、SwingXtimes、StopCube、VideoUnmask、ButtonUnmask、PickHighlight、VideoPlaceOrder、PatternLock、RouteStick</td><td>smoke 二后填</td><td><code>target_total／repeats／stop_k／pick_count／pickup／num_targets／length</code></td><td><code>skip</code>，W5 填入后转为计数</td></tr>
-<tr><td>MoveCube、InsertPeg</td><td>无 xhard 档</td><td>不适用</td><td>不计入</td></tr>
-</table>
-<p><strong>FAIL 处置</strong>（K9）：任何一条判定 FAIL 时工具只输出文件清单与原因，不删、不移、不补、不换 seed（P8）；裁决交用户。</p>
 
-<h3 id="h3-4">3.4 多 worker 测速：32／48／64／128 阶梯</h3>
-<p><strong>定义</strong>：复用 <code>scripts/data-generation-newSeed/utils/calibrate_parallelism.py</code>，加三样东西：① <code>--difficulty-cycle</code> 透传给生成器；② 默认档位改为 <code>L32:32:0:on;L48:48:0:on;L64:64:0:on;L128:128:0:on</code>（单卡 GPU0，K7「从 32 开始往外推」「只测 32、48、64、128 这几档」）；③ 两条护栏：<code>--mem-guard-gb 40</code>（采样到 <code>MemAvailable</code> 低于阈值即终止当前档并停住阶梯）与 <code>--stop-on-crash</code>（某档出现 <code>BrokenProcessPool</code> 或成功数不足即停住阶梯，后面的档跳过、报告写明）。每档 16 任务各 4 条共 64 条，用八档循环，吞吐口径沿用稳态窗口（丢前 W 与后 W 条）。</p>
-<p><strong>为什么要护栏</strong>：8 月在同型机器上的实测，W=44 单卡时 96 条只成功 24 条、264 次池崩溃，唯一逼近上限的资源是显卡（267.5 W、显存 27 GB）；xhard 单 worker 峰值 RSS 实测 7.3 GB，64 worker 理论峰值 467 GB、128 worker 934 GB，都超过本机 377 GB；128 档几乎必然触发内存护栏或池崩溃，它的价值是把崩溃点钉死。新机器硬件未知，阶梯必须能自己停。</p>
-<p><strong>判定与选档</strong>：<code>CALIB=PASS cells=&lt;跑完的档数&gt; best_workers=&lt;W*&gt; crashed_at=&lt;W|none&gt;</code>，W* 取全部成功且内存／显存安全的档里、稳态吞吐达到最高值 97% 的最小 workers（现有脚本的冠军规则）。全量用 W*。</p>
+<h3 id="h3-4">3.4 多 GPU 测速阶梯</h3>
+<p>生成器已是每卡一个进程池、worker 均分到各卡，测速脚本的档位格式本来带 gpus 字段，不需要新机制；只加 <code>--difficulty-cycle</code>、<code>--affinity</code> 透传、内存护栏与池崩溃自停。AWS 上的档位：32 worker 用卡 0–3、48 用卡 0–5、64 与 128 用卡 0–7，每档 16 任务各 4 条，吞吐取稳态窗口。物理仿真在 CPU，p4d.24xlarge 的 96 vCPU 才是真正上限，128 档预期触护栏，它的价值是钉死崩溃点。判定 <code>CALIB=PASS cells=&lt;n&gt; best_workers=&lt;W*&gt; crashed_at=&lt;W|none&gt;</code>，W* 取全部成功档里稳态吞吐达最高 97% 的最小 workers。</p>
 
-<h3 id="h3-5">3.5 新机器接入</h3>
-<p>AGENTS.md 第 0 条只登记了环境 A（aspen）与 B（vail），「出现第三台机器时先补判据表再开工」。新机器上的第一步是只读跑第 0 条的判定命令，把主机名、仓库根、NFS 是否存在、GPU 型号数量、<code>~/.ssh/config</code> 别名、磁盘余量写成环境 C 一列提交进 AGENTS.md；再检查全局 <code>~/.claude/settings.json</code> 的 64／64／<code>head</code>，缺失时按 CLAUDE.md 问用户是否写入。随后 clone 钉分支、<code>uv sync --extra dev</code>（ManiSkill git 依赖需要出网）、核验 editable 指向 <code>src/</code>、<code>sapien.Device("cuda").can_render()</code> 渲染探针、磁盘余量 ≥ 2 TB，最后复跑 smoke 一。判定行 <code>ENV_C=PASS host=&lt;名&gt; gpus=&lt;n&gt; disk_free_tb=&lt;x&gt;</code>。git 操作按第 14 条在有凭据的一侧发起：新机器若无 gh 凭据，留档文件 rsync 回 vail 提交。</p>
+<h3 id="h3-5">3.5 新机器（AWS 8×A100）接入</h3>
+<p>第一步只读跑 AGENTS.md 第 0 条判定命令，把主机、GPU、磁盘、ssh 别名写成环境 C 一列提交，并加一条 P7 覆盖：环境 C 的用卡由测速决定、不限 GPU0。然后 clone、<code>uv sync --extra dev</code>、核验 editable 指向 <code>src/</code>、渲染探针、磁盘余量 ≥ 2 TB、复跑 smoke 一。AWS 不下载原版数据集：校验只要 git 里的 golden JSON，跨机器对拍只要 vail 的 100 个样本 h5（约 25–40 GB，rsync 过去）。git 在有凭据一侧操作，AWS 无凭据则留档 rsync 回 vail 提交。</p>
 
 <h2 id="h4">四、验收判定行</h2>
 <table>
-<tr><th>判定行</th><th>在哪跑</th><th>命令</th><th>PASS 条件</th></tr>
-<tr><td><code>LIGHT_TESTS=PASS</code></td><td>vail，每个 W 合并前后</td><td><code>timeout 280s uv run --no-sync python -m pytest tests/lightweight/ src/robomme_xhard/tests/ -m 'not gpu and not slow' -q</code></td><td>全通过，含新增用例</td></tr>
-<tr><td><code>SMOKE1=PASS gym_id=VideoUnmaskSwapXHard difficulty=xhard12 T=&lt;n&gt;</code></td><td>vail GPU0；新机器复跑</td><td>runbook R-1</td><td><code>success_count=1</code>，h5 的 <code>setup/difficulty</code> 为 <code>xhard12</code>，<code>episode_results.jsonl</code> 含 <code>swap_plan</code></td></tr>
-<tr><td><code>SMOKE2=PASS requested=128 success=128 exhausted=0 max_attempt=&lt;k&gt;</code></td><td>vail GPU0</td><td>runbook R-2</td><td>16 任务 ep0–7 全成功；<code>run_parameters.json</code> 的 <code>effective_cycles</code> 与 3.1 表一致；记录每任务每档的 attempt 分布</td></tr>
-<tr><td><code>H5_SCHEMA／H5_CONTENT／H5_COUNTS／PLAN_VS_RECORD</code>（演练）</td><td>vail，对 smoke2</td><td>runbook R-3</td><td>前三条 PASS（<code>H5_COUNTS</code> 对 smoke 二按 8 条口径）；<code>PLAN_VS_RECORD</code> 四个已核实任务 mismatch=0</td></tr>
-<tr><td><code>ENV_C=PASS</code></td><td>新机器</td><td>runbook R-4</td><td>判据表列已提交，依赖与渲染探针通过</td></tr>
-<tr><td><code>CALIB=PASS cells=&lt;n&gt; best_workers=&lt;W*&gt; crashed_at=&lt;W|none&gt;</code></td><td>新机器</td><td>runbook R-5</td><td>至少 L32 完整成功；W* 已定</td></tr>
-<tr><td><code>GEN_FULL=PASS requested=6400 success=6400 exhausted=0</code></td><td>新机器 tmux</td><td>runbook R-6</td><td><code>run_summary.json</code> 的三个数；<code>exhausted&gt;0</code> 即 FAIL，如实报清单，不补不换</td></tr>
-<tr><td><code>H5_SCHEMA=PASS files=100 …</code>、<code>H5_CONTENT=PASS files=100 fails=0</code>、<code>H5_COUNTS=PASS tasks=16 episodes=6400 per_tier_ok=1</code>、<code>PLAN_VS_RECORD=PASS files=&lt;n&gt; mismatch=0 skip=0</code></td><td>新机器，对全量</td><td>runbook R-7</td><td>四条全 PASS；<code>skip</code> 必须为 0（W5 已填齐规则）</td></tr>
+<tr><th>判定行</th><th>在哪</th><th>PASS 条件</th></tr>
+<tr><td><code>LIGHT_TESTS=PASS</code></td><td>vail，每个 W 合并前后</td><td><code>pytest tests/lightweight/ src/robomme_xhard/tests/ -m 'not gpu and not slow'</code> 全过</td></tr>
+<tr><td><code>SMOKE1=PASS gym_id=VideoUnmaskSwapXHard difficulty=xhard12 T=&lt;n&gt;</code></td><td>vail；AWS 复跑</td><td>1 条成功，h5 的 <code>setup/difficulty</code> 为 <code>xhard12</code>，记录含 <code>swap_plan</code></td></tr>
+<tr><td><code>SMOKE2=PASS requested=128 success=128 exhausted=0 max_attempt=&lt;k&gt;</code></td><td>vail</td><td>全成功；<code>effective_cycles</code> 与 3.1 一致；z／xy 落点与 3.1 一致</td></tr>
+<tr><td>四条 <code>H5_*</code>（第一次）</td><td>vail，对 smoke 二</td><td>全 PASS，<code>skip=0</code></td></tr>
+<tr><td><code>ENV_C=PASS host=&lt;名&gt; gpus=&lt;n&gt; disk_free_tb=&lt;x&gt;</code></td><td>AWS</td><td>环境 C 列已提交，依赖与渲染探针通过</td></tr>
+<tr><td><code>CALIB=PASS cells=&lt;n&gt; best_workers=&lt;W*&gt; crashed_at=&lt;W|none&gt;</code></td><td>AWS</td><td>至少 L32 完整成功</td></tr>
+<tr><td><code>GEN_FULL=PASS requested=6400 success=6400 exhausted=0</code></td><td>AWS tmux</td><td><code>exhausted&gt;0</code> 即 FAIL，如实报清单</td></tr>
+<tr><td>四条 <code>H5_*</code>（第二次）；<code>XMACHINE_JOINT_DIFF files=100 max_abs=&lt;x&gt;</code></td><td>AWS，对全量</td><td>四条全 PASS；对拍行只报数</td></tr>
 </table>
 
 <h2 id="h5">五、实施步骤</h2>
 <table>
 <tr><th>阶段</th><th>内容</th><th>判据</th><th>机器</th></tr>
-<tr><td>0</td><td>开工审查子代理审本计划；本计划提交 2.108</td><td><code>PLAN_CONSISTENCY_REVIEW=PASS base=&lt;sha&gt; findings=&lt;n&gt; blocking=0</code></td><td>vail</td></tr>
-<tr><td>1</td><td>W1 seed_layout → 审查 → 合并 2.109</td><td><code>LIGHT_TESTS</code>、<code>PRE/POST_MERGE_REVIEW</code></td><td>vail</td></tr>
-<tr><td>2</td><td>W2 生成器（依赖 W1）；W3 校验工具；W4 测速工具（三者并行）→ 各自审查 → 顺序合并 2.110–2.112</td><td>同上</td><td>vail</td></tr>
+<tr><td>0</td><td>审查子代理审本计划；提交 2.111</td><td><code>PLAN_CONSISTENCY_REVIEW=PASS base=&lt;sha&gt; findings=&lt;n&gt; blocking=0</code></td><td>vail</td></tr>
+<tr><td>1</td><td>W1 seed_layout → 审查 → 合并</td><td><code>LIGHT_TESTS</code>、<code>PRE/POST_MERGE_REVIEW</code></td><td>vail</td></tr>
+<tr><td>2</td><td>W2 生成器（依赖 W1）、W3 校验工具与 golden、W4 测速工具并行 → 各审查 → 顺序合并</td><td>同上</td><td>vail</td></tr>
 <tr><td>3</td><td>smoke 一</td><td><code>SMOKE1</code></td><td>vail GPU0</td></tr>
-<tr><td>4</td><td>smoke 二；导出 golden；<code>--dump-subgoals</code>；W5 填规则表与 golden 进 git → 审查 → 合并 2.113；演练四条 H5 判定行；smoke 二的 attempt 分布与每档均时追加到本计划「实测结果」小节，提交 2.114</td><td><code>SMOKE2</code>、四条 <code>H5_*</code>（演练）</td><td>vail GPU0</td></tr>
-<tr><td>5</td><td><strong>用户裁决</strong>：看 smoke 二的 xhard 重试率与均时，定 xhard 的 <code>--max-attempts</code>、是否调整任何档旋钮；任何旋钮调整都是新的方案调整，按第 2 条停下重审</td><td>用户原话记入计划</td><td>—</td></tr>
-<tr><td>6</td><td>新机器接入，环境 C 列提交</td><td><code>ENV_C</code>、<code>SMOKE1</code></td><td>新机器</td></tr>
-<tr><td>7</td><td>测速阶梯</td><td><code>CALIB</code></td><td>新机器</td></tr>
-<tr><td>8</td><td>Beta commit（body 写全部参数）→ <code>git status</code> 干净 → tmux 全量 → Monitor 盯日志</td><td><code>GEN_FULL</code></td><td>新机器</td></tr>
-<tr><td>9</td><td>H5 校验 100 样本；留档；commit／push；清理 worktree</td><td>四条 <code>H5_*</code></td><td>新机器（或 rsync 回 vail 提交）</td></tr>
+<tr><td>4</td><td>smoke 二 → <code>dump-subgoals</code> → W5 填规则 → 合并 → 正式校验 100 样本 → 实测追加本计划</td><td><code>SMOKE2</code>、四条 <code>H5_*</code></td><td>vail GPU0</td></tr>
+<tr><td>5</td><td><strong>用户裁决</strong>：按 smoke 二实测定 xhard 的 <code>--max-attempts</code>；旋钮调整视为方案调整、停下重审</td><td>原话记入计划</td><td>—</td></tr>
+<tr><td>6</td><td>AWS 接入、环境 C 列与 P7 覆盖提交</td><td><code>ENV_C</code>、<code>SMOKE1</code></td><td>AWS</td></tr>
+<tr><td>7</td><td>测速阶梯</td><td><code>CALIB</code></td><td>AWS</td></tr>
+<tr><td>8</td><td>Beta commit → tmux 全量 → Monitor</td><td><code>GEN_FULL</code></td><td>AWS</td></tr>
+<tr><td>9</td><td>校验第二次、跨机器对拍、留档、commit／push、清理 worktree</td><td>四条 <code>H5_*</code></td><td>AWS 或 rsync 回 vail</td></tr>
 </table>
 <p>实施完成后的实测结果以小节追加在本表之后，不改写原计划。</p>
 
 <h2 id="h6">六、子代理分工与合并（简述）</h2>
-<p>代码拆四块，各自独立 worktree：W1 只动 <code>seed_layout.py</code> 与其测试，给出 <code>parse_difficulty_cycle／filter_cycle</code> 两个纯函数；W2 只动生成器与其测试，依赖 W1 的函数名，所以 W1 先合；W3 新建校验工具与合成 h5 单测；W4 只动测速脚本。W2／W3／W4 互不相交、同批派出，按 W2 → W3 → W4 顺序合回。每次合并前主会话核对改动文件 ⊆ 可写集合、在 worktree 内复跑核心短测、派一个 sonnet 审查代理出 <code>PRE_MERGE_REVIEW</code>；<code>--no-ff</code> 合入后主检出再跑一次核心短测与 <code>git diff --quiet HEAD -- src/robomme/</code> 出 <code>POST_MERGE_REVIEW</code>，PASS 即 push。smoke 二之后再派 W5 填规则表与 golden JSON，同一套审查合并。smoke、测速、全量由主会话按 runbook 在主检出执行，不派运行型子代理（本仓库长任务只有本机 tmux，监听与清理归主会话）。</p>
+<p>代码拆四块、各自独立 worktree：W1 只动 <code>seed_layout.py</code>；W2 只动生成器，依赖 W1 先合；W3 新建校验工具、规则表骨架并从原版副本导出 16 份 golden；W4 只动测速脚本。W2／W3／W4 同批派出，按 W2 → W3 → W4 合回。每次合并前核对改动文件在可写集合内、worktree 内复跑核心短测、派一个 sonnet 审查代理；<code>--no-ff</code> 合入后主检出再跑核心短测与 <code>src/robomme/</code> 零 diff，PASS 即 push。smoke 二后派 W5 填 10 个任务的规则。smoke、测速、全量由主会话按 runbook 执行。</p>
 
 <h1 id="p2">第二部分（技术细节，供 agent 追踪）</h1>
 
 <h2 id="t0">〇、红线</h2>
 <ol>
-<li><strong>R1</strong> <code>src/robomme/</code> 零 diff（P1）；验证 <code>git diff --quiet HEAD -- src/robomme/</code>。四个 wrapper 不改不覆盖。</li>
-<li><strong>R2</strong> <code>src/robomme_xhard/base.py／configs.py／envs/</code> 本轮零改动；只在 <code>tools/</code> 下新增文件、在 <code>tests/</code> 下新增用例。任何旋钮调整都是方案调整，按第 2 条停下交用户。</li>
-<li><strong>R3</strong> P8 例外仅限本计划的「公式 seed 模式」：xhard 作业失败按 <code>attempt+1</code> 换 seed 是 seed 公式的内在部分（K3）；母清单模式的固定 seed 行为不变。<code>exhausted</code> 的 episode 不补、不换、不重跑，如实报告。</li>
-<li><strong>R4</strong> 本机（vail）不跑测速阶梯、不跑全量；smoke 一、二是代码验证，规模封顶 128 条。</li>
-<li><strong>R5</strong> 新机器未提交环境 C 判据表前不执行任何带写入的命令（第 0 条）。</li>
-<li><strong>R6</strong> 全量用本机 detached tmux，会话名 <code>xh-mixed8-&lt;MMDD&gt;</code>，不提交 Slurm（P7）；Beta commit 在起跑前，起跑到打包完成之间不 commit。</li>
-<li><strong>R7</strong> 校验 FAIL 只报告不动文件；不删、不移、不改 metadata。</li>
-<li><strong>R8</strong> 母清单 xhard 模式（<code>--difficulty xhard12,… --mother-manifest</code>）与 <code>--difficulty 211</code> 旧比例模式行为逐字不变，由现有用例守住。</li>
+<li><strong>R1</strong> <code>src/robomme/</code> 零 diff（P1），验证 <code>git diff --quiet HEAD -- src/robomme/</code>；四个 wrapper 不改不覆盖。</li>
+<li><strong>R2</strong> <code>src/robomme_xhard/base.py／configs.py／envs/</code> 零改动；只在 <code>tools/</code>、<code>tests/</code> 新增。旋钮调整是方案调整，停下交用户。</li>
+<li><strong>R3</strong> P8 例外仅限本计划的公式 seed 模式：xhard 失败按 <code>attempt+1</code>（K3）；母清单模式固定 seed 不变；<code>exhausted</code> 不补不换不重跑。</li>
+<li><strong>R4</strong> vail 不跑测速阶梯、不跑全量；smoke 规模封顶 128 条。</li>
+<li><strong>R5</strong> AWS 未提交环境 C 判据表与 P7 覆盖前不执行任何带写入的命令（第 0 条）。</li>
+<li><strong>R6</strong> 全量用 detached tmux，会话名 <code>xh-mixed8-&lt;MMDD&gt;</code>，不提交 Slurm；Beta commit 在起跑前，起跑到打包完成之间不 commit。</li>
+<li><strong>R7</strong> 校验 FAIL 只报告不动文件；原版副本 <code>/data/hongzefu/robomme_data_h5/</code> 只读。</li>
+<li><strong>R8</strong> 母清单 xhard 模式与 <code>--difficulty 211</code> 旧比例模式行为逐字不变，由现有用例守住。</li>
 <li><strong>R9</strong> 不改 <code>pyproject.toml</code>、不加依赖；校验与测速工具只用 h5py、numpy、标准库。</li>
+<li><strong>R10</strong> 跨机器对拍 <code>XMACHINE_JOINT_DIFF</code> 只报数，不作闸门、不触发重跑（K7「同意但不作为闸门」）。</li>
 </ol>
 
-<h2 id="t1">一、逐文件改动清单</h2>
+<h2 id="t1">一、机制细节</h2>
+<h3>1.1 循环解析与有效循环</h3>
+<p><code>seed_layout.parse_difficulty_cycle(text, xhard_values)</code>：逗号分隔、去空白、小写；每项 ∈ <code>DIFFICULTY_ORDER ∪ xhard_values</code>，否则 <code>SeedLayoutError</code>；允许重复；空串报错。<code>seed_layout.filter_cycle(cycle, available_xhard)</code>：剔除不在集合内的 xhard 项，结果为空报错，保持顺序与重复。<code>difficulty_for</code> 不改。生成器父进程用 <code>importlib.util.spec_from_file_location</code> 独立加载 <code>src/robomme_xhard/configs.py</code>（纯数据表，只有 <code>from __future__</code>，2026-10-13 核实）取 <code>DIFFICULTIES</code> 与 <code>TIER_CONFIGS</code> 键，不 <code>import robomme_xhard</code>，worker 内导入仍在绑卡与 <code>import robomme.robomme_env</code> 之后（P2）。</p>
+<p>episode 到难度（前 12 条）：8 档任务 <code>easy,med,hard,x12,x14,x16,x18,x20,easy,med,hard,x12</code>；VideoUnmask（4 档）<code>easy,med,hard,x14,easy,med,hard,x14,…</code>；MoveCube（3 档）<code>easy,med,hard,easy,…</code>。最大可能 seed 16×1000+399×100+99 = 55999 低于 test 布局 offset 500000，现有护栏通过；不同任务 seed 数值重叠是 400 条先例已有情况，seed 只需任务内唯一。</p>
+<h3>1.2 FailRecover 按 base 档序号</h3>
+<p><code>EpisodeJob</code> 新增字段 <code>recovery: str | None = "auto"</code>（<code>"auto"</code> 为哨兵）；属性 <code>recovery_mode</code>：非 <code>"auto"</code> 时直接返回该值，否则沿用骨架的 episode 号规则。循环模式下父进程对每任务按 episode 升序给 base 档作业编序号 r：r≤2 → <code>"z"</code>，3≤r≤5 → <code>"xy"</code>，其余 <code>None</code>；xhard 作业 <code>None</code>。<code>bump</code> 用 <code>replace</code> 保留该字段。旧比例模式与母清单模式不传该字段，行为不变。结果记录已有 <code>recovery_mode</code> 字段，供 <code>SMOKE2</code> 核对落点。</p>
+<h3>1.3 xhard 作业</h3>
+<p><code>EpisodeJob</code> 新增 <code>xhard_values: tuple[str, ...] = ()</code>，属性 <code>is_xhard = difficulty in xhard_values</code>；<code>gym_id = make_name or (f"{task}XHard" if is_xhard else task)</code>。<code>card_role／make_name／source_difficulty</code> 保持 <code>None</code>，<code>fixed_seed</code> 为假。<code>_pool_init</code> 的 <code>xhard_mode</code> 在循环含 xhard 时为真；<code>_worker</code> 内导入条件 <code>job.card_role is not None or job.is_xhard</code>；证据采集与 <code>save_video</code> 断言条件扩为 <code>job.fixed_seed or job.is_xhard</code>。失败处理：五类任务性异常与 xhard 运行期拒绝 → <code>attempt+1</code>（拒绝的卡已写产物加 <code>FAILED_</code> 前缀保留）；非任务性连续 3 次放弃。</p>
+<h3>1.4 校验工具</h3>
+<p><code>src/robomme_xhard/tools/check_mixed_h5.py</code> 子命令：<code>check</code>（默认；<code>--output-dir --golden-dir [--sample first-per-tier|all] [--expect-episodes N] [--workers 32] [--out-json] [--out-md] [--compare-dir &lt;另一机器的 output-dir&gt;]</code>）、<code>export-golden --official /data/hongzefu/robomme_data_h5 --out-dir …</code>、<code>dump-subgoals</code>。golden JSON：<code>{"task", "source": {"file", "revision": "a5e4e25…", "episode": 0}, "excluded_keys": [8 项], "setup": {key: {"dtypes": [...], "shape": [...]}}, "timestep": {...}}</code>，dtype 记该 episode 全部 timestep 观察到的集合（覆盖 <code>waypoint_action</code> float32／float64 交替），比对时 dtype ∈ 集合、shape 相等；<code>excluded_keys</code> 固定为 <code>obs/eef_state_raw/{pose,quat,rpy}</code>、<code>action/eef_action_raw/{pose,quat,rpy}</code>、<code>setup/fail_recover_mode</code>、<code>setup/fail_recover_seed_anchor</code>（PatternLock 原版 setup 本就没有后两项，导出按实际）。样本选择读 <code>record_dataset_{task}_metadata.json</code> 与 <code>run_parameters.json</code> 的 <code>effective_cycles</code>。<code>PLAN_VS_RECORD</code> 读 <code>episode_results.jsonl</code> 同 (task, episode, seed) 成功记录的 <code>swap_plan</code> 与旋钮。<code>--compare-dir</code> 给出时对同 (task, episode, seed) 的 h5 逐元素比 <code>joint_action</code>，输出 <code>XMACHINE_JOINT_DIFF files=&lt;n&gt; max_abs=&lt;x&gt; over_1e6=&lt;n&gt;</code>，不影响退出码。</p>
 <table>
-<tr><th>文件</th><th>锚点</th><th>改什么</th><th>关闭态（不传新参数）</th><th>开启态</th></tr>
-<tr><td><code>scripts/data-generation-newSeed/seed_layout.py</code></td><td>新增 <code>parse_difficulty_cycle(text: str, xhard_values: Sequence[str]) -> tuple[str, ...]</code></td><td>逗号分隔、去空白、小写；每项 ∈ <code>DIFFICULTY_ORDER ∪ xhard_values</code>，否则 <code>SeedLayoutError</code>；允许重复；空串报错</td><td>不被调用</td><td>返回全局循环</td></tr>
-<tr><td>同上</td><td>新增 <code>filter_cycle(cycle, available_xhard: Collection[str]) -> tuple[str, ...]</code></td><td>剔除不在 <code>available_xhard</code> 内的 xhard 项；结果为空报错；保持原顺序与重复</td><td>—</td><td>每任务有效循环</td></tr>
-<tr><td>同上</td><td><code>difficulty_for</code></td><td>不改（已是 <code>cycle[episode % len(cycle)]</code>）</td><td>—</td><td>—</td></tr>
-<tr><td><code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code></td><td><code>_args</code></td><td>新增 <code>--difficulty-cycle</code>（<code>dest="difficulty_cycle"</code>，默认 <code>None</code>）；与 <code>--difficulty</code> 显式同时给出、或与 <code>--mother-manifest／--with-mother／--mother-rank</code> 同用 → <code>parser.error</code>；<code>--difficulty</code> 用 <code>default=None</code> 后在函数内落回 <code>DEFAULT_DIFFICULTY_RATIO</code>，以便判断「是否显式给出」</td><td><code>difficulty_cycle=None</code>，旧路径</td><td>进入循环模式</td></tr>
-<tr><td>同上</td><td>新增 <code>_load_xhard_configs()</code></td><td><code>importlib.util.spec_from_file_location("robomme_xhard_configs", SRC_ROOT/"robomme_xhard"/"configs.py")</code> 独立加载，返回 <code>(DIFFICULTIES, {task: set(TIER_CONFIGS[task])})</code>；不 <code>import robomme_xhard</code></td><td>不调用</td><td>父进程建作业前调用一次</td></tr>
-<tr><td>同上</td><td><code>generate_dataset_newseed</code> 签名加 <code>difficulty_cycle: str | None = None</code></td><td>循环模式：<code>cycle = parse_difficulty_cycle(…)</code>；<code>effective = {task: filter_cycle(cycle, avail[task])}</code>；作业 <code>difficulty=difficulty_for(episode, effective[task])</code>；<code>xhard_mode = any(is_xhard(d) for d in cycle)</code> 传给 <code>_run_jobs</code>；<code>parameters</code> 增 <code>"difficulty_cycle"</code>（全局）、<code>"effective_cycles"</code>（逐任务）、<code>"difficulty_ratio": null</code></td><td>旧字段原样</td><td>新字段写入 <code>run_parameters.json</code></td></tr>
-<tr><td>同上</td><td><code>EpisodeJob</code></td><td>新增 <code>xhard_values: tuple[str, ...] = ()</code> 字段（父进程填入 DIFFICULTIES）；属性 <code>is_xhard = difficulty in xhard_values</code>；<code>gym_id</code> 改为 <code>make_name or (f"{task}XHard" if is_xhard else task)</code></td><td><code>xhard_values=()</code> → <code>is_xhard</code> 恒假</td><td>xhard 作业 <code>gym_id=&lt;Task&gt;XHard</code></td></tr>
-<tr><td>同上</td><td><code>_worker</code></td><td>导入开关 <code>if job.card_role is not None or job.is_xhard: import robomme_xhard</code>；证据采集条件 <code>if job.fixed_seed or job.is_xhard</code>；<code>save_video</code> 断言条件同样扩到 <code>is_xhard</code></td><td>不变</td><td>xhard 记录带 <code>swap_plan／runtime_checks</code></td></tr>
-<tr><td>同上</td><td><code>_pool_init</code>、<code>_run_jobs</code></td><td>不改签名；<code>xhard_mode</code> 由调用方传真</td><td>—</td><td>—</td></tr>
-<tr><td><code>scripts/data-generation-newSeed/utils/calibrate_parallelism.py</code></td><td><code>main／run_cell／DEFAULT_CELLS／ResourceSampler</code></td><td>加 <code>--difficulty-cycle</code>（有则替换命令里的 <code>--difficulty</code>）；<code>DEFAULT_CELLS</code> 改为 L32／L48／L64／L128；加 <code>--mem-guard-gb</code>（默认 40，采样 <code>/proc/meminfo</code> 的 <code>MemAvailable</code>，低于阈值 <code>process.terminate()</code> 并标记该档 <code>aborted_by=mem</code>）与 <code>--stop-on-crash</code>（默认开，档内 <code>BrokenProcessPool</code>&gt;0 或 success&lt;requested 即停住阶梯）；末行打印 <code>CALIB=…</code> 判定行并写入 <code>calibration.md</code></td><td>旧默认档位被替换（旧值写在文档里可手传）</td><td>阶梯自停</td></tr>
-<tr><td><code>src/robomme_xhard/tools/check_mixed_h5.py</code>（新建）</td><td>子命令 <code>check</code>（默认）、<code>export-golden</code>、<code>dump-subgoals</code></td><td><code>check --output-dir --golden-dir [--sample first-per-tier|all] [--workers 32] [--out-json] [--out-md]</code>：按 3.3 四条判定行；多进程按文件分片；样本选择读 <code>record_dataset_{task}_metadata.json</code> 与 <code>run_parameters.json</code> 的 <code>effective_cycles</code>；<code>PLAN_VS_RECORD</code> 读 <code>episode_results.jsonl</code> 同 (task, episode, seed) 的成功记录</td><td>—</td><td>末尾打印四条判定行，退出码 0 仅当全 PASS</td></tr>
-<tr><td><code>src/robomme_xhard/tools/golden_schema/&lt;task&gt;.json</code>（新建，W5）</td><td>16 份</td><td><code>{"task":…, "source_file":…, "source_sha256_prefix":…, "setup": {key: {"dtypes":[…],"shape":[…]}}, "timestep": {key: {...}}}</code></td><td>—</td><td>—</td></tr>
-<tr><td><code>src/robomme_xhard/tools/subgoal_rules.py</code>（新建，W3 建骨架，W5 填齐）</td><td><code>SUBGOAL_RULES</code></td><td>每任务：<code>[{"name","pattern","expect":"knob:&lt;名&gt;"|"plan:len(pairs)"|"skip:&lt;原因&gt;"}]</code>；3.3 表四个任务由 W3 填入，其余 W5 填</td><td>—</td><td>—</td></tr>
-<tr><td><code>tests/lightweight/test_seed_layout.py</code></td><td>新增用例</td><td>八档解析；非法项报错；重复允许；<code>filter_cycle</code> 对 VideoUnmask→4 项、MoveCube→3 项、全空报错；八档下 ep0–15 的难度序列等于 3.1 数轴表</td><td>—</td><td>—</td></tr>
-<tr><td><code>tests/lightweight/test_generate_cycle_mode.py</code>（新建）</td><td>只测父进程逻辑，不 <code>gym.make</code></td><td><code>_load_xhard_configs</code> 不在 <code>sys.modules</code> 留下 <code>robomme_xhard</code>；<code>EpisodeJob.gym_id</code> 映射；<code>_args</code> 互斥报错；用 monkeypatch 把 <code>_run_jobs</code> 换成记录器，断言 16 任务 × 8 条作业的 <code>difficulty／gym_id／seed</code> 与 <code>run_parameters.json</code> 的 <code>effective_cycles</code></td><td>—</td><td>—</td></tr>
-<tr><td><code>src/robomme_xhard/tests/test_check_mixed_h5.py</code>（新建）</td><td>合成小 h5</td><td>沿用 <code>test_contract.py::_write_h5</code> 的写法造 T=6 的文件：正例四条 PASS；反例各一（缺键、dtype 错、timestep 断号、seed 与文件名不符、is_completed 末步假、常量 rgb、按压次数少一次）→ 对应判定 FAIL 且清单含该文件</td><td>—</td><td>—</td></tr>
-<tr><td><code>tests/lightweight/test_calibrate_cells.py</code>（新建）</td><td><code>parse_cells</code>、判定行拼装</td><td>新默认档位解析为 4 档；<code>stop-on-crash</code> 的阶梯截断逻辑用假结果表测</td><td>—</td><td>—</td></tr>
-<tr><td><code>AGENTS.md</code></td><td>第 0 条判据表</td><td>新机器上补「环境 C」列（主会话自做，纯文档）</td><td>—</td><td>—</td></tr>
-<tr><td><code>scripts/data-generation-newSeed/CLAUDE.md／README.md</code></td><td>「用法」节</td><td>补 <code>--difficulty-cycle</code> 一段与测速新默认档位（W2／W4 各自改各自的段，共享文件归属见分配表）</td><td>—</td><td>—</td></tr>
+<tr><th>任务</th><th>h5 里数什么（正则，匹配 subgoal 边界文本）</th><th>和什么比</th><th>状态</th></tr>
+<tr><td>ButtonUnmaskSwap</td><td><code>^press the (first|second) button$</code>；<code>^pick up the container</code></td><td><code>press_count</code>；<code>pick_count</code></td><td>已核实（ep23 xhard14：4 次按压、2 次抓容器）</td></tr>
+<tr><td>VideoUnmaskSwap</td><td><code>^pick up the container</code></td><td><code>pick_count</code></td><td>已核实</td></tr>
+<tr><td>VideoRepick</td><td><code>^pick up the correct cube for the .* time$</code></td><td><code>repick_count</code></td><td>已核实（3 次）</td></tr>
+<tr><td>VideoPlaceButton</td><td><code>^pick up the cube$</code> 减母档基线</td><td><code>extra_groups</code></td><td>基线数 smoke 二定</td></tr>
+<tr><td>三个 swap 任务的交换次数</td><td>不从 h5 数（发生在演示段）</td><td><code>len(swap_plan.pairs)</code> 对 <code>swap_count</code></td><td>已核实（ep23：6 对）</td></tr>
+<tr><td>其余 10 个有 xhard 档的任务</td><td>smoke 二后由 <code>dump-subgoals</code> 填（W5）</td><td><code>target_total／repeats／stop_k／pick_count／pickup／num_targets／length</code></td><td>填入前 <code>skip</code>；不可数项单列 <code>uncountable=&lt;n&gt;</code> 不计 skip</td></tr>
+</table>
+<h3>1.5 测速</h3>
+<p><code>calibrate_parallelism.py</code>：<code>--difficulty-cycle</code>（有则替换 <code>--difficulty</code>）、<code>--affinity</code> 透传、<code>DEFAULT_CELLS = "L32:32:0,1,2,3:on;L48:48:0,1,2,3,4,5:on;L64:64:0,1,2,3,4,5,6,7:on;L128:128:0,1,2,3,4,5,6,7:on"</code>、<code>--mem-guard-gb 40</code>（采样 <code>/proc/meminfo</code> 的 <code>MemAvailable</code>，低于阈值 <code>terminate()</code> 当前档、标记 <code>aborted_by=mem</code>、停住阶梯）、<code>--stop-on-crash</code>（默认开，档内 <code>BrokenProcessPool</code>&gt;0 或 success&lt;requested 即停住阶梯）；末行 <code>CALIB=…</code> 写入 <code>calibration.md</code>。worker 均分到各卡要求整除（32/4、48/6、64/8、128/8）。护栏依据：vail 8 月实测 W=44 单卡池崩溃 264 次（显卡 267 W、显存 27 GB）；xhard 单 worker 峰值 RSS 7.3 GB。</p>
+
+<h2 id="t2">二、逐文件改动清单</h2>
+<table>
+<tr><th>文件</th><th>改什么</th><th>关闭态</th><th>开启态</th></tr>
+<tr><td><code>scripts/data-generation-newSeed/seed_layout.py</code></td><td>新增 <code>parse_difficulty_cycle</code>、<code>filter_cycle</code>（1.1）</td><td>不被调用</td><td>全局循环与每任务有效循环</td></tr>
+<tr><td><code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code></td><td><code>_args</code> 加 <code>--difficulty-cycle</code>（与 <code>--difficulty</code> 显式同给、或与母清单参数同用 → <code>parser.error</code>；<code>--difficulty</code> 改 <code>default=None</code> 函数内落回默认）；新增 <code>_load_xhard_configs()</code>；<code>generate_dataset_newseed</code> 签名加 <code>difficulty_cycle=None</code>，循环模式下按 1.1–1.3 建作业并传 <code>xhard_mode</code>；<code>parameters</code> 增 <code>difficulty_cycle</code>、<code>effective_cycles</code>、<code>recovery_assignment</code>（逐任务 z／xy 的 episode 号）、<code>difficulty_ratio: null</code>；<code>EpisodeJob</code> 增 <code>xhard_values</code>、<code>recovery</code> 与三个属性；<code>_worker</code> 三处条件扩展</td><td>旧字段与旧路径原样</td><td>新字段写入 <code>run_parameters.json</code></td></tr>
+<tr><td><code>scripts/data-generation-newSeed/utils/calibrate_parallelism.py</code></td><td>1.5 全部</td><td>旧默认档位被替换，旧值写进文档可手传</td><td>阶梯自停</td></tr>
+<tr><td><code>src/robomme_xhard/tools/check_mixed_h5.py</code>（新）</td><td>1.4 全部；复用 <code>validate_generated_dataset_contract.py</code> 的 <code>timestep_indices</code>、<code>inspect_episode_terminal</code>（按路径插 <code>sys.path</code>）</td><td>—</td><td>退出码 0 仅当四条 PASS</td></tr>
+<tr><td><code>src/robomme_xhard/tools/subgoal_rules.py</code>（新）</td><td><code>SUBGOAL_RULES[task] = [{"name","pattern","expect":"knob:&lt;名&gt;"|"plan:len(pairs)"|"skip:&lt;原因&gt;"}]</code>；W3 填 4 任务，W5 填其余</td><td>—</td><td>—</td></tr>
+<tr><td><code>src/robomme_xhard/tools/golden_schema/&lt;task&gt;.json</code>（新，16 份，W3）</td><td>由 <code>export-golden</code> 从原版副本导出</td><td>—</td><td>—</td></tr>
+<tr><td><code>tests/lightweight/test_seed_layout.py</code></td><td>八档解析；非法项；重复；<code>filter_cycle</code> VideoUnmask→4、MoveCube→3、空报错；ep0–15 难度序列</td><td>—</td><td>—</td></tr>
+<tr><td><code>tests/lightweight/test_generate_cycle_mode.py</code>（新）</td><td>只测父进程：<code>_load_xhard_configs</code> 不留 <code>robomme_xhard</code> 于 <code>sys.modules</code>；<code>gym_id</code> 映射；<code>recovery_mode</code> 哨兵与 base 档序号落点（8／7／4／3 档各一例）；<code>_args</code> 互斥；monkeypatch <code>_run_jobs</code> 断言 16×8 作业与 <code>run_parameters.json</code></td><td>—</td><td>—</td></tr>
+<tr><td><code>src/robomme_xhard/tests/test_check_mixed_h5.py</code>（新）</td><td>沿用 <code>test_contract.py::_write_h5</code> 造 T=6 文件：正例四条 PASS；反例各一（缺键、dtype 错、断号、seed 不符、末步假、常量帧、按压少一次）→ 对应 FAIL；<code>--compare-dir</code> 对拍行格式</td><td>—</td><td>—</td></tr>
+<tr><td><code>tests/lightweight/test_calibrate_cells.py</code>（新）</td><td>4 档解析、整除校验、阶梯截断逻辑</td><td>—</td><td>—</td></tr>
+<tr><td><code>AGENTS.md</code>（主会话，AWS 上）</td><td>第 0 条加环境 C 列；P7 加环境 C 覆盖「用卡由测速决定，不限 GPU0」</td><td>—</td><td>—</td></tr>
+<tr><td><code>scripts/data-generation-newSeed/CLAUDE.md／README.md</code></td><td>W2 补 <code>--difficulty-cycle</code> 段，W4 补测速新档位段</td><td>—</td><td>—</td></tr>
 </table>
 
-<h2 id="t2">二、子代理分配表</h2>
-<p>全部写入型子代理：<code>isolation: "worktree"</code>、<code>model: "opus"</code>，基线 <code>BASE</code> 为派发时主检出 HEAD；环境取法 <code>UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -m pytest …</code>，先打印 <code>robomme.__file__</code> 确认落在 worktree；worktree 内只跑 CPU 轻量测试，不 <code>gym.make</code>。</p>
+<h2 id="t3">三、子代理分配表</h2>
+<p>写入型子代理一律 <code>isolation: "worktree"</code>、<code>model: "opus"</code>，基线 <code>BASE</code> 为派发时主检出 HEAD；环境取法 <code>UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -m pytest …</code>，先打印 <code>robomme.__file__</code> 确认落在 worktree；只跑 CPU 轻量测试，不 <code>gym.make</code>；原版副本只读。</p>
 <table>
-<tr><th>编号</th><th>目标</th><th>可写文件集合</th><th>禁触</th><th>接口契约与依赖</th><th>合并顺序</th><th>验收命令与判定行</th><th>资源</th></tr>
-<tr><td>W1</td><td>seed_layout 两个纯函数 + 用例</td><td><code>scripts/data-generation-newSeed/seed_layout.py</code>、<code>tests/lightweight/test_seed_layout.py</code></td><td>生成器、<code>src/</code></td><td>导出 <code>parse_difficulty_cycle(text, xhard_values)</code>、<code>filter_cycle(cycle, available_xhard)</code>，签名如上；无依赖</td><td>1</td><td><code>pytest tests/lightweight/test_seed_layout.py -q</code> 全过 → <code>LIGHT_TESTS=PASS</code></td><td>CPU</td></tr>
-<tr><td>W2</td><td>生成器循环模式 + 用例 + 文档段</td><td><code>generate_dataset_newseed.py</code>、<code>tests/lightweight/test_generate_cycle_mode.py</code>、<code>scripts/data-generation-newSeed/CLAUDE.md</code>「三、用法 → 生成」段、<code>README.md</code> 对应段</td><td><code>seed_layout.py</code>、<code>src/</code>、测速脚本</td><td>依赖 W1 已合入的两个函数；<code>EpisodeJob.xhard_values／is_xhard／gym_id</code>、<code>_load_xhard_configs</code>、<code>run_parameters.json</code> 新字段名按第二部分一表</td><td>2</td><td><code>pytest tests/lightweight/test_seed_layout.py tests/lightweight/test_generate_cycle_mode.py -q</code>；旧模式回归：<code>pytest src/robomme_xhard/tests/test_jobs.py -q</code></td><td>CPU</td></tr>
-<tr><td>W3</td><td>H5 校验工具 + 规则表骨架 + 合成 h5 用例</td><td><code>src/robomme_xhard/tools/check_mixed_h5.py</code>、<code>src/robomme_xhard/tools/subgoal_rules.py</code>、<code>src/robomme_xhard/tests/test_check_mixed_h5.py</code></td><td>生成器、<code>seed_layout.py</code>、<code>base.py／configs.py／envs/</code></td><td>只 import h5py／numpy／标准库与 <code>validate_generated_dataset_contract</code> 的两个函数（按路径 <code>sys.path</code> 插入 <code>scripts/data-generation</code>）；四条判定行格式按 3.3；规则表四个任务按 3.3 表填入，其余 <code>skip</code></td><td>3</td><td><code>pytest src/robomme_xhard/tests/test_check_mixed_h5.py -q</code></td><td>CPU</td></tr>
-<tr><td>W4</td><td>测速阶梯与护栏 + 用例 + 文档段</td><td><code>scripts/data-generation-newSeed/utils/calibrate_parallelism.py</code>、<code>tests/lightweight/test_calibrate_cells.py</code>、<code>scripts/data-generation-newSeed/CLAUDE.md</code>「三、用法 → 并行度标定」段</td><td>生成器、<code>src/</code></td><td>透传参数名 <code>--difficulty-cycle</code>；判定行 <code>CALIB=PASS cells=&lt;n&gt; best_workers=&lt;W*&gt; crashed_at=&lt;W|none&gt;</code></td><td>4</td><td><code>pytest tests/lightweight/test_calibrate_cells.py -q</code></td><td>CPU</td></tr>
-<tr><td>W5（smoke 二后）</td><td>填齐 12 个任务的 <code>SUBGOAL_RULES</code>、提交 16 份 golden JSON</td><td><code>subgoal_rules.py</code>、<code>tools/golden_schema/*.json</code>、<code>test_check_mixed_h5.py</code>（为新规则加用例）</td><td>其余全部</td><td>输入：主会话提供 <code>--dump-subgoals</code> 输出与 golden 导出文件；对不可数的旋钮写 <code>skip:&lt;原因&gt;</code> 并在交回里列清</td><td>5</td><td>同 W3 用例；主会话在主检出对 smoke2 跑 <code>check</code>，<code>PLAN_VS_RECORD skip=0</code>（不可数项不计 skip，单列 <code>uncountable=&lt;n&gt;</code>）</td><td>CPU</td></tr>
-<tr><td>主会话自做</td><td>smoke 一／二、golden 导出、测速、全量、留档、AGENTS.md 环境 C 列</td><td>—</td><td>—</td><td>需要 GPU 与 <code>artifacts/</code>，worktree 里没有</td><td>—</td><td>第四节各判定行</td><td>GPU0；tmux <code>xh-mixed8-*</code></td></tr>
+<tr><th>编号</th><th>目标</th><th>可写文件集合</th><th>禁触</th><th>契约与依赖</th><th>合并顺序</th><th>验收</th><th>资源</th></tr>
+<tr><td>W1</td><td>seed_layout 两个纯函数 + 用例</td><td><code>seed_layout.py</code>、<code>tests/lightweight/test_seed_layout.py</code></td><td>生成器、<code>src/</code></td><td>签名按 1.1；无依赖</td><td>1</td><td><code>pytest tests/lightweight/test_seed_layout.py -q</code></td><td>CPU</td></tr>
+<tr><td>W2</td><td>生成器循环模式 + FailRecover + 用例 + 文档段</td><td><code>generate_dataset_newseed.py</code>、<code>tests/lightweight/test_generate_cycle_mode.py</code>、<code>scripts/data-generation-newSeed/CLAUDE.md</code>「生成」段、<code>README.md</code> 对应段</td><td><code>seed_layout.py</code>、<code>src/</code>、测速脚本</td><td>依赖 W1 已合入；字段名按 1.2–1.3 与二表</td><td>2</td><td><code>pytest tests/lightweight/test_seed_layout.py tests/lightweight/test_generate_cycle_mode.py src/robomme_xhard/tests/test_jobs.py -q</code></td><td>CPU</td></tr>
+<tr><td>W3</td><td>校验工具 + 规则表骨架 + 16 份 golden + 合成 h5 用例</td><td><code>tools/check_mixed_h5.py</code>、<code>tools/subgoal_rules.py</code>、<code>tools/golden_schema/*.json</code>、<code>tests/test_check_mixed_h5.py</code></td><td>生成器、<code>seed_layout.py</code>、<code>base.py／configs.py／envs/</code></td><td>按 1.4；golden 从 <code>/data/hongzefu/robomme_data_h5</code> 只读导出，交回里附 16 份的 <code>source</code> 与 <code>excluded_keys</code></td><td>3</td><td><code>pytest src/robomme_xhard/tests/test_check_mixed_h5.py -q</code>；主会话抽查 2 份 golden</td><td>CPU，读原版 16 个文件的 episode_0</td></tr>
+<tr><td>W4</td><td>测速阶梯与护栏 + 用例 + 文档段</td><td><code>utils/calibrate_parallelism.py</code>、<code>tests/lightweight/test_calibrate_cells.py</code>、<code>scripts/data-generation-newSeed/CLAUDE.md</code>「并行度标定」段</td><td>生成器、<code>src/</code></td><td>按 1.5</td><td>4</td><td><code>pytest tests/lightweight/test_calibrate_cells.py -q</code></td><td>CPU</td></tr>
+<tr><td>W5（smoke 二后）</td><td>填齐 10 个任务的规则 + 用例</td><td><code>subgoal_rules.py</code>、<code>test_check_mixed_h5.py</code></td><td>其余全部</td><td>输入：主会话给 <code>dump-subgoals</code> 输出；不可数写 <code>skip:&lt;原因&gt;</code> 并列清</td><td>5</td><td>同 W3；主会话对 smoke2 跑 <code>check</code> 得 <code>skip=0</code></td><td>CPU</td></tr>
+<tr><td>主会话</td><td>smoke 一／二、校验、AWS 接入、测速、全量、留档、AGENTS.md 环境 C 与 P7 覆盖</td><td>—</td><td>—</td><td>需 GPU 与 <code>artifacts/</code></td><td>—</td><td>第一部分四节</td><td>vail GPU0；AWS 多卡；tmux <code>xh-mixed8-*</code></td></tr>
 </table>
-<p><strong>共享文件归属</strong>：<code>scripts/data-generation-newSeed/CLAUDE.md</code> 由 W2 与 W4 各改自己的段落，合并时若文本冲突由主会话按段落归属解，不派整合代理；<code>subgoal_rules.py</code> 先 W3 后 W5，串行无冲突。</p>
+<p><strong>共享文件归属</strong>：<code>scripts/data-generation-newSeed/CLAUDE.md</code> 由 W2、W4 各改自己的段，冲突由主会话按段落归属解；<code>subgoal_rules.py</code> 与 <code>test_check_mixed_h5.py</code> 先 W3 后 W5，串行。</p>
 
-<h2 id="t3">三、闸门总表</h2>
+<h2 id="t4">四、闸门总表</h2>
 <table>
 <tr><th>闸门</th><th>时点</th><th>判定行</th><th>FAIL 处置</th></tr>
-<tr><td>G0</td><td>开工前</td><td><code>PLAN_CONSISTENCY_REVIEW</code></td><td>逐条核实，涉及口径的交用户，修订后重审</td></tr>
-<tr><td>G1</td><td>每个 W 合并前</td><td><code>SCOPE=PASS</code>（diff 文件 ⊆ 可写集合）、<code>LIGHT_TESTS</code>、<code>PRE_MERGE_REVIEW</code></td><td>findings 交回原代理续改，第二轮只审增量；两轮仍 FAIL 交用户</td></tr>
-<tr><td>G2</td><td>每个 W 合并后</td><td><code>POST_MERGE_REVIEW=PASS merge=&lt;sha&gt; tests=&lt;结果&gt; files=&lt;n&gt;</code>，含 <code>git diff --quiet HEAD -- src/robomme/</code></td><td>停止后续合并、不 push，证据交用户</td></tr>
-<tr><td>G3</td><td>smoke 一</td><td><code>SMOKE1</code></td><td>定位后按 W2 续改，不改子类</td></tr>
-<tr><td>G4</td><td>smoke 二</td><td><code>SMOKE2</code> + 四条 <code>H5_*</code> 演练</td><td>任一任务某档 attempt 均值 ≥ 5 或有 exhausted → 停下把每任务每档的 attempt 表交用户（步骤 5）</td></tr>
-<tr><td>G5</td><td>新机器</td><td><code>ENV_C</code></td><td>判据冲突即停，原始输出交用户</td></tr>
-<tr><td>G6</td><td>测速</td><td><code>CALIB</code></td><td>L32 都没跑完 → 停，交用户</td></tr>
-<tr><td>G7</td><td>全量</td><td><code>GEN_FULL</code></td><td><code>exhausted&gt;0</code> 如实报清单，不补不换；<code>EXIT_CODE≠0</code> 查日志交用户</td></tr>
-<tr><td>G8</td><td>校验</td><td>四条 <code>H5_*</code></td><td>只报告，文件不动</td></tr>
+<tr><td>G0</td><td>开工前</td><td><code>PLAN_CONSISTENCY_REVIEW</code></td><td>逐条核实，口径类交用户，修订后重审</td></tr>
+<tr><td>G1</td><td>每个 W 合并前</td><td><code>SCOPE=PASS</code>、<code>LIGHT_TESTS</code>、<code>PRE_MERGE_REVIEW</code></td><td>findings 交回原代理续改，第二轮只审增量；两轮仍 FAIL 交用户</td></tr>
+<tr><td>G2</td><td>每个 W 合并后</td><td><code>POST_MERGE_REVIEW=PASS merge=&lt;sha&gt; tests=&lt;结果&gt; files=&lt;n&gt;</code></td><td>停止后续合并、不 push</td></tr>
+<tr><td>G3</td><td>smoke 一</td><td><code>SMOKE1</code></td><td>定位后 W2 续改</td></tr>
+<tr><td>G4</td><td>smoke 二 + 第一次校验</td><td><code>SMOKE2</code>、四条 <code>H5_*</code></td><td>某任务某档 attempt 均值 ≥ 5 或有 exhausted → 停下把每任务每档 attempt 表交用户（步骤 5）；校验 FAIL 只报告</td></tr>
+<tr><td>G5</td><td>AWS 接入</td><td><code>ENV_C</code></td><td>判据冲突即停</td></tr>
+<tr><td>G6</td><td>测速</td><td><code>CALIB</code></td><td>L32 没跑完 → 停，交用户</td></tr>
+<tr><td>G7</td><td>全量</td><td><code>GEN_FULL</code></td><td><code>exhausted&gt;0</code> 如实报清单；<code>EXIT_CODE≠0</code> 查日志交用户</td></tr>
+<tr><td>G8</td><td>第二次校验</td><td>四条 <code>H5_*</code>；<code>XMACHINE_JOINT_DIFF</code> 只报数</td><td>只报告，文件不动</td></tr>
 </table>
 
-<h2 id="t4">四、runbook</h2>
-<p><strong>R-0 派发前核对</strong>（主会话）：<code>jq -r '.env.CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS, .env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS, .worktree.baseRef' ~/.claude/settings.json</code> 为 64／64／head（2026-10-13 已核）；<code>git status --short --ignore-submodules=dirty -- . ':!docs/subagent-stats'</code> 为空；<code>BASE=$(git rev-parse HEAD)</code>；<code>git worktree list</code> 存档。</p>
-<p><strong>R-1 smoke 一</strong>（vail，主检出，GPU0）：</p>
+<h2 id="t5">五、runbook</h2>
+<p><strong>R-0 派发前核对</strong>：<code>jq -r '.env.CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS, .env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS, .worktree.baseRef' ~/.claude/settings.json</code> 为 64／64／head；<code>git status --short --ignore-submodules=dirty -- . ':!docs/subagent-stats'</code> 为空；<code>BASE=$(git rev-parse HEAD)</code>；<code>git worktree list</code> 存档。</p>
+<p><strong>R-1 smoke 一</strong>（vail 主检出）：</p>
 <pre><code>uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py \
-  --output-dir artifacts/mixed8/smoke1 --env VideoUnmaskSwap \
-  --episode-start 3 --episodes 1 --workers 1 --gpus 0 \
+  --output-dir artifacts/mixed8/smoke1 --env VideoUnmaskSwap --episode-start 3 --episodes 1 --workers 1 --gpus 0 \
   --difficulty-cycle easy,medium,hard,xhard12,xhard14,xhard16,xhard18,xhard20
-# 判定：run_summary.json success_count=1；h5py 读 setup/difficulty == "xhard12"；
-# episode_results.jsonl 最后一条含 swap_plan；打印 SMOKE1=PASS gym_id=VideoUnmaskSwapXHard difficulty=xhard12 T=&lt;n&gt;</code></pre>
-<p><strong>R-2 smoke 二</strong>（vail，tmux，≈15 分钟）：</p>
+# success_count=1；setup/difficulty=="xhard12"；记录含 swap_plan 且 recovery_mode 为 null → SMOKE1=PASS …</code></pre>
+<p><strong>R-2 smoke 二</strong>（vail，tmux）：</p>
 <pre><code>tmux new-session -d -s xh-mixed8-smoke2 "set -o pipefail; PYTHONUNBUFFERED=1 \
   uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py \
   --output-dir artifacts/mixed8/smoke2 --env all --episodes 8 --workers 32 --gpus 0 \
@@ -442,70 +411,69 @@ a { color:var(--accent); }
   2&gt;&amp;1 | tee artifacts/logs/mixed8-smoke2.log; echo \"EXIT_CODE=\$?\" &gt;&gt; artifacts/logs/mixed8-smoke2.log"
 # Monitor：tail -n +1 -F artifacts/logs/mixed8-smoke2.log | stdbuf -oL tr '\r' '\n' \
 #   | grep --line-buffered -E "succeeded with seed|EXIT_CODE=|failed|进程池已损坏|ERROR:|Traceback|BrokenProcessPool|svulkan2|out of memory|NO RECORD"</code></pre>
-<p><strong>R-3 golden 导出、subgoal 清单、校验演练</strong>（vail）：</p>
-<pre><code>for t in $(每任务); do uv run --no-sync python -m robomme_xhard.tools.check_mixed_h5 export-golden \
-  --from artifacts/mixed8/smoke2/hdf5_files/${t}_ep2_seed*.h5 --out src/robomme_xhard/tools/golden_schema/${t}.json; done
-uv run --no-sync python -m robomme_xhard.tools.check_mixed_h5 dump-subgoals --output-dir artifacts/mixed8/smoke2 \
-  --out artifacts/mixed8/smoke2/subgoals.json      # 交 W5
+<p><strong>R-3 规则填充与第一次校验</strong>（vail）：</p>
+<pre><code>uv run --no-sync python -m robomme_xhard.tools.check_mixed_h5 dump-subgoals --output-dir artifacts/mixed8/smoke2 \
+  --out artifacts/mixed8/smoke2/subgoals.json        # 交 W5
 uv run --no-sync python -m robomme_xhard.tools.check_mixed_h5 check --output-dir artifacts/mixed8/smoke2 \
   --golden-dir src/robomme_xhard/tools/golden_schema --expect-episodes 8 --workers 32 \
   --out-json artifacts/mixed8/smoke2/check.json --out-md artifacts/mixed8/smoke2/check.md</code></pre>
-<p><strong>R-4 新机器接入</strong>：先跑 AGENTS.md 第 0 条的判定命令块（只读），把结果写成环境 C 列提交；然后：</p>
+<p><strong>R-4 AWS 接入</strong>：先只读跑 AGENTS.md 第 0 条判定命令块，写环境 C 列与 P7 覆盖并提交；然后：</p>
 <pre><code>git clone -b newtask-v3-MotionJepa1006 &lt;远端&gt; &lt;WORK_ROOT&gt; &amp;&amp; cd &lt;WORK_ROOT&gt;
-UV_CACHE_DIR=$HOME/.cache/uv uv sync --extra dev
-uv run --no-sync python -c "import robomme,sys;print(robomme.__file__)"      # 须落在 &lt;WORK_ROOT&gt;/src/
+UV_CACHE_DIR=&lt;工作盘&gt;/.cache/uv uv sync --extra dev
+uv run --no-sync python -c "import robomme,sys;print(robomme.__file__)"      # 落在 &lt;WORK_ROOT&gt;/src/
 uv run --no-sync python -c "import sapien;d=sapien.Device('cuda');print(d.pci_string,d.can_render())"
-df -h &lt;WORK_ROOT&gt;   # 余量 ≥ 2 TB
-# 复跑 R-1 → SMOKE1；打印 ENV_C=PASS host=&lt;名&gt; gpus=&lt;n&gt; disk_free_tb=&lt;x&gt;</code></pre>
-<p><strong>R-5 测速阶梯</strong>（新机器，tmux，≈30–40 分钟）：</p>
+nvidia-smi --query-gpu=name --format=csv,noheader | sort | uniq -c; nproc; free -g; df -h &lt;WORK_ROOT&gt;   # ≥ 2 TB
+# 不下载原版数据集；golden 已在 git 里。复跑 R-1（--gpus 0）→ SMOKE1；ENV_C=PASS host=&lt;名&gt; gpus=&lt;n&gt; disk_free_tb=&lt;x&gt;</code></pre>
+<p><strong>R-5 测速阶梯</strong>（AWS，tmux）：</p>
 <pre><code>tmux new-session -d -s xh-mixed8-calib "set -o pipefail; PYTHONUNBUFFERED=1 \
   uv run --no-sync python scripts/data-generation-newSeed/utils/calibrate_parallelism.py \
-  --root artifacts/mixed8/calib --env all --episodes 4 \
+  --root artifacts/mixed8/calib --env all --episodes 4 --affinity per-gpu \
   --difficulty-cycle easy,medium,hard,xhard12,xhard14,xhard16,xhard18,xhard20 \
-  --cells 'L32:32:0:on;L48:48:0:on;L64:64:0:on;L128:128:0:on' --mem-guard-gb 40 \
+  --cells 'L32:32:0,1,2,3:on;L48:48:0,1,2,3,4,5:on;L64:64:0,1,2,3,4,5,6,7:on;L128:128:0,1,2,3,4,5,6,7:on' --mem-guard-gb 40 \
   2&gt;&amp;1 | tee artifacts/logs/mixed8-calib.log; echo \"EXIT_CODE=\$?\" &gt;&gt; artifacts/logs/mixed8-calib.log"
-# 末行 CALIB=PASS cells=&lt;n&gt; best_workers=&lt;W*&gt; crashed_at=&lt;W|none&gt;</code></pre>
-<p><strong>R-6 全量</strong>（新机器；先 Beta commit，<code>git status --short</code> 为空）：</p>
+# 末行 CALIB=PASS cells=&lt;n&gt; best_workers=&lt;W*&gt; crashed_at=&lt;W|none&gt;；W* 对应的卡列表记为 GPUS*</code></pre>
+<p><strong>R-6 全量</strong>（AWS；先 Beta commit，<code>git status --short</code> 为空）：</p>
 <pre><code>tmux new-session -d -s xh-mixed8-&lt;MMDD&gt; "set -o pipefail; PYTHONUNBUFFERED=1 \
   uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py \
-  --output-dir artifacts/mixed8/full --env all --episodes 400 --workers &lt;W*&gt; --gpus 0 \
-  --difficulty-cycle easy,medium,hard,xhard12,xhard14,xhard16,xhard18,xhard20 \
-  --max-attempts &lt;步骤 5 用户定&gt; \
+  --output-dir artifacts/mixed8/full --env all --episodes 400 --workers &lt;W*&gt; --gpus &lt;GPUS*&gt; --affinity per-gpu \
+  --difficulty-cycle easy,medium,hard,xhard12,xhard14,xhard16,xhard18,xhard20 --max-attempts &lt;步骤 5 用户定&gt; \
   2&gt;&amp;1 | tee artifacts/logs/mixed8-full.log; echo \"EXIT_CODE=\$?\" &gt;&gt; artifacts/logs/mixed8-full.log"
-# Monitor 过滤词同 R-2；完成后 run_summary.json → GEN_FULL=PASS requested=6400 success=6400 exhausted=0</code></pre>
-<p><strong>R-7 校验与留档</strong>（新机器）：</p>
+# Monitor 过滤词同 R-2；run_summary.json → GEN_FULL=PASS requested=6400 success=6400 exhausted=0</code></pre>
+<p><strong>R-7 第二次校验、对拍与留档</strong>（AWS；对拍需先把 vail 的 <code>artifacts/mixed8/smoke2</code> 的 100 个样本 rsync 到 AWS，约 25–40 GB）：</p>
 <pre><code>uv run --no-sync python -m robomme_xhard.tools.check_mixed_h5 check --output-dir artifacts/mixed8/full \
   --golden-dir src/robomme_xhard/tools/golden_schema --expect-episodes 400 --workers 32 \
+  --compare-dir artifacts/mixed8/smoke2-from-vail \
   --out-json artifacts/mixed8/full/check.json --out-md artifacts/mixed8/full/check.md
-# 四条判定行进 docs/xhard-doc/mixed8-&lt;MMDD&gt;/result.md；records/ 放 check.json、calibration.md、run_summary.json、
-# 清洗后日志 tr '\r' '\n' &lt; 日志 | grep -vE '%\|'；不归档 h5</code></pre>
+# 四条判定行 + XMACHINE_JOINT_DIFF 进 docs/xhard-doc/mixed8-&lt;MMDD&gt;/result.md；records/ 放 check.json、calibration.md、
+# run_summary.json、清洗后日志 tr '\r' '\n' &lt; 日志 | grep -vE '%\|'；不归档 h5</code></pre>
 
-<h2 id="t5">五、风险登记</h2>
+<h2 id="t6">六、风险登记</h2>
 <table>
 <tr><th>风险</th><th>影响</th><th>对策</th></tr>
-<tr><td>xhard 子类在公式 seed 上的通过率未知：到今天只在每任务 2–10 个母 seed 上验证过；1012 那轮 180 卡失败 50 张</td><td>重试次数把全量耗时抬高数倍；某档系统性不通会烧满 <code>max_attempts</code></td><td>smoke 二给出每任务每档的 attempt 分布（G4 阈值均值 ≥ 5 即停）；步骤 5 由用户定 xhard 的 <code>--max-attempts</code>（推荐远小于 100）</td></tr>
-<tr><td>新机器硬件未知（GPU 型号、核数、内存、磁盘）</td><td>测速档位可能全部崩或全部不崩；1.6 TB 放不下</td><td>阶梯护栏自停；接入时 <code>df</code> ≥ 2 TB 与渲染探针作为 <code>ENV_C</code> 判据</td></tr>
-<tr><td><code>importlib</code> 独立加载 <code>configs.py</code> 若将来加了包内导入会失效</td><td>父进程报 ImportError</td><td>用例守住「加载后 <code>robomme_xhard</code> 不在 <code>sys.modules</code>」；失效即报错不静默回退</td></tr>
-<tr><td>golden 从 hard 导出而 xhard 子类可能多出字段</td><td><code>H5_SCHEMA extra&gt;0</code> 误报</td><td>导出时同时读 ep2（hard）与 ep3（xhard）取并集并记来源；真有差异在 smoke 二演练时暴露，交用户</td></tr>
-<tr><td>FAILED_ 前缀的 h5 残留占盘（xhard 运行期拒绝的卡保留产物）</td><td>全量盘占用上浮</td><td>smoke 二统计残留体量；超预期交用户决定是否在全量加清理开关（新方案调整）</td></tr>
-<tr><td>两台机器 commit 分叉</td><td>历史混乱</td><td>git 只在有凭据一侧操作；新机器无凭据则 rsync 留档回 vail 提交</td></tr>
+<tr><td>xhard 子类在公式 seed 上的通过率未知（只在每任务 2–10 个母 seed 验证过；1012 一轮 180 卡失败 50 张）</td><td>重试把全量耗时抬高数倍</td><td>G4 阈值；步骤 5 用户定 xhard <code>--max-attempts</code></td></tr>
+<tr><td>AWS 实例型号与存储未定（K9 按 p4d.24xlarge 假设；实例 NVMe 停机即清空）</td><td>档位整除、内存护栏阈值、1.6 TB 落点都可能要改</td><td><code>ENV_C</code> 判据表先定硬件；产物落点由用户在接入前决定（EBS／S3／HF）</td></tr>
+<tr><td>多卡下 <code>--affinity per-gpu</code> 把 96 核按卡切分，4 卡档每卡 24 核、8 卡档每卡 12 核</td><td>L32 用 4 卡时每卡 8 worker 占 24 核，CPU 利用率偏低但不崩</td><td>吞吐以稳态窗口为准；若 L32 明显低于单卡经验值，在 <code>calibration.md</code> 标注并交用户</td></tr>
+<tr><td><code>importlib</code> 独立加载 <code>configs.py</code> 若将来加包内导入会失效</td><td>父进程 ImportError</td><td>用例守住；失效即报错不回退</td></tr>
+<tr><td>golden 从原版导出而现生成器少 8 个字段、xhard 子类可能多字段</td><td><code>extra</code>／<code>missing</code> 误报</td><td><code>excluded_keys</code> 固定清单；真有差异在第一次校验暴露，交用户</td></tr>
+<tr><td>FAILED_ 前缀 h5 残留占盘</td><td>全量盘占用上浮</td><td>smoke 二统计残留体量，超预期交用户决定是否加清理开关（新方案调整）</td></tr>
+<tr><td>两台机器 commit 分叉</td><td>历史混乱</td><td>git 只在有凭据一侧操作</td></tr>
 </table>
 
-<h2 id="t6">六、盲区诚实清单</h2>
+<h2 id="t7">七、盲区诚实清单</h2>
 <ul>
-<li>12 个任务的 subgoal 文本没在本机看过，语义闭环规则表只有四个任务是核实过的，其余等 smoke 二。</li>
-<li>easy／medium／hard 档的「应该做几次」没有纳入闭环（父类配置键不是公共契约），本轮只对 xhard 档做。</li>
-<li>新机器是哪台、能否出网拉 ManiSkill git 依赖、有没有 gh 凭据，都未知。</li>
-<li>耗时估计基于 vail 8 月与 10 月的实测吞吐，新机器上只有 <code>CALIB</code> 之后才有数。</li>
-<li>未与 MotionJEPA 的读取器对拍（<code>scan_episode</code>），K5 范围之外。</li>
-<li>全量 6400 条的 attempt 总次数无法在 128 条 smoke 上精确外推，smoke 二只能给每档均值与最大值。</li>
+<li>10 个任务的 subgoal 文本没在本机看过，语义闭环只有 4 个任务核实过，其余等 smoke 二。</li>
+<li>easy／medium／hard 档的「应做几次」没纳入闭环，只对 xhard 档做。</li>
+<li>AWS 实例具体型号、vCPU 数、能否出网拉 ManiSkill git 依赖、有无 gh 凭据、产物持久化落点都未定。</li>
+<li>耗时估计基于 vail 实测，AWS 只有 <code>CALIB</code> 后才有数。</li>
+<li>未与 MotionJEPA 读取器对拍（K4 范围之外）。</li>
+<li>原版副本未与 HF 做逐字节 sha256 复核（下载元数据记了 sha256，本计划只用它的结构）。</li>
 </ul>
 
-<h2 id="t7">七、留档与 commit 纪律</h2>
+<h2 id="t8">八、留档与 commit 纪律</h2>
 <ul>
-<li>本计划 2.108；W1–W4 合并各一个 commit（2.109–2.112），subject 写「合并 sub/Wn」加中文描述，body 摘录子代理报告与 <code>PRE_MERGE_REVIEW／POST_MERGE_REVIEW</code> 行；W5 合并 2.113；smoke 实测追加进本计划「实测结果」小节 2.114。</li>
-<li>新机器：环境 C 列单独 commit；全量前 Beta commit（<code>2.11xBeta</code>），body 写完整命令、W*、<code>max_attempts</code>、磁盘余量；跑完回写 <code>2.11x</code>，两个独立 commit 不 squash。</li>
-<li>留档目录 <code>docs/xhard-doc/mixed8-&lt;MMDD&gt;/</code>：<code>launch.md</code>（起跑那一刻写：版本、命令、tmux 名、W*、硬件）、<code>result.md</code>（四条 H5 判定行、<code>GEN_FULL</code>、<code>CALIB</code>、耗时表、每任务每档条数与 attempt 分布）、<code>records/</code>（check.json、calibration.md、run_summary.json、清洗后日志）；不归档 h5、不归档 .sh／.yaml。</li>
+<li>本计划修订 2.111；W1–W4 合并各一个 commit，subject「合并 sub/Wn」加中文描述，body 摘录子代理报告与 <code>PRE/POST_MERGE_REVIEW</code>；W5 合并一个；smoke 与第一次校验实测追加本计划「实测结果」小节一个。</li>
+<li>AWS：环境 C 列与 P7 覆盖单独 commit；全量前 Beta commit（body 写完整命令、W*、GPUS*、<code>max_attempts</code>、硬件与磁盘），跑完回写同号 commit，不 squash。</li>
+<li>留档 <code>docs/xhard-doc/mixed8-&lt;MMDD&gt;/</code>：<code>launch.md</code>（版本、命令、tmux 名、W*、硬件）、<code>result.md</code>（两次四条 H5 判定行、<code>XMACHINE_JOINT_DIFF</code>、<code>GEN_FULL</code>、<code>CALIB</code>、耗时表、每任务每档条数与 attempt 分布）、<code>records/</code>（check.json、calibration.md、run_summary.json、清洗后日志）；不归档 h5、.sh、.yaml。</li>
 <li>每次 commit 后立即 push；<code>sub/</code> 分支不单独推送；合并后审查 FAIL 的合并提交留本地并汇报。</li>
 </ul>
 
