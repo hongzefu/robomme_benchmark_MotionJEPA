@@ -1,0 +1,228 @@
+{
+  "task": "MoveCube",
+  "source": {
+    "file": "/data/hongzefu/robomme_data_h5/record_dataset_MoveCube.h5",
+    "revision": "a5e4e25ffe8af34f64944f9533d06455ce5f8337",
+    "episode": 0
+  },
+  "excluded_keys": [
+    "obs/eef_state_raw/pose",
+    "obs/eef_state_raw/quat",
+    "obs/eef_state_raw/rpy",
+    "action/eef_action_raw/pose",
+    "action/eef_action_raw/quat",
+    "action/eef_action_raw/rpy"
+  ],
+  "variable_shape_keys": [
+    "setup/task_goal"
+  ],
+  "setup": {
+    "available_multi_choices": {
+      "dtypes": [
+        "object"
+      ],
+      "shape": []
+    },
+    "difficulty": {
+      "dtypes": [
+        "object"
+      ],
+      "shape": []
+    },
+    "front_camera_intrinsic": {
+      "dtypes": [
+        "float32"
+      ],
+      "shape": [
+        3,
+        3
+      ]
+    },
+    "seed": {
+      "dtypes": [
+        "int64"
+      ],
+      "shape": []
+    },
+    "task_goal": {
+      "dtypes": [
+        "object"
+      ],
+      "shape": [
+        2
+      ]
+    },
+    "wrist_camera_intrinsic": {
+      "dtypes": [
+        "float32"
+      ],
+      "shape": [
+        3,
+        3
+      ]
+    }
+  },
+  "timestep": {
+    "action/choice_action": {
+      "dtypes": [
+        "object"
+      ],
+      "shape": []
+    },
+    "action/eef_action": {
+      "dtypes": [
+        "float64"
+      ],
+      "shape": [
+        7
+      ]
+    },
+    "action/joint_action": {
+      "dtypes": [
+        "float64"
+      ],
+      "shape": [
+        8
+      ]
+    },
+    "action/waypoint_action": {
+      "dtypes": [
+        "float32",
+        "float64"
+      ],
+      "shape": [
+        7
+      ]
+    },
+    "info/grounded_subgoal": {
+      "dtypes": [
+        "object"
+      ],
+      "shape": []
+    },
+    "info/grounded_subgoal_online": {
+      "dtypes": [
+        "object"
+      ],
+      "shape": []
+    },
+    "info/is_completed": {
+      "dtypes": [
+        "bool"
+      ],
+      "shape": []
+    },
+    "info/is_subgoal_boundary": {
+      "dtypes": [
+        "bool"
+      ],
+      "shape": []
+    },
+    "info/is_video_demo": {
+      "dtypes": [
+        "bool"
+      ],
+      "shape": []
+    },
+    "info/simple_subgoal": {
+      "dtypes": [
+        "object"
+      ],
+      "shape": []
+    },
+    "info/simple_subgoal_online": {
+      "dtypes": [
+        "object"
+      ],
+      "shape": []
+    },
+    "obs/eef_state": {
+      "dtypes": [
+        "float32"
+      ],
+      "shape": [
+        6
+      ]
+    },
+    "obs/front_camera_extrinsic": {
+      "dtypes": [
+        "float32"
+      ],
+      "shape": [
+        3,
+        4
+      ]
+    },
+    "obs/front_depth": {
+      "dtypes": [
+        "int16"
+      ],
+      "shape": [
+        256,
+        256,
+        1
+      ]
+    },
+    "obs/front_rgb": {
+      "dtypes": [
+        "uint8"
+      ],
+      "shape": [
+        256,
+        256,
+        3
+      ]
+    },
+    "obs/gripper_state": {
+      "dtypes": [
+        "float32"
+      ],
+      "shape": [
+        2
+      ]
+    },
+    "obs/is_gripper_close": {
+      "dtypes": [
+        "bool"
+      ],
+      "shape": []
+    },
+    "obs/joint_state": {
+      "dtypes": [
+        "float32"
+      ],
+      "shape": [
+        7
+      ]
+    },
+    "obs/wrist_camera_extrinsic": {
+      "dtypes": [
+        "float32"
+      ],
+      "shape": [
+        3,
+        4
+      ]
+    },
+    "obs/wrist_depth": {
+      "dtypes": [
+        "int16"
+      ],
+      "shape": [
+        256,
+        256,
+        1
+      ]
+    },
+    "obs/wrist_rgb": {
+      "dtypes": [
+        "uint8"
+      ],
+      "shape": [
+        256,
+        256,
+        3
+      ]
+    }
+  }
+}
