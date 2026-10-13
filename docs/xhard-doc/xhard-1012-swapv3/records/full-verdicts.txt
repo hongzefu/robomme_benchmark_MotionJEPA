@@ -1,0 +1,12 @@
+DIFFICULTY_LABEL=PASS files=130
+XHARD_RECORD_NONEMPTY=PASS files=130
+EPISODE_STRIP_VIDEO=PASS videos=30 columns=180 missing=0
+XHARD_FULL_DERIVE=DONE expected=180 seen=180 missing=0 dup=0 unknown=0 ok=130 task_reject=50 infra=0
+REPORT_V1V2=PASS seeds=30 rows=180
+V3_IDENTITY_MATCH=PASS cards=180 mismatches=0
+SWAP_V3_KINDS_GATE=PASS seeds=30 pass=20 reject_kinds=6 reject_isolated=3 runtime_fail=1 mixed=0 expected_reject_kinds=6
+PLAN_UNCHANGED=PASS cards=105 expected=105 missing=0 diffs=0 float_tol=1e-9
+FULL_VIDEO_METADATA=PASS videos=30 width=3072 fps=30
+VIDEO_FIRST_FRAME_REVIEW=PASS videos=30 columns=180
+OLD_RUN_INTACT=PASS files=426 mismatches=0 extra=0
+V2_ROOT_UNTOUCHED=PASS files=719 newer=0

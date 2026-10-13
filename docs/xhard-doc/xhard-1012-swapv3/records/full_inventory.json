@@ -1,0 +1,19 @@
+{
+  "full": {
+    "files": 304,
+    "bytes": 69326849828,
+    "h5_files": 135,
+    "successful_h5": 130,
+    "failed_h5": 5,
+    "mp4_files": 148
+  },
+  "report": {
+    "files": 34,
+    "bytes": 308434670,
+    "h5_files": 0,
+    "successful_h5": 0,
+    "failed_h5": 0,
+    "mp4_files": 30
+  },
+  "visual_review": "VIDEO_FIRST_FRAME_REVIEW=PASS videos=30 columns=180"
+}

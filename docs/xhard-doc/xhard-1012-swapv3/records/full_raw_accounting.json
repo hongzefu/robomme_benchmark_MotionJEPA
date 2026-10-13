@@ -1,0 +1,23 @@
+{
+  "beta": "f6209f5d7cf83da85bae4141aad04e2e477666c3",
+  "accounting": {
+    "summary": {
+      "expected": 180,
+      "seen": 180,
+      "missing": 0,
+      "dup": 0,
+      "unknown": 0,
+      "ok": 130,
+      "task_reject": 50,
+      "infra": 0,
+      "complete": true
+    },
+    "missing": [],
+    "duplicates": [],
+    "unknown_states": [],
+    "unexpected_identities": []
+  },
+  "elapsed_s": 465.7,
+  "throughput_ep_per_min": 16.75,
+  "peak_rss_mb": 7345.5
+}

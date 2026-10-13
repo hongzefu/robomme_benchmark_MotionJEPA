@@ -1,0 +1,281 @@
+{
+  "verdict": "FULL_VIDEO_METADATA=PASS videos=30 width=3072 fps=30",
+  "videos": [
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep7_seed5700.mp4",
+      "bytes": 8107127,
+      "width": 3072,
+      "height": 656,
+      "r_frame_rate": "30/1",
+      "nb_frames": "871",
+      "duration": 29.033333
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep11_seed6100.mp4",
+      "bytes": 9521363,
+      "width": 3072,
+      "height": 656,
+      "r_frame_rate": "30/1",
+      "nb_frames": "877",
+      "duration": 29.233333
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep15_seed6500.mp4",
+      "bytes": 1213866,
+      "width": 3072,
+      "height": 624,
+      "r_frame_rate": "30/1",
+      "nb_frames": "483",
+      "duration": 16.1
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep19_seed6900.mp4",
+      "bytes": 8537402,
+      "width": 3072,
+      "height": 656,
+      "r_frame_rate": "30/1",
+      "nb_frames": "880",
+      "duration": 29.333333
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep23_seed7300.mp4",
+      "bytes": 8439480,
+      "width": 3072,
+      "height": 656,
+      "r_frame_rate": "30/1",
+      "nb_frames": "861",
+      "duration": 28.7
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep27_seed7700.mp4",
+      "bytes": 8571785,
+      "width": 3072,
+      "height": 656,
+      "r_frame_rate": "30/1",
+      "nb_frames": "883",
+      "duration": 29.433333
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep31_seed8100.mp4",
+      "bytes": 7783081,
+      "width": 3072,
+      "height": 656,
+      "r_frame_rate": "30/1",
+      "nb_frames": "889",
+      "duration": 29.633333
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep35_seed8500.mp4",
+      "bytes": 8202773,
+      "width": 3072,
+      "height": 656,
+      "r_frame_rate": "30/1",
+      "nb_frames": "904",
+      "duration": 30.133333
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep39_seed8900.mp4",
+      "bytes": 7701077,
+      "width": 3072,
+      "height": 656,
+      "r_frame_rate": "30/1",
+      "nb_frames": "881",
+      "duration": 29.366667
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep43_seed9300.mp4",
+      "bytes": 964660,
+      "width": 3072,
+      "height": 624,
+      "r_frame_rate": "30/1",
+      "nb_frames": "432",
+      "duration": 14.4
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep7_seed7700.mp4",
+      "bytes": 10840068,
+      "width": 3072,
+      "height": 720,
+      "r_frame_rate": "30/1",
+      "nb_frames": "908",
+      "duration": 30.266667
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep11_seed8100.mp4",
+      "bytes": 11018535,
+      "width": 3072,
+      "height": 720,
+      "r_frame_rate": "30/1",
+      "nb_frames": "937",
+      "duration": 31.233333
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep15_seed8500.mp4",
+      "bytes": 1206165,
+      "width": 3072,
+      "height": 656,
+      "r_frame_rate": "30/1",
+      "nb_frames": "458",
+      "duration": 15.266667
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep19_seed8900.mp4",
+      "bytes": 10686864,
+      "width": 3072,
+      "height": 720,
+      "r_frame_rate": "30/1",
+      "nb_frames": "894",
+      "duration": 29.8
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep23_seed9300.mp4",
+      "bytes": 10912499,
+      "width": 3072,
+      "height": 720,
+      "r_frame_rate": "30/1",
+      "nb_frames": "931",
+      "duration": 31.033333
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep27_seed9700.mp4",
+      "bytes": 10472827,
+      "width": 3072,
+      "height": 720,
+      "r_frame_rate": "30/1",
+      "nb_frames": "909",
+      "duration": 30.3
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep31_seed10100.mp4",
+      "bytes": 10937587,
+      "width": 3072,
+      "height": 720,
+      "r_frame_rate": "30/1",
+      "nb_frames": "914",
+      "duration": 30.466667
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep35_seed10500.mp4",
+      "bytes": 1496408,
+      "width": 3072,
+      "height": 656,
+      "r_frame_rate": "30/1",
+      "nb_frames": "472",
+      "duration": 15.733333
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep39_seed10900.mp4",
+      "bytes": 10890883,
+      "width": 3072,
+      "height": 720,
+      "r_frame_rate": "30/1",
+      "nb_frames": "930",
+      "duration": 31.0
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep43_seed11300.mp4",
+      "bytes": 10892396,
+      "width": 3072,
+      "height": 720,
+      "r_frame_rate": "30/1",
+      "nb_frames": "950",
+      "duration": 31.666667
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep6_seed9600.mp4",
+      "bytes": 12507823,
+      "width": 3072,
+      "height": 784,
+      "r_frame_rate": "30/1",
+      "nb_frames": "1359",
+      "duration": 45.3
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep10_seed10000.mp4",
+      "bytes": 2047373,
+      "width": 3072,
+      "height": 784,
+      "r_frame_rate": "30/1",
+      "nb_frames": "887",
+      "duration": 29.566667
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep14_seed10400.mp4",
+      "bytes": 2075661,
+      "width": 3072,
+      "height": 784,
+      "r_frame_rate": "30/1",
+      "nb_frames": "845",
+      "duration": 28.166667
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep18_seed10800.mp4",
+      "bytes": 1691862,
+      "width": 3072,
+      "height": 720,
+      "r_frame_rate": "30/1",
+      "nb_frames": "588",
+      "duration": 19.6
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep22_seed11200.mp4",
+      "bytes": 14602973,
+      "width": 3072,
+      "height": 784,
+      "r_frame_rate": "30/1",
+      "nb_frames": "1367",
+      "duration": 45.566667
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep26_seed11602.mp4",
+      "bytes": 12436777,
+      "width": 3072,
+      "height": 784,
+      "r_frame_rate": "30/1",
+      "nb_frames": "1346",
+      "duration": 44.866667
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep30_seed12000.mp4",
+      "bytes": 14456798,
+      "width": 3072,
+      "height": 784,
+      "r_frame_rate": "30/1",
+      "nb_frames": "1334",
+      "duration": 44.466667
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep34_seed12400.mp4",
+      "bytes": 2852127,
+      "width": 3072,
+      "height": 784,
+      "r_frame_rate": "30/1",
+      "nb_frames": "865",
+      "duration": 28.833333
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep38_seed12800.mp4",
+      "bytes": 1488656,
+      "width": 3072,
+      "height": 720,
+      "r_frame_rate": "30/1",
+      "nb_frames": "572",
+      "duration": 19.066667
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep42_seed13200.mp4",
+      "bytes": 2170136,
+      "width": 3072,
+      "height": 784,
+      "r_frame_rate": "30/1",
+      "nb_frames": "848",
+      "duration": 28.266667
+    }
+  ],
+  "errors": [],
+  "first_frame_sheets": [
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/video-previews/2.3_VideoUnmaskSwap_first_frames.png",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/video-previews/2.4_ButtonUnmaskSwap_first_frames.png",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/video-previews/3.2_VideoRepick_first_frames.png"
+  ]
+}

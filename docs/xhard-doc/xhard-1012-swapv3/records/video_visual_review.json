@@ -1,0 +1,56 @@
+{
+  "verdict": "VIDEO_FIRST_FRAME_REVIEW=PASS videos=30 columns=180",
+  "reviewed_videos": [
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep7_seed5700.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep11_seed6100.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep15_seed6500.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep19_seed6900.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep23_seed7300.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep27_seed7700.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep31_seed8100.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep35_seed8500.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep39_seed8900.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep43_seed9300.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep7_seed7700.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep11_seed8100.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep15_seed8500.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep19_seed8900.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep23_seed9300.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep27_seed9700.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep31_seed10100.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep35_seed10500.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep39_seed10900.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep43_seed11300.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep6_seed9600.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep10_seed10000.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep14_seed10400.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep18_seed10800.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep22_seed11200.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep26_seed11602.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep30_seed12000.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep34_seed12400.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep38_seed12800.mp4",
+    "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep42_seed13200.mp4"
+  ],
+  "review_sheets": [
+    "artifacts/xhard/xhard-1012-swapv3/video-previews/2.3_VideoUnmaskSwap_first_frames_a.png",
+    "artifacts/xhard/xhard-1012-swapv3/video-previews/2.3_VideoUnmaskSwap_first_frames_b.png",
+    "artifacts/xhard/xhard-1012-swapv3/video-previews/2.4_ButtonUnmaskSwap_first_frames_a.png",
+    "artifacts/xhard/xhard-1012-swapv3/video-previews/2.4_ButtonUnmaskSwap_first_frames_b.png",
+    "artifacts/xhard/xhard-1012-swapv3/video-previews/3.2_VideoRepick_first_frames_a.png",
+    "artifacts/xhard/xhard-1012-swapv3/video-previews/3.2_VideoRepick_first_frames_b.png"
+  ],
+  "checks": {
+    "six_columns_aligned": true,
+    "headers_readable": true,
+    "failure_placeholders_visible": true,
+    "no_text_or_box_overlap": true,
+    "font_rendered": true
+  },
+  "notes": [
+    "复核拼图的附加标题初用普通sans字体，母字缺字；已换成原视频NotoSansCJK并复查，视频未改。",
+    "按实际五个视频行高分片，避免复核图边界截断。",
+    "缩小拼图一度误读11602英文指令区为空；原分辨率首帧与源H5均有完整指令，与v2源字段相同，非数据或视频缺字。",
+    "只复核首帧版式，不做逐帧跨轮像素对拍。"
+  ]
+}
