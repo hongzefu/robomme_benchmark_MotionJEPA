@@ -84,3 +84,11 @@ git show 3083af74:src/robomme_xhard/tools/layout.py
 独立审查确认计划没有明确文本优先级；U1–U13、V1–V3 和本次夹具恢复裁决也没有选择这一分支。固定 V9 的 `plan_balanced_swaps(adj, ...)` 接收固定邻接矩阵，没有形状、高度或动态图参数，无法由该函数代用户裁决。
 
 依据本轮用户「有重大口径调整一律停工问我」与规则第 2 条的失败处理变更边界，主会话在派发 W2 之前停止实施，等待用户决定：静态前提不满足时立即拒绝，或保留动态认证并另明确其重算与选对规则。此处只记录候选，不修改权威计划、不自行选取语义。W2 管理工作树已创建于 `/home/hongzefu/.codex/remote-control-host/worktrees/swapv2-w2/robomme_benchmark_newtask-v3-MotionJepa1006`，基线为上述 2.95.3；没有派 W2 代理，没有写入配对代码，也没有 GPU 契约、四卡 smoke 或全量。本轮没有启动 tmux，用户其他会话不动。
+
+## 同形与等高前提实测（裁决前只读核对）
+
+用户原话：「你先核对一下是否都满足这个前提。然后我再判断」。在 HEAD `061058b4969d35e14245776343902c5652ce6d10`（工作区干净）用只读探针 [`records/swap_premise_probe.py`](records/swap_premise_probe.py) 对阶段零的同一批 30 个母 seed（输入 `records/graph_scan.json`）逐个 reset。当前 HEAD 处于 W1 中间态、子类没有规划器钩子，探针在进程内包装三个 xhard 子类的 `_load_scene`，在其末尾（与 v1 `certify_swap_plan` 调用时点相同）读交换对象：VideoUnmaskSwap、ButtonUnmaskSwap 取 `spawned_bins`，VideoRepick 取 `spawned_cubes`。同形按计划 3.1 口径逐盒 `np.array_equal` 比较 `half`、`local_p`、`local_q`；等高比较各对象初始世界 z，reset 完成后再读一次。GPU0 单进程约 3 分钟，未改仓库源码。
+
+判定行：`SWAP_PREMISE=INFO seeds=30 not_same_shape=0 not_same_height=0`。VideoUnmaskSwap 与 ButtonUnmaskSwap 每对象 6 个盒体、z 全为 0.052 m；VideoRepick 每对象 1 个盒体、z 全为 0.020 m；逐盒最大偏差 0.0；`_load_scene` 时点的 z 与预扫 `slots` 逐个一致，reset 后高度同样全等。每个任务 30 个 seed 之间只出现一种盒体组合。被口径 B 剔除的 ButtonUnmaskSwap 10500、VideoRepick 10000/10400 同样满足两项前提。进程在汇总行和 JSON 写出之后以 139 退出（解释器关闭阶段段错误），30 行数据完整，原始输出见 [`records/swap_premise.txt`](records/swap_premise.txt)、[`records/swap_premise.json`](records/swap_premise.json)（sha256 前缀 `78a35b3fc30c3ab0`，24325 字节）。
+
+该结果只说明当前 30 个母 seed 上「不同形或不等高」分支不会被触发，不代替用户对 K7 与 3.1 冲突的裁决。

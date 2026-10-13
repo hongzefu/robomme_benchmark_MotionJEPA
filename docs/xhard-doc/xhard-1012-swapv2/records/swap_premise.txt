@@ -1,0 +1,34 @@
+# 只读前提探针：git_commit=061058b4969d35e14245776343902c5652ce6d10（HEAD，工作区干净），GPU0 单进程，输入 records/graph_scan.json 的 30 个母 seed
+# 命令：CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 timeout 290s uv run --no-sync python records/swap_premise_probe.py records/graph_scan.json <out.json>
+PREMISE VideoUnmaskSwap 5700 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoUnmaskSwap 6100 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoUnmaskSwap 6500 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoUnmaskSwap 6900 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoUnmaskSwap 7300 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoUnmaskSwap 7700 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoUnmaskSwap 8100 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoUnmaskSwap 8500 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoUnmaskSwap 8900 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoUnmaskSwap 9300 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE ButtonUnmaskSwap 7700 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE ButtonUnmaskSwap 8100 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE ButtonUnmaskSwap 8500 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE ButtonUnmaskSwap 8900 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE ButtonUnmaskSwap 9300 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE ButtonUnmaskSwap 9700 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE ButtonUnmaskSwap 10100 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE ButtonUnmaskSwap 10500 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE ButtonUnmaskSwap 10900 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE ButtonUnmaskSwap 11300 objs 4 boxes 6 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoRepick 9600 objs 3 boxes 1 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoRepick 10000 objs 3 boxes 1 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoRepick 10400 objs 3 boxes 1 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoRepick 10800 objs 3 boxes 1 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoRepick 11200 objs 3 boxes 1 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoRepick 11602 objs 3 boxes 1 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoRepick 12000 objs 3 boxes 1 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoRepick 12400 objs 3 boxes 1 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoRepick 12800 objs 3 boxes 1 same_shape True dev 0.0 same_height True after_reset True
+PREMISE VideoRepick 13200 objs 3 boxes 1 same_shape True dev 0.0 same_height True after_reset True
+SWAP_PREMISE=INFO seeds=30 not_same_shape=0 not_same_height=0
+EXIT_CODE=139  # 汇总行与 JSON 写出之后，解释器关闭阶段段错误（SAPIEN 收尾）；30 行数据完整
