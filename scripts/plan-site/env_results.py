@@ -17,7 +17,8 @@ SOURCE_BASE = "https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/a43
 
 
 def plain(value):
-    return html.unescape(re.sub(r"<[^>]+>", "", value)).strip()
+    # 标签是文本边界，不能把旋钮末尾数字与下一行长度拼成新数字。
+    return " ".join(html.unescape(re.sub(r"<[^>]+>", " ", value)).split())
 
 
 def expected_from_plan(doc):
@@ -36,7 +37,9 @@ def expected_from_plan(doc):
                 values[level] = None
                 continue
             text = plain(cell)
-            length = re.search(r"([\d.]+)\s*timestep", text)
+            lines = re.split(r"<br\s*/?>", cell, flags=re.I)
+            # 长度必须来自旋钮之后的独立数据行；不在整格中搜第一个数字。
+            length = re.match(r"(?:实测\s*)?([\d.]+)\s*timestep", plain(lines[1])) if len(lines) > 1 else None
             origin_estimate = re.search(r"原估算约\s*([\d.]+)\s*timestep", text)
             if re.search(r"实测\s*[\d.]+\s*timestep", text):
                 if not origin_estimate:

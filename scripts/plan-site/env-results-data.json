@@ -699,7 +699,7 @@
             "mi": 80
           },
           "knob": "k=3；间隔=80",
-          "timesteps": 80237.0,
+          "timesteps": 237.0,
           "windows": 13.0,
           "basis": "固定母档参照中位"
         },
@@ -710,7 +710,7 @@
             "mi": 80
           },
           "knob": "k=4；间隔=80",
-          "timesteps": 80317.0,
+          "timesteps": 317.0,
           "windows": 18.0,
           "basis": "固定样本集合成中位"
         },
@@ -720,7 +720,7 @@
             "mi": 80
           },
           "knob": "k=5；间隔=80",
-          "timesteps": 80397.0,
+          "timesteps": 397.0,
           "windows": 23.0,
           "basis": "固定样本集合成中位"
         },
@@ -740,7 +740,7 @@
             "mi": 80
           },
           "knob": "k=6；间隔=80",
-          "timesteps": 80477.0,
+          "timesteps": 477.0,
           "windows": 28.0,
           "basis": "固定样本集合成中位"
         }
@@ -2209,7 +2209,7 @@
             "swap": 3
           },
           "knob": "P=2；S=3",
-          "timesteps": 3460.0,
+          "timesteps": 460.0,
           "windows": 27.0,
           "basis": "固定母档参照中位"
         },
@@ -2219,7 +2219,7 @@
             "swap": 4
           },
           "knob": "P=3；S=4",
-          "timesteps": 4575.0,
+          "timesteps": 575.0,
           "windows": 34.0,
           "basis": "固定样本集合成中位"
         },
@@ -2229,7 +2229,7 @@
             "swap": 6
           },
           "knob": "P=4；S=6",
-          "timesteps": 6666.0,
+          "timesteps": 666.0,
           "windows": 40.0,
           "basis": "固定样本集合成中位"
         },
@@ -2239,7 +2239,7 @@
             "swap": 8
           },
           "knob": "P=4；S=8",
-          "timesteps": 8716.0,
+          "timesteps": 716.0,
           "windows": 43.0,
           "basis": "固定样本集合成中位"
         },
@@ -2249,7 +2249,7 @@
             "swap": 10
           },
           "knob": "P=5；S=10",
-          "timesteps": 10816.0,
+          "timesteps": 816.0,
           "windows": 49.0,
           "basis": "固定样本集合成中位"
         },
@@ -2259,7 +2259,7 @@
             "swap": 12
           },
           "knob": "P=6；S=12",
-          "timesteps": 12916.0,
+          "timesteps": 916.0,
           "windows": 56.0,
           "basis": "固定样本集合成中位"
         }
@@ -3389,7 +3389,7 @@
             "count": 3
           },
           "knob": "pickup=3；spawn=6",
-          "timesteps": 6539.0,
+          "timesteps": 539.0,
           "windows": 32.0,
           "basis": "固定母档参照中位"
         },
@@ -3398,7 +3398,7 @@
             "count": 4
           },
           "knob": "pickup=4；spawn=6",
-          "timesteps": 6700.0,
+          "timesteps": 700.0,
           "windows": 42.0,
           "basis": "固定样本集合成中位"
         },
@@ -3408,7 +3408,7 @@
             "count": 5
           },
           "knob": "pickup=5；spawn=6",
-          "timesteps": 6855.0,
+          "timesteps": 855.0,
           "windows": 52.0,
           "basis": "固定样本集合成中位"
         },
@@ -3417,7 +3417,7 @@
             "count": 6
           },
           "knob": "pickup=6；spawn=6",
-          "timesteps": 61010.0,
+          "timesteps": 1010.0,
           "windows": 62.0,
           "basis": "固定样本集合成中位"
         },
@@ -3550,7 +3550,7 @@
             "repeat": 2
           },
           "knob": "S=2；重抓R=2",
-          "timesteps": 2717.0,
+          "timesteps": 717.0,
           "windows": 42.0,
           "basis": "固定母档参照中位"
         },
@@ -3560,7 +3560,7 @@
             "repeat": 2
           },
           "knob": "S=5；重抓R=2",
-          "timesteps": 2879.0,
+          "timesteps": 879.0,
           "windows": 52.0,
           "basis": "固定样本集合成中位"
         },
@@ -3570,7 +3570,7 @@
             "repeat": 2
           },
           "knob": "S=7；重抓R=2",
-          "timesteps": 2987.0,
+          "timesteps": 987.0,
           "windows": 58.5,
           "basis": "固定样本集合成中位"
         },
@@ -3580,7 +3580,7 @@
             "repeat": 2
           },
           "knob": "S=10；重抓R=2",
-          "timesteps": 21149.0,
+          "timesteps": 1149.0,
           "windows": 69.0,
           "basis": "固定样本集合成中位"
         },
@@ -3590,7 +3590,7 @@
             "repeat": 2
           },
           "knob": "S=13；重抓R=2",
-          "timesteps": 21311.0,
+          "timesteps": 1311.0,
           "windows": 79.0,
           "basis": "固定样本集合成中位"
         },
@@ -3600,7 +3600,7 @@
             "repeat": 2
           },
           "knob": "S=15；重抓R=2",
-          "timesteps": 21419.0,
+          "timesteps": 1419.0,
           "windows": 85.5,
           "basis": "固定样本集合成中位"
         }
@@ -5187,7 +5187,7 @@
             "length": 6
           },
           "knob": "L=6节点；grid=5",
-          "timesteps": 5334.0,
+          "timesteps": 334.0,
           "windows": 18.0,
           "basis": "固定母档参照中位"
         },
@@ -5196,7 +5196,7 @@
             "length": 7
           },
           "knob": "L=7节点；grid=5",
-          "timesteps": 5396.0,
+          "timesteps": 396.0,
           "windows": 22.0,
           "basis": "固定样本集合成中位"
         },
@@ -5205,7 +5205,7 @@
             "length": 8
           },
           "knob": "L=8节点；grid=5",
-          "timesteps": 5480.0,
+          "timesteps": 480.0,
           "windows": 26.0,
           "basis": "固定样本集合成中位"
         },
@@ -5214,7 +5214,7 @@
             "length": 9
           },
           "knob": "L=9节点；grid=5",
-          "timesteps": 5528.0,
+          "timesteps": 528.0,
           "windows": 30.0,
           "basis": "固定样本集合成中位"
         },
@@ -5223,7 +5223,7 @@
             "length": 10
           },
           "knob": "L=10节点；grid=5",
-          "timesteps": 5604.0,
+          "timesteps": 604.0,
           "windows": 34.0,
           "basis": "固定样本集合成中位"
         },
@@ -5232,7 +5232,7 @@
             "length": 11
           },
           "knob": "L=11节点；grid=5",
-          "timesteps": 5661.0,
+          "timesteps": 661.0,
           "windows": 38.0,
           "basis": "固定样本集合成中位"
         }
