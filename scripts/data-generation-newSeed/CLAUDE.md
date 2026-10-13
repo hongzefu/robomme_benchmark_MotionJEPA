@@ -1,11 +1,14 @@
 # CLAUDE.md — data-generation-newSeed 完整参考
 
-本文件供 agent 阅读：命令用法、seed 公式、口径一致性约束、并行执行要点，
-以及 2026-08-17 建立本目录时的**全部实测数据**（机器环境、瓶颈定位、并行度标定、
-全量 400 条结果、与原版官方数据的逐项比对）。人类可读的结论摘要见 [README.md](README.md)。
+本文件供 agent 阅读：现行命令用法、seed 公式、生成模式、并行执行要点，
+以及 2026-08-17 建立本目录时的**历史实测数据**（机器环境、瓶颈定位、并行度标定、
+全量 400 条结果、与原版官方数据的逐项比对）。人类可读的历史结论摘要见 [README.md](README.md)。
 
-所有数字均为本机实测，不是估算。改动本目录代码前先读完「并行执行要点」与「实测记录」两部分——
-并行度、资源约束、GPU 绑定这几处凭直觉调很容易调反。
+第一至四节按 2026-10-13 已合入的八档循环与新测速代码说明；参数与判据是实施口径，
+不是本轮实测结果。第五至十四节原样保留 2026-08-17 记录；其中的「本轮」「当前」均指当时，
+不能用其单卡结论或数字代替新机器八档标定。本轮 AWS 测速与全量须由用户启动，
+不在 vail 实跑测速或全量；完整阶段、授权与闸门见
+[八档 400 条计划](../../1013-mixed8-400ep-plan.html)。改动本目录代码前先读完模式说明与并行执行要点。
 
 ---
 
@@ -25,14 +28,24 @@ seed = offset + env_code * env_block + episode * 100 + attempt
 | `val` | 1,000,000 | 10,000 |
 | `heldout` | 1,500,000 | 100,000 |
 
-难度用 ratio 字符串表示，三位数字依次对应 easy/medium/hard。`211` 展开成周期 4 的
+旧比例模式用 ratio 字符串表示难度，三位数字依次对应 easy/medium/hard。`211` 展开成周期 4 的
 `[easy, easy, medium, hard]`，按 `episode % 4` 取 —— 这与四个 Unmask 系 env 的 train metadata 完全一致。
 
 公式与难度循环的唯一定义在 `seed_layout.py`，不读 metadata、按公式自算。
+显式循环用 `--difficulty-cycle easy,medium,hard,xhard12,xhard14,xhard16,xhard18,xhard20`：
+`parse_difficulty_cycle` 按逗号拆分、去首尾空白并转小写，保留顺序与重复档，非法项或空项报错；
+`filter_cycle` 按 `src/robomme_xhard/configs.py::TIER_CONFIGS` 剔除该任务没有的 xhard 档，
+结果为空报错。`DIFFICULTY_ORDER` 和 `difficulty_for` 保持原样；实际难度为
+`有效循环[绝对 episode % len(有效循环)]`。
+
+例如 VideoUnmask 有效循环为 `[easy, medium, hard, xhard14]`，MoveCube 与 InsertPeg
+只有 `[easy, medium, hard]`。每任务 400 条时，八档任务各档 50 条；三档任务 easy 134 条、
+medium／hard 各 133 条，余数总落在循环最前面的档。这里的 400 是目标每任务条数，
+与历史第十三节四任务各 100 条、合计 400 条的运行不同。
 
 ## 二、与骨架的口径一致性（⚠ 改动前必读）
 
-env kwargs、FailRecover 分档（ep0-2 → `z`、ep3-5 → `xy`、ep≥6 → 不设）、planner 的
+旧比例模式的 env kwargs、FailRecover 分档（ep0-2 → `z`、ep3-5 → `xy`、ep≥6 → 不设）、planner 的
 screw×3 → RRT\*×3 重试、成功判定（跑完 task_list 且 `evaluate(solve_complete_eval=True)`
 的 `success` 真、`fail` 假）**与骨架逐字相同**。
 
@@ -40,12 +53,55 @@ screw×3 → RRT\*×3 重试、成功判定（跑完 task_list 且 `evaluate(sol
 seed 公式是纯函数，公式层面一致是必然的，真正被检验的是 attempt 层面。**这些口径一旦改动,
 比对结果就失去意义。**
 
-不做的事：不 replay、不导出 segmentation PNG、不与官方 reference 做 1e-8 数值比对
-（`data/robomme_data_h5` 在本仓库并不存在）。
+三种生成模式的契约分别如下，不能混用其 seed 与失败处理：
+
+| 模式 | 参数与 seed | 难度／FailRecover | 失败处理 |
+| --- | --- | --- | --- |
+| 旧比例 | `--difficulty 211`，默认仍为 `211`；按布局公式自算 | 三档比例；原绝对 ep0–2 为 z、ep3–5 为 xy | 任务性失败按 attempt+1；连续三次非任务性失败放弃 |
+| 新显式循环 | `--difficulty-cycle`；八档都用布局公式，`train` 为 `env_code×1000 + episode×100 + attempt` | 每任务有效循环；仅下列 11 任务的 base 档按绝对序号分配 | 本轮 `--max-attempts 100`；任务性失败换 attempt；池崩溃及连带退回计入连续非任务性失败，第三次放弃 |
+| 既有母清单 xhard | `--difficulty xhard12,... --mother-manifest <清单>`；沿用母 seed、attempt=0 | 每档独立目录；`--with-mother` 可另写母卡 | 正常失败为最终结果，不换 seed；仅无已写证据的基础设施故障可原卡退回，最多三次；已有证据隔离至 `_quarantine` 后不重试 |
+
+显式循环与**显式给出的** `--difficulty` 及 `--mother-manifest`／`--with-mother`／`--mother-rank`
+互斥；既有母清单模式不接受非默认 `--episodes` 或 `--episode-start`，其行为不改。
+循环模式在 `run_parameters.json` 保存全局 `difficulty_cycle`、各任务 `effective_cycles`、
+ep0–399 的 `recovery_assignment`，并把 `difficulty_ratio` 写为 `null`。
+
+循环模式的 FailRecover 任务按官网顺序为 BinFill、PickXtimes、SwingXtimes、VideoUnmask、
+ButtonUnmask、VideoUnmaskSwap、ButtonUnmaskSwap、PickHighlight、VideoRepick、VideoPlaceButton、
+VideoPlaceOrder。`_cycle_recovery` 令 r 为 ep0 至 ep(e−1) 中 base 档（easy／medium／hard）的个数：
+当前为 base 档时，r=0–2 为 `z`、r=3–5 为 `xy`，以后不设；xhard 不设。
+因此八档任务 z 在 ep0–2、xy 在 ep8–10，VideoUnmask 的 xy 在 ep4–6。
+StopCube、MoveCube、InsertPeg、PatternLock、RouteStick 不设 FailRecover。
+r 不因 `--episode-start` 或重试而重新计数；接续生成与全量相同切片一致。
+
+本目录不 replay、不导出 segmentation PNG。原版参考数据在 vail 的
+`/data/hongzefu/robomme_data_h5/`，只读，HF revision 为
+`a5e4e25ffe8af34f64944f9533d06455ce5f8337`，不能用生成器产物自建 golden。
+现有 [H5 校验工具](../../src/robomme_xhard/tools/check_mixed_h5.py) 的 `export-golden` 从各任务
+`episode_0` 导出 16 份 schema 至 [golden_schema](../../src/robomme_xhard/tools/golden_schema/)，
+剔除上游 `68a65a0` 已删的原始末端字段；后续机器只需 git 内 JSON，不需重新下载原版。
+`check`、`audit`、`dump-subgoals` 分别用于样本校验、全量身份对账与语义规则证据导出，
+规则与豁免审批按计划执行。跨机器数值差异只报告，不作为本轮闸门。
 
 ## 三、用法
 
 ### 生成
+
+本轮循环模式的最小 smoke 示例（vail GPU0，须按计划核实资源与新输出目录）：
+
+```bash
+UV_CACHE_DIR=/home/hongzefu/.cache/uv uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py \
+  --env VideoUnmaskSwap --episode-start 3 --episodes 1 --workers 1 --gpus 0 \
+  --difficulty-cycle easy,medium,hard,xhard12,xhard14,xhard16,xhard18,xhard20 \
+  --layout train --max-attempts 100 --output-dir artifacts/mixed8/smoke1
+```
+
+这里 ep3 应为 xhard12，seed 从 train 公式起算；命令只是使用例，执行顺序与具名判据见计划。
+计划的 smoke 二为 16 任务 ep0–7 共 128 条，覆盖 100 个首档校验样本；
+全量为每任务 ep0–399，共 6400 条请求，在用户启动 AWS 阶段并完成测速后才运行。
+不压缩、不自动合并；耗尽 attempt 时允许有缺条，须报清单交用户决定。
+
+旧比例模式仍可使用原参数：
 
 ```bash
 uv run python scripts/data-generation-newSeed/generate_dataset_newseed.py \
@@ -67,13 +123,22 @@ uv run python scripts/data-generation-newSeed/generate_dataset_newseed.py \
 | --- | --- |
 | 每 episode 的 h5 | `hdf5_files/{task}_ep{N}_seed{M}.h5` |
 | rollout 视频 | `videos/{task}_ep{N}_seed{M}{_FailRecoverZ/XY}_{难度}_{目标}.mp4` |
-| 失败 attempt 的视频 | 同目录，`FAILED_` / `success_NO_OBJECT_` 前缀（保留作为失败演进的证据） |
+| 失败／调试产物 | `FAILED_` 表示失败；`success_NO_OBJECT_` 是目标不在画面的调试视频变体，不能单凭前缀判失败；循环模式非任务性失败的已写 h5／视频加 `CRASHED_` 前缀 |
 | 逐 attempt 日志 | `episode_results.jsonl`（边跑边写，中途崩溃不丢已完成的部分） |
 | 成功 seed 汇总 | `record_dataset_{task}_metadata.json`（与 `env_metadata` 同构） |
 | 运行参数与摘要 | `run_parameters.json` / `run_summary.json` |
 
-失败 attempt 留下的空 h5 会被 worker 删掉（`RecordWrapper` 在 `__init__` 就建文件，
-但只有 episode 成功才写内容），因此 `hdf5_files/` 里只有真正成功的轨迹。
+公式 seed 模式任务性失败留下的空 h5 由 worker 删除；运行期 `_xhard_fatal` 拒绝的已写 h5／视频改为
+`FAILED_` 并保留。循环模式非任务性失败与池崩溃的已写成功名产物由
+`_isolate_crashed_card` 加 `CRASHED_`，移出成功集合后才推进 attempt；隔离不覆盖已有目标。
+成功集合须用 JSONL／metadata／成功文件名对账，不能把目录内全部 h5 当成功轨迹。
+循环 xhard 结果另记 `swap_plan`、`runtime_checks`、`xhard_knobs` 与结构化拒绝证据。
+
+循环模式可加 `--stop-on-pool-crash`：第一次池崩溃即停止调度，终止全部在途 worker，
+等退出后隔离已写产物，保留已完成记录、metadata 与 `run_summary.json`，写
+`stopped_by=pool_crash`，生成入口退出码为 **3**。这是测速停档开关，默认关闭；
+未打开时沿用池重建与有限重试。正常完成且无耗尽退出 0，有耗尽或入口捕获的
+`DatasetGenerationError` 退出 1；CLI 参数解析与互斥错误由 `argparse` 退出 2。
 
 ### 一致性比对
 
@@ -101,22 +166,91 @@ uv run python scripts/data-generation-newSeed/merge_episode_h5.py \
 
 ### 并行度标定
 
+新标定只在用户启动 AWS 阶段后按计划执行；以下八卡命令不适用于 vail 两卡环境。
+正式运行预计超过 5 分钟，必须从冻结版本在独立 `xh-` tmux 会话执行并留日志，
+不把本节使用例当成新的起跑授权。
+
 ```bash
-uv run python scripts/data-generation-newSeed/utils/calibrate_parallelism.py \
-  --root scripts/data-generation-newSeed/outputs/calib \
-  --env VideoUnmask --episodes 64
+UV_CACHE_DIR='<工作盘>/.cache/uv' uv run --no-sync python scripts/data-generation-newSeed/utils/calibrate_parallelism.py \
+  --root artifacts/mixed8/calib --env all --episodes 24 --episode-start 0 \
+  --difficulty-cycle easy,medium,hard,xhard12,xhard14,xhard16,xhard18,xhard20 \
+  --max-attempts 100 --affinity per-gpu \
+  --probe P8:8:0:on \
+  --probe-env BinFill,PickXtimes,SwingXtimes,VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick,PatternLock,RouteStick \
+  --probe-episode-start 6 --probe-episodes 2 \
+  --cells 'L32:32:0,1,2,3:on;L64:64:0,1,2,3,4,5,6,7:on;L128:128:0,1,2,3,4,5,6,7:on' \
+  --mem-guard-gb 40 --mem-margin 1.2 --cell-timeout-min 90
 ```
 
-默认三档 `A:20:0:off;B:32:0:on;C:32:0,1:on`（档位之间用**分号**分隔，因为 gpus 字段本身含逗号）。
-出 `calibration.md`，含稳态吞吐与资源占用对比。
+将 `<工作盘>` 替换为已判定的 AWS 工作盘。默认档位即上面的 L32／L64／L128，默认
+`--episodes 24`、`--episode-start 0`、`--affinity per-gpu`、`--max-attempts 100`；
+循环必须显式传入，与测速的 `--difficulty` 互斥，否则旧默认仍是比例 `211`，无法满足重档探针。
+档位字段为 `名称:worker数:物理GPU号:on|off`，档间用分号；GPU 号不能重复，worker 数须整除卡数。
+
+| 阶段 | worker 与 GPU | 工作负载／限制 |
+| --- | --- | --- |
+| P8 探针 | 卡 0，8 worker | 上述 8 个八档任务各 ep6–7，共 16 条，全部是 xhard18／20；上限 30 分钟 |
+| L32 | 32 worker，卡 0–3，每卡 8 | 16 任务各 24 条，共 384 条 |
+| L64 | 64 worker，卡 0–7，每卡 8 | 同一 384 条请求 |
+| L128 | 128 worker，卡 0–7，每卡 16 | 同一 384 条请求，384=3×128 |
+
+探针必须单卡 8 worker、完成 16 条且成功档集合恰为 xhard18／20，单 worker RSS、
+显存与单卡容量须为正，才写 `MEM_PROBE=PASS` 并继续阶梯。`--probe-env`、
+`--probe-episode-start`、`--probe-episodes` 可显式给出，实际仍须满足该判据。
+每个非 48 档要求请求数 ≥ 3×worker；冠军候选还要求八档全部完成、全部请求成功、
+无耗尽，按 `finished_at` 排序真正剔除首尾各 W 条，留下至少两个完成事件且稳态吞吐为正。
+无有效稳态窗口不回退到全窗口。W=48 即使手传也记 `skipped_by=user_skip_48` 跳过。
+
+准入由 `memory_admitted` 判定：R 为探针单 worker 峰值 RSS，V 为卡 0 峰值显存除以 8，
+M 为起档时可用内存、G 为探针卡容量；单位虽名为 GB，代码均按 `2**30` 换算。
+仅当 `W×R×1.2 + 40 ≤ M` 且 `(W/卡数)×V×1.2 ≤ G` 才起跑，
+否则记 `skipped_by=mem_budget` 后检查下一档。这里是探针估算，不是当前机器已实证的容量。
+
+运行三道闸为首次池崩溃、可用内存低于 40 GB、单档超过 90 分钟。
+标定器透传 `--difficulty-cycle`（或旧 `--difficulty`）、`--episode-start`、
+`--max-attempts`、`--affinity`，并总给生成器加 `--stop-on-pool-crash`；
+返回 3 记 `aborted_by=pool_crash`，超时／内存分别记 `timeout`／`mem_guard`。
+任一中止、未完整完成或稳态无效即截断阶梯。
+
+每档生成子进程以 `start_new_session=True` 起独立进程组；`terminate_group` 只处理该组：
+SIGTERM 后最多等 30 秒，仍有活成员才 SIGKILL，再核验 `remaining_pids=[]` 与
+`zero_residual=true`。生成父进程先退出时也清理其残留子进程。
+SIGTERM／SIGHUP 记 `aborted_by=signal:<信号名>`；直到资源写出和产物清理完成都保留该状态，
+恢复原信号处理后锁定 `cell_summary.json`，不把尾部叫停误记为完成。
+
+中止后若 `episode_results.jsonl` 有半写坏尾行，原字节保留、记 `parse_error`，
+整份记录不再计数或用于测速，`attempts`／`success`／吞吐为 `null`、该档未完成，
+汇总 `CALIB=FAIL` 并退出 1。正常结束的非法 JSONL 不静默吞掉，直接报错。
+探针与任一阶梯档同样受信号状态约束；探针未完成写 `MEM_PROBE=FAIL`，不推进阶梯。
+
+`choose_best` 在合格候选中选稳态吞吐达到最高值 97% 的**最小** worker 数 W*，
+对应 GPU 集合写 `context.best_gpus`。`CALIB=PASS` 至少要求探针通过、L32 合格且存在冠军；
+任一阶梯档有 JSONL 解析错误或信号中止则为 FAIL。高档普通崩溃会截断阶梯，
+此前合格 L32 的结果可以保留，`crashed_at` 如实列出；不能把该高档写成通过。
+
+根目录出 `calibration.json` 与 `calibration.md`；每档保留 `generate.log`、
+`episode_results.jsonl`、`run_summary.json`（生成器有写出时）、`resource_samples.json` 与
+`cell_summary.json`。已有探针或阶梯档目录一律拒绝起跑，不删除重跑。
+默认仅清理本档实体 `hdf5_files/` 与 `videos/`，`--keep-artifacts` 才保留它们。
+日志实时转发内层全部行，含 `stopped_by`／`aborted_by`，便于监听。
+
+GPU 采样只用一个持久 `nvidia-smi` 进程每 500ms 查询相关卡；正式加入主线前仍须同机
+验证采样开销。稳态报告给 util 均值、0% 占比、慢步与非慢步均值，不能以中位数代替。
+慢步定义为稳态完成项 `wall_s` 高于其均值，采样落在该项运行区间；并发区间可能重叠。
+
+旧默认 `A:20:0:off;B:32:0:on;C:32:0,1:on` 只作历史参数记录，仍可手传 `--cells`；
+新 CLI 与判据不提供无探针的旧流程，旧三档不能代替本轮八档、重档探针和 L32 验收。
 
 ## 四、并行执行要点（踩过的坑，改动前必读）
 
 1. **物理仿真在 CPU 上**。ManiSkill 的 `num_envs` 默认 1 → `sim_backend` 解析为 `physx_cpu`，
-   GPU 只承担 sapien 渲染。所以并行度上限由物理核数决定，显存不是主要约束，
-   **内存才是**（视频帧全程驻留，单 worker 峰值可达数 GB）。
+   GPU 承担 sapien 渲染；本轮须同机量 CPU、内存与显存，不套用历史的「单卡足够」结论。
+   视频帧全程驻留，**内存也是准入约束**，单 worker 峰值按重档探针实测。
 2. **每卡一个进程池，进程终身绑卡**。GPU 号是池的静态属性（写在 `initargs` 里），
-   worker 被回收或崩溃重建后依然正确。若改成「单池 + 计数器按 job 分卡」，
+   worker 被回收或崩溃重建后依然正确。父进程 `_load_xhard_configs` 只按文件加载纯配置表，
+   不导入 `robomme_xhard` 包；`_pool_init` 先绑卡、再导入 `robomme.robomme_env`，
+   之后才注册 `robomme_xhard`，worker 的补充导入也在该顺序之后。
+   循环 xhard 作业走 `<Task>XHard`，base 与母卡仍走原任务名。若改成「单池 + 计数器按 job 分卡」，
    worker 每次重建都会让计数器继续递增，两卡负载会静默漂移；而且 `CUDA_VISIBLE_DEVICES`
    只在该进程首次初始化 CUDA 之前有效，池复用进程时对第二个 job 就失效了。
 3. **线程限制必须在 import numpy 之前**。OpenBLAS/libgomp 在 `.so` 加载时读线程数，
@@ -126,8 +260,9 @@ uv run python scripts/data-generation-newSeed/utils/calibrate_parallelism.py \
    ffmpeg/x264 在每个 episode 收尾编码 mp4 时按 `sched_getaffinity` 自动决定线程数、
    完全不看 `OMP_NUM_THREADS` —— 要压住它只能用 `--affinity per-gpu` 走 CPU 亲和。
 5. **`BrokenProcessPool` 必须处理**。worker 在 C++ 层段错误会让整个池死掉，
-   所有 in-flight 和 pending 的 job 瞬间全败。调度循环会重建该池并把它名下的 job 退回队列，
-   否则一次段错误就报废整批任务。
+   所有 in-flight 和 pending 的 future 瞬间全败。默认重建该池并退回未完成 job；
+   循环模式连带退回同样算一次非任务性失败并推进 attempt，第三次放弃。
+   测速打开 `--stop-on-pool-crash` 时改为首崩停档、隔离、退出 3，不重建继续。
 6. **重试的边界**。五类任务性失败（`SceneGenerationError` / `FailsafeTimeout` /
    `PlannerExhausted` / `ScrewPlanFailure` / `DatasetGenerationError`）视为「该 seed 不通」，
    换 seed 重试；其余异常记为 `failure_class: "code"`，同一 episode 连续 3 次即放弃，
@@ -136,6 +271,10 @@ uv run python scripts/data-generation-newSeed/utils/calibrate_parallelism.py \
 ---
 
 # 实测记录（2026-08-17）
+
+> 以下第五至十四节为历史原文与历史数字，保持原样。其中机器状态、源码位置、
+> 三档运行结果、W=32 单卡结论与 GPU 判读都只描述 2026-08-17；
+> 本轮以第一至四节及 1013 计划为准，不能据此声称八档 GPU 验证或 AWS 测速已经通过。
 
 ## 五、机器与环境
 
