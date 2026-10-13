@@ -10,6 +10,7 @@ envs 页读取已核实的 env-results-data.json，只展示实测指标与真�
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import pathlib
 import re
@@ -86,6 +87,12 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         raise FileNotFoundError(f"明确指定的产物根不存在：{artifact_root}")
     data = json.loads((env_data or REPO / "scripts/plan-site/env-results-data.json").read_text(encoding="utf-8"))
     validate_snapshot(data)
+    # 一次读取并冻结资源字节：文件名、HTML 引用及实际写入使用同一份内容。
+    assets = {}
+    for suffix in ("js", "css"):
+        payload = (REPO / "scripts/plan-site" / f"env-results.{suffix}").read_bytes()
+        filename = f"env-results.{hashlib.sha256(payload).hexdigest()[:16]}.{suffix}"
+        assets[suffix] = (filename, payload)
     media = [(sample["video_source"], sample["video"]) for task in data["tasks"] for sample in task["samples"]]
     if len({dst for _, dst in media}) != len(media):
         raise ValueError("媒体白名单目标重复")
@@ -135,6 +142,11 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
                                swap_plan or REPO / "1012-swap-pairing-v2-plan.html", swap_v3_plan),
         "details.html": part2,
     }
+    for suffix, attribute in (("css", "href"), ("js", "src")):
+        old_reference = f'{attribute}="env-results.{suffix}"'
+        if pages["envs.html"].count(old_reference) != 1:
+            raise ValueError(f"环境页资源引用数量不符：{old_reference}")
+        pages["envs.html"] = pages["envs.html"].replace(old_reference, f'{attribute}="{assets[suffix][0]}"')
     heads = {name: head for name in pages}
     heads["swap.html"] = re.sub(r"<title>.*?</title>", "<title>六、交换机制调整 — RoboMME xhard</title>", head, flags=re.S)
     heads["envs.html"] = re.sub(r"<title>.*?</title>", "<title>环境梯度与实测视频 — RoboMME xhard</title>", head, flags=re.S)
@@ -189,10 +201,15 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(artifact_root / source, dst)
         written.append(target)
-    for name in ("env-results.js", "env-results.css", "env-results-data.json"):
-        source = (env_data or REPO / "scripts/plan-site/env-results-data.json") if name.endswith(".json") else REPO / "scripts/plan-site" / name
-        shutil.copy2(source, out / name)
-        written.append(name)
+    for suffix, (filename, payload) in assets.items():
+        (out / filename).write_bytes(payload)
+        written.append(filename)
+        # 兼容旧页面路径；新环境页始终只引用带内容指纹的实体文件。
+        legacy_name = f"env-results.{suffix}"
+        (out / legacy_name).write_bytes(payload)
+        written.append(legacy_name)
+    shutil.copy2(env_data or REPO / "scripts/plan-site/env-results-data.json", out / "env-results-data.json")
+    written.append("env-results-data.json")
     (out / "env-results-media.json").write_text(json.dumps(
         [{"source": source, "destination": target} for source, target in media], ensure_ascii=False, indent=2), encoding="utf-8")
     written.append("env-results-media.json")
