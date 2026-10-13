@@ -10,7 +10,7 @@
     const longest = derived.reduce((best, level) => !best || rows[level].timesteps > rows[best].timesteps ? level : best, null);
     return ['mother', ...(longest ? [longest] : [])];
   };
-  const segmentLabel = original => {
+  const segmentLabel = (original, taskName) => {
     const value = original.trim().toLowerCase();
     if (value === 'all tasks completed') return '完成';
     if (value === 'static' || value === 'remain static') return '等待';
@@ -31,8 +31,8 @@
     if (value.startsWith('pick up the container')) return '抓容器';
     if (value === 'put down the container') return '放容器';
     if (value === 'put it into the bin') return '投桶';
-    if (value.startsWith('press the first button')) return '按首键';
-    if (value.startsWith('press the second button')) return '按次键';
+    if (value.startsWith('press the first button')) return taskName === 'ButtonUnmaskSwap' ? '按右键' : '按首键';
+    if (value.startsWith('press the second button')) return taskName === 'ButtonUnmaskSwap' ? '按左键' : '按次键';
     if (value.startsWith('press the button')) return '按键';
     if (value.startsWith('pick up ')) {
       const color = [['red', '红'], ['green', '绿'], ['blue', '蓝']].find(([word]) => value.includes(word));
@@ -122,7 +122,7 @@
       }
       row.segments.forEach((segment, index) => {
         rect(group, `timeline-subgoal timeline-subgoal-${index % 2}`, segment.start, segment.end, top + 50, 14,
-          `原始分段「${segmentLabel(segment.text)}」：[${segment.start}, ${segment.end}) · ${segment.demo ? '演示' : '执行'} · ${segment.text}`,
+          `原始分段「${segmentLabel(segment.text, task.task)}」：[${segment.start}, ${segment.end}) · ${segment.demo ? '演示' : '执行'} · ${segment.text}`,
           {'data-demo': String(segment.demo), 'data-index': index});
       });
       row.missed_units.forEach(([start, end, label]) => {
@@ -130,7 +130,7 @@
           `遗漏的合并动作：[${start}, ${end}) · ${label}`);
       });
       row.segments.forEach(segment => {
-        const label = segmentLabel(segment.text);
+        const label = segmentLabel(segment.text, task.task);
         const available = x(segment.end) - x(segment.start);
         const fontSize = Math.min(10, Math.max(8.5, (available - 3) / label.length));
         const narrow = available < label.length * 8.5 + 3;
