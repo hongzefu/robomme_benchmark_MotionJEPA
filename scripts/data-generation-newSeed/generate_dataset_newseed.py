@@ -52,6 +52,7 @@ if os.environ.get(LIMIT_THREADS_ENV, "1") != "0":
 
 import argparse  # noqa: E402
 import copy  # noqa: E402
+import importlib.util  # noqa: E402
 import json  # noqa: E402
 import multiprocessing as mp  # noqa: E402
 import resource  # noqa: E402
@@ -89,6 +90,9 @@ from seed_layout import (  # noqa: E402
     difficulty_for,
     get_layout,
     parse_difficulty_ratio,
+    parse_difficulty_cycle,
+    filter_cycle,
+    DIFFICULTY_ORDER,
 )
 
 
@@ -97,6 +101,18 @@ SRC_ROOT = REPO_ROOT / "src"
 STICK_TASKS = frozenset(("PatternLock", "RouteStick"))
 DEFAULT_WORKERS = 20
 DEFAULT_DIFFICULTY_RATIO = "211"
+# 官网顺序只决定派发与报告，seed 的 env_code 仍由 seed_layout 定义。
+TASK_ORDER = (
+    "BinFill", "PickXtimes", "SwingXtimes", "StopCube",
+    "VideoUnmask", "ButtonUnmask", "VideoUnmaskSwap", "ButtonUnmaskSwap",
+    "PickHighlight", "VideoRepick", "VideoPlaceButton", "VideoPlaceOrder",
+    "MoveCube", "InsertPeg", "PatternLock", "RouteStick",
+)
+FAIL_RECOVER_TASKS = frozenset((
+    "BinFill", "PickXtimes", "SwingXtimes", "VideoUnmask", "ButtonUnmask",
+    "VideoUnmaskSwap", "ButtonUnmaskSwap", "PickHighlight", "VideoRepick",
+    "VideoPlaceButton", "VideoPlaceOrder",
+))
 # 每个池进程跑多少个 job 后强制回收：太小则反复付 import/CUDA 上下文成本，
 # 太大则 RecordWrapper 的显存/内存残留会跨 episode 累积、且一次段错误牵连更多 job。
 DEFAULT_MAX_TASKS_PER_CHILD = 8
@@ -116,6 +132,15 @@ class PlannerExhausted(RuntimeError):
     """planner 的 screw 与 RRTStar 重试均已耗尽。"""
 
 
+class PoolCrashStopped(RuntimeError):
+    """池崩溃停档后，把已完成结果交回父入口写汇总。"""
+
+    def __init__(self, succeeded: list[dict[str, Any]], exhausted: list[dict[str, Any]]) -> None:
+        super().__init__("进程池已损坏，stopped_by=pool_crash")
+        self.succeeded = succeeded
+        self.exhausted = exhausted
+
+
 @dataclass(frozen=True)
 class EpisodeJob:
     task: str
@@ -131,11 +156,21 @@ class EpisodeJob:
     card_role: str | None = None
     make_name: str | None = None
     source_difficulty: str | None = None
+    xhard_values: tuple[str, ...] = ()
+    recovery: str | None = "auto"
+
+    @property
+    def is_xhard(self) -> bool:
+        return self.difficulty in self.xhard_values
+
+    @property
+    def cycle_mode(self) -> bool:
+        return self.recovery != "auto"
 
     @property
     def gym_id(self) -> str:
         """gym.make 用的名字：旧模式与母卡为原任务名，xhard 卡为 <Task>XHard。"""
-        return self.make_name or self.task
+        return self.make_name or (f"{self.task}XHard" if self.is_xhard else self.task)
 
     @property
     def fixed_seed(self) -> bool:
@@ -145,6 +180,8 @@ class EpisodeJob:
     @property
     def recovery_mode(self) -> str | None:
         """FailRecover 分档按 episode 序号决定，与 seed / attempt 无关（与骨架一致）。"""
+        if self.recovery != "auto":
+            return self.recovery
         if self.episode <= 2:
             return "z"
         if self.episode <= 5:
@@ -153,6 +190,24 @@ class EpisodeJob:
 
     def bump(self, seed: int) -> "EpisodeJob":
         return replace(self, attempt=self.attempt + 1, seed=seed)
+
+
+def _load_xhard_configs() -> Any:
+    """独立加载纯配置表，父进程不触发 robomme_xhard 的包初始化。"""
+    spec = importlib.util.spec_from_file_location("_newseed_xhard_configs", SRC_ROOT / "robomme_xhard" / "configs.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _cycle_recovery(task: str, episode: int, cycle: Sequence[str]) -> str | None:
+    """按有效循环中的 base 档绝对序号分配，与本次生成切片无关。"""
+    if task not in FAIL_RECOVER_TASKS or cycle[episode % len(cycle)] not in DIFFICULTY_ORDER:
+        return None
+    rounds, remainder = divmod(episode, len(cycle))
+    rank = rounds * sum(item in DIFFICULTY_ORDER for item in cycle)
+    rank += sum(item in DIFFICULTY_ORDER for item in cycle[:remainder])
+    return "z" if rank <= 2 else "xy" if rank <= 5 else None
 
 
 def _inside(path: Path, root: Path) -> bool:
@@ -408,7 +463,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
         from robomme.env_record_wrapper import FailsafeTimeout, RobommeRecordWrapper
         from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError
 
-        if job.card_role is not None:
+        if job.card_role is not None or job.is_xhard:
             # 绑卡（_pool_init）与 import robomme.robomme_env 之后才注册 xhard 子类
             import robomme_xhard  # noqa: F401
         from robomme.robomme_env.utils.planner_fail_safe import (
@@ -476,7 +531,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
             seed=job.seed,
             save_video=True,
         )
-        if job.card_role is not None and getattr(record_env, "save_video", None) is not True:
+        if (job.fixed_seed or job.is_xhard) and getattr(record_env, "save_video", None) is not True:
             # 审查阶段踩过 save_video=False → timestep=0 的坑：xhard/母卡必须开录像
             raise RuntimeError(f"{job.task}/episode_{job.episode}: 录像器 save_video 未开启")
         phases["make_s"] = time.monotonic() - mark
@@ -507,7 +562,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
     finally:
         if record_env is not None:
             mark = time.monotonic()
-            if job.fixed_seed:
+            if job.fixed_seed or job.is_xhard:
                 # close 可能释放或改写环境，证据必须在它之前独立复制。
                 u = record_env.unwrapped
                 evidence = {
@@ -517,6 +572,12 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
                     if hasattr(u, attr)
                 }
                 fatal = copy.deepcopy(getattr(u, "_xhard_fatal", None))
+                if job.is_xhard:
+                    evidence.update({
+                        key: copy.deepcopy(getattr(u, attr))
+                        for key, attr in (("xhard_knobs", "xhard_knobs"), ("xhard_label", "xhard_label"))
+                        if hasattr(u, attr)
+                    })
             try:
                 # h5 落盘与 mp4 编码都发生在 close 里
                 record_env.close()
@@ -556,7 +617,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
         # 失败的 attempt 不写 h5 内容（RecordWrapper.py:1152 只在 episode_success 时写），
         # 但文件在 __init__ 里就被创建了，会留下几 KB 空壳 —— 删掉，
         # 让 hdf5_files/ 里只剩真正成功的轨迹。FAILED_ 视频保留作为失败演进的证据。
-        if not job.fixed_seed:
+        if not job.fixed_seed and not (job.cycle_mode and not isinstance(caught, retryable)):
             _discard_empty_h5(raw_path, job)
         return {
             **base,
@@ -570,11 +631,11 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
         }
     try:
         summary = _raw_summary(raw_path, job)
-        if job.card_role is not None and int(summary.get("timestep_count") or 0) <= 0:
+        if (job.fixed_seed or job.is_xhard) and int(summary.get("timestep_count") or 0) <= 0:
             raise DatasetGenerationError(f"{raw_path}: timestep 数为 0，视为失败")
         return {**base, "ok": True, **summary}
     except Exception as exc:
-        if not job.fixed_seed:
+        if not job.fixed_seed and not (job.cycle_mode and not isinstance(exc, retryable)):
             _discard_empty_h5(raw_path, job)
         return {
             **base,
@@ -590,7 +651,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
 
 def _exception_evidence(exc: BaseException, job: EpisodeJob) -> dict[str, Any]:
     """仅给固定卡片复制结构化异常，不改变旧模式的分类及字段。"""
-    if not job.fixed_seed:
+    if not (job.fixed_seed or job.is_xhard):
         return {}
     rejection = getattr(exc, "rejection", None)
     return {
@@ -666,6 +727,26 @@ def _quarantine_written_card(job: EpisodeJob) -> dict[str, Any]:
             "quarantine_files": moved, "task_success": False}
 
 
+def _isolate_crashed_card(job: EpisodeJob) -> dict[str, Any]:
+    """循环模式崩溃产物改为 CRASHED_，重试不再留下成功名的旧 attempt。"""
+    if not job.cycle_mode:
+        return {}
+    root = Path(job.output_root)
+    raw = _h5_path(root, job)
+    paths = [raw] if raw.is_file() else []
+    videos = root / "videos"
+    if videos.is_dir():
+        paths.extend(p for p in videos.iterdir() if p.is_file() and p.name.startswith(
+            (raw.stem + "_", "success_NO_OBJECT_" + raw.stem + "_")))
+    targets = [(p, p.with_name("CRASHED_" + p.name)) for p in paths]
+    for source, target in targets:
+        if source.is_symlink() or target.exists() or target.is_symlink():
+            raise DatasetGenerationError(f"崩溃产物不能覆盖或穿透符号链接：{source} → {target}")
+    for source, target in targets:
+        source.rename(target)
+    return {"crashed_artifacts": [str(target) for _, target in targets]}
+
+
 def _discard_empty_h5(path: Path, job: EpisodeJob) -> None:
     """删掉失败 attempt 留下的空 h5；万一里面确实有内容就保留，交人工判断。"""
     if not path.is_file():
@@ -723,6 +804,7 @@ def _run_jobs(
     max_tasks_per_child: int | None,
     cpu_plan: Mapping[str, tuple[int, ...] | None],
     xhard_mode: bool = False,
+    stop_on_pool_crash: bool = False,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """每卡一个池，按剩余容量动态派发；失败 attempt+1 重新入队；池崩溃则重建。
 
@@ -757,13 +839,43 @@ def _run_jobs(
         def record(result: Mapping[str, Any]) -> None:
             sink.write(json.dumps(result, ensure_ascii=False) + "\n")
 
+        def stop_broken_pool(job: EpisodeJob, exc: BaseException) -> None:
+            """仅停档支路终止全部在途 worker，退出后再隔离，防止继续落盘。"""
+            print("进程池已损坏，stopped_by=pool_crash", flush=True)
+            processes = [process for pool in pools.values()
+                         for process in tuple(pool._processes.values())]
+            for process in processes:
+                if process.is_alive():
+                    process.terminate()
+            for process in processes:
+                process.join()
+            for pool in pools.values():
+                pool.shutdown(wait=True, cancel_futures=True)
+            stopped_jobs = [job, *(item for _, item in inflight.values())]
+            for stopped_job in stopped_jobs:
+                result = _synth_failure(stopped_job, exc, "infra")
+                result.update(_isolate_crashed_card(stopped_job))
+                record(result)
+                exhausted.append(result)
+            inflight.clear()
+            raise PoolCrashStopped(succeeded, exhausted)
+
         while pending or inflight:
             while pending and any(capacity[gpu] > 0 for gpu in gpu_ids):
                 gpu = max(gpu_ids, key=lambda item: capacity[item])
                 if capacity[gpu] <= 0:
                     break
                 job = pending.popleft()
-                inflight[pools[gpu].submit(_worker, job)] = (gpu, job)
+                try:
+                    future = pools[gpu].submit(_worker, job)
+                except BrokenProcessPool as exc:
+                    if not job.cycle_mode:
+                        raise
+                    if stop_on_pool_crash:
+                        stop_broken_pool(job, exc)
+                    future = Future()
+                    future.set_exception(exc)
+                inflight[future] = (gpu, job)
                 capacity[gpu] -= 1
 
             if not inflight:
@@ -777,12 +889,19 @@ def _run_jobs(
                 try:
                     result = future.result()
                 except BrokenProcessPool as exc:
+                    if job.cycle_mode and stop_on_pool_crash:
+                        stop_broken_pool(job, exc)
+                    if job.cycle_mode and gpu not in broken:
+                        # 管理线程先把 future 标为失败，再终止 worker；必须等它退出后才隔离。
+                        pools[gpu].shutdown(wait=True, cancel_futures=True)
                     broken.add(gpu)
                     result = _synth_failure(job, exc, "infra")
                     result.update(_quarantine_written_card(job))
                 except BaseException as exc:  # noqa: BLE001
                     result = _synth_failure(job, exc, "infra")
                     result.update(_quarantine_written_card(job))
+                if job.cycle_mode and not result.get("ok") and result.get("failure_class") != "task":
+                    result.update(_isolate_crashed_card(job))
                 record(result)
                 key = (job.task, job.episode)
                 if job.fixed_seed:
@@ -856,8 +975,15 @@ def _run_jobs(
                     capacity[gpu] += 1
                     result = _synth_failure(job, RuntimeError("池重建，任务退回队列"), "infra")
                     result.update(_quarantine_written_card(job))
+                    if job.cycle_mode:
+                        result.update(_isolate_crashed_card(job))
+                        key = (job.task, job.episode)
+                        strikes[key] = strikes.get(key, 0) + 1
                     record(result)
                     if result.get("quarantined"):
+                        exhausted.append(result)
+                        continue
+                    if job.cycle_mode and strikes[key] >= MAX_NON_TASK_STRIKES:
                         exhausted.append(result)
                         continue
                     if job.fixed_seed:
@@ -938,8 +1064,12 @@ def generate_dataset_newseed(
     mother_manifest: str | Path | None = None,
     with_mother: bool = False,
     mother_rank: int | None = None,
+    difficulty_cycle: str | None = None,
+    stop_on_pool_crash: bool = False,
 ) -> dict[str, Any]:
-    if _is_xhard_request(difficulty_ratio):
+    if difficulty_cycle is not None and (mother_manifest is not None or with_mother or mother_rank is not None):
+        raise DatasetGenerationError("--difficulty-cycle 不能与母清单参数一起用")
+    if difficulty_cycle is None and _is_xhard_request(difficulty_ratio):
         return _generate_xhard(
             output_dir=output_dir,
             env=env,
@@ -973,7 +1103,19 @@ def generate_dataset_newseed(
     tasks = parse_tasks(env)
     gpu_ids = _parse_gpus(gpus)
     layout = get_layout(layout_name)
-    cycle = parse_difficulty_ratio(difficulty_ratio)
+    cycle_mode = difficulty_cycle is not None
+    xhard_values: tuple[str, ...] = ()
+    effective_cycles: dict[str, tuple[str, ...]] = {}
+    if cycle_mode:
+        configs = _load_xhard_configs()
+        xhard_values = configs.DIFFICULTIES
+        cycle = parse_difficulty_cycle(difficulty_cycle, xhard_values)
+        tasks = tuple(task for task in TASK_ORDER if task in tasks)
+        effective_cycles = {
+            task: filter_cycle(cycle, configs.TIER_CONFIGS.get(task, {})) for task in tasks
+        }
+    else:
+        cycle = parse_difficulty_ratio(difficulty_ratio)
 
     # 护栏：episode 号太大时 seed 会越过下一代布局的 offset，与 test/val/heldout 的 seed 空间相撞。
     next_offsets = [item.offset for item in LAYOUTS.values() if item.offset > layout.offset]
@@ -1002,9 +1144,11 @@ def generate_dataset_newseed(
             episode=episode,
             attempt=0,
             seed=layout.seed(task, episode, 0),
-            difficulty=difficulty_for(episode, cycle),
+            difficulty=difficulty_for(episode, effective_cycles.get(task, cycle)),
             output_root=str(output),
             repo_root=str(REPO_ROOT),
+            xhard_values=xhard_values,
+            recovery=_cycle_recovery(task, episode, effective_cycles[task]) if cycle_mode else "auto",
         )
         for task in tasks
         for episode in range(episode_start, episode_start + episodes)
@@ -1019,7 +1163,7 @@ def generate_dataset_newseed(
         "workers": workers,
         "gpus": list(gpu_ids),
         "seed_layout": layout_name,
-        "difficulty_ratio": difficulty_ratio,
+        "difficulty_ratio": None if cycle_mode else difficulty_ratio,
         "difficulty_cycle": list(cycle),
         "max_attempts": max_attempts,
         "limit_threads": limit_threads,
@@ -1027,13 +1171,22 @@ def generate_dataset_newseed(
         "affinity": affinity,
         "save_video_for_recording": True,
     }
+    if cycle_mode:
+        parameters.update({
+            "effective_cycles": {task: list(items) for task, items in effective_cycles.items()},
+            "recovery_assignment": {
+                task: {mode: [e for e in range(400) if _cycle_recovery(task, e, items) == mode]
+                       for mode in ("z", "xy")}
+                for task, items in effective_cycles.items()
+            },
+        })
     write_text_atomic(
         output / "run_parameters.json",
         json.dumps(parameters, ensure_ascii=False, indent=2) + "\n",
     )
 
     started = time.monotonic()
-    succeeded, exhausted = _run_jobs(
+    run_kwargs = dict(
         jobs=jobs,
         gpu_ids=gpu_ids,
         workers=workers,
@@ -1043,6 +1196,15 @@ def generate_dataset_newseed(
         max_tasks_per_child=max_tasks_per_child,
         cpu_plan=_cpu_plan(gpu_ids, affinity),
     )
+    if cycle_mode:
+        run_kwargs.update(xhard_mode=any(item in xhard_values for item in cycle),
+                          stop_on_pool_crash=stop_on_pool_crash)
+    stopped = False
+    try:
+        succeeded, exhausted = _run_jobs(**run_kwargs)
+    except PoolCrashStopped as exc:
+        succeeded, exhausted = exc.succeeded, exc.exhausted
+        stopped = True
     elapsed = time.monotonic() - started
 
     for task in tasks:
@@ -1059,6 +1221,8 @@ def generate_dataset_newseed(
         "throughput_ep_per_min": round(len(succeeded) / (elapsed / 60), 2) if elapsed > 0 else None,
         "peak_rss_mb": max((item.get("peak_rss_mb") or 0 for item in succeeded), default=0),
     }
+    if stopped:
+        summary["stopped_by"] = "pool_crash"
     write_text_atomic(
         output / "run_summary.json",
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
@@ -1329,12 +1493,16 @@ def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--difficulty",
         dest="difficulty_ratio",
-        default=DEFAULT_DIFFICULTY_RATIO,
+        default=None,
         help=(
             "难度循环比例，三位数字对应 easy/medium/hard，如 211；"
             "或逗号分隔的 xhard 字面值（xhard12,xhard14,xhard16,xhard18,xhard20），二者不可混用"
         ),
     )
+    parser.add_argument("--difficulty-cycle", default=None,
+                        help="逗号分隔的 base/xhard 循环；与显式 --difficulty 及母清单参数互斥")
+    parser.add_argument("--stop-on-pool-crash", action="store_true",
+                        help="循环模式第一次池崩溃即停止，写 stopped_by=pool_crash，退出码 3")
     parser.add_argument("--layout", default=DEFAULT_LAYOUT, choices=sorted(LAYOUTS), help="seed 布局代")
     parser.add_argument("--max-attempts", type=int, default=MAX_ATTEMPTS, help="单个 episode 的最大 attempt 数")
     parser.add_argument(
@@ -1372,6 +1540,13 @@ def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="xhard 模式：只取清单里该 rank 的母 seed；不传取全部",
     )
     args = parser.parse_args(argv)
+    if args.difficulty_cycle is not None:
+        if args.difficulty_ratio is not None:
+            parser.error("--difficulty-cycle 与显式 --difficulty 互斥")
+        if args.mother_manifest is not None or args.with_mother or args.mother_rank is not None:
+            parser.error("--difficulty-cycle 不能与母清单参数一起用")
+    if args.difficulty_ratio is None:
+        args.difficulty_ratio = DEFAULT_DIFFICULTY_RATIO
     if args.mother_rank is not None and args.mother_rank < 0:
         parser.error("--mother-rank 必须是非负整数")
     if _is_xhard_request(args.difficulty_ratio):
@@ -1404,11 +1579,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             mother_manifest=args.mother_manifest,
             with_mother=args.with_mother,
             mother_rank=args.mother_rank,
+            difficulty_cycle=args.difficulty_cycle,
+            stop_on_pool_crash=args.stop_on_pool_crash,
         )
     except DatasetGenerationError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
     print(json.dumps(summary, ensure_ascii=False), flush=True)
+    if summary.get("stopped_by") == "pool_crash":
+        return 3
     return 0 if summary["exhausted_count"] == 0 else 1
 
 
