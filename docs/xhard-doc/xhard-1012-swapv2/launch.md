@@ -29,3 +29,13 @@ CUDA_VISIBLE_DEVICES=0 UV_CACHE_DIR=/home/hongzefu/.cache/uv PYTHONUNBUFFERED=1 
 ## 代理与边界
 
 W1 使用 `gpt-6.1-sol`，分支 `codex/swapv2-w1`，工作树 `/home/hongzefu/.codex/remote-control-host/worktrees/swapv2-w1/robomme_benchmark_newtask-v3-MotionJepa1006`。只写已批准 W1 文件集合，不 push、不合并主分支、不运行 GPU 任务。主会话负责冻结、预扫、资源、证据与整合。W2 待 W1 合并后派发。受保护目录 `src/robomme/` 始终零差异。
+
+## 最新计划批准后的阶段 B 接续
+
+用户本轮原话：「根据最新的计划修正后的内容 继续」。按最新 2.95.6 计划接续，批准基线为 `0dfb2aead0c48ad545909fa9280e64dfc3a1c404`，主工作区干净且已同步上游。C1 裁决为同形且等高，否则立即 `SceneGenerationError` 拒绝；C2 裁决为旁观物统一经 `bystander_states_of` 转换。既有 W1-d 已完成，阶段零、前提预扫不重跑；档案名仍为 `xhard-1012-swapv2`。
+
+W2 使用 `gpt-6.1-sol`，独立工作树 `/home/hongzefu/.codex/remote-control-host/worktrees/swapv2-w2/robomme_benchmark_newtask-v3-MotionJepa1006`，分支 `codex/swapv2-w2`，从批准基线起顺序完成 W2-a/b/c。写入集合与计划分配表一致；不写官方源码、判据文件、已有工具、生成器、配置和依赖；不运行 GPU、不 push。独立审查复用原审查代理，主会话整合并验证。
+
+为之后四卡 smoke 摘出母清单的四个原身份，写新根 `artifacts/xhard/xhard-1012-swapv2/smoke_seeds.json`：VideoUnmaskSwap 的 episode 7/seed 5700 与 episode 43/seed 9300、ButtonUnmaskSwap 的 episode 35/seed 10500、VideoRepick 的 episode 22/seed 11200。`SMOKE_MANIFEST=PASS cards=4`；仍未启动生成。GPU 契约的既有证据环境键 `XHARD_TIMING_EVIDENCE_ROOT` 将指向新根 `gpu-contract/`，不指向旧产物。
+
+本轮开工核对 GPU0 显存 1286 MiB / 46068 MiB、利用率 12%，未被占满；SSH 别名与并发配置符合环境 B，配置 32、当前实际子代理槽位十六。实际 GPU 起跑前还须再次核对。重大口径调整立即停工；全量一百八十卡始终在四卡 smoke 后单独报批。
