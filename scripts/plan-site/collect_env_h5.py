@@ -28,6 +28,9 @@ MERGE = {
 }
 SWAP_TASKS = {"VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoRepick", "VideoPlaceButton", "VideoPlaceOrder"}
 SWAP_REASON = "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。"
+DERIVED_LEVELS = ["xhard12", "xhard14", "xhard16", "xhard18", "xhard20"]
+SWAP_COUNTS = {"VideoUnmaskSwap": [4, 5, 7, 9, 11], "ButtonUnmaskSwap": [4, 6, 8, 10, 12],
+               "VideoRepick": [5, 7, 10, 13, 15]}
 
 
 def windows(length):
@@ -66,6 +69,46 @@ def action_stats(task, records):
             "missed_units": missed, "segments": segments}
 
 
+def verified_swap_stats(request, records, stats):
+    """仅消费已经独立核实录像映射的 V3 成功派生事件。"""
+    if "swap_events" not in request:
+        return stats
+    if (request["task"] not in {"VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoRepick"}
+            or request["level"] == "mother" or request.get("task_success") != 1
+            or request.get("swap_mapping") != "before_control_to_recorded_t_v3"
+            or not request.get("code_source")):
+        raise ValueError("交换事件请求超出已验证映射范围")
+    events, count = request["swap_events"], request["expected_swaps"]
+    configured_count = SWAP_COUNTS[request["task"]][DERIVED_LEVELS.index(request["level"])]
+    if count != configured_count:
+        raise ValueError("交换计划 S 与固定任务档位配置不符")
+    if not isinstance(count, int) or count <= 0 or len(events) != count:
+        raise ValueError("交换事件数量与计划 S 不符")
+    if [e["sweep_index"] for e in events] != list(range(count)):
+        raise ValueError("交换 sweep_index 必须完整且按顺序为 0..S-1")
+    intervals = []
+    demo = request["task"] != "ButtonUnmaskSwap"
+    for event in events:
+        start = event["control_step"]
+        if (event.get("kind") != "swap_sweep" or event.get("phase") != "before_physics"
+                or "rejection" not in event or event["rejection"] is not None
+                or not isinstance(start, int) or start < 0 or start + 50 > len(records)):
+            raise ValueError("交换事件字段、时点或范围不符")
+        if intervals and start != intervals[-1][0] + 50:
+            raise ValueError("交换起点间隔不是 50")
+        segment = records[start:start + 50]
+        if any(row[2] != demo for row in segment):
+            raise ValueError("交换区间的演示标记不符")
+        if request["task"] == "VideoRepick" and any("static" not in row[1] for row in segment):
+            raise ValueError("VideoRepick 交换区间不是 static")
+        intervals.append([start, start + 50])
+    missed = sum(not any(a <= frame < b for frame in stats["frames"]) for a, b in intervals)
+    return {**stats, "swaps": count, "miss_swaps": missed, "miss": stats["miss_units"] + missed,
+            "swap_intervals": intervals,
+            "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+            "swap_provenance": request["code_source"]}
+
+
 def collect(request, root):
     import h5py
     path = pathlib.Path(request["h5"])
@@ -94,8 +137,9 @@ def collect(request, root):
     for key, value in measured.items():
         if request[key] != value:
             raise ValueError(f"{path} {key}: H5={value} summary={request[key]}")
+    stats = verified_swap_stats(request, records, action_stats(request["task"], records))
     return {**{k: request[k] for k in ("task", "seed", "level", "episode", "h5")},
-            **measured, **action_stats(request["task"], records)}
+            **measured, **stats}
 
 
 def main():
