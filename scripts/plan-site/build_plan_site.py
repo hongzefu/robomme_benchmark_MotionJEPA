@@ -127,6 +127,9 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         ibody = re.sub(r'href="(docs/[^"]+)"', rf'href="{GITHUB_BLOB}/\1"', ibody)
         pages = {"impl.html": ibody, **pages}
         heads["impl.html"] = ihead
+    # 原计划的锚点与说明页不同，统一落在新页首页，避免保留失效锚点。
+    pages = {name: re.sub(r'href="1012-swap-pairing-v2-plan\.html(?:#[^"]*)?"',
+                          'href="swap.html"', body) for name, body in pages.items()}
     out.mkdir(parents=True, exist_ok=True)
     written = []
     for name, body in pages.items():
@@ -153,6 +156,17 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
         written.append(rel)
+    # 仅发布明确列出的站内证据，不遍历 docs，也不依赖尚未推送的远端提交。
+    for rel in ("docs/site-review/1012-frozen-site-audit.md",):
+        if f'href="{rel}"' not in "".join(pages.values()):
+            continue
+        src = REPO / rel
+        if not src.is_file():
+            raise FileNotFoundError(f"站内证据源文件缺失：{src}")
+        dst = out / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
+        written.append(rel)
     return written
 
 
@@ -174,8 +188,9 @@ def main() -> None:
                     swap_content=pathlib.Path(a.swap_content), swap_plan=pathlib.Path(a.swap_plan))
     pages = [w for w in written if w.endswith(".html")]
     videos = [w for w in written if w.startswith("videos/")]
-    images = len(written) - len(pages) - len(videos)
-    print(f"PLAN_SITE=OK pages={len(pages)} images={images} videos={len(videos)} out={a.out}")
+    images = sum(w.endswith((".png", ".jpg", ".svg")) for w in written)
+    documents = len(written) - len(pages) - len(videos) - images
+    print(f"PLAN_SITE=OK pages={len(pages)} images={images} videos={len(videos)} documents={documents} out={a.out}")
 
 
 if __name__ == "__main__":
