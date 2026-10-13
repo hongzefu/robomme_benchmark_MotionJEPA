@@ -1,0 +1,27 @@
+PROBE ButtonUnmaskSwap button_left type Articulation
+  whole: BinCollisionError 碰撞排除[uncertified] geometry 对象 button_left(形状-1) 与 -(形状-1) g=n/a 读不到碰撞形状：'sapien.pysapien.physx.PhysxArticulation' object has no attribute 'find_component_by_typ
+  link button_base objtype PhysxArticulationLinkComponent
+   bc FAIL BinCollisionError 碰撞排除[uncertified] geometry 对象 button_base(形状-1) 与 -(形状-1) g=n/a 读不到碰撞形状：'sapien.pysapien.physx.PhysxArticulationLinkCompone' object has no attribute 'find_component_by_type'
+   shape PhysxCollisionShapeBox {'half_size': [0.03750000149011612, 0.03750000149011612, 0.007499999832361937]} local_p [0.0, 0.0, 0.0]
+  link button_cap objtype PhysxArticulationLinkComponent
+   bc FAIL BinCollisionError 碰撞排除[uncertified] geometry 对象 button_cap(形状-1) 与 -(形状-1) g=n/a 读不到碰撞形状：'sapien.pysapien.physx.PhysxArticulationLinkCompone' object has no attribute 'find_component_by_type'
+   shape PhysxCollisionShapeCylinder {'radius': 0.0225, 'half_length': 0.009} local_p [0.0, 0.0, 0.008999999612569809]
+PROBE ButtonUnmaskSwap button_right type Articulation
+  whole: BinCollisionError 碰撞排除[uncertified] geometry 对象 button_right(形状-1) 与 -(形状-1) g=n/a 读不到碰撞形状：'sapien.pysapien.physx.PhysxArticulation' object has no attribute 'find_component_by_ty
+  link button_base objtype PhysxArticulationLinkComponent
+   bc FAIL BinCollisionError 碰撞排除[uncertified] geometry 对象 button_base(形状-1) 与 -(形状-1) g=n/a 读不到碰撞形状：'sapien.pysapien.physx.PhysxArticulationLinkCompone' object has no attribute 'find_component_by_type'
+   shape PhysxCollisionShapeBox {'half_size': [0.03750000149011612, 0.03750000149011612, 0.007499999832361937]} local_p [0.0, 0.0, 0.0]
+  link button_cap objtype PhysxArticulationLinkComponent
+   bc FAIL BinCollisionError 碰撞排除[uncertified] geometry 对象 button_cap(形状-1) 与 -(形状-1) g=n/a 读不到碰撞形状：'sapien.pysapien.physx.PhysxArticulationLinkCompone' object has no attribute 'find_component_by_type'
+   shape PhysxCollisionShapeCylinder {'radius': 0.0225, 'half_length': 0.009} local_p [0.0, 0.0, 0.008999999612569809]
+PROBE ButtonUnmaskSwap swap-object shape bottoms z [0.032, 0.048, -0.0, -0.0, 0.0, -0.0]
+PROBE VideoRepick button_left type Articulation
+  whole: BinCollisionError 碰撞排除[uncertified] geometry 对象 button(形状-1) 与 -(形状-1) g=n/a 读不到碰撞形状：'sapien.pysapien.physx.PhysxArticulation' object has no attribute 'find_component_by_type'
+  link button_base objtype PhysxArticulationLinkComponent
+   bc FAIL BinCollisionError 碰撞排除[uncertified] geometry 对象 button_base(形状-1) 与 -(形状-1) g=n/a 读不到碰撞形状：'sapien.pysapien.physx.PhysxArticulationLinkCompone' object has no attribute 'find_component_by_type'
+   shape PhysxCollisionShapeBox {'half_size': [0.03750000149011612, 0.03750000149011612, 0.007499999832361937]} local_p [0.0, 0.0, 0.0]
+  link button_cap objtype PhysxArticulationLinkComponent
+   bc FAIL BinCollisionError 碰撞排除[uncertified] geometry 对象 button_cap(形状-1) 与 -(形状-1) g=n/a 读不到碰撞形状：'sapien.pysapien.physx.PhysxArticulationLinkCompone' object has no attribute 'find_component_by_type'
+   shape PhysxCollisionShapeCylinder {'radius': 0.0225, 'half_length': 0.009} local_p [0.0, 0.0, 0.008999999612569809]
+PROBE VideoRepick swap-object shape bottoms z [0.0]
+EXIT_OK

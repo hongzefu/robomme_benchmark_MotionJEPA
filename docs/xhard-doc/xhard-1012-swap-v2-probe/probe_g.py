@@ -9,9 +9,18 @@ from pathlib import Path
 import numpy as np
 import torch
 
+import subprocess
+import tempfile
+
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE / "lib"))
-import swap_uniform as su  # V9 5f4f2f9c 原样
+OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "probe_g.json"
+# V9 配对算法：运行时从 git 对象 5f4f2f9c 取出原样字节，放进临时目录再 import（不入库副本）
+V9_SHA, V9_PATH = "5f4f2f9c", "src/robomme_hard/robomme_env/utils/swap_uniform.py"
+_lib = Path(tempfile.mkdtemp(prefix="swap_uniform_"))
+(_lib / "swap_uniform.py").write_bytes(subprocess.run(["git", "show", f"{V9_SHA}:{V9_PATH}"], check=True,
+                                                     capture_output=True, cwd=HERE).stdout)
+sys.path.insert(0, str(_lib))
+import swap_uniform as su  # V9 5f4f2f9c 原样，sha256 f4a1a8c0…
 
 import gymnasium as gym
 import robomme.robomme_env  # noqa: F401
@@ -70,14 +79,19 @@ for task, seed, s_max in CASES:
     for i, s in enumerate(states):
         d = [(np.linalg.norm(s.p[:2] - t.p[:2]), j) for j, t in enumerate(states) if j != i]
         nearest[i] = min(d)[1]
+    # 不要求连通、只要有边就规划（口径 B / C 的序列；正文图 2 与表用此字段）
+    p_nc = su.plan_balanced_swaps(adj, s_max, torch.Generator().manual_seed(seed + sp.SWAP_PLAN_SEED_OFFSET))
+    v2_noconn = None if p_nc is None else dict(pairs=[list(p) for p in p_nc.pairs], slot_pairs=[list(p) for p in p_nc.slot_pairs],
+                                               counts=p_nc.counts, spread=p_nc.spread, tries=p_nc.tries)
     out.append(dict(task=task, seed=seed, s_max=s_max, same_shape=bool(same_shape),
                     slots=[s.p[:2].tolist() for s in states], yaw_q=[s.q.tolist() for s in states],
                     half=[[sh.half.tolist() for sh in s.shapes] for s in states][0],
                     adj=adj, gaps=gaps, connected=su.graph_connected(adj), nearest=nearest, v1=v1,
                     v2=None if plan is None else dict(pairs=[list(p) for p in plan.pairs],
                                                      slot_pairs=[list(p) for p in plan.slot_pairs],
-                                                     counts=plan.counts, spread=plan.spread, tries=plan.tries)))
+                                                     counts=plan.counts, spread=plan.spread, tries=plan.tries),
+                    v2_noconn=v2_noconn))
     print("PROBE", task, seed, "edges", len(su.graph_edges(adj)), "connected", su.graph_connected(adj),
           "v1_err", v1["error"], "v2_counts", None if plan is None else plan.counts, flush=True)
-(HERE / "probe_g.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
+OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1))
 print("EXIT_OK")

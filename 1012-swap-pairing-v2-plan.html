@@ -71,6 +71,7 @@ a { color:var(--accent); }
 <blockquote>
 <p><strong>权威性与锚点</strong>：本文件是交换配对 v2 的唯一权威计划，从零写成，不在 <a href="1012-swap-collision-plan.html"><code>1012-swap-collision-plan.html</code></a>（下称 v1 计划）上增量修改；v1 计划原样保留为历史，不再修订。工作副本 <code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>、分支 <code>newtask-v3-MotionJepa1006</code>（sled-vail，环境 B）。写计划时 HEAD 为 <code>3083af74</code>（2.93，v1 全量结论）；<strong>v2 代码基线</strong>是 v1 动代码之前的 <code>0ec9951b</code>（2.76）。外部锚点：V9 配对算法取自 <code>origin/newtaskRelease-taskV9</code> 的 <code>5f4f2f9c</code>，文件 <code>src/robomme_hard/robomme_env/utils/swap_uniform.py</code>（sha256 <code>f4a1a8c08c629e8924ff1a0d37e9acdd4c7bcfee32ba7be80cf18e6328d85821</code>）；碰撞判据仍是 <code>newtask-v2.1refractor@ce72b04f</code> 的 <code>bin_collision.py</code>（sha256 <code>bbe87eec3c36ab54e703a6ff741a5fdd3217c11e2a1541eb95d8f013c852302b</code>）。</p>
 <p><strong>commit 体例</strong>：主线 <code>&lt;大&gt;.&lt;小&gt; 中文描述</code> 从 2.94 接续（本计划提交即 2.94）；子代理提交 <code>sub/&lt;编号&gt;: </code> 前缀，经 <code>--no-ff</code> 合并。<strong>只前进、不改写历史</strong>：不 <code>reset</code>、不 <code>rebase</code>、不 <code>--force</code>。</p>
+<p><strong>本版修订（2.94.5）</strong>：按 Codex 静态对抗审计（锚点 <code>b68447331df57f6706447e56211ee78e6dbed763</code>，<code>STATIC_PLAN_AUDIT=FAIL</code>）逐条修订：按钮几何实测并改为包络方案（3.5）、建 G 传入按钮、短测按节点比对、受保护目录比两个提交、新增报告工具与 180 身份对账、探针可复现、GPU 测试进 tmux、补等高与前缀前提、补相对官方的差异表（3.6）、纠正 K10；仍待用户确定的三项见第二部分 8.1。</p>
 <p><strong>授权边界</strong>：本轮只交这份 HTML 和实测探针留档。用户对本计划不改而明确说「开工」后，才开始撤回提交与改代码；全量 180 卡另按 P5 在 smoke 后单独报批。</p>
 </blockquote>
 
@@ -84,7 +85,7 @@ a { color:var(--accent); }
 <h1 id="p1">第一部分（给人看）</h1>
 
 <h2 id="h1">一、一句话与已定口径</h2>
-<p><strong>一句话</strong>：代码先整体退回 <code>0ec9951b</code>；重建时碰撞判据、运行期复核、生成器与工具按 v1 最终版原样恢复，<strong>只把配对换成「可行槽对图 G + V9 负载均衡贪心」</strong>，口径 B：每个槽至少有一条可行边，否则整卡剔除。</p>
+<p><strong>一句话</strong>：代码先整体退回 <code>0ec9951b</code>；重建时碰撞判据、生成器与工具按 v1 最终版原样恢复；配对换成「可行槽对图 G + V9 负载均衡贪心」，口径 B 为每个槽至少有一条可行边，否则整卡剔除；运行期最近邻绑定改为槽位绑定；ButtonUnmaskSwap、VideoRepick 的按钮以保守包络盒纳入碰撞检查。</p>
 <p>用户原话（逐字）：</p>
 <ul>
 <li>「给出方案 只改变交换策略 预先对 4 个槽位的 6 种两两组合各做一次连续碰撞检查，得到可行图 G，只在 G 的边里挑。搭档可以不是最近邻，比如对角线 然后尽可能负债均衡」</li>
@@ -107,10 +108,10 @@ a { color:var(--accent); }
 <tr><td style="white-space:nowrap">K7</td><td>同形断言：交换对象的盒体集合必须逐盒一致，否则不能按「槽」算 G，抛 <code>SceneGenerationError</code>。实测三个 seed 全部同形</td><td>3.1</td></tr>
 <tr><td style="white-space:nowrap">K8</td><td>逐段再证：规划出的每一段仍按当时真实占用者跑一次 <code>check_swap_sweep</code>。同形下必然与 G 一致；不一致即拒绝，并标为「G 与逐段不符」</td><td>3.2</td></tr>
 <tr><td style="white-space:nowrap">K9</td><td>运行期复核沿用 v1 最终语义：子步布局检查、段起点端点逐位比较（含 X′ 父类 float32 归一化重放）、段起点整段重证。<strong>删去最近邻绑定</strong>，因为搭档不再是最近邻；改为<strong>槽位绑定</strong>：每个交换对象实际 xy 离哪个槽最近，那个槽就必须是计划占用的槽；偏到更靠近别的槽才算失败，不另设毫米阈值（U5 裁决）</td><td>3.3</td></tr>
-<tr><td style="white-space:nowrap">K10</td><td>母档（hard）不变，仍是官方父类的随机 2–3 次、最近邻配对；只改 xhard 五档。<code>src/robomme/</code> 零 diff</td><td>P1、P2</td></tr>
+<tr><td style="white-space:nowrap">K10</td><td>母档不变：VideoUnmaskSwap、ButtonUnmaskSwap 的母档是官方 hard（随机 2–3 次、最近邻配对）；VideoRepick 的母档来源是官方 <strong>medium</strong>（随机 2–3 次、最近邻），官方 hard 根本不交换（<code>config_hard</code> 的 <code>swap_min=swap_max=0</code>）。只改 xhard 五档。<code>src/robomme/</code> 零 diff</td><td>P1、P2；<code>configs.SOURCE_DIFFICULTY</code></td></tr>
 <tr><td style="white-space:nowrap">K11</td><td>v1 已批口径全部沿用：D2 运行期失败只记 <code>_xhard_fatal</code>、不抛异常；D4 保证范围<strong>扩为交换对象之间 + 交换对象与按钮之间</strong>（K13，机械臂、桌面仍不在内）；D5 基础设施崩溃卡隔离；D7 六列视频版式；D8 30 母 seed、180 卡、GPU0 <code>--workers 32</code>；P5 smoke 后对全量单独报批</td><td>v1 计划第八节</td></tr>
 <tr><td style="white-space:nowrap">K12</td><td><strong>上一轮结果一字不动，另起一轮</strong>：v1 全量 <code>artifacts/xhard/xhard-1012-coll/</code>（426 个文件、90 GB，含 <code>report/per_episode_strip/</code> 30 支六列视频）只读保留。v2 的 smoke、全量、汇总、视频一律写新根 <code>artifacts/xhard/xhard-MMDD-swapv2/</code>；日志写 <code>artifacts/logs/xh-swapv2-*</code>，tmux 名用 <code>xh-swapv2-*</code>，留档写 <code>docs/xhard-doc/xhard-MMDD-swapv2*</code>。起跑前先给旧根做全量 sha256 冻结清单，每个阶段结束复核一次（<code>OLD_RUN_INTACT</code>）</td><td>用户 10-12 原话；第五节阶段 0、第二部分八</td></tr>
-<tr><td style="white-space:nowrap">K13</td><td><strong>按钮进碰撞判据</strong>（U10 裁决）：ButtonUnmaskSwap 的两个按钮、VideoRepick 的一个按钮作为静止旁观物参与初态检查、建 G、逐段再证、段起点重证和每子步检查。VideoUnmaskSwap 没有按钮，不受影响。按钮的碰撞盒从按钮关节体的连杆碰撞形状读取（底座与按帽）；读取方式在预扫中先验证（<code>BUTTON_SHAPE</code>），读不出就停下交用户，不手写盒体</td><td>3.5</td></tr>
+<tr><td style="white-space:nowrap">K13</td><td><strong>按钮进碰撞判据</strong>（U10 裁决）：ButtonUnmaskSwap 的两个按钮、VideoRepick 的一个按钮作为静止旁观物，参与初态检查、<strong>建 G 的每条边</strong>、逐段再证、段起点重证和每子步检查；VideoUnmaskSwap 没有按钮。<strong>实测原判据读不了按钮</strong>（3.5），按钮几何改由 <code>swap_plan.py::button_envelope_state</code> 从真实碰撞形状构造一个保守包络盒，交给原样保留的判据；包络口径待用户确认（第二部分八 V1）</td><td>3.5；探针 <code>button_probe.txt</code></td></tr>
 <tr><td style="white-space:nowrap">K14</td><td><strong>并行与回退按审查建议</strong>：撤回和原样恢复合成一个写入代理 W1（分支内依次三个 <code>sub/</code> 提交：撤回 → 恢复判据并引入 V9 → 恢复生成器与工具），一次合并，主线不经过「无碰撞检测」的中间状态；从零写 <code>swap_plan.py</code> 与三子类接线合成第二个代理 W2。冻结清单和 30 母 seed 预扫在开工后立即与 W1 同时跑（只读，不依赖 v2 代码）</td><td>用户「并行和回退 同意」；第五、六节</td></tr>
 </table>
 
@@ -127,7 +128,7 @@ a { color:var(--accent); }
 
 <h2 id="h3">三、机制：改哪些函数、各干什么</h2>
 <h3 id="h3-0">3.0 改前与改后：配对机制对比</h3>
-<p>两版的共同点：交换动作都是父类 <code>swap_flat_two_lane</code>（两个物体沿相反弯道同时对换，横向偏移 0.07，高度不变），每段 50 步，配对都在 reset 时由 <code>certify_swap_plan</code> 预写进 <code>swap_pair{k}_idx1/idx2</code>，运行期失败一律只记 <code>_xhard_fatal</code>。<strong>只有「这一段谁和谁换」的决定方式不同</strong>，见图 3 与下表。</p>
+<p>两版的共同点：交换动作都是父类 <code>swap_flat_two_lane</code>（两个物体沿相反弯道同时对换，横向偏移 0.07，高度不变），每段 50 步，配对都在 reset 时由 <code>certify_swap_plan</code> 预写进 <code>swap_pair{k}_idx1/idx2</code>，运行期失败一律只记 <code>_xhard_fatal</code>。<strong>v2 相对 v1 的完整改动范围</strong>：① 配对规则（G + 负载均衡，见图 3 与下表）；② 运行期最近邻绑定改为槽位绑定；③ 按钮纳入碰撞范围（K13）；④ 新增同形与等高检查、按 S_max 规划，以及 G、均衡、槽位绑定、按钮包络的证据字段。交换动作本身、段长、偏移、pick 与按压流程都不改。</p>
 <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1165" width="1000" height="1165" font-family="Noto Sans CJK SC, sans-serif" font-size="14">
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto">
@@ -351,7 +352,8 @@ a { color:var(--accent); }
 </ul>
 <h3>3.1 可行槽对图 G</h3>
 <p><strong>定义</strong>：交换段结束时两个对象精确对换位置（xy）和朝向，各自保留高度。所以一局里对象占据的位姿集合（槽）不变，变的只是谁占哪个槽；两个对象交换的扫掠几何只取决于它们所占的无序槽对。容器同形（K7）时，G 在 reset 时算一次，整局有效。</p>
-<p><strong>锚点</strong>：<code>src/robomme_xhard/swap_plan.py::slot_graph(states)</code> 调 <code>swap_uniform.slot_pair_graph(n, feasible)</code>，其中 <code>feasible(a, b)</code> 是 <code>bc.check_swap_sweep(states[a], states[b], [其余槽], sweep_index=-1, stage="graph")</code> 无拒绝。同时返回每对的 <code>gap</code>（可行为下界，不可行为拒绝的 <code>gap_m</code>），写进 <code>_xhard_swap_plan["graph"]</code>。</p>
+<p><strong>锚点</strong>：<code>src/robomme_xhard/swap_plan.py::slot_graph(states, bystanders)</code> 调 <code>swap_uniform.slot_pair_graph(n, feasible)</code>，其中 <code>feasible(a, b)</code> 是 <code>bc.check_swap_sweep(states[a], states[b], [其余槽对象] + bystanders, sweep_index=-1, stage="graph")</code> 无拒绝。<strong>每条边都把按钮包络一起检查</strong>：反例是初态不碰按钮、弯道途中擦到按钮，这条边必须在建 G 时就被排除，而不是选中后才在逐段再证时失败。同时返回每对的 <code>gap</code>（可行为下界，不可行为拒绝的 <code>gap_m</code>），写进 <code>_xhard_swap_plan["graph"]</code>。</p>
+<p><strong>G 整局不变的前提</strong>（审计指出）：交换只互换 xy 和朝向、各自保留高度，所以「按槽算一次 G」成立要同时满足 ① 所有交换对象的盒体集合逐盒相同（<code>half</code>、<code>local_p</code>、<code>local_q</code> 全等），② 所有交换对象的初始高度 z 相同。两条都检查；不满足时不报错，改为每段都按真实占用者重算可行性，并在证据里记 <code>graph_static=false</code>。无论哪种情况，K8 逐段再证都会兜底，G 与逐段不一致即拒绝。</p>
 <p><strong>口径 B</strong>：<code>swap_plan.py::require_every_slot_covered(adj)</code> 在 <code>swap_uniform.isolated_slots(adj)</code> 非空时抛 <code>SwapCollisionError(rejection, "graph")</code>，rejection 记孤立槽号及其各对的 gap。B 也保证贪心不会无路可走：n=4 时每个槽有边，至少 2 条边；n=3 时至少 2 条边，去掉上一对后仍有候选。</p>
 <p>⚠ <strong>陷阱</strong>：G 只证明「这一对动、其余静止在槽上」时无接触。运行期对象相对槽有毫米级漂移（v1 的 11200 差 1.5 mm），所以运行期仍保留段起点整段重证与子步检查（K9），不能只凭 G 放行。</p>
 
@@ -359,8 +361,8 @@ a { color:var(--accent); }
 <pre><code># swap_plan.py::certify_swap_plan(env, actors, bystanders, prefix)
 states = [bc.object_state_from_actor(a, f"{prefix}{i}") for i, a in enumerate(actors)]
 check_bin_layout(states + others)               # 初态，v1 原样
-assert_same_shapes(states)                      # K7，不同形 → SceneGenerationError
-adj, gaps = slot_graph(states)                  # K2
+graph_static = same_shapes(states) and same_height(states)    # 3.1 前提，记入证据
+adj, gaps = slot_graph(states, others)          # K2：每条边含其余槽对象与按钮包络
 require_every_slot_covered(adj, gaps)           # K3 口径 B
 gen  = torch.Generator().manual_seed(env.seed + 0x53574150)        # K6
 full = su.plan_balanced_swaps(adj, S_max(task), gen, score="max_sum",
@@ -383,7 +385,7 @@ env._refresh_swap_schedule(); env._xhard_swap_plan = {...}</code></pre>
 <p>实测：5700 第 1 趟就得到 <code>[5,5,6,6]</code>（tries=1）；9300 第 1 趟 <code>[6,5,5,6]</code>；10500 因槽 3 孤立，20 趟都是 <code>[8,8,8,0]</code>（极差 8），但它在口径 B 已被剔除，走不到这一步。</p>
 <p><strong>收益（实测）</strong>：5700 用到的槽对从 2 种增至 4 种，极差保持 1；9300 从「剔除」变为可排。</p>
 
-<h3>3.3 运行期复核：只换「绑定」这一项</h3>
+<h3>3.3 运行期复核：换绑定、加按钮</h3>
 <table>
 <tr><th>检查点</th><th>v1 最终（3083af74）</th><th>v2</th></tr>
 <tr><td>段起点·绑定</td><td><code>nearest_partner_index</code> 重算最近邻，必须等于计划搭档（<code>SwapBindingError</code>, check=<code>binding</code>）</td><td><strong>槽位绑定</strong> <code>_slot_binding_evidence(k)</code>：每个交换对象实际 xy 离哪个槽最近，那个槽必须是计划占用槽；偏到更靠近别的槽才算失败（<code>SwapBindingError</code>, check=<code>slot_binding</code>，记录各对象漂移 mm）</td></tr>
@@ -393,11 +395,32 @@ env._refresh_swap_schedule(); env._xhard_swap_plan = {...}</code></pre>
 <tr><td>送达</td><td>只记首条 <code>_xhard_fatal</code>，不抛异常（D2）</td><td>原样</td></tr>
 </table>
 
-<h3>3.5 按钮进判据（K13）</h3>
-<p><strong>为什么</strong>：v1 搭档总是最近邻，弯道短；v2 允许对角和远处搭档，弯道更长，ButtonUnmaskSwap 的按钮在桌面左侧 x≈-0.2（<code>build_button(center_xy=(-0.2, ±0.1))</code>），VideoRepick 也有一个按钮，路径可能擦到。</p>
-<p><strong>怎么做</strong>：三个子类的 <code>_bystander_actors()</code> 从返回 <code>[]</code> 改为返回按钮（ButtonUnmaskSwap：<code>button_left</code>、<code>button_right</code>；VideoRepick：<code>button_left</code>；VideoUnmaskSwap 仍为 <code>[]</code>）。<code>certify_swap_plan</code> 与 <code>SwapCollisionMixin</code> 已把 bystanders 传进 <code>check_bin_layout</code> 与 <code>check_swap_sweep</code>，所以按钮会自动参与初态、G、逐段再证、段起点重证和子步检查。</p>
-<p>⚠ <strong>未验证</strong>：按钮由 <code>object_generation.py::build_button</code> 用关节体（articulation）搭成，底座与按帽是两个连杆；<code>bin_collision.object_state_from_actor</code> 能否直接读连杆的碰撞盒还没试过。预扫里先验证（判定行 <code>BUTTON_SHAPE=PASS buttons=3</code>：三个任务中按钮盒体数 &gt; 0、尺寸与 <code>build_button</code> 的 scale=1.5 相符）；读不出时停下交用户，不手写盒体、不静默跳过。按帽按下只向下移动，子步检查读的是实时位姿。</p>
-<p><strong>影响</strong>：可行的对子只会变少或不变，口径 B 的剔除数可能上升；预扫会给出加按钮前后的对比。</p>
+<h3>3.5 按钮进判据（K13）：实测与包络方案</h3>
+<p><strong>为什么</strong>：v1 搭档总是最近邻，弯道短；v2 允许对角和远处搭档，弯道更长。ButtonUnmaskSwap 的两个按钮在桌面左侧（<code>build_button(center_xy=(-0.2, ±0.1))</code>），VideoRepick 有一个按钮，路径可能擦到。</p>
+<p><strong>实测（只读探针 <a href="docs/xhard-doc/xhard-1012-swap-v2-probe/button_probe.py"><code>button_probe.py</code></a>，日志 <code>button_probe.txt</code>，ButtonUnmaskSwap seed 10500、VideoRepick seed 11200）</strong>：</p>
+<ul>
+<li>按钮是 <code>object_generation.py::build_button</code> 建的关节体（ManiSkill <code>Articulation</code>）：连杆 <code>button_base</code> 有一个 <code>PhysxCollisionShapeBox</code>，半尺寸 (0.0375, 0.0375, 0.0075)；连杆 <code>button_cap</code> 有一个 <code>PhysxCollisionShapeCylinder</code>，半径 0.0225、半长 0.009，经棱柱关节只能沿竖直方向向下运动（<code>limits=[[-travel, 0]]</code>）。</li>
+<li>原判据 <code>bin_collision.object_state_from_actor</code> <strong>读不了按钮</strong>：传整个关节体报「<code>PhysxArticulation</code> 没有 <code>find_component_by_type</code>」，传单个连杆报「<code>PhysxArticulationLinkComponent</code> 没有 <code>find_component_by_type</code>」，9 次尝试全部 <code>uncertified</code>。即便能读，<code>shape_specs_from_actor</code> 也只收盒体，遇到圆柱会拒绝；只读底座又会漏掉按帽。所以「返回按钮后自动参与检查」不成立，原计划这一句作废。</li>
+<li>交换对象的盒体底面高度：ButtonUnmaskSwap 的倒扣容器 6 个盒体底面为 0.032、0.048、0、0、0、0 m（四面墙落在桌面）；VideoRepick 方块底面为 0。</li>
+</ul>
+<p><strong>方案（推荐，待用户确认 V1）：保守包络盒，不改判据</strong>。<code>swap_plan.py::button_envelope_state</code> 直接从 SAPIEN 连杆组件 <code>get_collision_shapes()</code> 读出底座盒体与按帽圆柱的真实尺寸和世界位姿，构造<strong>一个</strong>盒体：水平范围取底座盒体与按帽圆柱外接正方形的并集，竖直范围从桌面到按帽未按下时的顶面（按当前数值为 0 到 0.033 m）。这个盒体以 <code>bc.ObjectState</code> 形式作为旁观物传给原样保留的判据，<code>bin_collision.py</code> 一字不改。</p>
+<ul>
+<li><strong>为什么保守</strong>：按帽圆柱（半径 0.0225）完全落在底座正方形（半边 0.0375）的水平投影内，按帽只能向下运动，所以任何按压状态下按钮的实际几何都被这个静止盒体包住；按钮内部底座与按帽的自接触不出现（整个按钮只是一个盒体）。</li>
+<li><strong>多算了多少</strong>：只多出按帽圆柱外、底座正方形内、高度 0.015 至 0.033 m 的那圈空间。交换对象的墙体都从桌面立起，水平上只要碰到这圈，就一定先碰到底座本体，所以对这三个任务而言包络与真实几何的判定结果应当相同。这是推理，未数值验证，预扫会给出「只用底座盒体」与「用包络」两列的 G 对比来核对。</li>
+<li><strong>判定行</strong>：<code>BUTTON_ENVELOPE=PASS buttons=3 base_box=1 cap_cylinder=1 cap_inside_base=1</code>：每个按钮恰好读到一个底座盒体、一个按帽圆柱，按帽半径 ≤ 底座半边，包络顶面 = 按帽顶面；任一不符即停，不手写尺寸、不静默跳过。</li>
+</ul>
+<p><strong>备选</strong>：① 给判据新增圆柱支持（要改引入文件 <code>bin_collision.py</code>，违反 R0-4，不推荐）；② 只用底座盒体（漏掉按帽，不推荐）。</p>
+<p><strong>影响</strong>：可行的对子只会变少或不变，口径 B 的剔除数可能上升；预扫给出含与不含按钮两列的对比。</p>
+
+<h3>3.6 三个任务相对官方的最终行为差异（v2 实施后）</h3>
+<p>按审计意见补充：区分「本次 v2 相对 v1 新改的」（3.0 第一段）与「最终 xhard 相对官方原版的差异」（本表）。五档数值依次为 xhard12/14/16/18/20。三项都不新增物体。</p>
+<table>
+<tr><th>编号</th><th>任务</th><th>扩充物体</th><th>官方执行不到的行为</th><th>参数越界及其他差异</th></tr>
+<tr><td>2.3</td><td>VideoUnmaskSwap</td><td>没有；仍是官方 hard 的四个容器、三色隐藏块</td><td>允许当前非最近邻对象作搭档（超出官方配对规则）；交换动作仍是原双弯道</td><td>交换次数 S = 4/5/7/9/11，超出官方各档 1–3；每段仍 50 步、偏移 0.07；两抓不变，演示段延长</td></tr>
+<tr><td>2.4</td><td>ButtonUnmaskSwap</td><td>没有；四个容器、三色隐藏块、两个按钮都是原有物体</td><td>非最近邻配对；右起左右交替按压 3–6 次（原任务流程不能产生的序列），私有边沿计数：按住不重复计，错侧或双按不推进</td><td>P/S = 3/4、4/6、4/8、5/10、6/12，S 超出原范围；第一抓前先等末次交换落定；两抓尾段保留；拒绝失败恢复开关</td></tr>
+<tr><td>3.2</td><td>VideoRepick</td><td>没有；用官方 medium 的三块同色方块和一个按钮</td><td>非最近邻配对</td><td>S = 5/7/10/13/15，超出官方 easy/medium 的 1–3；重抓 R 固定为 2（本在官方 1–3 内，不算越界）；演示交换段延长</td></tr>
+</table>
+<p>S 的扩域属于参数越界，不是新的运动动作；非最近邻配对扩大的是搭档选择规则，不代表每个 seed、每一段都会用到非最近邻搭档。</p>
 
 <h3>3.4 改动一览</h3>
 <table>
@@ -414,16 +437,17 @@ env._refresh_swap_schedule(); env._xhard_swap_plan = {...}</code></pre>
 <table>
 <tr><th>判定行</th><th>查什么</th><th>怎么查</th><th>过了说明什么</th></tr>
 <tr><td><code>REVERT_V1=PASS paths=2 diff=0 removed=10</code></td><td>撤回提交后两条代码路径与 <code>0ec9951b</code> 字节一致</td><td><code>git diff --quiet 0ec9951b -- scripts/data-generation-newSeed/generate_dataset_newseed.py src/robomme_xhard</code></td><td>v2 起点就是 v1 之前的代码，没有残留补丁</td></tr>
-<tr><td><code>SRC_ROBOMME_ZERO_DIFF=PASS</code></td><td>P1</td><td><code>git diff --quiet HEAD -- src/robomme/</code>（每次合并后）</td><td>官方代码一字未动</td></tr>
+<tr><td><code>SRC_ROBOMME_ZERO_DIFF=PASS base=0ec9951b</code></td><td>P1：受保护目录在整合提交与固定基线之间零差异</td><td><code>git diff --quiet 0ec9951b &lt;合并提交&gt; -- src/robomme/</code>（每次合并后；比较两个提交，而不是 <code>HEAD</code> 与工作区，已提交并合入的改动也能抓到）</td><td>官方代码一字未动</td></tr>
 <tr><td><code>VENDOR_BYTES=PASS files=2</code></td><td>两份引入文件的 sha256</td><td><code>sha256sum</code> 对 <code>bbe87eec…</code>、<code>f4a1a8c0…</code></td><td>判据与配对算法和来源逐字节相同</td></tr>
 <tr><td><code>RESTORE_V1_FINAL=PASS files=N diff=0</code></td><td>字节恢复类文件与 <code>3083af74</code> 一致</td><td>逐文件 <code>git diff --quiet 3083af74 -- &lt;文件&gt;</code></td><td>只有配对相关文件是新写的</td></tr>
 <tr><td><code>SWAP_PLAN_V2_CPU=PASS</code></td><td>纯函数单测：G 构造、口径 B 拒绝、对角搭档可选、禁撤销、前缀、可复现、同形断言、槽位绑定</td><td><code>pytest src/robomme_xhard/tests/test_swap_plan.py -q</code></td><td>规划逻辑与口径一致</td></tr>
-<tr><td>核心短测（P4 覆盖口径）</td><td>全仓轻量测试</td><td><code>timeout 280s uv run --no-sync python -m pytest tests/lightweight/ src/robomme_xhard/tests -m 'not gpu and not slow' -q</code></td><td>无回归；失败数不超过 v1 记录的基线已知失败</td></tr>
+<tr><td><code>CORE_SHORT=PASS new_failures=0</code></td><td>全仓轻量测试，<strong>按测试节点比较</strong></td><td><code>timeout 280s uv run --no-sync python -m pytest tests/lightweight/ src/robomme_xhard/tests -m 'not gpu and not slow' -q -rf</code>，取 <code>FAILED</code> 节点集合，与 v1 基线 <code>docs/xhard-doc/xhard-1012-collision-smoke/records/xh-coll-baseline-cpu-1012.log</code> 的 4 个已知失败节点（<code>test_TaskGoal.py</code> 2 个、<code>test_step_error_handling.py</code> 2 个）逐个比对</td><td>不在基线集合里的失败节点一个都不允许；基线节点若变为通过只报告不阻断。只比数量会让「修好一个、新坏一个」误放行</td></tr>
 <tr><td><code>XHARD_FATAL_CATCH=PASS tasks=3 hang=0</code></td><td>运行期失败能送达生成器</td><td><code>test_fatal_catch.py</code>（GPU0）</td><td>D2 送达链路完好</td></tr>
-<tr><td><code>BUTTON_SHAPE=PASS buttons=3</code></td><td>按钮碰撞盒能从关节体读出</td><td>预扫脚本内，每个任务第一个 seed</td><td>K13 可实施</td></tr>
+<tr><td><code>BUTTON_ENVELOPE=PASS buttons=3 base_box=1 cap_cylinder=1 cap_inside_base=1</code></td><td>按钮包络能从真实碰撞形状构造，且按帽被底座水平覆盖</td><td>预扫脚本内，每个任务第一个 seed；W2 单测用真实读数复核</td><td>K13 可实施</td></tr>
 <tr><td><code>SWAP_V2_GRAPH_SCAN=INFO seeds=30 b_pass=x b_reject=y</code></td><td>30 个母 seed 的 G 与口径 B 预判（只 reset，不 rollout），分「不含按钮」「含按钮」两列</td><td>阶段 0 预扫，xhard20 布局，与 W1 同时跑</td><td>开工即知剔除数；剔除超过 6 个先停（U6）</td></tr>
-<tr><td><code>SWAP_V2_SMOKE=PASS cards=4</code></td><td>5700、9300、10500、11200 各一张 xhard20</td><td>GPU0 单 worker</td><td>5700、9300 成功；10500 在 reset 阶段以 <code>stage=graph</code> 剔除；11200 如实报结果</td></tr>
-<tr><td><code>XHARD_FULL_DERIVE=DONE cards=180 ok=… coll=… other=0</code></td><td>全量</td><td>生成器 + summarize</td><td>剔除均有 G 或运行期证据</td></tr>
+<tr><td><code>SWAP_V2_SMOKE=PASS cards=4</code></td><td>5700、9300、10500、11200 各一张 xhard20</td><td>GPU0 单 worker</td><td>5700、9300 必须成功；10500 必须在 reset 阶段以 <code>stage=graph</code> 剔除；11200 的结果口径待用户确定（第二部分八 V2）。任何接口或基础设施类失败（<code>Traceback</code>、<code>uncertified</code> 几何读取、进程池损坏、隔离卡）一律阻断</td></tr>
+<tr><td><code>XHARD_FULL_DERIVE=DONE expected=180 seen=180 missing=0 dup=0 unknown=0 ok=… task_reject=… infra=0</code></td><td>全量：180 个预期身份（任务、母 episode、seed、档位）逐一交代</td><td>按 <code>mother_seeds_all.json</code> 展开 180 个预期身份，与 <code>episode_results.jsonl</code> 逐个对账：无缺项、无重复、无未知状态；正常碰撞或绑定剔除（<code>task_reject</code>）与基础设施失败（<code>infra</code>）分开计数</td><td>汇总程序退出零只说明已有 H5 的标签与非空检查通过，不说明 180 个身份都有下落；本判定行补上这一点</td></tr>
+<tr><td><code>REPORT_V1V2=PASS seeds=30 rows=180</code></td><td>U3 的 v1 对 v2 逐母 seed 对比表，以及 <code>spread_full</code>、<code>spread_prefix</code> 分布</td><td>新工具 <code>tools/swap_v2_report.py</code>（W2-c），只读两轮的 <code>episode_results.jsonl</code>，输出到新目录 <code>report/v1_vs_v2.{md,json}</code></td><td>已批准的报告要求有写者、有验收</td></tr>
 <tr><td><code>EPISODE_STRIP_VIDEO=PASS videos=30</code></td><td>六列视频</td><td>episode_strip_video，<code>--out-dir artifacts/xhard/xhard-MMDD-swapv2/report/per_episode_strip</code></td><td>D7 版式</td></tr>
 <tr><td><code>NEW_ROOT_FRESH=PASS</code></td><td>每次生成、汇总、出视频前，目标目录不存在</td><td><code>test ! -e &lt;目标&gt;</code>，写在命令最前面并用 <code>&amp;&amp;</code> 串联</td><td>新一轮不会写进任何已有目录</td></tr>
 <tr><td><code>OLD_RUN_INTACT=PASS files=426 mismatches=0</code></td><td>v1 全量根逐文件 sha256、字节数、文件数与冻结清单一致</td><td><code>sha256sum -c</code> 冻结清单（阶段 0 生成；阶段 D、E 各结束后复核）</td><td>上一轮证据（尤其 30 支视频）没被覆盖、删除或新增文件</td></tr>
@@ -432,11 +456,11 @@ env._refresh_swap_schedule(); env._xhard_swap_plan = {...}</code></pre>
 <h2 id="h5">五、实施步骤</h2>
 <table>
 <tr><th>阶段</th><th>内容</th><th>判据</th></tr>
-<tr><td>0（同时开始）</td><td>① 派 W1；② 主会话给旧目录做冻结清单并 <code>chmod -R a-w</code>（U1）；③ 主会话在主检出跑 30 母 seed 预扫（GPU0，只 reset，含按钮）。②③ 只读，不依赖 v2 代码，与 W1 同时进行，须在 W1 合并前跑完</td><td><code>FREEZE=PASS files=426</code>、<code>BUTTON_SHAPE</code>、<code>SWAP_V2_GRAPH_SCAN</code>（剔除 &gt; 6 先停）</td></tr>
+<tr><td>0（同时开始）</td><td>① 派 W1；② 主会话给旧目录做冻结清单并 <code>chmod -R a-w</code>（U1）；③ 主会话在主检出跑 30 母 seed 预扫（GPU0，只 reset，含按钮）。②③ 只读，不依赖 v2 代码，与 W1 同时进行，须在 W1 合并前跑完</td><td><code>FREEZE=PASS files=426</code>、<code>BUTTON_ENVELOPE</code>、<code>SWAP_V2_GRAPH_SCAN</code>（剔除 &gt; 6 先停）</td></tr>
 <tr><td>A</td><td>W1（一个代理、三个 <code>sub/</code> 提交）：撤回到 <code>0ec9951b</code> → 恢复判据并引入 V9 → 恢复生成器与工具；审查后一次 <code>--no-ff</code> 合并（2.95）</td><td><code>REVERT_V1</code>（W1-a 提交处）、<code>VENDOR_BYTES</code>、<code>RESTORE_V1_FINAL</code>、合并后核心短测</td></tr>
-<tr><td>B</td><td>W2（一个代理、两个 <code>sub/</code> 提交）：从零写 <code>swap_plan.py</code> 与单测 → 三子类接线（含按钮）与测试；审查后合并（2.96）</td><td><code>SWAP_PLAN_V2_CPU</code>、<code>SRC_ROBOMME_ZERO_DIFF</code>、核心短测</td></tr>
+<tr><td>B</td><td>W2（一个代理、三个 <code>sub/</code> 提交）：从零写 <code>swap_plan.py</code>（含按钮包络）与单测 → 三子类接线与测试 → 新增 <code>tools/swap_v2_report.py</code> 与单测；审查后合并（2.96）</td><td><code>SWAP_PLAN_V2_CPU</code>、<code>SRC_ROBOMME_ZERO_DIFF</code>、核心短测</td></tr>
 <tr><td>D</td><td>GPU：契约测试 → <code>XHARD_FATAL_CATCH</code> → 4 卡 smoke → 复核旧目录</td><td><code>XHARD_FATAL_CATCH</code>、<code>SWAP_V2_SMOKE</code>、<code>OLD_RUN_INTACT</code></td></tr>
-<tr><td>E</td><td>报批后：Beta 提交 → 全量 180 卡（新目录 <code>xhard-MMDD-swapv2</code>）→ 汇总、视频、v1 对 v2 对比表、留档 → 复核旧目录</td><td><code>XHARD_FULL_DERIVE</code>、<code>EPISODE_STRIP_VIDEO</code>、<code>OLD_RUN_INTACT</code></td></tr>
+<tr><td>E</td><td>报批后：Beta 提交 → 全量 180 卡（新目录 <code>xhard-MMDD-swapv2</code>）→ 汇总、视频、v1 对 v2 对比表（<code>swap_v2_report.py</code>）、留档 → 复核旧目录</td><td><code>XHARD_FULL_DERIVE</code>、<code>EPISODE_STRIP_VIDEO</code>、<code>REPORT_V1V2</code>、<code>OLD_RUN_INTACT</code></td></tr>
 </table>
 
 <h2 id="h6">六、子代理分工与合并（简述）</h2>
@@ -565,8 +589,9 @@ git diff --quiet 0ec9951b -- scripts/data-generation-newSeed/generate_dataset_ne
 <ul>
 <li>常量：<code>SWAP_PLAN_SEED_OFFSET = 0x53574150</code>；<code>PLAN_SCORE="max_sum"</code>、<code>PLAN_BUDGET=20</code>、<code>PLAN_ACCEPT_RANGE=1</code>。</li>
 <li><code>max_swap_count(task)</code>：<code>max(cfg["swap_count"] for cfg in TIER_CONFIGS[task].values())</code>（11/12/15）。</li>
-<li><code>assert_same_shapes(states)</code>：逐盒比较 <code>half</code>、<code>local_p</code>、<code>local_q</code>（<code>np.array_equal</code>），不一致抛 <code>SceneGenerationError</code>。</li>
-<li><code>slot_graph(states)</code> → <code>(adj, gaps)</code>；<code>require_every_slot_covered(adj, gaps)</code>。</li>
+<li><code>same_shapes(states)</code>、<code>same_height(states)</code>：逐盒 <code>np.array_equal</code> 比较 <code>half</code>、<code>local_p</code>、<code>local_q</code>，以及各对象初始 z 是否全等；结果记 <code>graph_static</code>，为假时 G 按真实占用者逐段计算。</li>
+<li><code>button_envelope_state(articulation, name)</code>：见 3.5，返回 <code>bc.ObjectState</code>，形状只有一个盒体。</li>
+<li><code>slot_graph(states, bystanders)</code> → <code>(adj, gaps)</code>；<code>require_every_slot_covered(adj, gaps)</code>。</li>
 <li><code>SwapPlan</code> 字段：<code>pairs</code>（<code>[a, b, distance, gap]</code>，与 v1 同形，<code>summarize</code>、<code>test_collision_tools</code> 照读）、<code>usage</code>、<code>initiator_usage</code>、<code>partner_usage</code>、<code>initial_gap</code>，新增 <code>slot_pairs</code>、<code>graph</code>（<code>adj</code>、<code>gaps</code>）、<code>s_max</code>、<code>spread_full</code>、<code>spread_prefix</code>、<code>tries</code>。</li>
 <li><code>certify_swap_plan(env, actors, bystanders, name_prefix)</code>：按 3.2 伪码；签名与 v1 相同。</li>
 <li><code>parent_start_q</code>、<code>_endpoint_evidence</code>、<code>_substep_check</code>、<code>_runtime_guard</code>、三个钩子：按 v1 最终语义写（可直接取 <code>3083af74</code> 版本的函数体）。</li>
@@ -575,17 +600,25 @@ git diff --quiet 0ec9951b -- scripts/data-generation-newSeed/generate_dataset_ne
 </ul>
 <h3>1.4 W2-b：三个子类</h3>
 <ul>
-<li><code>envs/video_unmask_swap.py</code>、<code>button_unmask_swap.py</code>、<code>video_repick.py</code>：以 <code>3083af74</code> 版本为底，接线不变（<code>_load_scene</code> 末尾 <code>certify_swap_plan</code>，<code>_swap_actors</code>、<code>_bystander_actors</code>、<code>_refresh_swap_schedule</code>）；docstring 中「搭档取最近邻」改为 G + 负载均衡说明；<code>_bystander_actors</code> 改为返回按钮（ButtonUnmaskSwap 两个、VideoRepick 一个、VideoUnmaskSwap 无），按钮碰撞盒的读取方式以预扫中 <code>BUTTON_SHAPE</code> 验证过的为准。</li>
+<li><code>envs/video_unmask_swap.py</code>、<code>button_unmask_swap.py</code>、<code>video_repick.py</code>：以 <code>3083af74</code> 版本为底，接线不变（<code>_load_scene</code> 末尾 <code>certify_swap_plan</code>，<code>_swap_actors</code>、<code>_bystander_actors</code>、<code>_refresh_swap_schedule</code>）；docstring 中「搭档取最近邻」改为 G + 负载均衡说明；<code>_bystander_actors</code> 改为返回按钮（ButtonUnmaskSwap 两个、VideoRepick 一个、VideoUnmaskSwap 无），按钮几何一律经 <code>swap_plan.py::button_envelope_state</code> 转成包络盒（3.5），不直接把关节体交给判据。</li>
 <li><code>tests/test_swap_collision_gpu.py</code>：以 v1 版本为底，<code>test_reset_certifies_all_pairs</code> 去掉对最近邻的断言，增加「每段槽对 ∈ G」「孤立槽 seed（10500）reset 抛 <code>SwapCollisionError</code> stage=graph」「ButtonUnmaskSwap、VideoRepick 的 <code>_bystander_actors</code> 非空」；<code>test_fatal_catch.py</code>、<code>test_s2_configs.py</code>、<code>test_contract.py</code> 字节恢复。</li>
 </ul>
 <h3>1.5 W1-c：生成器与工具</h3>
 <p>字节恢复自 <code>3083af74</code>：<code>generate_dataset_newseed.py</code>、<code>jobs.py</code>、<code>tools/layout.py</code>、<code>tools/summarize.py</code>、<code>tools/mother_seeds.py</code>、<code>tools/episode_strip_video.py</code>，测试 <code>test_jobs.py</code>、<code>test_episode_strip_video.py</code>、<code>test_worker_evidence.py</code>、<code>test_collision_tools.py</code>。判定行 <code>RESTORE_V1_FINAL</code>。</p>
 
+<h3>1.6 W2-c：v1 对 v2 报告工具</h3>
+<ul>
+<li>新增 <code>src/robomme_xhard/tools/swap_v2_report.py</code>：<code>--v1 &lt;v1 输出根&gt; --v2 &lt;v2 输出根&gt; --seeds &lt;母 seed 清单&gt; --out-md --out-json</code>，只读两轮的 <code>episode_results.jsonl</code>，不改 <code>summarize.py</code>（它按 R0-4 原样恢复）。</li>
+<li>输出：逐母 seed × 档位的 v1/v2 对比（成功与否、错误类型与阶段、用到几种槽对、参与次数、<code>spread_full</code>、<code>spread_prefix</code>、timestep）；按任务 × 档位的 <code>spread_prefix</code> 分布与净置换恒等比例；180 个预期身份对账（<code>XHARD_FULL_DERIVE</code> 的 <code>missing/dup/unknown</code> 由它计算）。</li>
+<li>写出前检查输出路径不在旧目录内、目标文件不存在；末行打印 <code>REPORT_V1V2=PASS seeds=30 rows=180</code>。</li>
+<li><code>tests/test_swap_v2_report.py</code>：用合成 jsonl 覆盖缺项、重复、未知状态、旧目录输出拒绝。</li>
+</ul>
+
 <h2 id="t2">二、子代理分配表</h2>
 <table>
 <tr><th>编号</th><th>目标</th><th>可写集合</th><th>禁触</th><th>契约与依赖</th><th>合并顺序</th><th>验收（worktree 内，CPU）</th><th>资源</th></tr>
 <tr><td>W1</td><td>三个 <code>sub/</code> 提交：W1-a 撤回（1.1）→ W1-b 判据与 V9 引入（1.2）→ W1-c 生成器与工具恢复（1.5）</td><td><code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code>、<code>src/robomme_xhard/**</code> 中 1.1/1.2/1.5 所列文件</td><td>docs、根目录文件、<code>src/robomme/</code>、<code>swap_plan.py</code>（W1-a 删除后不再新建）、<code>envs/**</code>（只随 W1-a 退回）</td><td>基线 = 计划最终提交</td><td>1（合并为 2.95）</td><td>W1-a 提交处 <code>REVERT_V1</code>；末尾 <code>VENDOR_BYTES</code>、<code>RESTORE_V1_FINAL</code>、两份引入测试通过</td><td>无</td></tr>
-<tr><td>W2</td><td>两个 <code>sub/</code> 提交：W2-a 从零写 <code>swap_plan.py</code> 与 <code>test_swap_plan.py</code>（1.3）→ W2-b 三子类接线、按钮旁观物与测试（1.4）</td><td><code>src/robomme_xhard/swap_plan.py</code>、三个 <code>envs/*.py</code>、<code>tests/{test_swap_plan,test_swap_collision_gpu,test_fatal_catch,test_s2_configs,test_contract}.py</code></td><td><code>collision/**</code>、生成器与工具</td><td>依赖 W1 合并；<code>certify_swap_plan(env, actors, bystanders, prefix)</code> 签名；<code>SwapPlan</code> 字段与 v1 同名同形（X4）</td><td>2（合并为 2.96）</td><td><code>SWAP_PLAN_V2_CPU</code>、CPU 用例（MRO、接口、按钮旁观物非空）</td><td>无</td></tr>
+<tr><td>W2</td><td>三个 <code>sub/</code> 提交：W2-a 从零写 <code>swap_plan.py</code>（含 <code>button_envelope_state</code>）与 <code>test_swap_plan.py</code>（1.3）→ W2-b 三子类接线、按钮旁观物与测试（1.4）→ W2-c 新增 <code>tools/swap_v2_report.py</code> 与 <code>tests/test_swap_v2_report.py</code>（1.6）</td><td><code>src/robomme_xhard/swap_plan.py</code>、三个 <code>envs/*.py</code>、<code>tools/swap_v2_report.py</code>、<code>tests/{test_swap_plan,test_swap_collision_gpu,test_fatal_catch,test_s2_configs,test_contract,test_swap_v2_report}.py</code></td><td><code>collision/**</code>、生成器与工具</td><td>依赖 W1 合并；<code>certify_swap_plan(env, actors, bystanders, prefix)</code> 签名；<code>SwapPlan</code> 字段与 v1 同名同形（X4）</td><td>2（合并为 2.96）</td><td><code>SWAP_PLAN_V2_CPU</code>、CPU 用例（MRO、接口、按钮旁观物非空）</td><td>无</td></tr>
 <tr><td>主会话</td><td>冻结清单、预扫、合并、GPU 验收、smoke、留档</td><td>合并提交、<code>docs/xhard-doc/xhard-MMDD-swapv2*</code></td><td>旧目录 <code>artifacts/xhard/xhard-1012-coll/</code></td><td>冻结与预扫在 W1 合并前跑完</td><td>—</td><td>阶段 0、D 判定行</td><td>GPU0；tmux <code>xh-swapv2-*</code></td></tr>
 <tr><td>运行型</td><td>全量 180 卡</td><td>只写新目录产物与日志</td><td>一切源码、旧目录</td><td>报批后</td><td>—</td><td>起跑判据：首个 <code>succeeded with seed</code></td><td>GPU0，<code>--workers 32</code>，tmux <code>xh-swapv2-full-MMDD</code></td></tr>
 </table>
@@ -594,7 +627,7 @@ git diff --quiet 0ec9951b -- scripts/data-generation-newSeed/generate_dataset_ne
 <h2 id="t3">三、闸门总表</h2>
 <table>
 <tr><th>闸门</th><th>时点</th><th>不过怎么办</th></tr>
-<tr><td><code>FREEZE</code>、<code>BUTTON_SHAPE</code>、<code>SWAP_V2_GRAPH_SCAN</code></td><td>阶段 0，W1 合并前</td><td>按钮读不出或剔除超过 6 个：停下交用户，W1 可以先写完但不合并</td></tr>
+<tr><td><code>FREEZE</code>、<code>BUTTON_ENVELOPE</code>、<code>SWAP_V2_GRAPH_SCAN</code></td><td>阶段 0，W1 合并前</td><td>按钮读不出或剔除超过 6 个：停下交用户，W1 可以先写完但不合并</td></tr>
 <tr><td><code>REVERT_V1</code> / <code>VENDOR_BYTES</code> / <code>RESTORE_V1_FINAL</code></td><td>W1 合并前</td><td>交回 W1 续改，不手改引入文件</td></tr>
 <tr><td><code>SWAP_PLAN_V2_CPU</code></td><td>W2 合并前</td><td>交回 W2</td></tr>
 <tr><td><code>SRC_ROBOMME_ZERO_DIFF</code> + 核心短测</td><td>每次合并后</td><td>停止后续合并、不 push，交用户</td></tr>
@@ -606,45 +639,45 @@ git diff --quiet 0ec9951b -- scripts/data-generation-newSeed/generate_dataset_ne
 
 <h2 id="t4">四、runbook（主会话）</h2>
 <pre><code># 档案名：阶段 0 开工当天东部日期，开工时一次定死并写进留档
-MMDD=$(TZ=America/New_York date +%m%d)    # 下文 xhard-MMDD-swapv2、xh-swapv2-*-MMDD 均指此值
+MMDD=$(TZ=America/New_York date +%m%d)    # 下文 xhard-${MMDD}-swapv2、xh-swapv2-*-MMDD 均指此值
 
 # 0-a 冻结旧目录（主会话，与 W1 同时）
-mkdir -p docs/xhard-doc/xhard-MMDD-swapv2/records
-find artifacts/xhard/xhard-1012-coll -type f -print0 | sort -z | xargs -0 sha256sum &gt; docs/xhard-doc/xhard-MMDD-swapv2/records/v1_coll_freeze.sha256
-test "$(wc -l &lt; docs/xhard-doc/xhard-MMDD-swapv2/records/v1_coll_freeze.sha256)" -eq 426 &amp;&amp; echo FREEZE=PASS files=426
+mkdir -p docs/xhard-doc/xhard-${MMDD}-swapv2/records
+find artifacts/xhard/xhard-1012-coll -type f -print0 | sort -z | xargs -0 sha256sum &gt; docs/xhard-doc/xhard-${MMDD}-swapv2/records/v1_coll_freeze.sha256
+test "$(wc -l &lt; docs/xhard-doc/xhard-${MMDD}-swapv2/records/v1_coll_freeze.sha256)" -eq 426 &amp;&amp; echo FREEZE=PASS files=426
 chmod -R a-w artifacts/xhard/xhard-1012-coll      # U1；恢复用 chmod -R u+w
 # 复核（阶段 D、E 结束后各一次）
-sha256sum --quiet -c docs/xhard-doc/xhard-MMDD-swapv2/records/v1_coll_freeze.sha256 &amp;&amp; \
+sha256sum --quiet -c docs/xhard-doc/xhard-${MMDD}-swapv2/records/v1_coll_freeze.sha256 &amp;&amp; \
   test "$(find artifacts/xhard/xhard-1012-coll -type f | wc -l)" -eq 426 &amp;&amp; echo OLD_RUN_INTACT=PASS files=426 mismatches=0
 
 # 0-b 预扫：30 母 seed，只 reset，含/不含按钮两列（主会话，主检出，W1 合并前跑完）
-tmux new-session -d -s xh-swapv2-scan-MMDD "set -o pipefail; cd /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006; CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 uv run --no-sync python docs/xhard-doc/xhard-MMDD-swapv2/records/graph_scan.py --manifest docs/xhard-doc/xhard-1012-coll/records/mother_seeds_all.json 2&gt;&amp;1 | tee artifacts/logs/xh-swapv2-scan-MMDD.log; echo \"EXIT_CODE=\$?\" &gt;&gt; artifacts/logs/xh-swapv2-scan-MMDD.log"
-# graph_scan.py 以 docs/xhard-doc/xhard-1012-swap-v2-probe/probe_g.py 为底，加按钮旁观物与 BUTTON_SHAPE 判定行
+tmux new-session -d -s xh-swapv2-scan-${MMDD} "set -o pipefail; cd /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006; CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 uv run --no-sync python docs/xhard-doc/xhard-${MMDD}-swapv2/records/graph_scan.py --manifest docs/xhard-doc/xhard-1012-coll/records/mother_seeds_all.json 2&gt;&amp;1 | tee artifacts/logs/xh-swapv2-scan-${MMDD}.log; echo \"EXIT_CODE=\$?\" &gt;&gt; artifacts/logs/xh-swapv2-scan-${MMDD}.log"
+# graph_scan.py 以 docs/xhard-doc/xhard-1012-swap-v2-probe/probe_g.py 为底：建 G 时传入按钮包络，输出「不含按钮 / 只用底座 / 包络」三列与 BUTTON_ENVELOPE 判定行
 
 # 母 seed 清单复制到新目录（不引用旧目录路径）
-test ! -e artifacts/xhard/xhard-MMDD-swapv2 &amp;&amp; mkdir -p artifacts/xhard/xhard-MMDD-swapv2 &amp;&amp; \
-  cp docs/xhard-doc/xhard-1012-coll/records/mother_seeds_all.json artifacts/xhard/xhard-MMDD-swapv2/mother_seeds_all.json
+test ! -e artifacts/xhard/xhard-${MMDD}-swapv2 &amp;&amp; mkdir -p artifacts/xhard/xhard-${MMDD}-swapv2 &amp;&amp; \
+  cp docs/xhard-doc/xhard-1012-coll/records/mother_seeds_all.json artifacts/xhard/xhard-${MMDD}-swapv2/mother_seeds_all.json
 
-# D1 GPU 契约与送达（GPU0，W2 合并后）
-CUDA_VISIBLE_DEVICES=0 timeout 600 uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py src/robomme_xhard/tests/test_fatal_catch.py -m gpu -q 2&gt;&amp;1 | tee artifacts/logs/xh-swapv2-d1-MMDD.log
+# D1 GPU 契约与送达（GPU0，W2 合并后；约 10 分钟，按第 7 条进 detached tmux，带 pipefail 与 EXIT_CODE）
+tmux new-session -d -s xh-swapv2-d1-${MMDD} "set -o pipefail; cd /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006; CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py src/robomme_xhard/tests/test_fatal_catch.py -m gpu -q -rf 2&gt;&amp;1 | tee artifacts/logs/xh-swapv2-d1-${MMDD}.log; echo \"EXIT_CODE=\$?\" &gt;&gt; artifacts/logs/xh-swapv2-d1-${MMDD}.log"
 
 # D2 smoke：4 张 xhard20，单 worker
-test ! -e artifacts/xhard/xhard-MMDD-swapv2/smoke &amp;&amp; \
+test ! -e artifacts/xhard/xhard-${MMDD}-swapv2/smoke &amp;&amp; \
 uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py \
   --env VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick --difficulty xhard20 \
-  --mother-manifest artifacts/xhard/xhard-MMDD-swapv2/smoke_seeds.json \
-  --gpus 0 --workers 1 --output-dir artifacts/xhard/xhard-MMDD-swapv2/smoke
+  --mother-manifest artifacts/xhard/xhard-${MMDD}-swapv2/smoke_seeds.json \
+  --gpus 0 --workers 1 --output-dir artifacts/xhard/xhard-${MMDD}-swapv2/smoke
 # smoke_seeds.json 从 mother_seeds_all.json 摘出 5700、9300（VUS）、10500（BUS）、11200（VR）
 
 # E 全量（报批后，Beta 提交后，运行型子代理起；命令前置 test ! -e）
-tmux new-session -d -s xh-swapv2-full-MMDD "set -o pipefail; cd /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006; test ! -e artifacts/xhard/xhard-MMDD-swapv2/full || exit 3; PYTHONUNBUFFERED=1 uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py --env VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick --difficulty xhard12,xhard14,xhard16,xhard18,xhard20 --mother-manifest artifacts/xhard/xhard-MMDD-swapv2/mother_seeds_all.json --with-mother --gpus 0 --workers 32 --output-dir artifacts/xhard/xhard-MMDD-swapv2/full 2&gt;&amp;1 | tee artifacts/logs/xh-swapv2-full-MMDD.log; echo \"EXIT_CODE=\$?\" &gt;&gt; artifacts/logs/xh-swapv2-full-MMDD.log"</code></pre>
+tmux new-session -d -s xh-swapv2-full-${MMDD} "set -o pipefail; cd /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006; test ! -e artifacts/xhard/xhard-${MMDD}-swapv2/full || exit 3; PYTHONUNBUFFERED=1 uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py --env VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick --difficulty xhard12,xhard14,xhard16,xhard18,xhard20 --mother-manifest artifacts/xhard/xhard-${MMDD}-swapv2/mother_seeds_all.json --with-mother --gpus 0 --workers 32 --output-dir artifacts/xhard/xhard-${MMDD}-swapv2/full 2&gt;&amp;1 | tee artifacts/logs/xh-swapv2-full-${MMDD}.log; echo \"EXIT_CODE=\$?\" &gt;&gt; artifacts/logs/xh-swapv2-full-${MMDD}.log"</code></pre>
 <pre><code># E 收尾：汇总与六列视频，全部写新根
-test ! -e artifacts/xhard/xhard-MMDD-swapv2/report &amp;&amp; \
-uv run --no-sync python -m robomme_xhard.tools.summarize --root artifacts/xhard/xhard-MMDD-swapv2/full \
-  --seeds artifacts/xhard/xhard-MMDD-swapv2/mother_seeds_all.json \
-  --out-md artifacts/xhard/xhard-MMDD-swapv2/report/summary.md --out-json artifacts/xhard/xhard-MMDD-swapv2/report/summary.json &amp;&amp; \
-uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifacts/xhard/xhard-MMDD-swapv2/full \
-  --seeds artifacts/xhard/xhard-MMDD-swapv2/mother_seeds_all.json --out-dir artifacts/xhard/xhard-MMDD-swapv2/report/per_episode_strip</code></pre>
+test ! -e artifacts/xhard/xhard-${MMDD}-swapv2/report &amp;&amp; \
+uv run --no-sync python -m robomme_xhard.tools.summarize --root artifacts/xhard/xhard-${MMDD}-swapv2/full \
+  --seeds artifacts/xhard/xhard-${MMDD}-swapv2/mother_seeds_all.json \
+  --out-md artifacts/xhard/xhard-${MMDD}-swapv2/report/summary.md --out-json artifacts/xhard/xhard-${MMDD}-swapv2/report/summary.json &amp;&amp; \
+uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifacts/xhard/xhard-${MMDD}-swapv2/full \
+  --seeds artifacts/xhard/xhard-${MMDD}-swapv2/mother_seeds_all.json --out-dir artifacts/xhard/xhard-${MMDD}-swapv2/report/per_episode_strip</code></pre>
 <p>Monitor 过滤：<code>succeeded with seed|EXIT_CODE=|SwapCollisionError|SwapBindingError|failed|进程池已损坏|ERROR:|Traceback|BrokenProcessPool|svulkan2|out of memory|NO RECORD</code>，一份日志挂一个 Monitor。停止条件沿用 v1 ⑤：进程池损坏、墙钟超过 1 小时、GPU0 被占满，或任一任务 <code>SwapBindingError</code> 超过 10%。</p>
 
 <h2 id="t5">五、风险登记</h2>
@@ -652,7 +685,7 @@ uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifa
 <tr><th>编号</th><th>风险</th><th>处置</th></tr>
 <tr><td>X1</td><td>非最近邻搭档的弯道更长，路径可能贴近按钮或机械臂；按钮已进判据（K13），机械臂仍是盲区</td><td>smoke 与全量视频目视抽查对角段</td></tr>
 <tr><td>X7</td><td>按钮进判据后可行槽对变少，口径 B 剔除上升</td><td>预扫给出含/不含按钮两列；剔除超过 6 个先停（U6）</td></tr>
-<tr><td>X8</td><td>按钮是关节体，碰撞盒读取方式未验证</td><td>预扫 <code>BUTTON_SHAPE</code> 先验证，失败即停，不手写盒体</td></tr>
+<tr><td>X8</td><td>按钮是关节体（底座盒体 + 按帽圆柱），原判据读不了（已实测）</td><td>用包络盒（3.5），<code>BUTTON_ENVELOPE</code> 不过即停，不手写尺寸</td></tr>
 <tr><td>X2</td><td>槽位绑定只看「离哪个槽最近」，两槽很近时允许的漂移变小</td><td>记录每段漂移 mm 与到第二近槽的余量；失败按 D2 记 fatal，交用户</td></tr>
 <tr><td>X3</td><td>V9 重排 20 次仍极差 &gt; 1（如 10500 型被 B 挡在前；口径 B 下仍可能出现）</td><td>取极差最小的一条，<code>spread_full</code>、<code>spread_prefix</code> 写进证据，汇总报分布</td></tr>
 <tr><td>X4</td><td>W1-c 恢复的 <code>3083af74</code> 生成器隐含依赖 v1 <code>SwapPlan</code> 字段</td><td>W2-a 保持 <code>pairs</code>、<code>usage</code>、<code>initiator_usage</code>、<code>partner_usage</code> 同名同形；合并后主检出复跑 <code>test_collision_tools.py</code>、<code>test_worker_evidence.py</code></td></tr>
@@ -665,7 +698,9 @@ uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifa
 <li>G 与运行期检查覆盖交换对象之间与按钮（K13）；机械臂、桌面不在判据内。</li>
 <li>口径 B 不保证连通：像 9300 这类布局只会在两对之间来回轮换，D1 的「净置换恒等」比例可能上升，汇总照报。</li>
 <li>30 个母 seed 的 G 分布目前只测了 3 个（不含按钮）；含按钮的剔除数要到阶段 0 预扫才知道。</li>
-<li>按钮碰撞盒读取方式未验证（X8）。</li>
+<li>按钮包络比真实几何多出按帽外一圈空间；推理认为对这三个任务判定等价，未数值验证，预扫三列对比核对。</li>
+<li>连续扫掠判据与父类实际路径之间的浮点差异是 v1 继承风险：段起点逐位核对只证明起点一致，不证明整段连续路径逐位一致；子步检查兜底。</li>
+<li>五档前缀依赖五档的初始布局、槽编号与 G 完全相同；GPU 契约测试对一个 seed 的五档逐项比对 <code>slots</code>、<code>graph</code> 与配对前缀。</li>
 <li>VideoRepick 11200 在 v2 下能否成功未验证。</li>
 <li>V9 引入的是纯函数；V9 环境里的外环干扰、提速、pick 改动都不引入。</li>
 </ul>
@@ -696,6 +731,13 @@ uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifa
 <tr><td>U12</td><td>档案名日期</td><td>取阶段 0 开工当天东部日期 <code>xhard-MMDD-swapv2</code></td><td>runbook 首行</td></tr>
 <tr><td>U13</td><td>smoke 卡</td><td>5700、9300、10500、11200 各一张 xhard20</td><td>runbook D2</td></tr>
 <tr><td>—</td><td>并行与回退</td><td>按审查建议：W1、W2 两个代理；冻结与预扫开工即同时跑</td><td>K14、第五、六节</td></tr>
+</table>
+<h3>8.1 Codex 静态审计后仍待用户确定（2026-10-12，审计锚点 <code>b6844733</code>）</h3>
+<table>
+<tr><th>编号</th><th>问题</th><th>推荐</th><th>备选</th></tr>
+<tr><td>V1</td><td>按钮几何怎么建模（原判据读不了关节体，也不收圆柱，已实测）</td><td>保守包络：从真实碰撞形状构造一个盒体（底座正方形 × 桌面到按帽顶），判据不改；预扫对比「包络 / 只用底座」两列</td><td>给判据加圆柱支持（改引入文件）；只用底座（漏按帽）</td></tr>
+<tr><td>V2</td><td>smoke 中 11200 失败是否阻断全量</td><td>11200 若因碰撞或槽位绑定被正常剔除（有判据证据），不阻断；若是接口或基础设施失败，阻断</td><td>11200 必须成功，否则停下</td></tr>
+<tr><td>V3</td><td>运行中「任一任务 <code>SwapBindingError</code> 超过 10%」停止条件的分母</td><td>按该任务计划的 xhard 卡数（每任务 50 张）计，即超过 5 张即停；运行中实时累计，不按已完成卡计（首张失败不会被算成 100%）</td><td>按母 seed 计（每任务 10 个，超过 1 个即停）</td></tr>
 </table>
 </main>
 </div>
