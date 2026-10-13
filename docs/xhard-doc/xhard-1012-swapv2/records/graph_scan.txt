@@ -1,0 +1,37 @@
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+SCAN VideoUnmaskSwap 5700 b_pass True isolated []
+SCAN VideoUnmaskSwap 6100 b_pass True isolated []
+SCAN VideoUnmaskSwap 6500 b_pass True isolated []
+SCAN VideoUnmaskSwap 6900 b_pass True isolated []
+SCAN VideoUnmaskSwap 7300 b_pass True isolated []
+SCAN VideoUnmaskSwap 7700 b_pass True isolated []
+SCAN VideoUnmaskSwap 8100 b_pass True isolated []
+SCAN VideoUnmaskSwap 8500 b_pass True isolated []
+SCAN VideoUnmaskSwap 8900 b_pass True isolated []
+SCAN VideoUnmaskSwap 9300 b_pass True isolated []
+SCAN ButtonUnmaskSwap 7700 b_pass True isolated []
+SCAN ButtonUnmaskSwap 8100 b_pass True isolated []
+SCAN ButtonUnmaskSwap 8500 b_pass True isolated []
+SCAN ButtonUnmaskSwap 8900 b_pass True isolated []
+SCAN ButtonUnmaskSwap 9300 b_pass True isolated []
+SCAN ButtonUnmaskSwap 9700 b_pass True isolated []
+SCAN ButtonUnmaskSwap 10100 b_pass True isolated []
+SCAN ButtonUnmaskSwap 10500 b_pass False isolated [3]
+SCAN ButtonUnmaskSwap 10900 b_pass True isolated []
+SCAN ButtonUnmaskSwap 11300 b_pass True isolated []
+SCAN VideoRepick 9600 b_pass True isolated []
+SCAN VideoRepick 10000 b_pass False isolated [0]
+SCAN VideoRepick 10400 b_pass False isolated [0]
+SCAN VideoRepick 10800 b_pass True isolated []
+SCAN VideoRepick 11200 b_pass True isolated []
+SCAN VideoRepick 11602 b_pass True isolated []
+SCAN VideoRepick 12000 b_pass True isolated []
+SCAN VideoRepick 12400 b_pass True isolated []
+SCAN VideoRepick 12800 b_pass True isolated []
+SCAN VideoRepick 13200 b_pass True isolated []
+BUTTON_ENVELOPE=PASS buttons=3 base_box=1 cap_cylinder=1 cap_inside_base=1
+SWAP_V2_GRAPH_SCAN=INFO seeds=30 b_pass=27 b_reject=3 base_envelope_diff=0
+EXIT_CODE=0

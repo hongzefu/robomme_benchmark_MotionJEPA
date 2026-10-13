@@ -1,0 +1,7912 @@
+{
+  "git_commit": "adefbe3e94b5fb2acfe78ec7ba69cf5611c74207",
+  "manifest_sha256": "56a0381bb78485a7373f6446a4a0007679c0aff3e5a0c347ad3c16528200e278",
+  "rows": [
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 7,
+      "seed": 5700,
+      "source_difficulty": "hard",
+      "rank": 0,
+      "verify": "unverified",
+      "slots": [
+        [
+          0.11564993858337402,
+          0.0050912220031023026,
+          0.052000001072883606
+        ],
+        [
+          -0.05032820627093315,
+          -0.09377527981996536,
+          0.052000001072883606
+        ],
+        [
+          -0.12766103446483612,
+          0.024737104773521423,
+          0.052000001072883606
+        ],
+        [
+          0.08749154955148697,
+          0.11821408569812775,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.032939557383106124,
+          "0-2": -0.00034973557071310904,
+          "0-3": 0.017596208954631723,
+          "1-2": 0.0373971010027756,
+          "1-3": -0.0009974728179388548,
+          "2-3": 0.004697836815111874
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.00034973557071310904,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 14,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0009974728179388548,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.032939557383106124,
+          "0-2": -0.00034973557071310904,
+          "0-3": 0.017596208954631723,
+          "1-2": 0.0373971010027756,
+          "1-3": -0.0009974728179388548,
+          "2-3": 0.004697836815111874
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.00034973557071310904,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 14,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0009974728179388548,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.032939557383106124,
+          "0-2": -0.00034973557071310904,
+          "0-3": 0.017596208954631723,
+          "1-2": 0.0373971010027756,
+          "1-3": -0.0009974728179388548,
+          "2-3": 0.004697836815111874
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.00034973557071310904,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 14,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0009974728179388548,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 11,
+      "seed": 6100,
+      "source_difficulty": "hard",
+      "rank": 1,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.10296108573675156,
+          -0.07879600673913956,
+          0.052000001072883606
+        ],
+        [
+          0.01864861510694027,
+          0.11021815240383148,
+          0.052000001072883606
+        ],
+        [
+          0.16032879054546356,
+          0.04682149365544319,
+          0.052000001072883606
+        ],
+        [
+          0.09393450617790222,
+          -0.16174238920211792,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.04419340950341069,
+          "0-2": -0.0003240955346354192,
+          "0-3": 0.043351332827683754,
+          "1-2": 0.04215832858961559,
+          "1-3": -2.7156693316762043e-05,
+          "2-3": 0.043827188675236474
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.0003240955346354192,
+            "s": 0.5625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.625,
+            "depth": 3,
+            "intervals_used": 17,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 5,
+            "gap_m": -2.7156693316762043e-05,
+            "s": 0.40625,
+            "sweep_index": -1,
+            "interval_low": 0.375,
+            "interval_high": 0.4375,
+            "depth": 4,
+            "intervals_used": 29,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.04419340950341069,
+          "0-2": -0.0003240955346354192,
+          "0-3": 0.043351332827683754,
+          "1-2": 0.04215832858961559,
+          "1-3": -2.7156693316762043e-05,
+          "2-3": 0.043827188675236474
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.0003240955346354192,
+            "s": 0.5625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.625,
+            "depth": 3,
+            "intervals_used": 17,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 5,
+            "gap_m": -2.7156693316762043e-05,
+            "s": 0.40625,
+            "sweep_index": -1,
+            "interval_low": 0.375,
+            "interval_high": 0.4375,
+            "depth": 4,
+            "intervals_used": 29,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.04419340950341069,
+          "0-2": -0.0003240955346354192,
+          "0-3": 0.043351332827683754,
+          "1-2": 0.04215832858961559,
+          "1-3": -2.7156693316762043e-05,
+          "2-3": 0.043827188675236474
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.0003240955346354192,
+            "s": 0.5625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.625,
+            "depth": 3,
+            "intervals_used": 17,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 5,
+            "gap_m": -2.7156693316762043e-05,
+            "s": 0.40625,
+            "sweep_index": -1,
+            "interval_low": 0.375,
+            "interval_high": 0.4375,
+            "depth": 4,
+            "intervals_used": 29,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 15,
+      "seed": 6500,
+      "source_difficulty": "hard",
+      "rank": 2,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.01931249536573887,
+          0.07467939704656601,
+          0.052000001072883606
+        ],
+        [
+          0.09772193431854248,
+          -0.09582003206014633,
+          0.052000001072883606
+        ],
+        [
+          -0.015003856271505356,
+          -0.10691779106855392,
+          0.052000001072883606
+        ],
+        [
+          -0.15291175246238708,
+          0.07671739161014557,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.008297069156973716,
+          "0-2": -0.00017938096232764317,
+          "0-3": 0.0316939911856808,
+          "1-2": 0.01599910393750759,
+          "1-3": -0.007477224247376721,
+          "2-3": -0.007289752934061176
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.008297069156973716,
+            "s": 0.375,
+            "sweep_index": -1,
+            "interval_low": 0.25,
+            "interval_high": 0.5,
+            "depth": 2,
+            "intervals_used": 18,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 1,
+            "shape_b": 2,
+            "gap_m": -0.00017938096232764317,
+            "s": 0.81640625,
+            "sweep_index": -1,
+            "interval_low": 0.8125,
+            "interval_high": 0.8203125,
+            "depth": 7,
+            "intervals_used": 47,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.007477224247376721,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.007289752934061176,
+            "s": 0.375,
+            "sweep_index": -1,
+            "interval_low": 0.25,
+            "interval_high": 0.5,
+            "depth": 2,
+            "intervals_used": 10,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.008297069156973716,
+          "0-2": -0.00017938096232764317,
+          "0-3": 0.0316939911856808,
+          "1-2": 0.01599910393750759,
+          "1-3": -0.007477224247376721,
+          "2-3": -0.007289752934061176
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.008297069156973716,
+            "s": 0.375,
+            "sweep_index": -1,
+            "interval_low": 0.25,
+            "interval_high": 0.5,
+            "depth": 2,
+            "intervals_used": 18,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 1,
+            "shape_b": 2,
+            "gap_m": -0.00017938096232764317,
+            "s": 0.81640625,
+            "sweep_index": -1,
+            "interval_low": 0.8125,
+            "interval_high": 0.8203125,
+            "depth": 7,
+            "intervals_used": 47,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.007477224247376721,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.007289752934061176,
+            "s": 0.375,
+            "sweep_index": -1,
+            "interval_low": 0.25,
+            "interval_high": 0.5,
+            "depth": 2,
+            "intervals_used": 10,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.008297069156973716,
+          "0-2": -0.00017938096232764317,
+          "0-3": 0.0316939911856808,
+          "1-2": 0.01599910393750759,
+          "1-3": -0.007477224247376721,
+          "2-3": -0.007289752934061176
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.008297069156973716,
+            "s": 0.375,
+            "sweep_index": -1,
+            "interval_low": 0.25,
+            "interval_high": 0.5,
+            "depth": 2,
+            "intervals_used": 18,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 1,
+            "shape_b": 2,
+            "gap_m": -0.00017938096232764317,
+            "s": 0.81640625,
+            "sweep_index": -1,
+            "interval_low": 0.8125,
+            "interval_high": 0.8203125,
+            "depth": 7,
+            "intervals_used": 47,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.007477224247376721,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.007289752934061176,
+            "s": 0.375,
+            "sweep_index": -1,
+            "interval_low": 0.25,
+            "interval_high": 0.5,
+            "depth": 2,
+            "intervals_used": 10,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 19,
+      "seed": 6900,
+      "source_difficulty": "hard",
+      "rank": 3,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.0743735209107399,
+          -0.002169840969145298,
+          0.052000001072883606
+        ],
+        [
+          0.034398049116134644,
+          0.12814392149448395,
+          0.052000001072883606
+        ],
+        [
+          0.11426729708909988,
+          -0.04529710114002228,
+          0.052000001072883606
+        ],
+        [
+          -0.045019347220659256,
+          -0.15740187466144562,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.03163975959062908,
+          "0-2": 0.0012048684949216744,
+          "0-3": 0.029374421039254636,
+          "1-2": 0.008955459445765998,
+          "1-3": -0.03999999855537101,
+          "2-3": 0.007175409269355299
+        },
+        "rejections": {
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.03999999855537101,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.03163975959062908,
+          "0-2": 0.0012048684949216744,
+          "0-3": 0.029374421039254636,
+          "1-2": 0.008955459445765998,
+          "1-3": -0.03999999855537101,
+          "2-3": 0.007175409269355299
+        },
+        "rejections": {
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.03999999855537101,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.03163975959062908,
+          "0-2": 0.0012048684949216744,
+          "0-3": 0.029374421039254636,
+          "1-2": 0.008955459445765998,
+          "1-3": -0.03999999855537101,
+          "2-3": 0.007175409269355299
+        },
+        "rejections": {
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.03999999855537101,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 23,
+      "seed": 7300,
+      "source_difficulty": "hard",
+      "rank": 4,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.08073581010103226,
+          0.08577432483434677,
+          0.052000001072883606
+        ],
+        [
+          0.10958459973335266,
+          0.00854398775845766,
+          0.052000001072883606
+        ],
+        [
+          0.03542061522603035,
+          -0.152060866355896,
+          0.052000001072883606
+        ],
+        [
+          -0.15595115721225739,
+          -0.04997006803750992,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.042203590851582366,
+          "0-2": 0.00026340602713547344,
+          "0-3": 0.04155309340867969,
+          "1-2": 0.040203846971586896,
+          "1-3": -0.0019304246867113545,
+          "2-3": 0.04329091898916893
+        },
+        "rejections": {
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.0019304246867113545,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.042203590851582366,
+          "0-2": 0.00026340602713547344,
+          "0-3": 0.04155309340867969,
+          "1-2": 0.040203846971586896,
+          "1-3": -0.0019304246867113545,
+          "2-3": 0.04329091898916893
+        },
+        "rejections": {
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.0019304246867113545,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.042203590851582366,
+          "0-2": 0.00026340602713547344,
+          "0-3": 0.04155309340867969,
+          "1-2": 0.040203846971586896,
+          "1-3": -0.0019304246867113545,
+          "2-3": 0.04329091898916893
+        },
+        "rejections": {
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.0019304246867113545,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 27,
+      "seed": 7700,
+      "source_difficulty": "hard",
+      "rank": 5,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.09446358680725098,
+          -0.11006125062704086,
+          0.052000001072883606
+        ],
+        [
+          -0.05667635425925255,
+          0.1477055698633194,
+          0.052000001072883606
+        ],
+        [
+          0.08434518426656723,
+          0.07737920433282852,
+          0.052000001072883606
+        ],
+        [
+          0.07194047421216965,
+          -0.11098860949277878,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.026171176318531813,
+          "0-2": -0.005040563432459958,
+          "0-3": 0.03883666103746324,
+          "1-2": 0.04330428766945156,
+          "1-3": -0.017432480005620633,
+          "2-3": 0.039809252815005684
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_2",
+            "object_b": "bin_3",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.005040563432459958,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 18,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.017432480005620633,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.026171176318531813,
+          "0-2": -0.005040563432459958,
+          "0-3": 0.03883666103746324,
+          "1-2": 0.04330428766945156,
+          "1-3": -0.017432480005620633,
+          "2-3": 0.039809252815005684
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_2",
+            "object_b": "bin_3",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.005040563432459958,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 18,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.017432480005620633,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.026171176318531813,
+          "0-2": -0.005040563432459958,
+          "0-3": 0.03883666103746324,
+          "1-2": 0.04330428766945156,
+          "1-3": -0.017432480005620633,
+          "2-3": 0.039809252815005684
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_2",
+            "object_b": "bin_3",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.005040563432459958,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 18,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.017432480005620633,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 31,
+      "seed": 8100,
+      "source_difficulty": "hard",
+      "rank": 6,
+      "verify": "unverified",
+      "slots": [
+        [
+          0.11684419214725494,
+          0.0866137146949768,
+          0.052000001072883606
+        ],
+        [
+          -0.004538271110504866,
+          -0.13902930915355682,
+          0.052000001072883606
+        ],
+        [
+          -0.15444771945476532,
+          -0.09251964837312698,
+          0.052000001072883606
+        ],
+        [
+          -0.06448443233966827,
+          0.09860386699438095,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.032248800110063584,
+          "0-2": -2.9857013491119133e-05,
+          "0-3": 0.043814216314089924,
+          "1-2": 0.03448318098557561,
+          "1-3": -0.0013943701860396653,
+          "2-3": 0.022000697460848952
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -2.9857013491119133e-05,
+            "s": 0.7138671875,
+            "sweep_index": -1,
+            "interval_low": 0.712890625,
+            "interval_high": 0.71484375,
+            "depth": 9,
+            "intervals_used": 66,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.0013943701860396653,
+            "s": 0.4375,
+            "sweep_index": -1,
+            "interval_low": 0.375,
+            "interval_high": 0.5,
+            "depth": 3,
+            "intervals_used": 20,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.032248800110063584,
+          "0-2": -2.9857013491119133e-05,
+          "0-3": 0.043814216314089924,
+          "1-2": 0.03448318098557561,
+          "1-3": -0.0013943701860396653,
+          "2-3": 0.022000697460848952
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -2.9857013491119133e-05,
+            "s": 0.7138671875,
+            "sweep_index": -1,
+            "interval_low": 0.712890625,
+            "interval_high": 0.71484375,
+            "depth": 9,
+            "intervals_used": 66,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.0013943701860396653,
+            "s": 0.4375,
+            "sweep_index": -1,
+            "interval_low": 0.375,
+            "interval_high": 0.5,
+            "depth": 3,
+            "intervals_used": 20,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.032248800110063584,
+          "0-2": -2.9857013491119133e-05,
+          "0-3": 0.043814216314089924,
+          "1-2": 0.03448318098557561,
+          "1-3": -0.0013943701860396653,
+          "2-3": 0.022000697460848952
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -2.9857013491119133e-05,
+            "s": 0.7138671875,
+            "sweep_index": -1,
+            "interval_low": 0.712890625,
+            "interval_high": 0.71484375,
+            "depth": 9,
+            "intervals_used": 66,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.0013943701860396653,
+            "s": 0.4375,
+            "sweep_index": -1,
+            "interval_low": 0.375,
+            "interval_high": 0.5,
+            "depth": 3,
+            "intervals_used": 20,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 35,
+      "seed": 8500,
+      "source_difficulty": "hard",
+      "rank": 7,
+      "verify": "unverified",
+      "slots": [
+        [
+          0.03175363317131996,
+          0.12695565819740295,
+          0.052000001072883606
+        ],
+        [
+          0.12897391617298126,
+          -0.059346165508031845,
+          0.052000001072883606
+        ],
+        [
+          -0.045149486511945724,
+          -0.14266851544380188,
+          0.052000001072883606
+        ],
+        [
+          -0.1649024933576584,
+          0.0366651751101017,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.05034748214394186,
+          "0-2": 0.0036533716163202647,
+          "0-3": 0.051749486812370515,
+          "1-2": 0.04391552402378272,
+          "1-3": -0.00016899666435105445,
+          "2-3": 0.04707157573926719
+        },
+        "rejections": {
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 2,
+            "gap_m": -0.00016899666435105445,
+            "s": 0.515625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.53125,
+            "depth": 5,
+            "intervals_used": 41,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.05034748214394186,
+          "0-2": 0.0036533716163202647,
+          "0-3": 0.051749486812370515,
+          "1-2": 0.04391552402378272,
+          "1-3": -0.00016899666435105445,
+          "2-3": 0.04707157573926719
+        },
+        "rejections": {
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 2,
+            "gap_m": -0.00016899666435105445,
+            "s": 0.515625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.53125,
+            "depth": 5,
+            "intervals_used": 41,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.05034748214394186,
+          "0-2": 0.0036533716163202647,
+          "0-3": 0.051749486812370515,
+          "1-2": 0.04391552402378272,
+          "1-3": -0.00016899666435105445,
+          "2-3": 0.04707157573926719
+        },
+        "rejections": {
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 2,
+            "gap_m": -0.00016899666435105445,
+            "s": 0.515625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.53125,
+            "depth": 5,
+            "intervals_used": 41,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 39,
+      "seed": 8900,
+      "source_difficulty": "hard",
+      "rank": 8,
+      "verify": "unverified",
+      "slots": [
+        [
+          0.06922047585248947,
+          -0.021492574363946915,
+          0.052000001072883606
+        ],
+        [
+          -0.11993265151977539,
+          -0.07736283540725708,
+          0.052000001072883606
+        ],
+        [
+          -0.1570749282836914,
+          0.05996467545628548,
+          0.052000001072883606
+        ],
+        [
+          0.04135535657405853,
+          0.13702762126922607,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.020300240887733634,
+          "0-2": -0.006911127687541478,
+          "0-3": 0.035160131107498854,
+          "1-2": 0.03873692974404466,
+          "1-3": -0.0010929985901299427,
+          "2-3": 0.03170382031634286
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.006911127687541478,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 22,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0010929985901299427,
+            "s": 0.4375,
+            "sweep_index": -1,
+            "interval_low": 0.375,
+            "interval_high": 0.5,
+            "depth": 3,
+            "intervals_used": 14,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.020300240887733634,
+          "0-2": -0.006911127687541478,
+          "0-3": 0.035160131107498854,
+          "1-2": 0.03873692974404466,
+          "1-3": -0.0010929985901299427,
+          "2-3": 0.03170382031634286
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.006911127687541478,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 22,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0010929985901299427,
+            "s": 0.4375,
+            "sweep_index": -1,
+            "interval_low": 0.375,
+            "interval_high": 0.5,
+            "depth": 3,
+            "intervals_used": 14,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.020300240887733634,
+          "0-2": -0.006911127687541478,
+          "0-3": 0.035160131107498854,
+          "1-2": 0.03873692974404466,
+          "1-3": -0.0010929985901299427,
+          "2-3": 0.03170382031634286
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.006911127687541478,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 22,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0010929985901299427,
+            "s": 0.4375,
+            "sweep_index": -1,
+            "interval_low": 0.375,
+            "interval_high": 0.5,
+            "depth": 3,
+            "intervals_used": 14,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 43,
+      "seed": 9300,
+      "source_difficulty": "hard",
+      "rank": 9,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.0675128847360611,
+          -0.017529450356960297,
+          0.052000001072883606
+        ],
+        [
+          0.010081237182021141,
+          0.1295798420906067,
+          0.052000001072883606
+        ],
+        [
+          0.10157795995473862,
+          0.026445047929883003,
+          0.052000001072883606
+        ],
+        [
+          0.017559386789798737,
+          -0.16983450949192047,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.0016987064352516567,
+          "0-2": -0.0005089731846702021,
+          "0-3": 0.03778835939914757,
+          "1-2": 0.012885373447309521,
+          "1-3": -0.0357918077556815,
+          "2-3": -0.000294271089920993
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 1,
+            "shape_b": 2,
+            "gap_m": -0.0016987064352516567,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.0005089731846702021,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 18,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0357918077556815,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 1,
+            "shape_b": 3,
+            "gap_m": -0.000294271089920993,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.0016987064352516567,
+          "0-2": -0.0005089731846702021,
+          "0-3": 0.03778835939914757,
+          "1-2": 0.012885373447309521,
+          "1-3": -0.0357918077556815,
+          "2-3": -0.000294271089920993
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 1,
+            "shape_b": 2,
+            "gap_m": -0.0016987064352516567,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.0005089731846702021,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 18,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0357918077556815,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 1,
+            "shape_b": 3,
+            "gap_m": -0.000294271089920993,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.0016987064352516567,
+          "0-2": -0.0005089731846702021,
+          "0-3": 0.03778835939914757,
+          "1-2": 0.012885373447309521,
+          "1-3": -0.0357918077556815,
+          "2-3": -0.000294271089920993
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 1,
+            "shape_b": 2,
+            "gap_m": -0.0016987064352516567,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.0005089731846702021,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 18,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0357918077556815,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 1,
+            "shape_b": 3,
+            "gap_m": -0.000294271089920993,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 7,
+      "seed": 7700,
+      "source_difficulty": "hard",
+      "rank": 0,
+      "verify": "unverified",
+      "slots": [
+        [
+          0.030168887227773666,
+          -0.03858683258295059,
+          0.052000001072883606
+        ],
+        [
+          0.011545437388122082,
+          0.14432796835899353,
+          0.052000001072883606
+        ],
+        [
+          0.12010901421308517,
+          0.15203331410884857,
+          0.052000001072883606
+        ],
+        [
+          0.12794442474842072,
+          -0.10323956608772278,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.23930712789297104,
+            -0.12241590768098831,
+            0.0
+          ],
+          "base_high": [
+            -0.1643071249127388,
+            -0.04741590470075607,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.22430712850615403,
+            -0.10741590708494186,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.1793071242995558,
+            -0.06241590529680252,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.23930712789297104,
+            -0.12241590768098831,
+            0.0
+          ],
+          "envelope_high": [
+            -0.1643071249127388,
+            -0.04741590470075607,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        },
+        {
+          "name": "button_right",
+          "base_low": [
+            -0.252011738717556,
+            0.04913648962974548,
+            0.0
+          ],
+          "base_high": [
+            -0.17701173573732376,
+            0.12413649260997772,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.237011739330739,
+            0.06413649022579193,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.19201173512414077,
+            0.10913649201393127,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.252011738717556,
+            0.04913648962974548,
+            0.0
+          ],
+          "envelope_high": [
+            -0.17701173573732376,
+            0.12413649260997772,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.002889450447170299,
+          "0-2": -0.005482814916044718,
+          "0-3": 0.02598481412773854,
+          "1-2": 0.012133529928545748,
+          "1-3": -0.006650256819322697,
+          "2-3": -0.0003369574439446056
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.005482814916044718,
+            "s": 0.75,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 1.0,
+            "depth": 1,
+            "intervals_used": 11,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.006650256819322697,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0003369574439446056,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.002889450447170299,
+          "0-2": -0.005482814916044718,
+          "0-3": 0.02598481412773854,
+          "1-2": 0.012133529928545748,
+          "1-3": -0.006650256819322697,
+          "2-3": -0.0003369574439446056
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.005482814916044718,
+            "s": 0.75,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 1.0,
+            "depth": 1,
+            "intervals_used": 11,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.006650256819322697,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0003369574439446056,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.002889450447170299,
+          "0-2": -0.005482814916044718,
+          "0-3": 0.02598481412773854,
+          "1-2": 0.012133529928545748,
+          "1-3": -0.006650256819322697,
+          "2-3": -0.0003369574439446056
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.005482814916044718,
+            "s": 0.75,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 1.0,
+            "depth": 1,
+            "intervals_used": 11,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.006650256819322697,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0003369574439446056,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 11,
+      "seed": 8100,
+      "source_difficulty": "hard",
+      "rank": 1,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.0016893133288249373,
+          -0.07876959443092346,
+          0.052000001072883606
+        ],
+        [
+          -0.012598305009305477,
+          0.08614175766706467,
+          0.052000001072883606
+        ],
+        [
+          0.09072332829236984,
+          0.13216516375541687,
+          0.052000001072883606
+        ],
+        [
+          0.1398019939661026,
+          -0.058964334428310394,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.22546348720788956,
+            -0.11287535727024078,
+            0.0
+          ],
+          "base_high": [
+            -0.15046348422765732,
+            -0.037875354290008545,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.21046348782107255,
+            -0.09787535667419434,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.16546348361447433,
+            -0.05287535488605499,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.22546348720788956,
+            -0.11287535727024078,
+            0.0
+          ],
+          "envelope_high": [
+            -0.15046348422765732,
+            -0.037875354290008545,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        },
+        {
+          "name": "button_right",
+          "base_low": [
+            -0.21969515830278397,
+            0.07183558493852615,
+            0.0
+          ],
+          "base_high": [
+            -0.14469515532255173,
+            0.1468355879187584,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.20469515891596696,
+            0.0868355855345726,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.15969515470936874,
+            0.13183558732271194,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.21969515830278397,
+            0.07183558493852615,
+            0.0
+          ],
+          "envelope_high": [
+            -0.14469515532255173,
+            0.1468355879187584,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.018474528919217255,
+          "0-2": -0.01719350298925913,
+          "0-3": 0.035926216584475666,
+          "1-2": 0.01772517147677475,
+          "1-3": -0.004001599424623158,
+          "2-3": -0.0006956375525436903
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.01719350298925913,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.004001599424623158,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_1",
+            "shape_a": 1,
+            "shape_b": 3,
+            "gap_m": -0.0006956375525436903,
+            "s": 0.75,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 1.0,
+            "depth": 1,
+            "intervals_used": 9,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.018474528919217255,
+          "0-2": -0.01719350298925913,
+          "0-3": 0.035926216584475666,
+          "1-2": 0.01772517147677475,
+          "1-3": -0.004001599424623158,
+          "2-3": -0.0006956375525436903
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.01719350298925913,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.004001599424623158,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_1",
+            "shape_a": 1,
+            "shape_b": 3,
+            "gap_m": -0.0006956375525436903,
+            "s": 0.75,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 1.0,
+            "depth": 1,
+            "intervals_used": 9,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.018474528919217255,
+          "0-2": -0.01719350298925913,
+          "0-3": 0.035926216584475666,
+          "1-2": 0.01772517147677475,
+          "1-3": -0.004001599424623158,
+          "2-3": -0.0006956375525436903
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.01719350298925913,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.004001599424623158,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_1",
+            "shape_a": 1,
+            "shape_b": 3,
+            "gap_m": -0.0006956375525436903,
+            "s": 0.75,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 1.0,
+            "depth": 1,
+            "intervals_used": 9,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 15,
+      "seed": 8500,
+      "source_difficulty": "hard",
+      "rank": 2,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.002097031567245722,
+          -0.0029960789252072573,
+          0.052000001072883606
+        ],
+        [
+          0.016406040638685226,
+          0.1975644826889038,
+          0.052000001072883606
+        ],
+        [
+          0.11769238114356995,
+          0.23111338913440704,
+          0.052000001072883606
+        ],
+        [
+          0.11737865954637527,
+          0.031682148575782776,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.21862975507974625,
+            -0.1527533158659935,
+            0.0
+          ],
+          "base_high": [
+            -0.143629752099514,
+            -0.07775331288576126,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.20362975569292924,
+            -0.13775331526994705,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.15862975148633102,
+            -0.09275331348180771,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.21862975507974625,
+            -0.1527533158659935,
+            0.0
+          ],
+          "envelope_high": [
+            -0.143629752099514,
+            -0.07775331288576126,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        },
+        {
+          "name": "button_right",
+          "base_low": [
+            -0.2144254371523857,
+            0.07156017422676086,
+            0.0
+          ],
+          "base_high": [
+            -0.13942543417215347,
+            0.1465601772069931,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.1994254377655687,
+            0.08656017482280731,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.15442543355897048,
+            0.13156017661094666,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.2144254371523857,
+            0.07156017422676086,
+            0.0
+          ],
+          "envelope_high": [
+            -0.13942543417215347,
+            0.1465601772069931,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.00011197466907887643,
+          "0-2": -0.020488250296913594,
+          "0-3": 0.023979644355308367,
+          "1-2": 0.016193605998170896,
+          "1-3": -0.0012442111332599368,
+          "2-3": -0.003915138509602525
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_3",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.00011197466907887643,
+            "s": 0.6875,
+            "sweep_index": -1,
+            "interval_low": 0.625,
+            "interval_high": 0.75,
+            "depth": 3,
+            "intervals_used": 58,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.020488250296913594,
+            "s": 0.75,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 1.0,
+            "depth": 1,
+            "intervals_used": 13,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 5,
+            "shape_b": 4,
+            "gap_m": -0.0012442111332599368,
+            "s": 0.375,
+            "sweep_index": -1,
+            "interval_low": 0.25,
+            "interval_high": 0.5,
+            "depth": 2,
+            "intervals_used": 14,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.003915138509602525,
+            "s": 0.75,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 1.0,
+            "depth": 1,
+            "intervals_used": 11,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.00011197466907887643,
+          "0-2": -0.020488250296913594,
+          "0-3": 0.023979644355308367,
+          "1-2": 0.016193605998170896,
+          "1-3": -0.0012442111332599368,
+          "2-3": -0.003915138509602525
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_3",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.00011197466907887643,
+            "s": 0.6875,
+            "sweep_index": -1,
+            "interval_low": 0.625,
+            "interval_high": 0.75,
+            "depth": 3,
+            "intervals_used": 58,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.020488250296913594,
+            "s": 0.75,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 1.0,
+            "depth": 1,
+            "intervals_used": 13,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 5,
+            "shape_b": 4,
+            "gap_m": -0.0012442111332599368,
+            "s": 0.375,
+            "sweep_index": -1,
+            "interval_low": 0.25,
+            "interval_high": 0.5,
+            "depth": 2,
+            "intervals_used": 14,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.003915138509602525,
+            "s": 0.75,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 1.0,
+            "depth": 1,
+            "intervals_used": 11,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.00011197466907887643,
+          "0-2": -0.020488250296913594,
+          "0-3": 0.023979644355308367,
+          "1-2": 0.016193605998170896,
+          "1-3": -0.0012442111332599368,
+          "2-3": -0.003915138509602525
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_3",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.00011197466907887643,
+            "s": 0.6875,
+            "sweep_index": -1,
+            "interval_low": 0.625,
+            "interval_high": 0.75,
+            "depth": 3,
+            "intervals_used": 58,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.020488250296913594,
+            "s": 0.75,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 1.0,
+            "depth": 1,
+            "intervals_used": 13,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 5,
+            "shape_b": 4,
+            "gap_m": -0.0012442111332599368,
+            "s": 0.375,
+            "sweep_index": -1,
+            "interval_low": 0.25,
+            "interval_high": 0.5,
+            "depth": 2,
+            "intervals_used": 14,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.003915138509602525,
+            "s": 0.75,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 1.0,
+            "depth": 1,
+            "intervals_used": 11,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 19,
+      "seed": 8900,
+      "source_difficulty": "hard",
+      "rank": 3,
+      "verify": "unverified",
+      "slots": [
+        [
+          0.04183060675859451,
+          -0.031290069222450256,
+          0.052000001072883606
+        ],
+        [
+          -0.03972705453634262,
+          0.2269732654094696,
+          0.052000001072883606
+        ],
+        [
+          0.07018214464187622,
+          0.11789453774690628,
+          0.052000001072883606
+        ],
+        [
+          0.13504758477210999,
+          -0.12621468305587769,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.22713474184274673,
+            -0.14979668706655502,
+            0.0
+          ],
+          "base_high": [
+            -0.1521347388625145,
+            -0.07479668408632278,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.21213474245592973,
+            -0.13479668647050858,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.1671347382493315,
+            -0.08979668468236923,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.22713474184274673,
+            -0.14979668706655502,
+            0.0
+          ],
+          "envelope_high": [
+            -0.1521347388625145,
+            -0.07479668408632278,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        },
+        {
+          "name": "button_right",
+          "base_low": [
+            -0.2598995640873909,
+            0.06833547353744507,
+            0.0
+          ],
+          "base_high": [
+            -0.18489956110715866,
+            0.1433354765176773,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.2448995647005739,
+            0.08333547413349152,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.19989956049397567,
+            0.12833547592163086,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.2598995640873909,
+            0.06833547353744507,
+            0.0
+          ],
+          "envelope_high": [
+            -0.18489956110715866,
+            0.1433354765176773,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            false,
+            true,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.03999999901619547,
+          "0-2": 0.02988747928155165,
+          "0-3": 0.03274048928398139,
+          "1-2": 0.043231612017297485,
+          "1-3": -0.01943434036497939,
+          "2-3": -0.034378401643772066
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.03999999901619547,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.01943434036497939,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.034378401643772066,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            false,
+            true,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.03999999901619547,
+          "0-2": 0.02988747928155165,
+          "0-3": 0.03274048928398139,
+          "1-2": 0.043231612017297485,
+          "1-3": -0.01943434036497939,
+          "2-3": -0.034378401643772066
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.03999999901619547,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.01943434036497939,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.034378401643772066,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            false,
+            true,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.03999999901619547,
+          "0-2": 0.02988747928155165,
+          "0-3": 0.03274048928398139,
+          "1-2": 0.043231612017297485,
+          "1-3": -0.01943434036497939,
+          "2-3": -0.034378401643772066
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.03999999901619547,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.01943434036497939,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.034378401643772066,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 23,
+      "seed": 9300,
+      "source_difficulty": "hard",
+      "rank": 4,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.03481853008270264,
+          -0.027829932048916817,
+          0.052000001072883606
+        ],
+        [
+          -0.014986304566264153,
+          0.17548313736915588,
+          0.052000001072883606
+        ],
+        [
+          0.11164821684360504,
+          0.13053296506404877,
+          0.052000001072883606
+        ],
+        [
+          0.11992372572422028,
+          -0.06640385091304779,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.2551041468977928,
+            -0.12957888841629028,
+            0.0
+          ],
+          "base_high": [
+            -0.18010414391756058,
+            -0.054578885436058044,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.2401041475109758,
+            -0.11457888782024384,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.1951041433043776,
+            -0.06957888603210449,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.2551041468977928,
+            -0.12957888841629028,
+            0.0
+          ],
+          "envelope_high": [
+            -0.18010414391756058,
+            -0.054578885436058044,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        },
+        {
+          "name": "button_right",
+          "base_low": [
+            -0.21337328106164932,
+            0.06799019873142242,
+            0.0
+          ],
+          "base_high": [
+            -0.13837327808141708,
+            0.14299020171165466,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.1983732816748323,
+            0.08299019932746887,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.1533732774682341,
+            0.12799020111560822,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.21337328106164932,
+            0.06799019873142242,
+            0.0
+          ],
+          "envelope_high": [
+            -0.13837327808141708,
+            0.14299020171165466,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.0019715874970113183,
+          "0-2": -0.003999994907502901,
+          "0-3": 0.03436558019135934,
+          "1-2": 0.03292593876409326,
+          "1-3": -0.0014098678888901546,
+          "2-3": 0.009133204438376744
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.003999994907502901,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 12,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0014098678888901546,
+            "s": 0.375,
+            "sweep_index": -1,
+            "interval_low": 0.25,
+            "interval_high": 0.5,
+            "depth": 2,
+            "intervals_used": 6,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.0019715874970113183,
+          "0-2": -0.003999994907502901,
+          "0-3": 0.03436558019135934,
+          "1-2": 0.03292593876409326,
+          "1-3": -0.0014098678888901546,
+          "2-3": 0.009133204438376744
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.003999994907502901,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 12,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0014098678888901546,
+            "s": 0.375,
+            "sweep_index": -1,
+            "interval_low": 0.25,
+            "interval_high": 0.5,
+            "depth": 2,
+            "intervals_used": 6,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.0019715874970113183,
+          "0-2": -0.003999994907502901,
+          "0-3": 0.03436558019135934,
+          "1-2": 0.03292593876409326,
+          "1-3": -0.0014098678888901546,
+          "2-3": 0.009133204438376744
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.003999994907502901,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 12,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0014098678888901546,
+            "s": 0.375,
+            "sweep_index": -1,
+            "interval_low": 0.25,
+            "interval_high": 0.5,
+            "depth": 2,
+            "intervals_used": 6,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 27,
+      "seed": 9700,
+      "source_difficulty": "hard",
+      "rank": 5,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.015627574175596237,
+          -0.02545849233865738,
+          0.052000001072883606
+        ],
+        [
+          -0.02318411134183407,
+          0.15798132121562958,
+          0.052000001072883606
+        ],
+        [
+          0.12687011063098907,
+          0.14470115303993225,
+          0.052000001072883606
+        ],
+        [
+          0.08359669893980026,
+          -0.049617037177085876,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.2141062095761299,
+            -0.13604343682527542,
+            0.0
+          ],
+          "base_high": [
+            -0.13910620659589767,
+            -0.06104343384504318,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.1991062101893129,
+            -0.12104343622922897,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.15410620598271468,
+            -0.07604343444108963,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.2141062095761299,
+            -0.13604343682527542,
+            0.0
+          ],
+          "envelope_high": [
+            -0.13910620659589767,
+            -0.06104343384504318,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        },
+        {
+          "name": "button_right",
+          "base_low": [
+            -0.23455985635519028,
+            0.04428856819868088,
+            0.0
+          ],
+          "base_high": [
+            -0.15955985337495804,
+            0.11928857117891312,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.21955985696837327,
+            0.059288568794727325,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.17455985276177505,
+            0.10428857058286667,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.23455985635519028,
+            0.04428856819868088,
+            0.0
+          ],
+          "envelope_high": [
+            -0.15955985337495804,
+            0.11928857117891312,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.021622442991854448,
+          "0-2": -0.003999995520101203,
+          "0-3": 0.009495694402048907,
+          "1-2": 0.04153819994010338,
+          "1-3": -0.0010270198387677155,
+          "2-3": -0.003102139289466316
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.003999995520101203,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0010270198387677155,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.003102139289466316,
+            "s": 0.1875,
+            "sweep_index": -1,
+            "interval_low": 0.125,
+            "interval_high": 0.25,
+            "depth": 3,
+            "intervals_used": 9,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.021622442991854448,
+          "0-2": -0.003999995520101203,
+          "0-3": 0.009495694402048907,
+          "1-2": 0.04153819994010338,
+          "1-3": -0.0010270198387677155,
+          "2-3": -0.003102139289466316
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.003999995520101203,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0010270198387677155,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.003102139289466316,
+            "s": 0.1875,
+            "sweep_index": -1,
+            "interval_low": 0.125,
+            "interval_high": 0.25,
+            "depth": 3,
+            "intervals_used": 9,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.021622442991854448,
+          "0-2": -0.003999995520101203,
+          "0-3": 0.009495694402048907,
+          "1-2": 0.04153819994010338,
+          "1-3": -0.0010270198387677155,
+          "2-3": -0.003102139289466316
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.003999995520101203,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0010270198387677155,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.003102139289466316,
+            "s": 0.1875,
+            "sweep_index": -1,
+            "interval_low": 0.125,
+            "interval_high": 0.25,
+            "depth": 3,
+            "intervals_used": 9,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 31,
+      "seed": 10100,
+      "source_difficulty": "hard",
+      "rank": 6,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.02201281674206257,
+          0.005852768197655678,
+          0.052000001072883606
+        ],
+        [
+          0.009042997844517231,
+          0.21849265694618225,
+          0.052000001072883606
+        ],
+        [
+          0.13099707663059235,
+          0.12706616520881653,
+          0.052000001072883606
+        ],
+        [
+          0.1027260571718216,
+          -0.09795673191547394,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.2417924627661705,
+            -0.13053768128156662,
+            0.0
+          ],
+          "base_high": [
+            -0.16679245978593826,
+            -0.05553767830133438,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.2267924633793535,
+            -0.11553768068552017,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.18179245917275527,
+            -0.07053767889738083,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.2417924627661705,
+            -0.13053768128156662,
+            0.0
+          ],
+          "envelope_high": [
+            -0.16679245978593826,
+            -0.05553767830133438,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        },
+        {
+          "name": "button_right",
+          "base_low": [
+            -0.2345416024327278,
+            0.05257023125886917,
+            0.0
+          ],
+          "base_high": [
+            -0.15954159945249557,
+            0.1275702342391014,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.2195416030459108,
+            0.06757023185491562,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.17454159883931258,
+            0.11257023364305496,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.2345416024327278,
+            0.05257023125886917,
+            0.0
+          ],
+          "envelope_high": [
+            -0.15954159945249557,
+            0.1275702342391014,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            false,
+            true,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.00018699202808467996,
+          "0-2": 0.01814642036152513,
+          "0-3": 0.04223772953696603,
+          "1-2": 0.04011628243336922,
+          "1-3": -0.01399097962000894,
+          "2-3": -0.00028273791650332974
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 1,
+            "shape_b": 2,
+            "gap_m": -0.00018699202808467996,
+            "s": 0.390625,
+            "sweep_index": -1,
+            "interval_low": 0.375,
+            "interval_high": 0.40625,
+            "depth": 5,
+            "intervals_used": 24,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.01399097962000894,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.00028273791650332974,
+            "s": 0.453125,
+            "sweep_index": -1,
+            "interval_low": 0.4375,
+            "interval_high": 0.46875,
+            "depth": 5,
+            "intervals_used": 35,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            false,
+            true,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.00018699202808467996,
+          "0-2": 0.01814642036152513,
+          "0-3": 0.04223772953696603,
+          "1-2": 0.04011628243336922,
+          "1-3": -0.01399097962000894,
+          "2-3": -0.00028273791650332974
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 1,
+            "shape_b": 2,
+            "gap_m": -0.00018699202808467996,
+            "s": 0.390625,
+            "sweep_index": -1,
+            "interval_low": 0.375,
+            "interval_high": 0.40625,
+            "depth": 5,
+            "intervals_used": 24,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.01399097962000894,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.00028273791650332974,
+            "s": 0.453125,
+            "sweep_index": -1,
+            "interval_low": 0.4375,
+            "interval_high": 0.46875,
+            "depth": 5,
+            "intervals_used": 35,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            false,
+            true,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.00018699202808467996,
+          "0-2": 0.01814642036152513,
+          "0-3": 0.04223772953696603,
+          "1-2": 0.04011628243336922,
+          "1-3": -0.01399097962000894,
+          "2-3": -0.00028273791650332974
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 1,
+            "shape_b": 2,
+            "gap_m": -0.00018699202808467996,
+            "s": 0.390625,
+            "sweep_index": -1,
+            "interval_low": 0.375,
+            "interval_high": 0.40625,
+            "depth": 5,
+            "intervals_used": 24,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.01399097962000894,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.00028273791650332974,
+            "s": 0.453125,
+            "sweep_index": -1,
+            "interval_low": 0.4375,
+            "interval_high": 0.46875,
+            "depth": 5,
+            "intervals_used": 35,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 35,
+      "seed": 10500,
+      "source_difficulty": "hard",
+      "rank": 7,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.02034076489508152,
+          0.007940218783915043,
+          0.052000001072883606
+        ],
+        [
+          0.02964506670832634,
+          0.20141367614269257,
+          0.052000001072883606
+        ],
+        [
+          0.06814295798540115,
+          0.08436574786901474,
+          0.052000001072883606
+        ],
+        [
+          0.1404838114976883,
+          -0.09814997017383575,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.2248603031039238,
+            -0.12809409201145172,
+            0.0
+          ],
+          "base_high": [
+            -0.14986030012369156,
+            -0.05309408903121948,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.2098603037171068,
+            -0.11309409141540527,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.16486029951050857,
+            -0.06809408962726593,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.2248603031039238,
+            -0.12809409201145172,
+            0.0
+          ],
+          "envelope_high": [
+            -0.14986030012369156,
+            -0.05309408903121948,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        },
+        {
+          "name": "button_right",
+          "base_low": [
+            -0.2509893551468849,
+            0.04523412138223648,
+            0.0
+          ],
+          "base_high": [
+            -0.17598935216665268,
+            0.12023412436246872,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.2359893557600679,
+            0.06023412197828293,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.1909893515534697,
+            0.10523412376642227,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.2509893551468849,
+            0.04523412138223648,
+            0.0
+          ],
+          "envelope_high": [
+            -0.17598935216665268,
+            0.12023412436246872,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.03919545860388106,
+          "0-2": 0.02046931612097013,
+          "0-3": -0.00043695588946612157,
+          "1-2": 0.02267922594824991,
+          "1-3": -0.0030001198528172048,
+          "2-3": -0.00010410759932771158
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.03919545860388106,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "0-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_2",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.00043695588946612157,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0030001198528172048,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.00010410759932771158,
+            "s": 0.78125,
+            "sweep_index": -1,
+            "interval_low": 0.75,
+            "interval_high": 0.8125,
+            "depth": 4,
+            "intervals_used": 69,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [
+          3
+        ],
+        "b_pass": false
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.03919545860388106,
+          "0-2": 0.02046931612097013,
+          "0-3": -0.00043695588946612157,
+          "1-2": 0.02267922594824991,
+          "1-3": -0.0030001198528172048,
+          "2-3": -0.00010410759932771158
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.03919545860388106,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "0-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_2",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.00043695588946612157,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0030001198528172048,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.00010410759932771158,
+            "s": 0.78125,
+            "sweep_index": -1,
+            "interval_low": 0.75,
+            "interval_high": 0.8125,
+            "depth": 4,
+            "intervals_used": 69,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [
+          3
+        ],
+        "b_pass": false
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            false,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.03919545860388106,
+          "0-2": 0.02046931612097013,
+          "0-3": -0.00043695588946612157,
+          "1-2": 0.02267922594824991,
+          "1-3": -0.0030001198528172048,
+          "2-3": -0.00010410759932771158
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.03919545860388106,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "0-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_2",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.00043695588946612157,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          },
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.0030001198528172048,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 1,
+            "gap_m": -0.00010410759932771158,
+            "s": 0.78125,
+            "sweep_index": -1,
+            "interval_low": 0.75,
+            "interval_high": 0.8125,
+            "depth": 4,
+            "intervals_used": 69,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [
+          3
+        ],
+        "b_pass": false
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 39,
+      "seed": 10900,
+      "source_difficulty": "hard",
+      "rank": 8,
+      "verify": "unverified",
+      "slots": [
+        [
+          0.030625080689787865,
+          -0.023582367226481438,
+          0.052000001072883606
+        ],
+        [
+          -0.04236855357885361,
+          0.17554374039173126,
+          0.052000001072883606
+        ],
+        [
+          0.08988447487354279,
+          0.17892125248908997,
+          0.052000001072883606
+        ],
+        [
+          0.13785320520401,
+          -0.06292499601840973,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.23554808646440506,
+            -0.15083344280719757,
+            0.0
+          ],
+          "base_high": [
+            -0.16054808348417282,
+            -0.07583343982696533,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.22054808707758805,
+            -0.13583344221115112,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.17554808287098983,
+            -0.09083344042301178,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.23554808646440506,
+            -0.15083344280719757,
+            0.0
+          ],
+          "envelope_high": [
+            -0.16054808348417282,
+            -0.07583343982696533,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        },
+        {
+          "name": "button_right",
+          "base_low": [
+            -0.2583773210644722,
+            0.08031900972127914,
+            0.0
+          ],
+          "base_high": [
+            -0.18337731808423996,
+            0.15531901270151138,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.2433773216776552,
+            0.09531901031732559,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.19837731747105697,
+            0.14031901210546494,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.2583773210644722,
+            0.08031900972127914,
+            0.0
+          ],
+          "envelope_high": [
+            -0.18337731808423996,
+            0.15531901270151138,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.008966435375265657,
+          "0-2": 0.006510215444707203,
+          "0-3": 0.016974295708656863,
+          "1-2": 0.031616946959738476,
+          "1-3": -0.018345620979608623,
+          "2-3": -0.005209789305339874
+        },
+        "rejections": {
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.018345620979608623,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.005209789305339874,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.008966435375265657,
+          "0-2": 0.006510215444707203,
+          "0-3": 0.016974295708656863,
+          "1-2": 0.031616946959738476,
+          "1-3": -0.018345620979608623,
+          "2-3": -0.005209789305339874
+        },
+        "rejections": {
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.018345620979608623,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.005209789305339874,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.008966435375265657,
+          "0-2": 0.006510215444707203,
+          "0-3": 0.016974295708656863,
+          "1-2": 0.031616946959738476,
+          "1-3": -0.018345620979608623,
+          "2-3": -0.005209789305339874
+        },
+        "rejections": {
+          "1-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.018345620979608623,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          },
+          "2-3": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_3",
+            "object_b": "bin_0",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.005209789305339874,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 43,
+      "seed": 11300,
+      "source_difficulty": "hard",
+      "rank": 9,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.014996062964200974,
+          -0.07016867399215698,
+          0.052000001072883606
+        ],
+        [
+          -0.025319835171103477,
+          0.1463271528482437,
+          0.052000001072883606
+        ],
+        [
+          0.10563196986913681,
+          0.20841459929943085,
+          0.052000001072883606
+        ],
+        [
+          0.11859554797410965,
+          0.005182161461561918,
+          0.052000001072883606
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.2561390921473503,
+            -0.1372171714901924,
+            0.0
+          ],
+          "base_high": [
+            -0.18113908916711807,
+            -0.062217168509960175,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.2411390927605333,
+            -0.12221717089414597,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.19613908855393508,
+            -0.07721716910600662,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.2561390921473503,
+            -0.1372171714901924,
+            0.0
+          ],
+          "envelope_high": [
+            -0.18113908916711807,
+            -0.062217168509960175,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        },
+        {
+          "name": "button_right",
+          "base_low": [
+            -0.23618542402982712,
+            0.07660337537527084,
+            0.0
+          ],
+          "base_high": [
+            -0.16118542104959488,
+            0.15160337835550308,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.2211854246430101,
+            0.09160337597131729,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.1761854204364119,
+            0.13660337775945663,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.23618542402982712,
+            0.07660337537527084,
+            0.0
+          ],
+          "envelope_high": [
+            -0.16118542104959488,
+            0.15160337835550308,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            true
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.0025891853973964638,
+          "0-2": -0.014550387814700267,
+          "0-3": 0.03948367039656663,
+          "1-2": 0.0378070820988267,
+          "1-3": 0.0020140367679089884,
+          "2-3": 0.0037873647093823216
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_3",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.0025891853973964638,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 12,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.014550387814700267,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 14,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            true
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.0025891853973964638,
+          "0-2": -0.014550387814700267,
+          "0-3": 0.03948367039656663,
+          "1-2": 0.0378070820988267,
+          "1-3": 0.0020140367679089884,
+          "2-3": 0.0037873647093823216
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_3",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.0025891853973964638,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 12,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.014550387814700267,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 14,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true,
+            true
+          ],
+          [
+            false,
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.0025891853973964638,
+          "0-2": -0.014550387814700267,
+          "0-3": 0.03948367039656663,
+          "1-2": 0.0378070820988267,
+          "1-3": 0.0020140367679089884,
+          "2-3": 0.0037873647093823216
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_1",
+            "object_b": "bin_3",
+            "shape_a": 1,
+            "shape_b": 1,
+            "gap_m": -0.0025891853973964638,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 12,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "bin_0",
+            "object_b": "bin_1",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.014550387814700267,
+            "s": 0.625,
+            "sweep_index": -1,
+            "interval_low": 0.5,
+            "interval_high": 0.75,
+            "depth": 2,
+            "intervals_used": 14,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 6,
+      "seed": 9600,
+      "source_difficulty": "medium",
+      "rank": 0,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.06959806382656097,
+          0.0520981028676033,
+          0.019999999552965164
+        ],
+        [
+          0.08295441418886185,
+          0.030002901330590248,
+          0.019999999552965164
+        ],
+        [
+          -0.034355223178863525,
+          -0.12785547971725464,
+          0.019999999552965164
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.27382803708314896,
+            -0.06165233440697193,
+            0.0
+          ],
+          "base_high": [
+            -0.19882803410291672,
+            0.013347668573260307,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.25882803769633195,
+            -0.046652333810925484,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.21382803348973373,
+            -0.0016523320227861404,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.27382803708314896,
+            -0.06165233440697193,
+            0.0
+          ],
+          "envelope_high": [
+            -0.19882803410291672,
+            0.013347668573260307,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.05536625130738181,
+          "0-2": 0.023652389036570326,
+          "1-2": 0.021672875459535626
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.05536625130738181,
+          "0-2": 0.023652389036570326,
+          "1-2": 0.021672875459535626
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.05536625130738181,
+          "0-2": 0.023652389036570326,
+          "1-2": 0.021672875459535626
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 10,
+      "seed": 10000,
+      "source_difficulty": "medium",
+      "rank": 1,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.1067785769701004,
+          0.086086206138134,
+          0.019999999552965164
+        ],
+        [
+          0.10881484299898148,
+          0.0009953423868864775,
+          0.019999999552965164
+        ],
+        [
+          -0.007575619034469128,
+          -0.006223612930625677,
+          0.019999999552965164
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.1877477690577507,
+            -0.08343329653143883,
+            0.0
+          ],
+          "base_high": [
+            -0.11274776607751846,
+            -0.008433293551206589,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.1727477696709337,
+            -0.06843329593539238,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.12774776546433547,
+            -0.023433294147253036,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.1877477690577507,
+            -0.08343329653143883,
+            0.0
+          ],
+          "envelope_high": [
+            -0.11274776607751846,
+            -0.008433293551206589,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.02689616800034807,
+          "0-2": 0.05852732481265724,
+          "1-2": 0.03886180471868343
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_1",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.02689616800034807,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.02689616800034807,
+          "0-2": -0.012757498614258019,
+          "1-2": 0.03886180471868343
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_1",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.02689616800034807,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_2",
+            "object_b": "button_left",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.012757498614258019,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [
+          0
+        ],
+        "b_pass": false
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.02689616800034807,
+          "0-2": -0.012757498614258019,
+          "1-2": 0.03886180471868343
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_1",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.02689616800034807,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_2",
+            "object_b": "button_left",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.012757498614258019,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [
+          0
+        ],
+        "b_pass": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 14,
+      "seed": 10400,
+      "source_difficulty": "medium",
+      "rank": 2,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.11090762168169022,
+          0.12942367792129517,
+          0.019999999552965164
+        ],
+        [
+          0.16803424060344696,
+          -0.08839626610279083,
+          0.019999999552965164
+        ],
+        [
+          -0.04744362086057663,
+          -0.03966560214757919,
+          0.019999999552965164
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.20529446750879288,
+            -0.024410714395344257,
+            0.0
+          ],
+          "base_high": [
+            -0.13029446452856064,
+            0.05058928858488798,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.19029446812197587,
+            -0.00941071379929781,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.14529446391537765,
+            0.035589287988841534,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.20529446750879288,
+            -0.024410714395344257,
+            0.0
+          ],
+          "envelope_high": [
+            -0.13029446452856064,
+            0.05058928858488798,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.013651442504993283,
+          "0-2": 0.06664301236782647,
+          "1-2": 0.07544602024845713
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_1",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.013651442504993283,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.013651442504993283,
+          "0-2": -0.014999999664723873,
+          "1-2": 0.060358755649452756
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_1",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.013651442504993283,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_2",
+            "object_b": "button_left",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.014999999664723873,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [
+          0
+        ],
+        "b_pass": false
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.013651442504993283,
+          "0-2": -0.03300000103041572,
+          "1-2": 0.060358755649452756
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_1",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.013651442504993283,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          },
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_2",
+            "object_b": "button_left",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.03300000103041572,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [
+          0
+        ],
+        "b_pass": false
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 18,
+      "seed": 10800,
+      "source_difficulty": "medium",
+      "rank": 3,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.021700680255889893,
+          0.07117253541946411,
+          0.019999999552965164
+        ],
+        [
+          0.13571526110172272,
+          -0.03407929092645645,
+          0.019999999552965164
+        ],
+        [
+          -0.04596263915300369,
+          -0.12386742234230042,
+          0.019999999552965164
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.20152851194143295,
+            -0.020810825750231743,
+            0.0
+          ],
+          "base_high": [
+            -0.12652850896120071,
+            0.054189177230000496,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.18652851255461594,
+            -0.005810825154185295,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.14152850834801772,
+            0.03918917663395405,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.20152851194143295,
+            -0.020810825750231743,
+            0.0
+          ],
+          "envelope_high": [
+            -0.12652850896120071,
+            0.054189177230000496,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.057124578063252454,
+          "0-2": 0.03763305359826138,
+          "1-2": 0.045833831085886026
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.057124578063252454,
+          "0-2": -0.004312827719336033,
+          "1-2": 0.045833831085886026
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_2",
+            "object_b": "button_left",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.004312827719336033,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            false
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            false,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.057124578063252454,
+          "0-2": -0.004312827719336033,
+          "1-2": 0.045833831085886026
+        },
+        "rejections": {
+          "0-2": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_2",
+            "object_b": "button_left",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.004312827719336033,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 22,
+      "seed": 11200,
+      "source_difficulty": "medium",
+      "rank": 4,
+      "verify": "unverified",
+      "slots": [
+        [
+          0.11563028395175934,
+          0.05014572665095329,
+          0.019999999552965164
+        ],
+        [
+          0.018005531281232834,
+          -0.09333439916372299,
+          0.019999999552965164
+        ],
+        [
+          -0.05616604536771774,
+          0.0021628134418278933,
+          0.019999999552965164
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.21093923598527908,
+            -0.018271394073963165,
+            0.0
+          ],
+          "base_high": [
+            -0.13593923300504684,
+            0.056728608906269073,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.19593923659846207,
+            -0.0032713934779167175,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.15093923239186385,
+            0.041728608310222626,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.21093923598527908,
+            -0.018271394073963165,
+            0.0
+          ],
+          "envelope_high": [
+            -0.13593923300504684,
+            0.056728608906269073,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.012947081814219757,
+          "0-2": 0.007632790521913676,
+          "1-2": 0.050949073344216056
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.012947081814219757,
+          "0-2": 0.007632790521913676,
+          "1-2": 0.046101917060675485
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.012947081814219757,
+          "0-2": 0.007632790521913676,
+          "1-2": 0.046101917060675485
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 26,
+      "seed": 11602,
+      "source_difficulty": "medium",
+      "rank": 5,
+      "verify": "unverified",
+      "slots": [
+        [
+          0.08448658138513565,
+          -0.062190208584070206,
+          0.019999999552965164
+        ],
+        [
+          -0.058271847665309906,
+          -0.08267661929130554,
+          0.019999999552965164
+        ],
+        [
+          -0.01107095554471016,
+          0.10419192165136337,
+          0.019999999552965164
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.23390450328588486,
+            -0.018228966742753983,
+            0.0
+          ],
+          "base_high": [
+            -0.15890450030565262,
+            0.056771036237478256,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.21890450389906785,
+            -0.003228966146707535,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.17390449969246963,
+            0.04177103564143181,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.23390450328588486,
+            -0.018228966742753983,
+            0.0
+          ],
+          "envelope_high": [
+            -0.15890450030565262,
+            0.056771036237478256,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.058139299526439134,
+          "0-2": 0.018160376350353464,
+          "1-2": 0.012924478871600854
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.058139299526439134,
+          "0-2": 0.018160376350353464,
+          "1-2": 0.012924478871600854
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.058139299526439134,
+          "0-2": 0.018160376350353464,
+          "1-2": 0.012924478871600854
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 30,
+      "seed": 12000,
+      "source_difficulty": "medium",
+      "rank": 6,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.07780899107456207,
+          0.046300847083330154,
+          0.019999999552965164
+        ],
+        [
+          0.09577124565839767,
+          0.08883021771907806,
+          0.019999999552965164
+        ],
+        [
+          -0.0026474054902791977,
+          -0.07907786965370178,
+          0.019999999552965164
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.21970172971487045,
+            -0.08120865374803543,
+            0.0
+          ],
+          "base_high": [
+            -0.14470172673463821,
+            -0.006208650767803192,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.20470173032805344,
+            -0.06620865315198898,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.15970172612145522,
+            -0.02120865136384964,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.21970172971487045,
+            -0.08120865374803543,
+            0.0
+          ],
+          "envelope_high": [
+            -0.14470172673463821,
+            -0.006208650767803192,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.03204419708977078,
+          "0-2": 0.04937819096473567,
+          "1-2": 0.012405782041699304
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.03204419708977078,
+          "0-2": 0.01580214334841004,
+          "1-2": 0.012405782041699304
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.03204419708977078,
+          "0-2": 0.01580214334841004,
+          "1-2": 0.012405782041699304
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 34,
+      "seed": 12400,
+      "source_difficulty": "medium",
+      "rank": 7,
+      "verify": "unverified",
+      "slots": [
+        [
+          0.12521858513355255,
+          -0.010897545143961906,
+          0.019999999552965164
+        ],
+        [
+          -0.11706500500440598,
+          0.0221079271286726,
+          0.019999999552965164
+        ],
+        [
+          -0.03848171979188919,
+          -0.046941399574279785,
+          0.019999999552965164
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.26236071437597275,
+            -0.03599103237502277,
+            0.0
+          ],
+          "base_high": [
+            -0.1873607113957405,
+            0.03900897060520947,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.24736071498915574,
+            -0.02099103177897632,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.20236071078255752,
+            0.024008970009163022,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.26236071437597275,
+            -0.03599103237502277,
+            0.0
+          ],
+          "envelope_high": [
+            -0.1873607113957405,
+            0.03900897060520947,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.007233777254661667,
+          "0-2": 0.042237125111603886,
+          "1-2": 0.03752469786793432
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_0",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.007233777254661667,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.007233777254661667,
+          "0-2": 0.042237125111603886,
+          "1-2": 0.0283747469182727
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_0",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.007233777254661667,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.007233777254661667,
+          "0-2": 0.042237125111603886,
+          "1-2": 0.0283747469182727
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_0",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.007233777254661667,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 38,
+      "seed": 12800,
+      "source_difficulty": "medium",
+      "rank": 8,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.08970429003238678,
+          0.11452125012874603,
+          0.019999999552965164
+        ],
+        [
+          0.12709404528141022,
+          -0.0005377076449804008,
+          0.019999999552965164
+        ],
+        [
+          0.007521357387304306,
+          -0.13421222567558289,
+          0.019999999552965164
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.21316254884004593,
+            -0.06486416049301624,
+            0.0
+          ],
+          "base_high": [
+            -0.1381625458598137,
+            0.010135842487215996,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.19816254945322892,
+            -0.049864159896969795,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.1531625452466307,
+            -0.004864158108830452,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.21316254884004593,
+            -0.06486416049301624,
+            0.0
+          ],
+          "envelope_high": [
+            -0.1381625458598137,
+            0.010135842487215996,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.06012700620995774,
+          "0-2": 0.04542741749874915,
+          "1-2": 0.07680199011984788
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.04712549199568786,
+          "0-2": 0.0019189899838834151,
+          "1-2": 0.07680199011984788
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            true,
+            true
+          ],
+          [
+            true,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": 0.04712549199568786,
+          "0-2": 0.0019189899838834151,
+          "1-2": 0.07680199011984788
+        },
+        "rejections": {},
+        "isolated": [],
+        "b_pass": true
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 42,
+      "seed": 13200,
+      "source_difficulty": "medium",
+      "rank": 9,
+      "verify": "unverified",
+      "slots": [
+        [
+          -0.034050919115543365,
+          0.1249590590596199,
+          0.019999999552965164
+        ],
+        [
+          0.030025150626897812,
+          -0.1678544580936432,
+          0.019999999552965164
+        ],
+        [
+          0.014751022681593895,
+          0.030075615271925926,
+          0.019999999552965164
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.23172298818826675,
+            -0.01706269010901451,
+            0.0
+          ],
+          "base_high": [
+            -0.15672298520803452,
+            0.05793731287121773,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.21672298880144975,
+            -0.0020626895129680634,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.17172298459485152,
+            0.04293731227517128,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.23172298818826675,
+            -0.01706269010901451,
+            0.0
+          ],
+          "envelope_high": [
+            -0.15672298520803452,
+            0.05793731287121773,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.012551109267741254,
+          "0-2": 0.034978490189141356,
+          "1-2": 0.05879357480142447
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_0",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.012551109267741254,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.012551109267741254,
+          "0-2": 0.034978490189141356,
+          "1-2": 0.05879357480142447
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_0",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.012551109267741254,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.012551109267741254,
+          "0-2": 0.034978490189141356,
+          "1-2": 0.05879357480142447
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_0",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.012551109267741254,
+            "s": 0.25,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 0.5,
+            "depth": 1,
+            "intervals_used": 4,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    }
+  ]
+}
