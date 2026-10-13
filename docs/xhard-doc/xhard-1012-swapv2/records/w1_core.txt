@@ -16,7 +16,7 @@ _______________ test_unknown_env_returns_single_goal_when_equal ________________
         result = _call("UnknownEnv", s)
 >       assert result == [""]
 E       AssertionError: assert [] == ['']
-E         
+E
 E         Right contains one more item: ''
 E         Use -v to get more diff
 
@@ -46,7 +46,7 @@ _____________________ test_step_error_returns_status_error _____________________
         """
         source = _load_step_source()
         tree = ast.parse(source, filename=str(_demo_wrapper_path()))
-    
+
         # Find step() method, verify try/except structure exists
         step_method = None
         for node in ast.walk(tree):
@@ -56,9 +56,9 @@ _____________________ test_step_error_returns_status_error _____________________
                         step_method = item
                         break
                 break
-    
+
         assert step_method is not None, "DemonstrationWrapper.step method not found"
-    
+
         # Verify that the step method body contains try/except
         has_try = any(isinstance(n, ast.Try) for n in ast.walk(step_method))
 >       assert has_try, "DemonstrationWrapper.step() should contain a try/except block"
@@ -75,12 +75,12 @@ ______________ test_scripts_use_status_check_not_bare_try_except _______________
         2. env.step(action) calls are no longer directly wrapped by try/except Exception
         """
         scripts = ["run_example.py", "dataset_replay.py"]
-    
+
         for script_name in scripts:
             script_path = _script_path(script_name)
             source = script_path.read_text(encoding="utf-8")
             tree = ast.parse(source, filename=str(script_path))
-    
+
             # ---- Check 1: Contains status related checks ----
             has_status_check = (
                 'info.get("status")' in source

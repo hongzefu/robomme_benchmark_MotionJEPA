@@ -60,3 +60,5 @@ git show 3083af74:src/robomme_xhard/tools/layout.py
 正文保留两个规定的一级标题，更新第一部分口径、验收与步骤，第二部分逐文件集合、代理唯一归属、闸门、接续命令、风险与提交纪律。原图保留，仅明确图一为首次实施的历史示意，本次接续按 A′ 表与命令。文档验证仅检查链接、结构、目录点击、页面报错及截图，不执行仓库测试或生成命令。
 
 文档检查：`git diff --check` 通过；规定的两个一级标题计数为二；相对链接与锚点存在。用一次性 Playwright 环境验证目录六个跳转、三个图像加载、页面零异常和无水平溢出，`PLAN_DOCUMENT=PASS parts=2 figures=3 toc_clicks=6 page_errors=0`。主会话目视检查三张图及文首、修订裁决截图：箭头落点正常，框与文字无重叠、无截断和缺字，颜色说明一致；没有改图的几何，仅给图一增加历史范围说明。截图位于 `artifacts/plan-review/swapv2-revision-1012-final/`，机器可读摘要存于 `records/plan_document_validation.json`。`IMPLEMENTATION_STOPPED=PASS code_diff=0`，源码、测试与依赖没有本轮修改。
+
+独立固定提交审查 `STATIC_REVISION_REVIEW=PASS`，锚点 `4259009737c295da6338c3d576649f53e27ac443`，确认文件归属、十一文件集合、接续步骤、成功字段语义及重新批准边界一致。随后文档复核补足原提交纪律漏写的 W2-c，并把 K14 的中间态表述明确为原 X5 的禁生成约束，没有改变执行口径。完整提交差异检查发现归档日志六行行尾空白，文档记录仅去掉行尾空白，原日志 `artifacts/logs/xh-swapv2-w1-core-1012.log` 保持原样。修整提交 2.95.2，后续 W1-d 合并编号顺延为 2.95.3；仍待用户审查，不恢复实施。
