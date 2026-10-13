@@ -111,6 +111,11 @@ def assemble(plan, old_rows, v3_rows, metric_rows):
                         raise ValueError(f"H5/summary 不一致：{task}/{seed}/{row['level']}/{key}")
                 real_rows[row["level"]] = {k: row[k] for k in ("timesteps", "demo_timesteps", "exec_timesteps", "windows", "demo_windows", "exec_windows", "ratio_timesteps", "ratio_windows")}
                 real_rows[row["level"]].update({k: metric[k] for k in ("units", "miss_units", "miss_swaps", "miss", "swap_reason")})
+                if metric["miss_swaps"] is None:
+                    if task in SELECTED and row["level"] == "mother":
+                        real_rows[row["level"]]["swap_reason"] = "母档缺少可核对的交换事件，交换遗漏与合计未统计。"
+                    elif task in {"VideoPlaceButton", "VideoPlaceOrder"}:
+                        real_rows[row["level"]]["swap_reason"] = f"{task} 的交换事件到录像帧映射尚未验证，交换遗漏与合计未统计。"
                 real_rows[row["level"]]["h5"] = metric["h5"]
                 for key in ("frames", "swaps", "swap_intervals", "swap_provenance"):
                     if key in metric:

@@ -1153,7 +1153,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/VideoUnmaskSwap_ep7_seed5700.h5",
               "frames": [
                 0,
@@ -1508,7 +1508,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/VideoUnmaskSwap_ep11_seed6100.h5",
               "frames": [
                 0,
@@ -1863,7 +1863,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/VideoUnmaskSwap_ep19_seed6900.h5",
               "frames": [
                 0,
@@ -2286,7 +2286,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/ButtonUnmaskSwap_ep7_seed7700.h5",
               "frames": [
                 0,
@@ -2657,7 +2657,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/ButtonUnmaskSwap_ep11_seed8100.h5",
               "frames": [
                 0,
@@ -3028,7 +3028,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/ButtonUnmaskSwap_ep19_seed8900.h5",
               "frames": [
                 0,
@@ -3627,7 +3627,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/VideoRepick_ep6_seed9600.h5",
               "frames": [
                 0,
@@ -4038,7 +4038,7 @@
               "miss_units": 1,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/VideoRepick_ep22_seed11200.h5",
               "frames": [
                 0,
@@ -4449,7 +4449,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/VideoRepick_ep26_seed11602.h5",
               "frames": [
                 0,
@@ -4899,7 +4899,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "VideoPlaceButton 的交换事件到录像帧映射尚未验证，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1011/vpbfix-1012/mother/hdf5_files/VideoPlaceButton_ep7_seed10701.h5",
               "frames": [
                 0,
@@ -4925,7 +4925,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "VideoPlaceButton 的交换事件到录像帧映射尚未验证，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1011/vpbfix-1012/xhard12/hdf5_files/VideoPlaceButton_ep7_seed10701.h5",
               "frames": [
                 0,
@@ -4951,7 +4951,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "VideoPlaceButton 的交换事件到录像帧映射尚未验证，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1011/vpbfix-1012/xhard14/hdf5_files/VideoPlaceButton_ep7_seed10701.h5",
               "frames": [
                 0,
@@ -5017,7 +5017,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "VideoPlaceOrder 的交换事件到录像帧映射尚未验证，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/VideoPlaceOrder_ep7_seed11705.h5",
               "frames": [
                 0,
@@ -5043,7 +5043,7 @@
               "miss_units": 0,
               "miss_swaps": null,
               "miss": null,
-              "swap_reason": "控制步到录像帧的映射尚未验证；交换遗漏与总遗漏未测，不以零代替。",
+              "swap_reason": "VideoPlaceOrder 的交换事件到录像帧映射尚未验证，交换遗漏与合计未统计。",
               "h5": "artifacts/xhard/xhard-1011/final/xhard12/hdf5_files/VideoPlaceOrder_ep7_seed11705.h5",
               "frames": [
                 0,
