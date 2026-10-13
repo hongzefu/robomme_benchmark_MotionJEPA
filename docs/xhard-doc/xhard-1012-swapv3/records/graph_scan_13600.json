@@ -1,0 +1,201 @@
+{
+  "git_commit": "5419e932af8639fd6f02c0d54a9e3d14976f511d",
+  "manifest_sha256": "dc803ff2cd6cf7863cfbf4bd19270439f05b300a1f3a4cfb02900915314e4c4e",
+  "rows": [
+    {
+      "task": "VideoRepick",
+      "episode": 46,
+      "seed": 13600,
+      "source_difficulty": "medium",
+      "rank": 0,
+      "verify": "unverified",
+      "slots": [
+        [
+          0.10253485292196274,
+          0.028797514736652374,
+          0.019999999552965164
+        ],
+        [
+          -0.11171524226665497,
+          0.016241662204265594,
+          0.019999999552965164
+        ],
+        [
+          -0.019359946250915527,
+          -0.016971295699477196,
+          0.019999999552965164
+        ]
+      ],
+      "buttons": [
+        {
+          "name": "button_left",
+          "base_low": [
+            -0.25402653962373734,
+            -0.05887237936258316,
+            0.0
+          ],
+          "base_high": [
+            -0.1790265366435051,
+            0.01612762361764908,
+            0.014999999664723873
+          ],
+          "cap_low": [
+            -0.23902654023692033,
+            -0.04387237876653671,
+            0.014999999386816792
+          ],
+          "cap_high": [
+            -0.1940265360303221,
+            0.0011276230216026306,
+            0.03300000103041572
+          ],
+          "envelope_low": [
+            -0.25402653962373734,
+            -0.05887237936258316,
+            0.0
+          ],
+          "envelope_high": [
+            -0.1790265366435051,
+            0.01612762361764908,
+            0.03300000103041572
+          ],
+          "radius": 0.02250000089406967,
+          "half_length": 0.008999999612569809,
+          "cap_inside_base": true
+        }
+      ],
+      "no_button": {
+        "adj": [
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.010636803013248427,
+          "0-2": 0.04096801015098622,
+          "1-2": 0.0406193237344839
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_0",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.010636803013248427,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "base_only": {
+        "adj": [
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.010636803013248427,
+          "0-2": 0.04096801015098622,
+          "1-2": 0.0406193237344839
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_0",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.010636803013248427,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      },
+      "envelope": {
+        "adj": [
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            false,
+            false,
+            true
+          ],
+          [
+            true,
+            true,
+            false
+          ]
+        ],
+        "gaps": {
+          "0-1": -0.010636803013248427,
+          "0-2": 0.04096801015098622,
+          "1-2": 0.0406193237344839
+        },
+        "rejections": {
+          "0-1": {
+            "reason": "contact",
+            "stage": "graph",
+            "object_a": "cube_0",
+            "object_b": "cube_2",
+            "shape_a": 0,
+            "shape_b": 0,
+            "gap_m": -0.010636803013248427,
+            "s": 0.5,
+            "sweep_index": -1,
+            "interval_low": 0.0,
+            "interval_high": 1.0,
+            "depth": 0,
+            "intervals_used": 3,
+            "detail": "中点判定"
+          }
+        },
+        "isolated": [],
+        "b_pass": true
+      }
+    }
+  ]
+}

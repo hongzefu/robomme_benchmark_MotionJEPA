@@ -421,6 +421,11 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
     - 生成计划、runbook 与留档里不写 sbatch、srun、占位 job、集群提交器、集群校验 job 等任何集群步骤；长任务只用本机 detached tmux（正本第 7 条，会话名前缀 `xh-`）。
     - `1012-swap-collision-plan.html` 碰撞计划的 smoke 与全量用卡固定本机 GPU0（`--gpus 0`）；起跑前只核对 GPU0，被他人占满即停下问用户，不自行换卡、不上集群。
     - 与「覆盖第 8 条」的关系：覆盖第 8 条描述的是本环境当前无集群访问这一事实，P7 是对本仓库生成计划的显式约束——即使将来本机获得集群访问，本仓库的生成也不适用集群路径，确需变更须用户另行明确决定。
+- **P8. 禁止换 seed、换测试 seed、改母 seed 清单，除非用户明确要求**（2026-10-12 用户原话「不做任何的换seed和上一版一样只对于现有SED做一次生成的检查。」「把这个作为禁止项除非用户明确要求不做任何的这种调整」）。
+    - 生成被判据剔除的母 seed 不补、不换、不重试（与 P2、P5 同向）；新一版机制的验证方式与上一版相同：对现有 seed 清单做一次生成检查，剔除数如实报告。
+    - 测试文件里固定的 seed（如 `src/robomme_xhard/tests/test_s2_configs.py::MOTHER_RANK0_SEEDS`、`test_swap_collision_gpu.py::CASES`、`test_fatal_catch.py` 的 episode）即使已知会被新判据拒绝，也不得为了让测试通过而换成别的 seed、改 episode 或改断言；母 seed 清单（`mother_seeds*.json`）只复制、不改字节。
+    - agent 发现「某 seed 在新判据下必被拒绝」时，只在计划或汇报里写明证据与候选处置（换 seed／改断言／保留），由用户明确指令后才动；写进计划的候选处置不等于授权。
+    - 实测踩坑：2026-10-12 写 `1012-swap-min3kinds-v3-plan.html` 时，核实发现 GPU 测试用的 VideoRepick 13600 在口径甲下 G 只有 2 条边，主会话拟把它换成 9600 并写进计划 K13，被用户当场叫停并要求列为禁止项。
 
 ## 对正本的覆盖项（按正本条号；未列出的条目按正本执行）
 

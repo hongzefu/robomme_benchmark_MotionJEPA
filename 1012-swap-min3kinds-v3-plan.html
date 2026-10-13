@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1012-swap-min3kinds-v3-plan — 交换配对 v3：可行槽对至少三种，不足即剔除</title>
+<style>
+:root { --fg:#1f2328; --muted:#59636e; --bg:#ffffff; --border:#d1d9e0; --code:#f6f8fa; --accent:#0969da; --quote:#eef4fb; }
+html { scroll-behavior:smooth; }
+body { margin:0; background:var(--bg); color:var(--fg); font-family:"Noto Sans CJK SC","PingFang SC","Microsoft YaHei",-apple-system,"Segoe UI",sans-serif; font-size:15px; line-height:1.7; }
+.wrap { display:flex; gap:32px; max-width:1500px; margin:0 auto; padding:24px 16px; }
+nav.toc { position:sticky; top:0; align-self:flex-start; max-height:100vh; overflow:auto; width:260px; flex:none; font-size:13px; border-right:1px solid var(--border); padding-right:12px; }
+nav.toc li.lv2 { padding-left:12px; } nav.toc li.lv3 { padding-left:24px; font-size:12px; }
+nav.toc ul { list-style:none; padding-left:12px; margin:4px 0; }
+nav.toc > ul { padding-left:0; }
+nav.toc a { color:var(--muted); text-decoration:none; }
+nav.toc a:hover { color:var(--accent); }
+main { flex:1; min-width:0; }
+h1 { font-size:1.9em; border-bottom:2px solid var(--border); padding-bottom:.3em; margin-top:1.6em; }
+h1:first-child { margin-top:0; font-size:1.5em; }
+h2 { font-size:1.45em; border-bottom:1px solid var(--border); padding-bottom:.25em; margin-top:1.6em; }
+h3 { font-size:1.15em; margin-top:1.4em; }
+blockquote { margin:0 0 1em; padding:8px 16px; background:var(--quote); border-left:4px solid var(--accent); }
+blockquote p { margin:.4em 0; }
+code { font-family:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace; font-size:.9em; background:var(--code); padding:1px 5px; border-radius:4px; }
+pre { background:var(--code); border:1px solid var(--border); border-radius:6px; padding:12px 14px; overflow:auto; line-height:1.45; }
+pre code { background:none; padding:0; font-size:.85em; }
+table { border-collapse:collapse; width:100%; margin:1em 0; font-size:.92em; }
+td code, th code { white-space:normal; word-break:break-all; }
+td { word-break:break-word; }
+th, td { border:1px solid var(--border); padding:6px 10px; vertical-align:top; }
+th { background:var(--code); text-align:left; }
+tr:nth-child(even) td { background:#fafbfc; }
+.rej td { background:#fff3f0 !important; }
+a { color:var(--accent); }
+@media (max-width: 960px) { .wrap { flex-direction:column; } nav.toc { position:static; width:auto; max-height:none; border-right:0; } }
+@media print { nav.toc { display:none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc">
+<ul>
+<li><a href="#h0">〇、为什么改</a></li>
+<li><a href="#p1">第一部分（给人看）</a></li>
+<li class="lv2"><a href="#h1">一、一句话与已定口径</a></li>
+<li class="lv2"><a href="#h2">二、实测：口径甲落在 v2 全量三十个母 seed 上</a></li>
+<li class="lv2"><a href="#h3">三、机制</a></li>
+<li class="lv3"><a href="#h3-0">3.0 改前与改后：流程对比</a></li>
+<li class="lv3"><a href="#h3-1">3.1 新闸门 require_min_pair_kinds</a></li>
+<li class="lv3"><a href="#h3-2">3.2 不变项与「规划逐字节不变」的保证</a></li>
+<li class="lv3"><a href="#h3-3">3.3 汇总工具：graph 拒绝分型</a></li>
+<li class="lv2"><a href="#h4">四、验收判定行</a></li>
+<li class="lv2"><a href="#h5">五、实施步骤</a></li>
+<li class="lv2"><a href="#h6">六、子代理分工与合并（简述）</a></li>
+<li><a href="#p2">第二部分（技术细节，供 agent 追踪）</a></li>
+<li class="lv2"><a href="#t0">〇、红线</a></li>
+<li class="lv2"><a href="#t1">一、逐文件改动清单</a></li>
+<li class="lv2"><a href="#t2">二、子代理分配表</a></li>
+<li class="lv2"><a href="#t3">三、闸门总表</a></li>
+<li class="lv2"><a href="#t4">四、runbook（主会话）</a></li>
+<li class="lv2"><a href="#t5">五、风险登记</a></li>
+<li class="lv2"><a href="#t6">六、盲区诚实清单</a></li>
+<li class="lv2"><a href="#t7">七、留档与 commit 纪律</a></li>
+</ul>
+</nav>
+<main>
+
+<h1>1012-swap-min3kinds-v3-plan.html — 交换配对 v3：可行槽对至少三种，不足即剔除</h1>
+<blockquote>
+<p><strong>权威性与锚点</strong>：本文件是交换配对 v3 的唯一权威计划。v3 是在 v2（<a href="1012-swap-pairing-v2-plan.html"><code>1012-swap-pairing-v2-plan.html</code></a>，已全量跑完并以 2.98 回写）之上的<strong>增量</strong>：只在 reset 阶段加一道闸门，不撤回、不重写配对算法。v2 计划原样保留为历史，不再修订。工作副本 <code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>、分支 <code>newtask-v3-MotionJepa1006</code>（sled-vail，环境 B）。写计划时 HEAD 为 <code>5419e932af8639fd6f02c0d54a9e3d14976f511d</code>（2.100）；<strong>v3 代码基线</strong>就是这个提交，<code>src/robomme_xhard/swap_plan.py</code> 等文件以它为底增量修改。</p>
+<p><strong>commit 体例</strong>：主线 <code>&lt;大&gt;.&lt;小&gt; 中文描述</code> 从 2.101 接续（本计划提交即 2.101；W1 合并 2.102；全量起跑 2.103Beta、回写 2.103）；子代理提交 <code>sub/V3-&lt;字母&gt;: </code> 前缀，经 <code>--no-ff</code> 合并。只前进、不改写历史。</p>
+<p><strong>外部依赖锚点</strong>：v2 全量产物 <code>artifacts/xhard/xhard-1012-swapv2/</code>（2.98Beta <code>f98c779a2c3f086759d9fcc4663a06da7deec083</code> 起跑，719 个文件，约 85 GB），本计划所有「预期剔除」数字都从它的 <code>report/summary.json</code> 读出；母清单 <code>artifacts/xhard/xhard-1012-swapv2/mother_seeds_all.json</code>（三任务各 10 个 seed）照用，不生成新 seed。两份引入文件 <code>collision/bin_collision.py</code>（sha256 前缀 <code>bbe87eec</code>）、<code>collision/swap_uniform.py</code>（<code>f4a1a8c0</code>）一字不改。</p>
+<p><strong>授权边界</strong>：用户原话「好的就这么改 给出完整方案」是对口径甲的方案授权，<strong>不是开工令</strong>（第 2 条）。本版只写计划并提交（随本计划一并提交的还有 <code>AGENTS.md</code> 新增 P8「禁止换 seed」与 13600 扫 G 证据）；不改代码、不派写入型子代理、不跑生成。用户对本 HTML 不改而直接认可后才开工；开工前先派一个 <code>sonnet</code> 审查子代理查全文矛盾（<code>PLAN_CONSISTENCY_REVIEW</code>）。按用户「和上一版一样只对于现有SED做一次生成的检查」，开工令覆盖最小 smoke 2 卡与现有 30 seed 的全量一次（K9）；smoke 不过则不起全量。</p>
+<p><strong>关于图</strong>：用户先说「先不画SVG」，随后改为「HTML需要画Svg」，本版含两张内联 SVG（图 1 流程对比、图 2 六个 seed 的槽对图与两种口径判定），由 <code>fable</code> 画图子代理生成，主会话用 cairosvg 渲染成 PNG 逐项目视复查（箭头交叉、重叠、溢出、字体）后嵌入。「子代理分工与合并」一节按用户原话「子代理分工以后不画svg图 除非用户要求」只写文字与表格。</p>
+<p><strong>细节核实（2026-10-12）</strong>：按用户「细节用子代理先把它确认下来」「尽可能让开跑的时候没有问题尽可能先确定下」，派一个 <code>sonnet</code> 只读核实代理把本计划逐条对照代码与产物（试跑清单加载、报告工具 v2 自比、pytest 收集数、核心短测基线快照），回报 <code>PLAN_DETAIL_VERIFY=FAIL items=12 mismatches=8</code>；8 处已全部改入本版（第二部分 1.2 两个既有用例需 monkeypatch 闸门、<code>pass=20</code>、<code>cards=105</code> 口径、边界 seed 计数、耗时、<code>EXIT_CODE=1</code> 预期、<code>graph_reject_kind</code> 读 <code>rejection.detail</code>、K8 措辞）。它指出的高风险点「GPU 契约用的 VideoRepick 13600 不在 30 母 seed 内、G 未知」，主会话随即用 v2 预扫脚本对 13600 做了一次只 reset、只写 scratchpad 的扫 G：<strong>G 只有 2 条边</strong>（0-2 +40.97 mm、1-2 +40.62 mm，0-1 穿入 −10.64 mm），证据 <a href="docs/xhard-doc/xhard-1012-swapv3/records/graph_scan_13600.json"><code>records/graph_scan_13600.json</code></a>；v3 闸门必然拒绝它。主会话曾拟把 GPU 测试里的 VideoRepick seed 换成 9600，用户随即原话「不做任何的换seed和上一版一样只对于现有SED做一次生成的检查。」，据此<strong>不换任何 seed、不跑 GPU 契约用例</strong>，v3 的检查就是对现有 30 个母 seed 做一次生成（K13、K15），13600 的遗留写在盲区清单交用户另行决定。</p>
+</blockquote>
+
+<h2 id="h0">〇、为什么改</h2>
+<ul>
+<li>v2 的准入口径 B 只要求「每个槽至少有一条可行边」，不要求可行边的数量。结果是 v2 全量里有 6 个母 seed 的可行槽对图 G 只有 2 条边：整条交换序列只能在 2 种槽对之间来回（例如 VideoUnmaskSwap 9300 的 11 段全在 03、12 两对之间轮换）。这种样本的「交换」信息量太低。</li>
+<li>用户要求（2026-10-12 原话）：「需要改成V3的机制要求所有的task必须要有至少三种swap如果没有三种swap就不生成了计为fail」。追问后用户选定口径甲（看 G 的可行边数，不看实际序列）：「如果用口径甲的话会剔除哪些」→「好的就这么改 给出完整方案」。</li>
+<li>改动只有一处新闸门，放在口径 B 之后、负载均衡规划之前。通过闸门的 seed，其规划与 v2 逐字节相同（3.2 给出理由与验收），所以 v3 全量的差别可以被精确预测并逐卡核对。</li>
+</ul>
+
+<h1 id="p1">第一部分（给人看）</h1>
+
+<h2 id="h1">一、一句话与已定口径</h2>
+<p><strong>一句话</strong>：在 <code>swap_plan.py::plan_swaps</code> 里，口径 B（无孤立槽）通过之后，再数一次可行槽对图 G 的边数；少于 3 条就抛 <code>SwapCollisionError(stage="graph")</code>，整卡剔除、固定 seed、不重试、计为任务拒绝（<code>task_reject</code>）；其余一切（配对算法、随机流、运行期复核、三个子类接线）不改。</p>
+<p>用户原话（逐字）：</p>
+<blockquote>
+<p>「现在的这个swap机制是什么?需要改成V3的机制要求所有的task必须要有至少三种swap如果没有三种swap就不生成了计为fail文字简单说明一下流程图然后告诉我现在是什么样的机制」</p>
+<p>「先不画SVG。」</p>
+<p>「如果用口径甲的话会剔除哪些。就是这三个任务你现在有的task会剔除哪些」</p>
+<p>「好的就这么改 给出完整方案」</p>
+<p>「HTML需要画Svg」</p>
+<p>「细节用子代理先把它确认下来。」</p>
+<p>「尽可能让开跑的时候没有问题尽可能先确定下」</p>
+<p>「子代理分工以后不画svg图 除非用户要求」</p>
+<p>「不做任何的换seed和上一版一样只对于现有SED做一次生成的检查。」</p>
+</blockquote>
+<table>
+<tr><th>编号</th><th>已定口径</th><th>依据</th></tr>
+<tr><td>K1</td><td><strong>口径甲</strong>：「至少三种 swap」= 可行槽对图 G 的可行无序槽对数 ≥ 3，常量 <code>MIN_SWAP_PAIR_KINDS = 3</code>，三个任务同一常量，不按任务分档。VideoRepick 只有 3 个槽（C(3,2)=3），等于要求三对全部可行。只看 G，<strong>不看</strong>实际序列里用到几种（口径乙未选）。</td><td>用户「好的就这么改」；第二节</td></tr>
+<tr><td>K2</td><td><strong>闸门位置与顺序</strong>：<code>plan_swaps</code> 内依次为 同形等高（K7 旧）→ 初态布局 → 建 G → 口径 B <code>require_every_slot_covered</code> → <strong>新增 <code>require_min_pair_kinds</code></strong> → 负载均衡规划 → 逐段再证。口径 B 在前，所以 v2 里因孤立槽被剔的 3 个 seed（ButtonUnmaskSwap 10500、VideoRepick 10000、10400）在 v3 的拒绝证据与 v2 完全相同。</td><td>3.1；第二部分 1.1</td></tr>
+<tr><td>K3</td><td><strong>失败形态</strong>：抛 <code>SwapCollisionError(rejection, "graph")</code>；<code>rejection.reason</code> 仍只取判据的三个具名值（按被拒边聚合：<code>uncertified</code> &gt; <code>numerical_boundary</code> &gt; <code>contact</code>，与口径 B 同一规则）；<code>detail</code> 固定形如 <code>可行槽对不足=2/3; 原始边证据={"gate":"min_pair_kinds","feasible_edges":[[0,3],[1,2]],"required":3,"gaps":{…},"rejected_edges":{…}}</code>。生成器按既有路径记 <code>failure_class="task"</code>、<code>stage="graph"</code>，不改生成器。</td><td>3.1；R0-4</td></tr>
+<tr><td>K4</td><td><strong>不换 seed、不补 seed、不重试</strong>（沿用 P2、R0-6）：被剔的母 seed 五档全部剔除，母卡不受影响（母档是官方 hard／medium，不走 <code>certify_swap_plan</code>）。</td><td>P2；K10 旧</td></tr>
+<tr><td>K5</td><td><strong>规划逐字节不变</strong>：闸门只读 <code>adj</code>，不消耗随机流，放在规划之前；通过闸门的 21 个母 seed（含运行期失败的 12800，它的五档记录里也带完整 <code>swap_plan</code>），其 <code>_xhard_swap_plan</code>（<code>pairs</code>、<code>slot_pairs</code>、<code>usage</code>、<code>graph</code>、<code>slots</code> 等全部字段）必须与 v2 全量对应卡逐字段相等，比较范围固定为「两轮都带 <code>swap_plan</code> 的 xhard 卡」= 21 × 5 = 105 张。这是本计划最强的回归判据 <code>PLAN_UNCHANGED</code>。</td><td>3.2；第四节</td></tr>
+<tr><td>K6</td><td><strong>预期剔除（从 v2 全量读出）</strong>：新剔 6 个母 seed——VideoUnmaskSwap 6500、9300；ButtonUnmaskSwap 8500；VideoRepick 10800、12400、13200（G 边数均为 2）。加上 v2 已剔的 3 个孤立槽 seed 与 VideoRepick 12800（运行期段起点接触，五档全败、与口径无关），v3 全量预期 <code>ok=130 task_reject=50 infra=0</code>。实测偏离预期任何一张即停下交用户。</td><td>第二节</td></tr>
+<tr><td>K7</td><td><strong>新根、旧根只读</strong>：v3 的 smoke、全量、汇总、视频一律写 <code>artifacts/xhard/xhard-1012-swapv3/</code>；日志 <code>artifacts/logs/xh-swapv3-*</code>；tmux 名 <code>xh-swapv3-*</code>；留档 <code>docs/xhard-doc/xhard-1012-swapv3/</code>。v2 根 <code>artifacts/xhard/xhard-1012-swapv2/</code> 先做 sha256 冻结清单（<code>FREEZE_V2</code>），阶段结束后复核（<code>V2_RUN_INTACT</code>）；v1 根继续只读。</td><td>K12 旧的同一做法</td></tr>
+<tr><td>K8</td><td><strong>最小 smoke 2 卡</strong>（正本第 4 条「各维度取 1」的最小实跑，P5 允许）：VideoUnmaskSwap 6500（G=2，预期新剔）与 5700（G=4，预期保留），都是 xhard20、GPU0、单 worker。判据：6500 必须 <code>stage=graph</code> 且 <code>rejection.detail</code> 以 <code>可行槽对不足=2/3</code> 开头；5700 必须 <code>task_success=1</code> 且 <code>swap_plan</code> 与 v2 全量同卡逐字段相等。不再做每任务 3 seed 的 9 卡 smoke（用户「只对于现有SED做一次生成的检查」）。</td><td>第五节阶段 C；第二部分四</td></tr>
+<tr><td>K9</td><td><strong>全量 180 卡就是「那一次生成检查」</strong>：现有 30 个母 seed、母档 + 五档，命令与 v2 全量只差输出目录；GPU0、32 worker；起跑前打 2.103Beta、工作区干净；生成期间冻结 HEAD。汇总、六列视频、v2 对 v3 对比报告输出到新 <code>report/</code>。规模、耗时、用途已在本计划写明（180 卡、约 10 分钟生成 + 5 分钟包装、用途是验证闸门并产出 v3 数据），用户对本计划的开工令即为 P5 要求的对该批次的明确决定；最小 smoke 2 卡不过则不起全量。</td><td>用户原话；P5；第 13 条</td></tr>
+<tr><td>K10</td><td><strong>汇总工具增量</strong>：<code>tools/swap_v2_report.py</code> 对 <code>stage="graph"</code> 的拒绝再分型为 <code>isolated_slots</code>／<code>min_pair_kinds</code>，新增判定行 <code>SWAP_V3_KINDS_GATE</code>；<code>classify</code> 的 task／infra 分界不变（新 detail 仍带 <code>原始边证据=</code> 标记，<code>_geometry_rejection</code> 照旧解析）。</td><td>3.3；第二部分 1.4</td></tr>
+<tr><td>K11</td><td><strong>受保护目录与引入文件</strong>：<code>src/robomme/</code> 零 diff（P1）；<code>bin_collision.py</code>、<code>swap_uniform.py</code> 零 diff（R0-4）；三个子类文件不改（docstring 里「K2/K3」的说明仍正确，口径甲是追加的第四道检查）。</td><td>R0-1、R0-4</td></tr>
+<tr><td>K12</td><td><strong>开工前审查</strong>：用户给开工令后、派 W1 前，先派一个 <code>sonnet</code> 只读审查子代理审本计划全文矛盾，锚定开工时的计划提交 sha，输出 <code>PLAN_CONSISTENCY_REVIEW=PASS|FAIL base=&lt;sha&gt; findings=&lt;n&gt; blocking=&lt;n&gt;</code>；有 blocking 即停下交用户。</td><td>第 2 条（2026-10-12 新增）</td></tr>
+<tr><td>K13</td><td><strong>不换任何 seed，不跑 GPU 契约用例</strong>：生成用的 30 个母 seed 与 v2 完全相同，不替换、不补；GPU 测试文件（<code>test_swap_collision_gpu.py</code>、<code>test_fatal_catch.py</code>、<code>test_s2_configs.py</code> 的 gpu 用例）<strong>一字不改</strong>，本计划也不运行它们。已知后果：这三个文件里 VideoRepick 用的 13600 实测 G 只有 2 条边（引言块「细节核实」、<code>records/graph_scan_13600.json</code>），W1 合并后若有人跑 <code>-m gpu</code>，VideoRepick 相关的 8 项会在 reset 被新闸门以 <code>stage=graph</code> 拒绝而失败；其处置（换 seed、改断言或保留）另交用户决定，不在本计划范围。W1 也不再新增 GPU 回归用例，闸门的真实建场验证由 K8 的 smoke 承担。</td><td>用户原话「不做任何的换seed」；核实代理 M7</td></tr>
+<tr><td>K14</td><td><strong>生成器退出码 1 属预期</strong>：只要有卡被剔除，<code>generate_dataset_newseed.py</code> 就以退出码 1 结束（v2 的 smoke 与全量日志末行都是 <code>EXIT_CODE=1</code>）。v3 的 smoke（预期剔 3 张）与全量（预期剔 50 张）的 <code>EXIT_CODE=1</code> 不是 infra 故障；通过与否只看 <code>episode_results.jsonl</code> 与各判定行。运行器照 v2 用 <code>code=${PIPESTATUS[0]}</code> 原样记录，包装步骤不因它中止。</td><td>核实代理 M6；v2 日志</td></tr>
+<tr><td>K15</td><td><strong>和上一版一样的检查方式</strong>：v3 的验证链 = CPU 单测（闸门、报告工具）→ 最小 smoke 2 卡 → 现有 30 seed 全量一次 → 汇总、六列视频、v2 对 v3 对比报告。没有 GPU 契约阶段，没有新 seed，没有重试。</td><td>用户原话「和上一版一样只对于现有SED做一次生成的检查」</td></tr>
+</table>
+
+<h2 id="h2">二、实测：口径甲落在 v2 全量三十个母 seed 上</h2>
+<p>只读 <code>artifacts/xhard/xhard-1012-swapv2/report/summary.json</code>，对每张成功的 xhard 卡从 <code>swap_plan.graph.adj</code> 数边、从 <code>swap_plan.slot_pairs</code> 数实际用到的种类；被剔的卡读 <code>rejection.detail</code>。没有跑任何仿真。按 P6 顺序列全 30 个 seed：</p>
+<table>
+<tr><th>任务</th><th>seed（母 episode）</th><th>G 边数</th><th>xhard12…20 实际用到的种类</th><th>v2 结果</th><th>v3 口径甲</th></tr>
+<tr><td rowspan="10">2.3 VideoUnmaskSwap</td><td>5700（7）</td><td>4</td><td>2,3,4,4,4</td><td>5 档成功</td><td>保留</td></tr>
+<tr><td>6100（11）</td><td>4</td><td>4,4,4,4,4</td><td>5 档成功</td><td>保留</td></tr>
+<tr class="rej"><td>6500（15）</td><td>2</td><td>2,2,2,2,2</td><td>5 档成功</td><td><strong>剔除</strong></td></tr>
+<tr><td>6900（19）</td><td>5</td><td>2,2,3,4,5</td><td>5 档成功</td><td>保留</td></tr>
+<tr><td>7300（23）</td><td>5</td><td>2,2,2,2,3</td><td>5 档成功</td><td>保留</td></tr>
+<tr><td>7700（27）</td><td>4</td><td>4,4,4,4,4</td><td>5 档成功</td><td>保留</td></tr>
+<tr><td>8100（31）</td><td>4</td><td>4,4,4,4,4</td><td>5 档成功</td><td>保留</td></tr>
+<tr><td>8500（35）</td><td>5</td><td>2,2,2,3,5</td><td>5 档成功</td><td>保留</td></tr>
+<tr><td>8900（39）</td><td>4</td><td>4,4,4,4,4</td><td>5 档成功</td><td>保留</td></tr>
+<tr class="rej"><td>9300（43）</td><td>2</td><td>2,2,2,2,2</td><td>5 档成功</td><td><strong>剔除</strong></td></tr>
+<tr><td rowspan="10">2.4 ButtonUnmaskSwap</td><td>7700（7）</td><td>3</td><td>3,3,3,3,3</td><td>5 档成功</td><td>保留（边界）</td></tr>
+<tr><td>8100（11）</td><td>3</td><td>2,3,3,3,3</td><td>5 档成功</td><td>保留（边界）</td></tr>
+<tr class="rej"><td>8500（15）</td><td>2</td><td>2,2,2,2,2</td><td>5 档成功</td><td><strong>剔除</strong></td></tr>
+<tr><td>8900（19）</td><td>3</td><td>3,3,3,3,3</td><td>5 档成功</td><td>保留（边界）</td></tr>
+<tr><td>9300（23）</td><td>4</td><td>4,4,4,4,4</td><td>5 档成功</td><td>保留</td></tr>
+<tr><td>9700（27）</td><td>3</td><td>3,3,3,3,3</td><td>5 档成功</td><td>保留（边界）</td></tr>
+<tr><td>10100（31）</td><td>3</td><td>3,3,3,3,3</td><td>5 档成功</td><td>保留（边界）</td></tr>
+<tr class="rej"><td>10500（35）</td><td>2，槽 3 孤立</td><td>—</td><td>口径 B 剔除</td><td>剔除（证据同 v2）</td></tr>
+<tr><td>10900（39）</td><td>4</td><td>4,4,4,4,4</td><td>5 档成功</td><td>保留</td></tr>
+<tr><td>11300（43）</td><td>4</td><td>2,2,2,3,3</td><td>5 档成功</td><td>保留</td></tr>
+<tr><td rowspan="10">3.2 VideoRepick</td><td>9600（6）</td><td>3</td><td>3,3,3,3,3</td><td>5 档成功</td><td>保留（边界）</td></tr>
+<tr class="rej"><td>10000（10）</td><td>槽 0 孤立</td><td>—</td><td>口径 B 剔除</td><td>剔除（证据同 v2）</td></tr>
+<tr class="rej"><td>10400（14）</td><td>槽 0 孤立</td><td>—</td><td>口径 B 剔除</td><td>剔除（证据同 v2）</td></tr>
+<tr class="rej"><td>10800（18）</td><td>2</td><td>2,2,2,2,2</td><td>5 档成功</td><td><strong>剔除</strong></td></tr>
+<tr><td>11200（22）</td><td>3</td><td>3,3,3,3,3</td><td>5 档成功</td><td>保留（边界）</td></tr>
+<tr><td>11602（26）</td><td>3</td><td>3,3,3,3,3</td><td>5 档成功</td><td>保留（边界）</td></tr>
+<tr><td>12000（30）</td><td>3</td><td>3,3,3,3,3</td><td>5 档成功</td><td>保留（边界）</td></tr>
+<tr class="rej"><td>12400（34）</td><td>2</td><td>2,2,2,2,2</td><td>5 档成功</td><td><strong>剔除</strong></td></tr>
+<tr><td>12800（38）</td><td>3</td><td>（规划 3 种）</td><td>5 档运行期失败（<code>segment_start</code>，k=0 接触）</td><td>仍运行期失败，与口径无关</td></tr>
+<tr class="rej"><td>13200（42）</td><td>2</td><td>2,2,2,2,2</td><td>5 档成功</td><td><strong>剔除</strong></td></tr>
+</table>
+<p><strong>预期全量数字</strong>（K6）：</p>
+<table>
+<tr><th>官网编号</th><th>任务</th><th>母档成功</th><th>v2 xhard 成功／计划</th><th>v3 xhard 成功／计划（预期）</th><th>v3 正常拒绝（预期）</th><th>其中 graph·min_pair_kinds</th></tr>
+<tr><td>2.3</td><td>VideoUnmaskSwap</td><td>10／10</td><td>50／50</td><td>40／50</td><td>10</td><td>10</td></tr>
+<tr><td>2.4</td><td>ButtonUnmaskSwap</td><td>10／10</td><td>45／50</td><td>40／50</td><td>10</td><td>5</td></tr>
+<tr><td>3.2</td><td>VideoRepick</td><td>10／10</td><td>35／50</td><td>20／50</td><td>30</td><td>15</td></tr>
+<tr><td colspan="2">合计（含 30 张母卡）</td><td>30</td><td>ok=160</td><td>ok=130</td><td>task_reject=50</td><td>30</td></tr>
+</table>
+<p>注意 VideoRepick 的损失最大：3 个槽只有 3 对，口径甲等于要求三对全部可行。用户已知此后果并选定口径甲。另外 G 边数恰为 3 的「边界」seed 共 10 个：ButtonUnmaskSwap 5 个（7700、8100、8900、9700、10100）、VideoRepick 5 个（9600、11200、11602、12000、12800）；除 ButtonUnmaskSwap 8100 的 xhard12 只用 2 种外，各档实际序列都已用满 3 种（上表第四列）。闸门对它们只是「刚好通过」，不改变其规划。上表全部数字已由核实代理从 <code>summary.json</code> 独立重算一遍，逐格一致。</p>
+
+<h2 id="h3">三、机制</h2>
+
+<h3 id="h3-0">3.0 改前与改后：流程对比</h3>
+<p>两版共同点：交换动作都是父类 <code>swap_flat_two_lane</code>，每段 50 步；配对在 reset 时由 <code>certify_swap_plan</code> 预写进 <code>swap_pair{k}_idx1/idx2</code>；运行期失败只记 <code>_xhard_fatal</code>。v3 相对 v2 的完整改动范围：① 新增闸门 <code>require_min_pair_kinds</code>（<code>swap_plan.py</code>）；② 汇总工具对 graph 拒绝分型（<code>swap_v2_report.py</code>）；③ 两处对应单测。GPU 测试文件、三个子类、生成器、seed 清单一字不动（K13）。</p>
+<figure>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1040" width="1500" height="1040" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#59636e"/></marker><marker id="ahr" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="ahg" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+<rect x="0" y="0" width="1500" height="1040" fill="#ffffff"/>
+<rect x="40" y="30" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="250.0" y="53.8" text-anchor="middle" font-size="15" fill="#1f2328" font-weight="bold">改前 v2</text>
+<text x="250.0" y="72.8" text-anchor="middle" font-size="15" fill="#1f2328">（commit 5419e932 的 swap_plan.py::plan_swaps）</text>
+<rect x="780" y="30" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="990.0" y="53.8" text-anchor="middle" font-size="15" fill="#1f2328" font-weight="bold">改后 v3</text>
+<text x="990.0" y="72.8" text-anchor="middle" font-size="15" fill="#1f2328">（本计划）</text>
+<text x="611.0" y="63.0" text-anchor="middle" font-size="14" fill="#57606a">v2 失败出口（整卡剔除）</text>
+<text x="1351.0" y="63.0" text-anchor="middle" font-size="14" fill="#57606a">v3 失败出口（整卡剔除）</text>
+<rect x="40" y="110" width="420" height="40" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="250.0" y="134.9" text-anchor="middle" font-size="14" fill="#1f2328">1. reset 建场</text>
+<rect x="780" y="110" width="420" height="40" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="990.0" y="134.9" text-anchor="middle" font-size="14" fill="#1f2328">1. reset 建场</text>
+<line x1="250.0" y1="150" x2="250.0" y2="178" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<line x1="990.0" y1="150" x2="990.0" y2="178" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="40" y="178" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="250.0" y="201.9" text-anchor="middle" font-size="14" fill="#1f2328">2. require_static_slots：同形且等高</text>
+<text x="250.0" y="219.9" text-anchor="middle" font-size="14" fill="#1f2328">→ 失败：SceneGenerationError</text>
+<rect x="780" y="178" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="990.0" y="201.9" text-anchor="middle" font-size="14" fill="#1f2328">2. require_static_slots：同形且等高</text>
+<text x="990.0" y="219.9" text-anchor="middle" font-size="14" fill="#1f2328">→ 失败：SceneGenerationError</text>
+<line x1="250.0" y1="234" x2="250.0" y2="262" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<line x1="990.0" y1="234" x2="990.0" y2="262" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="40" y="262" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="250.0" y="285.9" text-anchor="middle" font-size="14" fill="#1f2328">3. check_bin_layout 初态布局</text>
+<text x="250.0" y="303.9" text-anchor="middle" font-size="14" fill="#1f2328">→ 失败：SwapCollisionError(initial)</text>
+<rect x="780" y="262" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="990.0" y="285.9" text-anchor="middle" font-size="14" fill="#1f2328">3. check_bin_layout 初态布局</text>
+<text x="990.0" y="303.9" text-anchor="middle" font-size="14" fill="#1f2328">→ 失败：SwapCollisionError(initial)</text>
+<line x1="250.0" y1="318" x2="250.0" y2="346" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<line x1="990.0" y1="318" x2="990.0" y2="346" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="40" y="346" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="250.0" y="369.9" text-anchor="middle" font-size="14" fill="#1f2328">4. slot_graph：全部无序槽对各扫掠一次，</text>
+<text x="250.0" y="387.9" text-anchor="middle" font-size="14" fill="#1f2328">得可行槽对图 G</text>
+<rect x="780" y="346" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="990.0" y="369.9" text-anchor="middle" font-size="14" fill="#1f2328">4. slot_graph：全部无序槽对各扫掠一次，</text>
+<text x="990.0" y="387.9" text-anchor="middle" font-size="14" fill="#1f2328">得可行槽对图 G</text>
+<line x1="250.0" y1="402" x2="250.0" y2="430" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<line x1="990.0" y1="402" x2="990.0" y2="430" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="40" y="430" width="420" height="72" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="250.0" y="452.9" text-anchor="middle" font-size="14" fill="#1f2328">5. require_every_slot_covered：口径 B，</text>
+<text x="250.0" y="470.9" text-anchor="middle" font-size="14" fill="#1f2328">每个槽度数 ≥ 1 → 失败：</text>
+<text x="250.0" y="488.9" text-anchor="middle" font-size="14" fill="#1f2328">SwapCollisionError(graph)「孤立槽=…」</text>
+<rect x="780" y="430" width="420" height="72" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="990.0" y="452.9" text-anchor="middle" font-size="14" fill="#1f2328">5. require_every_slot_covered：口径 B，</text>
+<text x="990.0" y="470.9" text-anchor="middle" font-size="14" fill="#1f2328">每个槽度数 ≥ 1 → 失败：</text>
+<text x="990.0" y="488.9" text-anchor="middle" font-size="14" fill="#1f2328">SwapCollisionError(graph)「孤立槽=…」</text>
+<line x1="250.0" y1="502" x2="250.0" y2="530" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<line x1="990.0" y1="502" x2="990.0" y2="530" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="40" y="530" width="420" height="72" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5" stroke-dasharray="7,5"/>
+<text x="250.0" y="570.9" text-anchor="middle" font-size="14" fill="#57606a">（无）</text>
+<rect x="780" y="530" width="420" height="72" rx="8" ry="8" fill="#fff7ed" stroke="#d97706" stroke-width="3"/>
+<text x="990.0" y="552.9" text-anchor="middle" font-size="14" fill="#1f2328">6.【新】require_min_pair_kinds：G 边数 ≥ 3</text>
+<text x="990.0" y="570.9" text-anchor="middle" font-size="14" fill="#1f2328">→ 失败：SwapCollisionError(graph)</text>
+<text x="990.0" y="588.9" text-anchor="middle" font-size="14" fill="#1f2328">「可行槽对不足=n/3」</text>
+<line x1="250.0" y1="602" x2="250.0" y2="630" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<line x1="990.0" y1="602" x2="990.0" y2="630" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="40" y="630" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="250.0" y="653.9" text-anchor="middle" font-size="14" fill="#1f2328">7. plan_balanced_swaps：按 S_max 负载均衡排段，</text>
+<text x="250.0" y="671.9" text-anchor="middle" font-size="14" fill="#1f2328">取前 S 段</text>
+<rect x="780" y="630" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="990.0" y="653.9" text-anchor="middle" font-size="14" fill="#1f2328">7. plan_balanced_swaps：按 S_max 负载均衡排段，</text>
+<text x="990.0" y="671.9" text-anchor="middle" font-size="14" fill="#1f2328">取前 S 段</text>
+<line x1="250.0" y1="686" x2="250.0" y2="742" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<line x1="990.0" y1="686" x2="990.0" y2="742" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="40" y="742" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="250.0" y="765.9" text-anchor="middle" font-size="14" fill="#1f2328">8. 逐段按真实占用者再证</text>
+<text x="250.0" y="783.9" text-anchor="middle" font-size="14" fill="#1f2328">→ 失败：SwapCollisionError(sweep)</text>
+<rect x="780" y="742" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="990.0" y="765.9" text-anchor="middle" font-size="14" fill="#1f2328">8. 逐段按真实占用者再证</text>
+<text x="990.0" y="783.9" text-anchor="middle" font-size="14" fill="#1f2328">→ 失败：SwapCollisionError(sweep)</text>
+<line x1="250.0" y1="798" x2="250.0" y2="826" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<line x1="990.0" y1="798" x2="990.0" y2="826" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="40" y="826" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="250.0" y="849.9" text-anchor="middle" font-size="14" fill="#1f2328">9. 预写 swap_pair{k}_idx1/idx2，刷新调度，</text>
+<text x="250.0" y="867.9" text-anchor="middle" font-size="14" fill="#1f2328">写 _xhard_swap_plan</text>
+<rect x="780" y="826" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="990.0" y="849.9" text-anchor="middle" font-size="14" fill="#1f2328">9. 预写 swap_pair{k}_idx1/idx2，刷新调度，</text>
+<text x="990.0" y="867.9" text-anchor="middle" font-size="14" fill="#1f2328">写 _xhard_swap_plan</text>
+<line x1="250.0" y1="882" x2="250.0" y2="910" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<line x1="990.0" y1="882" x2="990.0" y2="910" stroke="#59636e" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="40" y="910" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="250.0" y="933.9" text-anchor="middle" font-size="14" fill="#1f2328">10. 运行期：槽位绑定 / 端点 / 整段重证 / 子步布局</text>
+<text x="250.0" y="951.9" text-anchor="middle" font-size="14" fill="#1f2328">→ 失败只记 _xhard_fatal</text>
+<rect x="780" y="910" width="420" height="56" rx="8" ry="8" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="990.0" y="933.9" text-anchor="middle" font-size="14" fill="#1f2328">10. 运行期：槽位绑定 / 端点 / 整段重证 / 子步布局</text>
+<text x="990.0" y="951.9" text-anchor="middle" font-size="14" fill="#1f2328">→ 失败只记 _xhard_fatal</text>
+<text x="1002.0" y="706" font-size="13" fill="#57606a">随机流未被闸门消耗 →</text>
+<text x="1002.0" y="724" font-size="13" fill="#57606a">规划与 v2 逐字节相同</text>
+<rect x="496" y="182.0" width="230" height="48" rx="8" ry="8" fill="#fff1f2" stroke="#dc2626" stroke-width="1.5"/>
+<text x="611.0" y="202.1" text-anchor="middle" font-size="13" fill="#1f2328">SceneGenerationError</text>
+<text x="611.0" y="219.1" text-anchor="middle" font-size="13" fill="#1f2328">整卡剔除</text>
+<line x1="460" y1="206.0" x2="496" y2="206.0" stroke="#dc2626" stroke-width="2" marker-end="url(#ahr)"/>
+<rect x="1236" y="182.0" width="230" height="48" rx="8" ry="8" fill="#fff1f2" stroke="#dc2626" stroke-width="1.5"/>
+<text x="1351.0" y="202.1" text-anchor="middle" font-size="13" fill="#1f2328">SceneGenerationError</text>
+<text x="1351.0" y="219.1" text-anchor="middle" font-size="13" fill="#1f2328">整卡剔除</text>
+<line x1="1200" y1="206.0" x2="1236" y2="206.0" stroke="#dc2626" stroke-width="2" marker-end="url(#ahr)"/>
+<rect x="496" y="266.0" width="230" height="48" rx="8" ry="8" fill="#fff1f2" stroke="#dc2626" stroke-width="1.5"/>
+<text x="611.0" y="286.1" text-anchor="middle" font-size="13" fill="#1f2328">SwapCollisionError(initial)</text>
+<text x="611.0" y="303.1" text-anchor="middle" font-size="13" fill="#1f2328">整卡剔除</text>
+<line x1="460" y1="290.0" x2="496" y2="290.0" stroke="#dc2626" stroke-width="2" marker-end="url(#ahr)"/>
+<rect x="1236" y="266.0" width="230" height="48" rx="8" ry="8" fill="#fff1f2" stroke="#dc2626" stroke-width="1.5"/>
+<text x="1351.0" y="286.1" text-anchor="middle" font-size="13" fill="#1f2328">SwapCollisionError(initial)</text>
+<text x="1351.0" y="303.1" text-anchor="middle" font-size="13" fill="#1f2328">整卡剔除</text>
+<line x1="1200" y1="290.0" x2="1236" y2="290.0" stroke="#dc2626" stroke-width="2" marker-end="url(#ahr)"/>
+<rect x="496" y="433.0" width="230" height="66" rx="8" ry="8" fill="#fff1f2" stroke="#dc2626" stroke-width="1.5"/>
+<text x="611.0" y="453.6" text-anchor="middle" font-size="13" fill="#1f2328">SwapCollisionError(graph)</text>
+<text x="611.0" y="470.6" text-anchor="middle" font-size="13" fill="#1f2328">「孤立槽=…」</text>
+<text x="611.0" y="487.6" text-anchor="middle" font-size="13" fill="#1f2328">整卡剔除</text>
+<line x1="460" y1="466.0" x2="496" y2="466.0" stroke="#dc2626" stroke-width="2" marker-end="url(#ahr)"/>
+<rect x="1236" y="433.0" width="230" height="66" rx="8" ry="8" fill="#fff1f2" stroke="#dc2626" stroke-width="1.5"/>
+<text x="1351.0" y="453.6" text-anchor="middle" font-size="13" fill="#1f2328">SwapCollisionError(graph)</text>
+<text x="1351.0" y="470.6" text-anchor="middle" font-size="13" fill="#1f2328">「孤立槽=…」</text>
+<text x="1351.0" y="487.6" text-anchor="middle" font-size="13" fill="#1f2328">整卡剔除</text>
+<line x1="1200" y1="466.0" x2="1236" y2="466.0" stroke="#dc2626" stroke-width="2" marker-end="url(#ahr)"/>
+<rect x="496" y="746.0" width="230" height="48" rx="8" ry="8" fill="#fff1f2" stroke="#dc2626" stroke-width="1.5"/>
+<text x="611.0" y="766.0" text-anchor="middle" font-size="13" fill="#1f2328">SwapCollisionError(sweep)</text>
+<text x="611.0" y="783.0" text-anchor="middle" font-size="13" fill="#1f2328">整卡剔除</text>
+<line x1="460" y1="770.0" x2="496" y2="770.0" stroke="#dc2626" stroke-width="2" marker-end="url(#ahr)"/>
+<rect x="1236" y="746.0" width="230" height="48" rx="8" ry="8" fill="#fff1f2" stroke="#dc2626" stroke-width="1.5"/>
+<text x="1351.0" y="766.0" text-anchor="middle" font-size="13" fill="#1f2328">SwapCollisionError(sweep)</text>
+<text x="1351.0" y="783.0" text-anchor="middle" font-size="13" fill="#1f2328">整卡剔除</text>
+<line x1="1200" y1="770.0" x2="1236" y2="770.0" stroke="#dc2626" stroke-width="2" marker-end="url(#ahr)"/>
+<rect x="496" y="914.0" width="230" height="48" rx="8" ry="8" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
+<text x="611.0" y="934.0" text-anchor="middle" font-size="13" fill="#1f2328">只记 _xhard_fatal，</text>
+<text x="611.0" y="951.0" text-anchor="middle" font-size="13" fill="#1f2328">不抛异常</text>
+<line x1="460" y1="938.0" x2="496" y2="938.0" stroke="#9ca3af" stroke-width="2" marker-end="url(#ahg)"/>
+<rect x="1236" y="914.0" width="230" height="48" rx="8" ry="8" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
+<text x="1351.0" y="934.0" text-anchor="middle" font-size="13" fill="#1f2328">只记 _xhard_fatal，</text>
+<text x="1351.0" y="951.0" text-anchor="middle" font-size="13" fill="#1f2328">不抛异常</text>
+<line x1="1200" y1="938.0" x2="1236" y2="938.0" stroke="#9ca3af" stroke-width="2" marker-end="url(#ahg)"/>
+<rect x="1236" y="533.0" width="230" height="66" rx="8" ry="8" fill="#fff1f2" stroke="#dc2626" stroke-width="1.5"/>
+<text x="1351.0" y="553.5" text-anchor="middle" font-size="13" fill="#1f2328">SwapCollisionError(graph)</text>
+<text x="1351.0" y="570.5" text-anchor="middle" font-size="13" fill="#1f2328">「可行槽对不足=n/3」</text>
+<text x="1351.0" y="587.5" text-anchor="middle" font-size="13" fill="#1f2328">整卡剔除</text>
+<line x1="1200" y1="566.0" x2="1236" y2="566.0" stroke="#dc2626" stroke-width="2" marker-end="url(#ahr)"/>
+<rect x="40" y="992" width="26" height="18" rx="4" fill="#f6f8fa" stroke="#59636e" stroke-width="1.5"/>
+<text x="74" y="1006" font-size="13" fill="#1f2328">流程步骤</text>
+<rect x="166.0" y="992" width="26" height="18" rx="4" fill="#fff7ed" stroke="#d97706" stroke-width="3"/>
+<text x="200.0" y="1006" font-size="13" fill="#1f2328">v3 新增闸门</text>
+<rect x="313.45" y="992" width="26" height="18" rx="4" fill="#fff1f2" stroke="#dc2626" stroke-width="1.5"/>
+<text x="347.45" y="1006" font-size="13" fill="#1f2328">失败 → 整卡剔除</text>
+<rect x="492.75" y="992" width="26" height="18" rx="4" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
+<text x="526.75" y="1006" font-size="13" fill="#1f2328">只记录、不抛异常</text>
+<rect x="670.75" y="992" width="26" height="18" rx="4" fill="#ffffff" stroke="#59636e" stroke-width="1.5" stroke-dasharray="7,5"/>
+<text x="704.75" y="1006" font-size="13" fill="#1f2328">v2 无此步</text>
+</svg>
+<figcaption>图 1　配对机制流程对比：左为改前 v2，右为改后 v3；橙色粗描边为 v3 新增的闸门，红框为整卡剔除出口，灰框为只记录不抛异常（fable 画图子代理生成，主会话渲染目视复查通过）</figcaption>
+</figure>
+<pre><code>改前 v2（5419e932 的 swap_plan.py::plan_swaps）        改后 v3（本计划）
+──────────────────────────────────────────────        ──────────────────────────────────────────────
+reset 建场                                             reset 建场
+ → require_static_slots（同形等高，否则 SceneGenerationError）    → 同左
+ → check_bin_layout 初态（接触 → SwapCollisionError initial）     → 同左
+ → slot_graph：全部无序槽对各扫掠一次，得 G、gaps              → 同左
+ → require_every_slot_covered：有孤立槽 → SwapCollisionError graph  → 同左（先于新闸门，证据不变）
+                                                       → 【新】require_min_pair_kinds：
+                                                            G 边数 &lt; 3 → SwapCollisionError graph，
+                                                            detail「可行槽对不足=n/3; 原始边证据=…」
+ → plan_balanced_swaps 按 S_max 排、取前 S 段                     → 同左（随机流未被消耗，结果逐字节同 v2）
+ → 逐段按真实占用者再证（不符 → SwapCollisionError sweep）        → 同左
+ → 预写 swap_pair{k}_idx*，刷新调度，写 _xhard_swap_plan          → 同左（新增 graph.feasible_edges 字段）
+运行期：槽位绑定 / 端点 / 整段重证 / 子步布局 → 只记 fatal        → 同左</code></pre>
+<table>
+<tr><th>环节</th><th>改前 v2</th><th>改后 v3</th></tr>
+<tr><td>准入</td><td>口径 B：每个槽度数 ≥ 1</td><td>口径 B <strong>且</strong> G 边数 ≥ 3</td></tr>
+<tr><td>拒绝出口</td><td><code>graph</code>（孤立槽）、<code>initial</code>、<code>sweep</code>、运行期</td><td>多一个 <code>graph</code>（可行槽对不足），detail 前缀可区分</td></tr>
+<tr><td>配对算法</td><td>V9 负载均衡贪心</td><td>不变</td></tr>
+<tr><td>随机流</td><td><code>seed + 0x53574150</code></td><td>不变；闸门不抽随机数</td></tr>
+<tr><td>运行期复核</td><td>槽位绑定、端点、重证、子步</td><td>不变</td></tr>
+<tr><td>证据字段</td><td><code>_xhard_swap_plan.graph = {adj, gaps}</code></td><td>加 <code>graph.feasible_edges</code>（排序后的可行无序槽对列表）</td></tr>
+</table>
+
+<h3 id="h3-1">3.1 新闸门 require_min_pair_kinds</h3>
+<p><strong>定义</strong>：可行槽对图 G 的边集 <code>E = {(a,b) | a&lt;b, adj[a][b]}</code>；要求 <code>|E| ≥ MIN_SWAP_PAIR_KINDS = 3</code>。每条边就是一种「swap」：交换的扫掠几何只取决于无序槽对（v2 计划 3.1 的槽论证），所以「三种 swap」在几何上就是三条可行边。</p>
+<p><strong>锚点</strong>：<code>src/robomme_xhard/swap_plan.py</code> 新增模块常量 <code>MIN_SWAP_PAIR_KINDS = 3</code> 与函数 <code>require_min_pair_kinds(adj, gaps, minimum=MIN_SWAP_PAIR_KINDS)</code>；<code>plan_swaps</code> 在 <code>require_every_slot_covered(adj, gaps)</code> 的下一行调用它。</p>
+<pre><code># swap_plan.py（新增；与 require_every_slot_covered 同形）
+MIN_SWAP_PAIR_KINDS = 3
+
+def require_min_pair_kinds(adj, gaps, minimum=MIN_SWAP_PAIR_KINDS):
+    """口径甲：可行无序槽对少于 minimum 种即整卡剔除；只读 adj，不碰随机流。"""
+    edges = su.graph_edges(adj)                      # 引入文件已有，[(a,b)] 且 a&lt;b
+    if len(edges) &gt;= int(minimum):
+        return
+    rejections = getattr(gaps, "rejections", {})
+    reasons = {item["reason"] for item in rejections.values()}
+    reason = ("uncertified" if "uncertified" in reasons else
+              "numerical_boundary" if "numerical_boundary" in reasons else "contact")
+    evidence = dict(gate="min_pair_kinds", feasible_edges=[list(e) for e in edges],
+                    required=int(minimum), gaps=dict(gaps), rejected_edges=rejections)
+    rejection = bc.CollisionRejection(
+        reason=reason, stage="graph", object_a="slots", object_b="slots",
+        shape_a=-1, shape_b=-1,
+        detail=f"可行槽对不足={len(edges)}/{int(minimum)}; 原始边证据=" + json.dumps(evidence, ensure_ascii=False))
+    raise SwapCollisionError(rejection, "graph")
+
+# plan_swaps 内（只加一行）
+    adj, gaps = slot_graph(states, bystanders)
+    require_every_slot_covered(adj, gaps)
+    require_min_pair_kinds(adj, gaps)                # 新增
+    s_max = ...</code></pre>
+<p><strong>reason 聚合为什么沿用口径 B 的规则</strong>：判据文件规定 <code>CollisionRejection.reason</code> 只取三个具名值（R0-4 不改判据文件）；闸门失败的根因是「被排除的边太多」，被排除的边各自有原始 reason，取最保守的那种作聚合值，与 <code>require_every_slot_covered</code> 一致，这样汇总工具的 task／infra 分界（<code>_geometry_rejection</code> 只在原始边 stage 为 <code>geometry</code> 时判 infra）不需要任何改动。</p>
+<p><strong>数轴演示</strong>（4 槽，6 对；VideoRepick 为 3 槽 3 对）：</p>
+<pre><code>G 边数:   0   1   2   3   4   5   6
+口径 B:   ✗   ✗  ✓? ✓? ✓   ✓   ✓     （2 条边时 4 槽可能仍各有度数，如 03+12；也可能有孤立槽，如 10500）
+口径甲:   ✗   ✗   ✗   ✓   ✓   ✓   ✓
+v2 实测:          G=2：6 个 seed 停在这里（新剔）
+                      G=3：10 个 seed（ButtonUnmaskSwap 5 + VideoRepick 5）恰好通过</code></pre>
+<figure>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1100" width="1500" height="1100" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif">
+<rect x="0" y="0" width="1500" height="1100" fill="#ffffff"/>
+<text x="750" y="34" text-anchor="middle" font-size="18" font-weight="bold" fill="#1f2328">图 2　口径 B 与口径甲在六个真实 seed 上的判定</text>
+<rect x="30" y="60" width="450" height="396" rx="6" fill="#ffffff" stroke="#d1d9e0" stroke-width="1.5"/>
+<text x="255.0" y="86" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2328">VideoUnmaskSwap　seed 5700　G 边数 4</text>
+<line x1="380.0" y1="267.2" x2="209.9" y2="368.6" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="380.0" y1="267.2" x2="130.0" y2="246.7" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<line x1="380.0" y1="267.2" x2="350.3" y2="151.4" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="209.9" y1="368.6" x2="130.0" y2="246.7" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="209.9" y1="368.6" x2="350.3" y2="151.4" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<line x1="130.0" y1="246.7" x2="350.3" y2="151.4" stroke="#16a34a" stroke-width="2.2"/>
+<text x="396.9" y="273.5" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">0</text>
+<text x="202.0" y="388.7" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">1</text>
+<text x="113.1" y="250.2" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">2</text>
+<text x="360.7" y="142.9" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">3</text>
+<rect x="282.1" y="322.4" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="302.1" y="334.2" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">32.94</text>
+<rect x="235.9" y="238.5" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="255.9" y="250.3" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-0.35</text>
+<rect x="366.0" y="197.3" width="33.2" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="382.6" y="209.1" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">17.6</text>
+<rect x="138.3" y="310.0" width="33.2" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="154.9" y="321.8" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">37.4</text>
+<rect x="259.9" y="288.9" width="19.6" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="269.7" y="300.7" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-1</text>
+<rect x="222.6" y="181.4" width="26.4" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="235.8" y="193.2" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">4.7</text>
+<circle cx="380.0" cy="267.2" r="7" fill="#1f2328"/>
+<circle cx="209.9" cy="368.6" r="7" fill="#1f2328"/>
+<circle cx="130.0" cy="246.7" r="7" fill="#1f2328"/>
+<circle cx="350.3" cy="151.4" r="7" fill="#1f2328"/>
+<text x="46" y="420" font-size="13" fill="#1f2328">口径 B（无孤立槽）：<tspan font-weight="bold" fill="#16a34a">通过</tspan></text>
+<text x="46" y="442" font-size="13" fill="#1f2328">口径甲（边数 ≥ 3）：<tspan font-weight="bold" fill="#16a34a">通过</tspan></text>
+<rect x="520" y="60" width="450" height="396" rx="6" fill="#ffffff" stroke="#d1d9e0" stroke-width="1.5"/>
+<text x="745.0" y="86" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2328">VideoUnmaskSwap　seed 9300　G 边数 2</text>
+<line x1="674.2" y1="258.3" x2="739.2" y2="135.0" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<line x1="674.2" y1="258.3" x2="815.8" y2="221.7" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<line x1="674.2" y1="258.3" x2="745.8" y2="385.0" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="739.2" y1="135.0" x2="815.8" y2="221.7" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="739.2" y1="135.0" x2="745.8" y2="385.0" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<line x1="815.8" y1="221.7" x2="745.8" y2="385.0" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<text x="657.3" y="265.4" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">0</text>
+<text x="738.5" y="123.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">1</text>
+<text x="831.7" y="220.4" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">2</text>
+<text x="746.1" y="407.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">3</text>
+<rect x="674.1" y="180.8" width="33.2" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="690.7" y="192.6" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-1.7</text>
+<rect x="701.7" y="224.1" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="721.7" y="235.9" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-0.51</text>
+<line x1="704.1" y1="325.0" x2="710.0" y2="321.7" stroke="#16a34a" stroke-width="1" stroke-opacity="0.8"/>
+<rect x="670.9" y="325.0" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="690.9" y="336.8" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">37.79</text>
+<line x1="785.5" y1="171.3" x2="777.5" y2="178.3" stroke="#16a34a" stroke-width="1" stroke-opacity="0.8"/>
+<rect x="774.0" y="156.3" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="794.0" y="168.1" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">12.89</text>
+<line x1="739.9" y1="260.1" x2="742.5" y2="260.0" stroke="#dc2626" stroke-width="1" stroke-opacity="0.8"/>
+<rect x="693.1" y="253.2" width="46.8" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="716.5" y="265.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-35.79</text>
+<line x1="783.6" y1="304.5" x2="780.8" y2="303.3" stroke="#dc2626" stroke-width="1" stroke-opacity="0.8"/>
+<rect x="781.1" y="304.5" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="801.1" y="316.3" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-0.29</text>
+<circle cx="674.2" cy="258.3" r="7" fill="#1f2328"/>
+<circle cx="739.2" cy="135.0" r="7" fill="#1f2328"/>
+<circle cx="815.8" cy="221.7" r="7" fill="#1f2328"/>
+<circle cx="745.8" cy="385.0" r="7" fill="#1f2328"/>
+<text x="536" y="420" font-size="13" fill="#1f2328">口径 B（无孤立槽）：<tspan font-weight="bold" fill="#16a34a">通过</tspan>（每槽都有一条边）</text>
+<text x="536" y="442" font-size="13" fill="#1f2328">口径甲（边数 ≥ 3）：<tspan font-weight="bold" fill="#dc2626">剔除</tspan>（只有 2 种）</text>
+<rect x="1010" y="60" width="450" height="396" rx="6" fill="#ffffff" stroke="#d1d9e0" stroke-width="1.5"/>
+<text x="1235.0" y="86" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2328">ButtonUnmaskSwap　seed 7700　G 边数 3（边界）</text>
+<line x1="1195.8" y1="322.3" x2="1178.1" y2="142.8" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="1195.8" y1="322.3" x2="1284.0" y2="135.0" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<line x1="1195.8" y1="322.3" x2="1291.9" y2="385.0" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="1178.1" y1="142.8" x2="1284.0" y2="135.0" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="1178.1" y1="142.8" x2="1291.9" y2="385.0" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<line x1="1284.0" y1="135.0" x2="1291.9" y2="385.0" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<text x="1187.6" y="342.2" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">0</text>
+<text x="1169.7" y="133.1" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">1</text>
+<text x="1290.6" y="124.3" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">2</text>
+<text x="1298.1" y="405.8" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">3</text>
+<rect x="1152.4" y="226.8" width="33.2" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="1169.0" y="238.6" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">2.89</text>
+<line x1="1243.9" y1="230.5" x2="1239.9" y2="228.6" stroke="#dc2626" stroke-width="1" stroke-opacity="0.8"/>
+<rect x="1239.8" y="230.5" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="1259.8" y="242.3" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-5.48</text>
+<rect x="1214.0" y="361.2" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="1234.0" y="373.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">25.98</text>
+<rect x="1210.3" y="120.5" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="1230.3" y="132.3" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">12.13</text>
+<rect x="1231.3" y="248.8" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="1251.3" y="260.6" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-6.65</text>
+<line x1="1289.9" y1="259.9" x2="1287.9" y2="260.0" stroke="#dc2626" stroke-width="1" stroke-opacity="0.8"/>
+<rect x="1289.9" y="251.8" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="1309.9" y="263.6" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-0.34</text>
+<circle cx="1195.8" cy="322.3" r="7" fill="#1f2328"/>
+<circle cx="1178.1" cy="142.8" r="7" fill="#1f2328"/>
+<circle cx="1284.0" cy="135.0" r="7" fill="#1f2328"/>
+<circle cx="1291.9" cy="385.0" r="7" fill="#1f2328"/>
+<text x="1026" y="420" font-size="13" fill="#1f2328">口径 B（无孤立槽）：<tspan font-weight="bold" fill="#16a34a">通过</tspan></text>
+<text x="1026" y="442" font-size="13" fill="#1f2328">口径甲（边数 ≥ 3）：<tspan font-weight="bold" fill="#16a34a">通过</tspan>（恰好 3 种）</text>
+<rect x="30" y="486" width="450" height="396" rx="6" fill="#ffffff" stroke="#d1d9e0" stroke-width="1.5"/>
+<text x="255.0" y="512" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2328">ButtonUnmaskSwap　seed 10500　G 边数 2，槽 3 孤立（示意位置）</text>
+<line x1="130.0" y1="800.3" x2="144.3" y2="564.6" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<line x1="130.0" y1="800.3" x2="380.0" y2="571.7" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="130.0" y1="800.3" x2="365.7" y2="807.4" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<line x1="144.3" y1="564.6" x2="380.0" y2="571.7" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="144.3" y1="564.6" x2="365.7" y2="807.4" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<line x1="380.0" y1="571.7" x2="365.7" y2="807.4" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<text x="117.5" y="816.8" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">0</text>
+<text x="132.8" y="557.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">1</text>
+<text x="392.5" y="565.2" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">2</text>
+<text x="377.2" y="825.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">3</text>
+<line x1="135.2" y1="682.3" x2="137.1" y2="682.4" stroke="#dc2626" stroke-width="1" stroke-opacity="0.8"/>
+<rect x="95.2" y="673.6" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="115.2" y="685.4" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-39.2</text>
+<rect x="170.6" y="718.5" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="190.6" y="730.3" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">20.47</text>
+<rect x="227.5" y="807.4" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="247.5" y="819.2" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-0.44</text>
+<rect x="242.5" y="549.6" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="262.5" y="561.4" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">22.68</text>
+<rect x="206.1" y="651.9" width="19.6" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="215.9" y="663.7" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-3</text>
+<rect x="374.2" y="683.2" width="33.2" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="390.8" y="695.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-0.1</text>
+<circle cx="130.0" cy="800.3" r="7" fill="#1f2328"/>
+<circle cx="144.3" cy="564.6" r="7" fill="#1f2328"/>
+<circle cx="380.0" cy="571.7" r="7" fill="#1f2328"/>
+<circle cx="365.7" cy="807.4" r="7" fill="#1f2328"/>
+<text x="46" y="846" font-size="13" fill="#1f2328">口径 B（无孤立槽）：<tspan font-weight="bold" fill="#dc2626">剔除</tspan>（槽 3 孤立）</text>
+<text x="46" y="868" font-size="13" fill="#1f2328">口径甲（边数 ≥ 3）：<tspan fill="#6b7280">不再判定，口径 B 已先剔除</tspan></text>
+<rect x="520" y="486" width="450" height="396" rx="6" fill="#ffffff" stroke="#d1d9e0" stroke-width="1.5"/>
+<text x="745.0" y="512" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2328">VideoRepick　seed 9600　G 边数 3（3 槽完全图）</text>
+<line x1="638.8" y1="561.0" x2="851.2" y2="591.6" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="638.8" y1="561.0" x2="688.8" y2="811.0" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="851.2" y1="591.6" x2="688.8" y2="811.0" stroke="#16a34a" stroke-width="2.2"/>
+<text x="627.1" y="553.6" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">0</text>
+<text x="866.4" y="588.9" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">1</text>
+<text x="684.8" y="832.5" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">2</text>
+<rect x="726.6" y="557.9" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="746.6" y="569.7" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">55.37</text>
+<line x1="662.2" y1="686.3" x2="663.8" y2="686.0" stroke="#16a34a" stroke-width="1" stroke-opacity="0.8"/>
+<rect x="622.2" y="682.8" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="642.2" y="694.6" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">23.65</text>
+<rect x="764.5" y="704.5" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="784.5" y="716.3" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">21.67</text>
+<circle cx="638.8" cy="561.0" r="7" fill="#1f2328"/>
+<circle cx="851.2" cy="591.6" r="7" fill="#1f2328"/>
+<circle cx="688.8" cy="811.0" r="7" fill="#1f2328"/>
+<text x="536" y="846" font-size="13" fill="#1f2328">口径 B（无孤立槽）：<tspan font-weight="bold" fill="#16a34a">通过</tspan></text>
+<text x="536" y="868" font-size="13" fill="#1f2328">口径甲（边数 ≥ 3）：<tspan font-weight="bold" fill="#16a34a">通过</tspan>（3 槽须三对全可行）</text>
+<rect x="1010" y="486" width="450" height="396" rx="6" fill="#ffffff" stroke="#d1d9e0" stroke-width="1.5"/>
+<text x="1235.0" y="512" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2328">VideoRepick　seed 10800　G 边数 2</text>
+<line x1="1149.1" y1="561.0" x2="1351.7" y2="695.6" stroke="#16a34a" stroke-width="2.2"/>
+<line x1="1149.1" y1="561.0" x2="1118.3" y2="811.0" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="7,5"/>
+<line x1="1351.7" y1="695.6" x2="1118.3" y2="811.0" stroke="#16a34a" stroke-width="2.2"/>
+<text x="1142.2" y="550.5" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">0</text>
+<text x="1368.7" y="701.4" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">1</text>
+<text x="1108.4" y="829.8" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2328">2</text>
+<rect x="1240.3" y="605.8" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="1260.3" y="617.6" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">57.12</text>
+<line x1="1131.9" y1="685.8" x2="1133.7" y2="686.0" stroke="#dc2626" stroke-width="1" stroke-opacity="0.8"/>
+<rect x="1091.9" y="675.8" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="1111.9" y="687.6" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">-4.31</text>
+<rect x="1221.2" y="758.4" width="40.0" height="15.0" rx="2" fill="#ffffff" fill-opacity="0.92"/>
+<text x="1241.2" y="770.2" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">45.83</text>
+<circle cx="1149.1" cy="561.0" r="7" fill="#1f2328"/>
+<circle cx="1351.7" cy="695.6" r="7" fill="#1f2328"/>
+<circle cx="1118.3" cy="811.0" r="7" fill="#1f2328"/>
+<text x="1026" y="846" font-size="13" fill="#1f2328">口径 B（无孤立槽）：<tspan font-weight="bold" fill="#16a34a">通过</tspan></text>
+<text x="1026" y="868" font-size="13" fill="#1f2328">口径甲（边数 ≥ 3）：<tspan font-weight="bold" fill="#dc2626">剔除</tspan></text>
+<line x1="60" y1="912" x2="110" y2="912" stroke="#16a34a" stroke-width="2.5"/>
+<text x="118" y="917" font-size="13" fill="#1f2328">绿实线 = 整段扫掠无接触（可行边）</text>
+<line x1="400" y1="912" x2="450" y2="912" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="7,5"/>
+<text x="458" y="917" font-size="13" fill="#1f2328">红虚线 = 会撞或无法证明安全（排除）</text>
+<rect x="760" y="904" width="40" height="16" rx="2" fill="#ffffff" stroke="#d1d9e0"/>
+<text x="780" y="916" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">12.89</text>
+<text x="808" y="917" font-size="13" fill="#1f2328">数字 = 最小间隙 mm（负数为穿入）</text>
+<circle cx="1110" cy="912" r="7" fill="#1f2328"/>
+<text x="1124" y="917" font-size="13" fill="#1f2328">槽位（标槽号 0–3）</text>
+<text x="60" y="938" font-size="12" fill="#6b7280">各面板按真实 xy 坐标（单位 m）等比缩放，x 向右为正、y 向上为正；面板 4 的槽位坐标未提供，为示意位置。偏移较远的标签带同色细引线指向所标的边。</text>
+<text x="60" y="1017" font-size="14" font-weight="bold" fill="#1f2328">G 边数</text>
+<line x1="270" y1="1012" x2="1240" y2="1012" stroke="#1f2328" stroke-width="1.5"/>
+<polygon points="1240,1007 1250,1012 1240,1017" fill="#1f2328"/>
+<line x1="300.0" y1="1006" x2="300.0" y2="1018" stroke="#1f2328" stroke-width="1.5"/>
+<text x="300.0" y="1036" text-anchor="middle" font-size="14" fill="#1f2328">0</text>
+<line x1="450.0" y1="1006" x2="450.0" y2="1018" stroke="#1f2328" stroke-width="1.5"/>
+<text x="450.0" y="1036" text-anchor="middle" font-size="14" fill="#1f2328">1</text>
+<line x1="600.0" y1="1006" x2="600.0" y2="1018" stroke="#1f2328" stroke-width="1.5"/>
+<text x="600.0" y="1036" text-anchor="middle" font-size="14" fill="#1f2328">2</text>
+<line x1="750.0" y1="1006" x2="750.0" y2="1018" stroke="#1f2328" stroke-width="1.5"/>
+<text x="750.0" y="1036" text-anchor="middle" font-size="14" fill="#1f2328">3</text>
+<line x1="900.0" y1="1006" x2="900.0" y2="1018" stroke="#1f2328" stroke-width="1.5"/>
+<text x="900.0" y="1036" text-anchor="middle" font-size="14" fill="#1f2328">4</text>
+<line x1="1050.0" y1="1006" x2="1050.0" y2="1018" stroke="#1f2328" stroke-width="1.5"/>
+<text x="1050.0" y="1036" text-anchor="middle" font-size="14" fill="#1f2328">5</text>
+<line x1="1200.0" y1="1006" x2="1200.0" y2="1018" stroke="#1f2328" stroke-width="1.5"/>
+<text x="1200.0" y="1036" text-anchor="middle" font-size="14" fill="#1f2328">6</text>
+<line x1="450.0" y1="978" x2="1200.0" y2="978" stroke="#16a34a" stroke-width="4" stroke-linecap="round"/>
+<line x1="450.0" y1="972" x2="450.0" y2="984" stroke="#16a34a" stroke-width="2"/>
+<text x="825.0" y="966" text-anchor="middle" font-size="13" fill="#16a34a" font-weight="bold">口径 B：边数 ≥ 1 且无孤立槽（覆盖 1–6；边数 = 2 时可能通过，也可能有孤立槽而剔除）</text>
+<line x1="750.0" y1="1060" x2="1200.0" y2="1060" stroke="#16a34a" stroke-width="4" stroke-linecap="round"/>
+<line x1="750.0" y1="1054" x2="750.0" y2="1066" stroke="#16a34a" stroke-width="2"/>
+<text x="975.0" y="1080" text-anchor="middle" font-size="13" fill="#16a34a" font-weight="bold">口径甲：边数 ≥ 3（覆盖 3–6）</text>
+<circle cx="600.0" cy="1012" r="6" fill="#dc2626"/>
+<line x1="600.0" y1="1020" x2="600.0" y2="1066" stroke="#dc2626" stroke-width="1.5"/>
+<text x="600.0" y="1082" text-anchor="middle" font-size="13" fill="#dc2626" font-weight="bold">v2 里 6 个 seed 停在这里</text>
+</svg>
+<figcaption>图 2　六个真实 seed 的可行槽对图与两种口径的判定：绿实线为可行边、红虚线为排除边、数字为最小间隙 mm；下方数轴标出口径 B 与口径甲各自覆盖的 G 边数区间（数据取自 v2 全量 summary.json；10500 为示意位置）</figcaption>
+</figure>
+<p><strong>⚠ 陷阱与反例</strong>：</p>
+<ul>
+<li>闸门必须放在口径 B 之后。若放在前面，10500 这类「2 条边且有孤立槽」的 seed 会以新 detail 被拒，v2 对 v3 的对比表就无法说明它们「证据相同」。</li>
+<li>闸门必须放在 <code>plan_balanced_swaps</code> 之前且不抽随机数。否则通过闸门的 seed 的规划会与 v2 不同，<code>PLAN_UNCHANGED</code> 失效。</li>
+<li>不要用 <code>len({tuple(sorted(p)) for p in slot_pairs}) ≥ 3</code>（口径乙）替代。用户已选口径甲；口径乙会额外剔掉 5700、6900、7300、8500 的 xhard12 等低档卡，且要改贪心。</li>
+<li>VideoRepick 3 槽时 <code>graph_edges</code> 最多 3 条；闸门不特判任务，3 槽图边数 ≥ 3 即完全图，这是口径甲的既定后果。</li>
+</ul>
+<p><strong>收益（实测口径）</strong>：v3 保留下来的 21 个母 seed，每档实际用到的槽对种类最少为 2（VideoUnmaskSwap 5700/6900/7300/8500 与 ButtonUnmaskSwap 8100/11300 的 xhard12），xhard20 档全部 ≥ 3；被剔的 6 个 seed 五档全为 2 种。闸门把「整条只能两对来回」的样本全部挡在生成之前，不烧 GPU。</p>
+
+<h3 id="h3-2">3.2 不变项与「规划逐字节不变」的保证</h3>
+<p>以下函数与常量不改：<code>SWAP_PLAN_SEED_OFFSET</code>、<code>PLAN_SCORE</code>、<code>PLAN_BUDGET</code>、<code>PLAN_ACCEPT_RANGE</code>、<code>max_swap_count</code>、<code>require_static_slots</code>、<code>button_shape_poses</code>、<code>button_envelope_state</code>、<code>bystander_states_of</code>、<code>slot_graph</code>、<code>require_every_slot_covered</code>、<code>parent_start_q</code>、<code>certify_swap_plan</code> 的签名与预写逻辑、<code>SwapCollisionMixin</code> 全部方法；三个子类文件；生成器。</p>
+<p><strong>为什么通过闸门的 seed 规划逐字节不变</strong>：① 规划的随机流在 <code>certify_swap_plan</code> 里由 <code>seed + 0x53574150</code> 播种，只被 <code>plan_balanced_swaps</code> 消耗；闸门只读 <code>adj</code>；② G 由 <code>slot_graph</code> 计算，闸门不改它；③ 闸门在 G 之后、规划之前，通过即无副作用。所以 <code>pairs</code>、<code>slot_pairs</code>、<code>usage</code>、<code>initiator_usage</code>、<code>partner_usage</code>、<code>initial_gap</code>、<code>spread_full</code>、<code>spread_prefix</code>、<code>tries</code>、<code>slots</code>、<code>graph.adj</code>、<code>graph.gaps</code> 应与 v2 同卡逐字段相等；只有新增的 <code>graph.feasible_edges</code> 是 v2 没有的键。验收 <code>PLAN_UNCHANGED</code> 在比较时排除这个新键。</p>
+<p>⚠ 这条保证假设同一台机器、同一 GPU、同一依赖下几何读数可复现。v2 的 GPU 契约用例 <code>test_five_tiers_share_pair_prefix</code> 已证明同 seed 五档的 <code>slots</code>、<code>graph</code> 逐项相同，跨两轮生成是否逐位相同，由 smoke 的 6 张保留卡先验证（K8），全量再对 21 个 seed × 5 档逐卡核对。若发现浮点级差异（例如 <code>gaps</code> 末位不同），停下交用户，不放宽为「容差内相等」。</p>
+
+<h3 id="h3-3">3.3 汇总工具：graph 拒绝分型</h3>
+<p><code>tools/swap_v2_report.py</code> 目前把所有 <code>SwapCollisionError × graph</code> 记在一起。v3 增加一个纯函数 <code>graph_reject_kind(record) -&gt; "isolated_slots" | "min_pair_kinds" | None</code>：<code>record["stage"]=="graph"</code> 且 <code>record["rejection"]["detail"]</code> 以 <code>孤立槽=</code> 开头为前者，以 <code>可行槽对不足=</code> 开头为后者（被剔卡的顶层 <code>record["detail"]</code> 是 <code>None</code>，不得读它）；并在每条 xhard 行的指标里加 <code>feasible_edges</code>（带 <code>graph.adj</code> 的卡数边；<code>swap_plan</code> 没有 <code>graph</code> 键的旧格式记 <code>None</code>；被剔卡从 detail 的 JSON 读 <code>feasible_edges</code> 长度或 <code>isolated_slots</code>）。报告末尾新增判定行：</p>
+<pre><code>SWAP_V3_KINDS_GATE=PASS seeds=30 pass=20 reject_kinds=6 reject_isolated=3 runtime_fail=1 expected_reject_kinds=6
+PLAN_UNCHANGED=PASS cards=105 diffs=0</code></pre>
+<p>其中 <code>pass</code> 按「五档全成功」计（20 个），<code>pass + reject_kinds + reject_isolated + runtime_fail = 30</code>；<code>expected_reject_kinds</code> 由 <code>--v1</code>（这里传 v2 根）里成功卡的 G 边数 &lt; 3 推出；<code>reject_kinds</code> 是 <code>--v2</code>（这里传 v3 根）里 detail 为 <code>min_pair_kinds</code> 的母 seed 数；两者不等即 FAIL。<code>PLAN_UNCHANGED</code> 对两轮都带 <code>swap_plan</code> 的 xhard 卡逐卡深比较（含 12800 的五张运行期失败卡），比较前删除新轮的 <code>graph.feasible_edges</code> 键；预期 <code>cards=105</code>。工具的参数名 <code>--v1/--v2</code> 保持不变（它只是「旧轮／新轮」两个根），判定行 <code>REPORT_V1V2</code> 名字也不改，留档里写明这次比较的是 v2 对 v3。</p>
+
+<h2 id="h4">四、验收判定行</h2>
+<table>
+<tr><th>判定行</th><th>查什么</th><th>怎么查</th><th>过了说明什么</th></tr>
+<tr><td><code>PLAN_CONSISTENCY_REVIEW=PASS base=&lt;sha&gt; findings=n blocking=0</code></td><td>本计划全文无自相矛盾</td><td>开工令后、派 W1 前，一个 <code>sonnet</code> 只读审查子代理按第 2 条清单审</td><td>可以照着实施</td></tr>
+<tr><td><code>FREEZE_V2=PASS files=719</code></td><td>v2 根全量 sha256 冻结清单</td><td><code>find artifacts/xhard/xhard-1012-swapv2 -type f | sort | xargs sha256sum &gt; docs/xhard-doc/xhard-1012-swapv3/records/v2_freeze.sha256</code>，行数等于 <code>find … | wc -l</code>（写计划时 719）</td><td>之后 <code>V2_RUN_INTACT</code> 有对照物</td></tr>
+<tr><td><code>SWAP_PLAN_V3_CPU=PASS</code></td><td>新闸门单测</td><td><code>uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_plan.py -q</code>（worktree 内按 CLAUDE.md 环境取法）</td><td>2 条边拒绝、3 条边通过、detail 格式、reason 聚合、口径 B 先于闸门、随机流未被消耗、<code>feasible_edges</code> 写入</td></tr>
+<tr><td><code>REPORT_V3_CPU=PASS</code></td><td>汇总工具分型与判定行</td><td><code>uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_v2_report.py -q</code></td><td>两种 graph 拒绝能分开、<code>SWAP_V3_KINDS_GATE</code> 的 expected 与实测比对逻辑正确、task／infra 分界不变</td></tr>
+<tr><td><code>CORE_SHORT=PASS new_failures=0</code></td><td>全仓轻量测试，按节点比较</td><td><code>timeout 280s uv run --no-sync python -m pytest tests/lightweight/ src/robomme_xhard/tests -m 'not gpu and not slow' -q -rf</code>，FAILED 节点集合与 v2 基线 4 个已知失败节点逐个比对（<code>docs/xhard-doc/xhard-1012-collision-smoke/records/xh-coll-baseline-cpu-1012.log</code>）</td><td>没有新坏的节点</td></tr>
+<tr><td><code>SRC_ROBOMME_ZERO_DIFF=PASS base=5419e932</code></td><td>P1</td><td><code>git diff --quiet 5419e932 &lt;合并提交&gt; -- src/robomme/</code></td><td>官方代码一字未动</td></tr>
+<tr><td><code>VENDOR_BYTES=PASS files=2</code></td><td>R0-4</td><td><code>sha256sum</code> 对 <code>bbe87eec…</code>、<code>f4a1a8c0…</code></td><td>判据与配对算法未改</td></tr>
+<tr><td><code>PRE_MERGE_REVIEW=PASS base=&lt;sha&gt; tip=&lt;sha&gt; files=4 commits=2 findings=0</code></td><td>W1 分支审查</td><td>一个 <code>sonnet</code> 审查子代理，只许 <code>git diff/log/show</code> 两个 sha</td><td>可写集合未越界、契约守住、前缀合规</td></tr>
+<tr><td><code>POST_MERGE_REVIEW=PASS merge=&lt;sha&gt; tests=&lt;结果&gt; files=4</code></td><td>合并后闸门</td><td>主检出跑 <code>CORE_SHORT</code>、<code>SRC_ROBOMME_ZERO_DIFF</code>、<code>VENDOR_BYTES</code></td><td>可以 push、进入 smoke</td></tr>
+<tr><td><code>SWAP_V3_SMOKE=PASS cards=2 reject_kinds=1 kept=1 plan_diff=0</code></td><td>最小 smoke 2 卡（6500 剔、5700 留，xhard20）</td><td>第二部分四阶段 C；对 5700 与 v2 全量同卡比较 <code>swap_plan</code>（排除 <code>graph.feasible_edges</code>）</td><td>闸门在真实建场上按预期工作；规划逐字节不变</td></tr>
+<tr><td><code>NEW_ROOT_FRESH=PASS</code></td><td>每次生成、汇总、出视频前目标目录不存在</td><td><code>test ! -e &lt;目标&gt;</code> 写在命令最前面</td><td>不会写进任何已有目录</td></tr>
+<tr><td><code>XHARD_FULL_DERIVE=DONE expected=180 seen=180 missing=0 dup=0 unknown=0 ok=130 task_reject=50 infra=0</code></td><td>全量 180 身份逐一交代</td><td><code>swap_v2_report.py --v1 &lt;v2 full&gt; --v2 &lt;v3 full&gt;</code></td><td>数字与 K6 预期逐项相等；任一不等即停</td></tr>
+<tr><td><code>SWAP_V3_KINDS_GATE=PASS seeds=30 pass=20 reject_kinds=6 reject_isolated=3 runtime_fail=1 expected_reject_kinds=6</code></td><td>闸门剔除数等于从 v2 推出的预期</td><td>同上工具新判定行</td><td>剔的正是第二节那 6 个 seed，不多不少</td></tr>
+<tr><td><code>PLAN_UNCHANGED=PASS cards=105 diffs=0</code></td><td>两轮都带 <code>swap_plan</code> 的 xhard 卡（21 seed × 5 档，含 12800 五张运行期失败卡）<code>swap_plan</code> 与 v2 逐字段相等</td><td>同上工具（<code>--v1</code> 为 v2 根时自动比对）</td><td>K5 成立</td></tr>
+<tr><td><code>REPORT_V1V2=PASS seeds=30 rows=180</code></td><td>两轮对账完整</td><td>同上</td><td>报告可用</td></tr>
+<tr><td><code>EPISODE_STRIP_VIDEO=PASS videos=30 columns=180 missing=0</code></td><td>六列视频</td><td><code>episode_strip_video --out-dir artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip</code></td><td>D7 版式；被剔卡显示 FAILED 列</td></tr>
+<tr><td><code>V2_RUN_INTACT=PASS files=719 mismatches=0</code></td><td>v2 根未被改动</td><td><code>sha256sum -c</code> 冻结清单，阶段 C、D 各结束后一次</td><td>上一轮证据完整</td></tr>
+<tr><td><code>OLD_RUN_INTACT=PASS files=426 mismatches=0</code></td><td>v1 根未被改动</td><td>沿用 v2 冻结清单 <code>docs/xhard-doc/xhard-1012-swapv2/records/v1_coll_freeze.sha256</code>（路径是仓库相对路径，须在仓库根执行 <code>sha256sum -c</code>），阶段 D 结束后一次</td><td>同上</td></tr>
+</table>
+
+<h2 id="h5">五、实施步骤</h2>
+<table>
+<tr><th>阶段</th><th>内容</th><th>判据</th></tr>
+<tr><td>0（开工令后立即）</td><td>① 派计划一致性审查（<code>sonnet</code>）；② 主会话给 v2 根做冻结清单（tmux <code>xh-swapv3-freeze-1012</code>，只读）；③ 派 W1（<code>opus</code>，独立 worktree）。②③ 与①并行，但 W1 的合并要等①通过</td><td><code>PLAN_CONSISTENCY_REVIEW</code>、<code>FREEZE_V2=PASS files=719</code></td></tr>
+<tr><td>A</td><td>W1 两个 <code>sub/</code> 提交：V3-A 闸门 + 单测（1.1–1.2）→ V3-B 汇总工具分型 + 单测（1.4–1.5）；主会话在 worktree 复跑验收；派 <code>sonnet</code> 审查；<code>--no-ff</code> 合并为 2.102；合并后闸门；push</td><td><code>SWAP_PLAN_V3_CPU</code>、<code>REPORT_V3_CPU</code>、<code>PRE_MERGE_REVIEW</code>、<code>CORE_SHORT</code>、<code>SRC_ROBOMME_ZERO_DIFF</code>、<code>VENDOR_BYTES</code>、<code>POST_MERGE_REVIEW</code></td></tr>
+<tr><td>C</td><td>最小 smoke 2 卡（6500、5700，xhard20、单 worker）；5700 与 v2 同卡比 <code>swap_plan</code>；复核 v2 根。不过则停，不起全量</td><td><code>SWAP_V3_SMOKE=PASS cards=2 reject_kinds=1 kept=1 plan_diff=0</code>、<code>V2_RUN_INTACT</code></td></tr>
+<tr><td>D</td><td>写 <code>full-launch.md</code> → 打 2.103Beta（工作区干净）→ 现有 30 seed 全量一次（tmux <code>xh-swapv3-full-1012</code>；v2 实测生成 601.1 秒约 10.0 分钟，包装 291 秒约 4.9 分钟）→ 汇总、视频、v2 对 v3 报告（tmux <code>xh-swapv3-report-1012</code>）→ 复核两旧根 → <code>full-result.md</code> → 2.103 回写</td><td><code>XHARD_FULL_DERIVE</code>、<code>SWAP_V3_KINDS_GATE</code>、<code>PLAN_UNCHANGED</code>、<code>REPORT_V1V2</code>、<code>EPISODE_STRIP_VIDEO</code>、<code>V2_RUN_INTACT</code>、<code>OLD_RUN_INTACT</code></td></tr>
+</table>
+<p>任何判定行 FAIL、任何数字偏离 K6 预期、任何 infra 失败：停止后续阶段，保留日志与产物，交用户裁决；不换 seed、不重试、不放宽。</p>
+
+<h2 id="h6">六、子代理分工与合并（简述）</h2>
+<p>代码改动很小（两个源码文件、两个测试文件），拆成<strong>一个写入型代理 W1</strong>（<code>opus</code>，独立 worktree）按顺序做两个提交：V3-A 管 <code>swap_plan.py</code> 与它的单测，V3-B 管 <code>swap_v2_report.py</code> 与它的测试文件；两块没有共享文件。GPU 测试文件不动（K13）。W1 交回后主会话在它的 worktree 里复跑 CPU 验收，再派<strong>一个 <code>sonnet</code> 审查代理</strong>钉死 BASE／TIP 两个 sha 审一遍，通过才 <code>--no-ff</code> 合并成 2.102，合并后在主检出跑核心短测、保护目录零 diff、引入文件哈希，通过即 push。smoke 与全量在合并后由主会话在主检出串行跑（GPU0），起跑交给<strong>运行型代理</strong>（<code>opus</code>，不加 worktree）按确定版本与命令开 tmux、验证起跑后交回句柄；监听、预算、清理归主会话。开工令后、派 W1 前另有<strong>一个 <code>sonnet</code> 计划一致性审查</strong>。探索类 <code>haiku</code> 只读按需派，不预列。</p>
+
+<h1 id="p2">第二部分（技术细节，供 agent 追踪）</h1>
+
+<h2 id="t0">〇、红线</h2>
+<table>
+<tr><td>R0-1</td><td><code>src/robomme/</code> 零 diff，不新增任何覆盖点（P1）。v3 的覆盖点集合与 v2 相同（预写 <code>swap_pair{k}_idx*</code>、混入改变 MRO、<code>_xhard_*</code> 属性）；新闸门发生在 <code>certify_swap_plan</code> 内部，不触碰父类。</td></tr>
+<tr><td>R0-2</td><td>历史只前进：禁止 <code>git reset</code>、<code>rebase</code>、<code>push --force</code>、<code>commit --amend</code>。</td></tr>
+<tr><td>R0-3</td><td>v2 计划、v2 留档 <code>docs/xhard-doc/xhard-1012-swapv2*</code>、v1 留档与计划不改。</td></tr>
+<tr><td>R0-4</td><td>两份引入文件逐字节不改（<code>bin_collision.py</code>、<code>swap_uniform.py</code>）；闸门只能调用 <code>su.graph_edges</code>、<code>bc.CollisionRejection</code> 这些已有接口。</td></tr>
+<tr><td>R0-5</td><td>判据不放宽：<code>EPS_M</code> 不变，不加余量；<code>MIN_SWAP_PAIR_KINDS</code> 固定 3，不按任务分档、不做命令行开关。</td></tr>
+<tr><td>R0-6</td><td>失败不换 seed、不补 seed、不重试（P2）；G 不满足口径 B 或口径甲都整卡剔除。</td></tr>
+<tr><td>R0-7</td><td>生成只在本机 GPU0（P7），tmux 前缀 <code>xh-swapv3-</code>；全量 180 卡须在 smoke 后单独报批（P5）。</td></tr>
+<tr><td>R0-8</td><td>不得写入、移动、删除 <code>artifacts/xhard/xhard-1012-coll/</code> 与 <code>artifacts/xhard/xhard-1012-swapv2/</code> 下任何文件；任何工具的 <code>--out-dir</code>、<code>--output-dir</code>、<code>--out-md</code>、<code>--out-json</code> 都不得指向这两个目录；靠 <code>NEW_ROOT_FRESH</code> 前置检查挡住。母清单用 <code>cp</code> 复制到新根，不用符号链接。</td></tr>
+<tr><td>R0-9</td><td>三个子类文件、<code>configs.py</code>、<code>jobs.py</code>、生成器、<code>summarize.py</code>、<code>episode_strip_video.py</code>、三个 GPU 测试文件（<code>test_swap_collision_gpu.py</code>、<code>test_fatal_catch.py</code>、<code>test_s2_configs.py</code>）不在可写集合；需要改即停下交用户。</td></tr>
+<tr><td>R0-10</td><td>不换 seed、不换测试 seed、不补 seed、不改母清单（<code>AGENTS.md</code> P8，用户原话「把这个作为禁止项除非用户明确要求不做任何的这种调整」）；<code>mother_seeds_all.json</code> 只 <code>cp</code> 到新根，字节不变（<code>sha256sum</code> 核对）。</td></tr>
+</table>
+
+<h2 id="t1">一、逐文件改动清单</h2>
+<h3>1.1 V3-A：<code>src/robomme_xhard/swap_plan.py</code></h3>
+<ul>
+<li>模块常量 <code>MIN_SWAP_PAIR_KINDS = 3</code>，紧接 <code>PLAN_ACCEPT_RANGE</code> 之后。</li>
+<li>新函数 <code>require_min_pair_kinds(adj, gaps, minimum=MIN_SWAP_PAIR_KINDS)</code>，放在 <code>require_every_slot_covered</code> 之后，函数体按 3.1 代码块；docstring 中文；<code>detail</code> 格式固定 <code>可行槽对不足={n}/{minimum}; 原始边证据={json}</code>，JSON 键固定 <code>gate</code>、<code>feasible_edges</code>、<code>required</code>、<code>gaps</code>、<code>rejected_edges</code>。</li>
+<li><code>plan_swaps</code>：在 <code>require_every_slot_covered(adj, gaps)</code> 后加一行 <code>require_min_pair_kinds(adj, gaps)</code>；返回的 <code>SwapPlan.graph</code> 由 <code>{"adj": adj, "gaps": dict(gaps)}</code> 改为 <code>{"adj": adj, "gaps": dict(gaps), "feasible_edges": [list(e) for e in su.graph_edges(adj)]}</code>。<code>SwapPlan</code> dataclass 字段不增减（<code>graph</code> 本来就是 dict）。</li>
+<li>其余函数一字不改。文件头 docstring 第一行补一句「口径甲：可行槽对至少三种」。</li>
+</ul>
+<h3>1.2 V3-A：<code>src/robomme_xhard/tests/test_swap_plan.py</code></h3>
+<p>新增用例（沿用文件内已有的 <code>rectangle()</code>、<code>state()</code>、<code>generator()</code> 夹具）：</p>
+<ul>
+<li><code>test_min_pair_kinds_two_edges_rejected</code>：4 槽 adj 只有 03、12 两条边（9300 形），每槽度数 1，口径 B 通过；<code>require_min_pair_kinds</code> 抛 <code>SwapCollisionError</code>，<code>stage=="graph"</code>，detail 以 <code>可行槽对不足=2/3; 原始边证据=</code> 开头，JSON 的 <code>feasible_edges==[[0,3],[1,2]]</code>、<code>required==3</code>、<code>gate=="min_pair_kinds"</code>。</li>
+<li><code>test_min_pair_kinds_three_edges_pass</code>：3 槽完全图与 4 槽 3 条边各一例，不抛。</li>
+<li><code>test_min_pair_kinds_reason_aggregation</code>：参数化三种原始 reason，被拒边证据经 <code>_GraphGaps.rejections</code> 传入，聚合值与 <code>require_every_slot_covered</code> 同规则（<code>uncertified</code> 优先）。</li>
+<li><code>test_isolated_checked_before_kinds</code>：monkeypatch <code>slot_graph</code> 返回 10500 形（02、12 两边，槽 3 孤立），<code>plan_swaps</code> 抛出的 detail 以 <code>孤立槽=</code> 开头而不是 <code>可行槽对不足=</code>。</li>
+<li><code>test_kinds_gate_does_not_consume_stream</code>：monkeypatch <code>slot_graph</code> 返回 5700 形（01、03、12、23 四边），同一 seed 下 v3 <code>plan_swaps</code> 的 <code>pairs</code>、<code>slot_pairs</code> 与「把 <code>require_min_pair_kinds</code> monkeypatch 成空函数」时逐项相等，且 <code>plan.graph["feasible_edges"]==[[0,1],[0,3],[1,2],[2,3]]</code>。</li>
+<li>既有 <code>test_success_graph_serialization_has_only_numeric_gaps</code> 的两处断言 <code>set(plan.graph) == {"adj", "gaps"}</code> 改为 <code>{"adj", "gaps", "feasible_edges"}</code>。</li>
+<li>另有两个既有用例所用的图边数少于 3，会被新闸门提前拦成 <code>stage="graph"</code>（核实代理在内存里应用补丁后实测变红），必须在各自开头加 <code>monkeypatch.setattr(sp, "require_min_pair_kinds", lambda *a, **k: None)</code>，保留原有语义：<code>test_disconnected_graph_diagonal_prefix_and_reproducibility</code>（图只有 0-2、1-3 两条边）；<code>test_k8_inconsistent_rejected</code>（2 槽 1 边，期望 <code>stage=="sweep"</code>）。</li>
+<li>其余用例不动。</li>
+</ul>
+<h3>1.3 GPU 测试文件：不改（K13）</h3>
+<ul>
+<li><code>test_swap_collision_gpu.py</code>、<code>test_fatal_catch.py</code>、<code>test_s2_configs.py</code> 一字不动，本计划不运行 <code>-m gpu</code> 用例。它们对 VideoRepick 用的 13600（<code>CASES</code> 第三项、<code>MOTHER_RANK0_SEEDS["VideoRepick"]</code>、<code>test_button_pose_loadtime_matches_initialized_geometry</code> 的参数、<code>test_fatal_catch.py</code> 的 episode 46）实测 G 只有 2 条边，W1 合并后这些用例会在 reset 被闸门拒绝；处置交用户另决。</li>
+<li>核实代理在当前 HEAD 用 <code>--collect-only</code> 数到两文件 gpu 用例 18 项、import 阶段不需要 GPU；这一数字留作将来处理 13600 时的基线。</li>
+</ul>
+<h3>1.4 V3-B：<code>src/robomme_xhard/tools/swap_v2_report.py</code></h3>
+<ul>
+<li>新纯函数 <code>graph_reject_kind(record)</code>：<code>record["stage"]=="graph"</code> 且 <code>record["rejection"]["detail"]</code> 以 <code>孤立槽=</code> 开头 → <code>"isolated_slots"</code>；以 <code>可行槽对不足=</code> 开头 → <code>"min_pair_kinds"</code>；否则 <code>None</code>。被剔卡的顶层 <code>record["detail"]</code> 是 <code>None</code>，不得读它；<code>rejection</code> 缺失或 detail 非字符串时返回 <code>None</code>。</li>
+<li><code>plan_metrics</code> 增加 <code>feasible_edges</code>（<code>swap_plan</code> 带 <code>graph.adj</code> 时数边；没有 <code>graph</code> 键的旧格式与母卡记 <code>None</code>）与 <code>graph_reject_kind</code>。</li>
+<li><code>build_report</code> 增加 <code>kinds_gate</code> 小节：<code>expected_reject_kinds</code> = 旧轮里「全部 xhard 卡成功且 <code>feasible_edges &lt; 3</code>」的母 seed 数；<code>reject_kinds</code> = 新轮里 <code>graph_reject_kind=="min_pair_kinds"</code> 的母 seed 数；<code>reject_isolated</code>、<code>runtime_fail</code>（五档全部非 graph 失败）、<code>pass</code>（五档全成功）；<code>plan_unchanged</code> = 对两轮中都带 <code>swap_plan</code> 的 xhard 卡逐卡深比较（不要求 <code>ok</code>，含 12800 的运行期失败卡；比较前删除新轮 <code>graph.feasible_edges</code>），记 <code>cards</code> 与 <code>diffs</code>。旧轮是 v1 格式（无 <code>graph</code>）时 <code>expected_reject_kinds</code> 记 <code>None</code>、判定行写 <code>expected_reject_kinds=NA</code> 并 FAIL。</li>
+<li><code>main</code> 末尾打印两行：<code>SWAP_V3_KINDS_GATE=PASS|FAIL seeds=… pass=… reject_kinds=… reject_isolated=… runtime_fail=… expected_reject_kinds=…</code>（<code>reject_kinds == expected_reject_kinds</code> 为 PASS）与 <code>PLAN_UNCHANGED=PASS|FAIL cards=… diffs=…</code>；两者任一 FAIL 时退出码 2。原 <code>XHARD_FULL_DERIVE</code>、<code>REPORT_V1V2</code> 行与 <code>classify</code> 不改。markdown 报告加「闸门」一节与逐行 <code>feasible_edges</code> 列。</li>
+</ul>
+<h3>1.5 V3-B：<code>src/robomme_xhard/tests/test_swap_v2_report.py</code></h3>
+<ul>
+<li><code>test_graph_reject_kind_two_markers</code>：两种 detail 分型正确，非 graph 阶段为 <code>None</code>。</li>
+<li><code>test_kinds_gate_expected_vs_actual</code>：合成旧轮（一个 seed 成功但 adj 只 2 边、一个 seed 3 边）与新轮（前者五档 <code>min_pair_kinds</code> 拒绝、后者成功且 <code>swap_plan</code> 相同），判定 PASS；把新轮改成「两者都成功」则 <code>reject_kinds=0 ≠ expected=1</code> FAIL 且退出码 2。</li>
+<li><code>test_plan_unchanged_ignores_feasible_edges_key</code>：新轮 <code>graph</code> 多一个 <code>feasible_edges</code> 键仍 <code>diffs=0</code>；改动一个 <code>slot_pairs</code> 元素则 <code>diffs=1</code>；一张 <code>ok=False</code> 但带 <code>swap_plan</code> 的运行期失败卡也计入 <code>cards</code>。</li>
+<li>现有合成夹具 <code>records()</code> 的 <code>swap_plan</code> 没有 <code>graph</code> 键，新用例须自己构造带 <code>graph.adj</code> 的 <code>swap_plan</code>（4 槽 2 边与 4 槽 3 边各一种），不能直接复用；同时保证既有用例在 <code>feasible_edges=None</code> 下仍通过。</li>
+<li>既有 <code>test_aggregated_graph_reason_reads_original_stage</code> 参数化增加 <code>可行槽对不足=2/3; 原始边证据=</code> 前缀一例，期望仍为 <code>task_reject</code>／<code>infra</code> 分界不变。</li>
+</ul>
+<h3>1.6 不改的文件（显式列出）</h3>
+<p><code>envs/video_unmask_swap.py</code>、<code>envs/button_unmask_swap.py</code>、<code>envs/video_repick.py</code>、<code>configs.py</code>、<code>jobs.py</code>、<code>base.py</code>、<code>collision/*</code>、<code>tools/summarize.py</code>、<code>tools/episode_strip_video.py</code>、<code>tools/mother_seeds.py</code>、<code>tools/layout.py</code>、<code>tests/test_swap_collision_gpu.py</code>、<code>tests/test_fatal_catch.py</code>、<code>tests/test_s2_configs.py</code>、<code>tests/test_jobs.py</code>、<code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code>、<code>pyproject.toml</code>、<code>uv.lock</code>、两份母 seed 清单。</p>
+
+<h2 id="t2">二、子代理分配表</h2>
+<table>
+<tr><th>编号</th><th>目标</th><th>模型／隔离</th><th>可写集合</th><th>禁触</th><th>契约与依赖</th><th>合并顺序</th><th>验收（在哪跑、怎么跑）</th><th>资源</th></tr>
+<tr><td>C0</td><td>计划一致性审查</td><td><code>sonnet</code>，无 worktree，只读</td><td>无</td><td>一切文件</td><td>锚定开工时计划提交 sha；按第 2 条清单审</td><td>先于 W1 合并</td><td><code>PLAN_CONSISTENCY_REVIEW</code></td><td>无</td></tr>
+<tr><td>W1</td><td>两个 <code>sub/</code> 提交：<code>sub/V3-A: 可行槽对至少三种闸门与单测</code>（1.1–1.2）→ <code>sub/V3-B: 汇总工具 graph 拒绝分型与判定行</code>（1.4–1.5）</td><td><code>opus</code>，<code>isolation: "worktree"</code></td><td><code>src/robomme_xhard/swap_plan.py</code>、<code>src/robomme_xhard/tests/test_swap_plan.py</code>、<code>src/robomme_xhard/tools/swap_v2_report.py</code>、<code>src/robomme_xhard/tests/test_swap_v2_report.py</code>（共 4 文件）</td><td>1.6 全部文件、<code>src/robomme/</code>、docs、根目录 html、<code>artifacts/</code>；不跑 GPU、不 push、不合主分支</td><td>BASE = 开工时主线 HEAD（2.101 或其后）；接口按 1.1、1.4 固定；每条 git 命令单独一次 Bash；不得起超过 5 分钟任务</td><td>1：审查通过后 <code>--no-ff</code> 合并为 2.102</td><td>worktree 内 CPU：<code>UV_PROJECT_ENVIRONMENT=&lt;主 .venv&gt; PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_plan.py src/robomme_xhard/tests/test_swap_v2_report.py -q</code>，先打印 <code>robomme_xhard.__file__</code> 落在 worktree；不跑任何 GPU 用例</td><td>GPU 0 张、端口无、tmux 无；共享文件无</td></tr>
+<tr><td>R1</td><td>W1 合并前审查</td><td><code>sonnet</code>，无 worktree，只读</td><td>无</td><td>一切文件</td><td>钉 <code>REVIEW_BASE</code>／<code>REVIEW_TIP</code> 两个完整 sha，只许 <code>git diff/log/show</code></td><td>先于合并</td><td><code>PRE_MERGE_REVIEW</code>；FAIL 则 <code>SendMessage</code> 交回 W1 续改，第二轮只审增量</td><td>无</td></tr>
+<tr><td>L1</td><td>启动 smoke、全量、包装三个 tmux（分三批，按阶段）</td><td><code>opus</code>，不加 worktree</td><td>只允许运行器与日志落 <code>artifacts/xhard/xhard-1012-swapv3/</code>、<code>artifacts/logs/</code></td><td>源码、配置、依赖、参数、seed 清单；不取消会话、不重试、不清理</td><td>完整命令见第四节 runbook；版本 = 传入的 HEAD；起跑判据：日志出现 <code>SOURCE_HEAD=</code> 行且 <code>tmux has-session</code> 为真</td><td>按阶段 C→D 顺序</td><td>交回 tmux 名、日志绝对路径、起跑判据原始输出、<code>tmux ls</code> 留证</td><td>GPU0；tmux <code>xh-swapv3-smoke-1012</code>／<code>xh-swapv3-full-1012</code>／<code>xh-swapv3-report-1012</code>；预算：smoke 30 分钟、全量 1 小时、包装 30 分钟</td></tr>
+<tr><td>主会话自做</td><td>冻结 v2 根、合并与两次审查的核对、Monitor 监听、与 v2 同卡比对、留档、Beta／回写提交与 push、worktree 清理</td><td>—</td><td>docs、根目录、合并提交</td><td>—</td><td>切不开：合并与 push 是主检出唯一写者的职责；冻结只读</td><td>—</td><td>各判定行</td><td>GPU0 复核时只读</td></tr>
+</table>
+
+<h2 id="t3">三、闸门总表</h2>
+<table>
+<tr><th>阶段</th><th>闸门</th><th>FAIL 时</th></tr>
+<tr><td>0</td><td><code>PLAN_CONSISTENCY_REVIEW</code>（blocking=0）、<code>FREEZE_V2=PASS files=719</code>、派发前核对（<code>worktree.baseRef=head</code>、主检出状态记录、<code>git check-ignore -q .claude/worktrees/probe</code>、<code>git worktree list</code> 存档：现有 4 个 codex worktree 一律不动）</td><td>有 blocking 交用户；冻结失败不派 W1</td></tr>
+<tr><td>A</td><td><code>SCOPE</code>（<code>git diff --name-only BASE..TIP</code> ⊆ 4 文件）、<code>SWAP_PLAN_V3_CPU</code>、<code>REPORT_V3_CPU</code>、<code>PRE_MERGE_REVIEW</code>、<code>POST_MERGE_REVIEW</code>（含 <code>CORE_SHORT new_failures=0</code>、<code>SRC_ROBOMME_ZERO_DIFF</code>、<code>VENDOR_BYTES</code>）</td><td>不合并／不 push，交回续改或交用户</td></tr>
+<tr><td>C</td><td><code>NEW_ROOT_FRESH</code>、<code>SWAP_V3_SMOKE=PASS cards=2 reject_kinds=1 kept=1 plan_diff=0</code>、<code>V2_RUN_INTACT</code>；infra=0</td><td>停，交用户；不换 seed、不起全量</td></tr>
+<tr><td>D</td><td>Beta 后 <code>git status --porcelain</code> 为空；<code>NEW_ROOT_FRESH</code>；<code>XHARD_FULL_DERIVE</code> 数字 = K6；<code>SWAP_V3_KINDS_GATE</code>；<code>PLAN_UNCHANGED cards=105 diffs=0</code>；<code>REPORT_V1V2</code>；<code>EPISODE_STRIP_VIDEO</code>；<code>V2_RUN_INTACT</code>；<code>OLD_RUN_INTACT</code></td><td>停，保留证据，2.103 只回写实测与 FAIL 原文，不改判据</td></tr>
+</table>
+
+<h2 id="t4">四、runbook（主会话）</h2>
+<h3>阶段 0</h3>
+<pre><code># 0-a 派发前核对
+jq -r '.env.CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS, .env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS, .worktree.baseRef' ~/.claude/settings.json   # 64 64 head
+git status --short --ignore-submodules=dirty -- . ':!docs/subagent-stats'
+BASE=$(git rev-parse HEAD); git check-ignore -q .claude/worktrees/probe; git worktree list
+
+# 0-b 冻结 v2 根（只读；tmux xh-swapv3-freeze-1012；日志 artifacts/logs/xh-swapv3-freeze-1012.log）
+mkdir -p docs/xhard-doc/xhard-1012-swapv3/records
+cd artifacts/xhard/xhard-1012-swapv2 &amp;&amp; find . -type f | sort | xargs sha256sum &gt; /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/docs/xhard-doc/xhard-1012-swapv3/records/v2_freeze.sha256
+# FREEZE_V2=PASS files=$(wc -l &lt; v2_freeze.sha256)，须等于 find … | wc -l（写计划时 719）
+# 不 chmod（v2 根无需改权限；完整性靠 V2_RUN_INTACT 复核）
+
+# 0-c 派 C0（sonnet）与 W1（opus, worktree），同一决策点发出</code></pre>
+<h3>阶段 A</h3>
+<pre><code># W1 交回后：越界检查
+git diff --name-only $BASE..$TIP        # ⊆ 1.1、1.2、1.4、1.5 四文件
+# worktree 内复跑
+UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_plan.py src/robomme_xhard/tests/test_swap_v2_report.py -q
+# 派 R1（sonnet）→ PRE_MERGE_REVIEW=PASS 后
+git merge --no-ff $TIP -F &lt;scratchpad 合并消息&gt;        # 2.102
+timeout 280s uv run --no-sync python -m pytest tests/lightweight/ src/robomme_xhard/tests -m 'not gpu and not slow' -q -rf
+git diff --quiet 5419e932 HEAD -- src/robomme/ &amp;&amp; echo SRC_ROBOMME_ZERO_DIFF=PASS
+sha256sum src/robomme_xhard/collision/bin_collision.py src/robomme_xhard/collision/swap_uniform.py   # bbe87eec… f4a1a8c0…
+git push
+git worktree remove &lt;W1 路径&gt;; git branch -d &lt;W1 分支&gt;</code></pre>
+<h3>阶段 C：最小 smoke 2 卡</h3>
+<pre><code># 清单 artifacts/xhard/xhard-1012-swapv3/smoke_seeds.json（格式同 v2 smoke_seeds.json：version=1, mode="smoke", tasks 内条目照抄 mother_seeds_all.json；核实代理已用 jobs.load_manifest 试加载同格式清单，必需字段为 episode/seed/source_difficulty/rank）
+# VideoUnmaskSwap: ep7/5700（G=4，预期保留）、ep15/6500（G=2，预期剔除）；其余两个任务给空列表
+test ! -e artifacts/xhard/xhard-1012-swapv3/smoke &amp;&amp; echo NEW_ROOT_FRESH=PASS
+UV_CACHE_DIR=/home/hongzefu/.cache/uv PYTHONUNBUFFERED=1 timeout 1800s uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py --env VideoUnmaskSwap --difficulty xhard20 --mother-manifest artifacts/xhard/xhard-1012-swapv3/smoke_seeds.json --gpus 0 --workers 1 --output-dir artifacts/xhard/xhard-1012-swapv3/smoke
+# 运行器 run_smoke.sh（形状照抄 v2 的 run_d1b.sh：校验 HEAD 等于参数、工作区干净、日志与目标目录不存在；pipefail、tee、EXIT_CODE）；tmux xh-swapv3-smoke-1012；日志 artifacts/logs/xh-swapv3-smoke-1012.log
+# Monitor 过滤词：succeeded with seed|failed|EXIT_CODE=|ERROR:|Traceback|BrokenProcessPool|svulkan2|out of memory|NO RECORD|进程池已损坏
+# 判定：读 smoke/episode_results.jsonl —— 6500 一张 stage=graph 且 rejection.detail 以「可行槽对不足=2/3」开头；5700 一张 task_success=1；
+#       5700 的 swap_plan（删 graph.feasible_edges 后）与 artifacts/xhard/xhard-1012-swapv2/full/episode_results.jsonl 同 (task,seed,xhard20) 记录逐字段相等 → plan_diff=0
+# 预期 EXIT_CODE=1（K14：有卡被剔就是 1），不是 infra；infra 只看 failure_class 与日志里的 Traceback/BrokenProcessPool
+sha256sum -c docs/xhard-doc/xhard-1012-swapv3/records/v2_freeze.sha256 --quiet &amp;&amp; echo V2_RUN_INTACT=PASS   # 清单是 ./ 相对路径，必须 cd 到 v2 根目录内执行</code></pre>
+<h3>阶段 D：现有 30 seed 全量一次</h3>
+<pre><code># smoke 通过后：写 docs/xhard-doc/xhard-1012-swapv3/full-launch.md，提交 2.103Beta，git status --porcelain 为空
+cp artifacts/xhard/xhard-1012-swapv2/mother_seeds_all.json artifacts/xhard/xhard-1012-swapv3/mother_seeds_all.json
+sha256sum artifacts/xhard/xhard-1012-swapv2/mother_seeds_all.json artifacts/xhard/xhard-1012-swapv3/mother_seeds_all.json   # 两行哈希相同（R0-10）
+test ! -e artifacts/xhard/xhard-1012-swapv3/full &amp;&amp; echo NEW_ROOT_FRESH=PASS
+UV_CACHE_DIR=/home/hongzefu/.cache/uv PYTHONUNBUFFERED=1 timeout 3600s uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py --env VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick --difficulty xhard12,xhard14,xhard16,xhard18,xhard20 --mother-manifest artifacts/xhard/xhard-1012-swapv3/mother_seeds_all.json --with-mother --gpus 0 --workers 32 --output-dir artifacts/xhard/xhard-1012-swapv3/full
+# 运行器 run_full.sh；tmux xh-swapv3-full-1012；日志 artifacts/logs/xh-swapv3-full-1012.log；生成期间冻结 HEAD
+# 预期 EXIT_CODE=1（50 张预期剔除，K14）；完成信号看 Monitor 的 EXIT_CODE= 行 + episode_results.jsonl 行数 = 180
+
+# 包装（tmux xh-swapv3-report-1012；三个目标目录／文件起跑前都 test ! -e）
+export UV_CACHE_DIR=/home/hongzefu/.cache/uv PYTHONUNBUFFERED=1
+uv run --no-sync python -m robomme_xhard.tools.summarize --root artifacts/xhard/xhard-1012-swapv3/full --seeds artifacts/xhard/xhard-1012-swapv3/mother_seeds_all.json --out-md artifacts/xhard/xhard-1012-swapv3/report/summary.md --out-json artifacts/xhard/xhard-1012-swapv3/report/summary.json
+uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifacts/xhard/xhard-1012-swapv3/full --seeds artifacts/xhard/xhard-1012-swapv3/mother_seeds_all.json --out-dir artifacts/xhard/xhard-1012-swapv3/report/per_episode_strip
+uv run --no-sync python -m robomme_xhard.tools.swap_v2_report --v1 artifacts/xhard/xhard-1012-swapv2/full --v2 artifacts/xhard/xhard-1012-swapv3/full --seeds artifacts/xhard/xhard-1012-swapv3/mother_seeds_all.json --out-md artifacts/xhard/xhard-1012-swapv3/report/v2_vs_v3.md --out-json artifacts/xhard/xhard-1012-swapv3/report/v2_vs_v3.json
+# 末四行：XHARD_FULL_DERIVE / REPORT_V1V2 / SWAP_V3_KINDS_GATE / PLAN_UNCHANGED
+# 复核两旧根：V2_RUN_INTACT（v2_freeze.sha256，在 v2 根内执行）、OLD_RUN_INTACT（docs/xhard-doc/xhard-1012-swapv2/records/v1_coll_freeze.sha256 是仓库相对路径，在仓库根执行）
+# full-result.md → 2.103 回写 → push</code></pre>
+
+<h2 id="t5">五、风险登记</h2>
+<table>
+<tr><th>风险</th><th>影响</th><th>处置</th></tr>
+<tr><td>跨两轮生成几何读数浮点不逐位相同，<code>PLAN_UNCHANGED</code> 报 diffs&gt;0</td><td>K5 不成立，不能宣称「只多了一道闸门」</td><td>smoke 的 6 张卡先验证；若 diffs 只在 <code>gaps</code> 末位，停下交用户决定是否改为「<code>pairs</code>/<code>slot_pairs</code> 逐位、<code>gaps</code> 容差」，不自行放宽</td></tr>
+<tr><td>GPU0 被其他进程占满</td><td>起跑延迟或 OOM</td><td>起跑前只核对 GPU0（P7）；被占满即停下问用户，不换卡</td></tr>
+<tr><td>全量数字与 K6 预期不同（例如某保留 seed 新出现运行期失败）</td><td>不能把 v3 全量当作 v2 + 闸门</td><td>停止包装之外的后续步骤，逐卡列出偏离与证据交用户；不重试</td></tr>
+<tr><td><code>swap_v2_report.py</code> 的 <code>expected_reject_kinds</code> 依赖旧轮成功卡的 <code>graph.adj</code>；若旧轮是 v1 格式（无 <code>graph</code>）会算不出</td><td>工具对 v1 根失效</td><td>v1 格式时该值记 <code>None</code>、判定行写 <code>expected_reject_kinds=NA</code> 并 FAIL；本计划只用 v2 根，不受影响</td></tr>
+<tr><td>GPU 测试用的 VideoRepick 13600 实测 G 只有 2 条边，用户裁决不换 seed（K13）</td><td>W1 合并后 <code>-m gpu</code> 的 VideoRepick 相关 8 项会在 reset 被闸门拒绝而失败；本计划不跑它们，所以不阻塞 v3 生成，但仓库里会留下一组已知会失败的 GPU 用例</td><td>证据 <code>records/graph_scan_13600.json</code>（v2 代码 <code>5419e932</code>、reset-only、xhard20 布局）；处置另交用户决定，本计划只记录、不改测试</td></tr>
+<tr><td>核心短测在 W1 合并前的基线快照：核实代理实测 <code>4 failed, 440 passed, 2 skipped</code>，FAILED 节点与 v2 基线 4 个逐个相同（基线日志的 281 passed 只含 <code>tests/lightweight/</code>）</td><td>比较口径错会误判</td><td><code>CORE_SHORT</code> 只按 FAILED 节点集合比较，不比 passed 数</td></tr>
+</table>
+
+<h2 id="t6">六、盲区诚实清单</h2>
+<ul>
+<li>「三种 swap」在几何上等于三条可行边，但没有证据说明 3 是训练效果上的最优阈值；本计划只落实用户选定的口径与常量。</li>
+<li>v3 对 VideoRepick 只剩 5 个可用母 seed（20 张 xhard 卡）；是否补 seed 是另一个决定，本计划按 P2、P5 不补。</li>
+<li>口径甲保留的 seed 里，低档（xhard12）实际只用 2 种槽对的情况仍存在（第二节第四列）；口径乙未选，本计划不处理。</li>
+<li>跨轮逐位复现（3.2 的 ⚠）未在写计划时验证，由 smoke 先证。</li>
+<li>六列视频对 21 个保留 seed 预期与 v2 逐帧相同，但本计划不做视频逐帧比对，只核验 <code>EPISODE_STRIP_VIDEO</code> 判定行。</li>
+<li>13600 的扫 G 是用 v2 代码在 xhard20 布局上做的单次 reset；同形等高前提下 G 与档位无关，但这次扫描本身没有重复第二次。</li>
+<li><strong>需要用户另行决定</strong>：三个 GPU 测试文件对 VideoRepick 用的 13600 在 v3 下必被闸门拒绝（上条证据）。本计划按「不做任何的换seed」不动它们、也不跑它们；之后是换成 30 母 seed 清单里 G=3 的 9600、还是把 13600 用例改成「预期 graph 拒绝」、还是保留现状，由用户决定后另立改动。</li>
+<li>没有 GPU 契约阶段，闸门在真实建场上的验证只有 smoke 的 2 张卡与全量本身；v2 契约里「五档 slots／graph 逐项相同」等性质由 <code>PLAN_UNCHANGED</code> 对 105 张卡的逐字段比较间接覆盖。</li>
+</ul>
+
+<h2 id="t7">七、留档与 commit 纪律</h2>
+<ul>
+<li>本计划提交 2.101（只含本 HTML）。W1 的两个 <code>sub/V3-A</code>、<code>sub/V3-B</code> 原样保留，<code>--no-ff</code> 合并为 2.102，body 摘录 W1 报告、<code>PRE_MERGE_REVIEW</code> 行、改动文件清单。</li>
+<li>留档目录 <code>docs/xhard-doc/xhard-1012-swapv3/</code>：<code>launch.md</code>（阶段 0–C）、<code>full-launch.md</code>、<code>full-result.md</code>、<code>records/</code>（本计划提交时已含 13600 扫 G 的输入清单 <code>scan13600.json</code> 与结果 <code>graph_scan_13600.json</code>；之后放冻结清单、GPU 契约清洗日志、smoke 与全量的 <code>*.summary.log</code>、<code>v2_vs_v3.json</code> 副本、判定行原文）。<code>docs/xhard-doc/README.md</code> 总索引加一行。零 <code>.sh</code>／零 <code>.yaml</code>；运行器只在 <code>artifacts/</code>。</li>
+<li>全量起跑前 2.103Beta，回写 2.103，两个独立提交；生成到包装结束期间冻结 HEAD。</li>
+<li>日志清洗：<code>tr '\r' '\n' &lt; 原日志 | grep -vE '%\|' &gt; records/&lt;名&gt;.summary.log</code>，核对 <code>EXIT_CODE=</code> 行数。</li>
+<li>每次 commit 后立即 push；合并后审查 FAIL 时合并提交以 <code>ahead</code> 留本地并交用户。</li>
+</ul>
+
+</main>
+</div>
+</body>
+</html>
