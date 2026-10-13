@@ -1,0 +1,26 @@
+[
+  {
+    "task": "VideoUnmaskSwap",
+    "seed": 5700,
+    "step": 289,
+    "fps": 30.0,
+    "video": "artifacts/xhard/xhard-1012-swapv2/smoke/xhard20/videos/VideoUnmaskSwap_ep7_seed5700_xhard20_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+    "image": "artifacts/xhard/xhard-1012-swapv2/smoke-visual/VideoUnmaskSwap-seed5700-step289.png"
+  },
+  {
+    "task": "VideoUnmaskSwap",
+    "seed": 9300,
+    "step": 189,
+    "fps": 30.0,
+    "video": "artifacts/xhard/xhard-1012-swapv2/smoke/xhard20/videos/VideoUnmaskSwap_ep43_seed9300_xhard20_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+    "image": "artifacts/xhard/xhard-1012-swapv2/smoke-visual/VideoUnmaskSwap-seed9300-step189.png"
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 11200,
+    "step": 450,
+    "fps": 30.0,
+    "video": "artifacts/xhard/xhard-1012-swapv2/smoke/xhard20/videos/VideoRepick_ep22_seed11200_xhard20_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4",
+    "image": "artifacts/xhard/xhard-1012-swapv2/smoke-visual/VideoRepick-seed11200-step450.png"
+  }
+]

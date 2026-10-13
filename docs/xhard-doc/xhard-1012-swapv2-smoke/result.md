@@ -1,4 +1,6 @@
-# 阶段 D：按钮包络读取失败，停止后续生成
+# 阶段 D：方案 A 与四卡 smoke 已通过
+
+最新结论：W3 按根位姿与真实关节帧推导按帽，D1b 十八项全部通过；四卡 smoke 三条任务成功、一条按预定 graph 判据正常拒绝，四个身份全部符合计划。旧目录四百二十六文件完整哈希再次通过。下面保留首次失败及诊断的历史证据，最新实测见末节。
 
 最小 GPU 复位通过，但完整 GPU 契约未通过：ButtonUnmaskSwap seed 7700 在建场阶段报「按钮包络读取失败 bystander_0：ValueError: 按帽水平投影超出底座」。按计划闸门停止，四卡 smoke 和全量均未启动；不把这次读取失败作为正常碰撞剔除。
 
@@ -66,3 +68,30 @@ CUDA_VISIBLE_DEVICES=0 UV_CACHE_DIR=/home/hongzefu/.cache/uv PYTHONUNBUFFERED=1 
 数值确认：生产建场读取时，底座已位于真实世界位置，按帽读数仍在原点附近，没有包含底座的世界平移。两组读数的水平中心差为 218.944809 mm；这是不一致的坐标读取，不能解释为实物真的偏离了约二十二厘米，也不能通过放宽 `1e-8` 包含性检查解决。结合前述 `_load_scene` 早于 `scene._setup`、构造器仅显式赋根位姿的代码事实，问题已定位到建场期子连杆位姿尚未完成同步的读取路径。
 
 下一步候选是在 `swap_plan.py::button_envelope_state` 内，用已就绪的根世界位姿及真实关节父子变换、真实碰撞形状构造未按下包络，保持认证钩子、统一转换入口、几何保证与阈值不变；此修法没有实施或验证。若必须改变认证钩子或时序，仍按重大口径变化交用户。本轮授权到此完成，保持停工，不修代码、不重跑 GPU 契约、不启动 smoke 或全量。`DIAGNOSTIC_CODE_UNCHANGED=PASS`，运行前后源码、测试、生成器与依赖没有改动。
+
+## 后续获批的方案 A 与四卡验证
+
+用户后续原话：「参考最新的计划，继续进行。」据最新 2.96.5 计划实施 W3，只写规划模块与两测试文件；子提交 `b251f9c958c0ddba25d22481072faea39209fe9e` 合并为 `d19c873da43ac71fcd6787c0eb248882f9bf6e97`。主检出核心 440 项通过、原四项失败、二跳过，8.71 秒；按原节点基线 `CORE_SHORT=PASS new_failures=0`，pytest 实际退出 1。认证钩子、时序、包络与阈值不改。
+
+实际 D1b 和 smoke 启动提交为 `e6e2d1e5d2ab6a428b271d92cd0e476480c59a68`（2.97.1），起跑与结束 HEAD 相同、源码未变；全程本机 GPU0。会话分别为 `xh-swapv2-d1b-1012`、`xh-swapv2-smoke-1012`，均已自然结束，监听尾进程按 `EXIT_CODE=` 结束自行退出。旧 D1 与诊断没有覆盖。
+
+- `GPU_MIN_D1B=PASS tests=1 seconds=7.70 exit=0`：原失败 BUS 7700 复位现在通过。
+- `GPU_CONTRACT=PASS tests=18 seconds=262.99 exit=0`。
+- `BUTTON_POSE_LOADTIME=PASS buttons=3 max_dp_m=0 max_angle_rad=4.4408920985e-16`。
+- `XHARD_FATAL_CATCH=PASS tasks=3 hang=0`。
+- `SWAP_V2_SMOKE=PASS cards=4 task_success=3 graph_reject=1 infra=0 attempt0=1 generator_exit=1`。
+- `SMOKE_H5=PASS files=3 labels=3 completion=3 rgb_contract=3`。
+- `OLD_RUN_INTACT=PASS files=426 mismatches=0`，结束后完整 SHA256 退出零；另核对全部文件字节数一致。
+
+| 官网编号 | 任务／seed | 任务成功 | 判定 | 帧数 | 墙钟秒 | 最长规划参与次数 |
+|---|---|---|---|---|---|---|
+| 2.3 | VideoUnmaskSwap 5700 | 1 | 成功 | 871 | 104.539 | 5、5、6、6 |
+| 2.3 | VideoUnmaskSwap 9300 | 1 | 成功 | 890 | 81.466 | 6、5、5、6 |
+| 2.4 | ButtonUnmaskSwap 10500 | 0 | reset 的 graph 阶段正常拒绝，未换 seed | 无 | 2.843 | 无 |
+| 3.2 | VideoRepick 11200 | 1 | 成功 | 1367 | 52.282 | 10、10、10 |
+
+四卡总墙钟 245.4 秒，单 worker 峰值 RSS 7176.0 MiB。生成器因一张正常拒绝卡退出 1；它本来就按有失败卡返回非零，不能把这个退出码篡改为零。四卡验收逐身份核对既定的成功与预期 graph 拒绝，缺项、重复、未知、infra 均为零，符合批准计划。
+
+三个成功 H5 的 seed、xhard20 标签、帧数与末帧完成标志均命中；首帧 front_rgb 为 256×256×3 uint8。H5 大小分别为 580650224、593316616、911302600 字节，产物留在 artifacts，不进入 Git。主会话从三个成功视频各取一帧目视；5700 的较远搭档段中点 step 289、9300 step 189、11200 step 450，图像加载正常、对象显示且没有明显相互穿入。该三帧抽查不替代整段数学判据，机械臂与桌面仍在已声明盲区。
+
+完整原日志和 `run_summary.json`、`episode_results.jsonl` 留在 artifacts；文档保存原 GPU 日志、去掉末尾整包 JSON 的 smoke 汇总文本、四行结构化判定、H5 核对和抽帧索引。删去整包 JSON 只发生在文档摘要，原日志与完整原账本不变。

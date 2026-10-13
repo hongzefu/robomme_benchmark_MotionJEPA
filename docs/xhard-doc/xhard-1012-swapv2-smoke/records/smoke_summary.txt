@@ -1,0 +1,15 @@
+SOURCE_HEAD=e6e2d1e5d2ab6a428b271d92cd0e476480c59a68
+2026-10-12T21:39:32-04:00
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[1/4] VideoUnmaskSwap/episode_7 succeeded with seed 5700 (attempt 0, 104.539s)
+[2/4] VideoUnmaskSwap/episode_43 succeeded with seed 9300 (attempt 0, 81.466s)
+    ButtonUnmaskSwap/episode_35 [xhard20] seed 10500 failed (SwapCollisionError)，固定 seed 不重试
+[3/4] VideoRepick/episode_22 succeeded with seed 11200 (attempt 0, 52.282s)
+EXIT_CODE=1

@@ -1,0 +1,38 @@
+[
+  {
+    "task": "VideoUnmaskSwap",
+    "seed": 5700,
+    "bytes": 580650224,
+    "has_episode": true,
+    "difficulty": "xhard20",
+    "h5_seed": 5700,
+    "demo_timesteps": 618,
+    "exec_timesteps": 253,
+    "timesteps": 871,
+    "last_completed": true
+  },
+  {
+    "task": "VideoUnmaskSwap",
+    "seed": 9300,
+    "bytes": 593316616,
+    "has_episode": true,
+    "difficulty": "xhard20",
+    "h5_seed": 9300,
+    "demo_timesteps": 618,
+    "exec_timesteps": 272,
+    "timesteps": 890,
+    "last_completed": true
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 11200,
+    "bytes": 911302600,
+    "has_episode": true,
+    "difficulty": "xhard20",
+    "h5_seed": 11200,
+    "demo_timesteps": 973,
+    "exec_timesteps": 394,
+    "timesteps": 1367,
+    "last_completed": true
+  }
+]
