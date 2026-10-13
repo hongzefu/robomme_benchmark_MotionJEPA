@@ -262,7 +262,7 @@ def test_two_edge_seed_rejected_at_graph():
 
 @pytest.mark.gpu
 def test_button_pose_loadtime_matches_initialized_geometry(monkeypatch):
-    """认证时捕获推导值，reset 后以真实子连杆世界位姿独立对照三个按钮。"""
+    """首次建场认证时保留推导值，初始化后以真实子连杆世界位姿独立对照三个按钮。"""
     captured = {}
     original = sp.button_shape_poses
     def capture(articulation):
@@ -273,10 +273,10 @@ def test_button_pose_loadtime_matches_initialized_geometry(monkeypatch):
     monkeypatch.setattr(sp, "button_shape_poses", capture)
     buttons, max_dp, max_angle = 0, 0., 0.
     for task, seed, expected_count in (("ButtonUnmaskSwap", 7700, 2), ("VideoRepick", 9600, 1)):
+        captured.clear()
         env = _make(task, seed)
         try:
-            captured.clear()
-            env.reset(seed=seed, options={"reconfigure": True})
+            env.reset(seed=seed)
             bystanders = env.unwrapped._bystander_actors()
             assert len(bystanders) == expected_count
             assert set(captured) == {id(button) for button in bystanders}
