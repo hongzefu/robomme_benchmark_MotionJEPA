@@ -1,0 +1,5638 @@
+{
+  "schema": 1,
+  "source_commit": "a43fa09c94317356091db6ba634a8f167b84ca13",
+  "selection": "成功演示选样；不代表全量成功率；只展示已有产物，不补生成。",
+  "expected_source": "1006-xhard12-env-plan.html#length-gradient-table",
+  "metric_method": "只读 H5 info；以 is_subgoal_boundary 切段；窗口分别按完整 demo/exec 计算；8 帧索引取最近整数。",
+  "tasks": [
+    {
+      "task": "BinFill",
+      "number": "1.1",
+      "expected": {
+        "mother": {
+          "config": {
+            "count": 4
+          },
+          "knob": "K=4块",
+          "timesteps": 830.5,
+          "windows": 50.5,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": {
+          "config": {
+            "count": 5
+          },
+          "knob": "K=5块",
+          "timesteps": 1034.5,
+          "windows": 63.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard14": {
+          "config": {
+            "count": 6
+          },
+          "knob": "K=6块",
+          "timesteps": 1203.0,
+          "windows": 74.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard16": {
+          "config": {
+            "count": 7
+          },
+          "knob": "K=7块",
+          "timesteps": 1372.0,
+          "windows": 84.5,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard18": {
+          "config": {
+            "count": 8
+          },
+          "knob": "K=8块",
+          "timesteps": 1564.5,
+          "windows": 96.5,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard20": {
+          "config": {
+            "count": 9
+          },
+          "knob": "K=9块",
+          "timesteps": 1768.5,
+          "windows": null,
+          "basis": "固定样本集合成中位"
+        }
+      },
+      "samples": [
+        {
+          "seed": 4701,
+          "episode": 7,
+          "batch": "10-11 全任务生成",
+          "run": "xhard-1011",
+          "video_source": "xhard/xhard-1011/report/per_episode_strip/1.1_BinFill_ep7_seed4701.mp4",
+          "video": "videos/env-results/xhard-1011/1.1_BinFill_ep7_seed4701.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 785,
+              "demo_timesteps": 0,
+              "exec_timesteps": 785,
+              "windows": 48,
+              "demo_windows": 0,
+              "exec_windows": 48,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 5,
+              "miss_units": 1,
+              "miss_swaps": 0,
+              "miss": 1,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/BinFill_ep7_seed4701.h5",
+              "frames": [
+                0,
+                112,
+                224,
+                336,
+                448,
+                560,
+                672,
+                784
+              ]
+            },
+            "xhard12": {
+              "timesteps": 941,
+              "demo_timesteps": 0,
+              "exec_timesteps": 941,
+              "windows": 57,
+              "demo_windows": 0,
+              "exec_windows": 57,
+              "ratio_timesteps": 1.199,
+              "ratio_windows": 1.188,
+              "units": 6,
+              "miss_units": 1,
+              "miss_swaps": 0,
+              "miss": 1,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard12/hdf5_files/BinFill_ep7_seed4701.h5",
+              "frames": [
+                0,
+                134,
+                269,
+                403,
+                537,
+                671,
+                806,
+                940
+              ]
+            },
+            "xhard14": {
+              "timesteps": 1105,
+              "demo_timesteps": 0,
+              "exec_timesteps": 1105,
+              "windows": 68,
+              "demo_windows": 0,
+              "exec_windows": 68,
+              "ratio_timesteps": 1.408,
+              "ratio_windows": 1.417,
+              "units": 7,
+              "miss_units": 1,
+              "miss_swaps": 0,
+              "miss": 1,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard14/hdf5_files/BinFill_ep7_seed4701.h5",
+              "frames": [
+                0,
+                158,
+                315,
+                473,
+                631,
+                789,
+                946,
+                1104
+              ]
+            },
+            "xhard16": {
+              "timesteps": 1315,
+              "demo_timesteps": 0,
+              "exec_timesteps": 1315,
+              "windows": 81,
+              "demo_windows": 0,
+              "exec_windows": 81,
+              "ratio_timesteps": 1.675,
+              "ratio_windows": 1.688,
+              "units": 8,
+              "miss_units": 2,
+              "miss_swaps": 0,
+              "miss": 2,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard16/hdf5_files/BinFill_ep7_seed4701.h5",
+              "frames": [
+                0,
+                188,
+                375,
+                563,
+                751,
+                939,
+                1126,
+                1314
+              ]
+            },
+            "xhard18": {
+              "timesteps": 1463,
+              "demo_timesteps": 0,
+              "exec_timesteps": 1463,
+              "windows": 90,
+              "demo_windows": 0,
+              "exec_windows": 90,
+              "ratio_timesteps": 1.864,
+              "ratio_windows": 1.875,
+              "units": 9,
+              "miss_units": 2,
+              "miss_swaps": 0,
+              "miss": 2,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard18/hdf5_files/BinFill_ep7_seed4701.h5",
+              "frames": [
+                0,
+                209,
+                418,
+                627,
+                835,
+                1044,
+                1253,
+                1462
+              ]
+            },
+            "xhard20": {
+              "timesteps": 1608,
+              "demo_timesteps": 0,
+              "exec_timesteps": 1608,
+              "windows": 99,
+              "demo_windows": 0,
+              "exec_windows": 99,
+              "ratio_timesteps": 2.048,
+              "ratio_windows": 2.062,
+              "units": 10,
+              "miss_units": 3,
+              "miss_swaps": 0,
+              "miss": 3,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard20/hdf5_files/BinFill_ep7_seed4701.h5",
+              "frames": [
+                0,
+                230,
+                459,
+                689,
+                918,
+                1148,
+                1377,
+                1607
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "PickXtimes",
+      "number": "1.2",
+      "expected": {
+        "mother": {
+          "config": {
+            "count": 5
+          },
+          "knob": "n=5次",
+          "timesteps": 841.0,
+          "windows": 51.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": {
+          "config": {
+            "count": 6
+          },
+          "knob": "n=6次",
+          "timesteps": 1028.0,
+          "windows": 63.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard14": {
+          "config": {
+            "count": 7
+          },
+          "knob": "n=7次",
+          "timesteps": 1164.0,
+          "windows": 71.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard16": {
+          "config": {
+            "count": 8
+          },
+          "knob": "n=8次",
+          "timesteps": 1300.0,
+          "windows": 80.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard18": {
+          "config": {
+            "count": 9
+          },
+          "knob": "n=9次",
+          "timesteps": 1444.0,
+          "windows": 89.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard20": {
+          "config": {
+            "count": 10
+          },
+          "knob": "n=10次",
+          "timesteps": 1586.0,
+          "windows": 98.0,
+          "basis": "固定样本集合成中位"
+        }
+      },
+      "samples": [
+        {
+          "seed": 1700,
+          "episode": 7,
+          "batch": "10-11 全任务生成",
+          "run": "xhard-1011",
+          "video_source": "xhard/xhard-1011/report/per_episode_strip/1.2_PickXtimes_ep7_seed1700.mp4",
+          "video": "videos/env-results/xhard-1011/1.2_PickXtimes_ep7_seed1700.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 897,
+              "demo_timesteps": 0,
+              "exec_timesteps": 897,
+              "windows": 55,
+              "demo_windows": 0,
+              "exec_windows": 55,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 6,
+              "miss_units": 1,
+              "miss_swaps": 0,
+              "miss": 1,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/PickXtimes_ep7_seed1700.h5",
+              "frames": [
+                0,
+                128,
+                256,
+                384,
+                512,
+                640,
+                768,
+                896
+              ]
+            },
+            "xhard12": {
+              "timesteps": 1052,
+              "demo_timesteps": 0,
+              "exec_timesteps": 1052,
+              "windows": 64,
+              "demo_windows": 0,
+              "exec_windows": 64,
+              "ratio_timesteps": 1.173,
+              "ratio_windows": 1.164,
+              "units": 7,
+              "miss_units": 1,
+              "miss_swaps": 0,
+              "miss": 1,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard12/hdf5_files/PickXtimes_ep7_seed1700.h5",
+              "frames": [
+                0,
+                150,
+                300,
+                450,
+                601,
+                751,
+                901,
+                1051
+              ]
+            },
+            "xhard14": {
+              "timesteps": 1206,
+              "demo_timesteps": 0,
+              "exec_timesteps": 1206,
+              "windows": 74,
+              "demo_windows": 0,
+              "exec_windows": 74,
+              "ratio_timesteps": 1.344,
+              "ratio_windows": 1.345,
+              "units": 8,
+              "miss_units": 2,
+              "miss_swaps": 0,
+              "miss": 2,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard14/hdf5_files/PickXtimes_ep7_seed1700.h5",
+              "frames": [
+                0,
+                172,
+                344,
+                516,
+                689,
+                861,
+                1033,
+                1205
+              ]
+            },
+            "xhard16": {
+              "timesteps": 1365,
+              "demo_timesteps": 0,
+              "exec_timesteps": 1365,
+              "windows": 84,
+              "demo_windows": 0,
+              "exec_windows": 84,
+              "ratio_timesteps": 1.522,
+              "ratio_windows": 1.527,
+              "units": 9,
+              "miss_units": 3,
+              "miss_swaps": 0,
+              "miss": 3,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard16/hdf5_files/PickXtimes_ep7_seed1700.h5",
+              "frames": [
+                0,
+                195,
+                390,
+                585,
+                779,
+                974,
+                1169,
+                1364
+              ]
+            },
+            "xhard18": {
+              "timesteps": 1538,
+              "demo_timesteps": 0,
+              "exec_timesteps": 1538,
+              "windows": 95,
+              "demo_windows": 0,
+              "exec_windows": 95,
+              "ratio_timesteps": 1.715,
+              "ratio_windows": 1.727,
+              "units": 10,
+              "miss_units": 4,
+              "miss_swaps": 0,
+              "miss": 4,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard18/hdf5_files/PickXtimes_ep7_seed1700.h5",
+              "frames": [
+                0,
+                220,
+                439,
+                659,
+                878,
+                1098,
+                1317,
+                1537
+              ]
+            },
+            "xhard20": {
+              "timesteps": 1710,
+              "demo_timesteps": 0,
+              "exec_timesteps": 1710,
+              "windows": 105,
+              "demo_windows": 0,
+              "exec_windows": 105,
+              "ratio_timesteps": 1.906,
+              "ratio_windows": 1.909,
+              "units": 11,
+              "miss_units": 4,
+              "miss_swaps": 0,
+              "miss": 4,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard20/hdf5_files/PickXtimes_ep7_seed1700.h5",
+              "frames": [
+                0,
+                244,
+                488,
+                732,
+                977,
+                1221,
+                1465,
+                1709
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "SwingXtimes",
+      "number": "1.3",
+      "expected": {
+        "mother": {
+          "config": {
+            "count": 3
+          },
+          "knob": "n=3往返",
+          "timesteps": 488.0,
+          "windows": 29.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": {
+          "config": {
+            "count": 4
+          },
+          "knob": "n=4往返",
+          "timesteps": 560.0,
+          "windows": 33.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard14": {
+          "config": {
+            "count": 5
+          },
+          "knob": "n=5往返",
+          "timesteps": 642.0,
+          "windows": 39.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard16": {
+          "config": {
+            "count": 7
+          },
+          "knob": "n=7往返",
+          "timesteps": 793.0,
+          "windows": 48.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard18": {
+          "config": {
+            "count": 8
+          },
+          "knob": "n=8往返",
+          "timesteps": 886.0,
+          "windows": 54.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard20": {
+          "config": {
+            "count": 9
+          },
+          "knob": "n=9往返",
+          "timesteps": 978.0,
+          "windows": 60.0,
+          "basis": "固定样本集合成中位"
+        }
+      },
+      "samples": [
+        {
+          "seed": 3700,
+          "episode": 7,
+          "batch": "10-11 全任务生成",
+          "run": "xhard-1011",
+          "video_source": "xhard/xhard-1011/report/per_episode_strip/1.3_SwingXtimes_ep7_seed3700.mp4",
+          "video": "videos/env-results/xhard-1011/1.3_SwingXtimes_ep7_seed3700.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 504,
+              "demo_timesteps": 0,
+              "exec_timesteps": 504,
+              "windows": 30,
+              "demo_windows": 0,
+              "exec_windows": 30,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 6,
+              "miss_units": 0,
+              "miss_swaps": 0,
+              "miss": 0,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/SwingXtimes_ep7_seed3700.h5",
+              "frames": [
+                0,
+                72,
+                144,
+                216,
+                287,
+                359,
+                431,
+                503
+              ]
+            },
+            "xhard12": {
+              "timesteps": 587,
+              "demo_timesteps": 0,
+              "exec_timesteps": 587,
+              "windows": 35,
+              "demo_windows": 0,
+              "exec_windows": 35,
+              "ratio_timesteps": 1.165,
+              "ratio_windows": 1.167,
+              "units": 7,
+              "miss_units": 1,
+              "miss_swaps": 0,
+              "miss": 1,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard12/hdf5_files/SwingXtimes_ep7_seed3700.h5",
+              "frames": [
+                0,
+                84,
+                167,
+                251,
+                335,
+                419,
+                502,
+                586
+              ]
+            },
+            "xhard14": {
+              "timesteps": 671,
+              "demo_timesteps": 0,
+              "exec_timesteps": 671,
+              "windows": 40,
+              "demo_windows": 0,
+              "exec_windows": 40,
+              "ratio_timesteps": 1.331,
+              "ratio_windows": 1.333,
+              "units": 8,
+              "miss_units": 2,
+              "miss_swaps": 0,
+              "miss": 2,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard14/hdf5_files/SwingXtimes_ep7_seed3700.h5",
+              "frames": [
+                0,
+                96,
+                191,
+                287,
+                383,
+                479,
+                574,
+                670
+              ]
+            },
+            "xhard16": {
+              "timesteps": 838,
+              "demo_timesteps": 0,
+              "exec_timesteps": 838,
+              "windows": 51,
+              "demo_windows": 0,
+              "exec_windows": 51,
+              "ratio_timesteps": 1.663,
+              "ratio_windows": 1.7,
+              "units": 10,
+              "miss_units": 3,
+              "miss_swaps": 0,
+              "miss": 3,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard16/hdf5_files/SwingXtimes_ep7_seed3700.h5",
+              "frames": [
+                0,
+                120,
+                239,
+                359,
+                478,
+                598,
+                717,
+                837
+              ]
+            },
+            "xhard18": {
+              "timesteps": 922,
+              "demo_timesteps": 0,
+              "exec_timesteps": 922,
+              "windows": 56,
+              "demo_windows": 0,
+              "exec_windows": 56,
+              "ratio_timesteps": 1.829,
+              "ratio_windows": 1.867,
+              "units": 11,
+              "miss_units": 4,
+              "miss_swaps": 0,
+              "miss": 4,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard18/hdf5_files/SwingXtimes_ep7_seed3700.h5",
+              "frames": [
+                0,
+                132,
+                263,
+                395,
+                526,
+                658,
+                789,
+                921
+              ]
+            },
+            "xhard20": {
+              "timesteps": 1005,
+              "demo_timesteps": 0,
+              "exec_timesteps": 1005,
+              "windows": 61,
+              "demo_windows": 0,
+              "exec_windows": 61,
+              "ratio_timesteps": 1.994,
+              "ratio_windows": 2.033,
+              "units": 12,
+              "miss_units": 5,
+              "miss_swaps": 0,
+              "miss": 5,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard20/hdf5_files/SwingXtimes_ep7_seed3700.h5",
+              "frames": [
+                0,
+                143,
+                287,
+                430,
+                574,
+                717,
+                861,
+                1004
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "StopCube",
+      "number": "1.4",
+      "expected": {
+        "mother": {
+          "config": {
+            "k": 3,
+            "mi": 80
+          },
+          "knob": "k=3；间隔=80",
+          "timesteps": 237.0,
+          "windows": 13.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": null,
+        "xhard14": {
+          "config": {
+            "k": 4,
+            "mi": 80
+          },
+          "knob": "k=4；间隔=80",
+          "timesteps": 317.0,
+          "windows": 18.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard16": {
+          "config": {
+            "k": 5,
+            "mi": 80
+          },
+          "knob": "k=5；间隔=80",
+          "timesteps": 397.0,
+          "windows": 23.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard18": {
+          "config": {
+            "k": 7,
+            "mi": 60
+          },
+          "knob": "k=7；间隔=60",
+          "timesteps": 427.0,
+          "windows": null,
+          "basis": "原估算近似值"
+        },
+        "xhard20": {
+          "config": {
+            "k": 6,
+            "mi": 80
+          },
+          "knob": "k=6；间隔=80",
+          "timesteps": 477.0,
+          "windows": 28.0,
+          "basis": "固定样本集合成中位"
+        }
+      },
+      "samples": [
+        {
+          "seed": 7900,
+          "episode": 59,
+          "batch": "10-11 全任务生成",
+          "run": "xhard-1011",
+          "video_source": "xhard/xhard-1011/report/per_episode_strip/1.4_StopCube_ep59_seed7900.mp4",
+          "video": "videos/env-results/xhard-1011/1.4_StopCube_ep59_seed7900.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 235,
+              "demo_timesteps": 0,
+              "exec_timesteps": 235,
+              "windows": 13,
+              "demo_windows": 0,
+              "exec_windows": 13,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 4,
+              "miss_units": 0,
+              "miss_swaps": 0,
+              "miss": 0,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/StopCube_ep59_seed7900.h5",
+              "frames": [
+                0,
+                33,
+                67,
+                100,
+                134,
+                167,
+                201,
+                234
+              ]
+            },
+            "xhard14": {
+              "timesteps": 313,
+              "demo_timesteps": 0,
+              "exec_timesteps": 313,
+              "windows": 18,
+              "demo_windows": 0,
+              "exec_windows": 18,
+              "ratio_timesteps": 1.332,
+              "ratio_windows": 1.385,
+              "units": 5,
+              "miss_units": 0,
+              "miss_swaps": 0,
+              "miss": 0,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard14/hdf5_files/StopCube_ep59_seed7900.h5",
+              "frames": [
+                0,
+                45,
+                89,
+                134,
+                178,
+                223,
+                267,
+                312
+              ]
+            },
+            "xhard16": {
+              "timesteps": 391,
+              "demo_timesteps": 0,
+              "exec_timesteps": 391,
+              "windows": 23,
+              "demo_windows": 0,
+              "exec_windows": 23,
+              "ratio_timesteps": 1.664,
+              "ratio_windows": 1.769,
+              "units": 6,
+              "miss_units": 2,
+              "miss_swaps": 0,
+              "miss": 2,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard16/hdf5_files/StopCube_ep59_seed7900.h5",
+              "frames": [
+                0,
+                56,
+                111,
+                167,
+                223,
+                279,
+                334,
+                390
+              ]
+            },
+            "xhard18": {
+              "timesteps": 421,
+              "demo_timesteps": 0,
+              "exec_timesteps": 421,
+              "windows": 25,
+              "demo_windows": 0,
+              "exec_windows": 25,
+              "ratio_timesteps": 1.791,
+              "ratio_windows": 1.923,
+              "units": 6,
+              "miss_units": 0,
+              "miss_swaps": 0,
+              "miss": 0,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard18/hdf5_files/StopCube_ep59_seed7900.h5",
+              "frames": [
+                0,
+                60,
+                120,
+                180,
+                240,
+                300,
+                360,
+                420
+              ]
+            },
+            "xhard20": {
+              "timesteps": 475,
+              "demo_timesteps": 0,
+              "exec_timesteps": 475,
+              "windows": 28,
+              "demo_windows": 0,
+              "exec_windows": 28,
+              "ratio_timesteps": 2.021,
+              "ratio_windows": 2.154,
+              "units": 7,
+              "miss_units": 1,
+              "miss_swaps": 0,
+              "miss": 1,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard20/hdf5_files/StopCube_ep59_seed7900.h5",
+              "frames": [
+                0,
+                68,
+                135,
+                203,
+                271,
+                339,
+                406,
+                474
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "VideoUnmask",
+      "number": "2.1",
+      "expected": {
+        "mother": {
+          "config": {
+            "pick": 2
+          },
+          "knob": "p=2抓",
+          "timesteps": 329.0,
+          "windows": 18.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": null,
+        "xhard14": {
+          "config": {
+            "pick": 3
+          },
+          "knob": "p=3抓",
+          "timesteps": 476.0,
+          "windows": 27.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard16": null,
+        "xhard18": null,
+        "xhard20": null
+      },
+      "samples": [
+        {
+          "seed": 6700,
+          "episode": 7,
+          "batch": "10-11 全任务生成",
+          "run": "xhard-1011",
+          "video_source": "xhard/xhard-1011/report/per_episode_strip/2.1_VideoUnmask_ep7_seed6700.mp4",
+          "video": "videos/env-results/xhard-1011/2.1_VideoUnmask_ep7_seed6700.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 338,
+              "demo_timesteps": 66,
+              "exec_timesteps": 272,
+              "windows": 18,
+              "demo_windows": 3,
+              "exec_windows": 15,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": 0,
+              "miss": 0,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/VideoUnmask_ep7_seed6700.h5",
+              "frames": [
+                0,
+                48,
+                96,
+                144,
+                193,
+                241,
+                289,
+                337
+              ]
+            },
+            "xhard14": {
+              "timesteps": 498,
+              "demo_timesteps": 66,
+              "exec_timesteps": 432,
+              "windows": 28,
+              "demo_windows": 3,
+              "exec_windows": 25,
+              "ratio_timesteps": 1.473,
+              "ratio_windows": 1.556,
+              "units": 3,
+              "miss_units": 0,
+              "miss_swaps": 0,
+              "miss": 0,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard14/hdf5_files/VideoUnmask_ep7_seed6700.h5",
+              "frames": [
+                0,
+                71,
+                142,
+                213,
+                284,
+                355,
+                426,
+                497
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "ButtonUnmask",
+      "number": "2.2",
+      "expected": {
+        "mother": {
+          "config": {
+            "pick": 2
+          },
+          "knob": "p=2抓",
+          "timesteps": 373.0,
+          "windows": 22.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": null,
+        "xhard14": {
+          "config": {
+            "pick": 3
+          },
+          "knob": "p=3抓",
+          "timesteps": 515.0,
+          "windows": 31.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard16": null,
+        "xhard18": null,
+        "xhard20": null
+      },
+      "samples": [
+        {
+          "seed": 8700,
+          "episode": 7,
+          "batch": "10-11 全任务生成",
+          "run": "xhard-1011",
+          "video_source": "xhard/xhard-1011/report/per_episode_strip/2.2_ButtonUnmask_ep7_seed8700.mp4",
+          "video": "videos/env-results/xhard-1011/2.2_ButtonUnmask_ep7_seed8700.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 377,
+              "demo_timesteps": 0,
+              "exec_timesteps": 377,
+              "windows": 22,
+              "demo_windows": 0,
+              "exec_windows": 22,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 3,
+              "miss_units": 0,
+              "miss_swaps": 0,
+              "miss": 0,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/ButtonUnmask_ep7_seed8700.h5",
+              "frames": [
+                0,
+                54,
+                107,
+                161,
+                215,
+                269,
+                322,
+                376
+              ]
+            },
+            "xhard14": {
+              "timesteps": 535,
+              "demo_timesteps": 0,
+              "exec_timesteps": 535,
+              "windows": 32,
+              "demo_windows": 0,
+              "exec_windows": 32,
+              "ratio_timesteps": 1.419,
+              "ratio_windows": 1.455,
+              "units": 4,
+              "miss_units": 0,
+              "miss_swaps": 0,
+              "miss": 0,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard14/hdf5_files/ButtonUnmask_ep7_seed8700.h5",
+              "frames": [
+                0,
+                76,
+                153,
+                229,
+                305,
+                381,
+                458,
+                534
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "number": "2.3",
+      "expected": {
+        "mother": {
+          "config": {
+            "swap": 2
+          },
+          "knob": "S=2次交换",
+          "timesteps": 428.0,
+          "windows": 24.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": {
+          "config": {
+            "swap": 4
+          },
+          "knob": "S=4次交换",
+          "timesteps": 524.0,
+          "windows": 30.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard14": {
+          "config": {
+            "swap": 5
+          },
+          "knob": "S=5次交换",
+          "timesteps": 578.0,
+          "windows": 33.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard16": {
+          "config": {
+            "swap": 7
+          },
+          "knob": "S=7次交换",
+          "timesteps": 674.0,
+          "windows": 39.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard18": {
+          "config": {
+            "swap": 9
+          },
+          "knob": "S=9次交换",
+          "timesteps": 776.0,
+          "windows": 46.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard20": {
+          "config": {
+            "swap": 11
+          },
+          "knob": "S=11次交换",
+          "timesteps": 878.0,
+          "windows": 52.0,
+          "basis": "固定样本集合成中位"
+        }
+      },
+      "samples": [
+        {
+          "seed": 5700,
+          "episode": 7,
+          "batch": "交换 V3：现有成功演示",
+          "run": "xhard-1012-swapv3",
+          "video_source": "xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep7_seed5700.mp4",
+          "video": "videos/env-results/xhard-1012-swapv3/2.3_VideoUnmaskSwap_ep7_seed5700.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 421,
+              "demo_timesteps": 168,
+              "exec_timesteps": 253,
+              "windows": 23,
+              "demo_windows": 9,
+              "exec_windows": 14,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/VideoUnmaskSwap_ep7_seed5700.h5",
+              "frames": [
+                0,
+                60,
+                120,
+                180,
+                240,
+                300,
+                360,
+                420
+              ]
+            },
+            "xhard12": {
+              "timesteps": 525,
+              "demo_timesteps": 264,
+              "exec_timesteps": 261,
+              "windows": 30,
+              "demo_windows": 15,
+              "exec_windows": 15,
+              "ratio_timesteps": 1.247,
+              "ratio_windows": 1.304,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": 1,
+              "miss": 1,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard12/hdf5_files/VideoUnmaskSwap_ep7_seed5700.h5",
+              "frames": [
+                0,
+                75,
+                150,
+                225,
+                299,
+                374,
+                449,
+                524
+              ],
+              "swaps": 4,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard14": {
+              "timesteps": 547,
+              "demo_timesteps": 318,
+              "exec_timesteps": 229,
+              "windows": 31,
+              "demo_windows": 18,
+              "exec_windows": 13,
+              "ratio_timesteps": 1.299,
+              "ratio_windows": 1.348,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": 1,
+              "miss": 1,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard14/hdf5_files/VideoUnmaskSwap_ep7_seed5700.h5",
+              "frames": [
+                0,
+                78,
+                156,
+                234,
+                312,
+                390,
+                468,
+                546
+              ],
+              "swaps": 5,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard16": {
+              "timesteps": 678,
+              "demo_timesteps": 414,
+              "exec_timesteps": 264,
+              "windows": 39,
+              "demo_windows": 24,
+              "exec_windows": 15,
+              "ratio_timesteps": 1.61,
+              "ratio_windows": 1.696,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": 3,
+              "miss": 3,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard16/hdf5_files/VideoUnmaskSwap_ep7_seed5700.h5",
+              "frames": [
+                0,
+                97,
+                193,
+                290,
+                387,
+                484,
+                580,
+                677
+              ],
+              "swaps": 7,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard18": {
+              "timesteps": 790,
+              "demo_timesteps": 516,
+              "exec_timesteps": 274,
+              "windows": 47,
+              "demo_windows": 31,
+              "exec_windows": 16,
+              "ratio_timesteps": 1.876,
+              "ratio_windows": 2.043,
+              "units": 2,
+              "miss_units": 1,
+              "miss_swaps": 5,
+              "miss": 6,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard18/hdf5_files/VideoUnmaskSwap_ep7_seed5700.h5",
+              "frames": [
+                0,
+                113,
+                225,
+                338,
+                451,
+                564,
+                676,
+                789
+              ],
+              "swaps": 9,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ],
+                [
+                  464,
+                  514
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard20": {
+              "timesteps": 871,
+              "demo_timesteps": 618,
+              "exec_timesteps": 253,
+              "windows": 51,
+              "demo_windows": 37,
+              "exec_windows": 14,
+              "ratio_timesteps": 2.069,
+              "ratio_windows": 2.217,
+              "units": 2,
+              "miss_units": 1,
+              "miss_swaps": 7,
+              "miss": 8,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard20/hdf5_files/VideoUnmaskSwap_ep7_seed5700.h5",
+              "frames": [
+                0,
+                124,
+                249,
+                373,
+                497,
+                621,
+                746,
+                870
+              ],
+              "swaps": 11,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ],
+                [
+                  464,
+                  514
+                ],
+                [
+                  514,
+                  564
+                ],
+                [
+                  564,
+                  614
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            }
+          }
+        },
+        {
+          "seed": 6100,
+          "episode": 11,
+          "batch": "交换 V3：现有成功演示",
+          "run": "xhard-1012-swapv3",
+          "video_source": "xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep11_seed6100.mp4",
+          "video": "videos/env-results/xhard-1012-swapv3/2.3_VideoUnmaskSwap_ep11_seed6100.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 410,
+              "demo_timesteps": 168,
+              "exec_timesteps": 242,
+              "windows": 23,
+              "demo_windows": 9,
+              "exec_windows": 14,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/VideoUnmaskSwap_ep11_seed6100.h5",
+              "frames": [
+                0,
+                58,
+                117,
+                175,
+                234,
+                292,
+                351,
+                409
+              ]
+            },
+            "xhard12": {
+              "timesteps": 522,
+              "demo_timesteps": 264,
+              "exec_timesteps": 258,
+              "windows": 30,
+              "demo_windows": 15,
+              "exec_windows": 15,
+              "ratio_timesteps": 1.273,
+              "ratio_windows": 1.304,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": 1,
+              "miss": 1,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard12/hdf5_files/VideoUnmaskSwap_ep11_seed6100.h5",
+              "frames": [
+                0,
+                74,
+                149,
+                223,
+                298,
+                372,
+                447,
+                521
+              ],
+              "swaps": 4,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard14": {
+              "timesteps": 577,
+              "demo_timesteps": 318,
+              "exec_timesteps": 259,
+              "windows": 33,
+              "demo_windows": 18,
+              "exec_windows": 15,
+              "ratio_timesteps": 1.407,
+              "ratio_windows": 1.435,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": 2,
+              "miss": 2,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard14/hdf5_files/VideoUnmaskSwap_ep11_seed6100.h5",
+              "frames": [
+                0,
+                82,
+                165,
+                247,
+                329,
+                411,
+                494,
+                576
+              ],
+              "swaps": 5,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard16": {
+              "timesteps": 669,
+              "demo_timesteps": 414,
+              "exec_timesteps": 255,
+              "windows": 38,
+              "demo_windows": 24,
+              "exec_windows": 14,
+              "ratio_timesteps": 1.632,
+              "ratio_windows": 1.652,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": 3,
+              "miss": 3,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard16/hdf5_files/VideoUnmaskSwap_ep11_seed6100.h5",
+              "frames": [
+                0,
+                95,
+                191,
+                286,
+                382,
+                477,
+                573,
+                668
+              ],
+              "swaps": 7,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard18": {
+              "timesteps": 769,
+              "demo_timesteps": 516,
+              "exec_timesteps": 253,
+              "windows": 45,
+              "demo_windows": 31,
+              "exec_windows": 14,
+              "ratio_timesteps": 1.876,
+              "ratio_windows": 1.957,
+              "units": 2,
+              "miss_units": 1,
+              "miss_swaps": 5,
+              "miss": 6,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard18/hdf5_files/VideoUnmaskSwap_ep11_seed6100.h5",
+              "frames": [
+                0,
+                110,
+                219,
+                329,
+                439,
+                549,
+                658,
+                768
+              ],
+              "swaps": 9,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ],
+                [
+                  464,
+                  514
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard20": {
+              "timesteps": 877,
+              "demo_timesteps": 618,
+              "exec_timesteps": 259,
+              "windows": 52,
+              "demo_windows": 37,
+              "exec_windows": 15,
+              "ratio_timesteps": 2.139,
+              "ratio_windows": 2.261,
+              "units": 2,
+              "miss_units": 1,
+              "miss_swaps": 7,
+              "miss": 8,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard20/hdf5_files/VideoUnmaskSwap_ep11_seed6100.h5",
+              "frames": [
+                0,
+                125,
+                250,
+                375,
+                501,
+                626,
+                751,
+                876
+              ],
+              "swaps": 11,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ],
+                [
+                  464,
+                  514
+                ],
+                [
+                  514,
+                  564
+                ],
+                [
+                  564,
+                  614
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            }
+          }
+        },
+        {
+          "seed": 6900,
+          "episode": 19,
+          "batch": "交换 V3：现有成功演示",
+          "run": "xhard-1012-swapv3",
+          "video_source": "xhard/xhard-1012-swapv3/report/per_episode_strip/2.3_VideoUnmaskSwap_ep19_seed6900.mp4",
+          "video": "videos/env-results/xhard-1012-swapv3/2.3_VideoUnmaskSwap_ep19_seed6900.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 431,
+              "demo_timesteps": 168,
+              "exec_timesteps": 263,
+              "windows": 24,
+              "demo_windows": 9,
+              "exec_windows": 15,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/VideoUnmaskSwap_ep19_seed6900.h5",
+              "frames": [
+                0,
+                61,
+                123,
+                184,
+                246,
+                307,
+                369,
+                430
+              ]
+            },
+            "xhard12": {
+              "timesteps": 527,
+              "demo_timesteps": 264,
+              "exec_timesteps": 263,
+              "windows": 30,
+              "demo_windows": 15,
+              "exec_windows": 15,
+              "ratio_timesteps": 1.223,
+              "ratio_windows": 1.25,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": 1,
+              "miss": 1,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard12/hdf5_files/VideoUnmaskSwap_ep19_seed6900.h5",
+              "frames": [
+                0,
+                75,
+                150,
+                225,
+                301,
+                376,
+                451,
+                526
+              ],
+              "swaps": 4,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard14": {
+              "timesteps": 569,
+              "demo_timesteps": 318,
+              "exec_timesteps": 251,
+              "windows": 32,
+              "demo_windows": 18,
+              "exec_windows": 14,
+              "ratio_timesteps": 1.32,
+              "ratio_windows": 1.333,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": 2,
+              "miss": 2,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard14/hdf5_files/VideoUnmaskSwap_ep19_seed6900.h5",
+              "frames": [
+                0,
+                81,
+                162,
+                243,
+                325,
+                406,
+                487,
+                568
+              ],
+              "swaps": 5,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard16": {
+              "timesteps": 663,
+              "demo_timesteps": 414,
+              "exec_timesteps": 249,
+              "windows": 38,
+              "demo_windows": 24,
+              "exec_windows": 14,
+              "ratio_timesteps": 1.538,
+              "ratio_windows": 1.583,
+              "units": 2,
+              "miss_units": 1,
+              "miss_swaps": 3,
+              "miss": 4,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard16/hdf5_files/VideoUnmaskSwap_ep19_seed6900.h5",
+              "frames": [
+                0,
+                95,
+                189,
+                284,
+                378,
+                473,
+                567,
+                662
+              ],
+              "swaps": 7,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard18": {
+              "timesteps": 783,
+              "demo_timesteps": 516,
+              "exec_timesteps": 267,
+              "windows": 46,
+              "demo_windows": 31,
+              "exec_windows": 15,
+              "ratio_timesteps": 1.817,
+              "ratio_windows": 1.917,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": 5,
+              "miss": 5,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard18/hdf5_files/VideoUnmaskSwap_ep19_seed6900.h5",
+              "frames": [
+                0,
+                112,
+                223,
+                335,
+                447,
+                559,
+                670,
+                782
+              ],
+              "swaps": 9,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ],
+                [
+                  464,
+                  514
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard20": {
+              "timesteps": 880,
+              "demo_timesteps": 618,
+              "exec_timesteps": 262,
+              "windows": 52,
+              "demo_windows": 37,
+              "exec_windows": 15,
+              "ratio_timesteps": 2.042,
+              "ratio_windows": 2.167,
+              "units": 2,
+              "miss_units": 1,
+              "miss_swaps": 7,
+              "miss": 8,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard20/hdf5_files/VideoUnmaskSwap_ep19_seed6900.h5",
+              "frames": [
+                0,
+                126,
+                251,
+                377,
+                502,
+                628,
+                753,
+                879
+              ],
+              "swaps": 11,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ],
+                [
+                  464,
+                  514
+                ],
+                [
+                  514,
+                  564
+                ],
+                [
+                  564,
+                  614
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "number": "2.4",
+      "expected": {
+        "mother": {
+          "config": {
+            "press": 2,
+            "swap": 3
+          },
+          "knob": "P=2；S=3",
+          "timesteps": 460.0,
+          "windows": 27.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": {
+          "config": {
+            "press": 3,
+            "swap": 4
+          },
+          "knob": "P=3；S=4",
+          "timesteps": 575.0,
+          "windows": 34.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard14": {
+          "config": {
+            "press": 4,
+            "swap": 6
+          },
+          "knob": "P=4；S=6",
+          "timesteps": 666.0,
+          "windows": 40.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard16": {
+          "config": {
+            "press": 4,
+            "swap": 8
+          },
+          "knob": "P=4；S=8",
+          "timesteps": 716.0,
+          "windows": 43.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard18": {
+          "config": {
+            "press": 5,
+            "swap": 10
+          },
+          "knob": "P=5；S=10",
+          "timesteps": 816.0,
+          "windows": 49.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard20": {
+          "config": {
+            "press": 6,
+            "swap": 12
+          },
+          "knob": "P=6；S=12",
+          "timesteps": 916.0,
+          "windows": 56.0,
+          "basis": "固定样本集合成中位"
+        }
+      },
+      "samples": [
+        {
+          "seed": 7700,
+          "episode": 7,
+          "batch": "交换 V3：现有成功演示",
+          "run": "xhard-1012-swapv3",
+          "video_source": "xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep7_seed7700.mp4",
+          "video": "videos/env-results/xhard-1012-swapv3/2.4_ButtonUnmaskSwap_ep7_seed7700.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 451,
+              "demo_timesteps": 0,
+              "exec_timesteps": 451,
+              "windows": 27,
+              "demo_windows": 0,
+              "exec_windows": 27,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 4,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/ButtonUnmaskSwap_ep7_seed7700.h5",
+              "frames": [
+                0,
+                64,
+                129,
+                193,
+                257,
+                321,
+                386,
+                450
+              ]
+            },
+            "xhard12": {
+              "timesteps": 551,
+              "demo_timesteps": 0,
+              "exec_timesteps": 551,
+              "windows": 33,
+              "demo_windows": 0,
+              "exec_windows": 33,
+              "ratio_timesteps": 1.222,
+              "ratio_windows": 1.222,
+              "units": 5,
+              "miss_units": 0,
+              "miss_swaps": 1,
+              "miss": 1,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard12/hdf5_files/ButtonUnmaskSwap_ep7_seed7700.h5",
+              "frames": [
+                0,
+                79,
+                157,
+                236,
+                314,
+                393,
+                471,
+                550
+              ],
+              "swaps": 4,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard14": {
+              "timesteps": 648,
+              "demo_timesteps": 0,
+              "exec_timesteps": 648,
+              "windows": 39,
+              "demo_windows": 0,
+              "exec_windows": 39,
+              "ratio_timesteps": 1.437,
+              "ratio_windows": 1.444,
+              "units": 6,
+              "miss_units": 1,
+              "miss_swaps": 3,
+              "miss": 4,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard14/hdf5_files/ButtonUnmaskSwap_ep7_seed7700.h5",
+              "frames": [
+                0,
+                92,
+                185,
+                277,
+                370,
+                462,
+                555,
+                647
+              ],
+              "swaps": 6,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard16": {
+              "timesteps": 699,
+              "demo_timesteps": 0,
+              "exec_timesteps": 699,
+              "windows": 42,
+              "demo_windows": 0,
+              "exec_windows": 42,
+              "ratio_timesteps": 1.55,
+              "ratio_windows": 1.556,
+              "units": 6,
+              "miss_units": 1,
+              "miss_swaps": 4,
+              "miss": 5,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard16/hdf5_files/ButtonUnmaskSwap_ep7_seed7700.h5",
+              "frames": [
+                0,
+                100,
+                199,
+                299,
+                399,
+                499,
+                598,
+                698
+              ],
+              "swaps": 8,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard18": {
+              "timesteps": 814,
+              "demo_timesteps": 0,
+              "exec_timesteps": 814,
+              "windows": 49,
+              "demo_windows": 0,
+              "exec_windows": 49,
+              "ratio_timesteps": 1.805,
+              "ratio_windows": 1.815,
+              "units": 7,
+              "miss_units": 1,
+              "miss_swaps": 6,
+              "miss": 7,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard18/hdf5_files/ButtonUnmaskSwap_ep7_seed7700.h5",
+              "frames": [
+                0,
+                116,
+                232,
+                348,
+                465,
+                581,
+                697,
+                813
+              ],
+              "swaps": 10,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ],
+                [
+                  464,
+                  514
+                ],
+                [
+                  514,
+                  564
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard20": {
+              "timesteps": 908,
+              "demo_timesteps": 0,
+              "exec_timesteps": 908,
+              "windows": 55,
+              "demo_windows": 0,
+              "exec_windows": 55,
+              "ratio_timesteps": 2.013,
+              "ratio_windows": 2.037,
+              "units": 8,
+              "miss_units": 2,
+              "miss_swaps": 7,
+              "miss": 9,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard20/hdf5_files/ButtonUnmaskSwap_ep7_seed7700.h5",
+              "frames": [
+                0,
+                130,
+                259,
+                389,
+                518,
+                648,
+                777,
+                907
+              ],
+              "swaps": 12,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ],
+                [
+                  464,
+                  514
+                ],
+                [
+                  514,
+                  564
+                ],
+                [
+                  564,
+                  614
+                ],
+                [
+                  614,
+                  664
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            }
+          }
+        },
+        {
+          "seed": 8100,
+          "episode": 11,
+          "batch": "交换 V3：现有成功演示",
+          "run": "xhard-1012-swapv3",
+          "video_source": "xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep11_seed8100.mp4",
+          "video": "videos/env-results/xhard-1012-swapv3/2.4_ButtonUnmaskSwap_ep11_seed8100.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 454,
+              "demo_timesteps": 0,
+              "exec_timesteps": 454,
+              "windows": 27,
+              "demo_windows": 0,
+              "exec_windows": 27,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 4,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/ButtonUnmaskSwap_ep11_seed8100.h5",
+              "frames": [
+                0,
+                65,
+                129,
+                194,
+                259,
+                324,
+                388,
+                453
+              ]
+            },
+            "xhard12": {
+              "timesteps": 546,
+              "demo_timesteps": 0,
+              "exec_timesteps": 546,
+              "windows": 33,
+              "demo_windows": 0,
+              "exec_windows": 33,
+              "ratio_timesteps": 1.203,
+              "ratio_windows": 1.222,
+              "units": 5,
+              "miss_units": 0,
+              "miss_swaps": 1,
+              "miss": 1,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard12/hdf5_files/ButtonUnmaskSwap_ep11_seed8100.h5",
+              "frames": [
+                0,
+                78,
+                156,
+                234,
+                311,
+                389,
+                467,
+                545
+              ],
+              "swaps": 4,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard14": {
+              "timesteps": 645,
+              "demo_timesteps": 0,
+              "exec_timesteps": 645,
+              "windows": 39,
+              "demo_windows": 0,
+              "exec_windows": 39,
+              "ratio_timesteps": 1.421,
+              "ratio_windows": 1.444,
+              "units": 6,
+              "miss_units": 1,
+              "miss_swaps": 3,
+              "miss": 4,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard14/hdf5_files/ButtonUnmaskSwap_ep11_seed8100.h5",
+              "frames": [
+                0,
+                92,
+                184,
+                276,
+                368,
+                460,
+                552,
+                644
+              ],
+              "swaps": 6,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard16": {
+              "timesteps": 739,
+              "demo_timesteps": 0,
+              "exec_timesteps": 739,
+              "windows": 45,
+              "demo_windows": 0,
+              "exec_windows": 45,
+              "ratio_timesteps": 1.628,
+              "ratio_windows": 1.667,
+              "units": 6,
+              "miss_units": 1,
+              "miss_swaps": 4,
+              "miss": 5,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard16/hdf5_files/ButtonUnmaskSwap_ep11_seed8100.h5",
+              "frames": [
+                0,
+                105,
+                211,
+                316,
+                422,
+                527,
+                633,
+                738
+              ],
+              "swaps": 8,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard18": {
+              "timesteps": 819,
+              "demo_timesteps": 0,
+              "exec_timesteps": 819,
+              "windows": 50,
+              "demo_windows": 0,
+              "exec_windows": 50,
+              "ratio_timesteps": 1.804,
+              "ratio_windows": 1.852,
+              "units": 7,
+              "miss_units": 1,
+              "miss_swaps": 6,
+              "miss": 7,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard18/hdf5_files/ButtonUnmaskSwap_ep11_seed8100.h5",
+              "frames": [
+                0,
+                117,
+                234,
+                351,
+                467,
+                584,
+                701,
+                818
+              ],
+              "swaps": 10,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ],
+                [
+                  464,
+                  514
+                ],
+                [
+                  514,
+                  564
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard20": {
+              "timesteps": 937,
+              "demo_timesteps": 0,
+              "exec_timesteps": 937,
+              "windows": 57,
+              "demo_windows": 0,
+              "exec_windows": 57,
+              "ratio_timesteps": 2.064,
+              "ratio_windows": 2.111,
+              "units": 8,
+              "miss_units": 2,
+              "miss_swaps": 8,
+              "miss": 10,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard20/hdf5_files/ButtonUnmaskSwap_ep11_seed8100.h5",
+              "frames": [
+                0,
+                134,
+                267,
+                401,
+                535,
+                669,
+                802,
+                936
+              ],
+              "swaps": 12,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ],
+                [
+                  464,
+                  514
+                ],
+                [
+                  514,
+                  564
+                ],
+                [
+                  564,
+                  614
+                ],
+                [
+                  614,
+                  664
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            }
+          }
+        },
+        {
+          "seed": 8900,
+          "episode": 19,
+          "batch": "交换 V3：现有成功演示",
+          "run": "xhard-1012-swapv3",
+          "video_source": "xhard/xhard-1012-swapv3/report/per_episode_strip/2.4_ButtonUnmaskSwap_ep19_seed8900.mp4",
+          "video": "videos/env-results/xhard-1012-swapv3/2.4_ButtonUnmaskSwap_ep19_seed8900.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 451,
+              "demo_timesteps": 0,
+              "exec_timesteps": 451,
+              "windows": 27,
+              "demo_windows": 0,
+              "exec_windows": 27,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 4,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/ButtonUnmaskSwap_ep19_seed8900.h5",
+              "frames": [
+                0,
+                64,
+                129,
+                193,
+                257,
+                321,
+                386,
+                450
+              ]
+            },
+            "xhard12": {
+              "timesteps": 550,
+              "demo_timesteps": 0,
+              "exec_timesteps": 550,
+              "windows": 33,
+              "demo_windows": 0,
+              "exec_windows": 33,
+              "ratio_timesteps": 1.22,
+              "ratio_windows": 1.222,
+              "units": 5,
+              "miss_units": 0,
+              "miss_swaps": 1,
+              "miss": 1,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard12/hdf5_files/ButtonUnmaskSwap_ep19_seed8900.h5",
+              "frames": [
+                0,
+                78,
+                157,
+                235,
+                314,
+                392,
+                471,
+                549
+              ],
+              "swaps": 4,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard14": {
+              "timesteps": 641,
+              "demo_timesteps": 0,
+              "exec_timesteps": 641,
+              "windows": 39,
+              "demo_windows": 0,
+              "exec_windows": 39,
+              "ratio_timesteps": 1.421,
+              "ratio_windows": 1.444,
+              "units": 6,
+              "miss_units": 1,
+              "miss_swaps": 3,
+              "miss": 4,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard14/hdf5_files/ButtonUnmaskSwap_ep19_seed8900.h5",
+              "frames": [
+                0,
+                91,
+                183,
+                274,
+                366,
+                457,
+                549,
+                640
+              ],
+              "swaps": 6,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard16": {
+              "timesteps": 694,
+              "demo_timesteps": 0,
+              "exec_timesteps": 694,
+              "windows": 42,
+              "demo_windows": 0,
+              "exec_windows": 42,
+              "ratio_timesteps": 1.539,
+              "ratio_windows": 1.556,
+              "units": 6,
+              "miss_units": 1,
+              "miss_swaps": 4,
+              "miss": 5,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard16/hdf5_files/ButtonUnmaskSwap_ep19_seed8900.h5",
+              "frames": [
+                0,
+                99,
+                198,
+                297,
+                396,
+                495,
+                594,
+                693
+              ],
+              "swaps": 8,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard18": {
+              "timesteps": 809,
+              "demo_timesteps": 0,
+              "exec_timesteps": 809,
+              "windows": 49,
+              "demo_windows": 0,
+              "exec_windows": 49,
+              "ratio_timesteps": 1.794,
+              "ratio_windows": 1.815,
+              "units": 7,
+              "miss_units": 1,
+              "miss_swaps": 6,
+              "miss": 7,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard18/hdf5_files/ButtonUnmaskSwap_ep19_seed8900.h5",
+              "frames": [
+                0,
+                115,
+                231,
+                346,
+                462,
+                577,
+                693,
+                808
+              ],
+              "swaps": 10,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ],
+                [
+                  464,
+                  514
+                ],
+                [
+                  514,
+                  564
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard20": {
+              "timesteps": 894,
+              "demo_timesteps": 0,
+              "exec_timesteps": 894,
+              "windows": 54,
+              "demo_windows": 0,
+              "exec_windows": 54,
+              "ratio_timesteps": 1.982,
+              "ratio_windows": 2.0,
+              "units": 8,
+              "miss_units": 2,
+              "miss_swaps": 7,
+              "miss": 9,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard20/hdf5_files/ButtonUnmaskSwap_ep19_seed8900.h5",
+              "frames": [
+                0,
+                128,
+                255,
+                383,
+                510,
+                638,
+                765,
+                893
+              ],
+              "swaps": 12,
+              "swap_intervals": [
+                [
+                  64,
+                  114
+                ],
+                [
+                  114,
+                  164
+                ],
+                [
+                  164,
+                  214
+                ],
+                [
+                  214,
+                  264
+                ],
+                [
+                  264,
+                  314
+                ],
+                [
+                  314,
+                  364
+                ],
+                [
+                  364,
+                  414
+                ],
+                [
+                  414,
+                  464
+                ],
+                [
+                  464,
+                  514
+                ],
+                [
+                  514,
+                  564
+                ],
+                [
+                  564,
+                  614
+                ],
+                [
+                  614,
+                  664
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "PickHighlight",
+      "number": "3.1",
+      "expected": {
+        "mother": {
+          "config": {
+            "count": 3
+          },
+          "knob": "pickup=3；spawn=6",
+          "timesteps": 539.0,
+          "windows": 32.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": {
+          "config": {
+            "count": 4
+          },
+          "knob": "pickup=4；spawn=6",
+          "timesteps": 700.0,
+          "windows": 42.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard14": null,
+        "xhard16": {
+          "config": {
+            "count": 5
+          },
+          "knob": "pickup=5；spawn=6",
+          "timesteps": 855.0,
+          "windows": 52.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard18": {
+          "config": {
+            "count": 6
+          },
+          "knob": "pickup=6；spawn=6",
+          "timesteps": 1010.0,
+          "windows": 62.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard20": null
+      },
+      "samples": [
+        {
+          "seed": 12700,
+          "episode": 7,
+          "batch": "10-11 全任务生成",
+          "run": "xhard-1011",
+          "video_source": "xhard/xhard-1011/report/per_episode_strip/3.1_PickHighlight_ep7_seed12700.mp4",
+          "video": "videos/env-results/xhard-1011/3.1_PickHighlight_ep7_seed12700.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 530,
+              "demo_timesteps": 0,
+              "exec_timesteps": 530,
+              "windows": 32,
+              "demo_windows": 0,
+              "exec_windows": 32,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 4,
+              "miss_units": 0,
+              "miss_swaps": 0,
+              "miss": 0,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/PickHighlight_ep7_seed12700.h5",
+              "frames": [
+                0,
+                76,
+                151,
+                227,
+                302,
+                378,
+                453,
+                529
+              ]
+            },
+            "xhard12": {
+              "timesteps": 670,
+              "demo_timesteps": 0,
+              "exec_timesteps": 670,
+              "windows": 40,
+              "demo_windows": 0,
+              "exec_windows": 40,
+              "ratio_timesteps": 1.264,
+              "ratio_windows": 1.25,
+              "units": 5,
+              "miss_units": 1,
+              "miss_swaps": 0,
+              "miss": 1,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard12/hdf5_files/PickHighlight_ep7_seed12700.h5",
+              "frames": [
+                0,
+                96,
+                191,
+                287,
+                382,
+                478,
+                573,
+                669
+              ]
+            },
+            "xhard16": {
+              "timesteps": 823,
+              "demo_timesteps": 0,
+              "exec_timesteps": 823,
+              "windows": 50,
+              "demo_windows": 0,
+              "exec_windows": 50,
+              "ratio_timesteps": 1.553,
+              "ratio_windows": 1.562,
+              "units": 6,
+              "miss_units": 1,
+              "miss_swaps": 0,
+              "miss": 1,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard16/hdf5_files/PickHighlight_ep7_seed12700.h5",
+              "frames": [
+                0,
+                117,
+                235,
+                352,
+                470,
+                587,
+                705,
+                822
+              ]
+            },
+            "xhard18": {
+              "timesteps": 988,
+              "demo_timesteps": 0,
+              "exec_timesteps": 988,
+              "windows": 60,
+              "demo_windows": 0,
+              "exec_windows": 60,
+              "ratio_timesteps": 1.864,
+              "ratio_windows": 1.875,
+              "units": 7,
+              "miss_units": 1,
+              "miss_swaps": 0,
+              "miss": 1,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard18/hdf5_files/PickHighlight_ep7_seed12700.h5",
+              "frames": [
+                0,
+                141,
+                282,
+                423,
+                564,
+                705,
+                846,
+                987
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "VideoRepick",
+      "number": "3.2",
+      "expected": {
+        "mother": {
+          "config": {
+            "swap": 2,
+            "repeat": 2
+          },
+          "knob": "S=2；重抓R=2",
+          "timesteps": 717.0,
+          "windows": 42.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": {
+          "config": {
+            "swap": 5,
+            "repeat": 2
+          },
+          "knob": "S=5；重抓R=2",
+          "timesteps": 879.0,
+          "windows": 52.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard14": {
+          "config": {
+            "swap": 7,
+            "repeat": 2
+          },
+          "knob": "S=7；重抓R=2",
+          "timesteps": 987.0,
+          "windows": 58.5,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard16": {
+          "config": {
+            "swap": 10,
+            "repeat": 2
+          },
+          "knob": "S=10；重抓R=2",
+          "timesteps": 1149.0,
+          "windows": 69.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard18": {
+          "config": {
+            "swap": 13,
+            "repeat": 2
+          },
+          "knob": "S=13；重抓R=2",
+          "timesteps": 1311.0,
+          "windows": 79.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard20": {
+          "config": {
+            "swap": 15,
+            "repeat": 2
+          },
+          "knob": "S=15；重抓R=2",
+          "timesteps": 1419.0,
+          "windows": 85.5,
+          "basis": "固定样本集合成中位"
+        }
+      },
+      "samples": [
+        {
+          "seed": 9600,
+          "episode": 6,
+          "batch": "交换 V3：现有成功演示",
+          "run": "xhard-1012-swapv3",
+          "video_source": "xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep6_seed9600.mp4",
+          "video": "videos/env-results/xhard-1012-swapv3/3.2_VideoRepick_ep6_seed9600.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 581,
+              "demo_timesteps": 317,
+              "exec_timesteps": 264,
+              "windows": 33,
+              "demo_windows": 18,
+              "exec_windows": 15,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/VideoRepick_ep6_seed9600.h5",
+              "frames": [
+                0,
+                83,
+                166,
+                249,
+                331,
+                414,
+                497,
+                580
+              ]
+            },
+            "xhard12": {
+              "timesteps": 880,
+              "demo_timesteps": 479,
+              "exec_timesteps": 401,
+              "windows": 52,
+              "demo_windows": 28,
+              "exec_windows": 24,
+              "ratio_timesteps": 1.515,
+              "ratio_windows": 1.576,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 3,
+              "miss": 4,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard12/hdf5_files/VideoRepick_ep6_seed9600.h5",
+              "frames": [
+                0,
+                126,
+                251,
+                377,
+                502,
+                628,
+                753,
+                879
+              ],
+              "swaps": 5,
+              "swap_intervals": [
+                [
+                  196,
+                  246
+                ],
+                [
+                  246,
+                  296
+                ],
+                [
+                  296,
+                  346
+                ],
+                [
+                  346,
+                  396
+                ],
+                [
+                  396,
+                  446
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard14": {
+              "timesteps": 983,
+              "demo_timesteps": 587,
+              "exec_timesteps": 396,
+              "windows": 58,
+              "demo_windows": 35,
+              "exec_windows": 23,
+              "ratio_timesteps": 1.692,
+              "ratio_windows": 1.758,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 5,
+              "miss": 6,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard14/hdf5_files/VideoRepick_ep6_seed9600.h5",
+              "frames": [
+                0,
+                140,
+                281,
+                421,
+                561,
+                701,
+                842,
+                982
+              ],
+              "swaps": 7,
+              "swap_intervals": [
+                [
+                  196,
+                  246
+                ],
+                [
+                  246,
+                  296
+                ],
+                [
+                  296,
+                  346
+                ],
+                [
+                  346,
+                  396
+                ],
+                [
+                  396,
+                  446
+                ],
+                [
+                  446,
+                  496
+                ],
+                [
+                  496,
+                  546
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard16": {
+              "timesteps": 1145,
+              "demo_timesteps": 749,
+              "exec_timesteps": 396,
+              "windows": 68,
+              "demo_windows": 45,
+              "exec_windows": 23,
+              "ratio_timesteps": 1.971,
+              "ratio_windows": 2.061,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 7,
+              "miss": 8,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard16/hdf5_files/VideoRepick_ep6_seed9600.h5",
+              "frames": [
+                0,
+                163,
+                327,
+                490,
+                654,
+                817,
+                981,
+                1144
+              ],
+              "swaps": 10,
+              "swap_intervals": [
+                [
+                  196,
+                  246
+                ],
+                [
+                  246,
+                  296
+                ],
+                [
+                  296,
+                  346
+                ],
+                [
+                  346,
+                  396
+                ],
+                [
+                  396,
+                  446
+                ],
+                [
+                  446,
+                  496
+                ],
+                [
+                  496,
+                  546
+                ],
+                [
+                  546,
+                  596
+                ],
+                [
+                  596,
+                  646
+                ],
+                [
+                  646,
+                  696
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard18": {
+              "timesteps": 1307,
+              "demo_timesteps": 911,
+              "exec_timesteps": 396,
+              "windows": 78,
+              "demo_windows": 55,
+              "exec_windows": 23,
+              "ratio_timesteps": 2.25,
+              "ratio_windows": 2.364,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 10,
+              "miss": 11,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard18/hdf5_files/VideoRepick_ep6_seed9600.h5",
+              "frames": [
+                0,
+                187,
+                373,
+                560,
+                746,
+                933,
+                1119,
+                1306
+              ],
+              "swaps": 13,
+              "swap_intervals": [
+                [
+                  196,
+                  246
+                ],
+                [
+                  246,
+                  296
+                ],
+                [
+                  296,
+                  346
+                ],
+                [
+                  346,
+                  396
+                ],
+                [
+                  396,
+                  446
+                ],
+                [
+                  446,
+                  496
+                ],
+                [
+                  496,
+                  546
+                ],
+                [
+                  546,
+                  596
+                ],
+                [
+                  596,
+                  646
+                ],
+                [
+                  646,
+                  696
+                ],
+                [
+                  696,
+                  746
+                ],
+                [
+                  746,
+                  796
+                ],
+                [
+                  796,
+                  846
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard20": {
+              "timesteps": 1359,
+              "demo_timesteps": 965,
+              "exec_timesteps": 394,
+              "windows": 82,
+              "demo_windows": 59,
+              "exec_windows": 23,
+              "ratio_timesteps": 2.339,
+              "ratio_windows": 2.485,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 12,
+              "miss": 13,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard20/hdf5_files/VideoRepick_ep6_seed9600.h5",
+              "frames": [
+                0,
+                194,
+                388,
+                582,
+                776,
+                970,
+                1164,
+                1358
+              ],
+              "swaps": 15,
+              "swap_intervals": [
+                [
+                  196,
+                  246
+                ],
+                [
+                  246,
+                  296
+                ],
+                [
+                  296,
+                  346
+                ],
+                [
+                  346,
+                  396
+                ],
+                [
+                  396,
+                  446
+                ],
+                [
+                  446,
+                  496
+                ],
+                [
+                  496,
+                  546
+                ],
+                [
+                  546,
+                  596
+                ],
+                [
+                  596,
+                  646
+                ],
+                [
+                  646,
+                  696
+                ],
+                [
+                  696,
+                  746
+                ],
+                [
+                  746,
+                  796
+                ],
+                [
+                  796,
+                  846
+                ],
+                [
+                  846,
+                  896
+                ],
+                [
+                  896,
+                  946
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            }
+          }
+        },
+        {
+          "seed": 11200,
+          "episode": 22,
+          "batch": "交换 V3：现有成功演示",
+          "run": "xhard-1012-swapv3",
+          "video_source": "xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep22_seed11200.mp4",
+          "video": "videos/env-results/xhard-1012-swapv3/3.2_VideoRepick_ep22_seed11200.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 747,
+              "demo_timesteps": 379,
+              "exec_timesteps": 368,
+              "windows": 43,
+              "demo_windows": 22,
+              "exec_windows": 21,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/VideoRepick_ep22_seed11200.h5",
+              "frames": [
+                0,
+                107,
+                213,
+                320,
+                426,
+                533,
+                639,
+                746
+              ]
+            },
+            "xhard12": {
+              "timesteps": 880,
+              "demo_timesteps": 487,
+              "exec_timesteps": 393,
+              "windows": 52,
+              "demo_windows": 29,
+              "exec_windows": 23,
+              "ratio_timesteps": 1.178,
+              "ratio_windows": 1.209,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 3,
+              "miss": 4,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard12/hdf5_files/VideoRepick_ep22_seed11200.h5",
+              "frames": [
+                0,
+                126,
+                251,
+                377,
+                502,
+                628,
+                753,
+                879
+              ],
+              "swaps": 5,
+              "swap_intervals": [
+                [
+                  203,
+                  253
+                ],
+                [
+                  253,
+                  303
+                ],
+                [
+                  303,
+                  353
+                ],
+                [
+                  353,
+                  403
+                ],
+                [
+                  403,
+                  453
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard14": {
+              "timesteps": 963,
+              "demo_timesteps": 595,
+              "exec_timesteps": 368,
+              "windows": 57,
+              "demo_windows": 36,
+              "exec_windows": 21,
+              "ratio_timesteps": 1.289,
+              "ratio_windows": 1.326,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 4,
+              "miss": 5,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard14/hdf5_files/VideoRepick_ep22_seed11200.h5",
+              "frames": [
+                0,
+                137,
+                275,
+                412,
+                550,
+                687,
+                825,
+                962
+              ],
+              "swaps": 7,
+              "swap_intervals": [
+                [
+                  203,
+                  253
+                ],
+                [
+                  253,
+                  303
+                ],
+                [
+                  303,
+                  353
+                ],
+                [
+                  353,
+                  403
+                ],
+                [
+                  403,
+                  453
+                ],
+                [
+                  453,
+                  503
+                ],
+                [
+                  503,
+                  553
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard16": {
+              "timesteps": 1146,
+              "demo_timesteps": 757,
+              "exec_timesteps": 389,
+              "windows": 69,
+              "demo_windows": 46,
+              "exec_windows": 23,
+              "ratio_timesteps": 1.534,
+              "ratio_windows": 1.605,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 7,
+              "miss": 8,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard16/hdf5_files/VideoRepick_ep22_seed11200.h5",
+              "frames": [
+                0,
+                164,
+                327,
+                491,
+                654,
+                818,
+                981,
+                1145
+              ],
+              "swaps": 10,
+              "swap_intervals": [
+                [
+                  203,
+                  253
+                ],
+                [
+                  253,
+                  303
+                ],
+                [
+                  303,
+                  353
+                ],
+                [
+                  353,
+                  403
+                ],
+                [
+                  403,
+                  453
+                ],
+                [
+                  453,
+                  503
+                ],
+                [
+                  503,
+                  553
+                ],
+                [
+                  553,
+                  603
+                ],
+                [
+                  603,
+                  653
+                ],
+                [
+                  653,
+                  703
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard18": {
+              "timesteps": 1233,
+              "demo_timesteps": 865,
+              "exec_timesteps": 368,
+              "windows": 74,
+              "demo_windows": 53,
+              "exec_windows": 21,
+              "ratio_timesteps": 1.651,
+              "ratio_windows": 1.721,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 10,
+              "miss": 11,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard18/hdf5_files/VideoRepick_ep22_seed11200.h5",
+              "frames": [
+                0,
+                176,
+                352,
+                528,
+                704,
+                880,
+                1056,
+                1232
+              ],
+              "swaps": 13,
+              "swap_intervals": [
+                [
+                  203,
+                  253
+                ],
+                [
+                  253,
+                  303
+                ],
+                [
+                  303,
+                  353
+                ],
+                [
+                  353,
+                  403
+                ],
+                [
+                  403,
+                  453
+                ],
+                [
+                  453,
+                  503
+                ],
+                [
+                  503,
+                  553
+                ],
+                [
+                  553,
+                  603
+                ],
+                [
+                  603,
+                  653
+                ],
+                [
+                  653,
+                  703
+                ],
+                [
+                  703,
+                  753
+                ],
+                [
+                  753,
+                  803
+                ],
+                [
+                  803,
+                  853
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard20": {
+              "timesteps": 1367,
+              "demo_timesteps": 973,
+              "exec_timesteps": 394,
+              "windows": 82,
+              "demo_windows": 59,
+              "exec_windows": 23,
+              "ratio_timesteps": 1.83,
+              "ratio_windows": 1.907,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 12,
+              "miss": 13,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard20/hdf5_files/VideoRepick_ep22_seed11200.h5",
+              "frames": [
+                0,
+                195,
+                390,
+                585,
+                781,
+                976,
+                1171,
+                1366
+              ],
+              "swaps": 15,
+              "swap_intervals": [
+                [
+                  203,
+                  253
+                ],
+                [
+                  253,
+                  303
+                ],
+                [
+                  303,
+                  353
+                ],
+                [
+                  353,
+                  403
+                ],
+                [
+                  403,
+                  453
+                ],
+                [
+                  453,
+                  503
+                ],
+                [
+                  503,
+                  553
+                ],
+                [
+                  553,
+                  603
+                ],
+                [
+                  603,
+                  653
+                ],
+                [
+                  653,
+                  703
+                ],
+                [
+                  703,
+                  753
+                ],
+                [
+                  753,
+                  803
+                ],
+                [
+                  803,
+                  853
+                ],
+                [
+                  853,
+                  903
+                ],
+                [
+                  903,
+                  953
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            }
+          }
+        },
+        {
+          "seed": 11602,
+          "episode": 26,
+          "batch": "交换 V3：现有成功演示",
+          "run": "xhard-1012-swapv3",
+          "video_source": "xhard/xhard-1012-swapv3/report/per_episode_strip/3.2_VideoRepick_ep26_seed11602.mp4",
+          "video": "videos/env-results/xhard-1012-swapv3/3.2_VideoRepick_ep26_seed11602.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 632,
+              "demo_timesteps": 377,
+              "exec_timesteps": 255,
+              "windows": 36,
+              "demo_windows": 22,
+              "exec_windows": 14,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "母档缺少可核对的交换事件，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/mother/hdf5_files/VideoRepick_ep26_seed11602.h5",
+              "frames": [
+                0,
+                90,
+                180,
+                270,
+                361,
+                451,
+                541,
+                631
+              ]
+            },
+            "xhard12": {
+              "timesteps": 887,
+              "demo_timesteps": 485,
+              "exec_timesteps": 402,
+              "windows": 53,
+              "demo_windows": 29,
+              "exec_windows": 24,
+              "ratio_timesteps": 1.403,
+              "ratio_windows": 1.472,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 3,
+              "miss": 4,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard12/hdf5_files/VideoRepick_ep26_seed11602.h5",
+              "frames": [
+                0,
+                127,
+                253,
+                380,
+                506,
+                633,
+                759,
+                886
+              ],
+              "swaps": 5,
+              "swap_intervals": [
+                [
+                  203,
+                  253
+                ],
+                [
+                  253,
+                  303
+                ],
+                [
+                  303,
+                  353
+                ],
+                [
+                  353,
+                  403
+                ],
+                [
+                  403,
+                  453
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard14": {
+              "timesteps": 997,
+              "demo_timesteps": 593,
+              "exec_timesteps": 404,
+              "windows": 60,
+              "demo_windows": 36,
+              "exec_windows": 24,
+              "ratio_timesteps": 1.578,
+              "ratio_windows": 1.667,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 5,
+              "miss": 6,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard14/hdf5_files/VideoRepick_ep26_seed11602.h5",
+              "frames": [
+                0,
+                142,
+                285,
+                427,
+                569,
+                711,
+                854,
+                996
+              ],
+              "swaps": 7,
+              "swap_intervals": [
+                [
+                  203,
+                  253
+                ],
+                [
+                  253,
+                  303
+                ],
+                [
+                  303,
+                  353
+                ],
+                [
+                  353,
+                  403
+                ],
+                [
+                  403,
+                  453
+                ],
+                [
+                  453,
+                  503
+                ],
+                [
+                  503,
+                  553
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard16": {
+              "timesteps": 1130,
+              "demo_timesteps": 755,
+              "exec_timesteps": 375,
+              "windows": 68,
+              "demo_windows": 46,
+              "exec_windows": 22,
+              "ratio_timesteps": 1.788,
+              "ratio_windows": 1.889,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 7,
+              "miss": 8,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard16/hdf5_files/VideoRepick_ep26_seed11602.h5",
+              "frames": [
+                0,
+                161,
+                323,
+                484,
+                645,
+                806,
+                968,
+                1129
+              ],
+              "swaps": 10,
+              "swap_intervals": [
+                [
+                  203,
+                  253
+                ],
+                [
+                  253,
+                  303
+                ],
+                [
+                  303,
+                  353
+                ],
+                [
+                  353,
+                  403
+                ],
+                [
+                  403,
+                  453
+                ],
+                [
+                  453,
+                  503
+                ],
+                [
+                  503,
+                  553
+                ],
+                [
+                  553,
+                  603
+                ],
+                [
+                  603,
+                  653
+                ],
+                [
+                  653,
+                  703
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard18": {
+              "timesteps": 1321,
+              "demo_timesteps": 917,
+              "exec_timesteps": 404,
+              "windows": 80,
+              "demo_windows": 56,
+              "exec_windows": 24,
+              "ratio_timesteps": 2.09,
+              "ratio_windows": 2.222,
+              "units": 3,
+              "miss_units": 1,
+              "miss_swaps": 10,
+              "miss": 11,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard18/hdf5_files/VideoRepick_ep26_seed11602.h5",
+              "frames": [
+                0,
+                189,
+                377,
+                566,
+                754,
+                943,
+                1131,
+                1320
+              ],
+              "swaps": 13,
+              "swap_intervals": [
+                [
+                  203,
+                  253
+                ],
+                [
+                  253,
+                  303
+                ],
+                [
+                  303,
+                  353
+                ],
+                [
+                  353,
+                  403
+                ],
+                [
+                  403,
+                  453
+                ],
+                [
+                  453,
+                  503
+                ],
+                [
+                  503,
+                  553
+                ],
+                [
+                  553,
+                  603
+                ],
+                [
+                  603,
+                  653
+                ],
+                [
+                  653,
+                  703
+                ],
+                [
+                  703,
+                  753
+                ],
+                [
+                  753,
+                  803
+                ],
+                [
+                  803,
+                  853
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            },
+            "xhard20": {
+              "timesteps": 1346,
+              "demo_timesteps": 971,
+              "exec_timesteps": 375,
+              "windows": 81,
+              "demo_windows": 59,
+              "exec_windows": 22,
+              "ratio_timesteps": 2.13,
+              "ratio_windows": 2.25,
+              "units": 3,
+              "miss_units": 2,
+              "miss_swaps": 12,
+              "miss": 14,
+              "swap_reason": "V3 派生：已核实 before_control t 对应录像索引 t，逐交换核验 50 帧半开区间。母档交换仍未测。",
+              "h5": "artifacts/xhard/xhard-1012-swapv3/full/xhard20/hdf5_files/VideoRepick_ep26_seed11602.h5",
+              "frames": [
+                0,
+                192,
+                384,
+                576,
+                769,
+                961,
+                1153,
+                1345
+              ],
+              "swaps": 15,
+              "swap_intervals": [
+                [
+                  203,
+                  253
+                ],
+                [
+                  253,
+                  303
+                ],
+                [
+                  303,
+                  353
+                ],
+                [
+                  353,
+                  403
+                ],
+                [
+                  403,
+                  453
+                ],
+                [
+                  453,
+                  503
+                ],
+                [
+                  503,
+                  553
+                ],
+                [
+                  553,
+                  603
+                ],
+                [
+                  603,
+                  653
+                ],
+                [
+                  653,
+                  703
+                ],
+                [
+                  703,
+                  753
+                ],
+                [
+                  753,
+                  803
+                ],
+                [
+                  803,
+                  853
+                ],
+                [
+                  853,
+                  903
+                ],
+                [
+                  903,
+                  953
+                ]
+              ],
+              "swap_provenance": {
+                "review_base": "a43fa09c94317356091db6ba634a8f167b84ca13",
+                "generation_commit_prefix": "f6209f5d",
+                "maniskill": "07be6fbc66350ddca200abfb0a11b692f078f7fd",
+                "verdict": "SWAP_H5_INDEX_MAPPING=PASS tasks=3 scope=derived_swap_intervals"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "VideoPlaceButton",
+      "number": "3.3",
+      "expected": {
+        "mother": {
+          "config": {
+            "extra": 0
+          },
+          "knob": "a=0组",
+          "timesteps": 961.0,
+          "windows": 57.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": {
+          "config": {
+            "extra": 1,
+            "pre_probability": 0.5
+          },
+          "knob": "a=1组（前/后各50%）",
+          "timesteps": 1156.5,
+          "windows": 69.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard14": {
+          "config": {
+            "extra": 2
+          },
+          "knob": "a=2组（前后各1）",
+          "timesteps": 1359.0,
+          "windows": 82.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard16": null,
+        "xhard18": null,
+        "xhard20": null
+      },
+      "samples": [
+        {
+          "seed": 10701,
+          "episode": 7,
+          "batch": "10-12 VideoPlaceButton 修版",
+          "run": "vpbfix-1012",
+          "video_source": "xhard/xhard-1011/vpbfix-1012/report/per_episode_strip/3.3_VideoPlaceButton_ep7_seed10701.mp4",
+          "video": "videos/env-results/vpbfix-1012/3.3_VideoPlaceButton_ep7_seed10701.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 958,
+              "demo_timesteps": 750,
+              "exec_timesteps": 208,
+              "windows": 56,
+              "demo_windows": 45,
+              "exec_windows": 11,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 1,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "VideoPlaceButton 的交换事件到录像帧映射尚未验证，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1011/vpbfix-1012/mother/hdf5_files/VideoPlaceButton_ep7_seed10701.h5",
+              "frames": [
+                0,
+                137,
+                273,
+                410,
+                547,
+                684,
+                820,
+                957
+              ]
+            },
+            "xhard12": {
+              "timesteps": 1132,
+              "demo_timesteps": 924,
+              "exec_timesteps": 208,
+              "windows": 67,
+              "demo_windows": 56,
+              "exec_windows": 11,
+              "ratio_timesteps": 1.182,
+              "ratio_windows": 1.196,
+              "units": 1,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "VideoPlaceButton 的交换事件到录像帧映射尚未验证，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1011/vpbfix-1012/xhard12/hdf5_files/VideoPlaceButton_ep7_seed10701.h5",
+              "frames": [
+                0,
+                162,
+                323,
+                485,
+                646,
+                808,
+                969,
+                1131
+              ]
+            },
+            "xhard14": {
+              "timesteps": 1265,
+              "demo_timesteps": 1059,
+              "exec_timesteps": 206,
+              "windows": 76,
+              "demo_windows": 65,
+              "exec_windows": 11,
+              "ratio_timesteps": 1.32,
+              "ratio_windows": 1.357,
+              "units": 1,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "VideoPlaceButton 的交换事件到录像帧映射尚未验证，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1011/vpbfix-1012/xhard14/hdf5_files/VideoPlaceButton_ep7_seed10701.h5",
+              "frames": [
+                0,
+                181,
+                361,
+                542,
+                722,
+                903,
+                1083,
+                1264
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "number": "3.4",
+      "expected": {
+        "mother": {
+          "config": {
+            "targets": 3
+          },
+          "knob": "N=3个不同目标",
+          "timesteps": 1120.0,
+          "windows": 67.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": {
+          "config": {
+            "targets": 4
+          },
+          "knob": "N=4个不同目标",
+          "timesteps": 1326.0,
+          "windows": 80.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard14": null,
+        "xhard16": null,
+        "xhard18": null,
+        "xhard20": null
+      },
+      "samples": [
+        {
+          "seed": 11705,
+          "episode": 7,
+          "batch": "10-11 全任务生成",
+          "run": "xhard-1011",
+          "video_source": "xhard/xhard-1011/report/per_episode_strip/3.4_VideoPlaceOrder_ep7_seed11705.mp4",
+          "video": "videos/env-results/xhard-1011/3.4_VideoPlaceOrder_ep7_seed11705.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 1131,
+              "demo_timesteps": 930,
+              "exec_timesteps": 201,
+              "windows": 68,
+              "demo_windows": 57,
+              "exec_windows": 11,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 1,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "VideoPlaceOrder 的交换事件到录像帧映射尚未验证，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/VideoPlaceOrder_ep7_seed11705.h5",
+              "frames": [
+                0,
+                161,
+                323,
+                484,
+                646,
+                807,
+                969,
+                1130
+              ]
+            },
+            "xhard12": {
+              "timesteps": 1281,
+              "demo_timesteps": 1080,
+              "exec_timesteps": 201,
+              "windows": 77,
+              "demo_windows": 66,
+              "exec_windows": 11,
+              "ratio_timesteps": 1.133,
+              "ratio_windows": 1.132,
+              "units": 1,
+              "miss_units": 0,
+              "miss_swaps": null,
+              "miss": null,
+              "swap_reason": "VideoPlaceOrder 的交换事件到录像帧映射尚未验证，交换遗漏与合计未统计。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard12/hdf5_files/VideoPlaceOrder_ep7_seed11705.h5",
+              "frames": [
+                0,
+                183,
+                366,
+                549,
+                731,
+                914,
+                1097,
+                1280
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "MoveCube",
+      "number": "4.1",
+      "expected": {
+        "mother": {
+          "config": {
+            "demo": 1,
+            "execute": 1
+          },
+          "knob": "一次演示＋一次执行",
+          "timesteps": 416.0,
+          "windows": 23.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": null,
+        "xhard14": null,
+        "xhard16": null,
+        "xhard18": null,
+        "xhard20": null
+      },
+      "samples": [
+        {
+          "seed": 14700,
+          "episode": 7,
+          "batch": "10-11 全任务生成",
+          "run": "xhard-1011",
+          "video_source": "xhard/xhard-1011/report/per_episode_strip/4.1_MoveCube_ep7_seed14700.mp4",
+          "video": "videos/env-results/xhard-1011/4.1_MoveCube_ep7_seed14700.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 512,
+              "demo_timesteps": 267,
+              "exec_timesteps": 245,
+              "windows": 29,
+              "demo_windows": 15,
+              "exec_windows": 14,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": 0,
+              "miss": 0,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/MoveCube_ep7_seed14700.h5",
+              "frames": [
+                0,
+                73,
+                146,
+                219,
+                292,
+                365,
+                438,
+                511
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "InsertPeg",
+      "number": "4.2",
+      "expected": {
+        "mother": {
+          "config": {
+            "demo": 1,
+            "execute": 1
+          },
+          "knob": "一次演示＋一次执行",
+          "timesteps": 464.0,
+          "windows": 26.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": null,
+        "xhard14": null,
+        "xhard16": null,
+        "xhard18": null,
+        "xhard20": null
+      },
+      "samples": [
+        {
+          "seed": 13700,
+          "episode": 7,
+          "batch": "10-11 全任务生成",
+          "run": "xhard-1011",
+          "video_source": "xhard/xhard-1011/report/per_episode_strip/4.2_InsertPeg_ep7_seed13700.mp4",
+          "video": "videos/env-results/xhard-1011/4.2_InsertPeg_ep7_seed13700.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 486,
+              "demo_timesteps": 242,
+              "exec_timesteps": 244,
+              "windows": 28,
+              "demo_windows": 14,
+              "exec_windows": 14,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 2,
+              "miss_units": 0,
+              "miss_swaps": 0,
+              "miss": 0,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/InsertPeg_ep7_seed13700.h5",
+              "frames": [
+                0,
+                69,
+                139,
+                208,
+                277,
+                346,
+                416,
+                485
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "PatternLock",
+      "number": "4.3",
+      "expected": {
+        "mother": {
+          "config": {
+            "length": 6
+          },
+          "knob": "L=6节点；grid=5",
+          "timesteps": 334.0,
+          "windows": 18.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": {
+          "config": {
+            "length": 7
+          },
+          "knob": "L=7节点；grid=5",
+          "timesteps": 396.0,
+          "windows": 22.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard14": {
+          "config": {
+            "length": 8
+          },
+          "knob": "L=8节点；grid=5",
+          "timesteps": 480.0,
+          "windows": 26.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard16": {
+          "config": {
+            "length": 9
+          },
+          "knob": "L=9节点；grid=5",
+          "timesteps": 528.0,
+          "windows": 30.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard18": {
+          "config": {
+            "length": 10
+          },
+          "knob": "L=10节点；grid=5",
+          "timesteps": 604.0,
+          "windows": 34.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard20": {
+          "config": {
+            "length": 11
+          },
+          "knob": "L=11节点；grid=5",
+          "timesteps": 661.0,
+          "windows": 38.0,
+          "basis": "固定样本集合成中位"
+        }
+      },
+      "samples": [
+        {
+          "seed": 15700,
+          "episode": 7,
+          "batch": "10-11 全任务生成",
+          "run": "xhard-1011",
+          "video_source": "xhard/xhard-1011/report/per_episode_strip/4.3_PatternLock_ep7_seed15700.mp4",
+          "video": "videos/env-results/xhard-1011/4.3_PatternLock_ep7_seed15700.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 358,
+              "demo_timesteps": 179,
+              "exec_timesteps": 179,
+              "windows": 20,
+              "demo_windows": 10,
+              "exec_windows": 10,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 5,
+              "miss_units": 2,
+              "miss_swaps": 0,
+              "miss": 2,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/PatternLock_ep7_seed15700.h5",
+              "frames": [
+                0,
+                51,
+                102,
+                153,
+                204,
+                255,
+                306,
+                357
+              ]
+            },
+            "xhard12": {
+              "timesteps": 424,
+              "demo_timesteps": 212,
+              "exec_timesteps": 212,
+              "windows": 24,
+              "demo_windows": 12,
+              "exec_windows": 12,
+              "ratio_timesteps": 1.184,
+              "ratio_windows": 1.2,
+              "units": 6,
+              "miss_units": 3,
+              "miss_swaps": 0,
+              "miss": 3,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard12/hdf5_files/PatternLock_ep7_seed15700.h5",
+              "frames": [
+                0,
+                60,
+                121,
+                181,
+                242,
+                302,
+                363,
+                423
+              ]
+            },
+            "xhard14": {
+              "timesteps": 538,
+              "demo_timesteps": 269,
+              "exec_timesteps": 269,
+              "windows": 30,
+              "demo_windows": 15,
+              "exec_windows": 15,
+              "ratio_timesteps": 1.503,
+              "ratio_windows": 1.5,
+              "units": 7,
+              "miss_units": 4,
+              "miss_swaps": 0,
+              "miss": 4,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard14/hdf5_files/PatternLock_ep7_seed15700.h5",
+              "frames": [
+                0,
+                77,
+                153,
+                230,
+                307,
+                384,
+                460,
+                537
+              ]
+            },
+            "xhard16": {
+              "timesteps": 512,
+              "demo_timesteps": 256,
+              "exec_timesteps": 256,
+              "windows": 28,
+              "demo_windows": 14,
+              "exec_windows": 14,
+              "ratio_timesteps": 1.43,
+              "ratio_windows": 1.4,
+              "units": 8,
+              "miss_units": 5,
+              "miss_swaps": 0,
+              "miss": 5,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard16/hdf5_files/PatternLock_ep7_seed15700.h5",
+              "frames": [
+                0,
+                73,
+                146,
+                219,
+                292,
+                365,
+                438,
+                511
+              ]
+            },
+            "xhard18": {
+              "timesteps": 646,
+              "demo_timesteps": 323,
+              "exec_timesteps": 323,
+              "windows": 38,
+              "demo_windows": 19,
+              "exec_windows": 19,
+              "ratio_timesteps": 1.804,
+              "ratio_windows": 1.9,
+              "units": 9,
+              "miss_units": 6,
+              "miss_swaps": 0,
+              "miss": 6,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard18/hdf5_files/PatternLock_ep7_seed15700.h5",
+              "frames": [
+                0,
+                92,
+                184,
+                276,
+                369,
+                461,
+                553,
+                645
+              ]
+            },
+            "xhard20": {
+              "timesteps": 704,
+              "demo_timesteps": 352,
+              "exec_timesteps": 352,
+              "windows": 40,
+              "demo_windows": 20,
+              "exec_windows": 20,
+              "ratio_timesteps": 1.966,
+              "ratio_windows": 2.0,
+              "units": 10,
+              "miss_units": 7,
+              "miss_swaps": 0,
+              "miss": 7,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard20/hdf5_files/PatternLock_ep7_seed15700.h5",
+              "frames": [
+                0,
+                100,
+                201,
+                301,
+                402,
+                502,
+                603,
+                703
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task": "RouteStick",
+      "number": "4.4",
+      "expected": {
+        "mother": {
+          "config": {
+            "length": 5
+          },
+          "knob": "S=5条边",
+          "timesteps": 500.0,
+          "windows": 28.0,
+          "basis": "固定母档参照中位"
+        },
+        "xhard12": {
+          "config": {
+            "length": 6
+          },
+          "knob": "S=6条边",
+          "timesteps": 600.0,
+          "windows": 34.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard14": {
+          "config": {
+            "length": 7
+          },
+          "knob": "S=7条边",
+          "timesteps": 700.0,
+          "windows": 40.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard16": {
+          "config": {
+            "length": 8
+          },
+          "knob": "S=8条边",
+          "timesteps": 800.0,
+          "windows": 46.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard18": {
+          "config": {
+            "length": 9
+          },
+          "knob": "S=9条边",
+          "timesteps": 900.0,
+          "windows": 54.0,
+          "basis": "固定样本集合成中位"
+        },
+        "xhard20": {
+          "config": {
+            "length": 10
+          },
+          "knob": "S=10条边",
+          "timesteps": 993.0,
+          "windows": 59.0,
+          "basis": "固定样本集合成中位"
+        }
+      },
+      "samples": [
+        {
+          "seed": 16700,
+          "episode": 7,
+          "batch": "10-11 全任务生成",
+          "run": "xhard-1011",
+          "video_source": "xhard/xhard-1011/report/per_episode_strip/4.4_RouteStick_ep7_seed16700.mp4",
+          "video": "videos/env-results/xhard-1011/4.4_RouteStick_ep7_seed16700.mp4",
+          "rows": {
+            "mother": {
+              "timesteps": 500,
+              "demo_timesteps": 250,
+              "exec_timesteps": 250,
+              "windows": 28,
+              "demo_windows": 14,
+              "exec_windows": 14,
+              "ratio_timesteps": 1.0,
+              "ratio_windows": 1.0,
+              "units": 5,
+              "miss_units": 2,
+              "miss_swaps": 0,
+              "miss": 2,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/mother/hdf5_files/RouteStick_ep7_seed16700.h5",
+              "frames": [
+                0,
+                71,
+                143,
+                214,
+                285,
+                356,
+                428,
+                499
+              ]
+            },
+            "xhard12": {
+              "timesteps": 600,
+              "demo_timesteps": 300,
+              "exec_timesteps": 300,
+              "windows": 34,
+              "demo_windows": 17,
+              "exec_windows": 17,
+              "ratio_timesteps": 1.2,
+              "ratio_windows": 1.214,
+              "units": 6,
+              "miss_units": 3,
+              "miss_swaps": 0,
+              "miss": 3,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard12/hdf5_files/RouteStick_ep7_seed16700.h5",
+              "frames": [
+                0,
+                86,
+                171,
+                257,
+                342,
+                428,
+                513,
+                599
+              ]
+            },
+            "xhard14": {
+              "timesteps": 700,
+              "demo_timesteps": 350,
+              "exec_timesteps": 350,
+              "windows": 40,
+              "demo_windows": 20,
+              "exec_windows": 20,
+              "ratio_timesteps": 1.4,
+              "ratio_windows": 1.429,
+              "units": 7,
+              "miss_units": 4,
+              "miss_swaps": 0,
+              "miss": 4,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard14/hdf5_files/RouteStick_ep7_seed16700.h5",
+              "frames": [
+                0,
+                100,
+                200,
+                300,
+                399,
+                499,
+                599,
+                699
+              ]
+            },
+            "xhard16": {
+              "timesteps": 800,
+              "demo_timesteps": 400,
+              "exec_timesteps": 400,
+              "windows": 46,
+              "demo_windows": 23,
+              "exec_windows": 23,
+              "ratio_timesteps": 1.6,
+              "ratio_windows": 1.643,
+              "units": 8,
+              "miss_units": 5,
+              "miss_swaps": 0,
+              "miss": 5,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard16/hdf5_files/RouteStick_ep7_seed16700.h5",
+              "frames": [
+                0,
+                114,
+                228,
+                342,
+                457,
+                571,
+                685,
+                799
+              ]
+            },
+            "xhard18": {
+              "timesteps": 900,
+              "demo_timesteps": 450,
+              "exec_timesteps": 450,
+              "windows": 54,
+              "demo_windows": 27,
+              "exec_windows": 27,
+              "ratio_timesteps": 1.8,
+              "ratio_windows": 1.929,
+              "units": 9,
+              "miss_units": 6,
+              "miss_swaps": 0,
+              "miss": 6,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard18/hdf5_files/RouteStick_ep7_seed16700.h5",
+              "frames": [
+                0,
+                128,
+                257,
+                385,
+                514,
+                642,
+                771,
+                899
+              ]
+            },
+            "xhard20": {
+              "timesteps": 1000,
+              "demo_timesteps": 500,
+              "exec_timesteps": 500,
+              "windows": 60,
+              "demo_windows": 30,
+              "exec_windows": 30,
+              "ratio_timesteps": 2.0,
+              "ratio_windows": 2.143,
+              "units": 10,
+              "miss_units": 7,
+              "miss_swaps": 0,
+              "miss": 7,
+              "swap_reason": "该任务无交换事件。",
+              "h5": "artifacts/xhard/xhard-1011/final/xhard20/hdf5_files/RouteStick_ep7_seed16700.h5",
+              "frames": [
+                0,
+                143,
+                285,
+                428,
+                571,
+                714,
+                856,
+                999
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

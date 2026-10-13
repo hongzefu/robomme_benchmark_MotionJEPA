@@ -1,25 +1,26 @@
 """把根目录单文件计划 HTML 拆成托管网页（分页），输出到 artifacts/plan-site/。
 
-页面：index（引言、口径、三行概要、导航）/ impl（实施结果，仅当根目录存在 1012-xhard12-env-impl.html 时生成）/ interface（接口怎么改）/ envs（逐环境与长度）/ goals（逐任务总目标对照）/ review（逐环境物体与动作审查）/ h5（H5 产物一致性检验）/ swap（交换机制调整）/ details（第二部分技术细节）。
-根计划里以 base64 内联的 PNG 还原成相对路径引用（data-src），图片另行复制；envs 页的数轴（V2 参照与 V3 各任务的中位条）
-由 scripts/plan-site/align_section.py 以「内联数据 + timeline_board.js」直接写在根计划里，本脚本只切页、不再注入。
-实施页的 <video> 引用改写为其 data-site-src（videos/<文件名>），对应 mp4 从 --videos-src 复制到站点 videos/，源文件缺失即报错退出。
-只读计划文件、实施文件、vis 下的图片与视频源目录，不改仓库任何文件；托管命令见 vis/README.md 同款：
+页面：index / interface / envs（环境梯度与实测视频合并页）/ goals / review / h5 / swap / details。
+impl.html 保留为兼容重定向，共八个导航正文页与一个重定向页。根计划的内联 PNG 按 data-src 复制，
+envs 页读取已核实的 env-results-data.json，保留原合成数轴为折叠历史参考。
+22 条媒体白名单相对于 --artifact-root 定位，复制到独立 videos/env-results/；缺源文件即拒绝构建。
+只读计划、冻结快照与图片视频源，不改输入；托管命令见 vis/README.md 同款：
   uv run --no-sync python -m http.server 8092 --bind 0.0.0.0 --directory artifacts/plan-site
 """
 from __future__ import annotations
 
 import argparse
+import json
 import pathlib
 import re
 import shutil
 import sys
 
+from env_results import render as render_env_results, redirect_page, validate_snapshot
+
 REPO = pathlib.Path(__file__).resolve().parents[2]
-IMPL_NAV = ("impl.html", "实施结果")
-IMPL_CARD = "实施结果（10-12）"
 GITHUB_BLOB = "https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/newtask-v3-MotionJepa1006"
-NAV = [("index.html", "首页"), ("interface.html", "一、接口怎么改"), ("envs.html", "二、逐环境怎么改与长度对齐"), ("goals.html", "三、逐任务 goal 对照"), ("review.html", "四、逐环境物体与动作审查"), ("h5.html", "五、H5 产物一致性检验"), ("swap.html", "六、交换机制调整"), ("details.html", "技术细节（第二部分）")]
+NAV = [("index.html", "首页"), ("interface.html", "一、接口怎么改"), ("envs.html", "二、环境梯度与实测视频"), ("goals.html", "三、逐任务 goal 对照"), ("review.html", "四、逐环境物体与动作审查"), ("h5.html", "五、H5 产物一致性检验"), ("swap.html", "六、交换机制调整"), ("details.html", "技术细节（第二部分）")]
 
 
 def swap_body(content: pathlib.Path, plan: pathlib.Path,
@@ -76,10 +77,22 @@ def site_videos(body: str) -> tuple[str, list[str]]:
 def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = None,
           videos_src: pathlib.Path | None = None, *, swap_content: pathlib.Path | None = None,
           swap_plan: pathlib.Path | None = None,
-          swap_v3_plan: pathlib.Path | None = None) -> list[str]:
+          swap_v3_plan: pathlib.Path | None = None,
+          artifact_root: pathlib.Path | None = None,
+          env_data: pathlib.Path | None = None) -> list[str]:
     nav_items = list(NAV)
-    if impl is not None:
-        nav_items.insert(1, IMPL_NAV)
+    artifact_root = artifact_root if artifact_root is not None else REPO / "artifacts"
+    if not artifact_root.is_dir():
+        raise FileNotFoundError(f"明确指定的产物根不存在：{artifact_root}")
+    data = json.loads((env_data or REPO / "scripts/plan-site/env-results-data.json").read_text(encoding="utf-8"))
+    validate_snapshot(data)
+    media = [(sample["video_source"], sample["video"]) for task in data["tasks"] for sample in task["samples"]]
+    if len({dst for _, dst in media}) != len(media):
+        raise ValueError("媒体白名单目标重复")
+    # 完整检查后才开始写站点；缺任何媒体即拒绝，不回退旧批次。
+    for source, _ in media:
+        if not (artifact_root / source).is_file():
+            raise FileNotFoundError(f"白名单视频缺失：{artifact_root / source}")
     doc = plan.read_text(encoding="utf-8")
     # base64 内联图还原成相对路径（站点按路径复制图片，页面不背几 MB 的 base64）
     doc = re.sub(r'src="data:image/[^"]*"\s+data-src="([^"]+)"', r'src="\1"', doc)
@@ -104,7 +117,7 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
     h5 = section(main, r"<h2 id=\"p1-h5\">", r"<h2 id=\"p1-_6\">")  # 五、H5 产物一致性检验
     sec5 = section(main, r"<h2 id=\"p1-_6\">", r"<h1 id=\"[^\"]*\">第二部分")  # 五、三行
     part2 = main[re.search(r"<h1 id=\"[^\"]*\">第二部分", main).start():]
-    cards = "".join(f'<div class="card"><a href="{h}">{IMPL_CARD if (h, t) == IMPL_NAV else t}</a></div>' for h, t in nav_items[1:])
+    cards = "".join(f'<div class="card"><a href="{h}">{t}</a></div>' for h, t in nav_items[1:])
     index_body = intro + sec1 + sec5 + f'<h2 id="nav">页面</h2><div class="cards">{cards}</div>'
     if '<section id="homepage-current-plan">' in main:
         # 首页优先展示本轮简明计划，历史接口和规模只保留为折叠参考。
@@ -114,7 +127,7 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
     pages = {
         "index.html": index_body,
         "interface.html": sec2,
-        "envs.html": sec34,
+        "envs.html": render_env_results(data, sec34),
         "goals.html": goals,
         "review.html": review,
         "h5.html": h5,
@@ -124,20 +137,7 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
     }
     heads = {name: head for name in pages}
     heads["swap.html"] = re.sub(r"<title>.*?</title>", "<title>六、交换机制调整 — RoboMME xhard</title>", head, flags=re.S)
-    videos: list[str] = []
-    if impl is not None:
-        idoc = impl.read_text(encoding="utf-8")
-        ihead = idoc[: idoc.index("<body>")]
-        # 站点导航与卡片样式（上面注入计划 head 的那一段）同样补进实施页的 <style>
-        a0 = head.index("nav.top {")
-        site_css = head[a0: head.index("</style>", a0) + len("</style>")]
-        ihead = ihead.replace("</style>", site_css, 1)
-        ibody, videos = site_videos(section(idoc, r"<main>", r"</main>")[len("<main>"):])
-        # 站点里没有根计划与 docs/：计划链接指回站点首页，留档链接指向远端分支上的同路径文件
-        ibody = ibody.replace('href="1006-xhard12-env-plan.html"', 'href="index.html"')
-        ibody = re.sub(r'href="(docs/[^"]+)"', rf'href="{GITHUB_BLOB}/\1"', ibody)
-        pages = {"impl.html": ibody, **pages}
-        heads["impl.html"] = ihead
+    heads["envs.html"] = re.sub(r"<title>.*?</title>", "<title>环境梯度与实测视频 — RoboMME xhard</title>", head, flags=re.S)
     # 原计划的锚点与说明页不同，统一落在新页首页，避免保留失效锚点。
     pages = {name: re.sub(r'href="1012-swap-(?:pairing-v2|min3kinds-v3)-plan\.html(?:#[^"]*)?"',
                           'href="swap.html"', body) for name, body in pages.items()}
@@ -182,16 +182,20 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
         html = heads[name] + f'<body>\n<div class="wrap">\n<main>\n{nav}\n{body}\n</main>\n</div>\n</body>\n</html>\n'
         (out / name).write_text(html, encoding="utf-8")
         written.append(name)
-    if videos:
-        assert videos_src is not None
-        for fn in videos:
-            src = videos_src / fn
-            if not src.is_file():
-                sys.exit(f"视频源文件缺失：{src}")
-            dst = out / "videos" / fn
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(src, dst)
-            written.append("videos/" + fn)
+    (out / "impl.html").write_text(redirect_page(), encoding="utf-8")
+    written.append("impl.html")
+    for source, target in media:
+        dst = out / target
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(artifact_root / source, dst)
+        written.append(target)
+    for name in ("env-results.js", "env-results.css", "env-results-data.json"):
+        source = (env_data or REPO / "scripts/plan-site/env-results-data.json") if name.endswith(".json") else REPO / "scripts/plan-site" / name
+        shutil.copy2(source, out / name)
+        written.append(name)
+    (out / "env-results-media.json").write_text(json.dumps(
+        [{"source": source, "destination": target} for source, target in media], ensure_ascii=False, indent=2), encoding="utf-8")
+    written.append("env-results-media.json")
     # 页面内引用的仓库相对路径图片，按原相对路径复制到站点目录
     for rel in sorted(set(re.findall(r'src="((?:vis|docs)/[^"]+\.(?:png|jpg|svg))"', "".join(pages.values())))):
         src = REPO / rel
@@ -219,7 +223,7 @@ def main() -> None:
     ap.add_argument("--plan", default=str(REPO / "1006-xhard12-env-plan.html"))
     ap.add_argument("--out", default=str(REPO / "artifacts" / "plan-site"))
     ap.add_argument("--impl", default=str(REPO / "1012-xhard12-env-impl.html"),
-                    help="实施结果 HTML；文件不存在或传空串时不生成 impl.html")
+                    help="保留旧命令兼容性；impl.html 现在固定重定向到 envs.html")
     ap.add_argument("--swap-content", default=str(REPO / "scripts/plan-site/swap-content.html"),
                     help="交换页正文片段，含 V3 流程图与两幅历史原图占位符")
     ap.add_argument("--swap-plan", default=str(REPO / "1012-swap-pairing-v2-plan.html"),
@@ -227,12 +231,17 @@ def main() -> None:
     ap.add_argument("--swap-v3-plan", default=None,
                     help="V3 图 1 来源计划；省略时按正文占位符自动读取仓库内现行计划")
     ap.add_argument("--videos-src", default=str(REPO / "artifacts" / "xhard" / "xhard-1011" / "report" / "per_episode_strip"),
-                    help="实施页视频的源目录（按文件名查找）")
+                    help="保留旧命令兼容性；统一页仅使用快照中的明确媒体白名单")
+    ap.add_argument("--artifact-root", type=pathlib.Path, default=REPO / "artifacts",
+                    help="现有产物根；明确缺失时报错，不回退其他目录")
+    ap.add_argument("--env-data", type=pathlib.Path, default=REPO / "scripts/plan-site/env-results-data.json",
+                    help="已核实的统一环境数据快照")
     a = ap.parse_args()
     impl = pathlib.Path(a.impl) if a.impl and pathlib.Path(a.impl).is_file() else None
     written = build(pathlib.Path(a.plan), pathlib.Path(a.out), impl, pathlib.Path(a.videos_src),
                     swap_content=pathlib.Path(a.swap_content), swap_plan=pathlib.Path(a.swap_plan),
-                    swap_v3_plan=pathlib.Path(a.swap_v3_plan) if a.swap_v3_plan else None)
+                    swap_v3_plan=pathlib.Path(a.swap_v3_plan) if a.swap_v3_plan else None,
+                    artifact_root=a.artifact_root, env_data=a.env_data)
     pages = [w for w in written if w.endswith(".html")]
     videos = [w for w in written if w.startswith("videos/")]
     images = sum(w.endswith((".png", ".jpg", ".svg")) for w in written)
