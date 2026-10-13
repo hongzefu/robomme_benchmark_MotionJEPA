@@ -50,6 +50,7 @@ a { color:var(--accent); }
 <li class="lv3"><a href="#h3-1">3.1 新闸门 require_min_pair_kinds</a></li>
 <li class="lv3"><a href="#h3-2">3.2 不变项与「规划逐字节不变」的保证</a></li>
 <li class="lv3"><a href="#h3-3">3.3 汇总工具：graph 拒绝分型</a></li>
+<li class="lv3"><a href="#h3-4">3.4 首次建场按钮位姿对照</a></li>
 <li class="lv2"><a href="#h4">四、验收判定行</a></li>
 <li class="lv2"><a href="#h5">五、实施步骤</a></li>
 <li class="lv2"><a href="#h6">六、子代理分工与合并（简述）</a></li>
@@ -68,12 +69,13 @@ a { color:var(--accent); }
 
 <h1>1012-swap-min3kinds-v3-plan.html — 交换配对 v3：可行槽对至少三种，不足即剔除</h1>
 <blockquote>
-<p><strong>权威性与锚点</strong>：本文件是交换配对 v3 的唯一权威计划。v3 是在 v2（<a href="1012-swap-pairing-v2-plan.html"><code>1012-swap-pairing-v2-plan.html</code></a>，已全量跑完并以 2.98 回写）之上的<strong>增量</strong>：只在 reset 阶段加一道闸门，不撤回、不重写配对算法。v2 计划原样保留为历史，不再修订。工作副本 <code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>、分支 <code>newtask-v3-MotionJepa1006</code>（sled-vail，环境 B）。写计划时 HEAD 为 <code>5419e932af8639fd6f02c0d54a9e3d14976f511d</code>（2.100）；<strong>v3 代码基线</strong>就是这个提交，<code>src/robomme_xhard/swap_plan.py</code> 等文件以它为底增量修改。</p>
-<p><strong>commit 体例</strong>：主线 <code>&lt;大&gt;.&lt;小&gt; 中文描述</code> 从 2.101 接续（本计划提交即 2.101；W1 合并 2.102；全量起跑 2.103Beta、回写 2.103）；子代理提交 <code>sub/V3-&lt;字母&gt;: </code> 前缀，经 <code>--no-ff</code> 合并。只前进、不改写历史。</p>
+<p><strong>权威性与锚点</strong>：本文件是交换配对 v3 的唯一完整实施计划。生产机制仍为 v2 之后新增可行槽对至少三种闸门；七文件实现已在 <code>e39795183752f5afe0ddca2ecf77a95b0a8753f6</code>（2.102）整合，失败留档提交为 <code>c6d4780e3246e57109e0c37f8735dbd6e9c07557</code>（2.102.1），这是本次修订与后续修补的代码基线。初版代码基线 <code>5419e932af8639fd6f02c0d54a9e3d14976f511d</code> 只用于解释已完成的 v2→v3 差异。工作副本 <code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>、分支 <code>newtask-v3-MotionJepa1006</code>、sled-vail 环境 B；v2 计划与旧运行证据只读。</p>
+<p><strong>commit 体例</strong>：主线沿用 <code>&lt;大&gt;.&lt;小&gt;[.&lt;修订&gt;] 中文描述</code>；本次纯计划修订为 2.102.2，批准后的测试修补合并为 2.102.3，GPU／smoke 结果回写为 2.102.4；全量另获决定后仍用 2.103Beta 起跑、2.103 回写，两个独立提交。新子代理修补提交前缀 <code>sub/V3-C:</code>，<code>--no-ff</code> 保留全部提交，不 amend、squash 或改写历史。</p>
 <p><strong>外部依赖锚点</strong>：v2 全量产物 <code>artifacts/xhard/xhard-1012-swapv2/</code>（2.98Beta <code>f98c779a2c3f086759d9fcc4663a06da7deec083</code> 起跑，719 个文件，约 85 GB），本计划所有「预期剔除」数字都从它的 <code>report/summary.json</code> 读出；母清单 <code>artifacts/xhard/xhard-1012-swapv2/mother_seeds_all.json</code>（三任务各 10 个 seed）照用，不生成新 seed。两份引入文件 <code>collision/bin_collision.py</code>（sha256 前缀 <code>bbe87eec</code>）、<code>collision/swap_uniform.py</code>（<code>f4a1a8c0</code>）一字不改。</p>
-<p><strong>授权边界</strong>：用户原话「好的就这么改 给出完整方案」是对口径甲的方案授权，<strong>不是开工令</strong>（第 2 条）。初版 2.101 只写计划并提交（同时提交 <code>AGENTS.md</code> 新增 P8「生成侧禁止换 seed，测试侧可换」与 13600 扫 G 证据）。用户随后要求「开始执行」，主会话已在 <code>2910e8cf387e8351d18059c6bceaa8f730c13ba3</code> 上完成一次独立开工审查，发现包装时序与失败后禁出视频的冲突，停在阶段 0，未改代码或启动运行。本版按用户新裁决修订失败视频边界，完整呈现后须用户明确批准继续；开工前再派一个独立只读审查子代理查该批准版本全文矛盾（<code>PLAN_CONSISTENCY_REVIEW</code>，Codex 用 <code>gpt-6.1-sol</code>，Claude 用 <code>sonnet</code>）。按用户「和上一版一样只对于现有SED做一次生成的检查」与五项裁决（2026-10-12：「1允许 2 加上 3 全量前问一次 4 继续按照v2 5 不做」），开工令覆盖 CPU 改动、GPU 契约与最小 smoke 4 卡；现有 30 seed 的全量一次在 smoke 通过后<strong>再问用户一次</strong>才起跑（K9）。</p>
+<p><strong>授权边界</strong>：用户最新原话「同意，改为核对首次建场的按钮位姿，保留9600和全部数值断言，先修订完整计划给我审查。」本轮只改本 HTML，不改代码、依赖或运行器，不派实施代理、不测试、不重跑。用户对完整修订版审查并明确批准继续后，再派一个独立只读计划一致性审查代理，锚定批准时提交；通过后仅实施本版 1.7 的单用例测试时序修补，随后最小 GPU 用例、十九项契约、两个 S2 节点、四卡 smoke。全量 180 卡仍须 smoke 通过后另问一次，既有全量授权边界不变。</p>
 <p><strong>Codex 静态审查（2026-10-12，锚点 <code>bd0ef262</code>，结论 <code>STATIC_PLAN_REVIEW=FAIL</code>、<code>V3_INCREMENT_REVIEW=PASS production_source_changes=0</code>、<code>EXPECTED_CARD_ARITHMETIC=PASS cards=180 ok=130 task_reject=50 plan_cards=105</code>）</strong>：用户原话「参考codex意见」「在修订一波」「有什么需要我确定的来找我」。2.101.3 落实其意见：① 新增身份级验收 <code>V3_IDENTITY_MATCH</code>（3.3），堵住「错留 9300、错剔 6900 而统计全对」的反例；② <code>PLAN_UNCHANGED</code> 改为固定预期集合 105 张、缺一张即 FAIL，并统一「相等」= 除 <code>graph.feasible_edges</code> 外原有字段相等；③ <code>runtime_fail</code> 按失败类与阶段精确定义，新增 <code>mixed</code> 类，五类互斥；④ 阶段 B 定向实测 <code>test_s2_configs.py</code> 受 K13 影响的两个 VideoRepick 节点；19 项改为硬门槛；新增用例保留 <code>env=None</code> 条件清理；⑤ 阶段 0 改为先审查后派 W1；⑥ 失败后允许的步骤明列（第五节末段）；⑦ 旧根复核加文件数、视频判定行三个数字逐个核对、成功 H5 两个既有判定行、权威判定行只认 <code>swap_v2_report</code>；⑧ 文字统一（VideoRepick 5 过闸／4 成功、「避免完整 rollout」而非「不烧 GPU」、2.101 提交范围、runbook 区分运行器内命令与唯一启动命令、新鲜性检查失败即退出）。Codex 提到的 smoke 规模与全量授权冲突已由 2.101.2 的裁决解决（4 卡；全量前问一次）。<strong>此前两项裁决（原话「1同意 2同意」）</strong>：(a) R0-11 基础设施故障沿用生成器既有的有限恢复（同卡最多 3 次、seed 不变，与 v2 相同），不改生成器；(b) 失败后允许只读诊断汇总、日志清洗与记 FAIL 的留档。用户追加「2执行过程中失败 要找出原因并且对抗验证 然后找用户」，据此第五节末段定为「保留证据 → 主会话找原因 → 独立审查代理对抗验证 → 交用户」的固定流程。原先失败后禁止出视频的限制已由下面的新裁决替代。</p>
 <p><strong>开工审查与失败视频新裁决（2.101.6）</strong>：<code>PLAN_CONSISTENCY_REVIEW=FAIL base=2910e8cf387e8351d18059c6bceaa8f730c13ba3 findings=1 blocking=1</code>，主会话复核后独立对抗核查为 <code>FAILURE_RCA_REVIEW=CONFIRMED findings=1</code>。冲突是阶段 D 先出视频、后做权威对账，而原失败处理禁止出视频；这是计划冲突，尚未发生运行事故。用户原话「错流的视频你可以保存 你只需不记任务成功即可」。据此保持原包装顺序，允许失败批次生成与保存六列视频作为证据；失败卡仍按实际 <code>task_success=0</code> 记录，不改账本的真实成功字段，不因视频存在或视频工具打印 PASS 而记任务成功。任何数据／身份／规划验收 FAIL 的批次仍记 FAIL，不写「验收通过」。仅改变失败视频的保留边界，阈值、seed、代码写集、GPU 验证、全量报批与根因调查流程不变。</p>
+<p><strong>本次失败与用户选定的修补</strong>：GPU 唯一尝试在 <code>e3979518</code> 上为 <code>17 passed, 1 failed</code>，<code>-x</code> 使余下一项未执行，130.40 秒、退出 1；S2、smoke、全量未启动。失败节点 <code>test_button_pose_loadtime_matches_initialized_geometry</code> 在 VideoRepick 9600 强制第二次建场时遇到 G=2（0-1 中点接触，间隙 −0.771417851 mm）。父类私有 <code>self.generator</code> 只在构造时播种，<code>reconfigure=True</code> 继续其已推进的流，不等于首次同 seed 场景。独立核查 <code>FAILURE_RCA_REVIEW=CONFIRMED findings=5</code>；日志未记录该失败实例完整前后 RNG／几何快照，不能宣称逐值对拍或按钮推导正确。详见 <a href="docs/xhard-doc/xhard-1012-swapv3/result.md">失败结果与证据</a>。用户已选定首次建场对照：仅移动捕获清空时点、去掉强制重建，ButtonUnmaskSwap 7700 与 VideoRepick 9600 及全部断言保留；不重播私有 RNG、不改生产链路、不绕过闸门。本修补尚未实施。</p>
 <p><strong>关于图</strong>：用户先说「先不画SVG」，随后改为「HTML需要画Svg」，本版含两张内联 SVG（图 1 流程对比、图 2 六个 seed 的槽对图与两种口径判定），由 <code>fable</code> 画图子代理生成，主会话用 cairosvg 渲染成 PNG 逐项目视复查（箭头交叉、重叠、溢出、字体）后嵌入。「子代理分工与合并」一节按用户原话「子代理分工以后不画svg图 除非用户要求」只写文字与表格。</p>
 <p><strong>细节核实（2026-10-12）</strong>：按用户「细节用子代理先把它确认下来」「尽可能让开跑的时候没有问题尽可能先确定下」，派一个 <code>sonnet</code> 只读核实代理把本计划逐条对照代码与产物（试跑清单加载、报告工具 v2 自比、pytest 收集数、核心短测基线快照），回报 <code>PLAN_DETAIL_VERIFY=FAIL items=12 mismatches=8</code>；8 处已全部改入本版（第二部分 1.2 两个既有用例需 monkeypatch 闸门、<code>pass=20</code>、<code>cards=105</code> 口径、边界 seed 计数、耗时、<code>EXIT_CODE=1</code> 预期、<code>graph_reject_kind</code> 读 <code>rejection.detail</code>、K8 措辞）。它指出的高风险点「GPU 契约用的 VideoRepick 13600 不在 30 母 seed 内、G 未知」，主会话随即用 v2 预扫脚本对 13600 做了一次只 reset、只写 scratchpad 的扫 G：<strong>G 只有 2 条边</strong>（0-2 +40.97 mm、1-2 +40.62 mm，0-1 穿入 −10.64 mm），证据 <a href="docs/xhard-doc/xhard-1012-swapv3/records/graph_scan_13600.json"><code>records/graph_scan_13600.json</code></a>；v3 闸门必然拒绝它。用户先说「不做任何的换seed和上一版一样只对于现有SED做一次生成的检查。」并要求列为禁止项，随后澄清禁令只针对<strong>生成</strong>（最终生成时某 task 不成功不许换 seed），<strong>测试</strong>因为只测一个子集可以换。据此：生成用的 30 母 seed 一个不换（K9、R0-10，<code>AGENTS.md</code> P8）；GPU 测试里的 VideoRepick seed 13600 换成清单内 G=3 的 9600（K13），GPU 契约阶段保留（K15）。</p>
 </blockquote>
@@ -105,6 +107,7 @@ a { color:var(--accent); }
 <p>五项裁决（对应主会话列出的 1 跨轮浮点容差、2 smoke 规模、3 全量报批、4 六列视频、5 v2 根冻结）：「1允许 2 加上 3 全量前问一次 4 继续按照v2 5 不做」</p>
 <p>Codex 审查后两项裁决（1 基础设施有限恢复沿用、2 失败后范围）：「1同意 2同意」「2执行过程中失败 要找出原因并且对抗验证 然后找用户」</p>
 <p>开工审查后的失败视频裁决：「错流的视频你可以保存 你只需不记任务成功即可」</p>
+<p>本次修补方向与审查边界：「同意，改为核对首次建场的按钮位姿，保留9600和全部数值断言，先修订完整计划给我审查。」</p>
 </blockquote>
 <table>
 <tr><th>编号</th><th>已定口径</th><th>依据</th></tr>
@@ -114,16 +117,17 @@ a { color:var(--accent); }
 <tr><td>K4</td><td><strong>不换 seed、不补 seed、不重试</strong>（沿用 P2、R0-6）：被剔的母 seed 五档全部剔除，母卡不受影响（母档是官方 hard／medium，不走 <code>certify_swap_plan</code>）。</td><td>P2；K10 旧</td></tr>
 <tr><td>K5</td><td><strong>规划逐字节不变</strong>：闸门只读 <code>adj</code>，不消耗随机流，放在规划之前；通过闸门的 21 个母 seed（含运行期失败的 12800，它的五档记录里也带完整 <code>swap_plan</code>），其 <code>_xhard_swap_plan</code>（<code>pairs</code>、<code>slot_pairs</code>、<code>usage</code>、<code>graph</code>、<code>slots</code> 等全部字段）必须与 v2 全量对应卡相等，比较范围固定为「v2 里带 <code>swap_plan</code> 且 G ≥ 3 的 xhard 卡」= 21 × 5 = 105 张，v3 缺任何一张即 FAIL。「相等」指<strong>除唯一允许新增的 <code>graph.feasible_edges</code> 外，原有字段全部相等</strong>（不承诺整份 JSON、H5 或视频字节相同）；口径（用户裁决「1允许」）：结构与整数字段（<code>pairs</code> 的对象序号、<code>slot_pairs</code>、<code>usage</code>、<code>initiator_usage</code>、<code>partner_usage</code>、<code>graph.adj</code>、<code>s_max</code>、<code>spread_full</code>、<code>spread_prefix</code>、<code>tries</code>）逐位相等；浮点字段（<code>slots</code>、<code>graph.gaps</code>、<code>initial_gap</code>、<code>pairs</code> 里的 distance 与 gap）允许 <code>|Δ| ≤ 1e-9</code>（单位米，只覆盖浮点末位，不是几何容差）。超过即 diff。这是本计划最强的回归判据 <code>PLAN_UNCHANGED</code>。</td><td>3.2；第四节；用户裁决 1</td></tr>
 <tr><td>K6</td><td><strong>预期剔除（从 v2 全量读出）</strong>：新剔 6 个母 seed——VideoUnmaskSwap 6500、9300；ButtonUnmaskSwap 8500；VideoRepick 10800、12400、13200（G 边数均为 2）。加上 v2 已剔的 3 个孤立槽 seed 与 VideoRepick 12800（运行期段起点接触，五档全败、与口径无关），v3 全量预期 <code>ok=130 task_reject=50 infra=0</code>。实测偏离预期任何一张即停下交用户。</td><td>第二节</td></tr>
-<tr><td>K7</td><td><strong>新根、旧根只读</strong>：v3 的 smoke、全量、汇总、视频一律写 <code>artifacts/xhard/xhard-1012-swapv3/</code>；日志 <code>artifacts/logs/xh-swapv3-*</code>；tmux 名 <code>xh-swapv3-*</code>；留档 <code>docs/xhard-doc/xhard-1012-swapv3/</code>。v2 根 <code>artifacts/xhard/xhard-1012-swapv2/</code> <strong>不做</strong> sha256 冻结（用户裁决「5 不做」）；改用零成本检查：起跑前 <code>touch</code> 一个标记文件，每阶段结束后 <code>find &lt;v2 根&gt; -type f -newer &lt;标记&gt; | wc -l</code> 必须为 0 且文件数仍为 719（<code>V2_ROOT_UNTOUCHED</code>）。v1 根继续只读，沿用 v2 留下的冻结清单复核。</td><td>用户裁决 5；R0-8</td></tr>
+<tr><td>K7</td><td><strong>新根、旧根只读</strong>：v3 的 smoke、全量、汇总、视频一律写 <code>artifacts/xhard/xhard-1012-swapv3/</code>；日志 <code>artifacts/logs/xh-swapv3-*</code>；tmux 名 <code>xh-swapv3-*</code>；留档 <code>docs/xhard-doc/xhard-1012-swapv3/</code>。v2 根 <code>artifacts/xhard/xhard-1012-swapv2/</code> <strong>不做</strong> sha256 冻结（用户裁决「5 不做」）；改用零成本检查：首次实施前已建立标记文件；本次续跑保留原标记、不重新 <code>touch</code>，每阶段结束后 <code>find &lt;v2 根&gt; -type f -newer &lt;标记&gt; | wc -l</code> 必须为 0 且文件数仍为 719（<code>V2_ROOT_UNTOUCHED</code>）。v1 根继续只读，沿用 v2 留下的冻结清单复核。</td><td>用户裁决 5；R0-8</td></tr>
 <tr><td>K8</td><td><strong>最小 smoke 4 卡</strong>（用户裁决「2 加上」）：每任务一张预期新剔卡——VideoUnmaskSwap 6500、ButtonUnmaskSwap 8500、VideoRepick 10800（G 都是 2）——加一张预期保留卡 VideoUnmaskSwap 5700（G=4）；都是 xhard20、GPU0、单 worker。判据：3 张预期剔除必须 <code>stage=graph</code> 且 <code>rejection.detail</code> 以 <code>可行槽对不足=2/3</code> 开头；5700 必须 <code>task_success=1</code> 且 <code>swap_plan</code> 与 v2 全量同卡按 K5 口径相等。</td><td>第五节阶段 C；第二部分四；用户裁决 2</td></tr>
 <tr><td>K9</td><td><strong>全量 180 卡就是「那一次生成检查」</strong>：现有 30 个母 seed、母档 + 五档，命令与 v2 全量只差输出目录；GPU0、32 worker；起跑前打 2.103Beta、工作区干净；生成期间冻结 HEAD。汇总、六列视频、v2 对 v3 对比报告输出到新 <code>report/</code>。规模、耗时、用途已在本计划写明（180 卡、约 10 分钟生成 + 5 分钟包装、用途是验证闸门并产出 v3 数据）；按用户裁决「3 全量前问一次」，smoke 通过后主会话把 smoke 结果与上述规模再报一次，<strong>用户明确决定后才起全量</strong>（P5）；smoke 不过不报批。六列视频继续按 v2 全部重出 30 支（用户裁决「4 继续按照v2」）。</td><td>用户原话与裁决 3、4；P5；第 13 条</td></tr>
 <tr><td>K10</td><td><strong>汇总工具增量</strong>：<code>tools/swap_v2_report.py</code> 对 <code>stage="graph"</code> 的拒绝再分型为 <code>isolated_slots</code>／<code>min_pair_kinds</code>，新增判定行 <code>SWAP_V3_KINDS_GATE</code>；<code>classify</code> 的 task／infra 分界不变（新 detail 仍带 <code>原始边证据=</code> 标记，<code>_geometry_rejection</code> 照旧解析）。</td><td>3.3；第二部分 1.4</td></tr>
 <tr><td>K11</td><td><strong>受保护目录与引入文件</strong>：<code>src/robomme/</code> 零 diff（P1）；<code>bin_collision.py</code>、<code>swap_uniform.py</code> 零 diff（R0-4）；三个子类文件不改（docstring 里「K2/K3」的说明仍正确，口径甲是追加的第四道检查）。</td><td>R0-1、R0-4</td></tr>
-<tr><td>K12</td><td><strong>开工前审查</strong>：用户给开工令后、派 W1 前，先派一个 <code>sonnet</code> 只读审查子代理审本计划全文矛盾，锚定开工时的计划提交 sha，输出 <code>PLAN_CONSISTENCY_REVIEW=PASS|FAIL base=&lt;sha&gt; findings=&lt;n&gt; blocking=&lt;n&gt;</code>；有 blocking 即停下交用户。</td><td>第 2 条（2026-10-12 新增）</td></tr>
+<tr><td>K12</td><td><strong>开工前审查</strong>：用户给开工令后、派 F1 前，先派一个 <code>sonnet</code> 只读审查子代理审本计划全文矛盾，锚定开工时的计划提交 sha，输出 <code>PLAN_CONSISTENCY_REVIEW=PASS|FAIL base=&lt;sha&gt; findings=&lt;n&gt; blocking=&lt;n&gt;</code>；有 blocking 即停下交用户。</td><td>第 2 条（2026-10-12 新增）</td></tr>
 <tr><td>K13</td><td><strong>生成不换 seed；GPU 测试的 VideoRepick seed 由 13600 换成 9600</strong>。生成用的 30 个母 seed 与 v2 完全相同，不替换、不补（P8 生成侧）。测试侧：13600 是 `REFERENCE_SUBSETS` 参考子集的 rank0（<code>docs/xhard-doc/xhard-1011/records/mother_seeds.json</code>），不在 30 母 seed 清单里，实测 G 只有 2 条边（引言块「细节核实」、<code>records/graph_scan_13600.json</code>），已不满足契约用例要测的「可建场、五档前缀、按钮位姿」性质；9600 是 <code>mother_seeds_all.json</code> 里 VideoRepick 的 rank0（episode 6），G 为完全图（3 条边，间隙 55.37／23.65／21.67 mm），v2 全量五档全部成功。改动范围：<code>test_swap_collision_gpu.py::CASES</code> 第三项与 <code>test_button_pose_loadtime_matches_initialized_geometry</code> 的参数、<code>test_s2_configs.py::MOTHER_RANK0_SEEDS["VideoRepick"]</code>（注释改写来源）、<code>test_fatal_catch.py</code> 里 VideoRepick 的 episode 46 → 6；断言语义不变。<code>test_jobs.py</code> 里的 13600 是纯 CPU 队列逻辑的占位数字，不动。其余四个任务的 rank0 seed 不变。</td><td>用户澄清原话；核实代理 M7；P8 测试侧</td></tr>
 <tr><td>K14</td><td><strong>生成器退出码 1 属预期</strong>：只要有卡被剔除，<code>generate_dataset_newseed.py</code> 就以退出码 1 结束（v2 的 smoke 与全量日志末行都是 <code>EXIT_CODE=1</code>）。v3 的 smoke（预期剔 3 张）与全量（预期剔 50 张）的 <code>EXIT_CODE=1</code> 不是 infra 故障；通过与否只看 <code>episode_results.jsonl</code> 与各判定行。运行器照 v2 用 <code>code=${PIPESTATUS[0]}</code> 原样记录，包装步骤不因它中止。</td><td>核实代理 M6；v2 日志</td></tr>
 <tr><td>K15</td><td><strong>和上一版一样的检查方式</strong>：v3 的验证链 = CPU 单测（闸门、报告工具）→ GPU 契约（v2 的 18 项 + 新增 1 项，v2 实测 262.99 秒）→ 最小 smoke 4 卡 → 全量前问用户一次 → 现有 30 seed 全量一次 → 汇总、六列视频（按 v2 全部重出 30 支）、v2 对 v3 对比报告。生成侧没有新 seed、没有重试。</td><td>用户原话「和上一版一样只对于现有SED做一次生成的检查」；v2 的 D1b 先例</td></tr>
 <tr><td>K16</td><td><strong>失败视频允许保存，任务与验收状态独立</strong>：阶段 D 包装顺序仍为汇总 → 六列视频 → 权威对账；失败批次可生成与保留视频作证据。失败卡仍为实际 <code>task_success=0</code>，不修改账本的真实字段；视频存在、可播放或视频工具打印 PASS 都不能替代任务成功与批次验收。权威判据失败即批次 FAIL，保存视频后仍按第五节固定流程找原因、对抗验证、交用户，不重试、不放宽。</td><td>用户新裁决原话；第五节；第二部分四阶段 D</td></tr>
+<tr><td>K17</td><td><strong>只核对首次建场的按钮位姿</strong>：唯一新增写入点为 <code>test_swap_collision_gpu.py::test_button_pose_loadtime_matches_initialized_geometry</code>。每任务先 <code>captured.clear()</code>，再 <code>env = _make(task, seed)</code>，随后 <code>env.reset(seed=seed)</code>，不传 <code>reconfigure=True</code>；现有默认 <code>reconfiguration_freq=0</code> 不触发第二次建场。保留 7700／9600、两个任务共三个按钮、qpos 零值、单碰撞形状、捕获对象集合、<code>atol=1e-6, rtol=0</code>、<code>dp ≤ 1e-6</code>、<code>angle ≤ 1e-6</code>、统计与清理全部断言和计算。只调整捕获／建场时序及中文说明；取消本用例第二次随机建场覆盖，未验证强制重建或 RNG 重播。</td><td>用户最新原话；3.4；第二部分 1.7</td></tr>
 </table>
 
 <h2 id="h2">二、实测：口径甲落在 v2 全量三十个母 seed 上</h2>
@@ -619,20 +623,32 @@ PLAN_UNCHANGED=PASS cards=105 expected=105 missing=0 diffs=0 float_tol=1e-9</cod
 <p><code>SWAP_V3_KINDS_GATE</code> 是按母 seed 的汇总：<code>pass</code>（五档全成功）、<code>reject_kinds</code>（五档全为 <code>min_pair_kinds</code>）、<code>reject_isolated</code>（五档全为 <code>isolated_slots</code>）、<code>runtime_fail</code>（五档全为 <code>failure_class=="task"</code> 且 <code>stage ∈ {initial, sweep, segment_start, substep_before, substep_after}</code>，不是「非 graph」的泛称）、<code>mixed</code>（五档不属于同一类，含任何 infra）；五类互斥、合计等于 <code>seeds</code>；PASS 要求 <code>reject_kinds == expected_reject_kinds</code> 且 <code>mixed == 0</code>。<code>expected_reject_kinds</code> 由旧轮带 <code>graph.adj</code> 的卡的 G 边数 &lt; 3 推出。</p>
 <p><code>PLAN_UNCHANGED</code> 的比较范围是<strong>固定的预期集合</strong>：旧轮带 <code>swap_plan</code> 且 <code>feasible_edges ≥ 3</code> 的 xhard 卡（预期 105 张，含 12800 的五张运行期失败卡），记 <code>expected</code>；新轮里缺 <code>swap_plan</code> 的记 <code>missing</code>；要求 <code>cards == expected</code>、<code>missing == 0</code>、<code>diffs == 0</code>，缺一张就 FAIL（不能因交集缩小而「全同」）。比较前删除新轮的 <code>graph.feasible_edges</code> 键，并另行核对该键等于 <code>graph.adj</code> 的无序边集。工具的参数名 <code>--v1/--v2</code> 保持不变（它只是「旧轮／新轮」两个根），判定行 <code>REPORT_V1V2</code> 名字也不改，留档里写明这次比较的是 v2 对 v3。</p>
 
+<h3 id="h3-4">3.4 本次唯一修补：首次建场的按钮位姿对照</h3>
+<p><strong>定义与锚点</strong>：在 <code>src/robomme_xhard/tests/test_swap_collision_gpu.py::test_button_pose_loadtime_matches_initialized_geometry</code> 内，捕获仍来自认证阶段的 <code>sp.button_shape_poses</code>，真实对照仍来自初始化后 <code>button_cap</code> 子连杆碰撞形状的世界位姿；两侧算法、形状与数值判据不变。改变的是捕获清空位置与是否强制再建场。</p>
+<table><tr><th>步骤</th><th>失败版（c6d4780e 代码）</th><th>拟修补版（未实施）</th></tr>
+<tr><td>1</td><td><code>_make(task, seed)</code>：首次建场并捕获推导值</td><td><code>captured.clear()</code>：清除上一任务捕获</td></tr>
+<tr><td>2</td><td><code>captured.clear()</code>：丢弃首次捕获</td><td><code>_make(task, seed)</code>：首次建场并保留捕获</td></tr>
+<tr><td>3</td><td><code>reset(seed, reconfigure=True)</code>：已推进的私有 RNG 再建不同场景，9600 G=2 被拒</td><td><code>reset(seed)</code>：默认频率 0，初始化首次场景，不强制再建</td></tr>
+<tr><td>4</td><td>原位姿断言（本次 VideoRepick 分支未执行）</td><td>同一套原位姿计算与全部断言，核对首次场景三个按钮</td></tr></table>
+<p><strong>保证与陷阱</strong>：捕获函数仍只读并复制位姿，<code>captured.clear()</code> 必须在每个任务 <code>_make</code> 之前，不能只放在循环外；否则上个任务的 articulation 身份会污染集合断言。禁止简单 <code>manual_seed(9600)</code>、恢复私有 RNG、patch 闸门或换 seed。实际 ManiSkill 默认频率为 0，两任务未覆盖该默认；这里不新增配置。结果仍待真实 GPU 验证，修补仅把用例对照物移回生成器使用的首次场景。</p>
+<p><strong>实测与待验收</strong>：旧版真实失败为 130.40 秒／17 过、1 败、1 未执行；新版本先仅跑这个 GPU 用例（两个任务、共三个按钮），须 <code>BUTTON_POSE_LOADTIME=PASS buttons=3</code> 且 pytest 1 passed、0 failed、0 skipped，再从头跑全部 19 项和 S2 两节点。收益是避免额外随机场景干扰位姿观察，不承诺训练效果或生成吞吐收益。</p>
 <h2 id="h4">四、验收判定行</h2>
 <table>
 <tr><th>判定行</th><th>查什么</th><th>怎么查</th><th>过了说明什么</th></tr>
-<tr><td><code>PLAN_CONSISTENCY_REVIEW=PASS base=&lt;sha&gt; findings=n blocking=0</code></td><td>本计划全文无自相矛盾</td><td>开工令后、派 W1 前，一个 <code>sonnet</code> 只读审查子代理按第 2 条清单审</td><td>可以照着实施</td></tr>
-<tr><td><code>V2_ROOT_UNTOUCHED=PASS files=719 newer=0</code></td><td>v2 根没有被写入（用户裁决不做 sha256 冻结）</td><td>阶段 0 <code>touch artifacts/xhard/xhard-1012-swapv3/.v2_mark</code>；每阶段结束 <code>find artifacts/xhard/xhard-1012-swapv2 -type f | wc -l</code> = 719 且 <code>find artifacts/xhard/xhard-1012-swapv2 -type f -newer artifacts/xhard/xhard-1012-swapv3/.v2_mark | wc -l</code> = 0</td><td>没有新建、覆盖 v2 根的文件（挡不住「保持 mtime 的改写」，本计划没有这类操作，R0-8）</td></tr>
-<tr><td><code>SWAP_PLAN_V3_CPU=PASS</code></td><td>新闸门单测</td><td><code>uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_plan.py -q</code>（worktree 内按 CLAUDE.md 环境取法）</td><td>2 条边拒绝、3 条边通过、detail 格式、reason 聚合、口径 B 先于闸门、随机流未被消耗、<code>feasible_edges</code> 写入</td></tr>
-<tr><td><code>REPORT_V3_CPU=PASS</code></td><td>汇总工具分型与判定行</td><td><code>uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_v2_report.py -q</code></td><td>两种 graph 拒绝能分开、<code>SWAP_V3_KINDS_GATE</code> 的 expected 与实测比对逻辑正确、task／infra 分界不变</td></tr>
+<tr><td><code>BUTTON_FIX_SCOPE=PASS files=1 functions=1</code></td><td>本次仅一个测试函数变化</td><td>固定 BASE／TIP 的 <code>git diff --name-only</code> 恰为指定测试文件；逐 hunk 仅目标函数时序和中文说明，其他函数与生产链路相对 c6d4780e 零 diff</td><td>修补没有扩大源码范围</td></tr>
+<tr><td><code>BUTTON_ASSERTIONS_UNCHANGED=PASS seeds=7700,9600 buttons=3</code></td><td>所有原计算与断言保持</td><td>R1 逐段对照 c6d4780e：捕获函数、任务／seed、qpos、shape、ID 集合、真实位姿、相对旋转、统计、数值阈值及 finally 原样；差异仅 clear 移到 _make 前、去掉 reconfigure 参数和说明</td><td>观察时序改变，数值标准与对象不变</td></tr>
+<tr><td><code>PLAN_CONSISTENCY_REVIEW=PASS base=&lt;sha&gt; findings=n blocking=0</code></td><td>本计划全文无自相矛盾</td><td>开工令后、派 F1 前，一个 <code>sonnet</code> 只读审查子代理按第 2 条清单审</td><td>可以照着实施</td></tr>
+<tr><td><code>V2_ROOT_UNTOUCHED=PASS files=719 newer=0</code></td><td>v2 根没有被写入（用户裁决不做 sha256 冻结）</td><td>首次实施时已建立 <code>artifacts/xhard/xhard-1012-swapv3/.v2_mark</code>，本次保留，不 touch 或重置；每阶段结束 <code>find artifacts/xhard/xhard-1012-swapv2 -type f | wc -l</code> = 719 且 <code>find artifacts/xhard/xhard-1012-swapv2 -type f -newer artifacts/xhard/xhard-1012-swapv3/.v2_mark | wc -l</code> = 0</td><td>没有新建、覆盖 v2 根的文件（挡不住「保持 mtime 的改写」，本计划没有这类操作，R0-8）</td></tr>
+<tr><td><code>SWAP_PLAN_V3_CPU=PASS</code>（已完成）</td><td>已整合新闸门单测；本次不重写</td><td><code>uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_plan.py -q</code>（worktree 内按 CLAUDE.md 环境取法）</td><td>2 条边拒绝、3 条边通过、detail 格式、reason 聚合、口径 B 先于闸门、随机流未被消耗、<code>feasible_edges</code> 写入</td></tr>
+<tr><td><code>REPORT_V3_CPU=PASS</code>（已完成）</td><td>已整合汇总工具；本次不重写</td><td><code>uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_v2_report.py -q</code></td><td>两种 graph 拒绝能分开、<code>SWAP_V3_KINDS_GATE</code> 的 expected 与实测比对逻辑正确、task／infra 分界不变</td></tr>
 <tr><td><code>CORE_SHORT=PASS new_failures=0</code></td><td>全仓轻量测试，按节点比较</td><td><code>timeout 280s uv run --no-sync python -m pytest tests/lightweight/ src/robomme_xhard/tests -m 'not gpu and not slow' -q -rf</code>，FAILED 节点集合与 v2 基线 4 个已知失败节点逐个比对（<code>docs/xhard-doc/xhard-1012-collision-smoke/records/xh-coll-baseline-cpu-1012.log</code>）</td><td>没有新坏的节点</td></tr>
 <tr><td><code>SRC_ROBOMME_ZERO_DIFF=PASS base=5419e932</code></td><td>P1</td><td><code>git diff --quiet 5419e932 &lt;合并提交&gt; -- src/robomme/</code></td><td>官方代码一字未动</td></tr>
 <tr><td><code>VENDOR_BYTES=PASS files=2</code></td><td>R0-4</td><td><code>sha256sum</code> 对 <code>bbe87eec…</code>、<code>f4a1a8c0…</code></td><td>判据与配对算法未改</td></tr>
-<tr><td><code>PRE_MERGE_REVIEW=PASS base=&lt;sha&gt; tip=&lt;sha&gt; files=7 commits=2 findings=0</code></td><td>W1 分支审查</td><td>一个 <code>sonnet</code> 审查子代理，只许 <code>git diff/log/show</code> 两个 sha</td><td>可写集合未越界、契约守住、前缀合规、13600 → 9600 只改 seed 不改断言</td></tr>
-<tr><td><code>POST_MERGE_REVIEW=PASS merge=&lt;sha&gt; tests=&lt;结果&gt; files=7</code></td><td>合并后闸门</td><td>主检出跑 <code>CORE_SHORT</code>、<code>SRC_ROBOMME_ZERO_DIFF</code>、<code>VENDOR_BYTES</code></td><td>可以 push、进入 GPU 契约</td></tr>
+<tr><td><code>PRE_MERGE_REVIEW=PASS base=&lt;sha&gt; tip=&lt;sha&gt; files=1 commits=n findings=0</code></td><td>F1 单文件修补审查</td><td>独立 Sol／sonnet 审查固定 BASE／TIP，断言段与 seed 相对 c6d4780e 原样保留；只改 K17 时序和说明</td><td>可整合修补，不代表 GPU 已通过</td></tr>
+<tr><td><code>POST_MERGE_REVIEW=PASS merge=&lt;sha&gt; tests=&lt;结果&gt; files=1</code></td><td>修补合并后闸门</td><td>主检出核心短测、官方源码与生产链路相对 c6d4780e 零 diff、两引入文件哈希；FAILED 节点只允许原四项</td><td>可 push，进入最小 GPU 验证</td></tr>
+<tr><td><code>BUTTON_FIRST_BUILD=PASS cases=1 buttons=3 failed=0 skipped=0</code></td><td>K17 最小真实用例</td><td>独立 GPU 运行器先跑按钮位姿单节点，核对 pytest 一项通过、原 <code>BUTTON_POSE_LOADTIME=PASS buttons=3</code> 与原数值断言</td><td>首次建场位姿契约通过，可扩大到十九项；不证明强制重建</td></tr>
 <tr><td><code>S2_GPU_VIDEOREPICK=PASS cases=2 failed=0</code></td><td><code>test_s2_configs.py</code> 因 K13 改了 <code>MOTHER_RANK0_SEEDS</code>，其受影响的两个 gpu 节点 <code>test_gym_make_reset_contract[VideoRepick-xhard12]</code>、<code>[VideoRepick-xhard20]</code> 必须实测</td><td>阶段 B 运行器第二条 pytest（定向两个节点，不跑该文件其余 6 项）</td><td>改过的测试文件没有未验证节点</td></tr>
-<tr><td><code>XHARD_GPU_CONTRACT=PASS cases=19 failed=0 skipped=0</code></td><td>GPU 契约用例（v2 的 18 项 + 新增 1 项；VideoRepick 用例改用 9600，K13）；19 是硬门槛，收集数不等或有 skipped 即 FAIL</td><td><code>CUDA_VISIBLE_DEVICES=0 … pytest src/robomme_xhard/tests/test_swap_collision_gpu.py src/robomme_xhard/tests/test_fatal_catch.py -m gpu -q -rf -rP -x</code>，tmux <code>xh-swapv3-gpu-1012</code>，上限 1 小时；<code>cases</code> 以 pytest 实际收集数为准写入留档（核实代理 collect-only 实测当前 18 项）</td><td>新用例 <code>test_two_edge_seed_rejected_at_graph</code>（VideoUnmaskSwap 6500 xhard20）在 reset 以 <code>stage=graph</code>、detail 含 <code>可行槽对不足=2/3</code> 被拒；原 18 项不退化（含 10500 孤立槽用例证据不变；VideoRepick 各项在 9600 上通过）</td></tr>
+<tr><td><code>XHARD_GPU_CONTRACT=PASS cases=19 failed=0 skipped=0</code></td><td>GPU 契约用例（v2 的 18 项 + 新增 1 项；VideoRepick 用例改用 9600，K13）；19 是硬门槛，收集数不等或有 skipped 即 FAIL</td><td><code>CUDA_VISIBLE_DEVICES=0 … pytest src/robomme_xhard/tests/test_swap_collision_gpu.py src/robomme_xhard/tests/test_fatal_catch.py -m gpu -q -rf -rP -x</code>，tmux <code>xh-swapv3-gpu-firstbuild-1012</code>，上限 1 小时；<code>cases</code> 以 pytest 实际收集数为准写入留档（2.102 实施时 collect-only 实测 19 项）</td><td>新用例 <code>test_two_edge_seed_rejected_at_graph</code>（VideoUnmaskSwap 6500 xhard20）在 reset 以 <code>stage=graph</code>、detail 含 <code>可行槽对不足=2/3</code> 被拒；原 18 项不退化（含 10500 孤立槽用例证据不变；VideoRepick 各项在 9600 上通过）</td></tr>
 <tr><td><code>SWAP_V3_SMOKE=PASS cards=4 reject_kinds=3 kept=1 plan_diff=0</code></td><td>最小 smoke 4 卡（6500、8500、10800 剔，5700 留，xhard20）</td><td>第二部分四阶段 C；对 5700 与 v2 全量同卡按 K5 口径比较 <code>swap_plan</code>（排除 <code>graph.feasible_edges</code>）</td><td>三个任务的闸门在真实建场上按预期工作；规划不变</td></tr>
 <tr><td><code>NEW_ROOT_FRESH=PASS</code></td><td>每次生成、汇总、出视频前目标目录不存在</td><td><code>test ! -e &lt;目标&gt;</code> 写在命令最前面</td><td>不会写进任何已有目录</td></tr>
 <tr><td><code>XHARD_FULL_DERIVE=DONE expected=180 seen=180 missing=0 dup=0 unknown=0 ok=130 task_reject=50 infra=0</code></td><td>全量 180 身份逐一交代</td><td><code>swap_v2_report.py --v1 &lt;v2 full&gt; --v2 &lt;v3 full&gt;</code>；<strong>权威出处只认这个工具打印的那一行</strong>（<code>summarize.py</code> 也打同名行但不做身份对账，不作验收依据）</td><td>数字与 K6 预期逐项相等；任一不等即停</td></tr>
@@ -649,17 +665,19 @@ PLAN_UNCHANGED=PASS cards=105 expected=105 missing=0 diffs=0 float_tol=1e-9</cod
 <h2 id="h5">五、实施步骤</h2>
 <table>
 <tr><th>阶段</th><th>内容</th><th>判据</th></tr>
-<tr><td>0（开工令后立即）</td><td>① 派计划一致性审查（<code>sonnet</code>），同时主会话 <code>touch</code> v2 根的 mtime 标记并记下文件数 719（只读，可并行）；② 审查 <code>blocking=0</code>、主会话逐条核实后<strong>才</strong>派 W1（<code>opus</code>，独立 worktree）。有 blocking 先交用户，不派 W1</td><td><code>PLAN_CONSISTENCY_REVIEW</code>、标记文件存在</td></tr>
-<tr><td>A</td><td>W1 两个 <code>sub/</code> 提交：V3-A 闸门 + 单测 + GPU 回归用例 + 测试 seed 替换（1.1–1.3）→ V3-B 汇总工具分型 + 单测（1.4–1.5）；主会话在 worktree 复跑验收；派 <code>sonnet</code> 审查；<code>--no-ff</code> 合并为 2.102；合并后闸门；push</td><td><code>SWAP_PLAN_V3_CPU</code>、<code>REPORT_V3_CPU</code>、<code>PRE_MERGE_REVIEW</code>、<code>CORE_SHORT</code>、<code>SRC_ROBOMME_ZERO_DIFF</code>、<code>VENDOR_BYTES</code>、<code>POST_MERGE_REVIEW</code></td></tr>
-<tr><td>B</td><td>GPU 契约：主检出 GPU0 从头跑两文件全部 gpu 用例（19 项）+ 定向跑 <code>test_s2_configs.py</code> 受 K13 影响的 2 个 VideoRepick 节点（同一运行器、tmux <code>xh-swapv3-gpu-1012</code>）</td><td><code>XHARD_GPU_CONTRACT=PASS cases=19 failed=0 skipped=0</code>、<code>S2_GPU_VIDEOREPICK=PASS cases=2 failed=0</code></td></tr>
-<tr><td>C</td><td>最小 smoke 4 卡（6500、8500、10800 剔，5700 留；xhard20、单 worker）；5700 与 v2 同卡比 <code>swap_plan</code>；复核 v2 根。不过则停，不报批</td><td><code>SWAP_V3_SMOKE=PASS cards=4 reject_kinds=3 kept=1 plan_diff=0</code>、<code>V2_ROOT_UNTOUCHED</code></td></tr>
-<tr><td>报批</td><td>向用户报 smoke 四卡结果、全量规模（180 卡）、预估耗时与预期数字（K6）；用户明确决定后才进 D（用户裁决「3 全量前问一次」）</td><td>用户原话记入 <code>full-launch.md</code></td></tr>
-<tr><td>D</td><td>写 <code>full-launch.md</code> → 打 2.103Beta（工作区干净）→ 现有 30 seed 全量一次（tmux <code>xh-swapv3-full-1012</code>；v2 实测生成 601.1 秒约 10.0 分钟，包装 291 秒约 4.9 分钟）→ 汇总、视频、v2 对 v3 报告（tmux <code>xh-swapv3-report-1012</code>）→ 复核两旧根 → <code>full-result.md</code> → 2.103 回写</td><td><code>XHARD_FULL_DERIVE</code>、<code>SWAP_V3_KINDS_GATE</code>、<code>PLAN_UNCHANGED</code>、<code>REPORT_V1V2</code>、<code>EPISODE_STRIP_VIDEO</code>、<code>V2_ROOT_UNTOUCHED</code>、<code>OLD_RUN_INTACT</code></td></tr>
-</table>
-<p>任何判定行 FAIL、任何数字偏离 K6 预期、任何 infra 失败：停止代码、重试、后续生成与成功交付，保留日志与产物，交用户裁决；不换 seed、不重试、不放宽。<strong>失败后的固定流程</strong>（用户原话「2执行过程中失败 要找出原因并且对抗验证 然后找用户」）：① 保留证据——只读输入、写新根 <code>report/</code> 的 <code>summarize</code> 与 <code>swap_v2_report</code>（判定行按实际 FAIL 原样记录）、日志清洗；按 K16 允许从已有产物生成与保存六列视频，仍守新目标与旧根只读，不借此补跑生成。没有全量产物时不为出视频启动全量；② <strong>找原因</strong>——主会话只读定位根因（读日志、<code>episode_results.jsonl</code>、<code>rejection</code>／<code>runtime_checks</code> 证据、必要时派 <code>haiku</code> 探索代理分片检索），写成「现象 → 证据 → 归因 → 候选处置」；③ <strong>对抗验证</strong>——派一个独立 <code>sonnet</code> 审查代理，只给它证据与主会话的归因，要求它反驳、找替代解释、指出证据缺口，输出 <code>FAILURE_RCA_REVIEW=CONFIRMED|DISPUTED findings=&lt;n&gt;</code>；同一归因只派一个审查者，不多轮反复；④ <strong>找用户</strong>——把原因、对抗验证结论、候选处置与证据路径一并交用户裁决，期间不改代码、不重试、不换 seed、不起下一生成或验证阶段；<code>full-result.md</code> 记 FAIL 与 RCA，2.103 回写 FAIL。失败卡保持实际 <code>task_success=0</code>，不改账本的真实成功字段，不因视频存在或视频工具的 PASS 字样记任务成功；局部通过的原始判定行照实留存，但失败批次总验收仍为 FAIL，不写「验收通过」。</p>
+<tr><td>0（新开工令后）</td><td>派一个独立计划全文审查；保留既有 <code>.v2_mark</code> 不 touch、不重置，核对 719 文件／newer=0；通过才派 F1</td><td><code>PLAN_CONSISTENCY_REVIEW</code>、<code>V2_ROOT_UNTOUCHED</code></td></tr>
+<tr><td>A-F</td><td>F1 独立 worktree 仅修 1.7；CPU 三项接口短测与十九项 collect-only；独立审查；<code>--no-ff</code> 合并 2.102.3；核心与冻结项检查；push</td><td><code>BUTTON_FIX_SCOPE files=1</code>、<code>BUTTON_ASSERTIONS_UNCHANGED</code>、<code>PRE_MERGE_REVIEW</code>、<code>CORE_SHORT</code>、<code>POST_MERGE_REVIEW</code></td></tr>
+<tr><td>B0</td><td>GPU0 只跑按钮位姿单节点，两个任务三个按钮；新运行器、新日志、新证据根，未通过不扩大</td><td><code>BUTTON_FIRST_BUILD=PASS cases=1 buttons=3 failed=0 skipped=0</code></td></tr>
+<tr><td>B</td><td>B0 通过后，同一运行器从头跑十九项，再顺序跑两个 VideoRepick S2 节点；保留旧失败证据，禁止自动重复</td><td><code>XHARD_GPU_CONTRACT=PASS cases=19 failed=0 skipped=0</code>、<code>S2_GPU_VIDEOREPICK=PASS cases=2 failed=0</code></td></tr>
+<tr><td>C</td><td>四卡 xhard20 单 worker smoke：5700 留，6500／8500／10800 剔；5700 按 K5 与 v2 同卡比较；结果回写 2.102.4</td><td><code>SWAP_V3_SMOKE=PASS cards=4 reject_kinds=3 kept=1 plan_diff=0</code>、<code>V2_ROOT_UNTOUCHED</code></td></tr>
+<tr><td>报批</td><td>smoke 通过后报 180 卡、约 10 分钟生成＋5 分钟包装和预期数字；用户明确决定后才进 D</td><td>用户决定原话记入 <code>full-launch.md</code></td></tr>
+<tr><td>D</td><td>2.103Beta → 现有 30 母 seed、母档＋五档一次生成 → 汇总、六列视频、v2/v3 对账 → 复核旧根 → 2.103 回写；完整命令及所有判据维持 K6／K9／K16</td><td>180 身份、130 成功／50 正常拒绝／infra=0、105 规划、30 视频等原具名判据逐项满足</td></tr></table>
+<h3>已实施事实（本次修订前）</h3>
+<p>七文件和三个子提交已整合为 2.102；主会话定向 CPU 151 通过、2.98 秒，核心 473 通过、原四项失败、二跳过、8.72 秒，<code>CORE_SHORT=PASS new_failures=0</code>；保护目录与引入文件完整哈希通过。第一次 GPU 契约为 FAIL（17 过／1 败／1 未执行、130.40 秒），已结束会话，S2、smoke 与全量未启动，281 个时间步证据保存。以上都是历史实测，新 K17 及恢复阶段尚未验证，旧 FAIL 不改写为 PASS。</p>
+<p>任何判定行 FAIL、任何数字偏离 K6 预期、任何 infra 失败：停止代码、重试、后续生成与成功交付，保留日志与产物，交用户裁决；不换 seed、不重试、不放宽。<strong>失败后的固定流程</strong>（用户原话「2执行过程中失败 要找出原因并且对抗验证 然后找用户」）：① 保留证据——只读输入、写新根 <code>report/</code> 的 <code>summarize</code> 与 <code>swap_v2_report</code>（判定行按实际 FAIL 原样记录）、日志清洗；按 K16 允许从已有产物生成与保存六列视频，仍守新目标与旧根只读，不借此补跑生成。没有全量产物时不为出视频启动全量；② <strong>找原因</strong>——主会话只读定位根因（读日志、<code>episode_results.jsonl</code>、<code>rejection</code>／<code>runtime_checks</code> 证据、必要时派 <code>haiku</code> 探索代理分片检索），写成「现象 → 证据 → 归因 → 候选处置」；③ <strong>对抗验证</strong>——派一个独立 <code>sonnet</code> 审查代理，只给它证据与主会话的归因，要求它反驳、找替代解释、指出证据缺口，输出 <code>FAILURE_RCA_REVIEW=CONFIRMED|DISPUTED findings=&lt;n&gt;</code>；同一归因只派一个审查者，不多轮反复；④ <strong>找用户</strong>——把原因、对抗验证结论、候选处置与证据路径一并交用户裁决，期间不改代码、不重试、不换 seed、不起下一生成或验证阶段；全量前的失败记 <code>result.md</code> 与 RCA 并接续 2.102 修订号；全量阶段失败才记 <code>full-result.md</code>、2.103 回写 FAIL。失败卡保持实际 <code>task_success=0</code>，不改账本的真实成功字段，不因视频存在或视频工具的 PASS 字样记任务成功；局部通过的原始判定行照实留存，但失败批次总验收仍为 FAIL，不写「验收通过」。</p>
 
 <h2 id="h6">六、子代理分工与合并（简述）</h2>
-<p>代码改动很小（两个源码文件、五个测试文件），拆成<strong>一个写入型代理 W1</strong>（<code>opus</code>，独立 worktree）按顺序做两个提交：V3-A 管 <code>swap_plan.py</code>、它的单测与 GPU 用例，以及 K13 的测试 seed 替换（<code>test_swap_collision_gpu.py</code>、<code>test_s2_configs.py</code>、<code>test_fatal_catch.py</code>）；V3-B 管 <code>swap_v2_report.py</code> 与它的测试文件；两块没有共享文件。W1 交回后主会话在它的 worktree 里复跑 CPU 验收，再派<strong>一个 <code>sonnet</code> 审查代理</strong>钉死 BASE／TIP 两个 sha 审一遍，通过才 <code>--no-ff</code> 合并成 2.102，合并后在主检出跑核心短测、保护目录零 diff、引入文件哈希，通过即 push。GPU 契约、smoke、全量在合并后由主会话在主检出串行跑（GPU0），起跑交给<strong>运行型代理</strong>（<code>opus</code>，不加 worktree）按确定版本与命令开 tmux、验证起跑后交回句柄；监听、预算、清理归主会话。开工令后、派 W1 前另有<strong>一个 <code>sonnet</code> 计划一致性审查</strong>。探索类 <code>haiku</code> 只读按需派，不预列。</p>
+<p>原 W1 七文件实现与审查已经完成，不再派发。批准本版后先派一个独立只读计划审查 C0，通过后由 F1（Codex <code>gpt-6.1-sol</code>，显式中等或更高推理强度）在新独立 worktree 仅修改按钮位姿测试单用例。主会话复核单文件范围及全部断言不变，R1 独立审固定 BASE／TIP，通过后主会话 <code>--no-ff</code> 合入 2.102.3，保留所有子提交；核心与冻结项检查通过即 push。运行代理 L1 与修代码角色分开，按确定 HEAD 启动 GPU0 新 tmux：最小按钮用例 → 十九项 → 两节点，然后另批启动 smoke。主会话唯一负责监听、预算、失败归因、留档与清理。所有新子代理显式中等以上推理强度；不在计划修订阶段重复派审，也不让运行代理修代码。</p>
 
 <h1 id="p2">第二部分（技术细节，供 agent 追踪）</h1>
 
@@ -674,11 +692,12 @@ PLAN_UNCHANGED=PASS cards=105 expected=105 missing=0 diffs=0 float_tol=1e-9</cod
 <tr><td>R0-7</td><td>生成只在本机 GPU0（P7），tmux 前缀 <code>xh-swapv3-</code>；全量 180 卡须在 smoke 后单独报批（P5；用户裁决「3 全量前问一次」，与 K9 一致）。</td></tr>
 <tr><td>R0-11</td><td><strong>「不重试」的含义</strong>：不为任务拒绝重试、不换 seed；生成器对<strong>基础设施故障</strong>（进程池崩溃）的既有行为是把原卡原样退回队列、同一卡最多 <code>MAX_NON_TASK_STRIKES=3</code> 次（<code>generate_dataset_newseed.py::_run_jobs</code>，seed 与 attempt 不变，每次尝试都写账本）。本计划<strong>沿用</strong>这一有限恢复（与 v2 相同，v2 实测 infra=0），不改生成器；恢复产生的重复身份由 <code>XHARD_FULL_DERIVE</code> 的 <code>dup</code> 计数暴露并判 FAIL。<code>attempt=0</code> 不代表只执行过一次，留档以日志与账本为准。（用户裁决「1同意」）</td></tr>
 <tr><td>R0-8</td><td>不得写入、移动、删除 <code>artifacts/xhard/xhard-1012-coll/</code> 与 <code>artifacts/xhard/xhard-1012-swapv2/</code> 下任何文件；任何工具的 <code>--out-dir</code>、<code>--output-dir</code>、<code>--out-md</code>、<code>--out-json</code> 都不得指向这两个目录；靠 <code>NEW_ROOT_FRESH</code> 前置检查挡住。母清单用 <code>cp</code> 复制到新根，不用符号链接。</td></tr>
-<tr><td>R0-9</td><td>三个子类文件、<code>configs.py</code>、<code>jobs.py</code>、生成器、<code>summarize.py</code>、<code>episode_strip_video.py</code>、<code>test_jobs.py</code> 不在可写集合；需要改即停下交用户。三个 GPU 测试文件只允许 K13 列出的 seed／episode 替换与 1.3 的新增用例，不改任何既有断言。</td></tr>
+<tr><td>R0-9</td><td>本次唯一源码可写点是 1.7 的 <code>test_swap_collision_gpu.py::test_button_pose_loadtime_matches_initialized_geometry</code> 的时序和中文说明；该函数全部断言、计算和 seed 原样保留。1.1–1.5 是已完成实现的只读记录，不再授权修改。其他测试、全部生产源码、三个子类、配置、生成器、依赖不改；需要扩大范围即停下交用户。</td></tr>
 <tr><td>R0-10</td><td>生成侧不换 seed、不补 seed、不改母清单（<code>AGENTS.md</code> P8 生成侧，用户原话「把这个作为禁止项除非用户明确要求不做任何的这种调整」）；<code>mother_seeds_all.json</code> 只 <code>cp</code> 到新根，字节不变（<code>sha256sum</code> 核对）。测试侧的 seed 替换以 K13 为限，不得再扩。</td></tr>
 </table>
 
 <h2 id="t1">一、逐文件改动清单</h2>
+<p><strong>区分已完成与待实施</strong>：1.1–1.5 记录 2.102 已落地的七文件规范，只读、不重做；本次批准后唯一新改动是 1.7。旧 seed 替换与旧 CPU 闸门已经完成，不将原清单当作本轮新增写入许可。</p>
 <h3>1.1 V3-A：<code>src/robomme_xhard/swap_plan.py</code></h3>
 <ul>
 <li>模块常量 <code>MIN_SWAP_PAIR_KINDS = 3</code>，紧接 <code>PLAN_ACCEPT_RANGE</code> 之后。</li>
@@ -700,10 +719,10 @@ PLAN_UNCHANGED=PASS cards=105 expected=105 missing=0 diffs=0 float_tol=1e-9</cod
 </ul>
 <h3>1.3 V3-A：<code>src/robomme_xhard/tests/test_swap_collision_gpu.py</code>、<code>test_s2_configs.py</code>、<code>test_fatal_catch.py</code></h3>
 <ul>
-<li><code>test_swap_collision_gpu.py</code>：新增一个 <code>gpu</code> 用例 <code>test_two_edge_seed_rejected_at_graph</code>，形状<strong>完整</strong>照抄 <code>test_isolated_slot_seed_rejected_at_graph</code>，含条件清理（<code>env = None</code>；<code>try: with pytest.raises(SwapCollisionError) as caught: env = _make(...); env.reset(seed=...)</code>；<code>finally: if env is not None: env.close()</code>——<code>_make</code> 内部也可能首次建场即抛错，此时 <code>env</code> 未赋值，无条件 <code>close()</code> 会用 <code>NameError</code> 盖住真正的闸门拒绝）：<code>_make("VideoUnmaskSwap", 6500, "xhard20")</code> + <code>env.reset(seed=6500)</code>，断言 <code>caught.value.stage == "graph"</code>、<code>rejection.detail</code> 以 <code>可行槽对不足=2/3</code> 开头、JSON 的 <code>feasible_edges</code> 长度 2。原有 8 个测试函数（7 个 gpu + 1 个 CPU）只改 K13 的 seed：<code>CASES</code> 第三项 <code>("VideoRepick", VideoRepickXHard, 13600, …)</code> → <code>9600</code>；<code>test_button_pose_loadtime_matches_initialized_geometry</code> 里 <code>("VideoRepick", 13600, 1)</code> → <code>("VideoRepick", 9600, 1)</code>。10500 用例的断言保持不变（证明口径 B 先行）。</li>
+<li><code>test_swap_collision_gpu.py</code>：新增一个 <code>gpu</code> 用例 <code>test_two_edge_seed_rejected_at_graph</code>，形状<strong>完整</strong>照抄 <code>test_isolated_slot_seed_rejected_at_graph</code>，含条件清理（<code>env = None</code>；<code>try: with pytest.raises(SwapCollisionError) as caught: env = _make(...); env.reset(seed=...)</code>；<code>finally: if env is not None: env.close()</code>——<code>_make</code> 内部也可能首次建场即抛错，此时 <code>env</code> 未赋值，无条件 <code>close()</code> 会用 <code>NameError</code> 盖住真正的闸门拒绝）：<code>_make("VideoUnmaskSwap", 6500, "xhard20")</code> + <code>env.reset(seed=6500)</code>，断言 <code>caught.value.stage == "graph"</code>、<code>rejection.detail</code> 以 <code>可行槽对不足=2/3</code> 开头、JSON 的 <code>feasible_edges</code> 长度 2。初次实现时原有 8 个测试函数（7 个 gpu + 1 个 CPU）仅按 K13 替换 seed（已完成）；本次按钮用例的额外时序调整由 K17／1.7 单独授权：<code>CASES</code> 第三项 <code>("VideoRepick", VideoRepickXHard, 13600, …)</code> → <code>9600</code>；<code>test_button_pose_loadtime_matches_initialized_geometry</code> 里 <code>("VideoRepick", 13600, 1)</code> → <code>("VideoRepick", 9600, 1)</code>。10500 用例的断言保持不变（证明口径 B 先行）。</li>
 <li><code>test_s2_configs.py</code>：<code>MOTHER_RANK0_SEEDS["VideoRepick"]</code> 13600 → 9600；其上注释改为说明 VideoRepick 取 <code>mother_seeds_all.json</code>（v2／v3 全量清单）的 rank0 = episode 6 / seed 9600，原 13600 是参考子集 rank0、G 只有 2 条边、被 v3 闸门拒绝（证据 <code>docs/xhard-doc/xhard-1012-swapv3/records/graph_scan_13600.json</code>）；其余四个任务不变。</li>
 <li><code>test_fatal_catch.py</code>：<code>episode = 46 if task == "VideoRepick" else 7</code> → <code>episode = 6 if task == "VideoRepick" else 7</code>（seed 经 <code>MOTHER_RANK0_SEEDS</code> 自动变为 9600）。</li>
-<li><code>test_jobs.py</code> 里的 13600 是 CPU 队列逻辑占位，不动。核实代理在当前 HEAD 用 <code>--collect-only</code> 数到两文件 gpu 用例 18 项、import 阶段不需要 GPU，新增后应为 19。</li>
+<li><code>test_jobs.py</code> 里的 13600 是 CPU 队列逻辑占位，不动。初次实现前收集 18 项，新增后 2.102 实测 19 项；本次修补不增加或删除用例，仍硬要求 19。</li>
 </ul>
 <h3>1.4 V3-B：<code>src/robomme_xhard/tools/swap_v2_report.py</code></h3>
 <ul>
@@ -727,21 +746,39 @@ PLAN_UNCHANGED=PASS cards=105 expected=105 missing=0 diffs=0 float_tol=1e-9</cod
 <h3>1.6 不改的文件（显式列出）</h3>
 <p><code>envs/video_unmask_swap.py</code>、<code>envs/button_unmask_swap.py</code>、<code>envs/video_repick.py</code>、<code>configs.py</code>、<code>jobs.py</code>、<code>base.py</code>、<code>collision/*</code>、<code>tools/summarize.py</code>、<code>tools/episode_strip_video.py</code>、<code>tools/mother_seeds.py</code>、<code>tools/layout.py</code>、<code>tests/test_jobs.py</code>、<code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code>、<code>pyproject.toml</code>、<code>uv.lock</code>、两份母 seed 清单。</p>
 
+<h3>1.7 V3-C（本次唯一待实施）：按钮位姿首次建场</h3>
+<p>文件 <code>src/robomme_xhard/tests/test_swap_collision_gpu.py</code>，函数 <code>test_button_pose_loadtime_matches_initialized_geometry</code>。仅改下列顺序与该函数中文 docstring；不改 <code>_make</code>、捕获函数、monkeypatch 目标、其他用例或生产源码。</p>
+<pre><code># 改前（已失败的版本）
+for task, seed, expected_count in (("ButtonUnmaskSwap", 7700, 2), ("VideoRepick", 9600, 1)):
+    env = _make(task, seed)
+    try:
+        captured.clear()
+        env.reset(seed=seed, options={"reconfigure": True})
+        # 全部原有对照计算、断言、统计与 finally 清理
+
+# 改后（未实施；循环内每任务分别清空）
+for task, seed, expected_count in (("ButtonUnmaskSwap", 7700, 2), ("VideoRepick", 9600, 1)):
+    captured.clear()
+    env = _make(task, seed)
+    try:
+        env.reset(seed=seed)
+        # 全部原有对照计算、断言、统计与 finally 清理，逐字保留</code></pre>
+<p><strong>必须原样保留</strong>：<code>len(bystanders)==expected_count</code>、捕获 articulation ID 集合一致、<code>np.array_equal(qpos, np.zeros(1))</code>、单 shape、真实世界位姿与相对旋转算法、<code>np.allclose(..., atol=1e-6, rtol=0)</code>、<code>dp ≤ 1e-6 and angle ≤ 1e-6</code>、<code>buttons == 3</code>、原打印 <code>BUTTON_POSE_LOADTIME</code> 及 <code>finally: env.close()</code>。审查对 c6d4780e 的此函数逐段核对，具名 <code>BUTTON_ASSERTIONS_UNCHANGED=PASS seeds=7700,9600 buttons=3</code>；不会通过新增 skip、捕获拒绝当通过、重播 RNG 或 patch 闸门规避失败。</p>
 <h2 id="t2">二、子代理分配表</h2>
 <table>
-<tr><th>编号</th><th>目标</th><th>模型／隔离</th><th>可写集合</th><th>禁触</th><th>契约与依赖</th><th>合并顺序</th><th>验收（在哪跑、怎么跑）</th><th>资源</th></tr>
-<tr><td>C0</td><td>计划一致性审查</td><td><code>sonnet</code>，无 worktree，只读</td><td>无</td><td>一切文件</td><td>锚定开工时计划提交 sha；按第 2 条清单审</td><td>先于 W1 合并</td><td><code>PLAN_CONSISTENCY_REVIEW</code></td><td>无</td></tr>
-<tr><td>W1</td><td>两个 <code>sub/</code> 提交：<code>sub/V3-A: 可行槽对至少三种闸门、单测与 GPU 测试 seed 替换</code>（1.1–1.3）→ <code>sub/V3-B: 汇总工具 graph 拒绝分型与判定行</code>（1.4–1.5）</td><td><code>opus</code>，<code>isolation: "worktree"</code></td><td><code>src/robomme_xhard/swap_plan.py</code>、<code>src/robomme_xhard/tests/test_swap_plan.py</code>、<code>src/robomme_xhard/tests/test_swap_collision_gpu.py</code>、<code>src/robomme_xhard/tests/test_s2_configs.py</code>、<code>src/robomme_xhard/tests/test_fatal_catch.py</code>、<code>src/robomme_xhard/tools/swap_v2_report.py</code>、<code>src/robomme_xhard/tests/test_swap_v2_report.py</code>（共 7 文件）</td><td>1.6 全部文件、<code>src/robomme/</code>、docs、根目录 html、<code>artifacts/</code>；不跑 GPU、不 push、不合主分支</td><td>BASE = 开工时主线 HEAD（2.101 或其后）；接口按 1.1、1.4 固定；每条 git 命令单独一次 Bash；不得起超过 5 分钟任务</td><td>1：审查通过后 <code>--no-ff</code> 合并为 2.102</td><td>worktree 内 CPU：<code>UV_PROJECT_ENVIRONMENT=&lt;主 .venv&gt; PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_plan.py src/robomme_xhard/tests/test_swap_v2_report.py src/robomme_xhard/tests/test_s2_configs.py -m 'not gpu' -q</code>，先打印 <code>robomme_xhard.__file__</code> 落在 worktree；再 <code>pytest src/robomme_xhard/tests/test_swap_collision_gpu.py src/robomme_xhard/tests/test_fatal_catch.py -m gpu --collect-only -q</code> 确认收集 19 项；GPU 用例只写不跑</td><td>GPU 0 张、端口无、tmux 无；共享文件无</td></tr>
-<tr><td>R1</td><td>W1 合并前审查</td><td><code>sonnet</code>，无 worktree，只读</td><td>无</td><td>一切文件</td><td>钉 <code>REVIEW_BASE</code>／<code>REVIEW_TIP</code> 两个完整 sha，只许 <code>git diff/log/show</code></td><td>先于合并</td><td><code>PRE_MERGE_REVIEW</code>；FAIL 则 <code>SendMessage</code> 交回 W1 续改，第二轮只审增量</td><td>无</td></tr>
-<tr><td>L1</td><td>启动 GPU 契约、smoke、全量、包装四个 tmux（分四批，按阶段）</td><td><code>opus</code>，不加 worktree</td><td>只允许运行器与日志落 <code>artifacts/xhard/xhard-1012-swapv3/</code>、<code>artifacts/logs/</code></td><td>源码、配置、依赖、参数、seed 清单；不取消会话、不重试、不清理</td><td>完整命令见第四节 runbook；版本 = 传入的 HEAD；起跑判据：日志出现 <code>SOURCE_HEAD=</code> 行且 <code>tmux has-session</code> 为真</td><td>按阶段 B→C→D 顺序</td><td>交回 tmux 名、日志绝对路径、起跑判据原始输出、<code>tmux ls</code> 留证</td><td>GPU0；tmux <code>xh-swapv3-gpu-1012</code>／<code>xh-swapv3-smoke-1012</code>／<code>xh-swapv3-full-1012</code>／<code>xh-swapv3-report-1012</code>；预算：契约 1 小时、smoke 30 分钟、全量 1 小时、包装 30 分钟</td></tr>
-<tr><td>主会话自做</td><td>v2 根 mtime 标记与文件数复核、合并与两次审查的核对、Monitor 监听、与 v2 同卡比对、全量前报批、留档、Beta／回写提交与 push、worktree 清理</td><td>—</td><td>docs、根目录、合并提交、<code>artifacts/xhard/xhard-1012-swapv3/.v2_mark</code></td><td>—</td><td>切不开：合并与 push 是主检出唯一写者的职责</td><td>—</td><td>各判定行</td><td>GPU0 复核时只读</td></tr>
-</table>
+<tr><th>编号／目标</th><th>模型与隔离</th><th>可写／禁触</th><th>契约、依赖与整合</th><th>验收与资源</th></tr>
+<tr><td>C0 完整计划一致性</td><td>Sol／sonnet，只读；Codex 显式 medium 或更高</td><td>无写集，源码只读批准提交</td><td>新开工令后审批准全文 SHA，blocking=0 才派 F1</td><td><code>PLAN_CONSISTENCY_REVIEW</code>；无 GPU、端口或 tmux</td></tr>
+<tr><td>F1 首次建场测试修补</td><td>Sol／opus，新独立 worktree；Codex <code>gpt-6.1-sol</code>、medium 或更高</td><td>唯一文件及锚点见 1.7；禁触其他函数、生产源码、其他测试、docs、HTML、依赖、产物</td><td>BASE=新批准计划提交（代码仍以 c6d4780e 为基线）；分支 <code>codex/swapv3-firstbuild</code>，新托管 worktree；不复用已归档 W1。<code>sub/V3-C:</code> 中文提交，不 push；单一文件 owner</td><td>worktree 借主 .venv 只读、PYTHONPATH 指向自身src；CPU <code>pytest test_swap_collision_gpu.py -m 'not gpu'</code>；两文件 <code>-m gpu --collect-only</code> 恰19项。GPU0张、端口无、tmux无、短测≤280秒</td></tr>
+<tr><td>R1 修补代码审查</td><td>独立 Sol／sonnet，只读；medium 或更高</td><td>无写集，只读固定 BASE／TIP 与 c6d4780e 对照</td><td>与 F1 不同代理；单文件、K17、全部断言不变、原失败证据保留。FAIL 交回同一 F1，机制变更先交用户</td><td><code>BUTTON_FIX_SCOPE</code>、<code>BUTTON_ASSERTIONS_UNCHANGED</code>、<code>PRE_MERGE_REVIEW files=1</code>；无 GPU</td></tr>
+<tr><td>L1 按阶段启动</td><td>运行型 Sol／opus，主检出；medium 或更高，与修代码角色分开</td><td>只执行主会话确定的运行器；程序仅写规定新日志与产物；禁改源码、配置、参数、seed、依赖，不取消或重试</td><td>版本=整合后干净 HEAD，完整命令见 runbook；前置新日志／新目标／新会话及 GPU0可用；交回 SOURCE_HEAD、会话、节点、时间、日志与起跑回执，起跑最长等待60秒</td><td><code>xh-swapv3-gpu-firstbuild-1012</code>：最小用例280秒＋十九项3600秒＋S2 900秒，依次、失败即退出；smoke <code>xh-swapv3-smoke-1012</code> 1800秒；全量／包装仍各3600／1800秒且先另获决定。只 GPU0，无服务端口</td></tr>
+<tr><td>主会话</td><td>主检出唯一整合与文档 owner</td><td>计划、docs、运行器、规定新根证据；不改 F1 源码；旧根与旧失败文件只读</td><td>核对并 <code>--no-ff</code> 合并2.102.3，核心与冻结项通过 push；归档 F1 worktree。负责预算、监听、清理、全量报批与留档</td><td>精确 tmux 清单；新运行器日志同前缀；不覆盖既有 .v2_mark，旧GPU文件与281证据不动</td></tr></table>
 
 <h2 id="t3">三、闸门总表</h2>
 <table>
 <tr><th>阶段</th><th>闸门</th><th>FAIL 时（任一阶段都先走第五节末段的固定流程：保留证据 → 找原因 → <code>sonnet</code> 对抗验证 → 交用户）</th></tr>
 <tr><td>0</td><td><code>PLAN_CONSISTENCY_REVIEW</code>（blocking=0）、v2 根 mtime 标记已建且文件数 719、派发前核对（<code>worktree.baseRef=head</code>、主检出状态记录、<code>git check-ignore -q .claude/worktrees/probe</code>、<code>git worktree list</code> 存档：现有 4 个 codex worktree 一律不动）</td><td>有 blocking 交用户</td></tr>
-<tr><td>A</td><td><code>SCOPE</code>（<code>git diff --name-only BASE..TIP</code> ⊆ 7 文件）、<code>SWAP_PLAN_V3_CPU</code>、<code>REPORT_V3_CPU</code>、<code>PRE_MERGE_REVIEW</code>、<code>POST_MERGE_REVIEW</code>（含 <code>CORE_SHORT new_failures=0</code>、<code>SRC_ROBOMME_ZERO_DIFF</code>、<code>VENDOR_BYTES</code>）</td><td>不合并／不 push，交回续改或交用户</td></tr>
+<tr><td>A-F</td><td><code>BUTTON_FIX_SCOPE files=1</code>、<code>BUTTON_ASSERTIONS_UNCHANGED</code>、CPU接口短测、19项收集、合并前后审查、<code>CORE_SHORT new_failures=0</code>、生产链路相对 c6d4780e 零 diff</td><td>不合并／不 push，交回续改或交用户</td></tr>
+<tr><td>B0</td><td><code>BUTTON_FIRST_BUILD=PASS cases=1 buttons=3 failed=0 skipped=0</code>；pytest退出0</td><td>保存证据→找原因→独立对抗核查→交用户，不跑十九项</td></tr>
 <tr><td>B</td><td><code>XHARD_GPU_CONTRACT=PASS cases=19 failed=0 skipped=0</code>、<code>S2_GPU_VIDEOREPICK=PASS cases=2 failed=0</code></td><td>停，交用户；不改判据、不再换 seed</td></tr>
 <tr><td>C</td><td><code>NEW_ROOT_FRESH</code>、<code>SWAP_V3_SMOKE=PASS cards=4 reject_kinds=3 kept=1 plan_diff=0</code>、<code>V2_ROOT_UNTOUCHED</code>；infra=0</td><td>停，交用户；不换 seed、不报批</td></tr>
 <tr><td>报批</td><td>用户对全量的明确决定（裁决「3 全量前问一次」）</td><td>无决定不起跑</td></tr>
@@ -749,43 +786,55 @@ PLAN_UNCHANGED=PASS cards=105 expected=105 missing=0 diffs=0 float_tol=1e-9</cod
 </table>
 
 <h2 id="t4">四、runbook（主会话）</h2>
-<h3>阶段 0</h3>
-<pre><code># 0-a 派发前核对
-jq -r '.env.CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS, .env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS, .worktree.baseRef' ~/.claude/settings.json   # 64 64 head
-git status --short --ignore-submodules=dirty -- . ':!docs/subagent-stats'
-BASE=$(git rev-parse HEAD); git check-ignore -q .claude/worktrees/probe; git worktree list
+<h3>阶段 0 与 A-F：批准后才执行</h3>
+<pre><code># 0：先记录 HEAD 与 porcelain；C0 审批准全文，不读后续改动
+BASE=$(git rev-parse HEAD)
+git status --porcelain
+git worktree list
+git check-ignore -q .claude/worktrees/probe
+# 保留原标记，不重新 touch；核对 v2 根 719/newer=0
+test -f artifacts/xhard/xhard-1012-swapv3/.v2_mark
+find artifacts/xhard/xhard-1012-swapv2 -type f | wc -l
+find artifacts/xhard/xhard-1012-swapv2 -type f -newer artifacts/xhard/xhard-1012-swapv3/.v2_mark | wc -l
+# C0 blocking=0 后才创建 F1 新独立worktree、分支 codex/swapv3-firstbuild；现有四个 worktree 一律不动
 
-# 0-b v2 根只做 mtime 标记（用户裁决不做 sha256 冻结）
-mkdir -p artifacts/xhard/xhard-1012-swapv3 docs/xhard-doc/xhard-1012-swapv3/records
-touch artifacts/xhard/xhard-1012-swapv3/.v2_mark
-find artifacts/xhard/xhard-1012-swapv2 -type f | wc -l        # 719
-# 之后每阶段末：V2_ROOT_UNTOUCHED=PASS files=$(find artifacts/xhard/xhard-1012-swapv2 -type f | wc -l) newer=$(find artifacts/xhard/xhard-1012-swapv2 -type f -newer artifacts/xhard/xhard-1012-swapv3/.v2_mark | wc -l)，要求 719 / 0
-
-# 0-c 先派 C0（sonnet）；PLAN_CONSISTENCY_REVIEW blocking=0 且主会话逐条核实后，再派 W1（opus, worktree）</code></pre>
-<h3>阶段 A</h3>
-<pre><code># W1 交回后：越界检查
-git diff --name-only $BASE..$TIP        # ⊆ 1.1–1.5 七文件
-# worktree 内复跑
-UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_plan.py src/robomme_xhard/tests/test_swap_v2_report.py -q
-# 派 R1（sonnet）→ PRE_MERGE_REVIEW=PASS 后
-git merge --no-ff $TIP -F &lt;scratchpad 合并消息&gt;        # 2.102
-timeout 280s uv run --no-sync python -m pytest tests/lightweight/ src/robomme_xhard/tests -m 'not gpu and not slow' -q -rf
-git diff --quiet 5419e932 HEAD -- src/robomme/ &amp;&amp; echo SRC_ROBOMME_ZERO_DIFF=PASS
-sha256sum src/robomme_xhard/collision/bin_collision.py src/robomme_xhard/collision/swap_uniform.py   # bbe87eec… f4a1a8c0…
+# F1 worktree 内仅 CPU：先核对包指向自身，禁 sync/add 与 GPU
+UV_CACHE_DIR=/home/hongzefu/.cache/uv UV_PROJECT_ENVIRONMENT=&lt;主检出&gt;/.venv PYTHONPATH=&lt;F1工作树&gt;/src uv run --no-sync python -c "import robomme_xhard;print(robomme_xhard.__file__)"
+UV_CACHE_DIR=/home/hongzefu/.cache/uv UV_PROJECT_ENVIRONMENT=&lt;主检出&gt;/.venv PYTHONPATH=&lt;F1工作树&gt;/src timeout 280s uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py -m 'not gpu' -q
+UV_CACHE_DIR=/home/hongzefu/.cache/uv UV_PROJECT_ENVIRONMENT=&lt;主检出&gt;/.venv PYTHONPATH=&lt;F1工作树&gt;/src uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py src/robomme_xhard/tests/test_fatal_catch.py -m gpu --collect-only -q
+# 必须19项；git diff --name-only BASE..TIP 恰一个文件、一个函数，不改 seed/计算/断言/其他用例
+# R1 审固定 BASE/TIP 与 c6d4780e 对照，BUTTON_ASSERTIONS_UNCHANGED、PRE_MERGE_REVIEW 通过后：
+git merge --no-ff $TIP -F &lt;主会话合并消息&gt;       # 2.102.3，保留全部 sub/V3-C 提交
+UV_CACHE_DIR=/home/hongzefu/.cache/uv timeout 280s uv run --no-sync python -m pytest tests/lightweight/ src/robomme_xhard/tests -m 'not gpu and not slow' -q -rf
+# FAILED 节点集合仍恰原四项，不以pytest退出1忽略新增失败
+git diff --quiet 5419e932 HEAD -- src/robomme/
+git diff --quiet c6d4780e HEAD -- src/robomme_xhard/swap_plan.py src/robomme_xhard/envs src/robomme_xhard/base.py src/robomme_xhard/configs.py src/robomme_xhard/collision src/robomme_xhard/tools scripts/data-generation-newSeed/generate_dataset_newseed.py pyproject.toml uv.lock
+sha256sum src/robomme_xhard/collision/bin_collision.py src/robomme_xhard/collision/swap_uniform.py
+# POST_MERGE_REVIEW 通过后立即：
 git push
-git worktree remove &lt;W1 路径&gt;; git branch -d &lt;W1 分支&gt;</code></pre>
-<h3>阶段 B：GPU 契约</h3>
-<pre><code># ① 写进运行器 artifacts/xhard/xhard-1012-swapv3/run_gpu.sh 的内容（形状照抄 v2 的 run_d1b.sh：校验 HEAD 等于参数、工作区干净、日志与证据目录不存在，任一不满足立即退出；pipefail、tee、EXIT_CODE）。
-#    运行器内先后两条 pytest，不在前台手动执行：
-#    (a) 契约 19 项：
-#        CUDA_VISIBLE_DEVICES=0 UV_CACHE_DIR=/home/hongzefu/.cache/uv PYTHONUNBUFFERED=1 XHARD_TIMING_EVIDENCE_ROOT=&lt;仓库&gt;/artifacts/xhard/xhard-1012-swapv3/gpu-contract timeout 3600s uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py src/robomme_xhard/tests/test_fatal_catch.py -m gpu -q -rf -rP -x
-#    (b) 受 K13 影响的两个 S2 节点（test_s2_configs.py 改了 MOTHER_RANK0_SEEDS，必须实测）：
-#        CUDA_VISIBLE_DEVICES=0 … timeout 900s uv run --no-sync python -m pytest "src/robomme_xhard/tests/test_s2_configs.py::test_gym_make_reset_contract[VideoRepick-xhard12]" "src/robomme_xhard/tests/test_s2_configs.py::test_gym_make_reset_contract[VideoRepick-xhard20]" -q -rf
-# ② 唯一的启动命令（只执行这一条）：
-tmux new-session -d -s xh-swapv3-gpu-1012 "bash /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/run_gpu.sh $(git rev-parse HEAD)"
-# Monitor：tail -n +1 -F artifacts/logs/xh-swapv3-gpu-1012.log | stdbuf -oL tr '\r' '\n' | grep --line-buffered -E "passed|failed|EXIT_CODE=|Traceback|BrokenProcessPool|out of memory|svulkan2"
-# 判定：XHARD_GPU_CONTRACT=PASS cases=19 failed=0 skipped=0（(a) 的 pytest 末行：收集数必须恰为 19，否则 FAIL；v2 的 18 项实测 262.99 秒）
-#       S2_GPU_VIDEOREPICK=PASS cases=2 failed=0（(b) 的末行）</code></pre>
+# Codex 托管工作树用 archive_worktree，待实际归档完成，核对只少 F1，再 git branch -d 精确分支</code></pre>
+<h3>阶段 B0 与 B：首次建场单用例 → 十九项 → S2 两节点</h3>
+<p>旧 <code>run_gpu.sh</code>、<code>xh-swapv3-gpu-1012.log</code>、<code>gpu-contract/</code> 与失败档案原样保留，不删、不覆盖、不复用；新运行器和以下命令都只能在本版获重新开工令后创建或执行。一个运行器按顺序执行三条 pytest，各自记退出码，任何失败立即退出，不执行下一条；记录总 <code>EXIT_CODE</code>。最大预算分别 280／3600／900 秒，总上限 4780 秒，非自动重试预算。</p>
+<pre><code># 新运行器：artifacts/xhard/xhard-1012-swapv3/run_gpu_firstbuild.sh
+# 前置：HEAD 等于传入sha、工作区干净、GPU0未被占满、以下新日志/证据根与tmux均不存在
+# 旧文件不动；pipefail、PYTHONUNBUFFERED=1、tee、EXIT_CODE；每阶段失败即退出
+export CUDA_VISIBLE_DEVICES=0 UV_CACHE_DIR=/home/hongzefu/.cache/uv PYTHONUNBUFFERED=1
+export XHARD_TIMING_EVIDENCE_ROOT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/gpu-contract-firstbuild
+# (0) 最小GPU节点，原三按钮数值断言；成功才扩大
+timeout 280s uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py::test_button_pose_loadtime_matches_initialized_geometry -m gpu -q -rf -rP -x
+# (a) 从头十九项；用例数量不变，不从中抽掉原失败项
+timeout 3600s uv run --no-sync python -m pytest src/robomme_xhard/tests/test_swap_collision_gpu.py src/robomme_xhard/tests/test_fatal_catch.py -m gpu -q -rf -rP -x
+# (b) 之前未执行的两个S2节点
+timeout 900s uv run --no-sync python -m pytest "src/robomme_xhard/tests/test_s2_configs.py::test_gym_make_reset_contract[VideoRepick-xhard12]" "src/robomme_xhard/tests/test_s2_configs.py::test_gym_make_reset_contract[VideoRepick-xhard20]" -q -rf
+# 上述仅运行器内部命令；唯一启动命令：
+tmux new-session -d -s xh-swapv3-gpu-firstbuild-1012 "bash /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/xhard/xhard-1012-swapv3/run_gpu_firstbuild.sh &lt;修补整合后的实际完整HEAD&gt;"
+# 日志 artifacts/logs/xh-swapv3-gpu-firstbuild-1012.log，写 SOURCE_HEAD 且起跑即交回主会话
+# 持久监听，各级行缓冲，检查phase/失败/EXIT_CODE；不新增高频GPU采样
+# 最小节点：pytest 1 passed/0 failed/0 skipped、BUTTON_POSE_LOADTIME=PASS buttons=3
+# BUTTON_FIRST_BUILD=PASS cases=1 buttons=3 failed=0 skipped=0
+# 十九项：XHARD_GPU_CONTRACT=PASS cases=19 failed=0 skipped=0，少收集或少执行均FAIL
+# S2：S2_GPU_VIDEOREPICK=PASS cases=2 failed=0
+# 末尾 V2_ROOT_UNTOUCHED=PASS files=719 newer=0；失败按第五节，不自动再跑</code></pre>
 <h3>阶段 C：最小 smoke 4 卡</h3>
 <pre><code># 清单 artifacts/xhard/xhard-1012-swapv3/smoke_seeds.json（格式同 v2 smoke_seeds.json：version=1, mode="smoke", tasks 内条目照抄 mother_seeds_all.json；核实代理已用 jobs.load_manifest 试加载同格式清单，必需字段为 episode/seed/source_difficulty/rank）
 # VideoUnmaskSwap: ep7/5700（G=4，预期保留）、ep15/6500（G=2，预期剔除）
@@ -830,7 +879,8 @@ uv run --no-sync python -m robomme_xhard.tools.swap_v2_report --v1 artifacts/xha
 <tr><td>全量数字与 K6 预期不同（例如某保留 seed 新出现运行期失败）</td><td>不能把 v3 全量当作 v2 + 闸门</td><td>停止包装之外的后续步骤，逐卡列出偏离与证据交用户；不重试</td></tr>
 <tr><td><code>swap_v2_report.py</code> 的 <code>expected_reject_kinds</code> 依赖旧轮成功卡的 <code>graph.adj</code>；若旧轮是 v1 格式（无 <code>graph</code>）会算不出</td><td>工具对 v1 根失效</td><td>v1 格式时该值记 <code>None</code>、判定行写 <code>expected_reject_kinds=NA</code> 并 FAIL；本计划只用 v2 根，不受影响</td></tr>
 <tr><td>GPU 测试原用 VideoRepick 13600，实测 G 只有 2 条边（已解决，K13）</td><td>若不换，契约 <code>-x</code> 在第一个 VideoRepick 用例即停，<code>test_fatal_catch</code>、<code>test_gym_make_reset_contract</code> 也会在 reset 抛错</td><td>K13 换成 9600（用户澄清测试 seed 可换）；证据 <code>records/graph_scan_13600.json</code>（v2 代码 <code>5419e932</code>、reset-only、xhard20 布局）；9600 的 G=3 来自 v2 全量</td></tr>
-<tr><td>GPU 用例总数：v2 留档记 D1b 收集 18 项（核实代理 collect-only 复核为 18），新增 1 项应为 19；若 pytest 收集数不是 19</td><td>新用例漏打 <code>@pytest.mark.gpu</code> 时会只跑 18 项「全通过」</td><td>19 是<strong>硬门槛</strong>：W1 在 worktree 用 <code>--collect-only</code> 先核到 19；阶段 B 收集数 ≠ 19、或任何 skipped ≠ 0，一律记 <code>XHARD_GPU_CONTRACT=FAIL</code> 并解释原因，不按实际数改判定行</td></tr>
+<tr><td>同 seed 强制第二次建场不等于首次场景（本次实际失败）</td><td>9600 第一次 G=3 不保证私有随机流推进后的第二次仍 G=3；按钮断言可能还未执行就被拒绝</td><td>K17 仅核对首次建场；不强制再建、不恢复私有 RNG；最小节点与全部十九项实测后才进入 smoke。强制重建行为不在本修补证明范围</td></tr>
+<tr><td>GPU 用例总数：v2 为18项，2.102新增后实测19项，本次用例数不变</td><td>修补不得因移除或跳过失败项而假通过</td><td>19 是<strong>硬门槛</strong>：F1 在 worktree 用 <code>--collect-only</code> 再核到19；阶段 B 收集或执行数 ≠19、或 skipped ≠0，一律 FAIL，不按实际数改判定行</td></tr>
 <tr><td>核心短测在 W1 合并前的基线快照：核实代理实测 <code>4 failed, 440 passed, 2 skipped</code>，FAILED 节点与 v2 基线 4 个逐个相同（基线日志的 281 passed 只含 <code>tests/lightweight/</code>）</td><td>比较口径错会误判</td><td><code>CORE_SHORT</code> 只按 FAILED 节点集合比较，不比 passed 数</td></tr>
 </table>
 
@@ -838,18 +888,18 @@ uv run --no-sync python -m robomme_xhard.tools.swap_v2_report --v1 artifacts/xha
 <ul>
 <li>「三种 swap」在几何上等于三条可行边，但没有证据说明 3 是训练效果上的最优阈值；本计划只落实用户选定的口径与常量。</li>
 <li>v3 对 VideoRepick 只剩 5 个过闸门的母 seed，其中 4 个五档成功（20 张成功卡）、12800 五档运行期失败；是否补 seed 是另一个决定，本计划按 P2、P5、P8 不补。</li>
-<li>GPU 契约只证明本次在 5700／7700／9600 上跨档一致，不证明 13600 的历史扫描可复现；13600 没有第二次扫描。</li>
+<li>旧十九项契约未整体通过；其17个通过不能替代完整闸门。新验证仅覆盖首次场景与所列测试，不证明强制二次建场、不证明13600历史扫描可复现。</li>
 <li>口径甲保留的 seed 里，低档（xhard12）实际只用 2 种槽对的情况仍存在（第二节第四列）；口径乙未选，本计划不处理。</li>
 <li>跨轮复现（3.2 的 ⚠）未在写计划时验证，由 smoke 先证；1e-9 m 的浮点容差是用户裁决的口径，不是实测得出的数值。</li>
 <li>六列视频对 21 个保留 seed 预期与 v2 逐帧相同，但本计划不做视频逐帧比对，只核验 <code>EPISODE_STRIP_VIDEO</code> 判定行。</li>
 <li>13600 的扫 G 是用 v2 代码在 xhard20 布局上做的单次 reset；同形等高前提下 G 与档位无关，但这次扫描本身没有重复第二次，逐位复现性由阶段 B 的契约用例（9600）与 smoke 再证。</li>
-<li>9600 替换 13600 后，<code>test_button_pose_loadtime_matches_initialized_geometry</code> 对 VideoRepick 按钮位姿的 <code>max_dp_m</code>／<code>max_angle_rad</code> 是在新 seed 上首次实测，阈值不放宽。</li>
+<li>旧失败中 VideoRepick 按钮数值断言没有执行，尚不能给出其 <code>max_dp_m</code>／<code>max_angle_rad</code>；K17 首次场景对照仍待实测，阈值不放宽。第二次随机建场及 RNG 状态恢复均未验证，不包含在本次覆盖内。</li>
 </ul>
 
 <h2 id="t7">七、留档与 commit 纪律</h2>
 <ul>
-<li>本计划提交 2.101（含本 HTML、<code>AGENTS.md</code> P8 与 13600 扫 G 证据），修订至 2.101.6；本次修订含开工一致性审查、根因对抗核查留档与用户失败视频新裁决，尚未实施。W1 的两个 <code>sub/V3-A</code>、<code>sub/V3-B</code> 原样保留，<code>--no-ff</code> 合并为 2.102，body 摘录 W1 报告、<code>PRE_MERGE_REVIEW</code> 行、改动文件清单。</li>
-<li>留档目录 <code>docs/xhard-doc/xhard-1012-swapv3/</code>：<code>launch.md</code>（阶段 0–C）、<code>full-launch.md</code>、<code>full-result.md</code>、<code>records/</code>（本计划提交时已含 13600 扫 G 的输入清单 <code>scan13600.json</code> 与结果 <code>graph_scan_13600.json</code>；之后放 GPU 契约清洗日志、smoke 与全量的 <code>*.summary.log</code>、<code>v2_vs_v3.json</code> 副本、判定行原文、用户对全量的决定原话）。<code>docs/xhard-doc/README.md</code> 总索引加一行。零 <code>.sh</code>／零 <code>.yaml</code>；运行器只在 <code>artifacts/</code>。</li>
+<li>初版 2.101 至 2.101.6 属历史规划；七文件、三子提交已在 2.102 整合，2.102.1 记 GPU FAIL。本次 2.102.2 只修完整计划；用户批准后 F1 单文件修补以 <code>sub/V3-C:</code> 提交，主会话审查并 <code>--no-ff</code> 合为 2.102.3，验证结果 2.102.4 回写。旧失败判定与证据保留，新验证不覆盖旧结论。</li>
+<li>留档目录 <code>docs/xhard-doc/xhard-1012-swapv3/</code>：<code>launch.md</code>（阶段 0–C）、<code>full-launch.md</code>、<code>full-result.md</code>、<code>records/</code>（本计划提交时已含 13600 扫 G 的输入清单 <code>scan13600.json</code> 与结果 <code>graph_scan_13600.json</code>；之后新增首次建场最小节点及新 GPU 契约清洗日志（单独新文件，不覆盖旧GPU日志），smoke 与全量的 <code>*.summary.log</code>、<code>v2_vs_v3.json</code> 副本、判定行原文、用户对全量的决定原话）。<code>docs/xhard-doc/README.md</code> 总索引加一行。零 <code>.sh</code>／零 <code>.yaml</code>；运行器只在 <code>artifacts/</code>。</li>
 <li>全量起跑前 2.103Beta，回写 2.103，两个独立提交；生成到包装结束期间冻结 HEAD。</li>
 <li>日志清洗：<code>tr '\r' '\n' &lt; 原日志 | grep -vE '%\|' &gt; records/&lt;名&gt;.summary.log</code>，核对 <code>EXIT_CODE=</code> 行数。</li>
 <li>每次 commit 后立即 push；合并后审查 FAIL 时合并提交以 <code>ahead</code> 留本地并交用户。</li>
