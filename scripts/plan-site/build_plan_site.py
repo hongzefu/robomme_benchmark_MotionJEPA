@@ -148,6 +148,10 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
             raise ValueError(f"环境页资源引用数量不符：{old_reference}")
         pages["envs.html"] = pages["envs.html"].replace(old_reference, f'{attribute}="{assets[suffix][0]}"')
     heads = {name: head for name in pages}
+    # 各页浏览器标题用各自页名，不再沿用根计划标题（swap、envs 保留下方既有写法）。
+    for name, label in nav_items:
+        if name in heads and name not in ("swap.html", "envs.html"):
+            heads[name] = re.sub(r"<title>.*?</title>", f"<title>{label} — RoboMME xhard</title>", head, flags=re.S)
     heads["swap.html"] = re.sub(r"<title>.*?</title>", "<title>六、交换机制调整 — RoboMME xhard</title>", head, flags=re.S)
     heads["envs.html"] = re.sub(r"<title>.*?</title>", "<title>环境梯度与实测视频 — RoboMME xhard</title>", head, flags=re.S)
     # 原计划的锚点与说明页不同，统一落在新页首页，避免保留失效锚点。
@@ -164,6 +168,9 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
     pages["goals.html"] = pages["goals.html"].replace(
         '<h2 id="p1-goals">五、现行总目标与子目标对照</h2>',
         '<h2 id="p1-goals">三、现行总目标与子目标对照</h2>')
+    pages["review.html"] = pages["review.html"].replace(
+        '<h2 id="p1-review">逐环境审查：物体、结构扩展与参数越界</h2>',
+        '<h2 id="p1-review"><span class="rev1013">四、</span>逐环境审查：物体、结构扩展与参数越界</h2>')
     # 新正文的两份运行档案固定到审查基线；实施页保留其既有链接规则。
     for rel in ("docs/xhard-doc/xhard-1011/result.md",
                 "docs/xhard-doc/xhard-1012-swapv2-smoke/result.md"):
