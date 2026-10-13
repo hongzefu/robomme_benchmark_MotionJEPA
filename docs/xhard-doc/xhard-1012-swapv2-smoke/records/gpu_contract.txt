@@ -1,0 +1,175 @@
+SOURCE_HEAD=6c7254cc4d9464cf022fe1045f66f67c2002e106
+2026-10-12T21:04:32-04:00
+.F
+=================================== FAILURES ===================================
+_ test_reset_certifies_all_pairs[ButtonUnmaskSwap-ButtonUnmaskSwapXHard-7700-spawned_bins-bin_] _
+
+articulation = <button_left: struct of type <class 'mani_skill.utils.structs.articulation.Articulation'>; managing 1 <class 'sapien.pysapien.physx.PhysxArticulation'> objects>
+name = 'bystander_0'
+
+    def button_envelope_state(articulation, name):
+        """真实底座与圆柱的世界包络，恢复未按下顶面而不写死尺寸。"""
+        try:
+            links = {link.get_name(): link for link in articulation.get_links()}
+            if set(links) != {"button_base", "button_cap"}:
+                raise ValueError("按钮连杆集合不符")
+            components = [links[key]._objs for key in ("button_base", "button_cap")]
+            if any(len(items) != 1 for items in components):
+                raise ValueError("按钮必须是单场景关节体")
+            base_component, cap_component = (items[0] for items in components)
+            bases, caps = base_component.get_collision_shapes(), cap_component.get_collision_shapes()
+            if len(bases) != 1 or len(caps) != 1:
+                raise ValueError("按钮必须各有一个底座盒体和按帽圆柱")
+            base, cap = bases[0], caps[0]
+            if type(base).__name__ != "PhysxCollisionShapeBox" or type(cap).__name__ != "PhysxCollisionShapeCylinder":
+                raise ValueError("按钮碰撞形状类型不符")
+            base_pose = base_component.entity.pose * base.local_pose
+            cap_pose = cap_component.entity.pose * cap.local_pose
+            bp, cp = bc._to_numpy(base_pose.p), bc._to_numpy(cap_pose.p)
+            br, cr = bc.quat_to_matrix(base_pose.q), bc.quat_to_matrix(cap_pose.q)
+            half = bc._to_numpy(base.half_size)
+            axis = cr[:, 0]
+            if not np.allclose(np.abs(axis), [0, 0, 1], atol=1e-6):
+                raise ValueError("按帽圆柱轴不是竖直方向")
+            radius, length = float(cap.radius), float(cap.half_length)
+            qpos = bc._to_numpy(articulation.get_qpos())
+            if qpos.size != 1 or not np.all(np.isfinite(qpos)) or qpos[0] > 1e-7:
+                raise ValueError("按钮关节必须只有非正的竖直按压位移")
+            # 官方按钮棱柱关节的正向为世界 +z，运行期 qpos 为负；补回按压位移。
+            cp = cp.copy()
+            cp[2] -= float(qpos[0])
+            be = np.abs(br) @ half
+            ce = np.abs(axis) * length + radius * np.sqrt(np.maximum(0, 1 - axis * axis))
+            blo, bhi, clo, chi = bp - be, bp + be, cp - ce, cp + ce
+            if (not np.all(np.isfinite(np.r_[blo, bhi, clo, chi])) or
+                    np.any(half <= 0) or radius <= 0 or length <= 0):
+                raise ValueError("按钮几何不是有限正尺寸")
+            if not (np.all(clo[:2] >= blo[:2] - 1e-8) and np.all(chi[:2] <= bhi[:2] + 1e-8)):
+>               raise ValueError("按帽水平投影超出底座")
+E               ValueError: 按帽水平投影超出底座
+
+src/robomme_xhard/swap_plan.py:100: ValueError
+
+The above exception was the direct cause of the following exception:
+
+task = 'ButtonUnmaskSwap'
+cls = <class 'robomme_xhard.envs.button_unmask_swap.ButtonUnmaskSwapXHard'>
+seed = 7700, attr = 'spawned_bins', prefix = 'bin_'
+
+    @pytest.mark.gpu
+    @pytest.mark.parametrize("task,cls,seed,attr,prefix", CASES)
+    def test_reset_certifies_all_pairs(task, cls, seed, attr, prefix):
+>       env = _make(task, seed)
+              ^^^^^^^^^^^^^^^^^
+
+src/robomme_xhard/tests/test_swap_collision_gpu.py:71:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/robomme_xhard/tests/test_swap_collision_gpu.py:61: in _make
+    return gym.make(
+.venv/lib/python3.11/site-packages/gymnasium/envs/registration.py:802: in make
+    env = env_creator(**env_spec_kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py:182: in make
+    env = env_spec.make(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py:79: in make
+    return self.cls(**_kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+src/robomme_xhard/envs/button_unmask_swap.py:140: in __init__
+    super().__init__(*args, **kwargs)
+src/robomme_xhard/base.py:58: in __init__
+    super().__init__(*args, difficulty=self.source_difficulty, **kwargs)
+src/robomme/robomme_env/ButtonUnmaskSwap.py:150: in __init__
+    super().__init__(*args, robot_uids=robot_uids, **kwargs)
+.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py:327: in __init__
+    obs, _ = self.reset(seed=[2022 + i for i in range(self.num_envs)], options=dict(reconfigure=True))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py:909: in reset
+    self._reconfigure(options)
+.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py:743: in _reconfigure
+    self._load_scene(options)
+src/robomme_xhard/envs/button_unmask_swap.py:148: in _load_scene
+    certify_swap_plan(self, self._swap_actors(), self._bystander_actors(), self.swap_name_prefix)
+src/robomme_xhard/swap_plan.py:226: in certify_swap_plan
+    others = bystander_states_of(bystanders)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/robomme_xhard/swap_plan.py:114: in bystander_states_of
+    return [button_envelope_state(actor, f"bystander_{i}") if hasattr(actor, "get_links")
+src/robomme_xhard/swap_plan.py:114: in <listcomp>
+    return [button_envelope_state(actor, f"bystander_{i}") if hasattr(actor, "get_links")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+articulation = <button_left: struct of type <class 'mani_skill.utils.structs.articulation.Articulation'>; managing 1 <class 'sapien.pysapien.physx.PhysxArticulation'> objects>
+name = 'bystander_0'
+
+    def button_envelope_state(articulation, name):
+        """真实底座与圆柱的世界包络，恢复未按下顶面而不写死尺寸。"""
+        try:
+            links = {link.get_name(): link for link in articulation.get_links()}
+            if set(links) != {"button_base", "button_cap"}:
+                raise ValueError("按钮连杆集合不符")
+            components = [links[key]._objs for key in ("button_base", "button_cap")]
+            if any(len(items) != 1 for items in components):
+                raise ValueError("按钮必须是单场景关节体")
+            base_component, cap_component = (items[0] for items in components)
+            bases, caps = base_component.get_collision_shapes(), cap_component.get_collision_shapes()
+            if len(bases) != 1 or len(caps) != 1:
+                raise ValueError("按钮必须各有一个底座盒体和按帽圆柱")
+            base, cap = bases[0], caps[0]
+            if type(base).__name__ != "PhysxCollisionShapeBox" or type(cap).__name__ != "PhysxCollisionShapeCylinder":
+                raise ValueError("按钮碰撞形状类型不符")
+            base_pose = base_component.entity.pose * base.local_pose
+            cap_pose = cap_component.entity.pose * cap.local_pose
+            bp, cp = bc._to_numpy(base_pose.p), bc._to_numpy(cap_pose.p)
+            br, cr = bc.quat_to_matrix(base_pose.q), bc.quat_to_matrix(cap_pose.q)
+            half = bc._to_numpy(base.half_size)
+            axis = cr[:, 0]
+            if not np.allclose(np.abs(axis), [0, 0, 1], atol=1e-6):
+                raise ValueError("按帽圆柱轴不是竖直方向")
+            radius, length = float(cap.radius), float(cap.half_length)
+            qpos = bc._to_numpy(articulation.get_qpos())
+            if qpos.size != 1 or not np.all(np.isfinite(qpos)) or qpos[0] > 1e-7:
+                raise ValueError("按钮关节必须只有非正的竖直按压位移")
+            # 官方按钮棱柱关节的正向为世界 +z，运行期 qpos 为负；补回按压位移。
+            cp = cp.copy()
+            cp[2] -= float(qpos[0])
+            be = np.abs(br) @ half
+            ce = np.abs(axis) * length + radius * np.sqrt(np.maximum(0, 1 - axis * axis))
+            blo, bhi, clo, chi = bp - be, bp + be, cp - ce, cp + ce
+            if (not np.all(np.isfinite(np.r_[blo, bhi, clo, chi])) or
+                    np.any(half <= 0) or radius <= 0 or length <= 0):
+                raise ValueError("按钮几何不是有限正尺寸")
+            if not (np.all(clo[:2] >= blo[:2] - 1e-8) and np.all(chi[:2] <= bhi[:2] + 1e-8)):
+                raise ValueError("按帽水平投影超出底座")
+            if abs(float(blo[2])) > 1e-7:
+                raise ValueError("按钮底面没有位于桌面")
+            low, high = np.minimum(blo, clo), np.maximum(bhi, chi)
+            low[2] = blo[2]
+            identity = np.array([1., 0, 0, 0])
+            return bc.ObjectState(name, (low + high) / 2, identity,
+                                  (bc.ShapeSpec(np.zeros(3), identity, (high - low) / 2),))
+        except Exception as exc:
+>           raise SceneGenerationError(f"按钮包络读取失败 {name}：{type(exc).__name__}: {exc}") from exc
+E           robomme.robomme_env.utils.SceneGenerationError.SceneGenerationError: 按钮包络读取失败 bystander_0：ValueError: 按帽水平投影超出底座
+
+src/robomme_xhard/swap_plan.py:109: SceneGenerationError
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+src/robomme_xhard/tests/test_swap_collision_gpu.py: 12 warnings
+  /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/mani_skill/utils/geometry/trimesh_utils.py:113: DeprecationWarning: component.pose can be ambiguous thus deprecated. It is equivalent to component.entity_pose, which should be used instead
+    T = component.pose.to_transformation_matrix()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED src/robomme_xhard/tests/test_swap_collision_gpu.py::test_reset_certifies_all_pairs[ButtonUnmaskSwap-ButtonUnmaskSwapXHard-7700-spawned_bins-bin_]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 1 passed, 3 deselected, 14 warnings in 8.39s
+EXIT_CODE=1
