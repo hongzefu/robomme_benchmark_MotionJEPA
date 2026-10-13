@@ -1,0 +1,57 @@
+{
+  "source_commit": "dad0447160d939700d1cddfedc8b7a87d0f5e885",
+  "task": "ButtonUnmaskSwap",
+  "seed": 7700,
+  "difficulty": "xhard12",
+  "attempts": 1,
+  "pytest_seconds": 3.84,
+  "pytest_exit_code": 1,
+  "observed_values_m": {
+    "bp": [
+      -0.20180713,
+      -0.08491591,
+      0.0075
+    ],
+    "cp": [
+      0.0,
+      0.0,
+      0.009
+    ],
+    "blo": [
+      -0.23930713,
+      -0.12241591,
+      0.0
+    ],
+    "bhi": [
+      -0.16430712,
+      -0.0474159,
+      0.015
+    ],
+    "clo": [
+      -0.0225000021,
+      -0.0225000009,
+      -1.20922966e-09
+    ],
+    "chi": [
+      0.0225,
+      0.0225,
+      0.018
+    ],
+    "half": [
+      0.0375,
+      0.0375,
+      0.0075
+    ],
+    "qpos": [
+      0.0
+    ]
+  },
+  "read_center_delta_m": [
+    0.20180713,
+    0.08491591,
+    0.0014999999999999996
+  ],
+  "read_xy_delta_mm": 218.94480923274935,
+  "code_modified": false,
+  "rollout": false
+}

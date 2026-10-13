@@ -41,3 +41,28 @@
 ## 旧结果完整性复核完成
 
 `OLD_RUN_INTACT=PASS files=426 mismatches=0`，全量 SHA256 复核退出零；文件数仍为四百二十六。另逐条对照字节数清单并检查目录与文件权限，`OLD_RUN_SIZE_MODE=PASS files=426 size_mismatches=0 writable=0`。完整复核日志归档到 `records/old_run_integrity.txt`。旧证据尤其六列视频没有覆盖、删除或新增文件。
+
+## 用户授权的一次数值诊断
+
+用户对限定问题选择原话：「允许这一次数值诊断（推荐）」。该授权只覆盖 GPU0、同一 ButtonUnmaskSwap 7700、五分钟内、无 rollout 的 `--showlocals` 诊断，不覆盖代码修补或继续批次。本轮未追加独立审查。
+
+实际启动提交为 `dad0447160d939700d1cddfedc8b7a87d0f5e885`（2.96.2），工作区干净。GPU0 起跑前 1286 MiB / 46068 MiB、利用率 12%，符合环境 B 且未被占满。完整命令如下，外围使用 pipefail、tee 和 `EXIT_CODE=`；外层 280 秒上限：
+
+```bash
+CUDA_VISIBLE_DEVICES=0 UV_CACHE_DIR=/home/hongzefu/.cache/uv PYTHONUNBUFFERED=1 timeout 280s uv run --no-sync python -m pytest 'src/robomme_xhard/tests/test_swap_collision_gpu.py::test_reset_certifies_all_pairs[ButtonUnmaskSwap-ButtonUnmaskSwapXHard-7700-spawned_bins-bin_]' -m gpu -q -rf -x --showlocals
+```
+
+仅执行一次，复现同一错误，pytest 为 `1 failed, 8 warnings in 3.84s`、`EXIT_CODE=1`。这是完成数值采集，不是修复通过：`BUTTON_DIAGNOSTIC=DONE attempts=1 reproduced=1 seconds=3.84 pytest_exit=1 read_xy_delta_mm=218.944809`。原日志 `artifacts/logs/xh-swapv2-button-diagnostic-1012.log`，完整记录 `records/button_diagnostic.txt`，结构化提取 `records/button_diagnostic_values.json`。
+
+| 读取量 | 实测值，米 |
+|---|---|
+| 底座盒体中心 `bp` | `[-0.20180713, -0.08491591, 0.0075]` |
+| 按帽圆柱中心 `cp` | `[0, 0, 0.009]` |
+| 底座水平边界 | x 为 `[-0.23930713, -0.16430712]`，y 为 `[-0.12241591, -0.04741590]` |
+| 按帽水平边界 | x、y 约为 `[-0.0225, 0.0225]` |
+| 关节位移 `qpos` | `[0]` |
+| 底座半尺寸、按帽半径／半长 | `[0.0375, 0.0375, 0.0075]`；`0.02250000089406967`／`0.008999999612569809` |
+
+数值确认：生产建场读取时，底座已位于真实世界位置，按帽读数仍在原点附近，没有包含底座的世界平移。两组读数的水平中心差为 218.944809 mm；这是不一致的坐标读取，不能解释为实物真的偏离了约二十二厘米，也不能通过放宽 `1e-8` 包含性检查解决。结合前述 `_load_scene` 早于 `scene._setup`、构造器仅显式赋根位姿的代码事实，问题已定位到建场期子连杆位姿尚未完成同步的读取路径。
+
+下一步候选是在 `swap_plan.py::button_envelope_state` 内，用已就绪的根世界位姿及真实关节父子变换、真实碰撞形状构造未按下包络，保持认证钩子、统一转换入口、几何保证与阈值不变；此修法没有实施或验证。若必须改变认证钩子或时序，仍按重大口径变化交用户。本轮授权到此完成，保持停工，不修代码、不重跑 GPU 契约、不启动 smoke 或全量。`DIAGNOSTIC_CODE_UNCHANGED=PASS`，运行前后源码、测试、生成器与依赖没有改动。
