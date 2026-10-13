@@ -27,7 +27,7 @@ def test_fatal_catch_three_tasks(new_gen, monkeypatch, capsys):
     root.mkdir(parents=True)
     for task in ("VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoRepick"):
         seed = MOTHER_RANK0_SEEDS[task]
-        episode = 46 if task == "VideoRepick" else 7
+        episode = 6 if task == "VideoRepick" else 7
         job = new_gen.EpisodeJob(task, episode, 0, seed, "xhard20", str(root / task),
                                 str(new_gen.REPO_ROOT), "xhard", task + "XHard",
                                 "medium" if task == "VideoRepick" else "hard")

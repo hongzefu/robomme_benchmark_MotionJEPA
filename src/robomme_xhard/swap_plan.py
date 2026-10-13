@@ -14,6 +14,7 @@ SWAP_PLAN_SEED_OFFSET = 0x53574150
 PLAN_SCORE = "max_sum"
 PLAN_BUDGET = 20
 PLAN_ACCEPT_RANGE = 1
+MIN_SWAP_PAIR_KINDS = 3
 
 
 @dataclass
@@ -188,6 +189,24 @@ def require_every_slot_covered(adj, gaps):
         raise SwapCollisionError(rejection, "graph")
 
 
+def require_min_pair_kinds(adj, gaps, minimum=MIN_SWAP_PAIR_KINDS):
+    """口径甲：可行无序槽对少于 minimum 种即整卡剔除；只读 adj，不碰随机流。"""
+    edges = su.graph_edges(adj)
+    if len(edges) >= int(minimum):
+        return
+    rejections = getattr(gaps, "rejections", {})
+    reasons = {item["reason"] for item in rejections.values()}
+    reason = ("uncertified" if "uncertified" in reasons else
+              "numerical_boundary" if "numerical_boundary" in reasons else "contact")
+    evidence = dict(gate="min_pair_kinds", feasible_edges=[list(e) for e in edges],
+                    required=int(minimum), gaps=dict(gaps), rejected_edges=rejections)
+    rejection = bc.CollisionRejection(
+        reason=reason, stage="graph", object_a="slots", object_b="slots",
+        shape_a=-1, shape_b=-1,
+        detail=f"可行槽对不足={len(edges)}/{int(minimum)}; 原始边证据=" + json.dumps(evidence, ensure_ascii=False))
+    raise SwapCollisionError(rejection, "graph")
+
+
 def plan_swaps(states, bystanders, swap_times, generator, s_max=None):
     """最长档只规划一次，取当前前缀后逐段按真实占用者再证。"""
     states = list(states.values()) if isinstance(states, dict) else list(states)
@@ -197,6 +216,7 @@ def plan_swaps(states, bystanders, swap_times, generator, s_max=None):
         raise SwapCollisionError(rejection, "initial")
     adj, gaps = slot_graph(states, bystanders)
     require_every_slot_covered(adj, gaps)
+    require_min_pair_kinds(adj, gaps)
     s_max = int(swap_times if s_max is None else s_max)
     if not 0 <= int(swap_times) <= s_max:
         raise SceneGenerationError("当前交换段数超出最长档")
@@ -221,7 +241,8 @@ def plan_swaps(states, bystanders, swap_times, generator, s_max=None):
         cur[a] = bc.ObjectState(old_a.name, np.r_[old_b.p[:2], old_a.p[2]], old_b.q.copy(), old_a.shapes)
         cur[b] = bc.ObjectState(old_b.name, np.r_[old_a.p[:2], old_b.p[2]], old_a.q.copy(), old_b.shapes)
     return SwapPlan(pairs, usage, initial_gap, initiated, partnered,
-                    full.slot_pairs[:int(swap_times)], {"adj": adj, "gaps": dict(gaps)},
+                    full.slot_pairs[:int(swap_times)],
+                    {"adj": adj, "gaps": dict(gaps), "feasible_edges": [list(e) for e in su.graph_edges(adj)]},
                     s_max, full.spread, max(usage)-min(usage), full.tries,
                     [s.p[:2].tolist() for s in states])
 

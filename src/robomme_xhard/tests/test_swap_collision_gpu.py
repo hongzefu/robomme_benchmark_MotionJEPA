@@ -30,7 +30,7 @@ from robomme_xhard import swap_plan as sp
 CASES = [
     ("VideoUnmaskSwap", VideoUnmaskSwapXHard, 5700, "spawned_bins", "bin_"),
     ("ButtonUnmaskSwap", ButtonUnmaskSwapXHard, 7700, "spawned_bins", "bin_"),
-    ("VideoRepick", VideoRepickXHard, 13600, "spawned_cubes", "cube_"),
+    ("VideoRepick", VideoRepickXHard, 9600, "spawned_cubes", "cube_"),
 ]
 TIERS = ("xhard12", "xhard14", "xhard16", "xhard18", "xhard20")
 
@@ -244,6 +244,23 @@ def test_isolated_slot_seed_rejected_at_graph():
 
 
 @pytest.mark.gpu
+def test_two_edge_seed_rejected_at_graph():
+    # 首次建场可能在 _make 内拒绝，条件清理不得掩盖原始 graph 证据。
+    env = None
+    try:
+        with pytest.raises(SwapCollisionError) as caught:
+            env = _make("VideoUnmaskSwap", 6500, "xhard20")
+            env.reset(seed=6500)
+        assert caught.value.stage == "graph"
+        assert caught.value.rejection.detail.startswith("可行槽对不足=2/3")
+        evidence = json.loads(caught.value.rejection.detail.split("原始边证据=", 1)[1])
+        assert len(evidence["feasible_edges"]) == 2
+    finally:
+        if env is not None:
+            env.close()
+
+
+@pytest.mark.gpu
 def test_button_pose_loadtime_matches_initialized_geometry(monkeypatch):
     """认证时捕获推导值，reset 后以真实子连杆世界位姿独立对照三个按钮。"""
     captured = {}
@@ -255,7 +272,7 @@ def test_button_pose_loadtime_matches_initialized_geometry(monkeypatch):
         return base_pose, cap_pose
     monkeypatch.setattr(sp, "button_shape_poses", capture)
     buttons, max_dp, max_angle = 0, 0., 0.
-    for task, seed, expected_count in (("ButtonUnmaskSwap", 7700, 2), ("VideoRepick", 13600, 1)):
+    for task, seed, expected_count in (("ButtonUnmaskSwap", 7700, 2), ("VideoRepick", 9600, 1)):
         env = _make(task, seed)
         try:
             captured.clear()
