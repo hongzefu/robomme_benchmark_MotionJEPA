@@ -2,6 +2,7 @@
 
 | 档案名 | 内容 | 状态 |
 |---|---|---|
+| [xhard-1012-swapv3](xhard-1012-swapv3/launch.md) | 至少三种可行槽对闸门；七文件增量、十九项 GPU 契约与四卡冒烟；全量另行报批 | 开工审查通过，实施中；尚未生成验收 |
 | [xhard-1012-swapv2](xhard-1012-swapv2/full-result.md) | 全量 180 身份、30 支六列视频、v1/v2 逐母 seed 对照；[启动档案](xhard-1012-swapv2/full-launch.md) | 已完成：160 成功、20 正常碰撞拒绝，infra=0；旧轮 426 文件完整哈希一致 |
 | [xhard-1012-swapv2-smoke](xhard-1012-swapv2-smoke/result.md) | W3 修复建场位姿读取；十八项 GPU 通过，四卡三成功、一预期 graph 拒绝 | 已通过，旧四百二十六文件完整哈希通过 |
 | [xhard-1012-collision-smoke](xhard-1012-collision-smoke/result.md) | 方案 X 时序修复已整合；CPU 381 通过、四项基线失败保留；首起点通过 | 共享端点仅四元数逐位不一致，已停止后续验证、正常冒烟与全量 |
