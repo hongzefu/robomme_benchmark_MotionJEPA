@@ -58,6 +58,24 @@ def identity_of(record, directory_level=None):
     return task, episode, seed, level
 
 
+def _geometry_rejection(rejection):
+    """数值保守拒绝是任务拒绝；仅真实几何读取阶段与聚合原始证据标为故障。"""
+    if not isinstance(rejection, dict):
+        return False
+    if rejection.get("stage") == "geometry":
+        return True
+    detail = rejection.get("detail")
+    marker = "原始边证据="
+    if isinstance(detail, str) and marker in detail:
+        try:
+            payload = json.loads(detail.split(marker, 1)[1])
+            return any(_geometry_rejection(item) for item in payload["rejected_edges"].values())
+        except (ValueError, KeyError, TypeError, AttributeError):
+            # 原始证据结构损坏不能当作正常数值拒绝放行。
+            return True
+    return False
+
+
 def classify(record):
     """独立成功字段；任务正常拒绝与读取/进程/接口故障明确分离。"""
     ok, success = record.get("ok"), record.get("task_success")
@@ -74,7 +92,7 @@ def classify(record):
         return "unknown"
     rejection = record.get("rejection") or {}
     detail = record.get("detail") or {}
-    if (rejection.get("reason") == "uncertified" or
+    if (_geometry_rejection(rejection) or
             isinstance(detail, dict) and detail.get("check") == "uncertified" or
             "按钮包络读取失败" in str(record.get("error", ""))):
         return "infra"
@@ -250,4 +268,3 @@ def main(argv=None):
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

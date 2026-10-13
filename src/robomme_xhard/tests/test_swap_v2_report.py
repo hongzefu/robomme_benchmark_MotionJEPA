@@ -76,7 +76,7 @@ def test_normal_failure_and_infra_separated(tmp_path):
                    error_type="SwapCollisionError", stage="graph",
                    rejection={"reason": "contact", "gap_m": -.01})
     rows[1].update(ok=False, task_success=False, failure_class="task",
-                   error_type="SwapCollisionError", rejection={"reason": "uncertified"})
+                   error_type="SwapCollisionError", rejection={"reason": "uncertified", "stage": "geometry"})
     rows[2].update(ok=False, task_success=False, failure_class="infra", error_type="BrokenProcessPool")
     rows[3].update(ok=True, task_success=False)
     root = tmp_path/"run"; write(root, rows)
@@ -157,3 +157,35 @@ def test_directory_only_ledger_and_mismatched_directory(tmp_path):
     audit, _ = report.reconcile(root, report.expected_identities(manifest()))
     assert audit["summary"]["unknown"] == 1
 
+
+@pytest.mark.parametrize("stage,detail", [("graph", "达到 MAX_DEPTH"),
+                                          ("sweep", "达到 MAX_INTERVALS"),
+                                          ("segment_start", "四元数退化")])
+def test_numerical_uncertified_is_normal_task_rejection(stage, detail):
+    record = dict(ok=False, task_success=False, failure_class="task",
+                  error_type="SwapCollisionError", stage=stage,
+                  rejection=dict(reason="uncertified", stage=stage, detail=detail))
+    assert report.classify(record) == "task_reject"
+
+
+@pytest.mark.parametrize("stage,expected", [("graph", "task_reject"), ("geometry", "infra")])
+def test_aggregated_graph_reason_reads_original_stage(stage, expected):
+    original = dict(reason="uncertified", stage=stage, detail="原始拒绝")
+    detail = "孤立槽=[0]; 原始边证据=" + json.dumps({"rejected_edges": {"0-1": original}})
+    record = dict(ok=False, task_success=False, failure_class="task",
+                  error_type="SwapCollisionError", stage="graph",
+                  rejection=dict(reason="uncertified", stage="graph", detail=detail))
+    assert report.classify(record) == expected
+
+
+def test_runtime_interface_uncertified_still_infra():
+    record = dict(ok=False, task_success=False, failure_class="task",
+                  error_type="SwapCollisionError", stage="substep_before",
+                  detail={"check": "uncertified", "detail": {"exception_type": "AttributeError"}})
+    assert report.classify(record) == "infra"
+
+
+def test_aggregated_malformed_evidence_is_infra():
+    record = dict(ok=False, task_success=False, failure_class="task", error_type="SwapCollisionError",
+                  rejection={"reason": "uncertified", "stage": "graph", "detail": "原始边证据=损坏"})
+    assert report.classify(record) == "infra"

@@ -1,6 +1,7 @@
 """可行槽对图、独立均衡规划与保持父类时序的运行期证明。"""
 
 from dataclasses import dataclass, asdict, replace
+import json
 import numpy as np
 import torch
 
@@ -115,15 +116,25 @@ def bystander_states_of(bystanders):
             for i, actor in enumerate(bystanders)]
 
 
+class _GraphGaps(dict):
+    """仅供建图与口径 B 之间传递原始拒绝证据，不进入持久图结构。"""
+
+    def __init__(self):
+        super().__init__()
+        self.rejections = {}
+
+
 def slot_graph(states, bystander_states):
     """每个无序槽对只证一次，始终带上其余槽与全部旁观物。"""
     states = list(states.values()) if isinstance(states, dict) else list(states)
-    gaps = {}
+    gaps = _GraphGaps()
     def feasible(a, b):
         others = [s for i, s in enumerate(states) if i not in (a, b)] + list(bystander_states)
         gap, rejection = bc.check_swap_sweep(states[a], states[b], others,
                                               sweep_index=-1, stage="graph")
         gaps[f"{a}-{b}"] = float(gap) if rejection is None else rejection.gap_m
+        if rejection is not None:
+            gaps.rejections[f"{a}-{b}"] = rejection.as_dict()
         return rejection is None
     return su.slot_pair_graph(len(states), feasible), gaps
 
@@ -132,9 +143,16 @@ def require_every_slot_covered(adj, gaps):
     """口径 B 允许不连通，但不允许任何孤立槽。"""
     isolated = su.isolated_slots(adj)
     if isolated:
+        rejections = getattr(gaps, "rejections", {})
+        reasons = {item["reason"] for item in rejections.values()}
+        # 聚合值不得把无法证明安全伪装成已穿入；完整逐边原文仍在 detail 内。
+        reason = ("uncertified" if "uncertified" in reasons else
+                  "numerical_boundary" if "numerical_boundary" in reasons else "contact")
+        evidence = dict(isolated_slots=isolated, gaps=dict(gaps), rejected_edges=rejections)
         rejection = bc.CollisionRejection(
-            reason="contact", stage="graph", object_a="slots", object_b="slots",
-            shape_a=-1, shape_b=-1, detail=f"孤立槽={isolated}; 各槽对 gap={gaps}")
+            reason=reason, stage="graph", object_a="slots", object_b="slots",
+            shape_a=-1, shape_b=-1,
+            detail=f"孤立槽={isolated}; 原始边证据=" + json.dumps(evidence, ensure_ascii=False))
         raise SwapCollisionError(rejection, "graph")
 
 
@@ -171,7 +189,7 @@ def plan_swaps(states, bystanders, swap_times, generator, s_max=None):
         cur[a] = bc.ObjectState(old_a.name, np.r_[old_b.p[:2], old_a.p[2]], old_b.q.copy(), old_a.shapes)
         cur[b] = bc.ObjectState(old_b.name, np.r_[old_a.p[:2], old_b.p[2]], old_a.q.copy(), old_b.shapes)
     return SwapPlan(pairs, usage, initial_gap, initiated, partnered,
-                    full.slot_pairs[:int(swap_times)], {"adj": adj, "gaps": gaps},
+                    full.slot_pairs[:int(swap_times)], {"adj": adj, "gaps": dict(gaps)},
                     s_max, full.spread, max(usage)-min(usage), full.tries,
                     [s.p[:2].tolist() for s in states])
 
@@ -365,4 +383,3 @@ class SwapCollisionMixin:
                                                 gap_lower_bound=gap, rejection=None if rejection is None else rejection.as_dict()))
         if rejection is not None:
             self._record_fatal("SwapCollisionError", stage, k, rejection=rejection, check="layout")
-

@@ -554,3 +554,38 @@ def test_button_bystander_removes_crossing_edge():
     assert sp.slot_graph(states, [])[0][0][1]
     assert not sp.slot_graph(states, [blocker])[0][0][1]
 
+
+@pytest.mark.parametrize("reason,stage", [("uncertified", "graph"),
+                                         ("uncertified", "geometry"),
+                                         ("numerical_boundary", "graph"),
+                                         ("contact", "graph")])
+def test_graph_rejection_preserves_original_edges_once(monkeypatch, reason, stage):
+    calls = []
+    original = bc.CollisionRejection(reason, stage, "0", "1", 2, 3,
+                                     gap_m=None, depth=bc.MAX_DEPTH,
+                                     detail="原始判据无法证明安全")
+    def sweep(a, b, others, **kwargs):
+        calls.append((a.name, b.name))
+        return None, original
+    monkeypatch.setattr(bc, "check_swap_sweep", sweep)
+    adj, gaps = sp.slot_graph(rectangle(), [])
+    assert len(calls) == len(set(calls)) == len(gaps) == 6
+    assert all(value is None for value in gaps.values())
+    with pytest.raises(SwapCollisionError) as exc:
+        sp.require_every_slot_covered(adj, gaps)
+    rejection = exc.value.rejection
+    assert rejection.reason == reason
+    evidence = json.loads(rejection.detail.split("原始边证据=", 1)[1])
+    assert evidence["isolated_slots"] == [0, 1, 2, 3]
+    assert len(evidence["rejected_edges"]) == 6
+    assert all(item == original.as_dict() for item in evidence["rejected_edges"].values())
+
+
+def test_success_graph_serialization_has_only_numeric_gaps():
+    plan = sp.plan_swaps(rectangle(), [], 4, generator(), s_max=11)
+    assert set(plan.graph) == {"adj", "gaps"}
+    assert type(plan.graph["gaps"]) is dict
+    assert not hasattr(plan.graph["gaps"], "rejections")
+    assert set(plan.as_dict()["graph"]) == {"adj", "gaps"}
+    restored = json.loads(json.dumps(plan.as_dict()))
+    assert restored["graph"] == plan.graph
