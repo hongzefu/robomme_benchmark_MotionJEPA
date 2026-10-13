@@ -71,7 +71,7 @@ a { color:var(--accent); }
 <blockquote>
 <p><strong>权威性与锚点</strong>：本文件是交换配对 v2 的唯一权威计划，从零写成，不在 <a href="1012-swap-collision-plan.html"><code>1012-swap-collision-plan.html</code></a>（下称 v1 计划）上增量修改；v1 计划原样保留为历史，不再修订。工作副本 <code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>、分支 <code>newtask-v3-MotionJepa1006</code>（sled-vail，环境 B）。写计划时 HEAD 为 <code>3083af74</code>（2.93，v1 全量结论）；<strong>v2 代码基线</strong>是 v1 动代码之前的 <code>0ec9951b</code>（2.76）。外部锚点：V9 配对算法取自 <code>origin/newtaskRelease-taskV9</code> 的 <code>5f4f2f9c</code>，文件 <code>src/robomme_hard/robomme_env/utils/swap_uniform.py</code>（sha256 <code>f4a1a8c08c629e8924ff1a0d37e9acdd4c7bcfee32ba7be80cf18e6328d85821</code>）；碰撞判据仍是 <code>newtask-v2.1refractor@ce72b04f</code> 的 <code>bin_collision.py</code>（sha256 <code>bbe87eec3c36ab54e703a6ff741a5fdd3217c11e2a1541eb95d8f013c852302b</code>）。</p>
 <p><strong>commit 体例</strong>：主线 <code>&lt;大&gt;.&lt;小&gt; 中文描述</code> 从 2.94 接续（本计划提交即 2.94）；子代理提交 <code>sub/&lt;编号&gt;: </code> 前缀，经 <code>--no-ff</code> 合并。<strong>只前进、不改写历史</strong>：不 <code>reset</code>、不 <code>rebase</code>、不 <code>--force</code>。</p>
-<p><strong>本版修订（2.94.5）</strong>：按 Codex 静态对抗审计（锚点 <code>b68447331df57f6706447e56211ee78e6dbed763</code>，<code>STATIC_PLAN_AUDIT=FAIL</code>）逐条修订：按钮几何实测并改为包络方案（3.5）、建 G 传入按钮、短测按节点比对、受保护目录比两个提交、新增报告工具与 180 身份对账、探针可复现、GPU 测试进 tmux、补等高与前缀前提、补相对官方的差异表（3.6）、纠正 K10；仍待用户确定的三项见第二部分 8.1。</p>
+<p><strong>本版修订（2.94.5）</strong>：按 Codex 静态对抗审计（锚点 <code>b68447331df57f6706447e56211ee78e6dbed763</code>，<code>STATIC_PLAN_AUDIT=FAIL</code>）逐条修订：按钮几何实测并改为包络方案（3.5）、建 G 传入按钮、短测按节点比对、受保护目录比两个提交、新增报告工具与 180 身份对账、探针可复现、GPU 测试进 tmux、补等高与前缀前提、补相对官方的差异表（3.6）、纠正 K10；三项待定已由用户裁决（第二部分 8.1）。</p>
 <p><strong>授权边界</strong>：本轮只交这份 HTML 和实测探针留档。用户对本计划不改而明确说「开工」后，才开始撤回提交与改代码；全量 180 卡另按 P5 在 smoke 后单独报批。</p>
 </blockquote>
 
@@ -111,7 +111,7 @@ a { color:var(--accent); }
 <tr><td style="white-space:nowrap">K10</td><td>母档不变：VideoUnmaskSwap、ButtonUnmaskSwap 的母档是官方 hard（随机 2–3 次、最近邻配对）；VideoRepick 的母档来源是官方 <strong>medium</strong>（随机 2–3 次、最近邻），官方 hard 根本不交换（<code>config_hard</code> 的 <code>swap_min=swap_max=0</code>）。只改 xhard 五档。<code>src/robomme/</code> 零 diff</td><td>P1、P2；<code>configs.SOURCE_DIFFICULTY</code></td></tr>
 <tr><td style="white-space:nowrap">K11</td><td>v1 已批口径全部沿用：D2 运行期失败只记 <code>_xhard_fatal</code>、不抛异常；D4 保证范围<strong>扩为交换对象之间 + 交换对象与按钮之间</strong>（K13，机械臂、桌面仍不在内）；D5 基础设施崩溃卡隔离；D7 六列视频版式；D8 30 母 seed、180 卡、GPU0 <code>--workers 32</code>；P5 smoke 后对全量单独报批</td><td>v1 计划第八节</td></tr>
 <tr><td style="white-space:nowrap">K12</td><td><strong>上一轮结果一字不动，另起一轮</strong>：v1 全量 <code>artifacts/xhard/xhard-1012-coll/</code>（426 个文件、90 GB，含 <code>report/per_episode_strip/</code> 30 支六列视频）只读保留。v2 的 smoke、全量、汇总、视频一律写新根 <code>artifacts/xhard/xhard-MMDD-swapv2/</code>；日志写 <code>artifacts/logs/xh-swapv2-*</code>，tmux 名用 <code>xh-swapv2-*</code>，留档写 <code>docs/xhard-doc/xhard-MMDD-swapv2*</code>。起跑前先给旧根做全量 sha256 冻结清单，每个阶段结束复核一次（<code>OLD_RUN_INTACT</code>）</td><td>用户 10-12 原话；第五节阶段 0、第二部分八</td></tr>
-<tr><td style="white-space:nowrap">K13</td><td><strong>按钮进碰撞判据</strong>（U10 裁决）：ButtonUnmaskSwap 的两个按钮、VideoRepick 的一个按钮作为静止旁观物，参与初态检查、<strong>建 G 的每条边</strong>、逐段再证、段起点重证和每子步检查；VideoUnmaskSwap 没有按钮。<strong>实测原判据读不了按钮</strong>（3.5），按钮几何改由 <code>swap_plan.py::button_envelope_state</code> 从真实碰撞形状构造一个保守包络盒，交给原样保留的判据；包络口径待用户确认（第二部分八 V1）</td><td>3.5；探针 <code>button_probe.txt</code></td></tr>
+<tr><td style="white-space:nowrap">K13</td><td><strong>按钮进碰撞判据</strong>（U10 裁决）：ButtonUnmaskSwap 的两个按钮、VideoRepick 的一个按钮作为静止旁观物，参与初态检查、<strong>建 G 的每条边</strong>、逐段再证、段起点重证和每子步检查；VideoUnmaskSwap 没有按钮。<strong>实测原判据读不了按钮</strong>（3.5），按钮几何改由 <code>swap_plan.py::button_envelope_state</code> 从真实碰撞形状构造一个保守包络盒，交给原样保留的判据；包络口径已裁决（第二部分 8.1 V1）</td><td>3.5；探针 <code>button_probe.txt</code></td></tr>
 <tr><td style="white-space:nowrap">K14</td><td><strong>并行与回退按审查建议</strong>：撤回和原样恢复合成一个写入代理 W1（分支内依次三个 <code>sub/</code> 提交：撤回 → 恢复判据并引入 V9 → 恢复生成器与工具），一次合并，主线不经过「无碰撞检测」的中间状态；从零写 <code>swap_plan.py</code> 与三子类接线合成第二个代理 W2。冻结清单和 30 母 seed 预扫在开工后立即与 W1 同时跑（只读，不依赖 v2 代码）</td><td>用户「并行和回退 同意」；第五、六节</td></tr>
 </table>
 
@@ -403,7 +403,7 @@ env._refresh_swap_schedule(); env._xhard_swap_plan = {...}</code></pre>
 <li>原判据 <code>bin_collision.object_state_from_actor</code> <strong>读不了按钮</strong>：传整个关节体报「<code>PhysxArticulation</code> 没有 <code>find_component_by_type</code>」，传单个连杆报「<code>PhysxArticulationLinkComponent</code> 没有 <code>find_component_by_type</code>」，9 次尝试全部 <code>uncertified</code>。即便能读，<code>shape_specs_from_actor</code> 也只收盒体，遇到圆柱会拒绝；只读底座又会漏掉按帽。所以「返回按钮后自动参与检查」不成立，原计划这一句作废。</li>
 <li>交换对象的盒体底面高度：ButtonUnmaskSwap 的倒扣容器 6 个盒体底面为 0.032、0.048、0、0、0、0 m（四面墙落在桌面）；VideoRepick 方块底面为 0。</li>
 </ul>
-<p><strong>方案（推荐，待用户确认 V1）：保守包络盒，不改判据</strong>。<code>swap_plan.py::button_envelope_state</code> 直接从 SAPIEN 连杆组件 <code>get_collision_shapes()</code> 读出底座盒体与按帽圆柱的真实尺寸和世界位姿，构造<strong>一个</strong>盒体：水平范围取底座盒体与按帽圆柱外接正方形的并集，竖直范围从桌面到按帽未按下时的顶面（按当前数值为 0 到 0.033 m）。这个盒体以 <code>bc.ObjectState</code> 形式作为旁观物传给原样保留的判据，<code>bin_collision.py</code> 一字不改。</p>
+<p><strong>方案（V1 已裁决）：保守包络盒，不改判据</strong>。<code>swap_plan.py::button_envelope_state</code> 直接从 SAPIEN 连杆组件 <code>get_collision_shapes()</code> 读出底座盒体与按帽圆柱的真实尺寸和世界位姿，构造<strong>一个</strong>盒体：水平范围取底座盒体与按帽圆柱外接正方形的并集，竖直范围从桌面到按帽未按下时的顶面（按当前数值为 0 到 0.033 m）。这个盒体以 <code>bc.ObjectState</code> 形式作为旁观物传给原样保留的判据，<code>bin_collision.py</code> 一字不改。</p>
 <ul>
 <li><strong>为什么保守</strong>：按帽圆柱（半径 0.0225）完全落在底座正方形（半边 0.0375）的水平投影内，按帽只能向下运动，所以任何按压状态下按钮的实际几何都被这个静止盒体包住；按钮内部底座与按帽的自接触不出现（整个按钮只是一个盒体）。</li>
 <li><strong>多算了多少</strong>：只多出按帽圆柱外、底座正方形内、高度 0.015 至 0.033 m 的那圈空间。交换对象的墙体都从桌面立起，水平上只要碰到这圈，就一定先碰到底座本体，所以对这三个任务而言包络与真实几何的判定结果应当相同。这是推理，未数值验证，预扫会给出「只用底座盒体」与「用包络」两列的 G 对比来核对。</li>
@@ -445,7 +445,7 @@ env._refresh_swap_schedule(); env._xhard_swap_plan = {...}</code></pre>
 <tr><td><code>XHARD_FATAL_CATCH=PASS tasks=3 hang=0</code></td><td>运行期失败能送达生成器</td><td><code>test_fatal_catch.py</code>（GPU0）</td><td>D2 送达链路完好</td></tr>
 <tr><td><code>BUTTON_ENVELOPE=PASS buttons=3 base_box=1 cap_cylinder=1 cap_inside_base=1</code></td><td>按钮包络能从真实碰撞形状构造，且按帽被底座水平覆盖</td><td>预扫脚本内，每个任务第一个 seed；W2 单测用真实读数复核</td><td>K13 可实施</td></tr>
 <tr><td><code>SWAP_V2_GRAPH_SCAN=INFO seeds=30 b_pass=x b_reject=y</code></td><td>30 个母 seed 的 G 与口径 B 预判（只 reset，不 rollout），分「不含按钮」「含按钮」两列</td><td>阶段 0 预扫，xhard20 布局，与 W1 同时跑</td><td>开工即知剔除数；剔除超过 6 个先停（U6）</td></tr>
-<tr><td><code>SWAP_V2_SMOKE=PASS cards=4</code></td><td>5700、9300、10500、11200 各一张 xhard20</td><td>GPU0 单 worker</td><td>5700、9300 必须成功；10500 必须在 reset 阶段以 <code>stage=graph</code> 剔除；11200 的结果口径待用户确定（第二部分八 V2）。任何接口或基础设施类失败（<code>Traceback</code>、<code>uncertified</code> 几何读取、进程池损坏、隔离卡）一律阻断</td></tr>
+<tr><td><code>SWAP_V2_SMOKE=PASS cards=4</code></td><td>5700、9300、10500、11200 各一张 xhard20</td><td>GPU0 单 worker</td><td>5700、9300 必须成功；10500 必须在 reset 阶段以 <code>stage=graph</code> 剔除；11200 若因碰撞或槽位绑定被正常剔除（有判据证据）不阻断，接口或基础设施失败阻断（V2 已裁决）。任何接口或基础设施类失败（<code>Traceback</code>、<code>uncertified</code> 几何读取、进程池损坏、隔离卡）一律阻断</td></tr>
 <tr><td><code>XHARD_FULL_DERIVE=DONE expected=180 seen=180 missing=0 dup=0 unknown=0 ok=… task_reject=… infra=0</code></td><td>全量：180 个预期身份（任务、母 episode、seed、档位）逐一交代</td><td>按 <code>mother_seeds_all.json</code> 展开 180 个预期身份，与 <code>episode_results.jsonl</code> 逐个对账：无缺项、无重复、无未知状态；正常碰撞或绑定剔除（<code>task_reject</code>）与基础设施失败（<code>infra</code>）分开计数</td><td>汇总程序退出零只说明已有 H5 的标签与非空检查通过，不说明 180 个身份都有下落；本判定行补上这一点</td></tr>
 <tr><td><code>REPORT_V1V2=PASS seeds=30 rows=180</code></td><td>U3 的 v1 对 v2 逐母 seed 对比表，以及 <code>spread_full</code>、<code>spread_prefix</code> 分布</td><td>新工具 <code>tools/swap_v2_report.py</code>（W2-c），只读两轮的 <code>episode_results.jsonl</code>，输出到新目录 <code>report/v1_vs_v2.{md,json}</code></td><td>已批准的报告要求有写者、有验收</td></tr>
 <tr><td><code>EPISODE_STRIP_VIDEO=PASS videos=30</code></td><td>六列视频</td><td>episode_strip_video，<code>--out-dir artifacts/xhard/xhard-MMDD-swapv2/report/per_episode_strip</code></td><td>D7 版式</td></tr>
@@ -678,7 +678,7 @@ uv run --no-sync python -m robomme_xhard.tools.summarize --root artifacts/xhard/
   --out-md artifacts/xhard/xhard-${MMDD}-swapv2/report/summary.md --out-json artifacts/xhard/xhard-${MMDD}-swapv2/report/summary.json &amp;&amp; \
 uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifacts/xhard/xhard-${MMDD}-swapv2/full \
   --seeds artifacts/xhard/xhard-${MMDD}-swapv2/mother_seeds_all.json --out-dir artifacts/xhard/xhard-${MMDD}-swapv2/report/per_episode_strip</code></pre>
-<p>Monitor 过滤：<code>succeeded with seed|EXIT_CODE=|SwapCollisionError|SwapBindingError|failed|进程池已损坏|ERROR:|Traceback|BrokenProcessPool|svulkan2|out of memory|NO RECORD</code>，一份日志挂一个 Monitor。停止条件沿用 v1 ⑤：进程池损坏、墙钟超过 1 小时、GPU0 被占满，或任一任务 <code>SwapBindingError</code> 超过 10%。</p>
+<p>Monitor 过滤：<code>succeeded with seed|EXIT_CODE=|SwapCollisionError|SwapBindingError|failed|进程池已损坏|ERROR:|Traceback|BrokenProcessPool|svulkan2|out of memory|NO RECORD</code>，一份日志挂一个 Monitor。停止条件沿用 v1 ⑤：进程池损坏、墙钟超过 1 小时、GPU0 被占满，或任一任务 <code>SwapBindingError</code> 超过该任务计划 xhard 卡数（50 张）的 10%，即超过 5 张（V3 已裁决，运行中实时累计）。</p>
 
 <h2 id="t5">五、风险登记</h2>
 <table>
@@ -732,9 +732,10 @@ uv run --no-sync python -m robomme_xhard.tools.episode_strip_video --root artifa
 <tr><td>U13</td><td>smoke 卡</td><td>5700、9300、10500、11200 各一张 xhard20</td><td>runbook D2</td></tr>
 <tr><td>—</td><td>并行与回退</td><td>按审查建议：W1、W2 两个代理；冻结与预扫开工即同时跑</td><td>K14、第五、六节</td></tr>
 </table>
-<h3>8.1 Codex 静态审计后仍待用户确定（2026-10-12，审计锚点 <code>b6844733</code>）</h3>
+<h3>8.1 Codex 静态审计后的三项（2026-10-12 已裁决，审计锚点 <code>b6844733</code>）</h3>
+<p>用户原话：「全同意」，即 V1–V3 均按推荐执行。</p>
 <table>
-<tr><th>编号</th><th>问题</th><th>推荐</th><th>备选</th></tr>
+<tr><th>编号</th><th>问题</th><th>裁决（推荐）</th><th>未采用的备选</th></tr>
 <tr><td>V1</td><td>按钮几何怎么建模（原判据读不了关节体，也不收圆柱，已实测）</td><td>保守包络：从真实碰撞形状构造一个盒体（底座正方形 × 桌面到按帽顶），判据不改；预扫对比「包络 / 只用底座」两列</td><td>给判据加圆柱支持（改引入文件）；只用底座（漏按帽）</td></tr>
 <tr><td>V2</td><td>smoke 中 11200 失败是否阻断全量</td><td>11200 若因碰撞或槽位绑定被正常剔除（有判据证据），不阻断；若是接口或基础设施失败，阻断</td><td>11200 必须成功，否则停下</td></tr>
 <tr><td>V3</td><td>运行中「任一任务 <code>SwapBindingError</code> 超过 10%」停止条件的分母</td><td>按该任务计划的 xhard 卡数（每任务 50 张）计，即超过 5 张即停；运行中实时累计，不按已完成卡计（首张失败不会被算成 100%）</td><td>按母 seed 计（每任务 10 个，超过 1 个即停）</td></tr>
