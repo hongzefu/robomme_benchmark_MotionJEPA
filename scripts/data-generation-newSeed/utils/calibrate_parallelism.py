@@ -368,19 +368,21 @@ def run_cell(cell: Cell, root: Path, env: str, episodes: int, difficulty: str, k
                    "gpu_peaks": {gpu: {"mem_mb": max((row["mem_mb"] for row in sampler.gpu_rows if str(row["index"]) == gpu), default=0),
                                        "total_mb": min((row["total_mb"] for row in sampler.gpu_rows if str(row["index"]) == gpu), default=0)}
                                  for gpu in cell.gpu_ids}}
-        _write_json(output / "cell_summary.json", summary)
         _write_json(output / "resource_samples.json", {"cpu_memory": sampler.rows, "gpus": sampler.gpu_rows})
-        print(f"档 {cell.name} 完成 complete={complete} aborted_by={aborted_by} 稳态吞吐={steady.get('throughput_ep_per_min')}", flush=True)
         if not keep:
             for name in ("hdf5_files", "videos"):
                 target = output / name
                 if target.is_dir() and not target.is_symlink():
                     shutil.rmtree(target)
-        return summary
     finally:
         for signum, previous in previous_handlers.items():
             signal.signal(signum, previous)
-
+    # 尾部写资源或清理产物时也可能叫停；恢复原信号语义后再锁定最终结果。
+    summary["aborted_by"] = aborted_by
+    summary["complete"] = summary["complete"] and not aborted_by
+    _write_json(output / "cell_summary.json", summary)
+    print(f"档 {cell.name} 完成 complete={summary['complete']} aborted_by={aborted_by} 稳态吞吐={steady.get('throughput_ep_per_min')}", flush=True)
+    return summary
 
 
 def memory_admitted(cell: Cell, probe: dict[str, Any], available_gb: float,

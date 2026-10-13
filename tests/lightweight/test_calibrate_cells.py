@@ -408,3 +408,63 @@ def test_main_integrity_or_signal_abort_fails_even_after_good_l32(monkeypatch, t
     assert calib.main(["--root", str(tmp_path), "--difficulty-cycle", ",".join(calib.MIXED_CYCLE)]) == 1
     payload = json.loads((tmp_path / "calibration.json").read_text())
     assert payload["context"]["calib_line"].startswith("CALIB=FAIL ")
+
+
+@pytest.mark.parametrize("phase", ["resource_write", "artifact_rmtree"])
+@pytest.mark.parametrize("signum", [signal.SIGTERM, signal.SIGHUP])
+def test_tail_signal_persists_final_abort_and_stops_ladder(monkeypatch, tmp_path, cpu_only, phase, signum):
+    # 生成器正常完成并已清理之后，在确定的尾部操作中给外层发信号。
+    _fake_command(monkeypatch, """
+import json, os, sys, time
+from pathlib import Path
+p = Path(sys.argv[1])
+probe = p.name == 'P8'
+count = 16 if probe else 384
+tiers = ['xhard18', 'xhard20'] if probe else ['easy', 'medium', 'hard', 'xhard12', 'xhard14', 'xhard16', 'xhard18', 'xhard20']
+rows = [dict(ok=True, finished_at=time.time()+i, wall_s=1, difficulty=tiers[i%len(tiers)], peak_rss_mb=8192) for i in range(count)]
+(p/'episode_results.jsonl').write_text(''.join(json.dumps(row)+'\\n' for row in rows))
+(p/'run_summary.json').write_text(json.dumps(dict(requested_count=count, success_count=count, exhausted_count=0)))
+(p/'identities.json').write_text(json.dumps(dict(pgid=os.getpgrp())))
+for name in ('hdf5_files', 'videos'):
+    (p/name).mkdir()
+    (p/name/'样本').write_text('夹具')
+print('假生成器正常退出', flush=True)
+""")
+    sent_groups = []
+    original_write = calib._write_json
+    original_rmtree = calib.shutil.rmtree
+
+    def interrupt(output):
+        pgid = json.loads((output / "identities.json").read_text())["pgid"]
+        assert calib._group_processes(pgid) == []
+        sent_groups.append(pgid)
+        os.kill(os.getpid(), signum)
+
+    def write(path, payload):
+        if phase == "resource_write" and path.name == "resource_samples.json" and path.parent.name == "L32":
+            interrupt(path.parent)
+        original_write(path, payload)
+
+    def rmtree(path, *args, **kwargs):
+        if phase == "artifact_rmtree" and path.name == "hdf5_files" and path.parent.name == "L32":
+            interrupt(path.parent)
+        return original_rmtree(path, *args, **kwargs)
+
+    monkeypatch.setattr(calib, "_write_json", write)
+    monkeypatch.setattr(calib.shutil, "rmtree", rmtree)
+    previous_handlers = {sig: signal.getsignal(sig) for sig in (signal.SIGTERM, signal.SIGHUP)}
+    exitcode = calib.main(["--root", str(tmp_path), "--difficulty-cycle", ",".join(calib.MIXED_CYCLE)])
+    payload = json.loads((tmp_path / "calibration.json").read_text())
+    summary = json.loads((tmp_path / "L32" / "cell_summary.json").read_text())
+    good = (exitcode == 1 and len(payload["cells"]) == 1 and not summary["complete"]
+            and summary["aborted_by"] == f"signal:{signal.Signals(signum).name}"
+            and payload["context"]["calib_line"].startswith("CALIB=FAIL "))
+    print(f"CALIB_TAIL_SIGNAL={'PASS' if good else 'FAIL'} phase={phase} "
+          f"signal={signal.Signals(signum).name} generator_pgid={sent_groups[0]} "
+          f"generator_exited=1 cells_run={sum('returncode' in row for row in payload['cells'])} complete={int(summary['complete'])} "
+          f"aborted_by={summary['aborted_by']} exit={exitcode} evidence={tmp_path}")
+    assert good
+    assert len(sent_groups) == 1 and not (tmp_path / "L64").exists()
+    assert summary["termination"]["zero_residual"]
+    assert (tmp_path / "L32" / "resource_samples.json").exists()
+    assert {sig: signal.getsignal(sig) for sig in previous_handlers} == previous_handlers
