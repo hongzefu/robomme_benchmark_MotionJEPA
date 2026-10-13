@@ -337,6 +337,9 @@ a { color:var(--accent); }
 </table>
 <p>实施完成后的实测结果以小节追加在本表之后，不改写原计划。</p>
 
+<h3 id="implementation-adjustments">实施中调整</h3>
+<p><strong>停池动作补齐</strong>：开工锚点 <code>94c6a90b312c35ebf1a47940cd4d8159523212ce</code>，W2 实现时核实本机 CPython 3.11.14：仅 <code>shutdown(cancel_futures=True)</code> 不能终止已运行的 worker，可能在隔离后继续写产物。仅在循环模式开启 <code>--stop-on-pool-crash</code> 的首次损坏支路，先保存各池现存 <code>_processes</code> 快照、终止并等待全部 worker 退出，再关闭 executor、隔离在途产物、写摘要并以 3 退出；默认重建路径不变。改动仅落 W2 生成器的既有停止支路与对应测试，不新增开关、守卫、重试或回退。独立只读对抗验证锚定 <code>1aad348dd6f5c60451501be96e1d339903a20fd3</code>，结论 <code>ADJUST_REVIEW=PASS scale=same findings=0</code>；主会话核实源码后按同等规模继续，实际行为待 W2 验证。</p>
+
 <h2 id="h6">六、子代理分工与合并（简述）</h2>
 <p>代码拆五块、各自独立 worktree：W1 只动 <code>seed_layout.py</code> 及其测试；W2 只动生成器、它的新测试，以及 <code>test_jobs.py</code> 里两个「新增字段默认值」常量，依赖 W1 先合；W3 新建校验与对账工具、规则表骨架，从原版副本导出 16 份 golden；W4 只动测速脚本及其测试。W2／W3／W4 同批派出，按 W2 → W3 → W4 合回。W6 在 W2、W4 合入后单独改生成器目录的 <code>CLAUDE.md</code>（唯一写者）。smoke 二后派 W5 填规则，豁免清单先交用户批准再合入。每次合并前核对改动文件在可写集合内、worktree 内复跑短测、派一个 sonnet 审查代理；<code>--no-ff</code> 合入后主检出再跑短测与受保护目录检查，PASS 即 push。smoke、测速、全量由主会话按 runbook 执行。</p>
 
@@ -381,7 +384,7 @@ a { color:var(--accent); }
 <tr><td>VideoUnmaskSwap</td><td><code>^pick up the container</code> 边界数</td><td><code>const:2</code></td><td>旋钮只有 <code>swap_count</code>，抓容器次数固定 2</td></tr>
 <tr><td>ButtonUnmaskSwap</td><td><code>^press the (first|second) button$</code>；<code>^pick up the container</code></td><td><code>knob:press_count</code>；<code>const:2</code></td><td>旋钮 <code>press_count</code>、<code>swap_count</code>；抓容器固定 2</td></tr>
 <tr><td>VideoRepick</td><td><code>^pick up the correct cube for the .* time$</code></td><td><code>knob:repick_count</code>（各档均为 2）</td><td><code>configs.py::_repick</code></td></tr>
-<tr><td>VideoPlaceButton</td><td><code>^pick up the cube$</code> 边界数</td><td><code>knob_plus:extra_groups:&lt;base 演示组数&gt;</code></td><td>base 组数由 W3 从任务演示清单静态推出，smoke 二核对</td></tr>
+<tr><td>VideoPlaceButton</td><td><code>^pick up the cube$</code> 边界数</td><td><code>knob_plus:extra_groups:4</code></td><td>W3 静态核实父任务完整清单：演示抓取 3 次、执行抓取 1 次，完整 H5 边界基线为 4；额外演示组数加在它上面，smoke 二核对</td></tr>
 <tr><td>三个 swap 任务的交换</td><td><code>runtime_checks</code> 中 <code>kind="swap_sweep"</code>、<code>endpoint_match=True</code> 的 <code>sweep_index</code> 集合</td><td><code>swap_runtime</code>：集合 = {0..S−1}，且 <code>len(swap_plan.pairs) == S == knob:swap_count</code>，且 episode 成功</td><td>只比 <code>len(pairs)</code> 在建场时就成立，必须看运行期每段起点证据；末段之后的成功完成证明最后一段已结束</td></tr>
 <tr><td>其余 10 个有 xhard 档的任务</td><td>smoke 二后由 W5 依 <code>dump-subgoals</code> 填</td><td>各自旋钮</td><td>数不出的项（如 StopCube <code>stop_k</code>）进 <code>EXEMPT</code> 草案，用户批准后才合入（K14）</td></tr>
 </table>
@@ -530,7 +533,7 @@ uv run --no-sync python -m robomme_xhard.tools.check_mixed_h5 check --output-dir
 
 <h2 id="t7">七、盲区诚实清单</h2>
 <ul>
-<li>其余 10 个任务的 subgoal 文本没在本机看过，语义规则等 smoke 二；已核实规则的任务为 VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick（另见 1.4 表），VideoPlaceButton 的 base 组数尚待 W3 推出与 smoke 二核对。</li>
+<li>其余 10 个任务的实际 H5 subgoal 文本尚未核实，语义规则等 smoke 二；已静态核实规则的任务为 VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick、VideoPlaceButton（另见 1.4 表）。VideoPlaceButton 完整抓取边界基线为 4，实际 H5 数量仍待 smoke 二核对。</li>
 <li>早先核实用的「ep23 xhard14」样本来自母 seed 布局，与新循环（ep23 为 xhard20）不是同一布局。</li>
 <li>easy／medium／hard 档的「应做几次」没纳入语义校验，只对 xhard 档做。</li>
 <li>AWS 的 vCPU、内存与实例盘未实测（仓库 2026-10-13 核实为公开，clone 不需凭据）；耗时估计基于 vail，AWS 只有 <code>CALIB</code> 后才有数。</li>
