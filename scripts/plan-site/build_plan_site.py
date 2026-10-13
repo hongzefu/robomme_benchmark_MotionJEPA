@@ -131,6 +131,17 @@ def build(plan: pathlib.Path, out: pathlib.Path, impl: pathlib.Path | None = Non
     # 原计划的锚点与说明页不同，统一落在新页首页，避免保留失效锚点。
     pages = {name: re.sub(r'href="1012-swap-pairing-v2-plan\.html(?:#[^"]*)?"',
                           'href="swap.html"', body) for name, body in pages.items()}
+    pages["envs.html"] = pages["envs.html"].replace(
+        'href="#p1-review"', 'href="review.html#p1-review"')
+    pages["goals.html"] = pages["goals.html"].replace(
+        'href="#p1-_4"', 'href="envs.html#p1-_4"')
+    # 新正文的两份运行档案固定到审查基线；实施页保留其既有链接规则。
+    for rel in ("docs/xhard-doc/xhard-1011/result.md",
+                "docs/xhard-doc/xhard-1012-swapv2-smoke/result.md"):
+        frozen = ("https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/"
+                  "f98c779a2c3f086759d9fcc4663a06da7deec083/" + rel)
+        pages = {name: body if name == "impl.html" else body.replace(
+            f'href="{rel}"', f'href="{frozen}"') for name, body in pages.items()}
     # 首页历史参照不随站点复制；只改这一条已知引用，冻结到本轮源码版本。
     reference = "1006-xhard12-prev-training-and-task-plan.md"
     frozen_reference = (
