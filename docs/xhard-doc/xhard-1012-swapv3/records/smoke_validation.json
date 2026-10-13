@@ -1,0 +1,49 @@
+{
+  "passed": true,
+  "cards": 4,
+  "identities": [
+    [
+      "VideoUnmaskSwap",
+      5700
+    ],
+    [
+      "VideoUnmaskSwap",
+      6500
+    ],
+    [
+      "ButtonUnmaskSwap",
+      8500
+    ],
+    [
+      "VideoRepick",
+      10800
+    ]
+  ],
+  "errors": [],
+  "rejection_details": [
+    {
+      "identity": [
+        "VideoUnmaskSwap",
+        6500
+      ],
+      "detail": "可行槽对不足=2/3; 原始边证据={\"gate\": \"min_pair_kinds\", \"feasible_edges\": [[0, 3], [1, 2]], \"required\": 3, \"gaps\": {\"0-1\": -0.008297069156973716, \"0-2\": -0.00017938096232764317, \"0-3\": 0.0316939911856808, \"1-2\": 0.01599910393750759, \"1-3\": -0.007477224247376721, \"2-3\": -0.007289752934061176}, \"rejected_edges\": {\"0-1\": {\"reason\": \"contact\", \"stage\": \"graph\", \"object_a\": \"bin_1\", \"object_b\": \"bin_2\", \"shape_a\": 0, \"shape_b\": 0, \"gap_m\": -0.008297069156973716, \"s\": 0.375, \"sweep_index\": -1, \"interval_low\": 0.25, \"interval_high\": 0.5, \"depth\": 2, \"intervals_used\": 18, \"detail\": \"中点判定\"}, \"0-2\": {\"reason\": \"contact\", \"stage\": \"graph\", \"object_a\": \"bin_0\", \"object_b\": \"bin_1\", \"shape_a\": 1, \"shape_b\": 2, \"gap_m\": -0.00017938096232764317, \"s\": 0.81640625, \"sweep_index\": -1, \"interval_low\": 0.8125, \"interval_high\": 0.8203125, \"depth\": 7, \"intervals_used\": 47, \"detail\": \"中点判定\"}, \"1-3\": {\"reason\": \"contact\", \"stage\": \"graph\", \"object_a\": \"bin_3\", \"object_b\": \"bin_0\", \"shape_a\": 0, \"shape_b\": 0, \"gap_m\": -0.007477224247376721, \"s\": 0.5, \"sweep_index\": -1, \"interval_low\": 0.0, \"interval_high\": 1.0, \"depth\": 0, \"intervals_used\": 3, \"detail\": \"中点判定\"}, \"2-3\": {\"reason\": \"contact\", \"stage\": \"graph\", \"object_a\": \"bin_3\", \"object_b\": \"bin_0\", \"shape_a\": 0, \"shape_b\": 0, \"gap_m\": -0.007289752934061176, \"s\": 0.375, \"sweep_index\": -1, \"interval_low\": 0.25, \"interval_high\": 0.5, \"depth\": 2, \"intervals_used\": 10, \"detail\": \"中点判定\"}}}"
+    },
+    {
+      "identity": [
+        "ButtonUnmaskSwap",
+        8500
+      ],
+      "detail": "可行槽对不足=2/3; 原始边证据={\"gate\": \"min_pair_kinds\", \"feasible_edges\": [[0, 3], [1, 2]], \"required\": 3, \"gaps\": {\"0-1\": -0.00011197466907887643, \"0-2\": -0.020488250296913594, \"0-3\": 0.023979644355308367, \"1-2\": 0.016193605998170896, \"1-3\": -0.0012442111332599368, \"2-3\": -0.003915138509602525}, \"rejected_edges\": {\"0-1\": {\"reason\": \"contact\", \"stage\": \"graph\", \"object_a\": \"bin_1\", \"object_b\": \"bin_3\", \"shape_a\": 0, \"shape_b\": 1, \"gap_m\": -0.00011197466907887643, \"s\": 0.6875, \"sweep_index\": -1, \"interval_low\": 0.625, \"interval_high\": 0.75, \"depth\": 3, \"intervals_used\": 58, \"detail\": \"中点判定\"}, \"0-2\": {\"reason\": \"contact\", \"stage\": \"graph\", \"object_a\": \"bin_0\", \"object_b\": \"bin_1\", \"shape_a\": 0, \"shape_b\": 0, \"gap_m\": -0.020488250296913594, \"s\": 0.75, \"sweep_index\": -1, \"interval_low\": 0.5, \"interval_high\": 1.0, \"depth\": 1, \"intervals_used\": 13, \"detail\": \"中点判定\"}, \"1-3\": {\"reason\": \"contact\", \"stage\": \"graph\", \"object_a\": \"bin_3\", \"object_b\": \"bin_0\", \"shape_a\": 5, \"shape_b\": 4, \"gap_m\": -0.0012442111332599368, \"s\": 0.375, \"sweep_index\": -1, \"interval_low\": 0.25, \"interval_high\": 0.5, \"depth\": 2, \"intervals_used\": 14, \"detail\": \"中点判定\"}, \"2-3\": {\"reason\": \"contact\", \"stage\": \"graph\", \"object_a\": \"bin_3\", \"object_b\": \"bin_1\", \"shape_a\": 0, \"shape_b\": 1, \"gap_m\": -0.003915138509602525, \"s\": 0.75, \"sweep_index\": -1, \"interval_low\": 0.5, \"interval_high\": 1.0, \"depth\": 1, \"intervals_used\": 11, \"detail\": \"中点判定\"}}}"
+    },
+    {
+      "identity": [
+        "VideoRepick",
+        10800
+      ],
+      "detail": "可行槽对不足=2/3; 原始边证据={\"gate\": \"min_pair_kinds\", \"feasible_edges\": [[0, 1], [1, 2]], \"required\": 3, \"gaps\": {\"0-1\": 0.057124578063252454, \"0-2\": -0.004312827719336033, \"1-2\": 0.045833831085886026}, \"rejected_edges\": {\"0-2\": {\"reason\": \"contact\", \"stage\": \"graph\", \"object_a\": \"cube_2\", \"object_b\": \"bystander_0\", \"shape_a\": 0, \"shape_b\": 0, \"gap_m\": -0.004312827719336033, \"s\": 0.5, \"sweep_index\": -1, \"interval_low\": 0.0, \"interval_high\": 1.0, \"depth\": 0, \"intervals_used\": 3, \"detail\": \"中点判定\"}}}"
+    }
+  ],
+  "plan_differences": [],
+  "max_float_delta": 0.0,
+  "float_tol": 1e-09
+}

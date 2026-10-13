@@ -69,6 +69,7 @@ a { color:var(--accent); }
 
 <h1>1012-swap-min3kinds-v3-plan.html — 交换配对 v3：可行槽对至少三种，不足即剔除</h1>
 <blockquote>
+<p><strong>执行状态更新（2.102.4）</strong>：本文件下文「本轮只改 HTML」「修补未实施」等原方案文字记录的是 2.102.2 修订呈现时状态；用户随后原话「同意 继续执行」已批准恢复实施，阶段 0–C 现已完成，具体实测追加在第五节。生产机制、K17、断言和验收口径未改。当前全量 180 卡尚未获得单独起跑决定，仍执行 K9 的报批边界。</p>
 <p><strong>权威性与锚点</strong>：本文件是交换配对 v3 的唯一完整实施计划。生产机制仍为 v2 之后新增可行槽对至少三种闸门；七文件实现已在 <code>e39795183752f5afe0ddca2ecf77a95b0a8753f6</code>（2.102）整合，失败留档提交为 <code>c6d4780e3246e57109e0c37f8735dbd6e9c07557</code>（2.102.1），这是本次修订与后续修补的代码基线。初版代码基线 <code>5419e932af8639fd6f02c0d54a9e3d14976f511d</code> 只用于解释已完成的 v2→v3 差异。工作副本 <code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>、分支 <code>newtask-v3-MotionJepa1006</code>、sled-vail 环境 B；v2 计划与旧运行证据只读。</p>
 <p><strong>commit 体例</strong>：主线沿用 <code>&lt;大&gt;.&lt;小&gt;[.&lt;修订&gt;] 中文描述</code>；本次纯计划修订为 2.102.2，批准后的测试修补合并为 2.102.3，GPU／smoke 结果回写为 2.102.4；全量另获决定后仍用 2.103Beta 起跑、2.103 回写，两个独立提交。新子代理修补提交前缀 <code>sub/V3-C:</code>，<code>--no-ff</code> 保留全部提交，不 amend、squash 或改写历史。</p>
 <p><strong>外部依赖锚点</strong>：v2 全量产物 <code>artifacts/xhard/xhard-1012-swapv2/</code>（2.98Beta <code>f98c779a2c3f086759d9fcc4663a06da7deec083</code> 起跑，719 个文件，约 85 GB），本计划所有「预期剔除」数字都从它的 <code>report/summary.json</code> 读出；母清单 <code>artifacts/xhard/xhard-1012-swapv2/mother_seeds_all.json</code>（三任务各 10 个 seed）照用，不生成新 seed。两份引入文件 <code>collision/bin_collision.py</code>（sha256 前缀 <code>bbe87eec</code>）、<code>collision/swap_uniform.py</code>（<code>f4a1a8c0</code>）一字不改。</p>
@@ -674,6 +675,14 @@ PLAN_UNCHANGED=PASS cards=105 expected=105 missing=0 diffs=0 float_tol=1e-9</cod
 <tr><td>D</td><td>2.103Beta → 现有 30 母 seed、母档＋五档一次生成 → 汇总、六列视频、v2/v3 对账 → 复核旧根 → 2.103 回写；完整命令及所有判据维持 K6／K9／K16</td><td>180 身份、130 成功／50 正常拒绝／infra=0、105 规划、30 视频等原具名判据逐项满足</td></tr></table>
 <h3>已实施事实（本次修订前）</h3>
 <p>七文件和三个子提交已整合为 2.102；主会话定向 CPU 151 通过、2.98 秒，核心 473 通过、原四项失败、二跳过、8.72 秒，<code>CORE_SHORT=PASS new_failures=0</code>；保护目录与引入文件完整哈希通过。第一次 GPU 契约为 FAIL（17 过／1 败／1 未执行、130.40 秒），已结束会话，S2、smoke 与全量未启动，281 个时间步证据保存。以上都是历史实测，新 K17 及恢复阶段尚未验证，旧 FAIL 不改写为 PASS。</p>
+<h3>本次恢复验证实测（2.102.4，阶段 0–C 已完成）</h3>
+<p>用户在完整修订版后原话「同意 继续执行」，C0 审批准提交 <code>a34bb9d955d91f913b1ff696e47476c5b3a05b73</code> 为 PASS，唯一 S2 序号说明已统一。F1 单函数三增三删，原断言与 seed 不变，独立 R1 通过；整合并推送 <code>0bf3a27ee8ada71822e3cf9d05daefd313b52c3e</code>，全部运行从该干净 HEAD 启动。核心 473 通过、原四项失败、二跳过，8.88 秒；生产链路零 diff。原失败日志、281 证据及 .v2_mark 保留。详见 <a href="docs/xhard-doc/xhard-1012-swapv3/firstbuild-result.md">本次恢复结果与具名判据</a>。</p>
+<table><tr><th>阶段</th><th>实测与判定</th></tr>
+<tr><td>B0</td><td><code>BUTTON_FIRST_BUILD=PASS cases=1 buttons=3 failed=0 skipped=0</code>；8.01 秒，位置误差 0、最大角误差 <code>4.4408920985e-16</code>，原全部断言满足</td></tr>
+<tr><td>B</td><td><code>XHARD_GPU_CONTRACT=PASS cases=19 failed=0 skipped=0</code>，243.26 秒；<code>S2_GPU_VIDEOREPICK=PASS cases=2 failed=0</code>，6.03 秒；GPU 运行器 <code>EXIT_CODE=0</code></td></tr>
+<tr><td>C</td><td><code>SWAP_V3_SMOKE=PASS cards=4 reject_kinds=3 kept=1 plan_diff=0 max_float_delta=0.0</code>；5700 成功、6500／8500／10800 正常 graph 2/3 拒绝、infra=0、attempt=0；112.8 秒，生成器预期 <code>EXIT_CODE=1</code></td></tr>
+<tr><td>旧根</td><td><code>V2_ROOT_UNTOUCHED=PASS files=719 newer=0</code>，标记未重置</td></tr>
+<tr><td>报批／D</td><td>全量 180 卡与六列视频包装尚未起跑，仍须用户单独决定，不将 K6 预期数字当作实测</td></tr></table>
 <p>任何判定行 FAIL、任何数字偏离 K6 预期、任何 infra 失败：停止代码、重试、后续生成与成功交付，保留日志与产物，交用户裁决；不换 seed、不重试、不放宽。<strong>失败后的固定流程</strong>（用户原话「2执行过程中失败 要找出原因并且对抗验证 然后找用户」）：① 保留证据——只读输入、写新根 <code>report/</code> 的 <code>summarize</code> 与 <code>swap_v2_report</code>（判定行按实际 FAIL 原样记录）、日志清洗；按 K16 允许从已有产物生成与保存六列视频，仍守新目标与旧根只读，不借此补跑生成。没有全量产物时不为出视频启动全量；② <strong>找原因</strong>——主会话只读定位根因（读日志、<code>episode_results.jsonl</code>、<code>rejection</code>／<code>runtime_checks</code> 证据、必要时派 <code>haiku</code> 探索代理分片检索），写成「现象 → 证据 → 归因 → 候选处置」；③ <strong>对抗验证</strong>——派一个独立 <code>sonnet</code> 审查代理，只给它证据与主会话的归因，要求它反驳、找替代解释、指出证据缺口，输出 <code>FAILURE_RCA_REVIEW=CONFIRMED|DISPUTED findings=&lt;n&gt;</code>；同一归因只派一个审查者，不多轮反复；④ <strong>找用户</strong>——把原因、对抗验证结论、候选处置与证据路径一并交用户裁决，期间不改代码、不重试、不换 seed、不起下一生成或验证阶段；全量前的失败记 <code>result.md</code> 与 RCA 并接续 2.102 修订号；全量阶段失败才记 <code>full-result.md</code>、2.103 回写 FAIL。失败卡保持实际 <code>task_success=0</code>，不改账本的真实成功字段，不因视频存在或视频工具的 PASS 字样记任务成功；局部通过的原始判定行照实留存，但失败批次总验收仍为 FAIL，不写「验收通过」。</p>
 
 <h2 id="h6">六、子代理分工与合并（简述）</h2>

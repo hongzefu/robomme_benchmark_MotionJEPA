@@ -1,0 +1,22 @@
+{
+  "head": "0bf3a27ee8ada71822e3cf9d05daefd313b52c3e",
+  "phases": {
+    "minimal": {
+      "passed": 1,
+      "seconds": 8.01
+    },
+    "contract": {
+      "passed": 19,
+      "seconds": 243.26
+    },
+    "s2": {
+      "passed": 2,
+      "seconds": 6.03
+    }
+  },
+  "exit_code": 0,
+  "max_dp_m": 0,
+  "max_angle_rad": 4.4408920985e-16,
+  "source_log": "artifacts/logs/xh-swapv3-gpu-firstbuild-1012.log",
+  "fatal_evidence": "artifacts/tests/fatal-catch/run-1791864744189796369"
+}

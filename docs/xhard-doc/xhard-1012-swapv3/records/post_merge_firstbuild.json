@@ -1,0 +1,16 @@
+{
+  "head": "0bf3a27ee8ada71822e3cf9d05daefd313b52c3e",
+  "lines": [
+    "CORE_SHORT=PASS new_failures=0 baseline_failures=4 passed=473 skipped=2 pytest_exit=1",
+    "SRC_ROBOMME_ZERO_DIFF=PASS base=5419e932",
+    "PRODUCTION_ZERO_DIFF=PASS base=c6d4780e",
+    "VENDOR_BYTES=PASS files=2",
+    "POST_MERGE_REVIEW=PASS merge=0bf3a27ee8ada71822e3cf9d05daefd313b52c3e tests=473_passed_4_baseline_failures files=1"
+  ],
+  "failed_nodes": [
+    "tests/lightweight/test_TaskGoal.py::test_swingxtimes_multiple",
+    "tests/lightweight/test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal",
+    "tests/lightweight/test_step_error_handling.py::test_scripts_use_status_check_not_bare_try_except",
+    "tests/lightweight/test_step_error_handling.py::test_step_error_returns_status_error"
+  ]
+}

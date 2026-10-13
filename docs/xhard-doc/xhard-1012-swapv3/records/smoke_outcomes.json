@@ -1,0 +1,72 @@
+{
+  "head": "0bf3a27ee8ada71822e3cf9d05daefd313b52c3e",
+  "elapsed_s": 112.8,
+  "counts": {
+    "ok": 1,
+    "task_reject": 3,
+    "infra": 0,
+    "unknown": 0
+  },
+  "requested_count": 4,
+  "success_count": 1,
+  "exhausted_count": 3,
+  "peak_rss_mb": 4885.7,
+  "cards": [
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 7,
+      "seed": 5700,
+      "difficulty": "xhard20",
+      "attempt": 0,
+      "ok": true,
+      "task_success": true,
+      "failure_class": null,
+      "error_type": null,
+      "stage": null,
+      "timestep_count": 871,
+      "wall_s": 102.665
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 6500,
+      "difficulty": "xhard20",
+      "attempt": 0,
+      "ok": false,
+      "task_success": false,
+      "failure_class": "task",
+      "error_type": "SwapCollisionError",
+      "stage": "graph",
+      "timestep_count": null,
+      "wall_s": 2.463
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "mother_episode": 15,
+      "seed": 8500,
+      "difficulty": "xhard20",
+      "attempt": 0,
+      "ok": false,
+      "task_success": false,
+      "failure_class": "task",
+      "error_type": "SwapCollisionError",
+      "stage": "graph",
+      "timestep_count": null,
+      "wall_s": 2.919
+    },
+    {
+      "task": "VideoRepick",
+      "mother_episode": 18,
+      "seed": 10800,
+      "difficulty": "xhard20",
+      "attempt": 0,
+      "ok": false,
+      "task_success": false,
+      "failure_class": "task",
+      "error_type": "SwapCollisionError",
+      "stage": "graph",
+      "timestep_count": null,
+      "wall_s": 0.91
+    }
+  ]
+}
