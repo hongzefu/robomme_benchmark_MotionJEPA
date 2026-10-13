@@ -59,6 +59,39 @@ def require_static_slots(states):
                     raise SceneGenerationError(f"对象 {i} 盒体 {j} 的 {key} 不同")
 
 
+def button_shape_poses(articulation):
+    """用已就位的底座根与关节帧推出未按下按帽，不读子连杆世界位姿。"""
+    import sapien
+
+    try:
+        links = {link.get_name(): link for link in articulation.get_links()}
+        if set(links) != {"button_base", "button_cap"}:
+            raise ValueError("按钮连杆集合不符")
+        components = [links[key]._objs for key in ("button_base", "button_cap")]
+        if any(len(items) != 1 for items in components):
+            raise ValueError("按钮必须是单场景关节体")
+        base_component, cap_component = (items[0] for items in components)
+        bases, caps = base_component.get_collision_shapes(), cap_component.get_collision_shapes()
+        if len(bases) != 1 or len(caps) != 1:
+            raise ValueError("按钮必须各有一个底座盒体和按帽圆柱")
+        joints = [joint for joint in articulation.get_joints()
+                  if joint.child_link is not None and joint.child_link.get_name() == "button_cap"]
+        if len(joints) != 1 or len(joints[0]._objs) != 1:
+            raise ValueError("按帽必须有唯一单场景关节")
+        joint = joints[0]._objs[0]
+        if joint.type != "prismatic":
+            raise ValueError("按帽关节不是 prismatic")
+        root = base_component.entity.pose
+        joint_world = root * joint.pose_in_parent
+        axis = bc.quat_to_matrix(bc._normalize_quat(bc._to_numpy(joint_world.q)))[:, 0]
+        if not np.allclose(np.abs(axis), [0, 0, 1], atol=1e-6, rtol=0):
+            raise ValueError("按帽关节 x 轴不是世界竖直方向")
+        cap_link = joint_world * sapien.Pose(p=[0, 0, 0]) * joint.pose_in_child.inv()
+        return root * bases[0].local_pose, cap_link * caps[0].local_pose
+    except Exception as exc:
+        raise SceneGenerationError(f"按钮包络读取失败：{type(exc).__name__}: {exc}") from exc
+
+
 def button_envelope_state(articulation, name):
     """真实底座与圆柱的世界包络，恢复未按下顶面而不写死尺寸。"""
     try:
@@ -75,10 +108,11 @@ def button_envelope_state(articulation, name):
         base, cap = bases[0], caps[0]
         if type(base).__name__ != "PhysxCollisionShapeBox" or type(cap).__name__ != "PhysxCollisionShapeCylinder":
             raise ValueError("按钮碰撞形状类型不符")
-        base_pose = base_component.entity.pose * base.local_pose
-        cap_pose = cap_component.entity.pose * cap.local_pose
+        base_pose, cap_pose = button_shape_poses(articulation)
         bp, cp = bc._to_numpy(base_pose.p), bc._to_numpy(cap_pose.p)
-        br, cr = bc.quat_to_matrix(base_pose.q), bc.quat_to_matrix(cap_pose.q)
+        # SAPIEN 连乘产生 float32 四元数；几何旋转与 ObjectState 同样先转单位四元数。
+        br = bc.quat_to_matrix(bc._normalize_quat(bc._to_numpy(base_pose.q)))
+        cr = bc.quat_to_matrix(bc._normalize_quat(bc._to_numpy(cap_pose.q)))
         half = bc._to_numpy(base.half_size)
         axis = cr[:, 0]
         if not np.allclose(np.abs(axis), [0, 0, 1], atol=1e-6):
@@ -87,9 +121,7 @@ def button_envelope_state(articulation, name):
         qpos = bc._to_numpy(articulation.get_qpos())
         if qpos.size != 1 or not np.all(np.isfinite(qpos)) or qpos[0] > 1e-7:
             raise ValueError("按钮关节必须只有非正的竖直按压位移")
-        # 官方按钮棱柱关节的正向为世界 +z，运行期 qpos 为负；补回按压位移。
-        cp = cp.copy()
-        cp[2] -= float(qpos[0])
+        # 辅助函数直接取关节位移 0；qpos 仅校验，运行期按下不缩小包络。
         be = np.abs(br) @ half
         ce = np.abs(axis) * length + radius * np.sqrt(np.maximum(0, 1 - axis * axis))
         blo, bhi, clo, chi = bp - be, bp + be, cp - ce, cp + ce

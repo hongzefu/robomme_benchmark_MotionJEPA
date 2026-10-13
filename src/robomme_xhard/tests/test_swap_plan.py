@@ -7,6 +7,7 @@ import subprocess
 import numpy as np
 import pytest
 import torch
+import sapien
 
 from robomme_xhard import swap_plan as sp
 from robomme_xhard.collision import bin_collision as bc
@@ -507,17 +508,22 @@ class FakePose:
                         bc.matrix_to_quat(bc.quat_to_matrix(self.q) @ bc.quat_to_matrix(other.q)))
 
 
-def button_fixture(qpos=0.):
-    box = type("PhysxCollisionShapeBox", (), {})()
-    box.half_size, box.local_pose = np.array([.0375, .0375, .0075]), FakePose([0, 0, 0])
-    cap = type("PhysxCollisionShapeCylinder", (), {})()
-    cap.radius, cap.half_length = .0225, .009
-    cap.local_pose = FakePose([0, 0, .009], bc.euler_xyz_to_quat([0, -np.pi/2, 0]))
+def button_fixture(qpos=0., root_xy=(0., 0.)):
+    material = sapien.physx.PhysxMaterial(.5, .5, 0.)
+    box = sapien.physx.PhysxCollisionShapeBox(np.array([.0375, .0375, .0075]), material)
+    cap = sapien.physx.PhysxCollisionShapeCylinder(.0225, .009, material)
+    up = bc.euler_xyz_to_quat([0, -np.pi/2, 0])
+    cap.local_pose = sapien.Pose([0, 0, .009], up)
     def link(name, shape, p):
-        component = SimpleNamespace(entity=SimpleNamespace(pose=FakePose(p)), get_collision_shapes=lambda: [shape])
+        component = SimpleNamespace(entity=SimpleNamespace(pose=sapien.Pose(p)), get_collision_shapes=lambda: [shape])
         return SimpleNamespace(get_name=lambda: name, _objs=[component])
-    links = [link("button_base", box, [0, 0, .0075]), link("button_cap", cap, [0, 0, .015+qpos])]
-    return SimpleNamespace(get_links=lambda: links, get_qpos=lambda: np.array([qpos]))
+    # 子连杆故意停在原点，复现 _load_scene 时它的世界位姿尚未就绪。
+    links = [link("button_base", box, [*root_xy, .0075]), link("button_cap", cap, [0, 0, 0])]
+    native_joint = SimpleNamespace(type="prismatic", pose_in_parent=sapien.Pose([0, 0, .0075], up),
+                                   pose_in_child=sapien.Pose([0, 0, 0], up))
+    joint = SimpleNamespace(child_link=links[1], _objs=[native_joint])
+    return SimpleNamespace(get_links=lambda: links, get_joints=lambda: [joint],
+                           get_qpos=lambda: np.array([qpos]))
 
 
 def test_button_envelope_covers_unpressed_cap_while_pressed():
@@ -531,7 +537,11 @@ def test_button_envelope_covers_unpressed_cap_while_pressed():
 
 def test_button_geometry_fail_loud():
     button = button_fixture()
-    button.get_links()[1]._objs[0].get_collision_shapes()[0].radius = .1
+    old = button.get_links()[1]._objs[0].get_collision_shapes()[0]
+    wide = sapien.physx.PhysxCollisionShapeCylinder(.1, old.half_length,
+                                                 sapien.physx.PhysxMaterial(.5, .5, 0.))
+    wide.local_pose = old.local_pose
+    button.get_links()[1]._objs[0].get_collision_shapes = lambda: [wide]
     with pytest.raises(SceneGenerationError, match="水平投影"):
         sp.button_envelope_state(button, "button")
 
@@ -589,3 +599,78 @@ def test_success_graph_serialization_has_only_numeric_gaps():
     assert set(plan.as_dict()["graph"]) == {"adj", "gaps"}
     restored = json.loads(json.dumps(plan.as_dict()))
     assert restored["graph"] == plan.graph
+
+
+def test_button_loadtime_cpu_nonzero_root_and_unready_cap(capsys):
+    xy = (-.20180713, -.08491591)
+    button = button_fixture(root_xy=xy)
+    assert np.array_equal(button.get_links()[1]._objs[0].entity.pose.p, [0, 0, 0])
+    base_pose, cap_pose = sp.button_shape_poses(button)
+    assert isinstance(base_pose, sapien.Pose) and isinstance(cap_pose, sapien.Pose)
+    assert np.allclose(cap_pose.p, [*xy, .024], atol=1e-7, rtol=0)
+    envelope = sp.button_envelope_state(button, "button")
+    assert np.allclose(envelope.p-envelope.shapes[0].half, [*np.subtract(xy, .0375), 0], atol=1e-7, rtol=0)
+    assert np.allclose(envelope.p+envelope.shapes[0].half, [*np.add(xy, .0375), .033], atol=1e-7, rtol=0)
+    with capsys.disabled():
+        print("\nBUTTON_LOADTIME_CPU=PASS")
+
+
+def test_button_shape_pose_transform_order_and_child_inverse():
+    button = button_fixture(root_xy=(.18, -.12))
+    links = button.get_links()
+    root = sapien.Pose([.18, -.12, .0075], bc.euler_xyz_to_quat([0, 0, .31]))
+    links[0]._objs[0].entity.pose = root
+    joint = button.get_joints()[0]._objs[0]
+    parent_rotation = bc.quat_to_matrix(bc.euler_xyz_to_quat([0, 0, .27])) @ bc.quat_to_matrix(bc.euler_xyz_to_quat([0, -np.pi/2, 0]))
+    joint.pose_in_parent = sapien.Pose([.013, -.009, .011], bc.matrix_to_quat(parent_rotation))
+    joint.pose_in_child = sapien.Pose([-.005, .007, .002], bc.euler_xyz_to_quat([.11, -.22, .39]))
+    def matrix(pose):
+        out = np.eye(4)
+        out[:3, :3], out[:3, 3] = bc.quat_to_matrix(bc._normalize_quat(np.asarray(pose.q, dtype=np.float64))), pose.p
+        return out
+    base_shape = links[0]._objs[0].get_collision_shapes()[0]
+    cap_shape = links[1]._objs[0].get_collision_shapes()[0]
+    expected = matrix(root) @ matrix(joint.pose_in_parent) @ np.linalg.inv(matrix(joint.pose_in_child)) @ matrix(cap_shape.local_pose)
+    actual_base, actual_cap = sp.button_shape_poses(button)
+    assert np.allclose(matrix(actual_base), matrix(root) @ matrix(base_shape.local_pose), atol=2e-7, rtol=0)
+    assert np.allclose(matrix(actual_cap), expected, atol=2e-7, rtol=0)
+    wrong = matrix(root) @ matrix(joint.pose_in_parent) @ matrix(joint.pose_in_child) @ matrix(cap_shape.local_pose)
+    assert not np.allclose(expected, wrong, atol=1e-4, rtol=0)
+
+
+@pytest.mark.parametrize("fault", ["missing_joint", "duplicate_joint", "wrong_child", "wrong_type",
+                                   "wrong_axis", "missing_parent_frame", "missing_child_frame",
+                                   "qpos_positive", "qpos_nan", "qpos_many"])
+def test_button_loadtime_fail_loud(fault):
+    button = button_fixture(root_xy=(.15, -.1))
+    joints = button.get_joints()
+    native = joints[0]._objs[0]
+    if fault == "missing_joint":
+        button.get_joints = lambda: []
+    elif fault == "duplicate_joint":
+        button.get_joints = lambda: joints*2
+    elif fault == "wrong_child":
+        joints[0].child_link = button.get_links()[0]
+    elif fault == "wrong_type":
+        native.type = "revolute"
+    elif fault == "wrong_axis":
+        native.pose_in_parent = sapien.Pose([0, 0, .0075])
+    elif fault == "missing_parent_frame":
+        del native.pose_in_parent
+    elif fault == "missing_child_frame":
+        del native.pose_in_child
+    else:
+        values = {"qpos_positive": [1e-6], "qpos_nan": [float("nan")], "qpos_many": [0., 0.]}
+        button.get_qpos = lambda: np.array(values[fault])
+    with pytest.raises(SceneGenerationError, match="按钮包络读取失败"):
+        sp.button_envelope_state(button, "button")
+
+
+def test_button_envelope_never_reads_cap_entity_pose():
+    class UnreadableEntity:
+        @property
+        def pose(self):
+            pytest.fail("生产推导不得读取按帽 entity.pose")
+    button = button_fixture(root_xy=(-.20180713, -.08491591))
+    button.get_links()[1]._objs[0].entity = UnreadableEntity()
+    assert sp.button_envelope_state(button, "button").shapes

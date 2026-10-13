@@ -23,6 +23,7 @@ from robomme_xhard.envs.button_unmask_swap import ButtonUnmaskSwapXHard
 from robomme_xhard.envs.video_repick import VideoRepickXHard
 from robomme_xhard.envs.video_unmask_swap import VideoUnmaskSwapXHard
 from robomme_xhard.swap_plan import SwapCollisionMixin
+from robomme_xhard import swap_plan as sp
 
 
 # 官网类内顺序：永久性两项，然后参考类 VideoRepick。
@@ -240,3 +241,47 @@ def test_isolated_slot_seed_rejected_at_graph():
     finally:
         if env is not None:
             env.close()
+
+
+@pytest.mark.gpu
+def test_button_pose_loadtime_matches_initialized_geometry(monkeypatch):
+    """认证时捕获推导值，reset 后以真实子连杆世界位姿独立对照三个按钮。"""
+    captured = {}
+    original = sp.button_shape_poses
+    def capture(articulation):
+        base_pose, cap_pose = original(articulation)
+        captured[id(articulation)] = (np.asarray(cap_pose.p, dtype=np.float64).copy(),
+                                      np.asarray(cap_pose.q, dtype=np.float64).copy())
+        return base_pose, cap_pose
+    monkeypatch.setattr(sp, "button_shape_poses", capture)
+    buttons, max_dp, max_angle = 0, 0., 0.
+    for task, seed, expected_count in (("ButtonUnmaskSwap", 7700, 2), ("VideoRepick", 13600, 1)):
+        env = _make(task, seed)
+        try:
+            captured.clear()
+            env.reset(seed=seed, options={"reconfigure": True})
+            bystanders = env.unwrapped._bystander_actors()
+            assert len(bystanders) == expected_count
+            assert set(captured) == {id(button) for button in bystanders}
+            for button in bystanders:
+                qpos = bc._to_numpy(button.get_qpos())
+                assert np.array_equal(qpos, np.zeros(1))
+                links = {link.get_name(): link for link in button.get_links()}
+                component = links["button_cap"]._objs[0]
+                shapes = component.get_collision_shapes()
+                assert len(shapes) == 1
+                actual = component.entity.pose * shapes[0].local_pose
+                derived_p, derived_q = captured[id(button)]
+                actual_p, actual_q = np.asarray(actual.p, dtype=np.float64), np.asarray(actual.q, dtype=np.float64)
+                dp = float(np.linalg.norm(derived_p-actual_p))
+                relative = bc.quat_to_matrix(bc._normalize_quat(derived_q)).T @ bc.quat_to_matrix(bc._normalize_quat(actual_q))
+                qrelative = bc.matrix_to_quat(relative)
+                angle = float(2*np.arctan2(np.linalg.norm(qrelative[1:]), abs(qrelative[0])))
+                assert np.allclose(derived_p, actual_p, atol=1e-6, rtol=0)
+                assert dp <= 1e-6 and angle <= 1e-6
+                buttons += 1
+                max_dp, max_angle = max(max_dp, dp), max(max_angle, angle)
+        finally:
+            env.close()
+    assert buttons == 3
+    print(f"BUTTON_POSE_LOADTIME=PASS buttons={buttons} max_dp_m={max_dp:.12g} max_angle_rad={max_angle:.12g}")
