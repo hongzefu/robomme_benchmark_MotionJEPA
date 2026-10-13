@@ -37,8 +37,10 @@ OLD_ARGVS = [
     ["--output-dir", "OUT", "--env", "BinFill,RouteStick", "--episodes", "4", "--workers", "3", "--gpus", "0,1",
      "--max-attempts", "5", "--no-limit-threads", "--max-tasks-per-child", "0", "--affinity", "per-gpu"],
 ]
-NEW_ARG_DEFAULTS = {"mother_manifest": None, "with_mother": False, "mother_rank": None}
-NEW_JOB_DEFAULTS = {"card_role": None, "make_name": None, "source_difficulty": None}
+NEW_ARG_DEFAULTS = {"mother_manifest": None, "with_mother": False, "mother_rank": None,
+                    "difficulty_cycle": None, "stop_on_pool_crash": False}
+NEW_JOB_DEFAULTS = {"card_role": None, "make_name": None, "source_difficulty": None,
+                    "xhard_values": (), "recovery": "auto"}
 
 
 def _exec_module(name: str, source: str) -> types.ModuleType:
