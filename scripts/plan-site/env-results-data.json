@@ -6300,13 +6300,13 @@
             "extra": 1,
             "pre_probability": 0.5
           },
-          "knob": "a=1组额外抓放（前/后各50%）"
+          "knob": "a=1组额外抓放（演示按键前或后，各50%概率）"
         },
         "xhard14": {
           "config": {
             "extra": 2
           },
-          "knob": "a=2组额外抓放（前后各1组）"
+          "knob": "a=2组额外抓放（演示按键前后各1组）"
         },
         "xhard16": null,
         "xhard18": null,
