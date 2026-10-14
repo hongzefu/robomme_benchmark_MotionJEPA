@@ -28,7 +28,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 NEWSEED_DIR = SCRIPT_DIR.parent
 GENERATOR = NEWSEED_DIR / "generate_dataset_newseed.py"
 REPO_ROOT = SCRIPT_DIR.parents[2]
-DEFAULT_CELLS = "L32:32:0,1,2,3:on;L64:64:0,1,2,3,4,5,6,7:on;L128:128:0,1,2,3,4,5,6,7:on"
+DEFAULT_CELLS = "L32:32:0,4,1,5:on;L64:64:0,1,4,5,2,3,6,7:on;L96:96:0,1,4,5,2,3,6,7:on"
 MIXED_CYCLE = ("easy", "medium", "hard", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20")
 TASK_ORDER = ("BinFill", "PickXtimes", "SwingXtimes", "StopCube", "VideoUnmask", "ButtonUnmask",
               "VideoUnmaskSwap", "ButtonUnmaskSwap", "PickHighlight", "VideoRepick", "VideoPlaceButton",

@@ -178,11 +178,11 @@ UV_CACHE_DIR='<工作盘>/.cache/uv' uv run --no-sync python scripts/data-genera
   --probe P8:8:0:on \
   --probe-env BinFill,PickXtimes,SwingXtimes,VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick,PatternLock,RouteStick \
   --probe-episode-start 6 --probe-episodes 2 \
-  --cells 'L32:32:0,1,2,3:on;L64:64:0,1,2,3,4,5,6,7:on;L128:128:0,1,2,3,4,5,6,7:on' \
+  --cells 'L32:32:0,4,1,5:on;L64:64:0,1,4,5,2,3,6,7:on;L96:96:0,1,4,5,2,3,6,7:on' \
   --mem-guard-gb 40 --mem-margin 1.2 --cell-timeout-min 90
 ```
 
-将 `<工作盘>` 替换为已判定的 AWS 工作盘。默认档位即上面的 L32／L64／L128，默认
+将 `<工作盘>` 替换为已判定的 AWS 工作盘。默认档位即上面的 L32／L64／L96，默认
 `--episodes 24`、`--episode-start 0`、`--affinity per-gpu`、`--max-attempts 100`；
 循环必须显式传入，与测速的 `--difficulty` 互斥，否则旧默认仍是比例 `211`，无法满足重档探针。
 档位字段为 `名称:worker数:物理GPU号:on|off`，档间用分号；GPU 号不能重复，worker 数须整除卡数。
@@ -190,9 +190,16 @@ UV_CACHE_DIR='<工作盘>/.cache/uv' uv run --no-sync python scripts/data-genera
 | 阶段 | worker 与 GPU | 工作负载／限制 |
 | --- | --- | --- |
 | P8 探针 | 卡 0，8 worker | 上述 8 个八档任务各 ep6–7，共 16 条，全部是 xhard18／20；上限 30 分钟 |
-| L32 | 32 worker，卡 0–3，每卡 8 | 16 任务各 24 条，共 384 条 |
-| L64 | 64 worker，卡 0–7，每卡 8 | 同一 384 条请求 |
-| L128 | 128 worker，卡 0–7，每卡 16 | 同一 384 条请求，384=3×128 |
+| L32 | 32 worker，卡 0,4,1,5，每卡 8 | 16 任务各 24 条，共 384 条 |
+| L64 | 64 worker，卡 0,1,4,5,2,3,6,7，每卡 8 | 同一 384 条请求 |
+| L96 | 96 worker，卡 0,1,4,5,2,3,6,7，每卡 12 | 同一 384 条请求，384 ≥ 3×96 |
+
+卡序这样写是为了 NUMA 对齐：AWS p4de 的 node0 为 CPU 0–23,48–71、挂 GPU 0–3，
+node1 为 CPU 24–47,72–95、挂 GPU 4–7。生成器 `_cpu_plan` 按 `sorted(os.sched_getaffinity(0))`
+的顺序把 CPU 均分给给定卡序（卡序不排序），所以 L32 写 `0,4,1,5` 时每卡 24 个逻辑 CPU：
+GPU0←0–23、GPU4←24–47、GPU1←48–71、GPU5←72–95；八卡档写 `0,1,4,5,2,3,6,7` 时每卡 12 个：
+0←0–11、1←12–23、4←24–35、5←36–47、2←48–59、3←60–71、6←72–83、7←84–95，全部落在本卡所属节点。
+2026-10-13 用户裁决：AWS 阶梯改为 L32／L64／L96，原 128 worker 档删除、L48 仍跳过。
 
 探针必须单卡 8 worker、完成 16 条且成功档集合恰为 xhard18／20，单 worker RSS、
 显存与单卡容量须为正，才写 `MEM_PROBE=PASS` 并继续阶梯。`--probe-env`、
