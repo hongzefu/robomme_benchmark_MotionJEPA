@@ -64,9 +64,11 @@ def _eligible(workers, throughput=100):
 def test_default_cells_and_divisibility():
     cells = calib.parse_cells(calib.DEFAULT_CELLS)
     assert [(cell.name, cell.workers, len(cell.gpu_ids)) for cell in cells] == [
-        ("L32", 32, 4), ("L64", 64, 8), ("L128", 128, 8)
+        ("L32", 32, 4), ("L64", 64, 8), ("L96", 96, 8)
     ]
-    assert [cell.workers // len(cell.gpu_ids) for cell in cells] == [8, 8, 16]
+    assert [cell.workers // len(cell.gpu_ids) for cell in cells] == [8, 8, 12]
+    # 卡序按 NUMA 交错：L32 每卡 24 个逻辑 CPU，八卡档每卡 12 个，均落在本卡所属节点。
+    assert [cell.gpus for cell in cells] == ["0,4,1,5", "0,1,4,5,2,3,6,7", "0,1,4,5,2,3,6,7"]
 
 
 @pytest.mark.parametrize("text", ["", "L:0:0:on", "L:33:0,1:on", "L:32:0,0:on",
