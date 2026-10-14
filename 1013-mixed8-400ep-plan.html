@@ -118,7 +118,7 @@ a { color:var(--accent); }
 <tr><td>S1c</td><td>vail</td><td>W5 填语义规则与豁免清单草案 → 用户批准豁免 → 第一次正式校验 → 完整报告</td><td>校验约 1 分钟</td><td>四条校验判定行（第一次）</td></tr>
 <tr><td>S2</td><td>AWS（用户启动）</td><td>只读判定 → vail 提交环境 C 列 → AWS 检出锁定 SHA、<code>uv sync</code>、渲染探针、复跑 smoke 一</td><td>约 1 小时</td><td><code>ENV_C</code>、<code>SMOKE1</code></td></tr>
 <tr><td>S3a</td><td>AWS 卡 0</td><td>内存探针 P8：8 worker 单卡跑 16 条 xhard18／20，量单 worker 峰值内存与显存</td><td>16 条，约 15 分钟</td><td><code>MEM_PROBE</code></td></tr>
-<tr><td>S3b</td><td>AWS 多卡</td><td>测速阶梯 L32（卡 0–3）、L64、L128（卡 0–7）；L48 跳过；预估超内存的档也跳过</td><td>每档 384 条、每档上限 90 分钟；合计约 2–4 小时</td><td><code>CALIB</code></td></tr>
+<tr><td>S3b</td><td>AWS 多卡</td><td>测速阶梯 L32（卡 0,4,1,5）、L64、L96（卡 0,1,4,5,2,3,6,7，按 NUMA 分组）；L48 跳过；预估超内存的档也跳过</td><td>每档 384 条、每档上限 90 分钟；合计约 2–4 小时</td><td><code>CALIB</code></td></tr>
 <tr><td>S4</td><td>AWS 多卡</td><td>vail 打 Beta commit → AWS 检出该 SHA → tmux 全量 16 任务 ep0–399，W* worker</td><td>6400 条，按 S3 实测估；无压缩 1.2–1.6 TB</td><td><code>GEN_FULL</code></td></tr>
 <tr><td>S5</td><td>AWS → vail</td><td>第二次校验、全量身份对账、跨机器对拍只报数；留档 rsync 回 vail 提交</td><td>约 10 分钟加传输</td><td>四条校验判定行、<code>IDENTITY_AUDIT</code>、<code>XMACHINE_JOINT_DIFF</code>（不设闸门）</td></tr>
 </table>
@@ -299,7 +299,7 @@ a { color:var(--accent); }
 </table>
 
 <h3 id="h3-4">3.4 测速：先量内存，再跑阶梯</h3>
-<p>测速分两步。<strong>第一步内存探针 P8</strong>：卡 0 上 8 个 worker，跑八档任务中 6 个（BinFill、PickXtimes、SwingXtimes、VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick）的 ep6–7 外加 PatternLock、RouteStick 的 ep6–7，即全部是最重的 xhard18／xhard20，共 16 条；记单 worker 峰值内存 <code>R</code>（GB）、卡 0 峰值显存除以 8 得单 worker 显存 <code>V</code>，以及本机实测可用内存 <code>M</code>、单卡显存 <code>G</code>。<strong>第二步阶梯</strong>：档位 L32（卡 0–3，每卡 8）、L64（卡 0–7，每卡 8）、L128（卡 0–7，每卡 16），L48 按用户原话跳过；每档 16 任务各 24 条共 384 条，八档全部覆盖，且 384 &gt; 2×128+1，三档都能剔除首尾得到真正的稳态窗口。每档起跑前做准入：<code>W×R×1.2 + 40 ≤ M</code> 且 <code>(W/卡数)×V×1.2 ≤ G</code>，不满足就不跑、记 <code>skipped_by=mem_budget</code>。运行中三道闸：生成器开关 <code>--stop-on-pool-crash</code>（第一次池崩溃即自停、非零退出）、可用内存低于 40 GB、单档超 90 分钟；任一触发都整组终止该档进程并停住阶梯。W* 取所有跑完且稳态窗口有效的档中，稳态吞吐达最高值 97% 的最小 worker 数。</p>
+<p>测速分两步。<strong>第一步内存探针 P8</strong>：卡 0 上 8 个 worker，跑八档任务中 6 个（BinFill、PickXtimes、SwingXtimes、VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick）的 ep6–7 外加 PatternLock、RouteStick 的 ep6–7，即全部是最重的 xhard18／xhard20，共 16 条；记单 worker 峰值内存 <code>R</code>（GB）、卡 0 峰值显存除以 8 得单 worker 显存 <code>V</code>，以及本机实测可用内存 <code>M</code>、单卡显存 <code>G</code>。<strong>第二步阶梯</strong>：档位 L32（卡 0,4,1,5，每卡 8）、L64（卡 0,1,4,5,2,3,6,7，每卡 8）、L96（卡 0,1,4,5,2,3,6,7，每卡 12），L48 按用户原话跳过；卡序按 AWS p4de 的 NUMA 分组写（GPU 0–3 属 node0＝CPU 0–23,48–71，GPU 4–7 属 node1＝CPU 24–47,72–95；生成器 <code>_cpu_plan</code> 按 CPU 编号顺序切给传入卡序，这样写每个池恰好绑在本侧节点）；三档取法见下文「实施中调整」的 AWS 阶梯条目（原第三档按内存准入必被跳过）；每档 16 任务各 24 条共 384 条，八档全部覆盖，且 384 &gt; 2×96+1，三档都能剔除首尾得到真正的稳态窗口。每档起跑前做准入：<code>W×R×1.2 + 40 ≤ M</code> 且 <code>(W/卡数)×V×1.2 ≤ G</code>，不满足就不跑、记 <code>skipped_by=mem_budget</code>。运行中三道闸：生成器开关 <code>--stop-on-pool-crash</code>（第一次池崩溃即自停、非零退出）、可用内存低于 40 GB、单档超 90 分钟；任一触发都整组终止该档进程并停住阶梯。W* 取所有跑完且稳态窗口有效的档中，稳态吞吐达最高值 97% 的最小 worker 数。</p>
 <p>判定 <code>CALIB=PASS probe_rss_gb=&lt;R&gt; probe_vram_gb=&lt;V&gt; cells_run=&lt;n&gt; skipped=&lt;档名|none&gt; best_workers=&lt;W*&gt; crashed_at=&lt;W|none&gt;</code>；PASS 条件：P8 跑完且 L32 跑完、稳态窗口有效。</p>
 
 <h3 id="h3-5">3.5 新机器（AWS 8 卡）接入</h3>
@@ -352,6 +352,8 @@ a { color:var(--accent); }
 <h3 id="implementation-adjustments">实施中调整</h3>
 <p><strong>停池动作补齐</strong>：开工锚点 <code>94c6a90b312c35ebf1a47940cd4d8159523212ce</code>，W2 实现时核实本机 CPython 3.11.14：仅 <code>shutdown(cancel_futures=True)</code> 不能终止已运行的 worker，可能在隔离后继续写产物。仅在循环模式开启 <code>--stop-on-pool-crash</code> 的首次损坏支路，先保存各池现存 <code>_processes</code> 快照、终止并等待全部 worker 退出，再关闭 executor、隔离在途产物、写摘要并以 3 退出；默认重建路径不变。改动仅落 W2 生成器的既有停止支路与对应测试，不新增开关、守卫、重试或回退。独立只读对抗验证锚定 <code>1aad348dd6f5c60451501be96e1d339903a20fd3</code>，结论 <code>ADJUST_REVIEW=PASS scale=same findings=0</code>；主会话核实源码后按同等规模继续，实际行为待 W2 验证。</p>
 <p><strong>语义计数表达式补齐</strong>：smoke 二结束后，W5 取得真实 H5 边界：PatternLock 的长度 L 对应演示和执行各 L−1 次移动，合计 <code>2L−2</code>；RouteStick 的边数 S 对应两段各 S 次，合计 <code>2S</code>。原有常数／旋钮／旋钮加常数表达式不能跨档表示倍率，不能把可数项当豁免。新增 <code>knob_affine:&lt;名&gt;:&lt;倍率&gt;:&lt;偏移&gt;</code>，只按 <code>int(knob) * int(倍率) + int(偏移)</code> 算期望值，复用正则计数；PatternLock 用 2、−2，RouteStick 用 2、0，应查集合仍为 80 项。W5 由原 W3 写者续任，写集增加 <code>check_mixed_h5.py::semantic_checks</code> 的小分支及对应测试，不新增字段、开关、守卫、回退或依赖。独立只读审查锚定 <code>76572b215c9cc7ccbf07c725297dd0ef3403b799</code>，<code>ADJUST_REVIEW=PASS scale=same findings=0</code>；主会话核实后按同等规模继续。</p>
+<p><strong>冻结源码遮盖修复</strong>：旧：<code>src/robomme/robomme_env/SwingXtimes.py</code>、<code>VideoRepick.py</code>、<code>VideoPlaceOrder.py</code> 先显式导入 <code>SceneGenerationError</code> 再 <code>from .utils import *</code>，异常类被同名模块遮盖，拥挤采样失败变成 <code>TypeError</code>、按「代码异常」三振放弃身份（smoke 二唯一耗尽 VideoPlaceOrder ep3/xhard12 即此因；全量按 smoke 二命中率估 VideoPlaceOrder 预期丢约 42 条、区间 6–162）→ 新：三文件各对调相邻两行，与 <code>VideoPlaceButton.py</code> 顺序一致，新增测试 <code>src/robomme_xhard/tests/test_scene_error_binding.py</code>。理由：让拥挤采样失败按任务性失败走 <code>attempt+1</code> 重试，而不是被误判为代码异常放弃。改动文件：上述三个冻结源码文件与一个新测试。规模：3 文件各 2 行。裁决：用户 2026-10-13 原话「同意修复然后把AWS改成这三档」（P1 逐文件批准）。</p>
+<p><strong>AWS 测速阶梯改档与 NUMA 卡序</strong>：旧：L32／L64／L128，卡序 <code>0,1,2,3</code>／<code>0..7</code> → 新：L32（卡 0,4,1,5）／L64（卡 0,1,4,5,2,3,6,7）／L96（卡 0,1,4,5,2,3,6,7，每卡 12）。理由：按物理核 48 线性外推最近档为 L64、按 vCPU 96 为 L96；L128 按内存准入式 <code>W×R×1.2+40</code> 在 R=8.4–9.5 GB 时需 1330–1499 GiB，超过 1121 GiB 必被跳过；原卡序会让一半的池绑到对侧 NUMA 节点。改动文件：<code>scripts/data-generation-newSeed/utils/calibrate_parallelism.py</code> 的 <code>DEFAULT_CELLS</code>、<code>tests/lightweight/test_calibrate_cells.py</code>、生成器目录 <code>CLAUDE.md</code>、本计划。规模：常量与文档。裁决：同一句用户原话「同意修复然后把AWS改成这三档」。</p>
 
 <h2 id="h6">六、子代理分工与合并（简述）</h2>
 <p>代码拆五块、各自独立 worktree：W1 只动 <code>seed_layout.py</code> 及其测试；W2 只动生成器、它的新测试，以及 <code>test_jobs.py</code> 里两个「新增字段默认值」常量，依赖 W1 先合；W3 新建校验与对账工具、规则表骨架，从原版副本导出 16 份 golden；W4 只动测速脚本及其测试。W2／W3／W4 同批派出，按 W2 → W3 → W4 合回。W6 在 W2、W4 合入后单独改生成器目录的 <code>CLAUDE.md</code>（唯一写者）。smoke 二后派 W5 填规则，豁免清单先交用户批准再合入。每次合并前核对改动文件在可写集合内、worktree 内复跑短测、派一个 sonnet 审查代理；<code>--no-ff</code> 合入后主检出再跑短测与受保护目录检查，PASS 即 push。smoke、测速、全量由主会话按 runbook 执行。</p>
@@ -402,7 +404,7 @@ a { color:var(--accent); }
 <tr><td>其余 10 个有 xhard 档的任务</td><td>smoke 二后由 W5 依 <code>dump-subgoals</code> 填</td><td>各自旋钮</td><td>数不出的项（如 StopCube <code>stop_k</code>）进 <code>EXEMPT</code> 草案，用户批准后才合入（K14）</td></tr>
 </table>
 <h3>1.5 测速</h3>
-<p><code>calibrate_parallelism.py</code> 新增：<code>--difficulty-cycle</code>（有则替换 <code>--difficulty</code>）、<code>--episode-start</code>、<code>--max-attempts</code>、<code>--affinity</code> 透传给生成器，并给生成器加 <code>--stop-on-pool-crash</code>；<code>--probe P8:8:0:on --probe-env &lt;8 个八档任务&gt; --probe-episode-start 6 --probe-episodes 2</code> 先跑探针档，从已有 <code>ResourceSampler</code> 取单 worker 峰值 RSS 与卡 0 峰值显存；<code>DEFAULT_CELLS = "L32:32:0,1,2,3:on;L64:64:0,1,2,3,4,5,6,7:on;L128:128:0,1,2,3,4,5,6,7:on"</code>；<code>--mem-guard-gb 40</code>、<code>--cell-timeout-min 90</code>、<code>--mem-margin 1.2</code>。生成器子进程以 <code>start_new_session=True</code> 启动；终止一律 <code>os.killpg(pgid, SIGTERM)</code>、等 30 秒、仍有存活进程再 <code>SIGKILL</code>，之后用 <code>psutil</code> 核对该进程组零残留并写入结果。档目录已存在即报错退出（不再 <code>rmtree</code>）；<code>--keep-artifacts</code> 默认仍删除 h5 与视频，但保留 <code>episode_results.jsonl</code>、<code>run_summary.json</code> 与内层 <code>generate.log</code>。外层日志实时转发内层日志中的 <code>进程池已损坏</code>、<code>stopped_by</code>、<code>aborted_by</code>、<code>skipped_by</code> 行，供 Monitor 监听。worker 均分到各卡要求整除（32/4、64/8、128/8）。参考数据：留档中 xhard 单 worker 峰值 RSS 7.0–9.2 GB（<code>docs/xhard-doc/xhard-1012-*</code>、<code>xhard-1011</code>）；<code>scripts/data-generation-newSeed/CLAUDE.md</code>「十、并行度标定」记载 2026-08-17 单卡 W=44 池崩溃 264 次。</p>
+<p><code>calibrate_parallelism.py</code> 新增：<code>--difficulty-cycle</code>（有则替换 <code>--difficulty</code>）、<code>--episode-start</code>、<code>--max-attempts</code>、<code>--affinity</code> 透传给生成器，并给生成器加 <code>--stop-on-pool-crash</code>；<code>--probe P8:8:0:on --probe-env &lt;8 个八档任务&gt; --probe-episode-start 6 --probe-episodes 2</code> 先跑探针档，从已有 <code>ResourceSampler</code> 取单 worker 峰值 RSS 与卡 0 峰值显存；<code>DEFAULT_CELLS = "L32:32:0,4,1,5:on;L64:64:0,1,4,5,2,3,6,7:on;L96:96:0,1,4,5,2,3,6,7:on"</code>；<code>--mem-guard-gb 40</code>、<code>--cell-timeout-min 90</code>、<code>--mem-margin 1.2</code>。生成器子进程以 <code>start_new_session=True</code> 启动；终止一律 <code>os.killpg(pgid, SIGTERM)</code>、等 30 秒、仍有存活进程再 <code>SIGKILL</code>，之后用 <code>psutil</code> 核对该进程组零残留并写入结果。档目录已存在即报错退出（不再 <code>rmtree</code>）；<code>--keep-artifacts</code> 默认仍删除 h5 与视频，但保留 <code>episode_results.jsonl</code>、<code>run_summary.json</code> 与内层 <code>generate.log</code>。外层日志实时转发内层日志中的 <code>进程池已损坏</code>、<code>stopped_by</code>、<code>aborted_by</code>、<code>skipped_by</code> 行，供 Monitor 监听。worker 均分到各卡要求整除（32/4、64/8、96/8）。参考数据：留档中 xhard 单 worker 峰值 RSS 7.0–9.2 GB（<code>docs/xhard-doc/xhard-1012-*</code>、<code>xhard-1011</code>）；<code>scripts/data-generation-newSeed/CLAUDE.md</code>「十、并行度标定」记载 2026-08-17 单卡 W=44 池崩溃 264 次。</p>
 
 <h2 id="t2">二、逐文件改动清单</h2>
 <table>
@@ -510,11 +512,11 @@ tmux new-session -d -s xh-mixed8-calib "set -o pipefail; PYTHONUNBUFFERED=1 \
   --difficulty-cycle easy,medium,hard,xhard12,xhard14,xhard16,xhard18,xhard20 \
   --probe P8:8:0:on --probe-env BinFill,PickXtimes,SwingXtimes,VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick,PatternLock,RouteStick \
   --probe-episode-start 6 --probe-episodes 2 \
-  --cells 'L32:32:0,1,2,3:on;L64:64:0,1,2,3,4,5,6,7:on;L128:128:0,1,2,3,4,5,6,7:on' \
+  --cells 'L32:32:0,4,1,5:on;L64:64:0,1,4,5,2,3,6,7:on;L96:96:0,1,4,5,2,3,6,7:on' \
   --mem-guard-gb 40 --mem-margin 1.2 --cell-timeout-min 90 \
   2&gt;&amp;1 | tee artifacts/logs/mixed8-calib.log; echo \"EXIT_CODE=\$?\" &gt;&gt; artifacts/logs/mixed8-calib.log"
 # Monitor 过滤词：R-2 的全部 + "MEM_PROBE=|CALIB=|stopped_by|aborted_by|skipped_by"
-# 末行 MEM_PROBE=… 与 CALIB=…；W* 对应的卡列表记为 GPUS*</code></pre>
+# 末行 MEM_PROBE=… 与 CALIB=…；W* 对应的卡列表记为 GPUS*（照抄该档的 NUMA 卡序，如 0,1,4,5,2,3,6,7）</code></pre>
 <p><strong>R-6 全量</strong>（vail 先打 Beta commit 并 push，body 写完整命令、W*、GPUS*、硬件与磁盘；AWS <code>git fetch</code> 后检出该 SHA，<code>git status --short</code> 为空）：</p>
 <pre><code>test ! -e artifacts/mixed8/full
 tmux new-session -d -s xh-mixed8-full-&lt;MMDD&gt; "set -o pipefail; PYTHONUNBUFFERED=1 \
@@ -537,7 +539,7 @@ uv run --no-sync python -m robomme_xhard.tools.check_mixed_h5 check --output-dir
 <table>
 <tr><th>风险</th><th>影响</th><th>对策</th></tr>
 <tr><td>xhard 子类在公式 seed 上的通过率未知（只在每任务 2–10 个母 seed 验证过；swapv3 一轮 180 卡失败 50 张）</td><td>重试把全量耗时抬高数倍，个别 episode 可能用尽 100 次</td><td>G4 报告尝试次数表；全量 <code>PARTIAL</code> 交用户（K10）</td></tr>
-<tr><td>AWS 核数与内存未知</td><td>L128 可能因 CPU 争用而无收益，或被内存准入跳过</td><td>探针与准入先挡；W* 只从跑完的档里选</td></tr>
+<tr><td>AWS 核数与内存未知</td><td>L96 可能因 CPU 争用而无收益，或被内存准入跳过；卡序若不按 NUMA 分组，一半的池会绑到对侧节点</td><td>探针与准入先挡；W* 只从跑完的档里选</td></tr>
 <tr><td>全量不设运行期内存护栏</td><td>W* 档若在全量中途遇更长尾的 episode 可能吃紧</td><td>W* 已过准入（含 1.2 余量与最重档探针）；Monitor 盯 <code>out of memory</code>、<code>进程池已损坏</code></td></tr>
 <tr><td><code>importlib</code> 独立加载 <code>configs.py</code> 若将来加包内导入会失效</td><td>父进程 ImportError</td><td>用例守住；失效即报错不回退</td></tr>
 <tr><td>golden 与现生成器字段差异超出 <code>excluded_keys</code> 与变长白名单</td><td><code>H5_SCHEMA</code> FAIL</td><td>第一次校验暴露并报告；白名单增项先告知用户</td></tr>
