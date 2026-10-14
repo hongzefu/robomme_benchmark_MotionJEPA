@@ -1,0 +1,17 @@
+{
+  "SwingXtimes": {
+    "binding_type": "module",
+    "is_module": true,
+    "binding_file": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/src/robomme/robomme_env/utils/SceneGenerationError.py"
+  },
+  "VideoRepick": {
+    "binding_type": "module",
+    "is_module": true,
+    "binding_file": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/src/robomme/robomme_env/utils/SceneGenerationError.py"
+  },
+  "VideoPlaceOrder": {
+    "binding_type": "module",
+    "is_module": true,
+    "binding_file": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/src/robomme/robomme_env/utils/SceneGenerationError.py"
+  }
+}

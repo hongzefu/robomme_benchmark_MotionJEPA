@@ -1,0 +1,64 @@
+{
+  "parameters": {
+    "output_dir": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/mixed8/smoke1",
+    "env": "VideoUnmaskSwap",
+    "tasks": [
+      "VideoUnmaskSwap"
+    ],
+    "episodes": 1,
+    "episode_start": 3,
+    "workers": 1,
+    "gpus": [
+      "0"
+    ],
+    "seed_layout": "train",
+    "difficulty_ratio": null,
+    "difficulty_cycle": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard12",
+      "xhard14",
+      "xhard16",
+      "xhard18",
+      "xhard20"
+    ],
+    "max_attempts": 100,
+    "limit_threads": true,
+    "max_tasks_per_child": 8,
+    "affinity": "none",
+    "save_video_for_recording": true,
+    "effective_cycles": {
+      "VideoUnmaskSwap": [
+        "easy",
+        "medium",
+        "hard",
+        "xhard12",
+        "xhard14",
+        "xhard16",
+        "xhard18",
+        "xhard20"
+      ]
+    },
+    "recovery_assignment": {
+      "VideoUnmaskSwap": {
+        "z": [
+          0,
+          1,
+          2
+        ],
+        "xy": [
+          8,
+          9,
+          10
+        ]
+      }
+    }
+  },
+  "requested_count": 1,
+  "success_count": 1,
+  "exhausted_count": 0,
+  "elapsed_s": 42.2,
+  "throughput_ep_per_min": 1.42,
+  "peak_rss_mb": 3601.7
+}

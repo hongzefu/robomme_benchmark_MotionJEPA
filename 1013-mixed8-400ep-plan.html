@@ -337,6 +337,18 @@ a { color:var(--accent); }
 </table>
 <p>实施完成后的实测结果以小节追加在本表之后，不改写原计划。</p>
 
+<h3 id="mixed8-local-results">本机阶段实测结果</h3>
+<p>生成锚点 <code>76572b215c9cc7ccbf07c725297dd0ef3403b799</code>，校验锚点 <code>3303ff3683f4697f06bf24c214fe3e4b1edb420a</code>，起跑均为干净工作区；生成期间 HEAD 不变。W1–W4、W6、W5 已独立审查合入，核心短测 679 通过、精确四个旧失败、无新增失败，19.52 秒。受保护目录与冻结 xhard 源码相对开工锚点零改动。</p>
+<table>
+<tr><th>判定</th><th>实测</th><th>含义</th></tr>
+<tr><td><code>SMOKE1=PASS</code></td><td>VideoUnmaskSwap ep3、seed 5300、attempt 0、525 timestep、42.2 秒，退出 0</td><td>单条循环 xhard 及证据字段打通</td></tr>
+<tr><td><code>SMOKE2=FAIL requested=128 success=127 exhausted=1 z=33 xy=14</code></td><td>501.0 秒、173 条 attempt 记录，退出 1；基础设施失败记录 0，33 个已知 worker 均退出</td><td>唯一耗尽为 VideoPlaceOrder ep3/xhard12，三次既有异常名遮盖引发 TypeError；不补跑</td></tr>
+<tr><td><code>IDENTITY_AUDIT=FAIL episodes=128 missing=3 dup=0 unknown=0 mismatch=1</code></td><td>缺成功记录、metadata、H5 三处，均属同一个 ep3 身份</td><td>其余身份无重复、未知或 seed／档／FailRecover 不符</td></tr>
+<tr><td><code>H5_SCHEMA=FAIL files=99 steps=69222 missing=1 extra=0 dtype_shape=0</code><br><code>H5_CONTENT=FAIL files=99 fails=1</code><br><code>H5_COUNTS=FAIL tasks=16 episodes=8 per_tier_ok=0</code><br><code>PLAN_VS_RECORD=FAIL files=52 rules_expected=80 rules_run=79 mismatch=1 exempt=12</code></td><td>正式校验 490 秒、退出 1；现有 99 个首档样本的结构、内容、可数语义个体失败列表为空</td><td>四项总体均因缺 ep3 失败；保持 100 样本、52 个 xhard 与 80 项期望，不以 ep7 替代</td></tr>
+</table>
+<p>用户明确批准三项具名豁免并继续校验：StopCube <code>stop_k</code> 四档、PickHighlight <code>spawn</code> 三档、PatternLock <code>grid</code> 五档，共 12 项；其余数量真数。VideoRepick xhard12、xhard16 实际平均尝试分别 10、8；VideoPlaceOrder xhard12 汇总平均 51（耗尽计 100，实际平均 2.5），完整逐档表留档。产物 59.6 GB，失败产物约 0.42%；直线参考 6400 条约 3.0 TB，原 1.2–1.6 TB 预估偏低，AWS 仍需实测存储与测速。首次校验按原约一分钟估计以前台启动，实际超五分钟，已如实保存起跑状态、命令、完整结果和耗时，不伪称 detached tmux、不截短样本。</p>
+<p>完整报告与不可由 Git 还原的证据在 <a href="docs/xhard-doc/mixed8-1013/result.md">本机结果档案</a>。当前停在步骤 5，AWS 未启动；冻结源码异常名遮盖仅记录候选修复，不自动修改或追加生成。</p>
+
 <h3 id="implementation-adjustments">实施中调整</h3>
 <p><strong>停池动作补齐</strong>：开工锚点 <code>94c6a90b312c35ebf1a47940cd4d8159523212ce</code>，W2 实现时核实本机 CPython 3.11.14：仅 <code>shutdown(cancel_futures=True)</code> 不能终止已运行的 worker，可能在隔离后继续写产物。仅在循环模式开启 <code>--stop-on-pool-crash</code> 的首次损坏支路，先保存各池现存 <code>_processes</code> 快照、终止并等待全部 worker 退出，再关闭 executor、隔离在途产物、写摘要并以 3 退出；默认重建路径不变。改动仅落 W2 生成器的既有停止支路与对应测试，不新增开关、守卫、重试或回退。独立只读对抗验证锚定 <code>1aad348dd6f5c60451501be96e1d339903a20fd3</code>，结论 <code>ADJUST_REVIEW=PASS scale=same findings=0</code>；主会话核实源码后按同等规模继续，实际行为待 W2 验证。</p>
 <p><strong>语义计数表达式补齐</strong>：smoke 二结束后，W5 取得真实 H5 边界：PatternLock 的长度 L 对应演示和执行各 L−1 次移动，合计 <code>2L−2</code>；RouteStick 的边数 S 对应两段各 S 次，合计 <code>2S</code>。原有常数／旋钮／旋钮加常数表达式不能跨档表示倍率，不能把可数项当豁免。新增 <code>knob_affine:&lt;名&gt;:&lt;倍率&gt;:&lt;偏移&gt;</code>，只按 <code>int(knob) * int(倍率) + int(偏移)</code> 算期望值，复用正则计数；PatternLock 用 2、−2，RouteStick 用 2、0，应查集合仍为 80 项。W5 由原 W3 写者续任，写集增加 <code>check_mixed_h5.py::semantic_checks</code> 的小分支及对应测试，不新增字段、开关、守卫、回退或依赖。独立只读审查锚定 <code>76572b215c9cc7ccbf07c725297dd0ef3403b799</code>，<code>ADJUST_REVIEW=PASS scale=same findings=0</code>；主会话核实后按同等规模继续。</p>

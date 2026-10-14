@@ -2,7 +2,7 @@
 
 | 档案名 | 内容 | 状态 |
 |---|---|---|
-| [mixed8-1013](mixed8-1013/implementation.md) | 八档循环生成器、H5 校验、原版 golden 与多卡测速实现；[本机起跑档案](mixed8-1013/launch.md) | W1–W4、W6 已审查合入，核心 612 通过且只有 4 个既定失败；两次本机冒烟准备中，AWS 尚未启动 |
+| [mixed8-1013](mixed8-1013/result.md) | 八档循环生成器、H5 校验、原版 golden 与多卡测速实现；[起跑档案](mixed8-1013/launch.md)、[实施审查](mixed8-1013/implementation.md) | 本机阶段执行完：核心 679 通过／4 个既定失败；单条通过，批次 127/128；四项整体因唯一缺失身份失败，现有 99 首档样本无结构、内容、可数语义不符；AWS 未启动 |
 | [xhard-1012-swapv3](xhard-1012-swapv3/full-result.md) | 至少三种可行槽对闸门；[全量启动档案](xhard-1012-swapv3/full-launch.md)，[恢复验证](xhard-1012-swapv3/firstbuild-result.md)，[原失败证据](xhard-1012-swapv3/result.md)保留 | 全量180身份完成：130成功、50正常拒绝、infra=0；105规划零差异、30支六列视频通过，旧两根完整 |
 | [xhard-1012-swapv2](xhard-1012-swapv2/full-result.md) | 全量 180 身份、30 支六列视频、v1/v2 逐母 seed 对照；[启动档案](xhard-1012-swapv2/full-launch.md) | 已完成：160 成功、20 正常碰撞拒绝，infra=0；旧轮 426 文件完整哈希一致 |
 | [xhard-1012-swapv2-smoke](xhard-1012-swapv2-smoke/result.md) | W3 修复建场位姿读取；十八项 GPU 通过，四卡三成功、一预期 graph 拒绝 | 已通过，旧四百二十六文件完整哈希通过 |

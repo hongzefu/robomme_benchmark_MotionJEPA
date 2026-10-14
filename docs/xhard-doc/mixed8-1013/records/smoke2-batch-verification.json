@@ -1,0 +1,829 @@
+{
+  "requested": 128,
+  "success": 127,
+  "exhausted": 1,
+  "elapsed_s": 501.0,
+  "attempt_records": 173,
+  "failure_counts": {
+    "TypeError": 12,
+    "PlannerExhausted": 1,
+    "SwapCollisionError": 17,
+    "DatasetGenerationError": 11,
+    "SceneGenerationError": 4,
+    "FailsafeTimeout": 1
+  },
+  "failure_classes": {
+    "code": 12,
+    "task": 34
+  },
+  "recovery_success": {
+    "None": 80,
+    "z": 33,
+    "xy": 14
+  },
+  "terminal_failures": [
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 3,
+      "attempt": 2,
+      "seed": 11302,
+      "difficulty": "xhard12",
+      "recovery_mode": null,
+      "bound": {
+        "gpu": "0",
+        "pid": 2708714,
+        "cuda_id": 0,
+        "pci": "0000:01:00.0",
+        "can_render": true,
+        "torch_threads": 1,
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      },
+      "phases": {},
+      "wall_s": 8.697,
+      "started_at": 1791935564.6245947,
+      "finished_at": 1791935573.321512,
+      "peak_rss_mb": 4182.0,
+      "ok": false,
+      "task_success": false,
+      "failure_class": "code",
+      "error_type": "TypeError",
+      "error": "catching classes that do not inherit from BaseException is not allowed was raised from the environment creator for VideoPlaceOrderXHard with kwargs ({'obs_mode': 'rgb+depth+segmentation', 'control_mode': 'pd_joint_pos', 'render_mode': 'rgb_array', 'reward_mode': 'dense', 'seed': 11302, 'difficulty': 'xhard12'})",
+      "traceback": "Traceback (most recent call last):\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/src/robomme/robomme_env/VideoPlaceOrder.py\", line 276, in _load_scene\n    target = spawn_random_target(\n             ^^^^^^^^^^^^^^^^^^^^\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/src/robomme/robomme_env/utils/object_generation.py\", line 687, in spawn_random_target\n    raise RuntimeError(\"spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decrease min_gap.\")\nRuntimeError: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decrease min_gap.\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/src/robomme/robomme_env/VideoPlaceOrder.py\", line 290, in _load_scene\n    raise SceneGenerationError(f\"Target {i + 1} sampling failed: {exc}\") from exc\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: 'module' object is not callable\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/envs/registration.py\", line 802, in make\n    env = env_creator(**env_spec_kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 182, in make\n    env = env_spec.make(**kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 79, in make\n    return self.cls(**_kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/src/robomme_xhard/base.py\", line 58, in __init__\n    super().__init__(*args, difficulty=self.source_difficulty, **kwargs)\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/src/robomme/robomme_env/VideoPlaceOrder.py\", line 151, in __init__\n    super().__init__(*args, robot_uids=robot_uids, **kwargs)\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 327, in __init__\n    obs, _ = self.reset(seed=[2022 + i for i in range(self.num_envs)], options=dict(reconfigure=True))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 909, in reset\n    self._reconfigure(options)\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 743, in _reconfigure\n    self._load_scene(options)\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/src/robomme_xhard/envs/video_place_order.py\", line 46, in _load_scene\n    super()._load_scene(options)\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/src/robomme/robomme_env/VideoPlaceOrder.py\", line 354, in _load_scene\n    except SceneGenerationError:\nTypeError: catching classes that do not inherit from BaseException is not allowed\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/scripts/data-generation-newSeed/generate_dataset_newseed.py\", line 523, in _worker\n    base_env = gym.make(job.gym_id, **kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/gymnasium/envs/registration.py\", line 814, in make\n    raise type(e)(\nTypeError: catching classes that do not inherit from BaseException is not allowed was raised from the environment creator for VideoPlaceOrderXHard with kwargs ({'obs_mode': 'rgb+depth+segmentation', 'control_mode': 'pd_joint_pos', 'render_mode': 'rgb_array', 'reward_mode': 'dense', 'seed': 11302, 'difficulty': 'xhard12'})\n",
+      "stage": null,
+      "rejection": null,
+      "detail": null,
+      "crashed_artifacts": []
+    }
+  ],
+  "known_worker_pids": [
+    2708689,
+    2708692,
+    2708693,
+    2708694,
+    2708695,
+    2708696,
+    2708697,
+    2708698,
+    2708699,
+    2708700,
+    2708701,
+    2708702,
+    2708703,
+    2708704,
+    2708705,
+    2708706,
+    2708707,
+    2708708,
+    2708709,
+    2708710,
+    2708711,
+    2708712,
+    2708713,
+    2708714,
+    2708715,
+    2708716,
+    2708717,
+    2708718,
+    2708719,
+    2708720,
+    2708721,
+    2708722,
+    2732540
+  ],
+  "remaining_known_worker_pids": [],
+  "per_task_tier_attempts": [
+    {
+      "task": "SwingXtimes",
+      "difficulty": "xhard12",
+      "identities": 1,
+      "mean_folded_attempts": 2.0,
+      "max_folded_attempts": 2
+    },
+    {
+      "task": "StopCube",
+      "difficulty": "medium",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "StopCube",
+      "difficulty": "hard",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "StopCube",
+      "difficulty": "xhard14",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoUnmask",
+      "difficulty": "easy",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "StopCube",
+      "difficulty": "xhard16",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PickXtimes",
+      "difficulty": "medium",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "StopCube",
+      "difficulty": "easy",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "StopCube",
+      "difficulty": "xhard18",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "StopCube",
+      "difficulty": "xhard20",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "SwingXtimes",
+      "difficulty": "medium",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoUnmask",
+      "difficulty": "medium",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "SwingXtimes",
+      "difficulty": "easy",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PickXtimes",
+      "difficulty": "easy",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "BinFill",
+      "difficulty": "easy",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "SwingXtimes",
+      "difficulty": "hard",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "BinFill",
+      "difficulty": "medium",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "SwingXtimes",
+      "difficulty": "xhard14",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoUnmask",
+      "difficulty": "hard",
+      "identities": 2,
+      "mean_folded_attempts": 1.5,
+      "max_folded_attempts": 2
+    },
+    {
+      "task": "ButtonUnmask",
+      "difficulty": "easy",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "ButtonUnmask",
+      "difficulty": "medium",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "SwingXtimes",
+      "difficulty": "xhard18",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoUnmask",
+      "difficulty": "xhard14",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PickXtimes",
+      "difficulty": "hard",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "SwingXtimes",
+      "difficulty": "xhard16",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard12",
+      "identities": 1,
+      "mean_folded_attempts": 2.0,
+      "max_folded_attempts": 2
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "easy",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "ButtonUnmask",
+      "difficulty": "hard",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "medium",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "BinFill",
+      "difficulty": "xhard12",
+      "identities": 1,
+      "mean_folded_attempts": 2.0,
+      "max_folded_attempts": 2
+    },
+    {
+      "task": "PickXtimes",
+      "difficulty": "xhard12",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "SwingXtimes",
+      "difficulty": "xhard20",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "ButtonUnmask",
+      "difficulty": "xhard14",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PickXtimes",
+      "difficulty": "xhard14",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "BinFill",
+      "difficulty": "hard",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "BinFill",
+      "difficulty": "xhard14",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "xhard12",
+      "identities": 1,
+      "mean_folded_attempts": 10.0,
+      "max_folded_attempts": 10
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "hard",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "xhard14",
+      "identities": 1,
+      "mean_folded_attempts": 2.0,
+      "max_folded_attempts": 2
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "xhard16",
+      "identities": 1,
+      "mean_folded_attempts": 8.0,
+      "max_folded_attempts": 8
+    },
+    {
+      "task": "PickXtimes",
+      "difficulty": "xhard16",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "xhard20",
+      "identities": 1,
+      "mean_folded_attempts": 4.0,
+      "max_folded_attempts": 4
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "medium",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PickHighlight",
+      "difficulty": "easy",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "medium",
+      "identities": 2,
+      "mean_folded_attempts": 1.5,
+      "max_folded_attempts": 2
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "hard",
+      "identities": 2,
+      "mean_folded_attempts": 2.0,
+      "max_folded_attempts": 3
+    },
+    {
+      "task": "BinFill",
+      "difficulty": "xhard16",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard14",
+      "identities": 1,
+      "mean_folded_attempts": 2.0,
+      "max_folded_attempts": 2
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "easy",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PickXtimes",
+      "difficulty": "xhard18",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "BinFill",
+      "difficulty": "xhard18",
+      "identities": 1,
+      "mean_folded_attempts": 2.0,
+      "max_folded_attempts": 2
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard12",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PickHighlight",
+      "difficulty": "medium",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "hard",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard12",
+      "identities": 2,
+      "mean_folded_attempts": 51.0,
+      "max_folded_attempts": 100
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "hard",
+      "identities": 2,
+      "mean_folded_attempts": 3.0,
+      "max_folded_attempts": 3
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard14",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "BinFill",
+      "difficulty": "xhard20",
+      "identities": 1,
+      "mean_folded_attempts": 2.0,
+      "max_folded_attempts": 2
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard16",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PickHighlight",
+      "difficulty": "hard",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PickXtimes",
+      "difficulty": "xhard20",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PickHighlight",
+      "difficulty": "xhard12",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "hard",
+      "identities": 1,
+      "mean_folded_attempts": 2.0,
+      "max_folded_attempts": 2
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "easy",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "MoveCube",
+      "difficulty": "easy",
+      "identities": 3,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PickHighlight",
+      "difficulty": "xhard16",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard18",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "MoveCube",
+      "difficulty": "medium",
+      "identities": 3,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "medium",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "MoveCube",
+      "difficulty": "hard",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard14",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PickHighlight",
+      "difficulty": "xhard18",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard16",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PatternLock",
+      "difficulty": "easy",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "easy",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "InsertPeg",
+      "difficulty": "easy",
+      "identities": 3,
+      "mean_folded_attempts": 1.6666666666666667,
+      "max_folded_attempts": 3
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard18",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard20",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "InsertPeg",
+      "difficulty": "medium",
+      "identities": 3,
+      "mean_folded_attempts": 2.0,
+      "max_folded_attempts": 3
+    },
+    {
+      "task": "PatternLock",
+      "difficulty": "hard",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard12",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "medium",
+      "identities": 2,
+      "mean_folded_attempts": 1.5,
+      "max_folded_attempts": 2
+    },
+    {
+      "task": "PatternLock",
+      "difficulty": "medium",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "xhard18",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "InsertPeg",
+      "difficulty": "hard",
+      "identities": 2,
+      "mean_folded_attempts": 1.5,
+      "max_folded_attempts": 2
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "easy",
+      "identities": 2,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PatternLock",
+      "difficulty": "xhard12",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PatternLock",
+      "difficulty": "xhard14",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PatternLock",
+      "difficulty": "xhard16",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PatternLock",
+      "difficulty": "xhard18",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "medium",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard20",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "hard",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "PatternLock",
+      "difficulty": "xhard20",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "xhard12",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "xhard14",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "xhard16",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "xhard18",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "xhard20",
+      "identities": 1,
+      "mean_folded_attempts": 1.0,
+      "max_folded_attempts": 1
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "source_head": "76572b215c9cc7ccbf07c725297dd0ef3403b799",
+  "git_status": "",
+  "host": "sled-vail",
+  "work_root": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006",
+  "recorded_at_utc": "2026-10-13T23:45:34.816711+00:00",
+  "env_overrides": {
+    "UV_CACHE_DIR": "/home/hongzefu/.cache/uv",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "inherited_graphics_env": {
+    "CUDA_VISIBLE_DEVICES": null,
+    "SAPIEN_RENDER_DEVICE": null,
+    "VK_ICD_FILENAMES": null,
+    "DISPLAY": null
+  },
+  "smoke1": {
+    "env": "VideoUnmaskSwap",
+    "episode_start": 3,
+    "episodes": 1,
+    "workers": 1,
+    "gpus": "0"
+  },
+  "smoke2": {
+    "env": "all",
+    "episode_start": 0,
+    "episodes": 8,
+    "workers": 32,
+    "gpus": "0"
+  },
+  "max_attempts": 100,
+  "difficulty_cycle": [
+    "easy",
+    "medium",
+    "hard",
+    "xhard12",
+    "xhard14",
+    "xhard16",
+    "xhard18",
+    "xhard20"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "pass": true,
+  "seed": 5300,
+  "attempt": 0,
+  "difficulty": "xhard12",
+  "timestep": 525,
+  "recovery_mode": null,
+  "h5_bytes": 350017032,
+  "runtime_checks": 2018,
+  "xhard_knobs": {
+    "swap_count": 4
+  },
+  "wall_s": 38.459,
+  "elapsed_s": 42.2,
+  "videos": [
+    "artifacts/mixed8/smoke1/videos/VideoUnmaskSwap_ep3_seed5300_xhard12_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4"
+  ]
+}
