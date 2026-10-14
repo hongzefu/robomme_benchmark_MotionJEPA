@@ -37,7 +37,7 @@ nproc; free -g | sed -n 2p
 
 **冲突即停**（正本第 0 条）：判定输出与上表不符（主机名不是 `sled-aspen`、NFS 不存在、出现第二套 GPU、`~/.ssh/config` 出现集群别名等），一律停下把原始输出交用户裁决，不得自行套用，也不得按「多数判据像 A」推断。本仓库现有三个环境列：环境 A（sled-aspen）、环境 B（sled-vail，2026-10-12 仓库迁入，见 `1012-migrate-vail-plan.md`）与环境 C（AWS p4de，2026-10-13 按正本 `docs/machine-aws-p4de.md` 预填，首次开工时现场判定逐行核对后才算接入，见 `1013-mixed8-400ep-plan.html` 3.5）；先按主机名选列，再逐行核对该列，任一判据与所选列不符（如 vail 上 GPU 型号或数量变化、`~/.ssh/config` 别名变化，aspen 上出现集群别名，AWS 上出现 `~/.ssh/config`、GPU 不是 8 × A100-80GB、`/scratch/hongze` 不存在）同样冲突即停；出现第四台机器时先补判据表再开工。
 
-<!-- AGENTMETARULES:BEGIN common-agents src=47bf9a85a9d10e0448514264091ff81f1d8d6104 blob=b560772edfa5d66db02e4198321704f1935987d9 -->
+<!-- AGENTMETARULES:BEGIN common-agents src=942efa027c922edc20c4f272cc419580a5408dec blob=6ff216b6f019f369c16a7625cdd9dcde5d2ce5d8 -->
 
 ## 强制规则（最高优先级）
 
@@ -345,6 +345,7 @@ nproc; free -g | sed -n 2p
       - **先改正本再回流**：通用条目的任何改动只在正本仓库改，commit 并 push 后再回流——`sync_rules.py check` 只读比对各目标标记块与正本 HEAD 块、报出漂移（末行 `SYNC_SUMMARY=PASS|FAIL`）；`sync_rules.py apply` 只替换标记块内容与标记行里的 sha，不碰标记外内容；目标仓库带着他人在途工作时用 [`scripts/land_rules_commit.py`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/scripts/land_rules_commit.py)（远端侧只含规则文件的 plumbing 提交 + 本地侧合并提交，见第 11 条 push 例外）。回流提交同时更新项目「规则来源」段的 sha。脚本按第 3 条经 `uv run --no-project python` 运行。
       - **项目副本只改标记外内容**：标记块内禁止手改；在项目里发现正本需要修改时，回正本仓库改正本再 `apply`，不在副本里先改后补。项目对正本的偏离一律写成标记外的按条号覆盖项。
       - `apply` 写的是别的仓库：只写 `sync-targets.json` 登记的文件；目标工作区的在途改动、暂存、提交与推送按目标仓库自己的第 11 条口径（含声明式例外）处理。
+      - **每次开工核对同步（2026-10-14 新增）**：每次会话开工时，把正本 HEAD 与本机各仓库标记块的 `src=` 逐一比对（只读，可直接做）。有落后的列成清单交用户：仓库、分支、文件、落后几个 commit、块内容是否真的变了、工作区是否干净、是否处于冻结期（第 12 条打包冻结、计划写明的不 commit 期）。**用户批准后**才 `apply`、commit、push；处在冻结期的仓库不在冻结 HEAD 上提交，改为切独立 worktree 分支完成回流、冻结结束后再合并，并把待合并事项写进该仓库计划或进度文件。`sync-targets.json` 登记的路径在当前机器上不存在时（例如换了机器），自己扫工作盘下带 `AGENTMETARULES:BEGIN` 的文件，不得因此跳过核对。用户原话（2026-10-14）：「以后你每次都同步」「告诉我你要更新哪几个仓库 我批准后再更新」「这个也要写入agentmetarules」。
 
     来源：benchmark 日志 2026-09-09（拆分口径、编号取舍、脚本搬运）；evalgl/AGENTS.md「规则来源」；mjepa/AGENTS.md 前言；2026-09-26 用户要求「每个仓库都要有一份agentsmd greatlake md等等 AgentMetaRules只负责每次同步的时候检查一下 平时只在仓库内交互 不要每次都读github太麻烦了」（标记块同步机制）。
 
@@ -400,7 +401,7 @@ nproc; free -g | sed -n 2p
 | `<COMMIT_SUBJECT_STYLE>` | commit subject 体例 | 第 11 条 |
 | `<PLAN_EXEMPLAR>` | 计划密度标杆文档 | 第 2 条 |
 
-<!-- AGENTMETARULES:END common-agents src=47bf9a85a9d10e0448514264091ff81f1d8d6104 blob=b560772edfa5d66db02e4198321704f1935987d9 -->
+<!-- AGENTMETARULES:END common-agents src=942efa027c922edc20c4f272cc419580a5408dec blob=6ff216b6f019f369c16a7625cdd9dcde5d2ce5d8 -->
 
 ## 项目专属规则（P1…Pn）
 
@@ -470,7 +471,7 @@ nproc; free -g | sed -n 2p
 
 ## 规则来源与未采用清单
 
-- 现行 `common-agents` 与 `common-claude` 同步自正本 `47bf9a8`（2026-10-13 第三次：第 2 条「执行中调整计划」子项整段改写——先派一个对抗验证子代理、只做最小改法、禁止叠加保护层，按改动规模判停，只在计划不能满足预期且不能以同等规模调整时停工并给方案，硬停清单为规模超已批 5 倍、受保护目录与破坏性操作、放宽判据影响后续前提；其余自行继续并在当轮与收尾告知；`common-claude` 块内容未变、只更新标记行 sha）。此前同步自正本 `09c2685`（2026-10-13 第二次：第 2 条画图清单只留机制图，新增「实施步骤、子代理分工、合并与 commit 顺序一律文字表格、不画 SVG」子项；`CLAUDE.md` plan mode 一节对应句同步）。此前 `common-agents` 同步自正本 `db4c56cf7365af8451ee1e4f49db82e970ffe63f`（2026-10-13：第 26 条改为仅 Codex 所有角色及递归子代理最低使用 `high`，必须显式指定 `reasoning_effort`；Claude 忽略本项，不规定其推理强度；本项下限仍不适用于主代理）。此前 `common-agents` 同步自正本 `08d0b896229d63adf7303a523324ae65b3614d42`（2026-10-12：第 26 条新增所有角色及递归子代理推理强度最低为中等，Codex 派发必须显式指定 `reasoning_effort`；本项下限不适用于主代理）。`common-claude` 保持正本 `ba47f84cdf44bffb958b9f79991bd23b467da058` 的同步标记，内容未变。此前两块同步自 `ba47f84cdf44bffb958b9f79991bd23b467da058`（2026-10-12：第 2 条新增「每次开工前派一个独立子代理审查计划有无自相矛盾；改计划时不逐次审」，`common-claude` 块内容不变，只更新标记行 sha）。再此前同步自 `2d46c36a86bc15f117b6cf9f8c272fd313588c89`（第 2 条新增执行中调整计划必须停止实施并等待用户彻底审查）。此前规则包同步自 `fca1e20c474992310cb155406ac8b5e60aac9c12`（2026-10-12 第二次：第 2 条新增「画图必须目视复查，画图子代理用 Fable」）。同日第一次同步自 `7df0e308a2a286557bbe229b6cb67be3343dcea3`（`CLAUDE.md` 新增「写 HTML 计划不进 plan mode、进 plan mode 前先问用户」；顺带带入正本 10-10 之后的 Codex 子代理并发 32 条）。此前同步自 `38a7fc10adc9da71d16b1c9f06d5b2c52682d2f3`（2026-10-10）：保留远端统一子代理职责与生命周期规则，并将 Codex 模型系列统一限定为 GPT-6／GPT-6.1；下述旧 sha 仅记录历史来源。
+- 现行 `common-agents` 与 `common-claude` 同步自正本 `942efa0`（2026-10-14：第 25 条「同步机制」新增「每次开工核对同步」——开工比对各仓库 `src=`，列清单经用户批准后才回流，冻结期仓库切 worktree 分支待合并，`sync-targets.json` 路径不存在时自扫工作盘）。上一次同步自正本 `47bf9a8`（2026-10-13 第三次：第 2 条「执行中调整计划」子项整段改写——先派一个对抗验证子代理、只做最小改法、禁止叠加保护层，按改动规模判停，只在计划不能满足预期且不能以同等规模调整时停工并给方案，硬停清单为规模超已批 5 倍、受保护目录与破坏性操作、放宽判据影响后续前提；其余自行继续并在当轮与收尾告知；`common-claude` 块内容未变、只更新标记行 sha）。此前同步自正本 `09c2685`（2026-10-13 第二次：第 2 条画图清单只留机制图，新增「实施步骤、子代理分工、合并与 commit 顺序一律文字表格、不画 SVG」子项；`CLAUDE.md` plan mode 一节对应句同步）。此前 `common-agents` 同步自正本 `db4c56cf7365af8451ee1e4f49db82e970ffe63f`（2026-10-13：第 26 条改为仅 Codex 所有角色及递归子代理最低使用 `high`，必须显式指定 `reasoning_effort`；Claude 忽略本项，不规定其推理强度；本项下限仍不适用于主代理）。此前 `common-agents` 同步自正本 `08d0b896229d63adf7303a523324ae65b3614d42`（2026-10-12：第 26 条新增所有角色及递归子代理推理强度最低为中等，Codex 派发必须显式指定 `reasoning_effort`；本项下限不适用于主代理）。`common-claude` 保持正本 `ba47f84cdf44bffb958b9f79991bd23b467da058` 的同步标记，内容未变。此前两块同步自 `ba47f84cdf44bffb958b9f79991bd23b467da058`（2026-10-12：第 2 条新增「每次开工前派一个独立子代理审查计划有无自相矛盾；改计划时不逐次审」，`common-claude` 块内容不变，只更新标记行 sha）。再此前同步自 `2d46c36a86bc15f117b6cf9f8c272fd313588c89`（第 2 条新增执行中调整计划必须停止实施并等待用户彻底审查）。此前规则包同步自 `fca1e20c474992310cb155406ac8b5e60aac9c12`（2026-10-12 第二次：第 2 条新增「画图必须目视复查，画图子代理用 Fable」）。同日第一次同步自 `7df0e308a2a286557bbe229b6cb67be3343dcea3`（`CLAUDE.md` 新增「写 HTML 计划不进 plan mode、进 plan mode 前先问用户」；顺带带入正本 10-10 之后的 Codex 子代理并发 32 条）。此前同步自 `38a7fc10adc9da71d16b1c9f06d5b2c52682d2f3`（2026-10-10）：保留远端统一子代理职责与生命周期规则，并将 Codex 模型系列统一限定为 GPT-6／GPT-6.1；下述旧 sha 仅记录历史来源。
 - 通用规则 = 上方标记块，正本 commit 见标记行 `src=`（2026-10-06 首次接入；此前本文件的强制规则 1–10 是 2026-08-18 自 MotionJEPA 移植的旧版，已随账本归档）。2026-10-08 回流到 `9ec0a8c`（子代理模型三档、开工令放宽、并发上限 64），并提交项目级 `.claude/settings.json`（与正本逐字相同，只含并发上限 `env`）；同日再回流到 `a5302d0`（根目录计划一律 HTML），再回流到 `464c1b6`（合并远端两条：新机器开工时检查全局并发上限、`worktree.baseRef="head"` 并入项目级 `.claude/settings.json`，本仓库该文件已同步为与正本逐字相同）。
 - 未采用的正本条目及原因：第 6 条（run_name）、第 10 条（训练超参落点）、第 12 条（训练 / 评估留档）、第 16 条（GPU 利用率判读）、第 17 条（长诊断 run 留档）、第 18 条（训练链路一致性）——本仓库无训练 / 评估链路；第 8 条集群分支与第 15 条集群校验分支——本环境无集群访问；第 23 条（server + client / job array 形态）——本仓库生成器是本机进程池，无服务形态，但其中「给用户的网页链接写完整域名 `sled-aspen.eecs.umich.edu`」一句照常适用。第 13 条（数据集构建留档）**采用**，新档全量生成按其 Beta 锚点与两段式留档。
 - Claude Code 独有机制见同目录 `CLAUDE.md`（标记块 `common-claude`）；本仓库无 `greatlakes.md`。两份文件冲突时以本文件为准。
