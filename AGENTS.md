@@ -13,28 +13,29 @@
 ```bash
 echo "repo=$(git rev-parse --show-toplevel 2>/dev/null)"
 hostname
-for p in /nfs/turbo/coe-chaijy-unreplicated/hongzefu /data/hongzefu ~/.ssh/config; do
+for p in /nfs/turbo/coe-chaijy-unreplicated/hongzefu /data/hongzefu /scratch/hongze ~/.ssh/config; do
   printf '%s: %s\n' "$p" "$([ -e "$p" ] && echo 存在 || echo 不存在)"
 done
 nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | sort | uniq -c
 command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 无"
+nproc; free -g | sed -n 2p
 ```
 
-| 判据 | 环境 A：sled-aspen 本机（2026-10-06 口径） | 环境 B：sled-vail 本机（2026-10-12 迁移实测） |
-|---|---|---|
-| 主机名（`hostname` 前缀） | `sled-aspen`（完整域名 `sled-aspen.eecs.umich.edu`） | `sled-vail`（完整域名 `sled-vail.eecs.umich.edu`） |
-| 仓库根 | `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`（分支 `newtask-v3-MotionJepa1006`，远端 `hongzefu/robomme_benchmark_MotionJEPA`） | 同路径 `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`（2026-10-12 由 git clone 建立，分支与远端同 A） |
-| 共享存储路径（NFS） | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/` 存在、可直读；只作只读参考源，不在其上改代码或写产物 | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu` 存在；同 A，只作只读参考源 |
-| 本机盘路径 | `/data/hongzefu/`（NVMe） | `/data/hongzefu/`（`/dev/nvme1n1p1` 14T，2026-10-12 可用 6.4T） |
-| 单机工作盘路径 | 无（不适用） | 无（不适用） |
-| `~/.ssh/config`（集群 ControlMaster） | 文件存在，但**只有 `Host host1`（本机转发），没有 `greatlakes` 别名、`ssh -G greatlakes` 为 `controlmaster false`** → 按正本第 8 条属**无集群访问环境** | 文件存在，含 `Host github.com`、`gitlab.eecs.umich.edu`、`greatlakes`、`sled-aspen`——**有 `greatlakes` 集群别名**；但按 P7 本仓库生成不走集群 |
-| GPU（型号 × 数量） | 2 × NVIDIA RTX A6000 | 2 × NVIDIA RTX 6000 Ada Generation（46068 MiB）；2026-10-12 实测 GPU0 已用 1286 MiB、利用率 0～4%，GPU1 空闲 |
-| Slurm / 集群提交 | **不可用**：禁止提交任何 Slurm 作业、禁止 ssh 集群、禁止运行提交器；本仓库不接 `greatlakes.md` | 按 P7 **不用于本仓库生成**（本仓库不接 `greatlakes.md`，不提交 Slurm、不跑提交器） |
-| 原始数据 | 官方参考集 `/data/hongzefu/data_0226/`（16 个 `record_dataset_<Task>.h5` + metadata + `videos/`，约 493 GB，只读；**未与 HF revision `a5e4e25…` 核 sha256**）；官方 train metadata 在仓库内 `src/robomme/env_metadata/train/`；`data/robomme_data_h5/` 在本仓库**不存在** | 没有 aspen 那个目录名 `data_0226/`，但**有原版官方数据集本机副本 `/data/hongzefu/robomme_data_h5/`**（HF `Yinpei/robomme_data_h5` revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`，16 个 `record_dataset_<Task>.h5` 各 100 条，530 GB 含下载的 `.tar.xz`，只读，见 P3）；另有 `data_0225`、`data_0226-test-1`（16×20）、`data-0306`（val 布局 16×100）等子集，不是原版；官方 train metadata 同 A 在仓库内；母 seed 清单用 `--no-verify`（见 P3） |
-| 生成产物 | `artifacts/`（`.gitignore` 根锚定 `/artifacts/`）与 `scripts/data-generation-newSeed/outputs/`（已忽略） | 同 A：`artifacts/`；2026-10-12 已从 aspen 同步网页站点 `artifacts/plan-site`、`artifacts/vis-site` 与 `artifacts/xhard/xhard-1011/report`、`artifacts/xhard/xhard-1011/vpbfix-1012/report`，H5 未搬 |
-| 可做的事 | 生成 / 对拍 / 轻量测试 / 统计全部在本机；多 worker 生成按 `scripts/data-generation-newSeed/CLAUDE.md` 的实测口径（`--workers 32` 为安全上限、全量用单张空闲卡） | 同 A，生成 / 对拍 / 轻量测试 / 统计全部在本机（P7）；32 核（`nproc=32`）、内存 377 GB（可用约 331 GB），worker 数在 smoke 时按 vail 实测标定；另有 micromamba、uv 0.10.2（`~/.local/bin/uv`）、gh 已登录 hongzefu、tmux、git 2.43.0 |
+| 判据 | 环境 A：sled-aspen 本机（2026-10-06 口径） | 环境 B：sled-vail 本机（2026-10-12 迁移实测） | 环境 C：AWS p4de 单机（2026-10-13 按正本 `docs/machine-aws-p4de.md` 预填，现场核对） |
+|---|---|---|---|
+| 主机名（`hostname` 前缀） | `sled-aspen`（完整域名 `sled-aspen.eecs.umich.edu`） | `sled-vail`（完整域名 `sled-vail.eecs.umich.edu`） | `ip-10-242-11-177`（完整域名 `ip-10-242-11-177.us-west-2.compute.internal`；实例 `p4de.24xlarge`，`us-west-2c`） |
+| 仓库根 | `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`（分支 `newtask-v3-MotionJepa1006`，远端 `hongzefu/robomme_benchmark_MotionJEPA`） | 同路径 `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`（2026-10-12 由 git clone 建立，分支与远端同 A） | `/scratch/hongze/robomme_benchmark_newtask-v3-MotionJepa1006`（AWS 上由 `git clone` 建立，**检出锁定 SHA（detached）**；远端同 A；git 提交只在 vail，AWS 只 clone／fetch） |
+| 共享存储路径（NFS） | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/` 存在、可直读；只作只读参考源，不在其上改代码或写产物 | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu` 存在；同 A，只作只读参考源 | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu` **不存在**；`/data/hongzefu` 也**不存在**，不得新建指向它们的 symlink 或写进脚本默认值 |
+| 本机盘路径 | `/data/hongzefu/`（NVMe） | `/data/hongzefu/`（`/dev/nvme1n1p1` 14T，2026-10-12 可用 6.4T） | `/scratch`（`/dev/md0`，8×875 G 实例存储 NVMe RAID0，6.9 T，2026-10-13 余 2.3 T；**临时盘，实例 stop／终止即清空**）；`/` 为 1 T EBS，不放项目文件；`/shared` 是他人的 Lustre，不是本项目落点 |
+| 单机工作盘路径 | 无（不适用） | 无（不适用） | `/scratch/hongze/`：一切持久化文件（仓库、`.venv`、uv 缓存、uv managed 解释器、产物、日志）只落这里，不写 `$HOME` |
+| `~/.ssh/config`（集群 ControlMaster） | 文件存在，但**只有 `Host host1`（本机转发），没有 `greatlakes` 别名、`ssh -G greatlakes` 为 `controlmaster false`** → 按正本第 8 条属**无集群访问环境** | 文件存在，含 `Host github.com`、`gitlab.eecs.umich.edu`、`greatlakes`、`sled-aspen`——**有 `greatlakes` 集群别名**；但按 P7 本仓库生成不走集群 | **不存在，且禁止创建**（创建会让所有仓库的环境判定冲突）；GitHub 必须用 `~/.ssh/id_ed25519_hongzefu`（默认 `id_rsa` 属他人账号、无写权限），首次 clone 用 `GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519_hongzefu -o IdentitiesOnly=yes"` |
+| GPU（型号 × 数量） | 2 × NVIDIA RTX A6000 | 2 × NVIDIA RTX 6000 Ada Generation（46068 MiB）；2026-10-12 实测 GPU0 已用 1286 MiB、利用率 0～4%，GPU1 空闲 | 8 × NVIDIA A100-SXM4-80GB（81920 MiB），NVLink 全互联；NUMA：GPU 0–3 → node0（CPU 0–23,48–71），GPU 4–7 → node1（CPU 24–47,72–95） |
+| Slurm / 集群提交 | **不可用**：禁止提交任何 Slurm 作业、禁止 ssh 集群、禁止运行提交器；本仓库不接 `greatlakes.md` | 按 P7 **不用于本仓库生成**（本仓库不接 `greatlakes.md`，不提交 Slurm、不跑提交器） | 无 GreatLakes／Slurm 访问，不适用；P7 环境 C 条文照旧不用集群 |
+| 原始数据 | 官方参考集 `/data/hongzefu/data_0226/`（16 个 `record_dataset_<Task>.h5` + metadata + `videos/`，约 493 GB，只读；**未与 HF revision `a5e4e25…` 核 sha256**）；官方 train metadata 在仓库内 `src/robomme/env_metadata/train/`；`data/robomme_data_h5/` 在本仓库**不存在** | 没有 aspen 那个目录名 `data_0226/`，但**有原版官方数据集本机副本 `/data/hongzefu/robomme_data_h5/`**（HF `Yinpei/robomme_data_h5` revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`，16 个 `record_dataset_<Task>.h5` 各 100 条，530 GB 含下载的 `.tar.xz`，只读，见 P3）；另有 `data_0225`、`data_0226-test-1`（16×20）、`data-0306`（val 布局 16×100）等子集，不是原版；官方 train metadata 同 A 在仓库内；母 seed 清单用 `--no-verify`（见 P3） | 无原版数据集副本，**不下载**（计划 K7）；golden JSON 在 git 内 `src/robomme_xhard/tools/golden_schema/`；跨机器对拍样本由 vail 侧传入 `artifacts/mixed8/smoke2-from-vail/` |
+| 生成产物 | `artifacts/`（`.gitignore` 根锚定 `/artifacts/`）与 `scripts/data-generation-newSeed/outputs/`（已忽略） | 同 A：`artifacts/`；2026-10-12 已从 aspen 同步网页站点 `artifacts/plan-site`、`artifacts/vis-site` 与 `artifacts/xhard/xhard-1011/report`、`artifacts/xhard/xhard-1011/vpbfix-1012/report`，H5 未搬 | 同 A：`artifacts/`；缓存类变量一律指到 `/scratch/hongze/.cache/`（`UV_CACHE_DIR`、`UV_PYTHON_INSTALL_DIR`、`MS_ASSET_DIR`） |
+| 可做的事 | 生成 / 对拍 / 轻量测试 / 统计全部在本机；多 worker 生成按 `scripts/data-generation-newSeed/CLAUDE.md` 的实测口径（`--workers 32` 为安全上限、全量用单张空闲卡） | 同 A，生成 / 对拍 / 轻量测试 / 统计全部在本机（P7）；32 核（`nproc=32`）、内存 377 GB（可用约 331 GB），worker 数在 smoke 时按 vail 实测标定；另有 micromamba、uv 0.10.2（`~/.local/bin/uv`）、gh 已登录 hongzefu、tmux、git 2.43.0 | 测速阶梯与全量生成（P7 环境 C 条文：用卡与 worker 数由测速决定、不限 GPU0）；96 vCPU（2×24 物理核超线程）、1121 GiB 内存、无 swap；uv 0.12.2（`~/.local/bin/uv`）、tmux、docker；**没有 `gh`**；系统 `python3` 3.9，项目一律 uv managed 3.11；账号 `ec2-user` 多人共用，起跑前核对 GPU／磁盘占用 |
 
-**冲突即停**（正本第 0 条）：判定输出与上表不符（主机名不是 `sled-aspen`、NFS 不存在、出现第二套 GPU、`~/.ssh/config` 出现集群别名等），一律停下把原始输出交用户裁决，不得自行套用，也不得按「多数判据像 A」推断。本仓库现有两个环境列：环境 A（sled-aspen）与环境 B（sled-vail，2026-10-12 仓库迁入，见 `1012-migrate-vail-plan.md`）；先按主机名选列，再逐行核对该列，任一判据与所选列不符（如 vail 上 GPU 型号或数量变化、`~/.ssh/config` 别名变化，aspen 上出现集群别名）同样冲突即停；出现第三台机器时先补判据表再开工。
+**冲突即停**（正本第 0 条）：判定输出与上表不符（主机名不是 `sled-aspen`、NFS 不存在、出现第二套 GPU、`~/.ssh/config` 出现集群别名等），一律停下把原始输出交用户裁决，不得自行套用，也不得按「多数判据像 A」推断。本仓库现有三个环境列：环境 A（sled-aspen）、环境 B（sled-vail，2026-10-12 仓库迁入，见 `1012-migrate-vail-plan.md`）与环境 C（AWS p4de，2026-10-13 按正本 `docs/machine-aws-p4de.md` 预填，首次开工时现场判定逐行核对后才算接入，见 `1013-mixed8-400ep-plan.html` 3.5）；先按主机名选列，再逐行核对该列，任一判据与所选列不符（如 vail 上 GPU 型号或数量变化、`~/.ssh/config` 别名变化，aspen 上出现集群别名，AWS 上出现 `~/.ssh/config`、GPU 不是 8 × A100-80GB、`/scratch/hongze` 不存在）同样冲突即停；出现第四台机器时先补判据表再开工。
 
 <!-- AGENTMETARULES:BEGIN common-agents src=47bf9a85a9d10e0448514264091ff81f1d8d6104 blob=b560772edfa5d66db02e4198321704f1935987d9 -->
 
@@ -426,6 +427,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - **P7. 本仓库生成一律本机执行，不设计任何 GreatLakes（gl）生成机制**（2026-10-12 用户原话「就本仓库的这个生成计划不要再做任何的gl生成的机制都使用本机来生成」；同日此前用户原话「改为在本机用gpu0」）。
     - 生成计划、runbook 与留档里不写 sbatch、srun、占位 job、集群提交器、集群校验 job 等任何集群步骤；长任务只用本机 detached tmux（正本第 7 条，会话名前缀 `xh-`）。
     - `1012-swap-collision-plan.html` 碰撞计划的 smoke 与全量用卡固定本机 GPU0（`--gpus 0`）；起跑前只核对 GPU0，被他人占满即停下问用户，不自行换卡、不上集群。
+    - **环境 C 条文（2026-10-13，计划 1013 K17 用户「9 全部同意」）**：AWS p4de 上用卡与 worker 数由测速阶梯（`calibrate_parallelism.py`，默认 L32／L64／L96，卡序按 NUMA）决定、不限 GPU0；其余照旧——不用 Slurm／集群，长任务只用本机 detached tmux（会话名前缀 `xh-`），git 提交只在 vail。
     - 与「覆盖第 8 条」的关系：覆盖第 8 条描述的是本环境当前无集群访问这一事实，P7 是对本仓库生成计划的显式约束——即使将来本机获得集群访问，本仓库的生成也不适用集群路径，确需变更须用户另行明确决定。
 - **P8. 生成阶段禁止换 seed、补 seed、改母 seed 清单，除非用户明确要求；测试夹具的 seed 可以换**（2026-10-12 用户原话「不做任何的换seed和上一版一样只对于现有SED做一次生成的检查。」「把这个作为禁止项除非用户明确要求不做任何的这种调整」，随后澄清「我的禁止令的意思是不可以实际生成最后生成的时候去如果有一个tas生成不成功你就换seed不允许做这个事情但是你测试的时候测试时候因为你测其中的一个子级所以说你是可以怎么干」）。
     - **生成**：母 seed 清单（`mother_seeds*.json`）只复制、不改字节；被判据剔除或生成失败的 seed 不补、不换、不重试（与 P2、P5 同向）；新一版机制的验证方式与上一版相同——对现有 seed 清单做一次生成检查，剔除数如实报告。确需换 seed 或补 seed，只能由用户明确指令。
@@ -437,7 +439,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - **覆盖第 1 条（历史英文化遗留）**：豁免清单只有 `tests/lightweight/test_no_patch_report_debug_environment.py`（源自已删除的 `scripts/data-generation-v2-noPatch/` 英文化目录），既有英文内容保持原样；其余新增 / 修改内容一律中文。
 - **覆盖第 2 条（计划密度标杆与命名）**：`<PLAN_EXEMPLAR>` = benchmark 仓库 [`docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md`](https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/newtaskRelease-taskV9/docs/plans/1005-eval-video-phase2-all-models-rerun-plan.md) 的第一部分（正本 2026-10-06 统一口径；本机没有该仓库的检出，核对时从 GitHub 读）。根目录计划按 `MMDD-<主题>-plan.html` 命名、一律写成单文件 HTML（正本第 2 条 2026-10-08 子项；用户原话「弃用markd作为计划的形式。改为HTML」「以后落在用户说要落在根目录的这个计划都使用HTML而不再使用markdn」）；既有 `NEWTASK_V2_PLAN.md` 沿用现名。本仓库现行计划 [`1006-xhard12-env-plan.html`](1006-xhard12-env-plan.html)（2026-10-08 由同名 `.md` 转换，`.md` 已删除），其留档 [`1006-xhard12-prev-training-and-task-plan.md`](1006-xhard12-prev-training-and-task-plan.md)。
 - **覆盖第 4 条（核心短测）**：无需数据集的核心短测 `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q`（pytest 在 `pyproject.toml` 的 `dev` extra 里，`.venv` 没有时先 `uv sync --extra dev`，2026-10-06 实测只增 pytest/pluggy/iniconfig 三包；`gpu` marker 无自动 skip，靠 `-m` 排除；`tests/lightweight/` 里真正 `gym.make` 的只有 `test_TaskGoalI_isList.py`，标 `slow, gpu`）；需要环境 / 渲染栈的条件测试 `uv run --no-sync python -m pytest tests/lightweight/ -m gpu -q` 与 `uv run --no-sync python -m pytest tests/dataset/ -q`；只改某条生成链路时至少跑该链路的定向单测（如改 seed 公式 → `tests/lightweight/test_seed_layout.py`）；涉及实跑生成一律先做「单任务、单 episode、单 worker」smoke。
-- **覆盖第 8 条（集群）**：本环境无集群访问（见第 0 条判据表），按正本第 8 条「无集群访问的环境」执行：不提交 Slurm、不 ssh 集群、不跑提交器；一切生成与测试在本机。第 15 条「HF 上传校验不在本机做」的集群分支不适用，若有 HF 上传则在本机校验并在汇报里写明原因。环境 B（sled-vail）的 `~/.ssh/config` 有 `greatlakes` 别名，但 P7 优先：本仓库生成一律本机，不提交 Slurm、不跑提交器、不为生成 ssh 集群。
+- **覆盖第 8 条（集群）**：本环境无集群访问（见第 0 条判据表），按正本第 8 条「无集群访问的环境」执行：不提交 Slurm、不 ssh 集群、不跑提交器；一切生成与测试在本机。第 15 条「HF 上传校验不在本机做」的集群分支不适用，若有 HF 上传则在本机校验并在汇报里写明原因。环境 B（sled-vail）的 `~/.ssh/config` 有 `greatlakes` 别名，但 P7 优先：本仓库生成一律本机，不提交 Slurm、不跑提交器、不为生成 ssh 集群。环境 C（AWS p4de）没有 `~/.ssh/config`、没有集群账户，同样按「无集群访问的环境」执行。
 - **覆盖第 11 条（commit 体例与 push）**：`<COMMIT_SUBJECT_STYLE>` = `<大版本>.<小版本>[.<修订>] <中文描述>`（如 `2.31 写入上次训练参照与 xhard 逐任务高层方案`），从 `git log` 最近一次接续；commit 后立即 `git push`（正本口径，分支 upstream 为 `origin/newtask-v3-MotionJepa1006`）。
 - **覆盖第 14 条（存储边界）**：`<WORK_ROOT>` = `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`；`<STORE_ROOT>` = `artifacts/`（`.gitignore` 根锚定忽略；另有 `scripts/data-generation-newSeed/outputs/` 与 `scripts/data-generation-MotionJEPALabel/outputs/` 已忽略，新产物优先落 `artifacts/`）；跨仓库引用 MotionJEPA / policy 侧数据时优先取 `/data/hongzefu/` 下的本机副本，NFS 原件是权威源、同步只用 rsync；本机没有 policy 仓库源码，其口径只能从 NFS 原件与 MotionJEPA 文档转引并注明。
 - **覆盖第 21 条（受保护目录）**：见 P1。
@@ -448,13 +450,13 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 | 占位符 | 本仓库取值 |
 |---|---|
-| `<WORK_ROOT>` | `/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006` |
+| `<WORK_ROOT>` | 环境 A／B：`/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006`；环境 C：`/scratch/hongze/robomme_benchmark_newtask-v3-MotionJepa1006` |
 | `<ARCHIVE_ROOT>` | 无 |
 | `<STORE_ROOT>` | `artifacts/` |
 | `<DOC_ROOT>` | `docs/`（`docs/ledger/` 历史账本只读；`docs/xhard-doc/` 新档生成留档） |
-| `<FAST_LOCAL_CACHE_ROOT>` | 默认（本机盘 `$HOME/.cache/uv`） |
+| `<FAST_LOCAL_CACHE_ROOT>` | 环境 A／B：默认（本机盘 `$HOME/.cache/uv`）；环境 C：`/scratch/hongze/.cache/`（`UV_CACHE_DIR=/scratch/hongze/.cache/uv`、`UV_PYTHON_INSTALL_DIR=/scratch/hongze/.cache/uv-python`、`MS_ASSET_DIR=/scratch/hongze/.cache/maniskill`） |
 | `<PY_INTERPRETER>` | 本仓库 uv 管理的 `.venv`（python3.11，单机不钉共享盘解释器） |
-| `<SHARED_ROOT>` / `<LOCAL_ROOT>` / `<SINGLE_NODE_ROOT>` | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu` / `/data/hongzefu` / 无 |
+| `<SHARED_ROOT>` / `<LOCAL_ROOT>` / `<SINGLE_NODE_ROOT>` | 环境 A／B：`/nfs/turbo/coe-chaijy-unreplicated/hongzefu` / `/data/hongzefu` / 无；环境 C：无 / `/scratch` / `/scratch/hongze` |
 | `<GL_REPO>` / `<GL_SUBMIT>` / `<GL_ACCOUNT>` / `<GL_PARTITION>` / `<SSH_HOST>` | 无集群访问，不适用 |
 | `<PROTECTED_DIRS>` | `src/robomme/`（默认冻结四个 wrapper，见 P1） |
 | `<COMMIT_SUBJECT_STYLE>` | `<大>.<小>[.<修订>] <中文描述>` |
