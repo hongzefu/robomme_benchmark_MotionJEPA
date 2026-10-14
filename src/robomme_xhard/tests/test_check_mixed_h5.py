@@ -31,6 +31,24 @@ def _labels(task, difficulty):
         return ["pick up the correct cube for the first time", "static", "pick up the correct cube for the second time"]
     if task == "VideoPlaceButton":
         return ["pick up the cube"] * (4 + knobs["extra_groups"])
+    if task == "BinFill":
+        return ["put it into the bin"] * knobs["target_total"] + ["All tasks completed"]
+    if task == "PickXtimes":
+        return ["pick up the red cube for the first time"] * knobs["repeats"] + ["All tasks completed"]
+    if task == "SwingXtimes":
+        labels = ["move to the top of the right-side target for the first time",
+                  "move to the top of the left-side target for the first time"]
+        return labels * knobs["repeats"] + ["All tasks completed"]
+    if task in ("VideoUnmask", "ButtonUnmask"):
+        return ["pick up the container that hides the green cube"] * knobs["pick_count"] + ["All tasks completed"]
+    if task == "PickHighlight":
+        return ["pick up the first highlighted cube, which is blue"] * knobs["pickup"] + ["All tasks completed"]
+    if task == "VideoPlaceOrder":
+        return ["drop the cube onto target"] * knobs["num_targets"] + ["All tasks completed"]
+    if task == "PatternLock":
+        return ["move forward"] * (2 * (knobs["length"] - 1)) + ["All tasks completed"]
+    if task == "RouteStick":
+        return ["move to the nearest left target by circling around the stick clockwise"] * (2 * knobs["length"]) + ["All tasks completed"]
     return ["static"] * 3
 
 
@@ -258,15 +276,75 @@ def test_exemption_count_is_processed_and_disjoint(tmp_path, monkeypatch):
     assert report["plan"]["exempt"] == 1
 
 
-def test_unfilled_expected_task_never_passes(tmp_path):
+def test_missing_expected_rule_never_passes(tmp_path, monkeypatch):
+    monkeypatch.setitem(checker.SUBGOAL_RULES, "BinFill", [])
     root = write_products(tmp_path / "unfilled", tasks=("BinFill",))
     report = run_check(root, tasks=("BinFill",))
     assert not report["plan"]["pass"]
     assert report["plan"]["rules_expected"] == 1
     assert report["plan"]["rules_run"] == 0
-    assert not any(rules.EXEMPT.values())
+    assert set((task, name) for task, items in rules.EXEMPT.items() for name in items) == {
+        ("StopCube", "stop_k"), ("PickHighlight", "spawn"), ("PatternLock", "grid")}
     assert set(rules.EXPECTED_CHECKS) == set(TIER_CONFIGS)
     assert all(rules.EXPECTED_CHECKS.values())
+
+
+@pytest.mark.parametrize("task,difficulty", [(task, difficulty) for task in TASK_ORDER
+                                             for difficulty in TIER_CONFIGS.get(task, {})])
+def test_all_xhard_quantity_rules_complete_fixture(tmp_path, task, difficulty):
+    root = write_products(tmp_path / f"{task}-{difficulty}", tasks=(task,), cycle=(difficulty,))
+    report = run_check(root, tasks=(task,), cycle=(difficulty,))
+    assert report["pass"], report
+    assert report["plan"]["rules_run"] == len(rules.EXPECTED_CHECKS[task])
+    assert report["plan"]["exempt"] == len(rules.EXEMPT[task])
+
+
+@pytest.mark.parametrize("task,difficulty", (
+    ("BinFill", "xhard12"), ("PickXtimes", "xhard12"), ("SwingXtimes", "xhard12"),
+    ("VideoUnmask", "xhard14"), ("ButtonUnmask", "xhard14"), ("PickHighlight", "xhard12"),
+    ("VideoPlaceOrder", "xhard12"), ("PatternLock", "xhard12"), ("RouteStick", "xhard12"),
+))
+def test_w5_quantity_boundary_missing_cannot_pass(tmp_path, task, difficulty):
+    root = write_products(tmp_path / task, tasks=(task,), cycle=(difficulty,))
+    with h5py.File(first_h5(root), "r+") as handle:
+        handle["episode_0/timestep_0/info/is_subgoal_boundary"][()] = False
+    report = run_check(root, tasks=(task,), cycle=(difficulty,))
+    assert report["schema"]["pass"] and report["content"]["pass"]
+    assert not report["plan"]["pass"]
+
+
+@pytest.mark.parametrize("task,difficulty,target", (
+    ("PatternLock", "xhard12", 12), ("PatternLock", "xhard20", 20),
+    ("RouteStick", "xhard12", 12), ("RouteStick", "xhard20", 20),
+))
+def test_affine_counts_full_sequence_and_excludes_completion(tmp_path, task, difficulty, target):
+    root = write_products(tmp_path / task, tasks=(task,), cycle=(difficulty,))
+    report = run_check(root, tasks=(task,), cycle=(difficulty,))
+    detail = report["samples"][0]["semantic"]["details"][0]
+    assert detail["expected"] == detail["actual"] == target
+    assert len(report["samples"][0]["boundaries"]) == target + 1
+    assert report["samples"][0]["boundaries"][-1]["text"] == "All tasks completed"
+
+
+def test_exemption_draft_keeps_frozen_80_items_and_exact_coverage():
+    for task, expected in rules.EXPECTED_CHECKS.items():
+        executed = {rule["name"] for rule in rules.SUBGOAL_RULES[task]}
+        exempted = set(rules.EXEMPT[task])
+        assert executed.isdisjoint(exempted)
+        assert executed | exempted == expected
+    assert sum(len(rules.EXPECTED_CHECKS[task]) * len(tiers) for task, tiers in TIER_CONFIGS.items()) == 80
+    assert sum(len(rules.EXEMPT[task]) * len(tiers) for task, tiers in TIER_CONFIGS.items()) == 12
+
+
+def test_later_same_tier_success_cannot_replace_missing_first_sample(tmp_path):
+    root = write_products(tmp_path / "missing-first", tasks=("VideoPlaceOrder",), episodes=2)
+    first_h5(root).unlink()
+    report = run_check(root, tasks=("VideoPlaceOrder",), episodes=2)
+    assert report["schema"]["files"] == 0
+    assert report["schema"]["missing"] == 1
+    assert report["plan"]["rules_expected"] == 1
+    assert report["plan"]["rules_run"] == 0
+    assert not report["schema"]["pass"] and not report["plan"]["pass"]
 
 
 @pytest.mark.parametrize("mutation", ("missing", "duplicate", "unknown_episode", "attempt_gap", "wrong_seed", "wrong_fr", "unknown_task"))
