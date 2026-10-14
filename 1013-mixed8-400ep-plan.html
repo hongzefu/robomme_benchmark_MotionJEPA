@@ -339,6 +339,7 @@ a { color:var(--accent); }
 
 <h3 id="implementation-adjustments">实施中调整</h3>
 <p><strong>停池动作补齐</strong>：开工锚点 <code>94c6a90b312c35ebf1a47940cd4d8159523212ce</code>，W2 实现时核实本机 CPython 3.11.14：仅 <code>shutdown(cancel_futures=True)</code> 不能终止已运行的 worker，可能在隔离后继续写产物。仅在循环模式开启 <code>--stop-on-pool-crash</code> 的首次损坏支路，先保存各池现存 <code>_processes</code> 快照、终止并等待全部 worker 退出，再关闭 executor、隔离在途产物、写摘要并以 3 退出；默认重建路径不变。改动仅落 W2 生成器的既有停止支路与对应测试，不新增开关、守卫、重试或回退。独立只读对抗验证锚定 <code>1aad348dd6f5c60451501be96e1d339903a20fd3</code>，结论 <code>ADJUST_REVIEW=PASS scale=same findings=0</code>；主会话核实源码后按同等规模继续，实际行为待 W2 验证。</p>
+<p><strong>语义计数表达式补齐</strong>：smoke 二结束后，W5 取得真实 H5 边界：PatternLock 的长度 L 对应演示和执行各 L−1 次移动，合计 <code>2L−2</code>；RouteStick 的边数 S 对应两段各 S 次，合计 <code>2S</code>。原有常数／旋钮／旋钮加常数表达式不能跨档表示倍率，不能把可数项当豁免。新增 <code>knob_affine:&lt;名&gt;:&lt;倍率&gt;:&lt;偏移&gt;</code>，只按 <code>int(knob) * int(倍率) + int(偏移)</code> 算期望值，复用正则计数；PatternLock 用 2、−2，RouteStick 用 2、0，应查集合仍为 80 项。W5 由原 W3 写者续任，写集增加 <code>check_mixed_h5.py::semantic_checks</code> 的小分支及对应测试，不新增字段、开关、守卫、回退或依赖。独立只读审查锚定 <code>76572b215c9cc7ccbf07c725297dd0ef3403b799</code>，<code>ADJUST_REVIEW=PASS scale=same findings=0</code>；主会话核实后按同等规模继续。</p>
 
 <h2 id="h6">六、子代理分工与合并（简述）</h2>
 <p>代码拆五块、各自独立 worktree：W1 只动 <code>seed_layout.py</code> 及其测试；W2 只动生成器、它的新测试，以及 <code>test_jobs.py</code> 里两个「新增字段默认值」常量，依赖 W1 先合；W3 新建校验与对账工具、规则表骨架，从原版副本导出 16 份 golden；W4 只动测速脚本及其测试。W2／W3／W4 同批派出，按 W2 → W3 → W4 合回。W6 在 W2、W4 合入后单独改生成器目录的 <code>CLAUDE.md</code>（唯一写者）。smoke 二后派 W5 填规则，豁免清单先交用户批准再合入。每次合并前核对改动文件在可写集合内、worktree 内复跑短测、派一个 sonnet 审查代理；<code>--no-ff</code> 合入后主检出再跑短测与受保护目录检查，PASS 即 push。smoke、测速、全量由主会话按 runbook 执行。</p>
@@ -378,7 +379,7 @@ a { color:var(--accent); }
 <li><code>export-golden --official /data/hongzefu/robomme_data_h5 --out-dir G</code>：每任务读 <code>episode_0</code>；golden JSON <code>{"task","source":{"file","revision":"a5e4e25…","episode":0},"excluded_keys":[…],"variable_shape_keys":["setup/task_goal"],"setup":{key:{"dtypes":[…],"shape":[…]}},"timestep":{…}}</code>；dtype 记全部 timestep 观察到的集合（覆盖 <code>waypoint_action</code> float32／float64 交替）；<code>excluded_keys</code> 为 <code>obs/eef_state_raw/{pose,quat,rpy}</code>、<code>action/eef_action_raw/{pose,quat,rpy}</code> 六项，加上原版存在时的 <code>setup/fail_recover_mode</code>、<code>setup/fail_recover_seed_anchor</code>（StopCube、MoveCube、InsertPeg、PatternLock、RouteStick 原版没有这两项）。</li>
 <li><code>dump-subgoals --output-dir D --out S.json</code>：逐 xhard 样本导出 subgoal 边界文本序列、<code>xhard_knobs</code>、<code>swap_plan</code> 摘要与 <code>runtime_checks</code> 摘要，供 W5 填规则。</li>
 </ul>
-<p>规则表 <code>src/robomme_xhard/tools/subgoal_rules.py</code>：<code>EXPECTED_CHECKS[task]</code> 冻结应查项名集合；<code>SUBGOAL_RULES[task] = [{"name","pattern","expect"}]</code>，<code>expect</code> ∈ <code>knob:&lt;名&gt;</code>、<code>const:&lt;n&gt;</code>、<code>knob_plus:&lt;名&gt;:&lt;基线&gt;</code>、<code>swap_runtime</code>；<code>EXEMPT[task] = {项名: 原因}</code> 只放用户批准的项。<code>PLAN_VS_RECORD</code> 要求 <code>{执行的规则名} ∪ {豁免项} == EXPECTED_CHECKS[task]</code>，否则计 <code>mismatch</code>。已知规则（W3 填，均由 <code>configs.py</code> 与代码静态核实）：</p>
+<p>规则表 <code>src/robomme_xhard/tools/subgoal_rules.py</code>：<code>EXPECTED_CHECKS[task]</code> 冻结应查项名集合；<code>SUBGOAL_RULES[task] = [{"name","pattern","expect"}]</code>，<code>expect</code> ∈ <code>knob:&lt;名&gt;</code>、<code>const:&lt;n&gt;</code>、<code>knob_plus:&lt;名&gt;:&lt;基线&gt;</code>、<code>knob_affine:&lt;名&gt;:&lt;倍率&gt;:&lt;偏移&gt;</code>、<code>swap_runtime</code>；线性表达式仅计算 <code>int(knob) * int(倍率) + int(偏移)</code>，见「实施中调整」。<code>EXEMPT[task] = {项名: 原因}</code> 只放用户批准的项。<code>PLAN_VS_RECORD</code> 要求 <code>{执行的规则名} ∪ {豁免项} == EXPECTED_CHECKS[task]</code>，否则计 <code>mismatch</code>。已知规则（W3 填，均由 <code>configs.py</code> 与代码静态核实）：</p>
 <table>
 <tr><th>任务</th><th>h5 里数什么</th><th>期望值</th><th>依据</th></tr>
 <tr><td>VideoUnmaskSwap</td><td><code>^pick up the container</code> 边界数</td><td><code>const:2</code></td><td>旋钮只有 <code>swap_count</code>，抓容器次数固定 2</td></tr>
@@ -418,10 +419,10 @@ a { color:var(--accent); }
 <tr><td>W3</td><td>校验与对账工具、规则表骨架、16 份 golden + 用例</td><td><code>src/robomme_xhard/tools/check_mixed_h5.py</code>、<code>src/robomme_xhard/tools/subgoal_rules.py</code>、<code>src/robomme_xhard/tools/golden_schema/*.json</code>、<code>src/robomme_xhard/tests/test_check_mixed_h5.py</code></td><td>集合外全部</td><td>按 1.4；golden 只读导出，交回附 16 份的 <code>source</code>、<code>excluded_keys</code> 与导出耗时；导出预计超 5 分钟则停手交主会话在主检出导出</td><td>3</td><td><code>pytest src/robomme_xhard/tests/test_check_mixed_h5.py -q</code> 全过；主会话抽查 2 份 golden</td><td>CPU，读原版 16 个文件的 <code>episode_0</code></td></tr>
 <tr><td>W4</td><td>测速探针、准入、三道闸 + 用例</td><td><code>scripts/data-generation-newSeed/utils/calibrate_parallelism.py</code>、<code>tests/lightweight/test_calibrate_cells.py</code></td><td>集合外全部</td><td>按 1.5；生成器开关名 <code>--stop-on-pool-crash</code>、退出码 3、<code>stopped_by</code> 字段与 W2 约定一致</td><td>4</td><td><code>pytest tests/lightweight/test_calibrate_cells.py -q</code> 全过</td><td>CPU，无 tmux</td></tr>
 <tr><td>W6（W2、W4 合入后）</td><td>生成器目录文档</td><td><code>scripts/data-generation-newSeed/CLAUDE.md</code></td><td>集合外全部</td><td>内容以已合入代码为准</td><td>5</td><td><code>git diff --check</code>；文中参数名与 <code>--help</code> 一致</td><td>无</td></tr>
-<tr><td>W5（smoke 二后）</td><td>填齐其余 10 个任务的规则与用例，起草 <code>EXEMPT</code></td><td><code>src/robomme_xhard/tools/subgoal_rules.py</code>、<code>src/robomme_xhard/tests/test_check_mixed_h5.py</code></td><td>集合外全部</td><td>输入：主会话给的 <code>dump-subgoals</code> 输出；<code>EXEMPT</code> 草案须用户批准后才合入</td><td>6</td><td>同 W3；主会话对 smoke 二跑 <code>check</code></td><td>CPU，无 tmux</td></tr>
+<tr><td>W5（smoke 二后）</td><td>填齐其余 10 个任务的规则与用例，起草 <code>EXEMPT</code>；同等规模补线性计数表达式</td><td><code>src/robomme_xhard/tools/subgoal_rules.py</code>、<code>src/robomme_xhard/tests/test_check_mixed_h5.py</code>；<code>src/robomme_xhard/tools/check_mixed_h5.py::semantic_checks</code> 仅新增 <code>knob_affine</code> 分支</td><td>集合外全部</td><td>输入：主会话给的 <code>dump-subgoals</code> 输出；线性表达式调整经独立 <code>ADJUST_REVIEW=PASS scale=same</code>；<code>EXEMPT</code> 草案须用户批准后才合入</td><td>6</td><td>同 W3；主会话对 smoke 二跑 <code>check</code></td><td>CPU，无 tmux</td></tr>
 <tr><td>主会话</td><td>smoke、校验、对账、AWS 接入、探针与测速、全量、留档、AGENTS.md 环境 C 与 P7 条文</td><td><code>AGENTS.md</code>、本计划、<code>docs/xhard-doc/mixed8-&lt;MMDD&gt;/</code></td><td>—</td><td>需 GPU 与 <code>artifacts/</code></td><td>—</td><td>第一部分四节</td><td>vail GPU0；AWS 多卡；tmux 见 R6</td></tr>
 </table>
-<p><strong>共享文件归属</strong>：每个文件只有一个写者；<code>subgoal_rules.py</code> 与 <code>test_check_mixed_h5.py</code> 先 W3 后 W5，串行交接；<code>CLAUDE.md</code> 只归 W6。</p>
+<p><strong>共享文件归属</strong>：每个文件只有一个写者；<code>subgoal_rules.py</code>、<code>test_check_mixed_h5.py</code> 与线性计数所需的 <code>check_mixed_h5.py</code> 先 W3 后 W5，同一代码代理串行续任；W5 对校验器只补 <code>knob_affine</code>。<code>CLAUDE.md</code> 只归 W6。</p>
 
 <h2 id="t4">四、闸门总表</h2>
 <table>
@@ -533,7 +534,7 @@ uv run --no-sync python -m robomme_xhard.tools.check_mixed_h5 check --output-dir
 
 <h2 id="t7">七、盲区诚实清单</h2>
 <ul>
-<li>其余 10 个任务的实际 H5 subgoal 文本尚未核实，语义规则等 smoke 二；已静态核实规则的任务为 VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick、VideoPlaceButton（另见 1.4 表）。VideoPlaceButton 完整抓取边界基线为 4，实际 H5 数量仍待 smoke 二核对。</li>
+<li>smoke 二已取得 54 条实际 xhard 边界序列，W5 正在填其余 10 任务规则；VideoPlaceButton 的完整抓取边界已确认基线 4 加额外组数。正式首样本仍只取每档第一条：VideoPlaceOrder ep3/xhard12 耗尽，不能用 ep7 的成功样本替代它；缺失项须保留 FAIL。</li>
 <li>早先核实用的「ep23 xhard14」样本来自母 seed 布局，与新循环（ep23 为 xhard20）不是同一布局。</li>
 <li>easy／medium／hard 档的「应做几次」没纳入语义校验，只对 xhard 档做。</li>
 <li>AWS 的 vCPU、内存与实例盘未实测（仓库 2026-10-13 核实为公开，clone 不需凭据）；耗时估计基于 vail，AWS 只有 <code>CALIB</code> 后才有数。</li>
