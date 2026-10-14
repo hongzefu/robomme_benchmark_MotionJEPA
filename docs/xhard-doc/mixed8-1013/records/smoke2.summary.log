@@ -1,0 +1,618 @@
+SOURCE_HEAD=76572b215c9cc7ccbf07c725297dd0ef3403b799
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+    SwingXtimes/episode_3 seed 3300 failed (TypeError), retrying attempt 1
+[1/128] StopCube/episode_1 succeeded with seed 2100 (attempt 0, 32.042s)
+[2/128] StopCube/episode_2 succeeded with seed 2200 (attempt 0, 36.481s)
+[3/128] StopCube/episode_3 succeeded with seed 2300 (attempt 0, 42.479s)
+[4/128] VideoUnmask/episode_0 succeeded with seed 6000 (attempt 0, 37.093s)
+[5/128] StopCube/episode_4 succeeded with seed 2400 (attempt 0, 49.745s)
+[6/128] PickXtimes/episode_1 succeeded with seed 1100 (attempt 0, 50.815s)
+[7/128] StopCube/episode_7 succeeded with seed 2700 (attempt 0, 50.488s)
+[8/128] StopCube/episode_5 succeeded with seed 2500 (attempt 0, 52.717s)
+[9/128] StopCube/episode_0 succeeded with seed 2000 (attempt 0, 55.115s)
+[10/128] StopCube/episode_6 succeeded with seed 2600 (attempt 0, 56.049s)
+[11/128] SwingXtimes/episode_1 succeeded with seed 3100 (attempt 0, 57.254s)
+[12/128] VideoUnmask/episode_1 succeeded with seed 6100 (attempt 0, 30.988s)
+[13/128] SwingXtimes/episode_0 succeeded with seed 3000 (attempt 0, 63.821s)
+[14/128] PickXtimes/episode_0 succeeded with seed 1000 (attempt 0, 66.557s)
+[15/128] BinFill/episode_0 succeeded with seed 4000 (attempt 0, 70.504s)
+[16/128] SwingXtimes/episode_2 succeeded with seed 3200 (attempt 0, 70.011s)
+[17/128] BinFill/episode_1 succeeded with seed 4100 (attempt 0, 71.191s)
+[18/128] VideoUnmask/episode_4 succeeded with seed 6400 (attempt 0, 35.786s)
+[19/128] SwingXtimes/episode_4 succeeded with seed 3400 (attempt 0, 80.332s)
+[20/128] VideoUnmask/episode_2 succeeded with seed 6200 (attempt 0, 47.005s)
+[21/128] VideoUnmask/episode_5 succeeded with seed 6500 (attempt 0, 33.888s)
+screw plan failed
+screw plan failed
+screw plan failed
+[22/128] ButtonUnmask/episode_0 succeeded with seed 8000 (attempt 0, 38.424s)
+[23/128] ButtonUnmask/episode_1 succeeded with seed 8100 (attempt 0, 38.706s)
+[24/128] SwingXtimes/episode_6 succeeded with seed 3600 (attempt 0, 96.081s)
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.025996 is greater than threshold 0.001000.
+IK Failed! Distance 0.032334 is greater than threshold 0.001000.
+IK Failed! Distance 0.034337 is greater than threshold 0.001000.
+[25/128] VideoUnmask/episode_3 succeeded with seed 6300 (attempt 0, 57.011s)
+    VideoUnmask/episode_6 seed 6600 failed (PlannerExhausted), retrying attempt 1
+[26/128] PickXtimes/episode_2 succeeded with seed 1200 (attempt 0, 101.206s)
+[27/128] SwingXtimes/episode_5 succeeded with seed 3500 (attempt 0, 101.785s)
+[28/128] ButtonUnmask/episode_5 succeeded with seed 8500 (attempt 0, 39.985s)
+[29/128] ButtonUnmask/episode_4 succeeded with seed 8400 (attempt 0, 41.46s)
+[30/128] VideoUnmask/episode_7 succeeded with seed 6700 (attempt 0, 57.809s)
+    ButtonUnmaskSwap/episode_3 seed 7300 failed (SwapCollisionError), retrying attempt 1
+[31/128] VideoUnmaskSwap/episode_0 succeeded with seed 5000 (attempt 0, 40.761s)
+[32/128] ButtonUnmask/episode_2 succeeded with seed 8200 (attempt 0, 57.716s)
+[33/128] VideoUnmaskSwap/episode_1 succeeded with seed 5100 (attempt 0, 44.8s)
+    BinFill/episode_3 seed 4300 failed (DatasetGenerationError), retrying attempt 1
+[34/128] PickXtimes/episode_3 succeeded with seed 1300 (attempt 0, 117.833s)
+[35/128] SwingXtimes/episode_7 succeeded with seed 3700 (attempt 0, 117.878s)
+[36/128] ButtonUnmask/episode_3 succeeded with seed 8300 (attempt 0, 62.353s)
+[37/128] ButtonUnmask/episode_6 succeeded with seed 8600 (attempt 0, 57.173s)
+[38/128] PickXtimes/episode_4 succeeded with seed 1400 (attempt 0, 123.917s)
+[39/128] BinFill/episode_2 succeeded with seed 4200 (attempt 0, 127.537s)
+[40/128] BinFill/episode_4 succeeded with seed 4400 (attempt 0, 128.826s)
+    VideoRepick/episode_3 seed 9300 failed (SwapCollisionError), retrying attempt 1
+[41/128] ButtonUnmask/episode_7 succeeded with seed 8700 (attempt 0, 65.293s)
+[42/128] VideoUnmaskSwap/episode_2 succeeded with seed 5200 (attempt 0, 57.413s)
+    VideoRepick/episode_4 seed 9400 failed (SwapCollisionError), retrying attempt 1
+screw plan failed
+screw plan failed
+screw plan failed
+    VideoRepick/episode_5 seed 9500 failed (SwapCollisionError), retrying attempt 1
+[43/128] PickXtimes/episode_5 succeeded with seed 1500 (attempt 0, 142.699s)
+    VideoRepick/episode_7 seed 9700 failed (TypeError), retrying attempt 1
+[44/128] ButtonUnmaskSwap/episode_1 succeeded with seed 7100 (attempt 0, 47.564s)
+[45/128] PickHighlight/episode_0 succeeded with seed 12000 (attempt 0, 38.025s)
+    VideoPlaceButton/episode_1 seed 10100 failed (SceneGenerationError), retrying attempt 1
+    VideoPlaceButton/episode_2 seed 10200 failed (SceneGenerationError), retrying attempt 1
+[46/128] BinFill/episode_5 succeeded with seed 4500 (attempt 0, 154.164s)
+    VideoPlaceButton/episode_4 seed 10400 failed (SceneGenerationError), retrying attempt 1
+[47/128] ButtonUnmaskSwap/episode_0 succeeded with seed 7000 (attempt 0, 61.278s)
+[48/128] PickHighlight/episode_6 succeeded with seed 12600 (attempt 0, 40.669s)
+[49/128] PickXtimes/episode_6 succeeded with seed 1600 (attempt 0, 159.361s)
+    BinFill/episode_6 seed 4600 failed (DatasetGenerationError), retrying attempt 1
+[50/128] VideoUnmaskSwap/episode_3 succeeded with seed 5300 (attempt 0, 80.522s)
+[51/128] PickHighlight/episode_1 succeeded with seed 12100 (attempt 0, 50.938s)
+[52/128] ButtonUnmaskSwap/episode_2 succeeded with seed 7200 (attempt 0, 62.887s)
+    VideoPlaceOrder/episode_3 seed 11300 failed (TypeError), retrying attempt 1
+screw plan failed
+screw plan failed
+screw plan failed
+    VideoPlaceOrder/episode_6 seed 11600 failed (TypeError), retrying attempt 1
+[53/128] VideoUnmaskSwap/episode_4 succeeded with seed 5400 (attempt 0, 85.698s)
+    VideoPlaceOrder/episode_7 seed 11700 failed (TypeError), retrying attempt 1
+[54/128] PickHighlight/episode_7 succeeded with seed 12700 (attempt 0, 51.697s)
+screw plan failed
+screw plan failed
+screw plan failed
+    BinFill/episode_7 seed 4700 failed (DatasetGenerationError), retrying attempt 1
+[55/128] VideoUnmaskSwap/episode_5 succeeded with seed 5500 (attempt 0, 93.199s)
+[56/128] PickHighlight/episode_2 succeeded with seed 12200 (attempt 0, 71.066s)
+[57/128] PickXtimes/episode_7 succeeded with seed 1700 (attempt 0, 188.315s)
+[58/128] PickHighlight/episode_3 succeeded with seed 12300 (attempt 0, 79.598s)
+    VideoRepick/episode_2 seed 9200 failed (DatasetGenerationError), retrying attempt 1
+[59/128] VideoRepick/episode_0 succeeded with seed 9000 (attempt 0, 80.481s)
+[60/128] MoveCube/episode_3 succeeded with seed 14300 (attempt 0, 35.537s)
+[61/128] PickHighlight/episode_4 succeeded with seed 12400 (attempt 0, 92.095s)
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[62/128] VideoUnmaskSwap/episode_6 succeeded with seed 5600 (attempt 0, 124.523s)
+[63/128] MoveCube/episode_0 succeeded with seed 14000 (attempt 0, 51.235s)
+[64/128] MoveCube/episode_1 succeeded with seed 14100 (attempt 0, 51.557s)
+[65/128] MoveCube/episode_4 succeeded with seed 14400 (attempt 0, 52.116s)
+[66/128] VideoRepick/episode_1 succeeded with seed 9100 (attempt 0, 101.407s)
+[67/128] MoveCube/episode_2 succeeded with seed 14200 (attempt 0, 56.302s)
+[68/128] ButtonUnmaskSwap/episode_4 succeeded with seed 7400 (attempt 0, 124.547s)
+[69/128] MoveCube/episode_5 succeeded with seed 14500 (attempt 0, 52.159s)
+[70/128] PickHighlight/episode_5 succeeded with seed 12500 (attempt 0, 111.639s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+screw plan failed
+screw plan failed
+screw plan failed
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[71/128] ButtonUnmaskSwap/episode_5 succeeded with seed 7500 (attempt 0, 138.296s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[72/128] MoveCube/episode_6 succeeded with seed 14600 (attempt 0, 66.806s)
+screw plan failed
+screw plan failed
+screw plan failed
+[73/128] MoveCube/episode_7 succeeded with seed 14700 (attempt 0, 61.456s)
+[74/128] PatternLock/episode_0 succeeded with seed 15000 (attempt 0, 29.219s)
+[75/128] VideoPlaceButton/episode_0 succeeded with seed 10000 (attempt 0, 111.498s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[76/128] InsertPeg/episode_0 succeeded with seed 13000 (attempt 0, 66.897s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+screw plan failed
+screw plan failed
+screw plan failed
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[77/128] VideoPlaceButton/episode_6 succeeded with seed 10600 (attempt 0, 113.121s)
+[78/128] VideoPlaceButton/episode_5 succeeded with seed 10500 (attempt 0, 115.749s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[79/128] ButtonUnmaskSwap/episode_6 succeeded with seed 7600 (attempt 0, 160.892s)
+[80/128] VideoPlaceButton/episode_7 succeeded with seed 10700 (attempt 0, 112.442s)
+[81/128] VideoUnmaskSwap/episode_7 succeeded with seed 5700 (attempt 0, 172.033s)
+    InsertPeg/episode_1 seed 13100 failed (DatasetGenerationError), retrying attempt 1
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[82/128] InsertPeg/episode_3 succeeded with seed 13300 (attempt 0, 64.293s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[83/128] PatternLock/episode_2 succeeded with seed 15200 (attempt 0, 48.737s)
+[84/128] VideoPlaceButton/episode_3 succeeded with seed 10300 (attempt 0, 126.894s)
+    VideoPlaceOrder/episode_5 seed 11500 failed (DatasetGenerationError), retrying attempt 1
+[85/128] PatternLock/episode_1 succeeded with seed 15100 (attempt 0, 54.879s)
+[86/128] VideoRepick/episode_6 succeeded with seed 9600 (attempt 0, 141.456s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+    InsertPeg/episode_2 seed 13200 failed (DatasetGenerationError), retrying attempt 1
+[87/128] InsertPeg/episode_5 succeeded with seed 13500 (attempt 0, 73.628s)
+    VideoRepick/episode_3 seed 9301 failed (SwapCollisionError), retrying attempt 2
+    VideoPlaceOrder/episode_2 seed 11200 failed (DatasetGenerationError), retrying attempt 1
+    VideoRepick/episode_5 seed 9501 failed (SwapCollisionError), retrying attempt 2
+[88/128] VideoPlaceOrder/episode_0 succeeded with seed 11000 (attempt 0, 133.603s)
+    VideoRepick/episode_7 seed 9701 failed (TypeError), retrying attempt 2
+    VideoPlaceButton/episode_2 seed 10201 failed (SceneGenerationError), retrying attempt 2
+[89/128] VideoPlaceOrder/episode_1 succeeded with seed 11100 (attempt 0, 133.385s)
+    VideoPlaceOrder/episode_3 seed 11301 failed (TypeError), retrying attempt 2
+[90/128] InsertPeg/episode_7 succeeded with seed 13700 (attempt 0, 75.709s)
+    VideoPlaceOrder/episode_6 seed 11601 failed (TypeError), retrying attempt 2
+[91/128] PatternLock/episode_3 succeeded with seed 15300 (attempt 0, 70.584s)
+    InsertPeg/episode_6 seed 13600 failed (DatasetGenerationError), retrying attempt 1
+[92/128] VideoPlaceOrder/episode_4 succeeded with seed 11400 (attempt 0, 144.829s)
+    VideoRepick/episode_3 seed 9302 failed (SwapCollisionError), retrying attempt 3
+    VideoPlaceOrder/episode_2 seed 11201 failed (TypeError), retrying attempt 2
+[93/128] RouteStick/episode_0 succeeded with seed 16000 (attempt 0, 64.568s)
+    VideoRepick/episode_5 seed 9502 failed (SwapCollisionError), retrying attempt 3
+    VideoRepick/episode_7 seed 9702 failed (SwapCollisionError), retrying attempt 3
+[94/128] PatternLock/episode_4 succeeded with seed 15400 (attempt 0, 88.557s)
+    VideoPlaceOrder/episode_3 连续 3 次非任务性失败（TypeError），判定为代码问题，放弃
+[95/128] PatternLock/episode_5 succeeded with seed 15500 (attempt 0, 92.989s)
+    VideoRepick/episode_3 seed 9303 failed (SwapCollisionError), retrying attempt 4
+    VideoRepick/episode_5 seed 9503 failed (SwapCollisionError), retrying attempt 4
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[96/128] VideoUnmask/episode_6 succeeded with seed 6601 (attempt 1, 64.718s)
+    VideoRepick/episode_3 seed 9304 failed (SwapCollisionError), retrying attempt 5
+[97/128] PatternLock/episode_6 succeeded with seed 15600 (attempt 0, 104.598s)
+[98/128] RouteStick/episode_1 succeeded with seed 16100 (attempt 0, 88.185s)
+[99/128] ButtonUnmaskSwap/episode_7 succeeded with seed 7700 (attempt 0, 229.344s)
+    VideoRepick/episode_5 seed 9504 failed (SwapCollisionError), retrying attempt 5
+    VideoRepick/episode_3 seed 9305 failed (SwapCollisionError), retrying attempt 6
+[100/128] SwingXtimes/episode_3 succeeded with seed 3301 (attempt 1, 76.247s)
+    VideoRepick/episode_5 seed 9505 failed (TypeError), retrying attempt 6
+    VideoRepick/episode_3 seed 9306 failed (SwapCollisionError), retrying attempt 7
+screw plan failed
+screw plan failed
+screw plan failed
+[101/128] RouteStick/episode_2 succeeded with seed 16200 (attempt 0, 99.869s)
+screw plan failed
+screw plan failed
+screw plan failed
+    VideoRepick/episode_5 seed 9506 failed (SwapCollisionError), retrying attempt 7
+    VideoRepick/episode_3 seed 9307 failed (TypeError), retrying attempt 8
+[102/128] PatternLock/episode_7 succeeded with seed 15700 (attempt 0, 113.473s)
+    VideoRepick/episode_3 seed 9308 failed (SwapCollisionError), retrying attempt 9
+[103/128] VideoRepick/episode_2 succeeded with seed 9201 (attempt 1, 72.668s)
+[104/128] RouteStick/episode_3 succeeded with seed 16300 (attempt 0, 111.004s)
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[105/128] ButtonUnmaskSwap/episode_3 succeeded with seed 7301 (attempt 1, 100.469s)
+[106/128] InsertPeg/episode_2 succeeded with seed 13201 (attempt 1, 77.408s)
+[107/128] RouteStick/episode_4 succeeded with seed 16400 (attempt 0, 120.999s)
+[108/128] InsertPeg/episode_1 succeeded with seed 13101 (attempt 1, 85.142s)
+    InsertPeg/episode_6 seed 13601 failed (DatasetGenerationError), retrying attempt 2
+[109/128] RouteStick/episode_5 succeeded with seed 16500 (attempt 0, 126.421s)
+[110/128] VideoRepick/episode_4 succeeded with seed 9401 (attempt 1, 114.03s)
+[111/128] BinFill/episode_3 succeeded with seed 4301 (attempt 1, 124.004s)
+[112/128] VideoPlaceButton/episode_1 succeeded with seed 10101 (attempt 1, 116.355s)
+[113/128] RouteStick/episode_6 succeeded with seed 16600 (attempt 0, 133.018s)
+[114/128] RouteStick/episode_7 succeeded with seed 16700 (attempt 0, 141.787s)
+[115/128] VideoPlaceButton/episode_2 succeeded with seed 10202 (attempt 2, 103.024s)
+    InsertPeg/episode_4 seed 13400 failed (FailsafeTimeout), retrying attempt 1
+[116/128] VideoPlaceOrder/episode_7 succeeded with seed 11701 (attempt 1, 126.798s)
+[117/128] VideoPlaceButton/episode_4 succeeded with seed 10401 (attempt 1, 133.877s)
+[118/128] VideoPlaceOrder/episode_5 succeeded with seed 11501 (attempt 1, 124.742s)
+[119/128] InsertPeg/episode_6 succeeded with seed 13602 (attempt 2, 43.141s)
+[120/128] VideoRepick/episode_3 succeeded with seed 9309 (attempt 9, 66.857s)
+[121/128] VideoPlaceOrder/episode_2 succeeded with seed 11202 (attempt 2, 109.526s)
+[122/128] BinFill/episode_6 succeeded with seed 4601 (attempt 1, 142.535s)
+[123/128] VideoPlaceOrder/episode_6 succeeded with seed 11602 (attempt 2, 124.511s)
+[124/128] VideoRepick/episode_5 succeeded with seed 9507 (attempt 7, 83.276s)
+[125/128] VideoRepick/episode_7 succeeded with seed 9703 (attempt 3, 112.296s)
+[126/128] BinFill/episode_7 succeeded with seed 4701 (attempt 1, 152.534s)
+    InsertPeg/episode_4 seed 13401 failed (DatasetGenerationError), retrying attempt 2
+screw plan failed
+screw plan failed
+screw plan failed
+[127/128] InsertPeg/episode_4 succeeded with seed 13402 (attempt 2, 27.696s)
+{"parameters": {"output_dir": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/mixed8/smoke2", "env": "all", "tasks": ["BinFill", "PickXtimes", "SwingXtimes", "StopCube", "VideoUnmask", "ButtonUnmask", "VideoUnmaskSwap", "ButtonUnmaskSwap", "PickHighlight", "VideoRepick", "VideoPlaceButton", "VideoPlaceOrder", "MoveCube", "InsertPeg", "PatternLock", "RouteStick"], "episodes": 8, "episode_start": 0, "workers": 32, "gpus": ["0"], "seed_layout": "train", "difficulty_ratio": null, "difficulty_cycle": ["easy", "medium", "hard", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20"], "max_attempts": 100, "limit_threads": true, "max_tasks_per_child": 8, "affinity": "none", "save_video_for_recording": true, "effective_cycles": {"BinFill": ["easy", "medium", "hard", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20"], "PickXtimes": ["easy", "medium", "hard", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20"], "SwingXtimes": ["easy", "medium", "hard", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20"], "StopCube": ["easy", "medium", "hard", "xhard14", "xhard16", "xhard18", "xhard20"], "VideoUnmask": ["easy", "medium", "hard", "xhard14"], "ButtonUnmask": ["easy", "medium", "hard", "xhard14"], "VideoUnmaskSwap": ["easy", "medium", "hard", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20"], "ButtonUnmaskSwap": ["easy", "medium", "hard", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20"], "PickHighlight": ["easy", "medium", "hard", "xhard12", "xhard16", "xhard18"], "VideoRepick": ["easy", "medium", "hard", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20"], "VideoPlaceButton": ["easy", "medium", "hard", "xhard12", "xhard14"], "VideoPlaceOrder": ["easy", "medium", "hard", "xhard12"], "MoveCube": ["easy", "medium", "hard"], "InsertPeg": ["easy", "medium", "hard"], "PatternLock": ["easy", "medium", "hard", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20"], "RouteStick": ["easy", "medium", "hard", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20"]}, "recovery_assignment": {"BinFill": {"z": [0, 1, 2], "xy": [8, 9, 10]}, "PickXtimes": {"z": [0, 1, 2], "xy": [8, 9, 10]}, "SwingXtimes": {"z": [0, 1, 2], "xy": [8, 9, 10]}, "StopCube": {"z": [], "xy": []}, "VideoUnmask": {"z": [0, 1, 2], "xy": [4, 5, 6]}, "ButtonUnmask": {"z": [0, 1, 2], "xy": [4, 5, 6]}, "VideoUnmaskSwap": {"z": [0, 1, 2], "xy": [8, 9, 10]}, "ButtonUnmaskSwap": {"z": [0, 1, 2], "xy": [8, 9, 10]}, "PickHighlight": {"z": [0, 1, 2], "xy": [6, 7, 8]}, "VideoRepick": {"z": [0, 1, 2], "xy": [8, 9, 10]}, "VideoPlaceButton": {"z": [0, 1, 2], "xy": [5, 6, 7]}, "VideoPlaceOrder": {"z": [0, 1, 2], "xy": [4, 5, 6]}, "MoveCube": {"z": [], "xy": []}, "InsertPeg": {"z": [], "xy": []}, "PatternLock": {"z": [], "xy": []}, "RouteStick": {"z": [], "xy": []}}}, "requested_count": 128, "success_count": 127, "exhausted_count": 1, "elapsed_s": 501.0, "throughput_ep_per_min": 15.21, "peak_rss_mb": 8440.3}
+EXIT_CODE=1

@@ -1,0 +1,10 @@
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+IDENTITY_AUDIT=FAIL episodes=128 missing=3 dup=0 unknown=0 mismatch=1
+('VideoPlaceOrder', 3) 缺少成功记录
+('VideoPlaceOrder', 3) 缺少metadata
+('VideoPlaceOrder', 3) 缺少H5
+('VideoPlaceOrder', 3) attempt 必须为连续失败后唯一成功，实际 [0, 1, 2]
+EXIT_CODE=1

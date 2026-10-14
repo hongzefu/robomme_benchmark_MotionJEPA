@@ -1,0 +1,11 @@
+CHECKER_HEAD=3303ff3683f4697f06bf24c214fe3e4b1edb420a
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+H5_SCHEMA=FAIL files=99 steps=69222 missing=1 extra=0 dtype_shape=0
+H5_CONTENT=FAIL files=99 fails=1
+H5_COUNTS=FAIL tasks=16 episodes=8 per_tier_ok=0
+PLAN_VS_RECORD=FAIL files=52 rules_expected=80 rules_run=79 mismatch=1 exempt=12
+CHECK_WALL_S=490
+EXIT_CODE=1
