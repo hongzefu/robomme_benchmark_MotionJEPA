@@ -283,6 +283,8 @@ def semantic_checks(task, difficulty, boundaries, record):
                     target = int(knobs[parts[1]])
                 elif parts[0] == "knob_plus":
                     target = int(knobs[parts[1]]) + int(parts[2])
+                elif parts[0] == "knob_affine":
+                    target = int(knobs[parts[1]]) * int(parts[2]) + int(parts[3])
                 else:
                     raise ValueError(f"未知 expect {expression}")
                 actual = sum(re.search(rule["pattern"], boundary["text"]) is not None for boundary in boundaries)
