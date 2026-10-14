@@ -74,18 +74,18 @@ SUBGOAL_RULES.update({
     ],
 })
 
-# 以下三项为 W5 待用户批准的具名草案；批准前不得合入主分支或用于正式校验。
+# 以下三项具名豁免用户已批准，可合入主分支并用于正式校验。
 # 应查集合保持原样；处理豁免仍计入 rules_run，并由 exempt 单列。
 EXEMPT = {task: {} for task in EXPECTED_CHECKS}
 EXEMPT["StopCube"]["stop_k"] = (
-    "待用户批准：stop_k 是方块经过目标的序号，remain static 是按时间生成的检查点，"
+    "用户已批准：stop_k 是方块经过目标的序号，remain static 是按时间生成的检查点，"
     "不能等同经过次数；真实 xhard18 的 stop_k=7 却只有 4 个 remain static 边界。"
 )
 EXEMPT["PickHighlight"]["spawn"] = (
-    "待用户批准：H5 边界只记录被高亮并抓取的 4、5、6 块，不记录未选方块；"
+    "用户已批准：H5 边界只记录被高亮并抓取的 4、5、6 块，不记录未选方块；"
     "无法由这些边界独立数出场景生成总数 6，xhard_knobs 只是配置报告。"
 )
 EXEMPT["PatternLock"]["grid"] = (
-    "待用户批准：H5 边界只记录路径移动方向，没有全部网格节点的身份或数量；"
+    "用户已批准：H5 边界只记录路径移动方向，没有全部网格节点的身份或数量；"
     "可真数 length 对应移动次数，但无法由方向序列独立证明网格边长 5。"
 )
