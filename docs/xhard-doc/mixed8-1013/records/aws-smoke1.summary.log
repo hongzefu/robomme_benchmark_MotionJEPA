@@ -1,0 +1,12 @@
+SOURCE_HEAD=ea7cb1bbd85873a45bc2b12cbfd45e87500036cb
+/scratch/hongze/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/scratch/hongze/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/scratch/hongze/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:37: UserWarning: Failed to find system libvulkan. Fallback to SAPIEN builtin libvulkan.
+  warn("Failed to find system libvulkan. Fallback to SAPIEN builtin libvulkan.")
+/scratch/hongze/robomme_benchmark_newtask-v3-MotionJepa1006/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+[1/1] VideoUnmaskSwap/episode_3 succeeded with seed 5300 (attempt 0, 83.816s)
+{"parameters": {"output_dir": "/scratch/hongze/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/mixed8/smoke1", "env": "VideoUnmaskSwap", "tasks": ["VideoUnmaskSwap"], "episodes": 1, "episode_start": 3, "workers": 1, "gpus": ["0"], "seed_layout": "train", "difficulty_ratio": null, "difficulty_cycle": ["easy", "medium", "hard", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20"], "max_attempts": 100, "limit_threads": true, "max_tasks_per_child": 8, "affinity": "none", "save_video_for_recording": true, "effective_cycles": {"VideoUnmaskSwap": ["easy", "medium", "hard", "xhard12", "xhard14", "xhard16", "xhard18", "xhard20"]}, "recovery_assignment": {"VideoUnmaskSwap": {"z": [0, 1, 2], "xy": [8, 9, 10]}}}, "requested_count": 1, "success_count": 1, "exhausted_count": 0, "elapsed_s": 96.4, "throughput_ep_per_min": 0.62, "peak_rss_mb": 3561.9}
+EXIT_CODE=0

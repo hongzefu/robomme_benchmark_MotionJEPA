@@ -1,0 +1,40 @@
+{
+  "cell": "P8",
+  "workers": 8,
+  "gpus": "0",
+  "limit_threads": true,
+  "returncode": 0,
+  "wall_s": 439.94824366644025,
+  "attempts": 20,
+  "success": 16,
+  "parse_error": null,
+  "requested": 16,
+  "complete": true,
+  "aborted_by": null,
+  "stopped_by": null,
+  "termination": {
+    "pgid": 893800,
+    "sigkill": false,
+    "remaining_pids": [],
+    "zero_residual": true
+  },
+  "failed_attempts": 4,
+  "gross_throughput_ep_per_min": 2.1820748549864706,
+  "steady": {
+    "episodes": 0,
+    "throughput_ep_per_min": null,
+    "trimmed": false
+  },
+  "tiers_completed": [
+    "xhard18",
+    "xhard20"
+  ],
+  "resources": {},
+  "peak_worker_rss_mb": 8485.7,
+  "gpu_peaks": {
+    "0": {
+      "mem_mb": 6451.0,
+      "total_mb": 81920.0
+    }
+  }
+}

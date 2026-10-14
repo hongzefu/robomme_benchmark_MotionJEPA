@@ -1,0 +1,167 @@
+{
+  "cell": "L64",
+  "workers": 64,
+  "gpus": "0,1,4,5,2,3,6,7",
+  "limit_threads": true,
+  "returncode": 0,
+  "wall_s": 1762.0597117319703,
+  "attempts": 490,
+  "success": 384,
+  "parse_error": null,
+  "requested": 384,
+  "complete": true,
+  "aborted_by": null,
+  "stopped_by": null,
+  "termination": {
+    "pgid": 973057,
+    "sigkill": false,
+    "remaining_pids": [],
+    "zero_residual": true
+  },
+  "failed_attempts": 106,
+  "gross_throughput_ep_per_min": 13.075606829097431,
+  "steady": {
+    "episodes": 256,
+    "span_s": 863.0202350616455,
+    "throughput_ep_per_min": 17.797960437049124,
+    "mean_wall_s": 186.92469140625,
+    "trimmed": true,
+    "t_start": 1791943532.7863593,
+    "t_end": 1791944395.8065944
+  },
+  "tiers_completed": [
+    "easy",
+    "hard",
+    "medium",
+    "xhard12",
+    "xhard14",
+    "xhard16",
+    "xhard18",
+    "xhard20"
+  ],
+  "resources": {
+    "samples": 1592,
+    "cpu_percent_mean": 24.383542713567838,
+    "load1_mean": 66.76326838466373,
+    "mem_used_gb_max": 422.89354705810547,
+    "slow_wall_threshold_s": 186.92469140625,
+    "slow_definition": "稳态完成项 wall_s 高于其均值，采样时刻落在该项运行区间",
+    "gpus": {
+      "0": {
+        "samples": 1231,
+        "util_mean": 6.300568643379366,
+        "util_zero_fraction": 0.0,
+        "slow_util_mean": 6.300568643379366,
+        "slow_samples": 1231,
+        "non_slow_util_mean": null,
+        "non_slow_samples": 0,
+        "mem_mb_max": 7305.0
+      },
+      "1": {
+        "samples": 1231,
+        "util_mean": 5.753046303818034,
+        "util_zero_fraction": 0.0,
+        "slow_util_mean": 5.753046303818034,
+        "slow_samples": 1231,
+        "non_slow_util_mean": null,
+        "non_slow_samples": 0,
+        "mem_mb_max": 6339.0
+      },
+      "2": {
+        "samples": 1231,
+        "util_mean": 5.6133225020308695,
+        "util_zero_fraction": 0.006498781478472786,
+        "slow_util_mean": 5.6133225020308695,
+        "slow_samples": 1231,
+        "non_slow_util_mean": null,
+        "non_slow_samples": 0,
+        "mem_mb_max": 6339.0
+      },
+      "3": {
+        "samples": 1231,
+        "util_mean": 5.869212022745735,
+        "util_zero_fraction": 0.0016246953696181965,
+        "slow_util_mean": 5.869212022745735,
+        "slow_samples": 1231,
+        "non_slow_util_mean": null,
+        "non_slow_samples": 0,
+        "mem_mb_max": 6339.0
+      },
+      "4": {
+        "samples": 1231,
+        "util_mean": 5.552396425670187,
+        "util_zero_fraction": 0.0008123476848090983,
+        "slow_util_mean": 5.552396425670187,
+        "slow_samples": 1231,
+        "non_slow_util_mean": null,
+        "non_slow_samples": 0,
+        "mem_mb_max": 6339.0
+      },
+      "5": {
+        "samples": 1231,
+        "util_mean": 5.866774979691308,
+        "util_zero_fraction": 0.002437043054427295,
+        "slow_util_mean": 5.866774979691308,
+        "slow_samples": 1231,
+        "non_slow_util_mean": null,
+        "non_slow_samples": 0,
+        "mem_mb_max": 6339.0
+      },
+      "6": {
+        "samples": 1231,
+        "util_mean": 5.851340373679935,
+        "util_zero_fraction": 0.010560519902518278,
+        "slow_util_mean": 5.851340373679935,
+        "slow_samples": 1231,
+        "non_slow_util_mean": null,
+        "non_slow_samples": 0,
+        "mem_mb_max": 6339.0
+      },
+      "7": {
+        "samples": 1231,
+        "util_mean": 5.703493095044679,
+        "util_zero_fraction": 0.01462225832656377,
+        "slow_util_mean": 5.703493095044679,
+        "slow_samples": 1231,
+        "non_slow_util_mean": null,
+        "non_slow_samples": 0,
+        "mem_mb_max": 6341.0
+      }
+    }
+  },
+  "peak_worker_rss_mb": 9649.890625,
+  "gpu_peaks": {
+    "0": {
+      "mem_mb": 7305.0,
+      "total_mb": 81920.0
+    },
+    "1": {
+      "mem_mb": 6339.0,
+      "total_mb": 81920.0
+    },
+    "4": {
+      "mem_mb": 6339.0,
+      "total_mb": 81920.0
+    },
+    "5": {
+      "mem_mb": 6339.0,
+      "total_mb": 81920.0
+    },
+    "2": {
+      "mem_mb": 6339.0,
+      "total_mb": 81920.0
+    },
+    "3": {
+      "mem_mb": 6339.0,
+      "total_mb": 81920.0
+    },
+    "6": {
+      "mem_mb": 6339.0,
+      "total_mb": 81920.0
+    },
+    "7": {
+      "mem_mb": 6341.0,
+      "total_mb": 81920.0
+    }
+  }
+}

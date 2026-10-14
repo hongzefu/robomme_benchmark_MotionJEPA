@@ -1,0 +1,111 @@
+{
+  "cell": "L32",
+  "workers": 32,
+  "gpus": "0,4,1,5",
+  "limit_threads": true,
+  "returncode": 0,
+  "wall_s": 1752.21856665425,
+  "attempts": 490,
+  "success": 384,
+  "parse_error": null,
+  "requested": 384,
+  "complete": true,
+  "aborted_by": null,
+  "stopped_by": null,
+  "termination": {
+    "pgid": 899321,
+    "sigkill": false,
+    "remaining_pids": [],
+    "zero_residual": true
+  },
+  "failed_attempts": 106,
+  "gross_throughput_ep_per_min": 13.149044553267927,
+  "steady": {
+    "episodes": 320,
+    "span_s": 1125.0310173034668,
+    "throughput_ep_per_min": 17.066196135658167,
+    "mean_wall_s": 100.7711125,
+    "trimmed": true,
+    "t_start": 1791941637.4478369,
+    "t_end": 1791942762.4788542
+  },
+  "tiers_completed": [
+    "easy",
+    "hard",
+    "medium",
+    "xhard12",
+    "xhard14",
+    "xhard16",
+    "xhard18",
+    "xhard20"
+  ],
+  "resources": {
+    "samples": 2104,
+    "cpu_percent_mean": 21.547148288973386,
+    "load1_mean": 32.47468824369348,
+    "mem_used_gb_max": 253.25383758544922,
+    "slow_wall_threshold_s": 100.7711125,
+    "slow_definition": "稳态完成项 wall_s 高于其均值，采样时刻落在该项运行区间",
+    "gpus": {
+      "0": {
+        "samples": 2072,
+        "util_mean": 12.057432432432432,
+        "util_zero_fraction": 0.005308880308880309,
+        "slow_util_mean": 12.029121421520237,
+        "slow_samples": 2026,
+        "non_slow_util_mean": 13.304347826086957,
+        "non_slow_samples": 46,
+        "mem_mb_max": 6817.0
+      },
+      "1": {
+        "samples": 2072,
+        "util_mean": 12.092664092664092,
+        "util_zero_fraction": 0.00723938223938224,
+        "slow_util_mean": 12.068608094768015,
+        "slow_samples": 2026,
+        "non_slow_util_mean": 13.152173913043478,
+        "non_slow_samples": 46,
+        "mem_mb_max": 6338.0
+      },
+      "4": {
+        "samples": 2072,
+        "util_mean": 12.004826254826256,
+        "util_zero_fraction": 0.013030888030888031,
+        "slow_util_mean": 11.980750246791708,
+        "slow_samples": 2026,
+        "non_slow_util_mean": 13.065217391304348,
+        "non_slow_samples": 46,
+        "mem_mb_max": 6338.0
+      },
+      "5": {
+        "samples": 2072,
+        "util_mean": 11.710907335907336,
+        "util_zero_fraction": 0.011583011583011582,
+        "slow_util_mean": 11.712240868706811,
+        "slow_samples": 2026,
+        "non_slow_util_mean": 11.652173913043478,
+        "non_slow_samples": 46,
+        "mem_mb_max": 6340.0
+      }
+    }
+  },
+  "peak_worker_rss_mb": 9691.9,
+  "gpu_peaks": {
+    "0": {
+      "mem_mb": 6817.0,
+      "total_mb": 81920.0
+    },
+    "4": {
+      "mem_mb": 6338.0,
+      "total_mb": 81920.0
+    },
+    "1": {
+      "mem_mb": 6338.0,
+      "total_mb": 81920.0
+    },
+    "5": {
+      "mem_mb": 6340.0,
+      "total_mb": 81920.0
+    }
+  }
+}
