@@ -142,3 +142,64 @@ AWS 起跑前宜先裁决三处冻结源码的异常名遮盖问题，并用实�
 `records/` 只归档 Git 无法还原的现场证据：起跑身份快照、两批摘要与单条验证、批次验证／失败 traceback／异常绑定诊断／体量、身份对账、清洗日志、正式 `check.json`／`check.md`／`check.log`、完整逐档尝试分布。原 H5、视频与启动器保留在 `artifacts/`，不进 Git；配置由启动档案加源码提交还原，没有脚本或 YAML 拷贝。
 
 清洗核对 `LOG_CLEAN=PASS`：第一批 `EXIT_CODE=0` 一条，第二批 `EXIT_CODE=1` 一条，数量和值与原日志一致；校验原日志为 `CHECK_WALL_S=490`、`EXIT_CODE=1`。源码、结果、失败与用户裁决各自保留原始身份，不用 aggregate PASS 代替独立判定。
+
+---
+
+# AWS 环境 C 阶段结果（2026-10-14 追加）
+
+以上为 vail 本机阶段结果，原文不改。本节记录 AWS p4de（环境 C）上的接入、测速与全量；起跑口径见 [launch.md](launch.md) 末尾「AWS 环境 C」一节，起跑锚点 `2.131Beta`（`0e8d249acd87c4d09a2a030d643e7f4fb93a28bc`）。
+
+## 一、一句话结论与指标
+
+环境接入、smoke 一、内存探针与三档测速全部通过，选定 W\*=64；全量按计划起跑，约 56 分钟、完成 718/6400 条（BinFill 307、PickXtimes 382、SwingXtimes 29）时**按用户指令中止**，产物经用户指令删除。全量未完成，第二次校验、身份对账、跨机器对拍均未执行。
+
+```text
+ENV_C=PASS host=ip-10-242-11-177 gpus=8 disk_free_tb=3.14 sha=ea7cb1bbd85873a45bc2b12cbfd45e87500036cb
+SMOKE1=PASS gym_id=VideoUnmaskSwapXHard difficulty=xhard12 timestep=525 seed=5300 attempt=0 task_success=1 elapsed_s=96.4
+MEM_PROBE=PASS peak_rss_gb=8.28681640625 peak_vram_gb=0.7874755859375 mem_avail_gb=1067.5172424316406
+CALIB=PASS probe_rss_gb=8.28681640625 probe_vram_gb=0.7874755859375 cells_run=3 skipped=none best_workers=64 crashed_at=none
+GEN_FULL=ABORTED requested=6400 success=718 failed_attempts=106 exhausted=0 reason=user_stop
+H5_SCHEMA／H5_CONTENT／H5_COUNTS／PLAN_VS_RECORD／IDENTITY_AUDIT（第二次）=未执行
+XMACHINE_JOINT_DIFF=未执行（vail smoke 二样本未传入本机，且全量中止）
+```
+
+## 二、版本与代码状态
+
+接入与测速在 `ea7cb1bb`（2.130）上运行，工作区干净；全量在 `2.131Beta` 上运行，启动器打印 `SOURCE_HEAD=0e8d249a… DIRTY=0`。全程未改任何代码、依赖或配置；`src/robomme/` 工作区零 diff。
+
+## 三、测速
+
+| 档 | workers | 卡序 | 成功／请求 | 稳态吞吐（条/分） |
+|---|---:|---|---:|---:|
+| P8 探针 | 8 | 0 | 16/16 | — |
+| L32 | 32 | 0,4,1,5 | 384/384 | 17.07 |
+| L64 | 64 | 0,1,4,5,2,3,6,7 | 384/384 | 17.80 |
+| L96 | 96 | 0,1,4,5,2,3,6,7 | 384/384 | 17.03 |
+
+三档吞吐持平：CPU 约 75% 空闲、GPU 利用率 5–12%，单条 wall_s 随 worker 数近乎线性增长（L32 100.8 s → L64 186.9 s）。L96 起跑阶段观察到 95 个 D 状态进程全为 nvidia-smi 卡驱动锁，负载下单次 `nvidia-smi` 8.9–13.5 秒；来源与经用户批准终止的两个外部进程见 launch.md。smoke 二唯一耗尽的 VideoPlaceOrder ep3/xhard12 在三档测速中均成功（W7 修复后）。证据：`records/aws-calibration.md`、`records/aws-calib-*-cell-summary.json`、`records/aws-calib.summary.log`。
+
+## 四、全量运行与中止
+
+- 02:59:40 UTC 起跑 tmux `xh-mixed8-full-1014`；约 03:55 UTC 用户原话「停止现在的生成」，主会话 `tmux kill-session -t '=xh-mixed8-full-1014'`，删前删后 `tmux ls` 差集恰为该会话，其余六个既有会话不动；随后核对本仓库生成进程为 0、8 卡显存归零。强杀不写 `EXIT_CODE=`，原日志无该行（清洗后同为 0 行）。
+- 中止时：结果记录 824 条、成功 718、任务性失败 attempt 106、代码类失败 0、无耗尽；成功条平均 994.9 timestep（作业按任务顺序派发，前段恰为最长的 BinFill／PickXtimes，与 vail 首档样本该两任务均值 1072／1020 一致，不改变全量约 2.93–2.95 TB 的体量估计）；吞吐约 12.8 条/分（718 条／56 分，含启动）。
+- `hdf5_files/` 762 个无前缀 H5（478,108,183,768 字节），其中 44 个无成功记录，是强杀时在途的半截文件；`videos/` 954 个（17,533,166,177 字节）。统计见 `records/aws-full-abort-stats.json`。
+- 用户原话「这一部分产物全部删除。测速的产物也可以删除只保留文件和所有小文件运行的记录。然后现在归党。」：主会话先把 `run_parameters.json`、`episode_results.jsonl`（gzip）、清洗日志归入 `records/aws-full-*`，再按显式路径 `rm -rf` 删除 `artifacts/mixed8/full/hdf5_files` 与 `videos`（删前 `ls -ld` 核对为实体目录、非 symlink），`/scratch` 空闲回到约 3.4 TiB。测速各档的 H5 与视频已在每档结束时由测速脚本删除，剩余约 89 MB 均为运行记录，按用户要求保留；smoke 一产物（342 MB）未在指令范围内，保留。全量清洗日志额外滤掉刷屏行 `screw plan failed`，718 行 `succeeded with seed` 原样保留。
+
+## 五、用户决策记录
+
+1. 起跑指令与本轮改口径原话见 launch.md「AWS 环境 C」一节第 1 条。
+2. 「/scratch 可用空间从 2.9T 涨到 3.4T（占用率 51%），超过了你要的 3.2T。完成后可开始全量。」
+3. 「不用用户在再等用户的审批了直接开始全量。」
+4. 「VSCode这个可以删除。然后9月13号这个也可以删除」「其他的你可以自己判断。」
+5. 「停止现在的生成」
+6. 「这一部分产物全部删除。测速的产物也可以删除只保留文件和所有小文件运行的记录。然后现在归党。」
+
+## 六、计划外事件
+
+- 接入时 `/scratch` 仅 3.14 TB，低于用户 3.2 TB；用户清理后 3.73 TB。
+- 测速发现 nvidia-smi 驱动锁争用；提出的 PATH 垫片方案用户未作答，全量未采用。
+- 全量按用户指令中止并删除产物，计划 R-6 的 GEN_FULL 与 R-7 第二次校验未完成。
+
+## 七、当前状态与下一步
+
+本机无本轮运行中的 tmux 会话或进程；保留 `artifacts/mixed8/{smoke1,calib}` 与 `full/` 下的两个小记录文件、`artifacts/logs/mixed8-{smoke1,calib,full}.log`、两个启动器。若重启全量，需新的明确指令；`artifacts/mixed8/full` 目录仍存在（只含小记录），按 R12 新一轮须换用新的输出目录名。

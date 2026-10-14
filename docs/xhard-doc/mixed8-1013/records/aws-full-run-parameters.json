@@ -1,0 +1,340 @@
+{
+  "output_dir": "/scratch/hongze/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/mixed8/full",
+  "env": "all",
+  "tasks": [
+    "BinFill",
+    "PickXtimes",
+    "SwingXtimes",
+    "StopCube",
+    "VideoUnmask",
+    "ButtonUnmask",
+    "VideoUnmaskSwap",
+    "ButtonUnmaskSwap",
+    "PickHighlight",
+    "VideoRepick",
+    "VideoPlaceButton",
+    "VideoPlaceOrder",
+    "MoveCube",
+    "InsertPeg",
+    "PatternLock",
+    "RouteStick"
+  ],
+  "episodes": 400,
+  "episode_start": 0,
+  "workers": 64,
+  "gpus": [
+    "0",
+    "1",
+    "4",
+    "5",
+    "2",
+    "3",
+    "6",
+    "7"
+  ],
+  "seed_layout": "train",
+  "difficulty_ratio": null,
+  "difficulty_cycle": [
+    "easy",
+    "medium",
+    "hard",
+    "xhard12",
+    "xhard14",
+    "xhard16",
+    "xhard18",
+    "xhard20"
+  ],
+  "max_attempts": 100,
+  "limit_threads": true,
+  "max_tasks_per_child": 8,
+  "affinity": "per-gpu",
+  "save_video_for_recording": true,
+  "effective_cycles": {
+    "BinFill": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard12",
+      "xhard14",
+      "xhard16",
+      "xhard18",
+      "xhard20"
+    ],
+    "PickXtimes": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard12",
+      "xhard14",
+      "xhard16",
+      "xhard18",
+      "xhard20"
+    ],
+    "SwingXtimes": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard12",
+      "xhard14",
+      "xhard16",
+      "xhard18",
+      "xhard20"
+    ],
+    "StopCube": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard14",
+      "xhard16",
+      "xhard18",
+      "xhard20"
+    ],
+    "VideoUnmask": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard14"
+    ],
+    "ButtonUnmask": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard14"
+    ],
+    "VideoUnmaskSwap": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard12",
+      "xhard14",
+      "xhard16",
+      "xhard18",
+      "xhard20"
+    ],
+    "ButtonUnmaskSwap": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard12",
+      "xhard14",
+      "xhard16",
+      "xhard18",
+      "xhard20"
+    ],
+    "PickHighlight": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard12",
+      "xhard16",
+      "xhard18"
+    ],
+    "VideoRepick": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard12",
+      "xhard14",
+      "xhard16",
+      "xhard18",
+      "xhard20"
+    ],
+    "VideoPlaceButton": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard12",
+      "xhard14"
+    ],
+    "VideoPlaceOrder": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard12"
+    ],
+    "MoveCube": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "InsertPeg": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "PatternLock": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard12",
+      "xhard14",
+      "xhard16",
+      "xhard18",
+      "xhard20"
+    ],
+    "RouteStick": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard12",
+      "xhard14",
+      "xhard16",
+      "xhard18",
+      "xhard20"
+    ]
+  },
+  "recovery_assignment": {
+    "BinFill": {
+      "z": [
+        0,
+        1,
+        2
+      ],
+      "xy": [
+        8,
+        9,
+        10
+      ]
+    },
+    "PickXtimes": {
+      "z": [
+        0,
+        1,
+        2
+      ],
+      "xy": [
+        8,
+        9,
+        10
+      ]
+    },
+    "SwingXtimes": {
+      "z": [
+        0,
+        1,
+        2
+      ],
+      "xy": [
+        8,
+        9,
+        10
+      ]
+    },
+    "StopCube": {
+      "z": [],
+      "xy": []
+    },
+    "VideoUnmask": {
+      "z": [
+        0,
+        1,
+        2
+      ],
+      "xy": [
+        4,
+        5,
+        6
+      ]
+    },
+    "ButtonUnmask": {
+      "z": [
+        0,
+        1,
+        2
+      ],
+      "xy": [
+        4,
+        5,
+        6
+      ]
+    },
+    "VideoUnmaskSwap": {
+      "z": [
+        0,
+        1,
+        2
+      ],
+      "xy": [
+        8,
+        9,
+        10
+      ]
+    },
+    "ButtonUnmaskSwap": {
+      "z": [
+        0,
+        1,
+        2
+      ],
+      "xy": [
+        8,
+        9,
+        10
+      ]
+    },
+    "PickHighlight": {
+      "z": [
+        0,
+        1,
+        2
+      ],
+      "xy": [
+        6,
+        7,
+        8
+      ]
+    },
+    "VideoRepick": {
+      "z": [
+        0,
+        1,
+        2
+      ],
+      "xy": [
+        8,
+        9,
+        10
+      ]
+    },
+    "VideoPlaceButton": {
+      "z": [
+        0,
+        1,
+        2
+      ],
+      "xy": [
+        5,
+        6,
+        7
+      ]
+    },
+    "VideoPlaceOrder": {
+      "z": [
+        0,
+        1,
+        2
+      ],
+      "xy": [
+        4,
+        5,
+        6
+      ]
+    },
+    "MoveCube": {
+      "z": [],
+      "xy": []
+    },
+    "InsertPeg": {
+      "z": [],
+      "xy": []
+    },
+    "PatternLock": {
+      "z": [],
+      "xy": []
+    },
+    "RouteStick": {
+      "z": [],
+      "xy": []
+    }
+  }
+}

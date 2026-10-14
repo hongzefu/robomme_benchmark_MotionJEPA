@@ -1,0 +1,21 @@
+{
+  "aborted_at_utc": "2026-10-14T03:55Z(约)",
+  "records": 824,
+  "success": 718,
+  "failed_attempt_records": 106,
+  "success_by_task": {
+    "BinFill": 307,
+    "PickXtimes": 382,
+    "SwingXtimes": 29
+  },
+  "failure_classes": {
+    "task": 106
+  },
+  "h5_plain_files": 762,
+  "h5_plain_without_success_record": 44,
+  "h5_prefixed_files": 0,
+  "h5_bytes": 478108183768,
+  "video_files": 954,
+  "video_bytes": 17533166177,
+  "mean_timestep_success": 994.8607242339833
+}
