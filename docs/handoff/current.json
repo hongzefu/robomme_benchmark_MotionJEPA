@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "written_at": {
+    "utc": "2026-10-15T03:46:34Z",
+    "america_new_york": "2026-10-14T23:46:34-0400"
+  },
+  "repo": {
+    "branch": "newtask-v3-MotionJepa1006",
+    "base_head": "7575951daee74e81036793f60a6a5873f88f5c52"
+  },
+  "freeze": {
+    "active": false,
+    "main_path": null,
+    "frozen_head": null
+  },
+  "tasks": {}
+}
