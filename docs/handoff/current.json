@@ -1,17 +1,90 @@
 {
   "schema_version": 1,
   "written_at": {
-    "utc": "2026-10-15T03:46:34Z",
-    "america_new_york": "2026-10-14T23:46:34-0400"
+    "utc": "2026-10-17T23:37:27Z",
+    "america_new_york": "2026-10-17T19:37:27-0400"
   },
   "repo": {
     "branch": "newtask-v3-MotionJepa1006",
-    "base_head": "7575951daee74e81036793f60a6a5873f88f5c52"
+    "base_head": "026c43a1162689c89fd04c9e1c8677e7f2f5e273"
   },
   "freeze": {
     "active": false,
     "main_path": null,
     "frozen_head": null
   },
-  "tasks": {}
+  "tasks": {
+    "test-xhard5-12per": {
+      "plan": {
+        "file": "1017-test-xhard5-12per-plan.html",
+        "sha": null
+      },
+      "state": "planned",
+      "state_changed_at": "2026-10-17T23:37:27Z",
+      "state_reason": "计划已写、未开工；等待用户开工令与 PLAN_CONSISTENCY_REVIEW",
+      "owner": {
+        "session": null,
+        "host": "sled-vail"
+      },
+      "depends_on": [],
+      "pre_handoff": [
+        {
+          "what": "五组全量生成",
+          "evidence": "GEN_FULL=PASS requested=624",
+          "where": "artifacts/test-xhard/full/G*/run_summary.json",
+          "status": "pending"
+        },
+        {
+          "what": "五组 H5 校验与身份对账",
+          "evidence": "H5_SCHEMA/H5_CONTENT/H5_COUNTS/PLAN_VS_RECORD/IDENTITY_AUDIT=PASS × 5 组",
+          "where": "artifacts/test-xhard/full/G*/check.log, audit.log",
+          "status": "pending"
+        },
+        {
+          "what": "seed 追加进官方 test metadata",
+          "evidence": "META_APPEND=PASS groups=5 tasks=14 added_records=624 holes=0; PROTECTED_APPEND_ONLY=PASS files=14 deleted_lines=0",
+          "where": "S5 commit sha（待填）",
+          "status": "pending"
+        },
+        {
+          "what": "官方 ckpt 双卡评估",
+          "evidence": "EVAL_XHARD=DONE gpu=0 shard=0 episodes=81; EVAL_XHARD=DONE gpu=1 shard=1 episodes=75; EVAL_TABLE=DONE cells=52 episodes=156",
+          "where": "artifacts/test-xhard/eval/shard{0,1}/eval.log, summary.md",
+          "status": "pending"
+        },
+        {
+          "what": "第 13 条留档",
+          "evidence": "留档 commit sha（待填）",
+          "where": "docs/xhard-doc/test-xhard5-1017/",
+          "status": "pending"
+        }
+      ],
+      "long_tail": [
+        {
+          "what": "HF bucket 上传",
+          "tmux": "xh-testx-upload",
+          "log": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/test-xhard/upload/upload.log",
+          "done_line": "HF_UPLOAD=PASS",
+          "status": "pending"
+        },
+        {
+          "what": "GL 纯 CPU job 读回校验",
+          "tmux": null,
+          "log": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/logs/testx-hfverify/testx-hfverify_<jobid>.out",
+          "done_line": "HF_VERIFY=",
+          "status": "pending"
+        }
+      ],
+      "running_handles": [],
+      "authorizations": [],
+      "pending_decisions": [],
+      "next_steps": [
+        {
+          "what": "等用户开工令；开工后先派 sonnet 只读审查计划自相矛盾",
+          "command": "（见计划第一部分五 步 0）",
+          "verdict_line": "PLAN_CONSISTENCY_REVIEW=PASS base=<sha> findings=<n> blocking=0"
+        }
+      ]
+    }
+  }
 }

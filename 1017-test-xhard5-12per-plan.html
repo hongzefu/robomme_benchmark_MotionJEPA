@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>1017-test-xhard5-12per-plan — test 布局 xhard 五档每档 12 条：生成、校验、metadata 追加、HF 上传与官方 ckpt 本机双卡评估</title>
+<style>
+body{font-family:-apple-system,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;max-width:1120px;margin:24px auto;padding:0 16px;line-height:1.6;color:#1b1b1b;background:#fff}
+h1{border-bottom:3px solid #333;padding-bottom:6px;margin-top:48px}
+h2{border-left:6px solid #2b6cb0;padding-left:10px;margin-top:36px}
+h3{margin-top:24px;color:#2b6cb0}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
+th,td{border:1px solid #bbb;padding:6px 8px;vertical-align:top;text-align:left}
+th{background:#eef2f7}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+pre{background:#f6f8fa;border:1px solid #ddd;padding:10px;overflow-x:auto}
+code{background:#f1f1f1;padding:1px 4px;border-radius:3px}
+.intro{background:#fff8e1;border:1px solid #e0c060;padding:12px 16px;border-radius:6px}
+.warn{background:#fdecea;border-left:5px solid #c62828;padding:8px 12px;margin:10px 0}
+.note{background:#e8f4fd;border-left:5px solid #1e88e5;padding:8px 12px;margin:10px 0}
+.quote{color:#444;font-style:normal;background:#f4f4f4;padding:2px 6px;border-radius:3px}
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto;border:1px solid #ddd;background:#fff}
+figcaption{font-size:13px;color:#555;margin-top:6px}
+.small{font-size:13px;color:#555}
+</style>
+</head>
+<body>
+
+<h1 style="margin-top:0;border:none">1017-test-xhard5-12per-plan.html — test 布局 xhard 五档每档 12 条：生成、校验、metadata 追加、HF 上传与官方 ckpt 本机双卡评估</h1>
+
+<div class="intro">
+<p><b>权威性</b>：本文件是「test 布局 xhard 五档数据集（每格 12 条）＋官方 ckpt 本机评估」的唯一现行计划。1013 计划（<code>1013-mixed8-400ep-plan.html</code>）提供八档循环生成器、H5 校验工具与 golden，本计划只复用、不改其口径；1006／1012 系列只作 xhard 子类与配置表来源。</p>
+<p><b>代码锚点</b>：<code>/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006</code>，分支 <code>newtask-v3-MotionJepa1006</code>，本版撰写时 HEAD <code>026c43a1</code>。生成器 <code>scripts/data-generation-newSeed/generate_dataset_newseed.py</code>，seed 公式 <code>seed_layout.py</code>，xhard 子类与配置表 <code>src/robomme_xhard/</code>，校验工具 <code>src/robomme_xhard/tools/check_mixed_h5.py</code>，metadata 追加工具 <code>scripts/data-generation-newSeed/utils/append_train_metadata.py</code>。</p>
+<p><b>外部锚点</b>：官方 ckpt <code>/nfs/turbo/coe-chaijy-unreplicated/hongzefu/eval-out/mmevla-ckpt/perceptual-framesamp-modul/79999</code>（本机可读，起跑前 rsync 到 <code>/data/hongzefu/</code>）；模型服务端 mme-vla 官方代码 <code>ecf086c</code>（本机检出 <code>/data/hongzefu/RoboMME-benchmark-OOD-eval/third_party/mme-vla</code>）；原版评估客户端 <code>robomme_policy_learning@927c56d9879762c1afa0217d79a591093c9ffbe9</code> 的 <code>examples/robomme/</code>（NFS 工作树 <code>robomme_policy_learning-official-xhard0</code>，<code>eval.py</code> 442 行、sha256 前缀 <code>c61d0ba7597549e4</code>）；<code>openpi-client</code> 取 <code>/data/hongzefu/openpi@fdc03f527881cdfc8ae1a168ed6a20c60edbbbcc</code> 的 <code>packages/openpi-client</code>；ManiSkill 钉 <code>07be6fbc</code> 不动。</p>
+<p><b>commit 体例</b>：<code>&lt;大&gt;.&lt;小&gt; 中文描述</code>，本版计划为 2.134，之后顺延；子代理提交前缀 <code>sub/&lt;编号&gt;: </code>；状态机提交前缀 <code>handoff: </code>。</p>
+<p><b>授权边界</b>：只规划不实施。开工令按 <code>AGENTS.md</code> 第 2 条；开工前先派一个只读审查子代理出 <code>PLAN_CONSISTENCY_REVIEW</code>。本计划内所有运行都在本机 sled-vail（P7），不提交 Slurm 跑生成或评估；唯一的集群操作是第 15 条规定的 HF 读回校验纯 CPU job（用户 2026-10-17 定「Hugging Face 读回用 Great Lakes 来实现」）。</p>
+</div>
+
+<h2>〇、为什么做</h2>
+<p>官方 test 集每任务 50 条，难度只有 easy／medium／hard（26／12／12）；本仓库的 xhard 五档此前只在 train 布局上规划过（1013 计划，AWS 全量于 718／6400 条中止并已删产物，2.131）。用户要一份<b>test 侧</b>的 xhard 数据：base 档直接用官方 test，不重生成；xhard 五档沿用 train 那套循环与配置，只是 seed 改从 test 布局算，每个「任务 × 档」12 条，与官方 test 的 medium／hard 各 12 条同量级。生成完上传新的 HF bucket、把 seed 追加进官方 test metadata，并用官方 FrameSamp+Modulation ckpt 在本机两张卡上对每个格子的前 3 条做一次评估。生成器、校验工具、metadata 追加工具都已具备，本计划的新代码只有评估客户端副本（拷原文、改建环境几行）、清单导出、启动器与 HF 上传／校验脚本。</p>
+
+<h1>第一部分（给人看）</h1>
+
+<h2>一、一句话方案与已定口径</h2>
+<p><b>一句话</b>：14 个有 xhard 的任务按有效档数分五组，<code>--layout test --episode-start 50 --difficulty-cycle xhard12,xhard14,xhard16,xhard18,xhard20</code>，每组 <code>--episodes</code> = 12 × 档数，共 52 格 × 12 = 624 条，seed = 500000 + env_code×10000 + episode×100 + attempt；校验通过后把 624 条 seed 追加到 <code>src/robomme/env_metadata/test/</code>，从追加后的 metadata 导出 156 局评估清单（每格前 3 条），GPU0／GPU1 各起一对「模型进程 + 仿真进程」评官方 ckpt，产物上传新 bucket 并在 Great Lakes 纯 CPU job 里读回校验。</p>
+
+<table>
+<tr><th style="width:5%">编号</th><th style="width:55%">已定口径（用户原话，2026-10-17）</th><th>落点</th></tr>
+<tr><td>T1</td><td><span class="quote">「我需要对 test seed 也进行派生」「你需要保证现在的这个分布范围和 train seed 是完全一样的，只不过它的 seed 是从 test seed 开始派生的」</span></td><td>五个 xhard 档沿用 <code>configs.py::TIER_CONFIGS</code> 的 52 个有效格子，不加档不减档；<code>--layout test</code>（3.1）</td></tr>
+<tr><td>T2</td><td><span class="quote">「官方的 Test Easy Medium Hard 就不用生成了，直接生成 X Hard 的系列」</span></td><td>base 档 = 官方 test 50 条，不重生成；循环只含五个 xhard 值；MoveCube、InsertPeg 不生成（3.1）</td></tr>
+<tr><td>T3</td><td><span class="quote">「X hard 是每档十二条」</span>（此前「总和大概每一个 task 在一百个左右，每一个难度最好都有十五个以上或者二十个以上」被本句取代）</td><td>每格 12 条；按档数分五组运行（3.1）</td></tr>
+<tr><td>T4</td><td><span class="quote">「Hugging Face bucket 上传没问题，就现在这样上传，上传到新的 bucket」「Hugging Face 读回用 Great Lakes 来实现」</span></td><td>新建私有 bucket <code>HongzeFu/robomme-test-xhard5-12per-1017</code>；读回校验走第 15 条 GL 纯 CPU job（3.5）</td></tr>
+<tr><td>T5</td><td><span class="quote">「Seed 加入 metadata 同意，直接加在 test 后面」</span></td><td>追加到 <code>src/robomme/env_metadata/test/record_dataset_&lt;Task&gt;_metadata.json</code> 14 个文件、ep50 起接在 ep0–49 后；这是对 P1 的逐文件批准，范围只限纯追加（3.4）</td></tr>
+<tr><td>T6</td><td><span class="quote">「对于新生成的 X hard 跑官方 ckpt framesample modulation 的评估。不要都跑，只跑每个难度 3 个」「评估取样同意」（每格 ep50、50+k、50+2k 三条）</span></td><td>52 格 × 3 = 156 局，清单从追加后的 test metadata 导出（3.6）</td></tr>
+<tr><td>T7</td><td><span class="quote">「官方 checkpoint 的评估在本机跑，有两个 GPU，你要分开跑」「评估不要使用下游在本机里面去评估」「评估按你讲的做：模型进程借 eval 仓库 mme-vla 检出建环境，客户端拷原版 eval.py 只改建环境几行」</span></td><td>评估是本计划的一个阶段，不拆成别的仓库的下游任务；GPU0／GPU1 各一对进程、各一片清单（3.6）</td></tr>
+<tr><td>T8</td><td><span class="quote">「登记进状态机同意」</span></td><td>任务 id <code>test-xhard5-12per</code> 进 <code>docs/handoff/current.json</code>（七）</td></tr>
+<tr><td>T9</td><td><span class="quote">「写完之后，你自己启动一次 workflow，全部用 Sonnet 做一次对抗性验证，然后自己纠正一下，然后给我一个完整版」</span></td><td>本文件交付前先经一轮 Sonnet 对抗验证 workflow 并修订，修订记录见第二部分八</td></tr>
+</table>
+
+<div class="note">沿用 1013 计划、本计划不重议的口径：公式 seed 模式下任务性失败按 attempt+1 换 seed 重试、八档统一 <code>--max-attempts 100</code>（1013 K3、K10，对 P8 的显式例外）；耗尽的 episode 不补、不换、如实报缺（P8）；池崩溃产物加 <code>CRASHED_</code> 前缀隔离后重试（K12）；不压缩、每 episode 一个 h5（K2）；golden 用 git 内 16 份 JSON、不重新导出（K7）。</div>
+
+<h2>二、全部运行一览</h2>
+<table>
+<tr><th>阶段</th><th>机器／卡</th><th>内容</th><th>规模／耗时（估）</th><th>判定行</th></tr>
+<tr><td>S0 准备</td><td>vail CPU</td><td>只读核实清单（第二部分一.0）；W1／W2 两个 worktree 子代理写评估与上传脚本，逐个审查合并；核心短测</td><td>约 1 天人力；短测 &lt;5 分钟</td><td><code>LIGHT_TESTS</code>、<code>PROTECTED</code>、<code>PRE/POST_MERGE_REVIEW</code>、<code>CLIENT_DIFF</code>、<code>CLIENT_IMPORT</code>、<code>SERVER_ZERO_DIFF</code></td></tr>
+<tr><td>S1 smoke 一</td><td>vail GPU0</td><td>VideoUnmaskSwap ep50（xhard12，seed 555000）单 worker 单条</td><td>1 条，约 1 分钟</td><td><code>SMOKE1</code></td></tr>
+<tr><td>S2 smoke 二</td><td>vail GPU0</td><td>14 任务各 ep50–51，32 worker</td><td>28 条，约 5 分钟</td><td><code>SMOKE2</code>、<code>IDENTITY_AUDIT</code>（smoke）</td></tr>
+<tr><td>S3 全量</td><td>vail GPU0</td><td>Beta 锚点后，一个 tmux 脚本顺序跑 G5→G4→G3→G2→G1 五次生成器调用</td><td>624 条；按 1013 smoke 二 128 条／501 s 且纯 xhard 更重估 1～1.5 小时；产物约 0.3 TB</td><td><code>GEN_FULL_G5…G1</code> 五行、<code>GEN_FULL</code> 汇总</td></tr>
+<tr><td>S4 校验</td><td>vail CPU</td><td>五组各跑 <code>check</code>（首档样本）与 <code>audit</code>（全部身份）</td><td>52 个样本文件，约 5 分钟</td><td><code>H5_SCHEMA</code>、<code>H5_CONTENT</code>、<code>H5_COUNTS</code>、<code>PLAN_VS_RECORD</code>、<code>IDENTITY_AUDIT</code>（每组各一套）</td></tr>
+<tr><td>S5 metadata</td><td>vail</td><td>五组 metadata 追加进官方 test 14 个文件，先 <code>--dry-run</code> 再落盘，单独 commit</td><td>1 分钟</td><td><code>META_APPEND</code>、<code>PROTECTED_APPEND_ONLY</code></td></tr>
+<tr><td>S6 评估 smoke</td><td>vail GPU0</td><td>服务端 venv、ckpt 本地副本、清单导出；GPU0 跑 2 局量单局耗时</td><td>2 局，约 20 分钟（含 server 加载）</td><td><code>CKPT_COPY</code>、<code>MANIFEST</code>、<code>EVAL_SMOKE</code></td></tr>
+<tr><td>S7 评估全量</td><td>vail GPU0 + GPU1</td><td>shard 0（81 局）在 GPU0、shard 1（75 局）在 GPU1 同时跑，各一对「模型进程 + 仿真进程」</td><td>156 局；单局几分钟量级，两卡并行估 3～6 小时，<b>未实测</b>，以 S6 为准</td><td><code>EVAL_XHARD gpu=0</code>、<code>EVAL_XHARD gpu=1</code>、<code>EVAL_TABLE</code></td></tr>
+<tr><td>S8 上传（长尾）</td><td>vail → HF → GL CPU job</td><td>新 bucket 上传五组产物与清单、<code>SHA256SUMS</code>；GL <code>standard</code> 分区纯 CPU job 流式读回比对</td><td>约 0.3 TB，按带宽 1～3 小时；校验 job 约 1 小时</td><td><code>HF_UPLOAD</code>、<code>HF_VERIFY</code></td></tr>
+<tr><td>S9 留档交接</td><td>vail</td><td>第 13 条两段式留档 <code>docs/xhard-doc/test-xhard5-1017/</code>，状态机 <code>done</code>，长尾登记</td><td>—</td><td><code>HANDOFF_WRITE</code></td></tr>
+</table>
+<p class="small">全程生成只用 GPU0（P7）；评估用双卡是用户 T7 的明确指令。tmux 会话名前缀 <code>xh-testx-</code>，清单见第二部分五。</p>
+
+<h2>三、机制</h2>
+
+<h3>3.1 五组 seed 区间与每格 12 条</h3>
+<p>生成器循环模式的 <code>--episodes</code> 对一次调用里的全部任务统一，而各任务的有效 xhard 档数不同（<code>TIER_CONFIGS</code> 缺档剔除：StopCube 没有 xhard12，PickHighlight 只有 12／16／18，VideoPlaceButton 只有 12／14，VideoUnmask／ButtonUnmask 只有 xhard14，VideoPlaceOrder 只有 xhard12）。要让每格恰好 12 条，就按档数把 14 个任务分成五组，每组一次调用、<code>--episodes = 12 × 档数</code>。难度取 <code>有效循环[episode % 档数]</code>，从 ep50 起算：G5 的 ep50 落 xhard12（50 % 5 = 0），G4 的 ep50 落 xhard18（50 % 4 = 2），G3 的 ep50 落 xhard18（50 % 3 = 2），G2 的 ep50 落 xhard12；起点落在哪一档不影响每档条数，各档恰好 12。</p>
+
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 545" font-family="sans-serif" font-size="12">
+  <rect x="0" y="0" width="1000" height="545" fill="#ffffff"/>
+  <!-- 标题 -->
+  <text x="500" y="28" text-anchor="middle" font-size="16" font-weight="bold" fill="#222222">图 1：test 布局 seed 空间与五组 xhard episode 区间</text>
+
+  <!-- 横轴：episode 号，1 ep = 6 px，ep0 在 x=270，ep50 在 x=570，ep110 边界在 x=930 -->
+  <text x="10" y="64" fill="#333333">episode 号 →</text>
+  <line x1="270" y1="68" x2="930" y2="68" stroke="#333333" stroke-width="1"/>
+  <g fill="#333333" text-anchor="middle">
+    <text x="270" y="60">0</text>
+    <text x="330" y="60">10</text>
+    <text x="390" y="60">20</text>
+    <text x="450" y="60">30</text>
+    <text x="510" y="60">40</text>
+    <text x="570" y="60">50</text>
+    <text x="630" y="60">60</text>
+    <text x="690" y="60">70</text>
+    <text x="750" y="60">80</text>
+    <text x="810" y="60">90</text>
+    <text x="870" y="60">100</text>
+  </g>
+  <g stroke="#333333" stroke-width="1">
+    <line x1="270" y1="68" x2="270" y2="74"/>
+    <line x1="330" y1="68" x2="330" y2="74"/>
+    <line x1="390" y1="68" x2="390" y2="74"/>
+    <line x1="450" y1="68" x2="450" y2="74"/>
+    <line x1="510" y1="68" x2="510" y2="74"/>
+    <line x1="570" y1="68" x2="570" y2="74"/>
+    <line x1="630" y1="68" x2="630" y2="74"/>
+    <line x1="690" y1="68" x2="690" y2="74"/>
+    <line x1="750" y1="68" x2="750" y2="74"/>
+    <line x1="810" y1="68" x2="810" y2="74"/>
+    <line x1="870" y1="68" x2="870" y2="74"/>
+    <line x1="930" y1="68" x2="930" y2="74"/>
+  </g>
+
+  <!-- ep50 处竖直虚线（零重 seed 分界） -->
+  <line x1="570" y1="76" x2="570" y2="446" stroke="#444444" stroke-width="1.2" stroke-dasharray="5,4"/>
+  <text x="576" y="131" fill="#444444">零重 seed：官方 ep0–49 ／ 本计划 ep50 起</text>
+
+  <!-- 第 1 行：官方 test（不重生成）ep0–49 -->
+  <text x="10" y="105" fill="#222222">官方 test（不重生成）ep0–49</text>
+  <rect x="270" y="88" width="300" height="26" fill="#bdbdbd" stroke="#6e6e6e" stroke-width="1"/>
+  <!-- 前 8 格细分：e,e,m,h,e,e,m,h -->
+  <rect x="270" y="88" width="6" height="26" fill="#e0e0e0" stroke="#6e6e6e" stroke-width="0.5"/>
+  <rect x="276" y="88" width="6" height="26" fill="#e0e0e0" stroke="#6e6e6e" stroke-width="0.5"/>
+  <rect x="282" y="88" width="6" height="26" fill="#a0a0a0" stroke="#6e6e6e" stroke-width="0.5"/>
+  <rect x="288" y="88" width="6" height="26" fill="#5c5c5c" stroke="#6e6e6e" stroke-width="0.5"/>
+  <rect x="294" y="88" width="6" height="26" fill="#e0e0e0" stroke="#6e6e6e" stroke-width="0.5"/>
+  <rect x="300" y="88" width="6" height="26" fill="#e0e0e0" stroke="#6e6e6e" stroke-width="0.5"/>
+  <rect x="306" y="88" width="6" height="26" fill="#a0a0a0" stroke="#6e6e6e" stroke-width="0.5"/>
+  <rect x="312" y="88" width="6" height="26" fill="#5c5c5c" stroke="#6e6e6e" stroke-width="0.5"/>
+  <text x="326" y="105" fill="#111111">… 26／12／12，共 50 条</text>
+  <text x="270" y="131" fill="#444444">ep0–7：e,e,m,h,e,e,m,h；ep8 起同样循环…</text>
+
+  <!-- G5：8 个任务，ep50–109，循环 x12,x14,x16,x18,x20，每档 12 -->
+  <rect x="10" y="152" width="10" height="10" fill="#1f77b4"/>
+  <text x="26" y="161" fill="#222222" font-weight="bold">G5（8 个任务）ep50–109</text>
+  <text x="10" y="175" fill="#222222">BinFill、PickXtimes、SwingXtimes、</text>
+  <text x="10" y="189" fill="#222222">VideoUnmaskSwap、ButtonUnmaskSwap、</text>
+  <text x="10" y="203" fill="#222222">VideoRepick、PatternLock、RouteStick</text>
+  <rect x="570" y="152" width="360" height="24" fill="#1f77b4" fill-opacity="0.28" stroke="#1f77b4" stroke-width="1"/>
+  <rect x="570" y="152" width="6" height="24" fill="#1f77b4"/>
+  <rect x="576" y="152" width="6" height="24" fill="#1f77b4" fill-opacity="0.6"/>
+  <rect x="582" y="152" width="6" height="24" fill="#1f77b4"/>
+  <rect x="588" y="152" width="6" height="24" fill="#1f77b4" fill-opacity="0.6"/>
+  <rect x="594" y="152" width="6" height="24" fill="#1f77b4"/>
+  <text x="934" y="168" fill="#1f77b4" font-weight="bold">ep109</text>
+  <text x="570" y="193" fill="#1f77b4">前 5 格 = x12 x14 x16 x18 x20，循环 ×12 轮，每档 12 条，共 60 条</text>
+
+  <!-- G4：StopCube，ep50–97，循环 x14,x16,x18,x20，每档 12 -->
+  <rect x="10" y="210" width="10" height="10" fill="#2ca02c"/>
+  <text x="26" y="219" fill="#222222" font-weight="bold">G4（1 个任务）ep50–97</text>
+  <text x="10" y="233" fill="#222222">StopCube</text>
+  <rect x="570" y="210" width="288" height="24" fill="#2ca02c" fill-opacity="0.28" stroke="#2ca02c" stroke-width="1"/>
+  <rect x="570" y="210" width="6" height="24" fill="#2ca02c"/>
+  <rect x="576" y="210" width="6" height="24" fill="#2ca02c" fill-opacity="0.6"/>
+  <rect x="582" y="210" width="6" height="24" fill="#2ca02c"/>
+  <rect x="588" y="210" width="6" height="24" fill="#2ca02c" fill-opacity="0.6"/>
+  <text x="862" y="226" fill="#2ca02c" font-weight="bold">ep97</text>
+  <text x="570" y="251" fill="#2ca02c">前 4 格 = x14 x16 x18 x20，循环 ×12 轮，每档 12 条，共 48 条</text>
+
+  <!-- G3：PickHighlight，ep50–85，循环 x12,x16,x18，每档 12 -->
+  <rect x="10" y="268" width="10" height="10" fill="#ff7f0e"/>
+  <text x="26" y="277" fill="#222222" font-weight="bold">G3（1 个任务）ep50–85</text>
+  <text x="10" y="291" fill="#222222">PickHighlight</text>
+  <rect x="570" y="268" width="216" height="24" fill="#ff7f0e" fill-opacity="0.28" stroke="#ff7f0e" stroke-width="1"/>
+  <rect x="570" y="268" width="6" height="24" fill="#ff7f0e"/>
+  <rect x="576" y="268" width="6" height="24" fill="#ff7f0e" fill-opacity="0.6"/>
+  <rect x="582" y="268" width="6" height="24" fill="#ff7f0e"/>
+  <text x="790" y="284" fill="#ff7f0e" font-weight="bold">ep85</text>
+  <text x="570" y="309" fill="#ff7f0e">前 3 格 = x12 x16 x18，循环 ×12 轮，每档 12 条，共 36 条</text>
+
+  <!-- G2：VideoPlaceButton，ep50–73，循环 x12,x14，每档 12 -->
+  <rect x="10" y="326" width="10" height="10" fill="#9467bd"/>
+  <text x="26" y="335" fill="#222222" font-weight="bold">G2（1 个任务）ep50–73</text>
+  <text x="10" y="349" fill="#222222">VideoPlaceButton</text>
+  <rect x="570" y="326" width="144" height="24" fill="#9467bd" fill-opacity="0.28" stroke="#9467bd" stroke-width="1"/>
+  <rect x="570" y="326" width="6" height="24" fill="#9467bd"/>
+  <rect x="576" y="326" width="6" height="24" fill="#9467bd" fill-opacity="0.6"/>
+  <text x="718" y="342" fill="#9467bd" font-weight="bold">ep73</text>
+  <text x="570" y="367" fill="#9467bd">前 2 格 = x12 x14，循环 ×12 轮，每档 12 条，共 24 条</text>
+
+  <!-- G1：VideoUnmask、ButtonUnmask、VideoPlaceOrder，ep50–61，单档 x12 -->
+  <rect x="10" y="384" width="10" height="10" fill="#d62728"/>
+  <text x="26" y="393" fill="#222222" font-weight="bold">G1（3 个任务）ep50–61</text>
+  <text x="10" y="407" fill="#222222">VideoUnmask、ButtonUnmask、</text>
+  <text x="10" y="421" fill="#222222">VideoPlaceOrder</text>
+  <rect x="570" y="384" width="72" height="24" fill="#d62728" fill-opacity="0.28" stroke="#d62728" stroke-width="1"/>
+  <rect x="570" y="384" width="6" height="24" fill="#d62728"/>
+  <text x="646" y="400" fill="#d62728" font-weight="bold">ep61</text>
+  <text x="570" y="425" fill="#d62728">单档（x14／x14／x12），每任务 12 条</text>
+
+  <!-- 底部：公式与举例 -->
+  <line x1="10" y1="452" x2="990" y2="452" stroke="#cccccc" stroke-width="1"/>
+  <text x="10" y="470" fill="#222222">seed = 500000 + env_code×10000 + episode×100 + attempt（attempt 0–99）；例：PickXtimes（env_code=1）ep50 attempt0 → 510000 + 5000 + 0 = 515000</text>
+
+  <!-- 图例 -->
+  <rect x="10" y="482" width="12" height="12" fill="#bdbdbd" stroke="#6e6e6e" stroke-width="1"/>
+  <text x="26" y="492" fill="#222222">灰＝官方已有（e=easy 浅灰、m=medium 中灰、h=hard 深灰）</text>
+  <rect x="380" y="482" width="12" height="12" fill="#1f77b4"/>
+  <text x="396" y="492" fill="#222222">G5</text>
+  <rect x="426" y="482" width="12" height="12" fill="#2ca02c"/>
+  <text x="442" y="492" fill="#222222">G4</text>
+  <rect x="472" y="482" width="12" height="12" fill="#ff7f0e"/>
+  <text x="488" y="492" fill="#222222">G3</text>
+  <rect x="518" y="482" width="12" height="12" fill="#9467bd"/>
+  <text x="534" y="492" fill="#222222">G2</text>
+  <rect x="564" y="482" width="12" height="12" fill="#d62728"/>
+  <text x="580" y="492" fill="#222222">G1</text>
+  <text x="620" y="492" fill="#222222">MoveCube、InsertPeg 无 xhard，不生成</text>
+
+  <text x="10" y="514" fill="#666666">刻度为 episode 起点，1 ep = 6 px 等比；长条右端 = 末 episode 的右边界；每格 1 个 episode，格内档位按文字所列顺序循环。</text>
+  <text x="990" y="536" text-anchor="end" fill="#666666">最大 seed 670999（RouteStick ep109 attempt 99）&lt; val 布局 offset 1000000</text>
+</svg>
+<figcaption>图 1：test 布局 seed 空间与五组 xhard episode 区间（官方 test 占 ep0–49 不重生成；五组从 ep50 起、每格 12 条）。</figcaption></figure>
+
+<table>
+<tr><th>组</th><th>任务（官网顺序）</th><th>有效 xhard 档</th><th><code>--episodes</code></th><th>episode 区间</th><th>条数</th><th>每任务总和（含官方 50）</th></tr>
+<tr><td>G5</td><td>1.1 BinFill、1.2 PickXtimes、1.3 SwingXtimes、2.3 VideoUnmaskSwap、2.4 ButtonUnmaskSwap、3.2 VideoRepick、4.3 PatternLock、4.4 RouteStick</td><td>12／14／16／18／20</td><td>60</td><td>ep50–109</td><td>8 × 60 = 480</td><td>110</td></tr>
+<tr><td>G4</td><td>1.4 StopCube</td><td>14／16／18／20</td><td>48</td><td>ep50–97</td><td>48</td><td>98</td></tr>
+<tr><td>G3</td><td>3.1 PickHighlight</td><td>12／16／18</td><td>36</td><td>ep50–85</td><td>36</td><td>86</td></tr>
+<tr><td>G2</td><td>3.3 VideoPlaceButton</td><td>12／14</td><td>24</td><td>ep50–73</td><td>24</td><td>74</td></tr>
+<tr><td>G1</td><td>2.1 VideoUnmask、2.2 ButtonUnmask、3.4 VideoPlaceOrder</td><td>单档（14／14／12）</td><td>12</td><td>ep50–61</td><td>3 × 12 = 36</td><td>62</td></tr>
+<tr><td>—</td><td>4.1 MoveCube、4.2 InsertPeg</td><td>无</td><td>—</td><td>不生成</td><td>0</td><td>50</td></tr>
+<tr><th colspan="5">合计</th><th>624</th><th>52 格 × 12</th></tr>
+</table>
+<p>seed 的三条保证：① 官方 test 占 ep0–49，本计划从 ep50 起，<b>与官方 test 零重 seed</b>；② 最大可能 seed 是 RouteStick（env_code 16）ep109 attempt 99 = 500000 + 160000 + 10900 + 99 = <b>670999</b>，低于 val 布局 offset 1,000,000，生成器护栏（<code>generate_dataset_newseed.py</code> 建池前按 <code>layout.seed(task, last_episode, MAX_ATTEMPTS-1)</code> 对比下一代 offset）必然放行；③ FailRecover 在循环模式只落 base 档，本循环没有 base 档，<code>_cycle_recovery</code> 对每条都返回「不设」，与 train 的 xhard 条一致。</p>
+<div class="warn">⚠ 与 1013 的两处不同，不是口径变化而是参数变化：1013 用 <code>--layout train</code> 从 ep0 跑八档；本计划用 <code>--layout test --episode-start 50</code> 只跑五个 xhard 档。生成器对「循环里没有任何 base 档」这一情形没有历史实测，S1 smoke 一就是为此：<code>run_parameters.json</code> 的 <code>recovery_assignment</code> 应全为空、<code>difficulty_ratio</code> 为 <code>null</code>。</div>
+
+<h3>3.2 失败、崩溃与缺条（沿用 1013）</h3>
+<p>xhard 作业的 gym_id 为 <code>&lt;Task&gt;XHard</code>，任务性失败（<code>SceneGenerationError</code>、<code>PlannerExhausted</code>、<code>ScrewPlanFailure</code>、<code>FailsafeTimeout</code>、xhard 运行期拒绝）按 attempt+1 换 seed 重试，上限 100；非任务性失败连续 3 次放弃并记 <code>exhausted</code>；池崩溃的已写产物加 <code>CRASHED_</code> 前缀隔离。<b>耗尽会在 metadata 里留下 episode 空洞</b>，而 S5 的追加工具硬断言「合并后 episode 连续 0..N-1」——有空洞时工具整体拒绝、不落盘。本计划不自行补 seed（P8）：出现耗尽即停在 S5 之前，把缺失清单交用户裁决（接受缺条并改用允许空洞的追加方式、或其他处置），不预设自动分支。1013 smoke 二 128 条里唯一的耗尽是 VideoPlaceOrder ep3 xhard12（连续三次非任务性失败），本计划 G1 的 VideoPlaceOrder 是重点盯防对象。</p>
+
+<h3>3.3 H5 校验与身份对账（沿用 1013 工具，按组跑）</h3>
+<p><code>check_mixed_h5.py check</code> 对每任务每有效档的第一条做结构（golden）、内容、条数与语义（<code>PLAN_VS_RECORD</code>）校验，<code>audit</code> 对全部成功身份做独立对账（seed 等于公式、difficulty 等于独立循环、attempt 连续、JSONL／metadata／文件名三者一一对应）。两个子命令都接受 <code>--cycle</code>、<code>--episode-start</code>、<code>--episodes</code>，本计划每组一次调用、<code>--cycle xhard12,xhard14,xhard16,xhard18,xhard20</code>、<code>--episode-start 50</code>、<code>--episodes</code> 按组。首档样本数 = 该组格子数：G5 40、G4 4、G3 3、G2 2、G1 3，合计 52。语义豁免清单沿用 1013 W5 已批准的 12 项，不新增；清单外必须真数。</p>
+<table>
+<tr><th>判定行（每组一套，组名写进 <code>group=</code>）</th><th>查什么</th></tr>
+<tr><td><code>H5_SCHEMA=PASS group=G5 files=40 steps=&lt;n&gt; missing=0 extra=0 dtype_shape=0</code></td><td>每文件每 timestep 键集、dtype、shape 符合 golden（变长白名单只含 <code>setup/task_goal</code>）</td></tr>
+<tr><td><code>H5_CONTENT=PASS group=G5 files=40 fails=0</code></td><td>timestep 连续；seed、difficulty 与文件名／metadata／独立预期一致；<code>is_completed</code> 末真且单调；<code>joint_action</code> (8,) float64 有限；首中末帧非常量；mp4 存在</td></tr>
+<tr><td><code>H5_COUNTS=PASS group=G5 tasks=8 episodes=60 per_tier_ok=1</code></td><td>每任务各档条数等于 12</td></tr>
+<tr><td><code>PLAN_VS_RECORD=PASS group=G5 files=40 rules_expected=&lt;a&gt; rules_run=&lt;a&gt; mismatch=0 exempt=&lt;e&gt;</code></td><td>配置「应做几次」与 h5 subgoal 边界、runtime_checks 数出的「实际几次」一致；豁免只能是已批 12 项</td></tr>
+<tr><td><code>IDENTITY_AUDIT=PASS group=G5 episodes=480 missing=0 dup=0 unknown=0 mismatch=0</code></td><td>每任务 episode 集合恰为 ep50–109；每个成功身份唯一；seed、difficulty、attempt 与独立预期一致</td></tr>
+</table>
+
+<h3>3.4 seed 追加进官方 test metadata</h3>
+<p>官方 test metadata 是 <code>{"env_id","record_count","records":[{"task","episode","seed","difficulty"}…]}</code>；生成器输出的 <code>record_dataset_&lt;Task&gt;_metadata.json</code> 与之同构，<code>difficulty</code> 字段写的就是 <code>xhard14</code> 这类值。追加工具 <code>append_train_metadata.py</code> 已有 <code>--metadata-dir</code> 参数（默认 train，本计划传 <code>src/robomme/env_metadata/test</code>），三条硬断言：新旧 episode 不重叠、合并后连续、<code>env_id</code> 一致；序列化口径逐字对齐（indent 2、不转义、结尾无换行），所以 <code>git diff</code> 必须呈现为 14 个文件的纯追加、无删行。追加分五次（每组一次 <code>--input-dir</code>），先 <code>--dry-run</code> 看将发生的变化，再落盘，再 <code>git diff --numstat -- src/robomme/env_metadata/test</code> 核对删行数全为 0、增行数之和等于 624 条记录对应的行数。这一步是 P1 受保护目录的改动，用户 T5 已逐文件批准（范围：14 个 test metadata 的纯追加；不改 ep0–49、不改任何其他文件）。</p>
+<div class="warn">⚠ 消费方影响：<code>src/robomme/env_record_wrapper/episode_config_resolver.py::BenchmarkEnvBuilder</code> 按 <code>(env_id, episode)</code> 读这份 metadata 并把 <code>difficulty</code> 原样传给 <code>gym.make(env_id, difficulty=…)</code>。追加后，任何用 <code>dataset="test"</code> 建 ep≥50 的调用方都会拿到 <code>xhard14</code> 这类难度值并对<b>原任务类</b>调用，原任务类的 <code>configs</code> 字典没有这个键会报错。这正是评估客户端必须用 <code>&lt;Task&gt;XHard</code> 建环境的原因（3.6）；ep0–49 的消费方不受影响。追加前后各跑一次 <code>get_episode_num()</code> 对 14 个任务核对 50 → 50+12k。</div>
+
+<h3>3.5 HF bucket 上传与 Great Lakes 读回校验</h3>
+<p>本机 <code>hf</code> 已登录 <code>HongzeFu</code>，现有 bucket 命名体例如 <code>robomme-16task-mixed8-…</code>。本计划新建私有 bucket <code>HongzeFu/robomme-test-xhard5-12per-1017</code>，上传五组目录的 <code>hdf5_files/</code>、<code>videos/</code>、<code>record_dataset_&lt;Task&gt;_metadata.json</code>、<code>run_parameters.json</code>、<code>run_summary.json</code>、<code>episode_results.jsonl</code>，另加 156 局评估清单与评估结果 <code>episodes.jsonl</code>（两片）、以及顶层 <code>SHA256SUMS</code>（624 个 h5 的 sha256 在 S4 校验时已逐文件算过，直接复用，不为生成清单重读大文件；小文件在本机算）。上传放 detached tmux，长尾处理（不占 GPU、不写本仓库 git、下游不读 bucket）。读回校验按第 15 条与正本 <code>greatlakes.md</code>「HF 上传校验 job」：<code>sbatch --account=chaijy2 --partition=standard --nodes=1 --ntasks-per-node=1 --cpus-per-task=4 --mem=8G --time=12:00:00 --job-name=testx-hfverify</code> 直接 sbatch 跑完即退，job 内逐对象流式读回边下边算 sha256、不落盘，比对 <code>SHA256SUMS</code>、对象数、逐对象字节数与多余对象，末行 <code>HF_VERIFY=PASS|FAIL objects=&lt;n&gt; sha_match=&lt;n&gt; size_equal=&lt;n&gt; missing=&lt;n&gt; extra=&lt;n&gt;</code>；正式校验前先用同一脚本校验 1 个小对象做冒烟；私有对象 token 只经 <code>--export=ALL</code> 从提交端环境进入，不落 GL 任何文件。ssh 前先 <code>ssh -O check greatlakes</code>，master 不活再问用户 Okta 方式。未经 <code>HF_VERIFY=PASS</code> 的上传不写成「已备份」，也不据此删本地副本。</p>
+<p class="small">这是本仓库第一次在环境 B 上做 HF 校验：<code>AGENTS.md</code>「覆盖第 8 条」写的「若有 HF 上传则在本机校验」是环境 A 的口径，本计划随计划 commit 把该句改为按环境分叉（环境 B 走 GL 纯 CPU job，环境 A／C 本机），只改标记外文字。</p>
+
+<h3>3.6 官方 ckpt 在 xhard 场景的本机双卡评估</h3>
+<p>官方评估不读 h5，而是让模型在仿真里按同一个 seed <b>现场操作一遍</b>，由环境判 <code>task_success</code>。两个进程：<b>模型进程</b>是 mme-vla 官方 <code>scripts/serve_policy.py</code>，加载 ckpt 79999 在一张卡上监听本地端口，每来一帧图像与任务指令就回一个动作，代码零 diff；<b>仿真进程</b>是原版 <code>eval.py</code>，按清单逐局：<code>EnvRunner</code> → <code>BenchmarkEnvBuilder(dataset="test")</code> 用 episode 号从 test metadata 解析 seed 与难度 → <code>gym.make</code> → reset → 循环「取画面与指令发给模型、收动作、执行」直到终局 → 记一行 <code>{task, source_episode, seed, status, task_success}</code>。清单格式沿用官方 xhard0 路线：<code>{task, source_episode, seed, shard}</code>，本计划多写一个 <code>difficulty</code> 字段。</p>
+
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 628" font-family="sans-serif" font-size="12">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#333333"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="628" fill="#FFFFFF"/>
+
+  <!-- 标题 -->
+  <text x="500" y="28" text-anchor="middle" font-size="16" font-weight="bold" fill="#222222">图 2：官方 ckpt 在 xhard 场景的本机双卡评估链路</text>
+
+  <!-- 列标题 -->
+  <text x="40" y="56" font-size="13" font-weight="bold" fill="#2F6DB5">输入</text>
+  <text x="770" y="56" font-size="13" font-weight="bold" fill="#7B3FA0">输出</text>
+
+  <!-- ===== 左列：输入 ===== -->
+  <rect x="40" y="84" width="185" height="96" rx="4" fill="#E8F1FB" stroke="#2F6DB5" stroke-width="1.5"/>
+  <text x="48" y="104" fill="#1A3A5C" font-weight="bold">① 官方 ckpt</text>
+  <text x="48" y="120" fill="#1A3A5C">perceptual-framesamp-</text>
+  <text x="48" y="136" fill="#1A3A5C">modul/79999</text>
+  <text x="48" y="152" fill="#1A3A5C">（NFS → rsync 到</text>
+  <text x="48" y="168" fill="#1A3A5C">/data 本地副本）</text>
+
+  <rect x="40" y="206" width="185" height="144" rx="4" fill="#E8F1FB" stroke="#2F6DB5" stroke-width="1.5"/>
+  <text x="48" y="226" fill="#1A3A5C" font-weight="bold">② 评估清单</text>
+  <text x="48" y="242" fill="#1A3A5C">eval-test-xhard5-</text>
+  <text x="48" y="258" fill="#1A3A5C">156.jsonl：每行</text>
+  <text x="48" y="274" fill="#1A3A5C">{task, source_episode,</text>
+  <text x="48" y="290" fill="#1A3A5C">seed, difficulty, shard}</text>
+  <text x="48" y="306" fill="#1A3A5C">52 格 × 3 = 156 局，</text>
+  <text x="48" y="322" fill="#1A3A5C">shard 0 / shard 1</text>
+  <text x="48" y="338" fill="#1A3A5C">81 局 / 75 局</text>
+
+  <rect x="40" y="366" width="185" height="144" rx="4" fill="#E8F1FB" stroke="#2F6DB5" stroke-width="1.5"/>
+  <text x="48" y="386" fill="#1A3A5C" font-weight="bold">③ 本仓库</text>
+  <text x="48" y="402" fill="#1A3A5C">env_metadata/test</text>
+  <text x="48" y="418" fill="#1A3A5C">（已追加 ep50+ 的</text>
+  <text x="48" y="434" fill="#1A3A5C">xhard seed）→ 导出</text>
+  <text x="48" y="450" fill="#1A3A5C">record_dataset_&lt;Task&gt;</text>
+  <text x="48" y="466" fill="#1A3A5C">XHard_metadata.json</text>
+  <text x="48" y="482" fill="#1A3A5C">到评估目录</text>
+
+  <!-- ===== 中间块 A：GPU0 ===== -->
+  <rect x="250" y="76" width="240" height="444" rx="6" fill="#FAFAFA" stroke="#7A7A7A" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="258" y="94" font-weight="bold" fill="#444444">GPU0 · shard 0 · 端口 19300</text>
+
+  <rect x="258" y="104" width="224" height="100" rx="4" fill="#FFF4E0" stroke="#C77D00" stroke-width="1.5"/>
+  <text x="266" y="124" fill="#5A3A00" font-weight="bold">模型进程 serve_policy.py</text>
+  <text x="266" y="140" fill="#5A3A00">（mme-vla 官方代码 ecf086c</text>
+  <text x="266" y="156" fill="#5A3A00">零 diff；借 eval 仓库检出</text>
+  <text x="266" y="172" fill="#5A3A00">建 venv；XLA_PYTHON_CLIENT_</text>
+  <text x="266" y="188" fill="#5A3A00">MEM_FRACTION=0.75）</text>
+
+  <path d="M290,204 V268" stroke="#333333" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <path d="M320,268 V204" stroke="#333333" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <text x="335" y="230" fill="#333333">websocket：</text>
+  <text x="335" y="248" fill="#333333">图像+指令 ↓ / 动作 ↑</text>
+
+  <rect x="258" y="268" width="224" height="240" rx="4" fill="#E9F7EC" stroke="#2E8B57" stroke-width="1.5"/>
+  <text x="266" y="288" fill="#163F28" font-weight="bold">仿真进程 eval.py 副本</text>
+  <text x="266" y="304" fill="#163F28">（本仓库 .venv）：按清单行 →</text>
+  <text x="266" y="320" fill="#163F28">BenchmarkEnvBuilder(</text>
+  <text x="266" y="336" fill="#163F28">  env_id=&lt;Task&gt;XHard,</text>
+  <text x="266" y="352" fill="#163F28">  override_metadata_path)</text>
+  <text x="266" y="368" fill="#163F28">→ gym.make(&lt;Task&gt;XHard,</text>
+  <text x="266" y="384" fill="#163F28">  seed, difficulty)</text>
+  <text x="266" y="400" fill="#163F28">→ 逐步 obs→动作</text>
+  <text x="266" y="416" fill="#163F28">→ 环境判 task_success</text>
+
+  <!-- ===== 中间块 B：GPU1 ===== -->
+  <rect x="505" y="76" width="240" height="444" rx="6" fill="#FAFAFA" stroke="#7A7A7A" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="513" y="94" font-weight="bold" fill="#444444">GPU1 · shard 1 · 端口 19400</text>
+
+  <rect x="513" y="104" width="224" height="100" rx="4" fill="#FFF4E0" stroke="#C77D00" stroke-width="1.5"/>
+  <text x="521" y="124" fill="#5A3A00" font-weight="bold">模型进程 serve_policy.py</text>
+  <text x="521" y="140" fill="#5A3A00">（mme-vla 官方代码 ecf086c</text>
+  <text x="521" y="156" fill="#5A3A00">零 diff；借 eval 仓库检出</text>
+  <text x="521" y="172" fill="#5A3A00">建 venv；XLA_PYTHON_CLIENT_</text>
+  <text x="521" y="188" fill="#5A3A00">MEM_FRACTION=0.75）</text>
+
+  <path d="M545,204 V268" stroke="#333333" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <path d="M575,268 V204" stroke="#333333" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <text x="590" y="230" fill="#333333">websocket：</text>
+  <text x="590" y="248" fill="#333333">图像+指令 ↓ / 动作 ↑</text>
+
+  <rect x="513" y="268" width="224" height="240" rx="4" fill="#E9F7EC" stroke="#2E8B57" stroke-width="1.5"/>
+  <text x="521" y="288" fill="#163F28" font-weight="bold">仿真进程 eval.py 副本</text>
+  <text x="521" y="304" fill="#163F28">（本仓库 .venv）：按清单行 →</text>
+  <text x="521" y="320" fill="#163F28">BenchmarkEnvBuilder(</text>
+  <text x="521" y="336" fill="#163F28">  env_id=&lt;Task&gt;XHard,</text>
+  <text x="521" y="352" fill="#163F28">  override_metadata_path)</text>
+  <text x="521" y="368" fill="#163F28">→ gym.make(&lt;Task&gt;XHard,</text>
+  <text x="521" y="384" fill="#163F28">  seed, difficulty)</text>
+  <text x="521" y="400" fill="#163F28">→ 逐步 obs→动作</text>
+  <text x="521" y="416" fill="#163F28">→ 环境判 task_success</text>
+
+  <!-- ===== 右列：输出 ===== -->
+  <rect x="770" y="300" width="215" height="80" rx="4" fill="#F3E8FB" stroke="#7B3FA0" stroke-width="1.5"/>
+  <text x="778" y="320" fill="#3A1A50" font-weight="bold">每卡 episodes.jsonl：</text>
+  <text x="778" y="336" fill="#3A1A50">task, source_episode,</text>
+  <text x="778" y="352" fill="#3A1A50">seed, status,</text>
+  <text x="778" y="368" fill="#3A1A50">task_success 0/1</text>
+
+  <rect x="770" y="410" width="215" height="96" rx="4" fill="#F3E8FB" stroke="#7B3FA0" stroke-width="1.5"/>
+  <text x="778" y="430" fill="#3A1A50" font-weight="bold">汇总：任务 × 档 成功率表</text>
+  <text x="778" y="446" fill="#3A1A50">（官网顺序），判定行</text>
+  <text x="778" y="462" fill="#3A1A50">EVAL_XHARD=DONE gpu=&lt;n&gt;</text>
+  <text x="778" y="478" fill="#3A1A50">episodes=81|75 success=&lt;s&gt;</text>
+  <text x="778" y="494" fill="#3A1A50">infra_retries=&lt;r&gt;</text>
+
+  <!-- ===== 连线（只走水平／垂直） ===== -->
+  <!-- ① → 模型进程 A（直接水平） -->
+  <path d="M225,132 H258" stroke="#2F6DB5" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <!-- ① → 模型进程 B（上方通道） -->
+  <path d="M132,84 V66 H720 V104" stroke="#2F6DB5" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <text x="380" y="60" fill="#2F6DB5">① ckpt → 两卡模型进程</text>
+
+  <!-- ② → 仿真进程 A（直接水平） -->
+  <path d="M225,278 H258" stroke="#2E8B57" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <!-- ② → 仿真进程 B（左侧出、下方通道 y=550） -->
+  <path d="M40,320 H27 V550 H690 V508" stroke="#2E8B57" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <text x="300" y="566" fill="#2E8B57">② 清单 → 两卡仿真进程</text>
+
+  <!-- ③ → 仿真进程 A（直接水平） -->
+  <path d="M225,438 H258" stroke="#1F6F8B" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <!-- ③ → 仿真进程 B（底部出、下方通道 y=536） -->
+  <path d="M132,510 V536 H620 V508" stroke="#1F6F8B" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <text x="300" y="532" fill="#1F6F8B">③ metadata → 两卡仿真进程</text>
+
+  <!-- 仿真进程 B → 每卡 episodes.jsonl -->
+  <path d="M737,340 H770" stroke="#7B3FA0" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <!-- episodes.jsonl → 汇总 -->
+  <path d="M877,380 V410" stroke="#7B3FA0" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+  <!-- ===== 底部注释 ===== -->
+  <rect x="40" y="574" width="945" height="40" rx="4" fill="#FFFBE6" stroke="#B8A000" stroke-width="1.2"/>
+  <text x="52" y="590" fill="#5A5000">注：只改 env_runner.py 建环境几行与 xhard0_manifest.check_seed 的难度判定；</text>
+  <text x="52" y="606" fill="#5A5000">观测预处理、帧采样、prompt、动作循环一字不动。</text>
+</svg>
+<figcaption>图 2：官方 ckpt 在 xhard 场景的本机双卡评估链路（每卡一对「模型进程 + 仿真进程」，输入只有 ckpt、清单与追加后的 metadata）。</figcaption></figure>
+
+<p><b>只改两处</b>（拷到本仓库 <code>scripts/eval-xhard/client/</code> 的副本上改，原版 NFS 工作树不动）：</p>
+<ol>
+<li><code>env_runner.py::EnvRunner.__init__</code>：<code>import robomme_xhard</code>（在 <code>from robomme.robomme_env import *</code> 之后，触发 <code>&lt;Task&gt;XHard</code> 注册），<code>BenchmarkEnvBuilder</code> 的 <code>env_id</code> 改传 <code>f"{env_id}XHard"</code>，并传 <code>override_metadata_path=&lt;评估目录&gt;/metadata</code>；<code>self.env_id</code> 仍是原任务名（<code>TASK_NAME_LIST</code> 校验、视频文件名、结果记录都按原任务名）。因为 <code>_resolve_metadata_path</code> 用 <code>record_dataset_{env_id}_metadata.json</code> 拼文件名、<code>resolve_episode</code> 用 <code>(env_id, episode)</code> 查索引，清单导出脚本同时把追加后的 test metadata 复制成 <code>record_dataset_&lt;Task&gt;XHard_metadata.json</code>，并把其中 <code>env_id</code> 与每条 <code>task</code> 改写成 <code>&lt;Task&gt;XHard</code>，放进评估目录；<code>src/robomme/</code> 不动。xhard 子类的 <code>spec</code> 属性会把 id 换回原任务名，四个 wrapper、语言目标、VQA 查表都按原任务走（<code>robomme_xhard/base.py</code> 第 3 条设计），所以 <code>DemonstrationWrapper</code> 这一层无需改动。</li>
+<li><code>xhard0_manifest.py::check_seed</code>：原版断言 <code>difficulty == "hard"</code>（官方 xhard0 路线只评 hard 子集），改为 <code>difficulty == row["difficulty"]</code>；seed 必须等于清单 seed 的断言不动。</li>
+</ol>
+<p>其余一字不动：观测预处理、帧采样、prompt 拼接、动作执行、<code>max_steps=1300</code>、三遍重评循环（只对 <code>status=error</code> 的局重跑，<code>failure</code> 不重跑）、<code>--args.model_seed=7 --args.model_ckpt_id=79999 --args.policy_name=mmevla-official-xhard0</code>。<code>diff -ru</code> 原版目录与副本的 patch 存进留档，判定行 <code>CLIENT_DIFF=PASS files=2 hunks=&lt;n&gt; lines=&lt;n&gt;</code>。不接透明代理与观测器（那是 eval 仓库为对拍加的外挂，与成绩无关）。</p>
+<table>
+<tr><th>项</th><th>GPU0 · shard 0</th><th>GPU1 · shard 1</th></tr>
+<tr><td>任务</td><td>BinFill、PickXtimes、SwingXtimes、VideoUnmaskSwap（各 5 格）、StopCube（4 格）、PickHighlight（3 格）</td><td>ButtonUnmaskSwap、VideoRepick、PatternLock、RouteStick（各 5 格）、VideoPlaceButton（2 格）、VideoUnmask、ButtonUnmask、VideoPlaceOrder（各 1 格）</td></tr>
+<tr><td>格子 × 3 = 局数</td><td>27 × 3 = 81</td><td>25 × 3 = 75</td></tr>
+<tr><td>取样</td><td colspan="2">每格取该档 episode 升序前 3 条，即 ep50+i、50+i+k、50+i+2k（i 为该档在循环里的位置，k 为档数）；G1 单档为 ep50、51、52</td></tr>
+<tr><td>端口</td><td>server 19300</td><td>server 19400</td></tr>
+<tr><td>环境变量</td><td colspan="2">两个进程都 <code>CUDA_VISIBLE_DEVICES=&lt;卡&gt;</code>（仿真渲染也用卡）；server 另加 <code>XLA_PYTHON_CLIENT_MEM_FRACTION=0.75</code> 并 <code>env -u XLA_FLAGS -u JAX_COMPILATION_CACHE_DIR …</code>（照抄原版）</td></tr>
+<tr><td>输出</td><td><code>artifacts/test-xhard/eval/shard0/</code></td><td><code>artifacts/test-xhard/eval/shard1/</code></td></tr>
+<tr><td>tmux</td><td><code>xh-testx-eval0</code></td><td><code>xh-testx-eval1</code></td></tr>
+<tr><td>判定行</td><td><code>EVAL_XHARD=DONE gpu=0 shard=0 episodes=81 success=&lt;s&gt; failure=&lt;f&gt; error=&lt;e&gt; infra_retries=&lt;r&gt;</code></td><td><code>EVAL_XHARD=DONE gpu=1 shard=1 episodes=75 success=&lt;s&gt; failure=&lt;f&gt; error=&lt;e&gt; infra_retries=&lt;r&gt;</code></td></tr>
+</table>
+<p>评估是测量，不设通过阈值：<code>task_success</code> 逐局 0／1 如实报，重试只用于基础设施故障（server 死、连接断、仿真崩溃）并记次数，不为挑成功重跑（第 22 条）。汇总脚本出「任务 × 档」成功率表（官网顺序，分母 3），判定行 <code>EVAL_TABLE=DONE cells=52 episodes=156 success=&lt;s&gt;</code>。单局耗时无实测，S6 先用 2 局量；<code>max_steps=1300</code> 沿用官方，xhard20 的演示轨迹本就约 900 timestep，模型若更慢可能被截断记失败——这是官方口径的一部分，不改，但在结果表里单列「按 timeout 终局」的局数。</p>
+
+<h2>四、验收判定行总表</h2>
+<table>
+<tr><th>判定行</th><th>查什么／怎么查</th><th>过了说明什么</th></tr>
+<tr><td><code>LIGHT_TESTS=PASS failed=4 new_failures=0 passed=&lt;n&gt;</code></td><td><code>timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q</code>；失败节点恰为 1012 口径的已知 4 项</td><td>新增脚本与测试没有破坏既有链路</td></tr>
+<tr><td><code>PROTECTED=PASS base=&lt;sha&gt; tip=&lt;sha&gt;</code></td><td><code>git diff --quiet &lt;base&gt; &lt;tip&gt; -- src/robomme/</code>，S5 之前每次合并都查</td><td>P1 目录零改动直到获批的纯追加</td></tr>
+<tr><td><code>PROTECTED_APPEND_ONLY=PASS files=14 deleted_lines=0 added_records=624</code></td><td>S5 后 <code>git diff --numstat HEAD -- src/robomme/env_metadata/test</code> 删行全 0；记录数差之和 624</td><td>P1 改动恰为批准范围</td></tr>
+<tr><td><code>CLIENT_DIFF=PASS files=2 hunks=&lt;n&gt; lines=&lt;n&gt;</code></td><td><code>diff -ru</code> 原版 <code>examples/robomme/</code>@927c56d 与副本，只允许 <code>env_runner.py</code>、<code>xhard0_manifest.py</code> 有差</td><td>评出来的仍是官方评估流程</td></tr>
+<tr><td><code>CLIENT_IMPORT=PASS robomme=&lt;本仓库 src 路径&gt; xhard_registered=1 openpi_client=1</code></td><td>客户端 venv 内 <code>python -c "import robomme, robomme_xhard, openpi_client; …"</code> 打印 <code>robomme.__file__</code> 并 <code>gym.spec("VideoUnmaskSwapXHard")</code></td><td>客户端用的是本仓库 env 与 xhard 注册</td></tr>
+<tr><td><code>SERVER_ZERO_DIFF=PASS repo=mme-vla rev=ecf086c</code></td><td><code>git -C &lt;mme-vla&gt; diff --quiet ecf086c -- src scripts/serve_policy.py pyproject.toml uv.lock packages</code></td><td>模型进程是官方代码</td></tr>
+<tr><td><code>CKPT_COPY=PASS files=&lt;n&gt; bytes=&lt;b&gt; sha_sample=&lt;8 位&gt;</code></td><td>rsync 后 <code>find | wc -l</code>、<code>du -sb</code> 与 NFS 原件一致，抽 3 个文件比 sha256</td><td>本地 ckpt 副本同源</td></tr>
+<tr><td><code>SMOKE1=PASS gym_id=VideoUnmaskSwapXHard difficulty=xhard12 seed=555000 attempt=&lt;a&gt; task_success=1 recovery=none</code></td><td>S1 单条；<code>run_parameters.json</code> 的 <code>recovery_assignment</code> 为空、<code>difficulty_ratio</code> 为 null</td><td>纯 xhard 循环 + test 布局在生成器里走通</td></tr>
+<tr><td><code>SMOKE2=PASS requested=28 success=28 exhausted=0</code></td><td>S2 14 任务 ep50–51</td><td>14 个 XHard 环境在 test seed 上都能建、都能规划</td></tr>
+<tr><td><code>GEN_FULL_G5=PASS requested=480 success=&lt;n&gt; exhausted=&lt;e&gt; crashed=&lt;c&gt; elapsed_s=&lt;t&gt;</code>（G4…G1 同形）；<code>GEN_FULL=PASS requested=624 success=&lt;n&gt; exhausted=&lt;e&gt;</code></td><td>各组 <code>run_summary.json</code>；<code>exhausted&gt;0</code> 记 <code>GEN_FULL=PARTIAL</code> 并停在 S5 前交用户</td><td>全量产出与缺条如实</td></tr>
+<tr><td>3.3 表的五行 × 五组</td><td>见 3.3</td><td>结构、内容、条数、语义、身份</td></tr>
+<tr><td><code>META_APPEND=PASS groups=5 tasks=14 added_records=624 holes=0</code></td><td>五次 dry-run 均无断言失败，落盘后 14 个文件 <code>record_count</code> 之差之和 624</td><td>seed 已进官方 test metadata</td></tr>
+<tr><td><code>MANIFEST=PASS rows=156 cells=52 shard0=81 shard1=75 seeds_match_metadata=156</code></td><td>导出脚本自检：每行 seed 等于 metadata、等于公式；每格恰 3 行</td><td>评估对象就是生成的那些场景</td></tr>
+<tr><td><code>EVAL_SMOKE=DONE gpu=0 episodes=2 success=&lt;s&gt; server_ready_s=&lt;t1&gt; per_episode_s=&lt;t2&gt;</code></td><td>S6；<code>per_episode_s</code> 用来估 S7 总时长</td><td>双进程链路在 xhard 环境上走通</td></tr>
+<tr><td><code>EVAL_XHARD=DONE gpu=&lt;n&gt; shard=&lt;n&gt; episodes=&lt;n&gt; success=&lt;s&gt; failure=&lt;f&gt; error=&lt;e&gt; infra_retries=&lt;r&gt;</code> × 2；<code>EVAL_TABLE=DONE cells=52 episodes=156 success=&lt;s&gt;</code></td><td><code>episodes.jsonl</code> 每 (task, source_episode) 取最后一条；<code>error&gt;0</code> 时如实列出</td><td>评估完成（成绩不设阈值）</td></tr>
+<tr><td><code>HF_UPLOAD=PASS bucket=HongzeFu/robomme-test-xhard5-12per-1017 objects=&lt;n&gt; bytes=&lt;b&gt;</code>；<code>HF_VERIFY=PASS objects=&lt;n&gt; sha_match=&lt;n&gt; size_equal=&lt;n&gt; missing=0 extra=0</code>（GL job 日志末行）</td><td>3.5</td><td>远端有一份经读回校验的副本</td></tr>
+<tr><td><code>HANDOFF_WRITE=PASS task=test-xhard5-12per state=done pre_handoff_pass=&lt;n&gt; pre_handoff_total=&lt;n&gt; long_tail=2</code></td><td>七</td><td>交接文件如实</td></tr>
+</table>
+
+<h2>五、实施步骤</h2>
+<table>
+<tr><th>步</th><th>阶段</th><th>内容</th><th>判据</th></tr>
+<tr><td>0</td><td>开工审查</td><td>用户开工令 → 派一个 sonnet 只读审查子代理审本计划全文自相矛盾 → 裁决 → 开工；<code>handoff</code> 小 commit：<code>authorizations</code> 写 <code>kind: go</code>、<code>plan.sha</code>，<code>planned → running</code></td><td><code>PLAN_CONSISTENCY_REVIEW=PASS base=&lt;sha&gt; findings=&lt;n&gt; blocking=0</code></td></tr>
+<tr><td>1</td><td>S0 只读核实</td><td>第二部分一.0 的 8 项核实，结果写进 commit body；任一项与计划假设不符按第 2 条「执行中调整」处理</td><td>8 项各一行 <code>VERIFY_&lt;项&gt;=PASS|DIFF</code></td></tr>
+<tr><td>2</td><td>S0 W1／W2</td><td>两个 opus worktree 子代理并发：W1 评估客户端副本＋清单导出＋启动器＋汇总；W2 HF 上传脚本＋GL 校验 sbatch＋<code>SHA256SUMS</code> 生成；各自 sonnet 审查、<code>--no-ff</code> 合入、push</td><td><code>PRE_MERGE_REVIEW</code>、<code>POST_MERGE_REVIEW</code>、<code>LIGHT_TESTS</code>、<code>PROTECTED</code>、<code>CLIENT_DIFF</code></td></tr>
+<tr><td>3</td><td>S0 环境</td><td>mme-vla 检出 <code>uv sync --frozen</code> 建 server venv；客户端子项目 <code>uv sync</code>；ckpt rsync 到 <code>/data/hongzefu/mmevla-ckpt-framesamp-modul-79999/</code></td><td><code>SERVER_ZERO_DIFF</code>、<code>CLIENT_IMPORT</code>、<code>CKPT_COPY</code></td></tr>
+<tr><td>4</td><td>S1</td><td>smoke 一（GPU0、1 worker）</td><td><code>SMOKE1</code></td></tr>
+<tr><td>5</td><td>S2</td><td>smoke 二（GPU0、32 worker、28 条）＋ 对 smoke 二跑 <code>audit</code></td><td><code>SMOKE2</code>、<code>IDENTITY_AUDIT group=smoke2</code></td></tr>
+<tr><td>6</td><td>S3</td><td>Beta commit（<code>2.13xBeta</code>，工作区必须干净）→ 运行型子代理起 <code>xh-testx-full</code>（五组顺序脚本）→ 主会话挂 Monitor</td><td><code>GEN_FULL_G5…G1</code>、<code>GEN_FULL</code>；<code>exhausted&gt;0</code> 即停在步 8 前交用户</td></tr>
+<tr><td>7</td><td>S4</td><td>五组 <code>check</code> + <code>audit</code></td><td>3.3 五行 × 5</td></tr>
+<tr><td>8</td><td>S5</td><td>五次 <code>--dry-run</code> → 落盘 → numstat 核对 → 单独 commit「2.13x 追加 test xhard seed」并 push</td><td><code>META_APPEND</code>、<code>PROTECTED_APPEND_ONLY</code></td></tr>
+<tr><td>9</td><td>S6</td><td>导出清单与 <code>&lt;Task&gt;XHard</code> metadata 副本；GPU0 跑 2 局 smoke（<code>ONLY_TASKS</code> 限一任务、清单截 2 行）</td><td><code>MANIFEST</code>、<code>EVAL_SMOKE</code></td></tr>
+<tr><td>10</td><td>S7</td><td>运行型子代理同一决策点起 <code>xh-testx-eval0</code>、<code>xh-testx-eval1</code>；主会话两份日志各挂一个 Monitor；结束后汇总</td><td><code>EVAL_XHARD</code> × 2、<code>EVAL_TABLE</code></td></tr>
+<tr><td>11</td><td>S8（长尾）</td><td>生成 <code>SHA256SUMS</code> → 运行型子代理起 <code>xh-testx-upload</code> → 上传完成后提交 GL 校验 job（先 1 对象冒烟再全量）</td><td><code>HF_UPLOAD</code>、<code>HF_VERIFY</code></td></tr>
+<tr><td>12</td><td>S9</td><td>留档 <code>docs/xhard-doc/test-xhard5-1017/</code>（launch／result／records）；<code>docs/xhard-doc/README.md</code> 加一行；状态机 <code>running → done</code>（S8 进 <code>long_tail</code>）；<code>handoff:</code> commit 并 push</td><td><code>HANDOFF_WRITE</code></td></tr>
+</table>
+
+<h2>六、子代理分工与合并（简述）</h2>
+<p>新代码只有两块，互不相交，同一决策点并发派两个 opus worktree 子代理：<b>W1</b> 管 <code>scripts/eval-xhard/</code> 整个目录（原版客户端目录的副本与两处 diff、客户端子项目 <code>pyproject.toml</code>／<code>uv.lock</code>、清单导出脚本、双进程启动器、汇总脚本、CPU 轻量测试）；<b>W2</b> 管 <code>scripts/hf-upload/</code>（<code>SHA256SUMS</code> 生成、上传脚本、GL 校验 sbatch 与校验脚本、CPU 轻量测试）。两者都不碰 <code>src/</code>、生成器与现有测试。每个 worktree 交回后主会话按 <code>CLAUDE.md</code>「计划执行模式」走：核对写集 ⊆ 分配表、在 worktree 内复跑该块的 CPU 测试、派一个 sonnet 只读审查（钉死 BASE／TIP）、<code>--no-ff</code> 合 TIP sha、合并后跑核心短测与 <code>PROTECTED</code>、push。合并顺序 W1 → W2（无依赖，按完成先后亦可）。主会话自做的部分：S0 只读核实、三处环境搭建、S5 对受保护目录的纯追加（P1 已批，不派子代理改受保护目录）、Beta 与 handoff commit、留档。运行型 opus 子代理只负责起 tmux 并交回句柄（全量、双卡评估、上传各一批），监听、预算与清理归主会话。</p>
+
+<h2>七、交接顺序与状态机登记（第 27 条）</h2>
+<table>
+<tr><th>项</th><th>内容</th></tr>
+<tr><td>任务 id</td><td><code>test-xhard5-12per</code>；计划文件 <code>1017-test-xhard5-12per-plan.html</code>；本次计划 commit 时登记 <code>planned</code>（用户 T8 同意）</td></tr>
+<tr><td>依赖的上游</td><td>无（1013 的 AWS 全量已中止、本计划不依赖其产物；只复用其代码，代码已在 HEAD）</td></tr>
+<tr><td>交接前必须完成（<code>pre_handoff</code>）</td><td>① <code>GEN_FULL</code> 五组行，出处五组 <code>run_summary.json</code>；② 3.3 五行 × 五组，出处各组 <code>check.log</code>／<code>audit.log</code>；③ <code>META_APPEND</code> 与 <code>PROTECTED_APPEND_ONLY</code>，出处 S5 commit sha；④ <code>EVAL_XHARD</code> × 2 与 <code>EVAL_TABLE</code>，出处 <code>artifacts/test-xhard/eval/shard{0,1}/eval.log</code> 与 <code>summary.md</code>；⑤ 留档 commit sha。评估占 GPU，按第 27 条长尾定义不能算长尾，必须进 <code>pre_handoff</code></td></tr>
+<tr><td>长尾（<code>long_tail</code>）</td><td>① HF 上传：tmux <code>xh-testx-upload</code>，日志 <code>artifacts/test-xhard/upload/upload.log</code>，完成行 <code>HF_UPLOAD=PASS</code>；② GL 读回校验：JobID 记入，日志 <code>&lt;NFS&gt;/testx-hfverify_&lt;jobid&gt;.out</code>，完成行 <code>HF_VERIFY=</code>。两项都不占 GPU、CPU 轻、不写本仓库 git、不写下游要读的产物</td></tr>
+<tr><td>本任务 <code>done</code> 后可开工的下游</td><td>目前无登记的下游；若后续在 MotionJEPA／policy 仓库要用这份 test xhard，跨仓库 <code>depends_on</code> 指 <code>{path: /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006, branch: newtask-v3-MotionJepa1006, task: test-xhard5-12per}</code></td></tr>
+<tr><td>状态流</td><td>计划 commit：<code>planned</code> → 开工令 commit（<code>kind: go</code> + <code>plan.sha</code>）→ 起跑 commit：<code>running</code>（写 <code>owner</code>、<code>running_handles</code>）→ 耗尽或评估故障待裁决：<code>stopped</code> → S9：<code>done</code>（<code>running_handles</code> 清空、长尾登记）→ 上传校验完成后任一会话核实改 <code>closed</code></td></tr>
+</table>
+
+<h1>第二部分（技术细节，供 agent 追踪）</h1>
+
+<h2>〇、红线</h2>
+<ol>
+<li><b>R1</b> <code>src/robomme/</code> 在 S5 之前零 diff；S5 只允许 14 个 test metadata 文件的纯追加（用户 T5 批准范围），不改 ep0–49 记录、不改 <code>env_id</code>、不改序列化口径。<code>episode_config_resolver.py</code> 与四个 wrapper 不改不覆盖。</li>
+<li><b>R2</b> 生成只用本机 GPU0、32 worker、detached tmux（P7）；评估用 GPU0+GPU1（T7）；不提交任何 Slurm 跑生成或评估。唯一集群操作是 HF 读回校验纯 CPU job（第 15 条、T4）。</li>
+<li><b>R3</b> 不换 seed、不补 seed、不改母清单（P8）；公式 seed 模式的 attempt+1 重试沿用 1013 K3 例外；耗尽停在 S5 前交用户。</li>
+<li><b>R4</b> <code>pyproject.toml</code>、<code>uv.lock</code>、ManiSkill 钉 <code>07be6fbc</code> 不动。评估客户端的依赖落在独立子项目 <code>scripts/eval-xhard/pyproject.toml</code> 与它自己的 <code>uv.lock</code>（第 3 条「冲突依赖建独立 pyproject」），不进主项目。</li>
+<li><b>R5</b> mme-vla 服务端代码零 diff（<code>ecf086c</code>）；只在其目录下 <code>uv sync --frozen</code> 建 <code>.venv</code>，不改 eval 仓库任何被跟踪文件；原版客户端 NFS 工作树只读。</li>
+<li><b>R6</b> 客户端副本只改 <code>env_runner.py</code> 与 <code>xhard0_manifest.py</code>，<code>CLIENT_DIFF files=2</code>；评估参数照抄原版（model_seed 7、ckpt 79999、max_steps 1300、三遍只重跑 error）。</li>
+<li><b>R7</b> 评估结果只报数不设阈值；不为挑成功重跑；基础设施重试记次数。</li>
+<li><b>R8</b> 新目录 <code>scripts/eval-xhard/</code>、<code>scripts/hf-upload/</code> 是本计划对 P2「只改两处」的显式扩展，开工令即批准；其他位置不新增文件（留档与 <code>docs/handoff</code> 除外）。</li>
+<li><b>R9</b> Beta 锚点打在 S3 起跑前；S3 到 S4 之间不 commit；S5 单独 commit。</li>
+<li><b>R10</b> tmux 清理只用 <code>tmux kill-session -t '=确切名'</code>，清单见五；HF 校验 job 结束自行释放，超时按 JobID <code>scancel</code>。</li>
+<li><b>R11</b> ckpt 本地副本落 <code>/data/hongzefu/mmevla-ckpt-framesamp-modul-79999/</code>（第 14 条本地快盘），NFS 原件只读；评估完成、留档写明后可删本地副本（用户另行决定，本计划不删）。</li>
+</ol>
+
+<h2>一、机制细节</h2>
+
+<h3>1.0 S0 只读核实清单（开工后第一步，每项一行判定）</h3>
+<table>
+<tr><th>项</th><th>核实什么</th><th>怎么查</th><th>计划假设</th></tr>
+<tr><td>V1</td><td>生成器循环模式接受只含 xhard 值的循环，且 <code>_cycle_recovery</code>／<code>recovery_assignment</code> 对无 base 档循环不报错</td><td>读 <code>generate_dataset_newseed.py</code> 的 <code>_cycle_recovery</code> 与 <code>run_parameters</code> 写出处；S1 实跑印证</td><td>返回「不设」、写空字典</td></tr>
+<tr><td>V2</td><td><code>check_mixed_h5.py</code> 的 <code>check</code>／<code>audit</code> 对 <code>--episode-start 50</code> 与纯 xhard <code>--cycle</code> 的期望计数是否按 <code>有效循环[ep % k]</code> 从 ep50 算</td><td>读其 <code>expected_*</code> 相关函数（<code>filter</code> 处在第 44 行附近用 <code>TIER_CONFIGS.get(task)</code>）</td><td>是；否则在 W1 范围外单独立项（会触发第 2 条调整流程）</td></tr>
+<tr><td>V3</td><td><code>append_train_metadata.py --metadata-dir</code> 指向 test 时三条断言对「ep0–49 + ep50–50+12k−1」成立；序列化与官方 test 文件逐字一致</td><td>读源码；对 smoke 二输出做 <code>--dry-run</code></td><td>成立；dry-run 打印纯追加</td></tr>
+<tr><td>V4</td><td><code>load_episode_metadata</code>／<code>get_episode_metadata</code> 的索引键是 <code>(records[i]["task"], episode)</code> 还是 <code>(env_id, episode)</code></td><td>读 <code>episode_config_resolver.py</code> 前 90 行</td><td>用记录里的 <code>task</code>，所以导出的 XHard metadata 副本要同时改写 <code>env_id</code> 与每条 <code>task</code></td></tr>
+<tr><td>V5</td><td>原版 <code>eval.py</code> 模块级 import 闭包（<code>subgoal_predictor</code> 顶层 import 了 gemini／qwen API）需要哪些第三方包；<code>setup_save_directory</code> 对已存在目录的行为（第 250–257 行有 <code>rmtree</code> 分支）与三遍重评的续评方式是否兼容</td><td>在客户端子项目 venv 里 <code>python -c "import eval"</code>（cwd 为副本目录）；读 250–290 行</td><td>依赖按 <code>requirements.txt</code> 剔除训练专用（deepspeed、ms_swift）后能导入；原版脚本三遍循环就是在同一 <code>SAVE_ROOT</code> 下续评，说明 rmtree 分支有开关</td></tr>
+<tr><td>V6</td><td>mme-vla 检出当前 HEAD 是否 <code>ecf086c</code>、<code>uv.lock</code> 在、Python 版本要求与本机 uv 0.10.2 可满足；<code>serve_policy.py</code> 的 <code>--policy.config=mme_vla_suite</code> 存在</td><td><code>git -C … rev-parse HEAD</code>、读 <code>pyproject.toml</code></td><td>可 <code>uv sync --frozen</code></td></tr>
+<tr><td>V7</td><td>两张卡空闲、<code>/data</code> 余量 ≥ 1 TB、端口 19300／19400 未占</td><td><code>nvidia-smi</code>、<code>df -h /data</code>、<code>(exec 3&lt;&gt;/dev/tcp/127.0.0.1/19300)</code></td><td>2026-10-17 实测两卡各 &lt;10 MiB、<code>/data</code> 余 6.0 TB</td></tr>
+<tr><td>V8</td><td>GL ControlMaster 状态、<code>HF_TOKEN</code> 在提交端环境可用</td><td><code>ssh -O check greatlakes</code>；<code>hf auth whoami</code></td><td>master 不活则按规则问用户 Okta 方式；token 不落文件</td></tr>
+</table>
+
+<h3>1.1 五组生成命令（S3 脚本 <code>artifacts/test-xhard/full/run_full.sh</code>，先落脚本再进 tmux）</h3>
+<pre>set -o pipefail
+export UV_CACHE_DIR=/home/hongzefu/.cache/uv PYTHONUNBUFFERED=1
+GEN="uv run --no-sync python scripts/data-generation-newSeed/generate_dataset_newseed.py"
+COMMON="--layout test --episode-start 50 --workers 32 --gpus 0 --max-attempts 100 \
+  --difficulty-cycle xhard12,xhard14,xhard16,xhard18,xhard20"
+$GEN --env BinFill,PickXtimes,SwingXtimes,VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick,PatternLock,RouteStick \
+  --episodes 60 $COMMON --output-dir artifacts/test-xhard/full/G5; echo "GROUP_EXIT G5=$?"
+$GEN --env StopCube        --episodes 48 $COMMON --output-dir artifacts/test-xhard/full/G4; echo "GROUP_EXIT G4=$?"
+$GEN --env PickHighlight   --episodes 36 $COMMON --output-dir artifacts/test-xhard/full/G3; echo "GROUP_EXIT G3=$?"
+$GEN --env VideoPlaceButton --episodes 24 $COMMON --output-dir artifacts/test-xhard/full/G2; echo "GROUP_EXIT G2=$?"
+$GEN --env VideoUnmask,ButtonUnmask,VideoPlaceOrder --episodes 12 $COMMON --output-dir artifacts/test-xhard/full/G1; echo "GROUP_EXIT G1=$?"</pre>
+<p>tmux：<code>tmux new-session -d -s xh-testx-full "bash artifacts/test-xhard/full/run_full.sh 2>&1 | tee artifacts/test-xhard/full/full.log; echo \"EXIT_CODE=\$?\" >> artifacts/test-xhard/full/full.log"</code>。生成器退出码：0 正常、1 有耗尽、2 参数错、3 池崩溃停（本计划不开 <code>--stop-on-pool-crash</code>）。每组一个 <code>GROUP_EXIT</code> 行，<code>GEN_FULL_G*</code> 由主会话读各组 <code>run_summary.json</code> 写出。smoke 一／二命令同形：smoke 一 <code>--env VideoUnmaskSwap --episodes 1 --workers 1 --output-dir artifacts/test-xhard/smoke1</code>；smoke 二 <code>--env &lt;14 任务&gt; --episodes 2 --workers 32 --output-dir artifacts/test-xhard/smoke2</code>。</p>
+
+<h3>1.2 校验命令（每组一次）</h3>
+<pre>UV_CACHE_DIR=/home/hongzefu/.cache/uv uv run --no-sync python -m robomme_xhard.tools.check_mixed_h5 check \
+  --output-dir artifacts/test-xhard/full/G5 --golden-dir src/robomme_xhard/tools/golden_schema \
+  --cycle xhard12,xhard14,xhard16,xhard18,xhard20 --episode-start 50 --episodes 60 --workers 32 \
+  --out-json artifacts/test-xhard/full/G5/check.json --out-md artifacts/test-xhard/full/G5/check.md
+UV_CACHE_DIR=/home/hongzefu/.cache/uv uv run --no-sync python -m robomme_xhard.tools.check_mixed_h5 audit \
+  --output-dir artifacts/test-xhard/full/G5 --cycle xhard12,xhard14,xhard16,xhard18,xhard20 \
+  --episode-start 50 --episodes 60 --max-attempts 100</pre>
+<p>G4／G3／G2／G1 只换 <code>--output-dir</code> 与 <code>--episodes</code>（48／36／24／12）。<code>check</code> 的 <code>--sample first-per-tier</code> 默认即每格第一条。判定行由工具末行给出，主会话补 <code>group=</code>。</p>
+
+<h3>1.3 metadata 追加（S5，主会话自做）</h3>
+<pre>for G in G5 G4 G3 G2 G1; do
+  uv run --no-sync python scripts/data-generation-newSeed/utils/append_train_metadata.py \
+    --input-dir artifacts/test-xhard/full/$G --env all --metadata-dir src/robomme/env_metadata/test --dry-run
+done
+# 五次 dry-run 都无断言失败后去掉 --dry-run 重跑；然后：
+git diff --numstat HEAD -- src/robomme/env_metadata/test   # 14 行，第二列（删行）全 0
+uv run --no-sync python - &lt;&lt;'EOF'
+import json,glob
+n=0
+for f in sorted(glob.glob('src/robomme/env_metadata/test/*.json')):
+    d=json.load(open(f)); n+=d['record_count']-50
+print('META_APPEND added_records=',n)   # 应为 624
+EOF</pre>
+<p><code>--env all</code> 下工具只处理输入目录里存在的任务 metadata（V3 核实这一点；若它对缺失任务报错，改为逐组显式 <code>--env</code> 列表）。追加后 <code>git add</code> 逐路径 14 个文件，subject <code>2.13x 追加 test 布局 xhard 五档 624 条 seed 进官方 test metadata</code>，body 含用户 T5 原话与 <code>PROTECTED_APPEND_ONLY</code> 行。</p>
+
+<h3>1.4 评估：清单导出、环境、启动器</h3>
+<p><b>清单导出</b> <code>scripts/eval-xhard/make_manifest.py --metadata-dir src/robomme/env_metadata/test --out-dir artifacts/test-xhard/eval</code>：读 14 个任务 ep≥50 的记录，按 <code>difficulty</code> 分组、episode 升序取前 3，shard 按 3.6 表的任务分配写 0／1，每行 <code>{"task","source_episode","seed","difficulty","shard"}</code>（<code>source_episode</code> = episode 号，与官方清单字段名一致）；同时写 <code>artifacts/test-xhard/eval/metadata/record_dataset_&lt;Task&gt;XHard_metadata.json</code>（全部记录复制，<code>env_id</code> 与每条 <code>task</code> 改写为 <code>&lt;Task&gt;XHard</code>）。自检：每行 seed 等于 metadata、等于 <code>get_layout("test").seed(task, ep, 0)</code> 加上该条实际 attempt（从各组 <code>episode_results.jsonl</code> 读成功 attempt）——注意 attempt&gt;0 的条 seed 不等于 base_seed，清单以 metadata 为准；末行 <code>MANIFEST=PASS rows=156 cells=52 shard0=81 shard1=75 seeds_match_metadata=156</code>。</p>
+<p><b>客户端子项目</b> <code>scripts/eval-xhard/pyproject.toml</code>：<code>dependencies</code> 含 <code>robomme</code>（<code>[tool.uv.sources] robomme = { path = "../..", editable = true }</code>，带入 ManiSkill 钉 rev）、<code>openpi-client</code>（<code>{ git = "https://github.com/Physical-Intelligence/openpi.git", rev = "fdc03f527881cdfc8ae1a168ed6a20c60edbbbcc", subdirectory = "packages/openpi-client" }</code>）、以及 V5 核实出的模块级 import 闭包（<code>requirements.txt</code> 列的 <code>google-genai==1.56.0</code>、<code>google-generativeai==0.8.6</code>、<code>qwen-vl-utils==0.0.14</code>、<code>transformers==4.57.3</code>、<code>moviepy==2.2.1</code> 等，训练专用的 <code>deepspeed</code>、<code>ms_swift</code>、<code>ninja</code> 不装；<code>torch==2.9.1</code> 与主项目同版本）。venv 在 <code>scripts/eval-xhard/.venv</code>（<code>.gitignore</code> 已忽略 <code>.venv</code>，V5 顺带核实），<code>uv.lock</code> 进 git。<code>CLIENT_IMPORT</code> 命令：<code>cd scripts/eval-xhard && uv run --no-sync python -c "import robomme,robomme_xhard,openpi_client,gymnasium as g;print(robomme.__file__);g.spec('VideoUnmaskSwapXHard')"</code>。</p>
+<p><b>服务端</b>：<code>cd /data/hongzefu/RoboMME-benchmark-OOD-eval/third_party/mme-vla && UV_CACHE_DIR=/home/hongzefu/.cache/uv uv sync --frozen</code>；零 diff 守卫 <code>git diff --quiet ecf086c3be7c2223167d9bb2f6ef1f0a6e24353b -- src scripts/serve_policy.py pyproject.toml uv.lock packages</code>。ckpt：<code>rsync -a --info=progress2 /nfs/turbo/coe-chaijy-unreplicated/hongzefu/eval-out/mmevla-ckpt/perceptual-framesamp-modul/79999/ /data/hongzefu/mmevla-ckpt-framesamp-modul-79999/</code>。</p>
+<p><b>启动器</b> <code>scripts/eval-xhard/run_eval_shard.sh &lt;gpu&gt; &lt;shard&gt; &lt;port&gt; &lt;save_root&gt;</code>（照抄原版 <code>run_orig_framesamp_modul.sh</code> 的骨架，去掉代理、观测器、预算账本、E0 冻结核对与 Slurm 相关行）：</p>
+<pre>set -uo pipefail
+GPU=$1; SHARD=$2; PORT=$3; SAVE_ROOT=$4
+MANIFEST=artifacts/test-xhard/eval/eval-test-xhard5-156.jsonl
+CKPT=/data/hongzefu/mmevla-ckpt-framesamp-modul-79999
+SERVER_REPO=/data/hongzefu/RoboMME-benchmark-OOD-eval/third_party/mme-vla
+CLIENT_DIR=scripts/eval-xhard/client
+# 守卫：端口未占、server 零 diff、ckpt 有 params、SAVE_ROOT 为新目录
+( cd "$SERVER_REPO" && exec env -u XLA_FLAGS -u JAX_COMPILATION_CACHE_DIR -u JAX_PERSISTENT_CACHE_MIN_COMPILE_TIME_SECS \
+    -u JAX_PERSISTENT_CACHE_MIN_ENTRY_SIZE_BYTES -u JAX_ENABLE_COMPILATION_CACHE \
+    CUDA_VISIBLE_DEVICES=$GPU XLA_PYTHON_CLIENT_MEM_FRACTION=0.75 PYTHONUNBUFFERED=1 \
+    .venv/bin/python scripts/serve_policy.py --seed=7 --port="$PORT" \
+    policy:checkpoint --policy.dir="$CKPT" --policy.config=mme_vla_suite ) &gt;&gt; "$SAVE_ROOT/server.log" 2&gt;&amp;1 &amp;
+SERVER_PID=$!; trap 'kill $SERVER_PID 2&gt;/dev/null' EXIT
+# 等端口就绪（上限 20 分钟；server 先死立即退出）……
+for pass in 1 2 3; do
+  # 只在 episodes.jsonl 里仍有未到正常终态的局时继续；错误数超过本片局数即 RETRY_CAP_HIT
+  ( cd "$CLIENT_DIR" && CUDA_VISIBLE_DEVICES=$GPU PYTHONUNBUFFERED=1 ../.venv/bin/python eval.py \
+      --args.host=127.0.0.1 --args.port="$PORT" --args.model_seed=7 --args.model_ckpt_id=79999 \
+      --args.policy_name=mmevla-official-xhard0 --args.episode_manifest="$MANIFEST" --args.shard="$SHARD" \
+      --args.video_dir="$SAVE_ROOT/videos" --args.save_dir="$SAVE_ROOT" \
+      --args.xhard_metadata_dir=artifacts/test-xhard/eval/metadata )
+done
+echo "EVAL_XHARD=DONE gpu=$GPU shard=$SHARD episodes=… success=… failure=… error=… infra_retries=…"</pre>
+<p class="small">其中 <code>--args.xhard_metadata_dir</code> 是副本里唯一新增的参数（落在 <code>env_runner.py</code> 的 <code>override_metadata_path</code>），也算在 <code>CLIENT_DIFF</code> 的两处之内——若 W1 实现时发现必须改 <code>eval.py</code> 的 <code>Args</code> 才能传进去，则 <code>files=3</code>，以环境变量 <code>XHARD_METADATA_DIR</code> 代替可保持 <code>files=2</code>；W1 二选一并在交回时写明，主会社按实际更新本节与判定行。无进展看门狗（首局 10 分钟、之后 30 分钟）照抄原版。两片同一决策点起：<code>tmux new-session -d -s xh-testx-eval0 "bash scripts/eval-xhard/run_eval_shard.sh 0 0 19300 artifacts/test-xhard/eval/shard0 2>&1 | tee artifacts/test-xhard/eval/shard0/eval.log; echo \"EXIT_CODE=\$?\" >> …"</code>，eval1 同形换 <code>1 1 19400 shard1</code>。汇总 <code>scripts/eval-xhard/summarize_eval.py --eval-dir artifacts/test-xhard/eval --out summary.md</code> 出官网顺序「任务 × 档」表（每格 成功数/3，另列 timeout 终局数）与 <code>EVAL_TABLE</code> 行。</p>
+
+<h3>1.5 HF 上传与 GL 校验（W2 脚本）</h3>
+<p><code>scripts/hf-upload/make_sha256sums.py --roots artifacts/test-xhard/full artifacts/test-xhard/eval --out artifacts/test-xhard/upload/SHA256SUMS</code>：h5 的 sha256 从 S4 <code>check.json</code>／<code>audit</code> 记录复用（V2 核实 audit 是否记 sha；不记则在本机只对 h5 算一次，写明原因），其余小文件本机算。<code>scripts/hf-upload/upload_bucket.sh</code>：<code>hf buckets create HongzeFu/robomme-test-xhard5-12per-1017 --private</code> 后按目录 <code>hf buckets upload</code>（具体子命令以本机 <code>hf --help</code> 为准，W2 核实并写进脚本注释），日志 <code>artifacts/test-xhard/upload/upload.log</code>，末行 <code>HF_UPLOAD=PASS bucket=… objects=&lt;n&gt; bytes=&lt;b&gt;</code>。<code>scripts/hf-upload/hfverify.sbatch</code> + <code>hfverify.py</code>：规格照正本 3.5 所引；<code>hfverify.py</code> 用 <code>huggingface_hub</code> 列对象、HTTP 分块流式读、边读边算 sha256、与 <code>SHA256SUMS</code> 比对，支持 <code>--limit 1</code> 冒烟；日志目录 <code>/nfs/turbo/coe-chaijy-unreplicated/hongzefu/logs/testx-hfverify/</code>。提交命令 <code>sbatch --export=ALL … scripts/hf-upload/hfverify.sbatch</code> 在 GL 登录节点执行（需要仓库的 GL 可见副本：只 <code>scp</code> 这两个脚本与 <code>SHA256SUMS</code> 到 NFS 日志目录旁，不在 GL 建仓库检出）。</p>
+
+<h2>二、逐文件改动清单</h2>
+<table>
+<tr><th>文件</th><th>改什么</th><th>归属</th></tr>
+<tr><td><code>1017-test-xhard5-12per-plan.html</code></td><td>本文件；实施后追加「实施中调整」「实测结果」小节</td><td>主会话</td></tr>
+<tr><td><code>AGENTS.md</code>（标记外「覆盖第 8 条」）</td><td>HF 校验句改为按环境分叉：环境 B 走 GL 纯 CPU job（第 15 条），环境 A／C 本机</td><td>主会话，随计划 commit</td></tr>
+<tr><td><code>docs/handoff/current.json</code></td><td>登记 <code>test-xhard5-12per</code>（<code>planned</code>），后续状态流</td><td>主会话</td></tr>
+<tr><td><code>scripts/eval-xhard/client/</code>（新，原版 <code>examples/robomme/</code>@927c56d 副本，去掉 <code>*_test.py</code> 与 <code>__pycache__</code>）</td><td><code>env_runner.py</code>：import <code>robomme_xhard</code>、<code>env_id+"XHard"</code>、<code>override_metadata_path</code>；<code>xhard0_manifest.py::check_seed</code>：难度比清单字段。副本顶部 <code>readme.md</code> 加一段中文说明来源 commit、sha256 与两处改动</td><td>W1</td></tr>
+<tr><td><code>scripts/eval-xhard/pyproject.toml</code>、<code>uv.lock</code>（新）</td><td>客户端子项目依赖（1.4）</td><td>W1</td></tr>
+<tr><td><code>scripts/eval-xhard/make_manifest.py</code>、<code>run_eval_shard.sh</code>、<code>summarize_eval.py</code>、<code>README.md</code>（新）</td><td>1.4</td><td>W1</td></tr>
+<tr><td><code>tests/lightweight/test_eval_xhard_manifest.py</code>（新）</td><td>CPU 测试：对一份合成的 test metadata（50 条官方 + 追加）导出清单，断言 156 行、52 格各 3、shard 81／75、XHard metadata 副本的 <code>env_id</code>／<code>task</code> 改写、seed 等于 metadata</td><td>W1</td></tr>
+<tr><td><code>scripts/hf-upload/make_sha256sums.py</code>、<code>upload_bucket.sh</code>、<code>hfverify.sbatch</code>、<code>hfverify.py</code>、<code>README.md</code>（新）</td><td>1.5</td><td>W2</td></tr>
+<tr><td><code>tests/lightweight/test_hf_sha256sums.py</code>（新）</td><td>CPU 测试：对临时目录生成 <code>SHA256SUMS</code> 并用 <code>hfverify.py</code> 的比对函数对一份伪造清单判 PASS／FAIL</td><td>W2</td></tr>
+<tr><td><code>src/robomme/env_metadata/test/record_dataset_&lt;Task&gt;_metadata.json</code> × 14</td><td>S5 纯追加 624 条（P1 已批）</td><td>主会话</td></tr>
+<tr><td><code>docs/xhard-doc/test-xhard5-1017/{launch.md,result.md,records/}</code>、<code>docs/xhard-doc/README.md</code></td><td>第 13 条留档；索引加一行</td><td>主会话</td></tr>
+</table>
+
+<h2>三、子代理分配表</h2>
+<table>
+<tr><th>编号</th><th>目标</th><th>可写文件集合</th><th>禁触路径</th><th>接口契约与依赖</th><th>合并顺序</th><th>验收命令与判定行（在哪里、什么环境）</th><th>资源占用</th><th>共享文件归属</th></tr>
+<tr><td>W1（opus，worktree）</td><td>评估客户端副本＋两处 diff、子项目 pyproject、清单导出、启动器、汇总、CPU 测试</td><td><code>scripts/eval-xhard/**</code>、<code>tests/lightweight/test_eval_xhard_manifest.py</code></td><td><code>src/**</code>、<code>scripts/data-generation-newSeed/**</code>、<code>pyproject.toml</code>、<code>uv.lock</code>、其他测试</td><td>清单行字段 <code>{task, source_episode, seed, difficulty, shard}</code>；XHard metadata 副本命名 <code>record_dataset_&lt;Task&gt;XHard_metadata.json</code>；启动器参数 <code>&lt;gpu&gt; &lt;shard&gt; &lt;port&gt; &lt;save_root&gt;</code>；判定行名按第一部分四。依赖：原版目录只读来源 NFS；<code>openpi</code> 本机 clone 只读</td><td>1</td><td>worktree 内：<code>UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/.venv PYTHONPATH=&lt;worktree&gt;/src uv run --no-sync python -m pytest tests/lightweight/test_eval_xhard_manifest.py -q</code>（先打印 <code>robomme.__file__</code> 落在 worktree）；<code>diff -ru &lt;NFS 原版&gt; scripts/eval-xhard/client</code> 只有两个文件；不在 worktree 建子项目 venv、不跑 GPU</td><td>CPU 只读；无 GPU、无端口</td><td>无共享</td></tr>
+<tr><td>W2（opus，worktree）</td><td>SHA256SUMS 生成、bucket 上传脚本、GL 校验 sbatch 与脚本、CPU 测试</td><td><code>scripts/hf-upload/**</code>、<code>tests/lightweight/test_hf_sha256sums.py</code></td><td>同 W1，另禁 <code>scripts/eval-xhard/**</code></td><td>输入根目录列表；<code>SHA256SUMS</code> 格式 <code>&lt;sha256&gt;  &lt;相对路径&gt;</code>；校验脚本末行 <code>HF_VERIFY=…</code>；不含任何 token 字面量</td><td>2</td><td>worktree 内同环境取法跑 <code>test_hf_sha256sums.py</code>；<code>grep -rn 'hf_[A-Za-z0-9]\{20,\}' scripts/hf-upload</code> 为空；不实际上传、不 ssh</td><td>CPU 只读</td><td>无共享</td></tr>
+<tr><td>A1／A2（sonnet，无 isolation）</td><td>W1／W2 合并前审查</td><td>无</td><td>一切</td><td>只许 <code>git diff/log/show</code> 于 <code>REVIEW_BASE..REVIEW_TIP</code></td><td>各一轮</td><td><code>PRE_MERGE_REVIEW=PASS|FAIL base= tip= files= commits= findings=</code></td><td>—</td><td>—</td></tr>
+<tr><td>R1（opus，运行型，主检出）</td><td>起 <code>xh-testx-full</code></td><td>只写 <code>artifacts/test-xhard/full/**</code></td><td>一切源码</td><td>命令 1.1；起跑判据：日志出现 G5 第一条成功行；最长等待 10 分钟；失败不重试、交回原始输出</td><td>S3</td><td>交回 tmux 名、日志绝对路径、起跑原始输出、<code>tmux ls</code></td><td>GPU0，32 worker</td><td>—</td></tr>
+<tr><td>R2（opus，运行型，主检出）</td><td>同一决策点起 <code>xh-testx-eval0</code>、<code>xh-testx-eval1</code></td><td>只写 <code>artifacts/test-xhard/eval/shard{0,1}/**</code></td><td>一切源码</td><td>命令 1.4；起跑判据：两份 <code>server.log</code> 出现 ckpt 恢复行且端口就绪、第一局开始；最长等待 25 分钟；重试上限 0</td><td>S7</td><td>同 R1 × 2</td><td>GPU0 + GPU1，端口 19300／19400</td><td>—</td></tr>
+<tr><td>R3（opus，运行型，主检出）</td><td>起 <code>xh-testx-upload</code>；上传完成后提交 GL 校验 job（先 <code>--limit 1</code> 冒烟）</td><td>只写 <code>artifacts/test-xhard/upload/**</code>、NFS 日志目录</td><td>一切源码</td><td>命令 1.5；立即交回 JobID；不 scancel</td><td>S8</td><td>tmux 名、日志、JobID、<code>squeue -j</code> 原始输出</td><td>网络；GL 4 CPU／8 G</td><td>—</td></tr>
+<tr><td>主会话自做</td><td>S0 核实、三处环境、S1／S2／S4、S5 受保护目录追加、Beta／handoff／留档 commit、Monitor、清理</td><td>—</td><td>—</td><td>理由：P1 改动不派子代理；smoke 与校验 ≤5 分钟</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+</table>
+
+<h2>四、闸门总表</h2>
+<table>
+<tr><th>闸门</th><th>位置</th><th>通过条件</th><th>不通过时</th></tr>
+<tr><td>G-A 开工</td><td>步 0</td><td><code>PLAN_CONSISTENCY_REVIEW blocking=0</code> 且用户开工令</td><td>裁决后修订计划、再审</td></tr>
+<tr><td>G-B 合并</td><td>每个 worktree</td><td><code>SCOPE ⊆ 写集</code>、<code>PRE_MERGE_REVIEW=PASS</code>、worktree 内测试通过</td><td><code>SendMessage</code> 交回续改，两轮仍 FAIL 交用户</td></tr>
+<tr><td>G-C 环境</td><td>步 3</td><td><code>SERVER_ZERO_DIFF</code>、<code>CLIENT_IMPORT</code>、<code>CKPT_COPY</code> 三行 PASS</td><td>不进 S1；记录原始报错</td></tr>
+<tr><td>G-D smoke</td><td>步 4、5</td><td><code>SMOKE1</code>、<code>SMOKE2</code> PASS</td><td>不起全量；失败按第 2 条调整流程</td></tr>
+<tr><td>G-E 全量到追加</td><td>步 6→8</td><td><code>GEN_FULL exhausted=0</code> 且五组校验全 PASS</td><td><code>exhausted&gt;0</code>：停在 S5 前，缺失清单交用户；校验 FAIL：不动文件，交用户</td></tr>
+<tr><td>G-F 评估 smoke</td><td>步 9</td><td><code>EVAL_SMOKE</code> 两局都到正常终态（success 或 failure），<code>error=0</code></td><td>不起双卡全量</td></tr>
+<tr><td>G-G 交接</td><td>步 12</td><td><code>pre_handoff</code> 全 pass、非长尾 tmux 全退出</td><td>保持 <code>running</code> 或 <code>stopped</code>，不写 <code>done</code></td></tr>
+</table>
+
+<h2>五、runbook（句柄清单）</h2>
+<table>
+<tr><th>tmux 会话</th><th>日志</th><th>Monitor 过滤词</th><th>完成信号</th></tr>
+<tr><td><code>xh-testx-smoke2</code></td><td><code>artifacts/test-xhard/smoke2/generate.log</code></td><td><code>succeeded with seed|EXIT_CODE=|failed|进程池已损坏|ERROR:|Traceback|BrokenProcessPool|svulkan2|out of memory|NO RECORD</code></td><td><code>EXIT_CODE=</code></td></tr>
+<tr><td><code>xh-testx-full</code></td><td><code>artifacts/test-xhard/full/full.log</code></td><td>同上加 <code>GROUP_EXIT</code></td><td>五个 <code>GROUP_EXIT</code> + <code>EXIT_CODE=</code></td></tr>
+<tr><td><code>xh-testx-eval0</code>／<code>xh-testx-eval1</code></td><td><code>artifacts/test-xhard/eval/shard{0,1}/eval.log</code>（各挂一个 Monitor）</td><td><code>EVAL_PASS|EVAL_XHARD=|SERVER_DIED|RETRY_CAP_HIT|Traceback|out of memory|EXIT_CODE=</code></td><td><code>EVAL_XHARD=</code> + <code>EXIT_CODE=</code></td></tr>
+<tr><td><code>xh-testx-upload</code></td><td><code>artifacts/test-xhard/upload/upload.log</code></td><td><code>HF_UPLOAD=|Error|Traceback|EXIT_CODE=</code></td><td><code>HF_UPLOAD=</code></td></tr>
+<tr><td>GL job <code>testx-hfverify</code></td><td><code>&lt;NFS&gt;/logs/testx-hfverify/testx-hfverify_&lt;jobid&gt;.out</code>（本机 <code>tail -F</code> NFS 文件挂 Monitor）</td><td><code>HF_VERIFY=|EXIT_CODE=|Error</code></td><td><code>HF_VERIFY=</code></td></tr>
+</table>
+<p>每份日志一个 Monitor，<code>tail -n +1 -F … | stdbuf -oL tr '\r' '\n' | grep --line-buffered -E "…"</code>。清理：只对本表会话 <code>tmux kill-session -t '=名'</code>，删前删后 <code>tmux ls</code>。smoke 一 ≤5 分钟直接 <code>run_in_background</code>。</p>
+
+<h2>六、风险登记</h2>
+<table>
+<tr><th>风险</th><th>影响</th><th>处置</th></tr>
+<tr><td>某 episode 耗尽（1013 smoke 二曾出现 VideoPlaceOrder 连续三次非任务性失败）</td><td>metadata 出空洞，追加工具拒绝；评估清单该格可能不足 3 条</td><td>停在 S5 前交用户（P8）；不自动补</td></tr>
+<tr><td>原版 <code>eval.py</code> 的 import 闭包拉入重依赖（gemini／qwen API、transformers）</td><td>客户端子项目 venv 变大、解析慢</td><td>按 V5 实测装齐；不改 import（R6）</td></tr>
+<tr><td>mme-vla <code>uv sync --frozen</code> 在本机失败（JAX／CUDA 轮子、Python 版本）</td><td>评估无法起</td><td>记录原始报错交用户；不改其 lock（R5）</td></tr>
+<tr><td><code>max_steps=1300</code> 对 xhard18／20 偏短</td><td>timeout 终局计失败，成功率被压低</td><td>沿用官方口径不改，表里单列 timeout 局数；是否加长由用户另定</td></tr>
+<tr><td>同卡上 server（JAX 占 75% 显存）与仿真渲染（sapien）共存</td><td>显存不够或 Vulkan 建 device 失败</td><td>S6 smoke 验证；失败则记录并交用户（可能改为 server 一卡、仿真另一卡的两进程两卡形态，但那不再是「分开跑两片」，须用户定）</td></tr>
+<tr><td>追加后 <code>env_metadata/test</code> 被其他消费方以原任务类建 ep≥50</td><td>报未知难度</td><td>3.4 已写明；留档与 <code>src/robomme/env_metadata/test/</code> 旁不加文件（R1），只在计划与 commit body 说明</td></tr>
+<tr><td>GL 校验 job 出网走代理失败</td><td><code>HF_VERIFY</code> 拿不到</td><td>记录原始报错交用户，不改在本机校验（正本口径）</td></tr>
+<tr><td>评估耗时远超估计</td><td>占两卡数小时以上</td><td>S6 先量；超过 8 小时预估先报用户再起全量</td></tr>
+</table>
+
+<h2>七、盲区诚实清单</h2>
+<ul>
+<li>生成器「循环里无 base 档」没有历史实测，S1 才能证实。</li>
+<li>校验工具对 <code>--episode-start 50</code> 的期望计数逻辑未逐行读过（V2）。</li>
+<li>原版 <code>eval.py</code> 的续评开关与 <code>rmtree</code> 分支未读到（V5）。</li>
+<li>单局评估耗时、同卡双进程显存是否够，都无实测。</li>
+<li>HF bucket 上传子命令的精确形态以本机 <code>hf --help</code> 为准，未在本计划核实。</li>
+<li>追加后 metadata 的其他消费方（本仓库外）未盘点。</li>
+<li>评估成绩的意义：52 格各 3 局，样本极小，只能看趋势，不能下统计结论。</li>
+</ul>
+
+<h2>八、留档与 commit 纪律</h2>
+<ul>
+<li>计划 commit：<code>2.134 写 1017 test 布局 xhard 五档每档 12 条计划：生成、校验、metadata 追加、HF 上传与官方 ckpt 双卡评估</code>，同一 commit 带 <code>docs/handoff/current.json</code>（<code>planned</code>）与 <code>AGENTS.md</code> 覆盖第 8 条一句；push。</li>
+<li>对抗验证（T9）：计划写完后按 <code>CLAUDE.md</code>「Workflow 逐次审批」把方案（phase、规模、模型）写给用户，获准后起 Workflow（全部 sonnet，按页分片审自相矛盾、数字、命令可执行性、与仓库事实的出入），主会话逐条回原文核实后修订，修订清单写进本节下方「对抗验证修订记录」与 commit body；不改口径的文字统一直接改，涉及口径的交用户。</li>
+<li>开工令、起跑、停工、完成各一个只碰 <code>current.json</code> 的小 commit；Beta commit 在 S3 前；S5 单独 commit；留档 commit 在 S9。</li>
+<li>留档 <code>docs/xhard-doc/test-xhard5-1017/</code>：<code>launch.md</code>（版本、命令、环境、tmux 清单、Beta sha）、<code>result.md</code>（一句话结论、判定行原文、任务 × 档评估表、意外与处置）、<code>records/</code>（五组 <code>run_summary.json</code>、<code>check.json</code>、<code>audit.log</code>、<code>client-diff.patch</code>、两片 <code>episodes.jsonl</code>、<code>summary.md</code>、<code>SHA256SUMS</code>、GL 校验日志清洗版）；不归档 h5、视频、ckpt。</li>
+<li>所有给用户看的时间写美东（第 1 条）。</li>
+</ul>
+
+<h3>对抗验证修订记录</h3>
+<p class="small">（待 T9 的 Sonnet workflow 完成后填写：finding 编号、原文、核实结论、处置。）</p>
+
+</body>
+</html>
