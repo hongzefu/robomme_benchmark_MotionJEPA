@@ -1,6 +1,6 @@
 {
   "env_id": "VideoPlaceOrder",
-  "record_count": 50,
+  "record_count": 62,
   "records": [
     {
       "task": "VideoPlaceOrder",
@@ -301,6 +301,78 @@
       "episode": 49,
       "seed": 614900,
       "difficulty": "easy"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 50,
+      "seed": 615001,
+      "difficulty": "xhard12"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 51,
+      "seed": 615102,
+      "difficulty": "xhard12"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 52,
+      "seed": 615200,
+      "difficulty": "xhard12"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 53,
+      "seed": 615301,
+      "difficulty": "xhard12"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 54,
+      "seed": 615401,
+      "difficulty": "xhard12"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 55,
+      "seed": 615500,
+      "difficulty": "xhard12"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 56,
+      "seed": 615600,
+      "difficulty": "xhard12"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 57,
+      "seed": 615701,
+      "difficulty": "xhard12"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 58,
+      "seed": 615800,
+      "difficulty": "xhard12"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 59,
+      "seed": 615900,
+      "difficulty": "xhard12"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 60,
+      "seed": 616000,
+      "difficulty": "xhard12"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 61,
+      "seed": 616101,
+      "difficulty": "xhard12"
     }
   ]
 }

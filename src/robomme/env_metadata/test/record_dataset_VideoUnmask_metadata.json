@@ -1,6 +1,6 @@
 {
   "env_id": "VideoUnmask",
-  "record_count": 50,
+  "record_count": 62,
   "records": [
     {
       "task": "VideoUnmask",
@@ -301,6 +301,78 @@
       "episode": 49,
       "seed": 564900,
       "difficulty": "easy"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 50,
+      "seed": 565000,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 51,
+      "seed": 565100,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 52,
+      "seed": 565200,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 53,
+      "seed": 565300,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 54,
+      "seed": 565400,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 55,
+      "seed": 565500,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 56,
+      "seed": 565600,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 57,
+      "seed": 565700,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 58,
+      "seed": 565800,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 59,
+      "seed": 565900,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 60,
+      "seed": 566000,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 61,
+      "seed": 566100,
+      "difficulty": "xhard14"
     }
   ]
 }

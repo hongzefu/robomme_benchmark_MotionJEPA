@@ -1,6 +1,6 @@
 {
   "env_id": "ButtonUnmask",
-  "record_count": 50,
+  "record_count": 62,
   "records": [
     {
       "task": "ButtonUnmask",
@@ -301,6 +301,78 @@
       "episode": 49,
       "seed": 584900,
       "difficulty": "easy"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 50,
+      "seed": 585000,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 51,
+      "seed": 585100,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 52,
+      "seed": 585200,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 53,
+      "seed": 585300,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 54,
+      "seed": 585400,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 55,
+      "seed": 585500,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 56,
+      "seed": 585600,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 57,
+      "seed": 585700,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 58,
+      "seed": 585800,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 59,
+      "seed": 585900,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 60,
+      "seed": 586000,
+      "difficulty": "xhard14"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 61,
+      "seed": 586100,
+      "difficulty": "xhard14"
     }
   ]
 }
