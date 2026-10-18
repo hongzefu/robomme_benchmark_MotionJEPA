@@ -2,7 +2,7 @@
 
 | 档案名 | 内容 | 状态 |
 |---|---|---|
-| [test-xhard5-1017](test-xhard5-1017/launch.md) | test 布局 xhard 五档、每格 12 条、五组共 624 条（1017 计划生成侧）；起跑前 SMOKE1、SMOKE2=PASS requested=28 exhausted=0 | 全量起跑（2.154Beta） |
+| [test-xhard5-1017](test-xhard5-1017/result.md) | test 布局 xhard 五档、每格 12 条、五组共 624 条（1017 计划生成侧）；[起跑档案](test-xhard5-1017/launch.md) | 已完成：GEN_FULL=PASS 624/624 exhausted=0，五组校验全 PASS，META_APPEND=PASS，tag v2-motionmem-eval-test1017-metadata（943ddf32）；32→16 worker 重跑 G5（G5-r2）；HF 上传长尾进行中 |
 | [mixed8-1013](mixed8-1013/result.md) | 八档循环生成器、H5 校验、原版 golden 与多卡测速实现；[起跑档案](mixed8-1013/launch.md)、[实施审查](mixed8-1013/implementation.md) | 本机阶段执行完：核心 679 通过／4 个既定失败；单条通过，批次 127/128；四项整体因唯一缺失身份失败，现有 99 首档样本无结构、内容、可数语义不符；AWS 未启动 |
 | [xhard-1012-swapv3](xhard-1012-swapv3/full-result.md) | 至少三种可行槽对闸门；[全量启动档案](xhard-1012-swapv3/full-launch.md)，[恢复验证](xhard-1012-swapv3/firstbuild-result.md)，[原失败证据](xhard-1012-swapv3/result.md)保留 | 全量180身份完成：130成功、50正常拒绝、infra=0；105规划零差异、30支六列视频通过，旧两根完整 |
 | [xhard-1012-swapv2](xhard-1012-swapv2/full-result.md) | 全量 180 身份、30 支六列视频、v1/v2 逐母 seed 对照；[启动档案](xhard-1012-swapv2/full-launch.md) | 已完成：160 成功、20 正常碰撞拒绝，infra=0；旧轮 426 文件完整哈希一致 |
