@@ -48,7 +48,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>T8</td><td><span class="quote">「所有的任务改为在 Great Lakes 上评估，每个都是单卡」「放行 8 个占位 job（各 1 × A40）；其余按你建议」</span>（取代此前「本机两卡」口径）</td><td>8 个占位 job（1×A40／1 CPU／24 G／48 h／<code>gpu_cmode=shared</code>），登录节点 8 个 worker 动态抢单元，每单元一个 <code>srun</code> step、模型进程与仿真进程同卡；本机不再跑任何评估</td></tr>
 <tr><td>T9</td><td><span class="quote">「官方的 frame sample modulation 最后再跑，优先跑我要的这两个」「可以先拿十 K 的跑冒烟」</span></td><td>顺序：官方 2 局链路冒烟 → 512 @10k 100 局冒烟 → 512 @60k → 512+motion @60k → 官方 79999</td></tr>
 <tr><td>T10</td><td><span class="quote">「全部认可 写入计划」</span>（2026-10-17，针对展开说明后的 T10）：test 布局公式 seed 任务性失败按 attempt+1 换 seed 重试、上限 100；非任务性失败连续 3 次放弃记缺条（对 P8 的显式例外，此前出处只有 1013 K3／K10）</td><td>生成按此执行；metadata 记最终成功的 seed；缺条不补、如实报</td></tr>
-<tr><td>T11</td><td>对 P2 的显式扩展：本仓库新增 <code>scripts/hf-upload/</code>、改 <code>check_mixed_h5.py</code> 加 <code>--layout</code>／<code>--tasks</code>（它写死 train 布局、默认 16 任务）</td><td>开工令即认可</td></tr>
+<tr><td>T11</td><td>对 P2 的显式扩展：本仓库新增 <code>scripts/hf-upload/</code>、改 <code>check_mixed_h5.py</code> 加 <code>--layout</code>／<code>--tasks</code>（它写死 train 布局、默认 16 任务）、两个轻量测试；不碰 <code>src/robomme/</code>、<code>pyproject.toml</code>／<code>uv.lock</code></td><td>已认可（用户原话「全部认可 写入计划」）</td></tr>
 <tr><td>T12</td><td><span class="quote">「HTML 里面细节太多了，尽可能缩减，我只关心 high level 的事情」「写在一份统一的 HTML 里」</span></td><td>本文件</td></tr>
 <tr><td>T13</td><td><span class="quote">「同意硬件豁免。然后如果超过一百六十，你需要加入一个丢弃的机制，保证能够继续做。」「用 2000」「超出的量全由执行段等距抽稀承担，恰好填满 160 个窗…先沿用」</span></td><td>provenance 比对豁免 <code>gpu_name／compute_cap／sm_count／driver</code> 四键（vae 与 encoder 两段都豁免，其余 sha、版本照比）；motion 窗超 160 沿用上次评估分支已有的 <code>MMEVLA_MOTION_OVERFLOW=resample</code>（demo 优先、执行段等距抽稀、恰好填满 160），移植到 <code>test1017</code>；<code>max_steps</code> 三模型统一 <b>2000</b>（上次四任务评估定值，oracle 在 xhard 最长 1312 步）（4.6）</td></tr>
 <tr><td>T14</td><td><span class="quote">「video demo 有一个 padding…没有满三十二帧，就是满十六帧的也要做 padding 的一个机制」「这个你也要实现」</span></td><td>已实现、沿用：训练库布局 <code>motion-768-grid16-demopad17-v1</code> 与在线推理同契约——demo 段起点剩 ≥17 个真实帧即保留、不足 33 用 demo 末帧重复补齐（<code>repeat_last</code>），恰好 16 帧不编；执行段不补帧。门槛 17 是训练库定死的，推理改 16 会与训练不一致，故不改；从 run 快照核 <code>DEMO_PAD=PASS min_real=17 pad=repeat_last</code>（4.6，图 3）</td></tr>
@@ -1065,7 +1065,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 
 <h2>〇、红线</h2>
 <ol>
-<li>本仓库 <code>src/robomme/</code> 零 diff，唯一例外是 14 个 test metadata 的纯追加；<code>pyproject.toml</code>／<code>uv.lock</code>／ManiSkill 钉 <code>07be6fbc</code> 不动；不换 seed 清单、不补 seed（T10 例外待确认）。</li>
+<li>本仓库 <code>src/robomme/</code> 零 diff，唯一例外是 14 个 test metadata 的纯追加；<code>pyproject.toml</code>／<code>uv.lock</code>／ManiSkill 钉 <code>07be6fbc</code> 不动；不换 seed 清单、不补 seed（T10 例外已认可）。</li>
 <li>生成只用本机 GPU0、32 worker、detached tmux，不上集群（P7）；评估在 GL 8 个占位 job 内（用户放行），一切集群操作按策略仓库 <code>greatlakes.md</code>：account chaijy2、spgpu、占位 job 规格不放大、不 <code>scancel -u</code>、评测期间 HEAD 冻结；HF 读回校验纯 CPU job 另算。</li>
 <li>策略仓库：只在 <code>test1017</code> 分支改，<code>v2-motionmem</code> 与训练中的东西不碰；评估分支改动限于 <code>examples/robomme/</code>、<code>.gitmodules</code>／gitlink、<code>scripts/evaluation/</code>（整目录移植自 <code>v2-eval-0918-motion</code>）、以及 <code>src/mme_vla_suite/policies/</code> 下四处开关式小改（<code>policy_config.py</code> 读 sidecar 卡号、<code>motion_client.py</code> 硬件四键豁免、<code>framesamp_memory.py</code> 从上次评估分支移植 <code>resample</code>、<code>policy.py</code> 回传 motion 计数），都经环境变量开启、默认行为不变；模型前向不改。</li>
 <li>官方服务端 mme-vla <code>ecf086c</code> 零 diff；原版客户端 NFS 工作树只读。</li>
