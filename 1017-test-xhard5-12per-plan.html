@@ -47,7 +47,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>T7</td><td><span class="quote">「60k 两个 checkpoint 的评估都只需要每个难度评十二集，easy…也只需要十二集」「官方 FrameSamp 也按同一清单 1200 局同意」</span></td><td>每任务每档 episode 升序前 12，共 1200 局；三模型共用一份清单</td></tr>
 <tr><td>T8</td><td><span class="quote">「所有的任务改为在 Great Lakes 上评估，每个都是单卡」「放行 8 个占位 job（各 1 × A40）；其余按你建议」</span>（取代此前「本机两卡」口径）</td><td>8 个占位 job（1×A40／1 CPU／24 G／48 h／<code>gpu_cmode=shared</code>），登录节点 8 个 worker 动态抢单元，每单元一个 <code>srun</code> step、模型进程与仿真进程同卡；本机不再跑任何评估</td></tr>
 <tr><td>T9</td><td><span class="quote">「官方的 frame sample modulation 最后再跑，优先跑我要的这两个」「可以先拿十 K 的跑冒烟」</span></td><td>顺序：官方 2 局链路冒烟 → 512 @10k 100 局冒烟 → 512 @60k → 512+motion @60k → 官方 79999</td></tr>
-<tr><td>T10</td><td><b>待开工令确认</b>：test 布局公式 seed 任务性失败按 attempt+1 重试、上限 100（对 P8 的例外，出处只有 1013 K3／K10；官方 train 1600 条里 280 条重试过、最大 attempt 7）</td><td>不认可则 attempt 固定 0、缺条如实报</td></tr>
+<tr><td>T10</td><td><span class="quote">「全部认可 写入计划」</span>（2026-10-17，针对展开说明后的 T10）：test 布局公式 seed 任务性失败按 attempt+1 换 seed 重试、上限 100；非任务性失败连续 3 次放弃记缺条（对 P8 的显式例外，此前出处只有 1013 K3／K10）</td><td>生成按此执行；metadata 记最终成功的 seed；缺条不补、如实报</td></tr>
 <tr><td>T11</td><td>对 P2 的显式扩展：本仓库新增 <code>scripts/hf-upload/</code>、改 <code>check_mixed_h5.py</code> 加 <code>--layout</code>／<code>--tasks</code>（它写死 train 布局、默认 16 任务）</td><td>开工令即认可</td></tr>
 <tr><td>T12</td><td><span class="quote">「HTML 里面细节太多了，尽可能缩减，我只关心 high level 的事情」「写在一份统一的 HTML 里」</span></td><td>本文件</td></tr>
 <tr><td>T13</td><td><span class="quote">「同意硬件豁免。然后如果超过一百六十，你需要加入一个丢弃的机制，保证能够继续做。」「用 2000」「超出的量全由执行段等距抽稀承担，恰好填满 160 个窗…先沿用」</span></td><td>provenance 比对豁免 <code>gpu_name／compute_cap／sm_count／driver</code> 四键（vae 与 encoder 两段都豁免，其余 sha、版本照比）；motion 窗超 160 沿用上次评估分支已有的 <code>MMEVLA_MOTION_OVERFLOW=resample</code>（demo 优先、执行段等距抽稀、恰好填满 160），移植到 <code>test1017</code>；<code>max_steps</code> 三模型统一 <b>2000</b>（上次四任务评估定值，oracle 在 xhard 最长 1312 步）（4.6）</td></tr>
@@ -55,7 +55,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>T15</td><td><span class="quote">「你再次对抗验证，核实一下上一次的实现有哪些特殊的机制，都要检查一下」「上一次训练的四个 task 的评估」</span></td><td>两轮全 Sonnet 对抗验证（7 视角 99 条：23 确认、72 部分成立、4 驳回）盘点出的机制全部补进 4.7 与第二部分二；判定行相应新增</td></tr>
 <tr><td>T16</td><td><span class="quote">「延续十二条」</span>（在看过「每格 5 条 vs 12 条」的抽样模拟后）</td><td>每格 12 条不变；模拟结论：5 条只能分辨模型间 ≥10 个百分点的差距，12 条到 5～7 个百分点</td></tr>
 <tr><td>T18</td><td>官方 79999 的服务端（第三轮对抗验证发现流水线没有 mme-vla 分支）</td><td>沿用上次做法：策略仓库自己的 <code>serve_policy.py</code> 以 <code>--policy.config=mme_vla_suite</code> 加载官方权重目录（含 <code>history_config.txt</code>），<code>SERVER_PIN</code> 改为核「<code>src/mme_vla_suite/models</code> 前向相对 mme-vla <code>ecf086c</code> 零语义 diff（<code>git diff ecf086c..test1017 -- src/mme_vla_suite/models</code> 逐项列出并说明）」；不另建 mme-vla 环境</td></tr>
-<tr><td>T19</td><td>评估环境缓存落 NFS（上次 <code>env.sh</code> 做法；与正本第 3 条「uv 缓存压回本机」不同，因计算节点只用预装环境）</td><td>随开工令认可；<code>UV_CACHE_DIR</code>、XDG、HF、torch 缓存全在 <code>v1-store/cache/policy-eval/</code></td></tr>
+<tr><td>T19</td><td><span class="quote">「全部认可 写入计划」</span>：评估环境缓存落 NFS（上次 <code>env.sh</code> 做法；与正本第 3 条「uv 缓存压回本机」不同，因计算节点只用 NFS 上预装的 venv）</td><td>已认可；<code>UV_CACHE_DIR</code>、XDG、HF、torch、ManiSkill、JAX 缓存全在 <code>v1-store/cache/policy-eval/</code></td></tr>
 <tr><td>T20</td><td>Beta 时序</td><td>两次 Beta：Beta-1（评估代码 + 10k／官方登记）后起 8 个 worker 跑冒烟；60k 两条 run 登记入 <code>check_checkpoint.py</code> 后 Beta-2，<b>重起全部 worker</b>（<code>EXPECTED_GIT_HEAD</code> 取 worker 启动时 HEAD），再追加 30 个正式单元；期间零 commit，回写 commit 在三模型 DONE 后一次</td></tr>
 <tr><td>T17</td><td>代码基底（用户「其余按你建议」）</td><td><code>test1017</code> 从 <code>v2-motionmem</code> HEAD 分出，整目录移植上次 GL 评估分支 <code>v2-eval-0918-motion</code> 的 <code>scripts/evaluation/</code>（占位 job 模板、<code>gl_hold_pool</code>／<code>gl_hold_queue</code> 抢单、<code>run_shard.sh</code> 分块与探针、resample、<code>check_checkpoint</code>、<code>merge_shards</code>），不再移植 927c56d 清单模式；GL 执行副本 = NFS 检出切到 <code>test1017</code></td></tr>
 </table>
@@ -1041,7 +1041,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <h2>六、实施步骤</h2>
 <table>
 <tr><th>步</th><th>侧</th><th>内容</th><th>判据</th></tr>
-<tr><td>0</td><td>两侧</td><td>开工令（含 T10、T11、T19）→ sonnet 审本版 → 本仓库 handoff commit（<code>running</code>）与 <code>AGENTS.md</code> P9（生成本机、评估在策略仓库分支上集群、权威规则是策略仓库 <code>greatlakes.md</code>）；策略仓库建分支与 <code>docs/handoff/current.json</code>，评估分支 <code>greatlakes.md</code> 记放行</td><td><code>PLAN_CONSISTENCY_REVIEW blocking=0</code></td></tr>
+<tr><td>0</td><td>两侧</td><td>开工令（T10、T11、T19 已于 2026-10-17 认可）→ sonnet 审本版 → 本仓库 handoff commit（<code>running</code>）与 <code>AGENTS.md</code> P9（生成本机、评估在策略仓库分支上集群、权威规则是策略仓库 <code>greatlakes.md</code>）；策略仓库建分支与 <code>docs/handoff/current.json</code>，评估分支 <code>greatlakes.md</code> 记放行</td><td><code>PLAN_CONSISTENCY_REVIEW blocking=0</code></td></tr>
 <tr><td>1</td><td>生成</td><td>W3（校验工具两参数）、W2（上传脚本）两个 worktree 子代理并发，审查合并</td><td>合并审查、<code>LIGHT_TESTS</code></td></tr>
 <tr><td>2</td><td>生成</td><td>smoke 一、smoke 二 → Beta commit（带 <code>launch.md</code> 第一段）→ 全量五组 → 五组校验 → 追加 metadata 单独 commit → 打 tag 并 push</td><td>五节生成行</td></tr>
 <tr><td>3</td><td>评估</td><td>E1（移植 <code>scripts/evaluation/</code>、子模块改指 tag、三处改动、四处开关小改）在本机策略仓库 worktree 做，sonnet 审查，合入 <code>test1017</code> 并 push；NFS 检出 <code>git fetch && checkout test1017</code>、<code>submodule update --init</code>、<code>setup.sh</code> 建两个 uv 环境与 wan venv；官方 server 用 NFS 上的 mme-vla <code>ecf086c</code> 检出</td><td><code>ENV_PIN</code>、<code>PROTO_CHECK</code>、<code>CLIENT_DIFF</code>、<code>MANIFEST</code></td></tr>
@@ -1135,7 +1135,7 @@ tmux new-session -d -s xh-testx-pool-&lt;jobid&gt; "set -o pipefail; cd $REPO &a
 <h2>四、闸门</h2>
 <table>
 <tr><th>闸</th><th>通过条件</th><th>否则</th></tr>
-<tr><td>开工</td><td>开工令 + <code>PLAN_CONSISTENCY_REVIEW blocking=0</code></td><td>修订再审</td></tr>
+<tr><td>开工</td><td>开工令（T10／T11／T19 已认可）+ <code>PLAN_CONSISTENCY_REVIEW blocking=0</code></td><td>修订再审</td></tr>
 <tr><td>合并</td><td>写集 ⊆ 分配表、<code>PRE_MERGE_REVIEW=PASS</code>、worktree 测试通过</td><td>续改，两轮仍 FAIL 交用户</td></tr>
 <tr><td>生成→追加</td><td><code>GEN_FULL exhausted=0</code> 且五组校验 PASS</td><td>停在追加前交用户</td></tr>
 <tr><td>评估分支就绪</td><td><code>ENV_PIN</code>、<code>PROTO_CHECK</code>、<code>MANIFEST</code>、<code>CLIENT_DIFF</code> PASS</td><td>不起冒烟</td></tr>

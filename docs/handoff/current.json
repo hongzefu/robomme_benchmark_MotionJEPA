@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "written_at": {
-    "utc": "2026-10-18T02:35:05Z",
-    "america_new_york": "2026-10-17T22:35:05-0400"
+    "utc": "2026-10-18T02:43:20Z",
+    "america_new_york": "2026-10-17T22:43:20-0400"
   },
   "repo": {
     "branch": "newtask-v3-MotionJepa1006",
@@ -21,7 +21,7 @@
       },
       "state": "planned",
       "state_changed_at": "2026-10-17T23:37:27Z",
-      "state_reason": "计划 2.141（第三轮对抗验证修订：manifest 六列、eval.py episode_plan 基底、官方权重经策略仓库代码加载、两次 Beta、JobID 清单）已写、未开工；等待用户开工令与 PLAN_CONSISTENCY_REVIEW",
+      "state_reason": "计划 2.142：T10／T11／T19 已认可写入；仍 planned，等用户开工令与 PLAN_CONSISTENCY_REVIEW",
       "owner": {
         "session": null,
         "host": "sled-vail"
@@ -94,22 +94,15 @@
           "date": "2026-10-17",
           "quote": "所有的任务改为在 Great Lakes 上评估，每个都是单卡 / 延续十二条 / 放行 8 个占位 job（各 1 × A40）；其余按你建议",
           "scope": "评估改 GL：8 个占位 job（超默认 4 个已放行）、每单元单卡；每格 12 条；test1017 移植 v2-eval-0918-motion 的 scripts/evaluation；落点 NFS；本机只生成"
-        }
-      ],
-      "pending_decisions": [
-        {
-          "what": "T10：test 布局公式 seed 的 attempt+1 重试（对 P8 的例外）是否认可",
-          "since": "2026-10-17"
         },
         {
-          "what": "T11：对 P2 的显式扩展随开工令认可",
-          "since": "2026-10-17"
-        },
-        {
-          "what": "T19：评估环境缓存落 NFS v1-store/cache（与正本第 3 条不同）随开工令认可",
-          "since": "2026-10-17"
+          "kind": "decision",
+          "date": "2026-10-17",
+          "quote": "全部认可 写入计划",
+          "scope": "T10：公式 seed 任务性失败 attempt+1 重试上限 100（P8 例外）；T11：P2 扩展到 scripts/hf-upload、check_mixed_h5 两参数、两个测试；T19：评估缓存落 NFS v1-store/cache"
         }
       ],
+      "pending_decisions": [],
       "next_steps": [
         {
           "what": "等用户开工令；开工后先派 sonnet 只读审查计划自相矛盾",
