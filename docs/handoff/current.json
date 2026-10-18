@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "written_at": {
-    "utc": "2026-10-18T04:20:04Z",
-    "america_new_york": "2026-10-18T00:20:04-0400"
+    "utc": "2026-10-18T04:22:19Z",
+    "america_new_york": "2026-10-18T00:22:19-0400"
   },
   "repo": {
     "branch": "newtask-v3-MotionJepa1006",
-    "base_head": "1ee8003f"
+    "base_head": "812d97a3"
   },
   "freeze": {
     "active": false,
@@ -21,7 +21,7 @@
       },
       "state": "running",
       "state_changed_at": "2026-10-18T04:14:15Z",
-      "state_reason": "running：PLAN_CONSISTENCY_REVIEW F1 已裁决 (a)；SMOKE1=PASS；W3／W2／E1 worktree 子代理进行中；8 个占位 job 已提交（PENDING）",
+      "state_reason": "running：8 个占位 job 00:20 美东全部 RUNNING，追加 4 个 PENDING；W3 合并前审查中；W2／E1／P-REV 进行中",
       "owner": {
         "session": "https://claude.ai/code/session_01LMCMAVs6vXp1XMWZZALH3N",
         "host": "sled-aspen"
@@ -118,6 +118,12 @@
           "date": "2026-10-18",
           "quote": "1a 2同意现在交",
           "scope": "F1 取 (a)：官方 2 局冒烟与 512+motion@10k 冒烟等本仓库 tag 推远端后再起，不等 HF 上传与读回；8 个 GL 占位 job 立即提交（JobID 64233473–64233480，清单 NFS v1-store/logs/hold-jobs-testx.txt）"
+        },
+        {
+          "kind": "decision",
+          "date": "2026-10-18",
+          "quote": "同意你再追加四个 job 去并行。",
+          "scope": "GL 占位 job 由 8 个增至 12 个（追加 64233525–64233528，同规格 1×A40／4 CPU／24G／48h），清单 hold-jobs-testx.txt 共 12 行；评估 worker 相应按 12 个起"
         }
       ],
       "pending_decisions": [],
