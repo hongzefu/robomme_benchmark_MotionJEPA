@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "written_at": {
-    "utc": "2026-10-18T04:22:19Z",
-    "america_new_york": "2026-10-18T00:22:19-0400"
+    "utc": "2026-10-18T06:36:46Z",
+    "america_new_york": "2026-10-18T02:36:46-0400"
   },
   "repo": {
     "branch": "newtask-v3-MotionJepa1006",
-    "base_head": "812d97a3"
+    "base_head": "ec46cb7c"
   },
   "freeze": {
     "active": false,
@@ -19,9 +19,9 @@
         "file": "1017-test-xhard5-12per-plan.html",
         "sha": "781bb2c6"
       },
-      "state": "running",
-      "state_changed_at": "2026-10-18T04:14:15Z",
-      "state_reason": "running：8 个占位 job 00:20 美东全部 RUNNING，追加 4 个 PENDING；W3 合并前审查中；W2／E1／P-REV 进行中",
+      "state": "done",
+      "state_changed_at": "2026-10-18T06:36:46Z",
+      "state_reason": "pre_handoff 四项全 pass、非长尾 tmux 全退出；上传与 GL 读回校验为长尾",
       "owner": {
         "session": "https://claude.ai/code/session_01LMCMAVs6vXp1XMWZZALH3N",
         "host": "sled-aspen"
@@ -30,27 +30,27 @@
       "pre_handoff": [
         {
           "what": "五组全量生成",
-          "evidence": "GEN_FULL=PASS requested=624 exhausted=0",
-          "where": "artifacts/test-xhard/full/G*/run_summary.json",
-          "status": "pending"
+          "evidence": "GEN_FULL=PASS requested=624 exhausted=0（G5-r2 480、G4 48、G3 36、G2 24、G1 36；FULL_DONE fail=0 EXIT_CODE=0）",
+          "where": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/test-xhard/logs/full-r2.log",
+          "status": "pass"
         },
         {
           "what": "五组 H5 校验与身份对账",
-          "evidence": "H5_SCHEMA/H5_CONTENT/H5_COUNTS/PLAN_VS_RECORD/IDENTITY_AUDIT=PASS × 5 组",
-          "where": "artifacts/test-xhard/full/G*/check.log, audit.log",
-          "status": "pending"
+          "evidence": "IDENTITY_AUDIT/H5_SCHEMA/H5_CONTENT/H5_COUNTS/PLAN_VS_RECORD=PASS × 5 组（G5-r2,G4,G3,G2,G1）",
+          "where": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/test-xhard/full/{G5-r2,G4,G3,G2,G1}/{audit,check}.log",
+          "status": "pass"
         },
         {
           "what": "seed 追加进官方 test metadata 并打 tag",
-          "evidence": "META_APPEND=PASS added_records=624 holes=0; PROTECTED_APPEND_ONLY=PASS files=14 deleted_lines=28 old_records_unchanged=14 env_id_unchanged=14; TAG=v2-motionmem-eval-test1017-metadata sha=<sha>",
-          "where": "S5 commit sha；git ls-remote --tags origin v2-motionmem-eval-test1017-metadata",
-          "status": "pending"
+          "evidence": "META_APPEND=PASS added_records=624 holes=0; PROTECTED_APPEND_ONLY=PASS files=14 deleted_lines=14 deleted_only_record_count=14 old_records_unchanged=14 env_id_unchanged=14; TAG=v2-motionmem-eval-test1017-metadata sha=943ddf3221e8b20d7369bacd209a3afc1786503b",
+          "where": "commit 943ddf32；git ls-remote --tags origin v2-motionmem-eval-test1017-metadata → 3311edf3",
+          "status": "pass"
         },
         {
           "what": "第 13 条留档",
-          "evidence": "留档 commit sha",
-          "where": "docs/xhard-doc/test-xhard5-1017/",
-          "status": "pending"
+          "evidence": "commit ec46cb7c（2.156）",
+          "where": "docs/xhard-doc/test-xhard5-1017/{launch,result}.md",
+          "status": "pass"
         }
       ],
       "long_tail": [
@@ -59,7 +59,7 @@
           "tmux": "xh-testx-upload",
           "log": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/test-xhard/upload/upload.log",
           "done_line": "HF_UPLOAD=PASS",
-          "status": "pending"
+          "status": "running"
         },
         {
           "what": "GL 纯 CPU job 读回校验（HF_UPLOAD=PASS 后须由当时的会话提交 job）",
@@ -129,9 +129,9 @@
       "pending_decisions": [],
       "next_steps": [
         {
-          "what": "W3 合并审查后起 smoke 二，再 Beta 与全量",
-          "command": "见计划第二部分一节",
-          "verdict_line": "SMOKE2=PASS requested=28"
+          "what": "HF_UPLOAD=PASS 后在 GL 提交 hfverify 纯 CPU job（先 --limit 1 冒烟）；HF_VERIFY=PASS 后标 closed",
+          "command": "scripts/hf-upload/hfverify.sbatch（规格 chaijy2 standard 4C 8G 12h）",
+          "verdict_line": "HF_VERIFY=PASS missing=0 extra=0 mismatch=0"
         }
       ],
       "downstream": [
