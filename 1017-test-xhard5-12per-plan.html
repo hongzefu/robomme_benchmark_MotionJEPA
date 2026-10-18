@@ -28,7 +28,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <h1 style="margin-top:0;border:none">1017-test-xhard5-12per-plan.html — test 布局 xhard 五档生成（本仓库）＋三模型本机双卡评估（策略仓库评估分支）</h1>
 
 <div class="intro">
-<p><b>这份计划管两件事</b>：① 本仓库生成 test 布局的 xhard 五档、每格 12 条，追加进官方 test metadata 并上传 HF；② 在策略仓库 <code>robomme_policy_learning_MotionJEPA</code> 开评估分支 <code>v2-motionmem-eval-testx</code>，用同一份清单在本机两张卡上评三个模型：512 @60k、512+motion @60k、官方 FrameSamp+Modulation 79999（顺序如此，官方最后）。只写高层决策，细节以第二部分的命令与判据为准；本版（2.136）在 2.135（已过一轮全 Sonnet 对抗验证，修订记录见 commit <code>fbabc3df</code>）基础上按用户 10-17 晚的裁决改写为统一版。</p>
+<p><b>这份计划管两件事</b>：① 本仓库生成 test 布局的 xhard 五档、每格 12 条，追加进官方 test metadata 并上传 HF；② 在策略仓库 <code>robomme_policy_learning_MotionJEPA</code> 开评估分支 <code>test1017</code>，用同一份清单在本机两张卡上评三个模型：512 @60k、512+motion @60k、官方 FrameSamp+Modulation 79999（顺序如此，官方最后）。只写高层决策，细节以第二部分的命令与判据为准；本版（2.136）在 2.135（已过一轮全 Sonnet 对抗验证，修订记录见 commit <code>fbabc3df</code>）基础上按用户 10-17 晚的裁决改写为统一版。</p>
 <p><b>锚点</b>：本仓库 HEAD <code>fbabc3df</code>；策略仓库本机检出 <code>/data/hongzefu/robomme_policy_learning_MotionJEPA</code> 分支 <code>v2-motionmem</code> @ <code>82e5175</code>（评估分支从它分出，下一功能编号 <code>commitV11.22</code>）；官方服务端代码 mme-vla <code>ecf086c</code>（本机检出 <code>/data/hongzefu/RoboMME-benchmark-OOD-eval/third_party/mme-vla</code>）；官方清单模式客户端 <code>927c56d</code>（NFS 工作树 <code>robomme_policy_learning-official-xhard0</code>）；两条训练 run（1016 计划，AWS）：512 = <code>mixed8-200-m8x8-modul-b128-80k</code>，512+motion = <code>mixed8-200-m8x8-modul-motion-b128-80k</code>，各取 step 60000（10k 冒烟取 512 的 10000）。</p>
 <p><b>授权边界</b>：只规划不实施；开工令按第 2 条，开工前派 sonnet 只读审本版出 <code>PLAN_CONSISTENCY_REVIEW</code>。一切生成与评估都在本机 sled-vail（GPU0 生成，双卡评估）；集群只用于 HF 读回校验纯 CPU job。</p>
 </div>
@@ -43,7 +43,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>T3</td><td><span class="quote">「X hard 是每档十二条」</span></td><td>每格 12 条，按档数分五组，共 624 条</td></tr>
 <tr><td>T4</td><td><span class="quote">「上传到新的 bucket」「Hugging Face 读回用 Great Lakes 来实现」</span></td><td>私有 bucket <code>HongzeFu/robomme-test-xhard5-12per-1017</code>；GL 纯 CPU job 读回校验（P7 仅为此放宽）</td></tr>
 <tr><td>T5</td><td><span class="quote">「Seed 加入 metadata 同意，直接加在 test 后面」</span></td><td>追加到 <code>src/robomme/env_metadata/test/</code> 14 个文件、ep50 起、只纯追加（P1 范围）</td></tr>
-<tr><td>T6</td><td><span class="quote">「同意反过来。派生 seed 的任务全部在本 repo 进行，所有的评估…都在新的 repo 来实现」「新的 repo 指的是 policy learning 这个 repo 开一个新的 branch」</span></td><td>本仓库零评估代码；评估全部在策略仓库分支 <code>v2-motionmem-eval-testx</code></td></tr>
+<tr><td>T6</td><td><span class="quote">「同意反过来。派生 seed 的任务全部在本 repo 进行，所有的评估…都在新的 repo 来实现」「新的 repo 指的是 policy learning 这个 repo 开一个新的 branch」</span></td><td>本仓库零评估代码；评估全部在策略仓库分支 <code>test1017</code></td></tr>
 <tr><td>T7</td><td><span class="quote">「60k 两个 checkpoint 的评估都只需要每个难度评十二集，easy…也只需要十二集」「官方 FrameSamp 也按同一清单 1200 局同意」</span></td><td>每任务每档 episode 升序前 12，共 1200 局；三模型共用一份清单</td></tr>
 <tr><td>T8</td><td><span class="quote">「所有的评估都在本机两个卡进行，不需要考虑 Great Lakes」「有两个 GPU，你要分开跑」</span></td><td>每模型一轮，两卡各一片 600 局；不用集群</td></tr>
 <tr><td>T9</td><td><span class="quote">「官方的 frame sample modulation 最后再跑，优先跑我要的这两个」「可以先拿十 K 的跑冒烟」</span></td><td>顺序：官方 2 局链路冒烟 → 512 @10k 100 局冒烟 → 512 @60k → 512+motion @60k → 官方 79999</td></tr>
@@ -57,7 +57,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><th>方</th><th>做什么</th><th>产出与交接物</th></tr>
 <tr><td>本仓库（生成侧）</td><td>624 条生成 → 五组校验 → seed 追加 metadata → <b>打 tag <code>testx-metadata-v1</code></b> → 上传 HF、GL 读回校验 → 留档</td><td>tag（评估侧子模块锁它）；bucket；<code>docs/xhard-doc/test-xhard5-1017/</code></td></tr>
 <tr><td>训练侧（策略仓库 <code>v2-motionmem</code>，AWS，1016 计划）</td><td>两条 run 训到 60k 并按 1016 口径上传 HF</td><td>两个 run 的 bucket（含 run 级 <code>history_config.resolved.yaml</code>、<code>motion_provenance.json</code>、<code>SHA256SUMS.pre.txt</code> 与 step 目录）</td></tr>
-<tr><td>评估侧（策略仓库分支 <code>v2-motionmem-eval-testx</code>，本机双卡）</td><td>子模块改指本仓库 tag；一份清单模式客户端；三套服务端启动；清单、双卡启动器、汇总；留档</td><td>三模型「任务 × 档」成功率表；<code>v1-store/evaluation/testx/</code>；<code>docs/training-doc/eval-testx-1017/</code></td></tr>
+<tr><td>评估侧（策略仓库分支 <code>test1017</code>，本机双卡）</td><td>子模块改指本仓库 tag；一份清单模式客户端；三套服务端启动；清单、双卡启动器、汇总；留档</td><td>三模型「任务 × 档」成功率表；<code>v1-store/evaluation/testx/</code>；<code>docs/training-doc/eval-testx-1017/</code></td></tr>
 </table>
 
 <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 715" font-family="sans-serif" font-size="12" fill="#1f2937">
@@ -110,7 +110,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 
   <!-- ===== 评估侧（右侧虚线框） ===== -->
   <rect x="525" y="140" width="460" height="486" fill="#f0fdf4" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="6,4"/>
-  <text x="537" y="160" font-weight="bold">评估侧：策略仓库新分支 v2-motionmem-eval-testx（本机 sled-vail 两卡）</text>
+  <text x="537" y="160" font-weight="bold">评估侧：策略仓库新分支 test1017（本机 sled-vail 两卡）</text>
 
   <!-- 子模块框 -->
   <rect x="545" y="176" width="420" height="60" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
@@ -393,13 +393,13 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 </table>
 
 <h2>七、子代理分工与合并（简述）</h2>
-<p>本仓库两块：W3 改校验工具（<code>check_mixed_h5.py</code> + 单测），W2 写上传与 GL 校验脚本（<code>scripts/hf-upload/</code> + 单测）；各一个 opus worktree，sonnet 审，<code>--no-ff</code> 合入 <code>newtask-v3-MotionJepa1006</code>。策略仓库一块：E1 在评估分支的 worktree 里做子模块改指、客户端移植（<code>evaluate_manifest</code>、<code>xhard0_manifest.py</code>、三处建环境改动）、清单导出、双卡启动器、汇总与 sidecar 卡号一行；opus worktree，sonnet 审，合入 <code>v2-motionmem-eval-testx</code>，不碰 <code>v2-motionmem</code>。运行型子代理只起 tmux 交回句柄（生成全量、每轮评估、上传各一批）；受保护目录追加、tag、GL job 提交、Beta／handoff／留档 commit 由主会话自做。</p>
+<p>本仓库两块：W3 改校验工具（<code>check_mixed_h5.py</code> + 单测），W2 写上传与 GL 校验脚本（<code>scripts/hf-upload/</code> + 单测）；各一个 opus worktree，sonnet 审，<code>--no-ff</code> 合入 <code>newtask-v3-MotionJepa1006</code>。策略仓库一块：E1 在评估分支的 worktree 里做子模块改指、客户端移植（<code>evaluate_manifest</code>、<code>xhard0_manifest.py</code>、三处建环境改动）、清单导出、双卡启动器、汇总与 sidecar 卡号一行；opus worktree，sonnet 审，合入 <code>test1017</code>，不碰 <code>v2-motionmem</code>。运行型子代理只起 tmux 交回句柄（生成全量、每轮评估、上传各一批）；受保护目录追加、tag、GL job 提交、Beta／handoff／留档 commit 由主会话自做。</p>
 
 <h2>八、状态机登记（第 27 条）</h2>
 <table>
 <tr><th>任务</th><th>仓库</th><th>依赖</th><th>交接前必须完成</th><th>长尾</th></tr>
 <tr><td><code>test-xhard5-12per</code>（已登记 planned）</td><td>本仓库</td><td>无</td><td><code>GEN_FULL</code>、五组校验、<code>META_APPEND</code>／<code>PROTECTED_APPEND_ONLY</code>、tag 推远端、留档 commit</td><td><code>HF_UPLOAD</code>、<code>HF_VERIFY</code>（含「<code>HF_UPLOAD=PASS</code> 后由当时会话提交 GL job」）</td></tr>
-<tr><td><code>eval-testx-3models</code>（评估分支建 <code>docs/handoff/current.json</code> 时登记）</td><td>策略仓库 <code>v2-motionmem-eval-testx</code></td><td>跨仓库：本仓库 <code>test-xhard5-12per</code> 为 done；训练侧两条 run 的 60k bucket 到位（10k 冒烟不等）</td><td><code>ENV_PIN</code>、<code>MANIFEST</code>、两次冒烟、三轮 <code>EVAL_*=DONE</code>、<code>MANIFEST_SHARED</code>、<code>EVAL_TABLE</code>、留档 commit</td><td>无</td></tr>
+<tr><td><code>eval-testx-3models</code>（评估分支建 <code>docs/handoff/current.json</code> 时登记）</td><td>策略仓库 <code>test1017</code></td><td>跨仓库：本仓库 <code>test-xhard5-12per</code> 为 done；训练侧两条 run 的 60k bucket 到位（10k 冒烟不等）</td><td><code>ENV_PIN</code>、<code>MANIFEST</code>、两次冒烟、三轮 <code>EVAL_*=DONE</code>、<code>MANIFEST_SHARED</code>、<code>EVAL_TABLE</code>、留档 commit</td><td>无</td></tr>
 </table>
 
 <h1>第二部分（技术细节，供 agent 追踪）</h1>
@@ -408,7 +408,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <ol>
 <li>本仓库 <code>src/robomme/</code> 零 diff，唯一例外是 14 个 test metadata 的纯追加；<code>pyproject.toml</code>／<code>uv.lock</code>／ManiSkill 钉 <code>07be6fbc</code> 不动；不换 seed 清单、不补 seed（T10 例外待确认）。</li>
 <li>生成只用 GPU0、32 worker、detached tmux；评估用双卡；不提交 Slurm 跑生成或评估；集群只跑 HF 读回校验 job。</li>
-<li>策略仓库：只在 <code>v2-motionmem-eval-testx</code> 分支改，<code>v2-motionmem</code> 与训练中的东西不碰；评估分支改动限于 <code>examples/robomme/</code>、<code>.gitmodules</code>／gitlink、<code>scripts/eval-testx/</code>、<code>policy_config.py</code> 读 sidecar 卡号的一行、<code>docs/</code>；服务端模型代码不改。</li>
+<li>策略仓库：只在 <code>test1017</code> 分支改，<code>v2-motionmem</code> 与训练中的东西不碰；评估分支改动限于 <code>examples/robomme/</code>、<code>.gitmodules</code>／gitlink、<code>scripts/eval-testx/</code>、<code>policy_config.py</code> 读 sidecar 卡号的一行、<code>docs/</code>；服务端模型代码不改。</li>
 <li>官方服务端 mme-vla <code>ecf086c</code> 零 diff；原版客户端 NFS 工作树只读。</li>
 <li>评估只报数不设阈值；只重跑 <code>error</code>；不为挑成功重跑。</li>
 <li>Beta 锚点：生成全量前（本仓库）、每轮评估前（评估分支）；冻结期不 commit。</li>
@@ -434,7 +434,7 @@ uv run --no-sync python scripts/data-generation-newSeed/utils/append_train_metad
 
 <h2>二、评估侧改动清单与命令（策略仓库分支）</h2>
 <table>
-<tr><th>文件（分支 <code>v2-motionmem-eval-testx</code>）</th><th>改什么</th></tr>
+<tr><th>文件（分支 <code>test1017</code>）</th><th>改什么</th></tr>
 <tr><td><code>.gitmodules</code>、gitlink <code>third_party/robomme_benchmark</code></td><td>url 改 <code>https://github.com/hongzefu/robomme_benchmark_MotionJEPA.git</code>，gitlink = tag <code>testx-metadata-v1</code> 的 commit；<code>git submodule update --init</code></td></tr>
 <tr><td><code>examples/robomme/eval.py</code>、<code>xhard0_manifest.py</code>（新）</td><td>从 927c56d 移植清单模式（<code>Args.episode_manifest／shard／video_dir</code>、<code>evaluate_manifest</code>、<code>done_keys</code>），不移植 VLM 子目标部分；保留本分支的 <code>dataset／episode_stride</code> 参数</td></tr>
 <tr><td><code>examples/robomme/env_runner.py</code></td><td>三处：<code>import robomme_xhard</code>；<code>BenchmarkEnvBuilder(env_id=f"{env_id}XHard", override_metadata_path=Path(os.environ["XHARD_METADATA_DIR"]))</code>；<code>self.env_id</code> 仍为原任务名。<code>check_seed</code> 比清单 <code>difficulty</code></td></tr>
@@ -459,7 +459,7 @@ cd examples/robomme &amp;&amp; CUDA_VISIBLE_DEVICES=$g XHARD_METADATA_DIR=&lt;�
 <tr><th>编号</th><th>仓库／分支</th><th>目标</th><th>可写集合</th><th>验收（worktree 内，CPU）</th></tr>
 <tr><td>W3（opus，worktree）</td><td>本仓库</td><td><code>check_mixed_h5.py</code> 加 <code>--layout</code>／<code>--tasks</code></td><td>该文件 + <code>tests/lightweight/test_check_mixed_h5_layout.py</code></td><td>定向 pytest（<code>UV_PROJECT_ENVIRONMENT=&lt;主 .venv&gt; PYTHONPATH=&lt;worktree&gt;/src</code>）</td></tr>
 <tr><td>W2（opus，worktree）</td><td>本仓库</td><td>sha 清单、上传、GL 校验脚本</td><td><code>scripts/hf-upload/**</code> + <code>tests/lightweight/test_hf_sha256sums.py</code></td><td>定向 pytest；<code>grep</code> 无 token 字面量</td></tr>
-<tr><td>E1（opus，worktree）</td><td>策略仓库 <code>v2-motionmem-eval-testx</code></td><td>二节全部文件</td><td>二节清单；禁触 <code>src/mme_vla_suite</code> 除 <code>policy_config.py</code> 一行、训练脚本、<code>v1-store</code></td><td>清单导出单测（合成 metadata，断言 1200／100 格／600／600 与 G4／G3 取样）；<code>diff -ru -x '*_test.py' -x __pycache__ &lt;927c56d&gt; examples/robomme</code> 只差允许文件</td></tr>
+<tr><td>E1（opus，worktree）</td><td>策略仓库 <code>test1017</code></td><td>二节全部文件</td><td>二节清单；禁触 <code>src/mme_vla_suite</code> 除 <code>policy_config.py</code> 一行、训练脚本、<code>v1-store</code></td><td>清单导出单测（合成 metadata，断言 1200／100 格／600／600 与 G4／G3 取样）；<code>diff -ru -x '*_test.py' -x __pycache__ &lt;927c56d&gt; examples/robomme</code> 只差允许文件</td></tr>
 <tr><td>A1–A3（sonnet）</td><td>各自</td><td>合并前审查</td><td>无</td><td><code>PRE_MERGE_REVIEW</code></td></tr>
 <tr><td>R1／R2／R3（opus，运行型）</td><td>各自主检出</td><td>起生成全量／每轮评估两片／上传 tmux，立即交回</td><td>只写产物目录</td><td>起跑判据原始输出、<code>tmux ls</code></td></tr>
 <tr><td>主会话</td><td>两侧</td><td>只读核实、环境、smoke、metadata 追加、tag、ckpt 下载核验、GL job、Beta／handoff／留档、Monitor、清理</td><td>—</td><td>—</td></tr>

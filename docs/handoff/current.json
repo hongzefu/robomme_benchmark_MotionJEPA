@@ -21,7 +21,7 @@
       },
       "state": "planned",
       "state_changed_at": "2026-10-17T23:37:27Z",
-      "state_reason": "计划 2.136（统一版：生成侧在本仓库，评估侧移到策略仓库分支 v2-motionmem-eval-testx）已写、未开工；等待用户开工令（含 T10、T11 确认）与 PLAN_CONSISTENCY_REVIEW",
+      "state_reason": "计划 2.136（统一版：生成侧在本仓库，评估侧移到策略仓库分支 test1017）已写、未开工；等待用户开工令（含 T10、T11 确认）与 PLAN_CONSISTENCY_REVIEW",
       "owner": {
         "session": null,
         "host": "sled-vail"
@@ -91,7 +91,7 @@
       "downstream": [
         {
           "path": "/data/hongzefu/robomme_policy_learning_MotionJEPA",
-          "branch": "v2-motionmem-eval-testx",
+          "branch": "test1017",
           "task": "eval-testx-3models",
           "note": "评估分支子模块锁本任务打的 tag testx-metadata-v1；本任务 done 后方可开工"
         }
