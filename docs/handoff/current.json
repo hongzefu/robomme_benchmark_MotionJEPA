@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "written_at": {
-    "utc": "2026-10-18T02:23:41Z",
-    "america_new_york": "2026-10-17T22:23:41-0400"
+    "utc": "2026-10-18T02:35:05Z",
+    "america_new_york": "2026-10-17T22:35:05-0400"
   },
   "repo": {
     "branch": "newtask-v3-MotionJepa1006",
@@ -21,7 +21,7 @@
       },
       "state": "planned",
       "state_changed_at": "2026-10-17T23:37:27Z",
-      "state_reason": "计划 2.140（评估改 Great Lakes 八卡单卡、每格 12 条、2000 步、resample）已写、未开工；等待用户开工令（含 T10、T11 确认）与 PLAN_CONSISTENCY_REVIEW",
+      "state_reason": "计划 2.141（第三轮对抗验证修订：manifest 六列、eval.py episode_plan 基底、官方权重经策略仓库代码加载、两次 Beta、JobID 清单）已写、未开工；等待用户开工令与 PLAN_CONSISTENCY_REVIEW",
       "owner": {
         "session": null,
         "host": "sled-vail"
@@ -102,7 +102,11 @@
           "since": "2026-10-17"
         },
         {
-          "what": "T11：对 P2 的显式扩展（scripts/hf-upload、check_mixed_h5 两参数）随开工令认可",
+          "what": "T11：对 P2 的显式扩展随开工令认可",
+          "since": "2026-10-17"
+        },
+        {
+          "what": "T19：评估环境缓存落 NFS v1-store/cache（与正本第 3 条不同）随开工令认可",
           "since": "2026-10-17"
         }
       ],
