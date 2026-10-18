@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "written_at": {
-    "utc": "2026-10-18T01:20:00Z",
-    "america_new_york": "2026-10-17T21:20:00-0400"
+    "utc": "2026-10-18T01:44:00Z",
+    "america_new_york": "2026-10-17T21:44:00-0400"
   },
   "repo": {
     "branch": "newtask-v3-MotionJepa1006",
@@ -21,7 +21,7 @@
       },
       "state": "planned",
       "state_changed_at": "2026-10-17T23:37:27Z",
-      "state_reason": "计划 2.136（统一版：生成侧在本仓库，评估侧移到策略仓库分支 test1017）已写、未开工；等待用户开工令（含 T10、T11 确认）与 PLAN_CONSISTENCY_REVIEW",
+      "state_reason": "计划 2.139（统一版 + 两轮对抗验证机制补入 + 2000/resample/padding）已写、未开工；等待用户开工令（含 T10、T11 确认）与 PLAN_CONSISTENCY_REVIEW",
       "owner": {
         "session": null,
         "host": "sled-vail"
@@ -75,7 +75,19 @@
           "kind": "decision",
           "date": "2026-10-17",
           "quote": "同意硬件豁免。然后如果超过一百六十，你需要加入一个丢弃的机制，保证能够继续做。",
-          "scope": "评估分支 test1017：provenance 豁免 gpu_name/compute_cap/sm_count/driver；motion 窗超 160 按 drop_oldest 继续"
+          "scope": "评估分支 test1017：provenance 豁免 gpu_name/compute_cap/sm_count/driver（vae 与 encoder 两段）"
+        },
+        {
+          "kind": "decision",
+          "date": "2026-10-17",
+          "quote": "用2000 超出的量全由执行段等距抽稀承担，恰好填满 160 个窗这个是什么意思 先沿用 但是在聊天框和我解释清楚",
+          "scope": "三模型 max_steps=2000；motion 窗超 160 沿用上次评估分支的 MMEVLA_MOTION_OVERFLOW=resample"
+        },
+        {
+          "kind": "decision",
+          "date": "2026-10-17",
+          "quote": "video demo 有一个 padding…没有满三十二帧，就是满十六帧的也要做 padding 的一个机制 / 这个你也要实现",
+          "scope": "沿用训练库 demopad17 契约（≥17 真实帧保留、repeat_last），从 run 快照核 DEMO_PAD"
         }
       ],
       "pending_decisions": [

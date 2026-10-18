@@ -50,7 +50,9 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>T10</td><td><b>待开工令确认</b>：test 布局公式 seed 任务性失败按 attempt+1 重试、上限 100（对 P8 的例外，出处只有 1013 K3／K10；官方 train 1600 条里 280 条重试过、最大 attempt 7）</td><td>不认可则 attempt 固定 0、缺条如实报</td></tr>
 <tr><td>T11</td><td>对 P2 的显式扩展：本仓库新增 <code>scripts/hf-upload/</code>、改 <code>check_mixed_h5.py</code> 加 <code>--layout</code>／<code>--tasks</code>（它写死 train 布局、默认 16 任务）</td><td>开工令即认可</td></tr>
 <tr><td>T12</td><td><span class="quote">「HTML 里面细节太多了，尽可能缩减，我只关心 high level 的事情」「写在一份统一的 HTML 里」</span></td><td>本文件</td></tr>
-<tr><td>T13</td><td><span class="quote">「同意硬件豁免。然后如果超过一百六十，你需要加入一个丢弃的机制，保证能够继续做。」</span></td><td>评估分支两处小改：sidecar provenance 比对豁免 <code>gpu_name／compute_cap／sm_count／driver</code> 四键（其余 sha、版本照比）；motion 窗超 160 时按「丢最早起点、保留最近 160」继续，不再 raise。两者都经环境变量开启、默认行为不变（4.6）</td></tr>
+<tr><td>T13</td><td><span class="quote">「同意硬件豁免。然后如果超过一百六十，你需要加入一个丢弃的机制，保证能够继续做。」「用 2000」「超出的量全由执行段等距抽稀承担，恰好填满 160 个窗…先沿用」</span></td><td>provenance 比对豁免 <code>gpu_name／compute_cap／sm_count／driver</code> 四键（vae 与 encoder 两段都豁免，其余 sha、版本照比）；motion 窗超 160 沿用上次评估分支已有的 <code>MMEVLA_MOTION_OVERFLOW=resample</code>（demo 优先、执行段等距抽稀、恰好填满 160），移植到 <code>test1017</code>；<code>max_steps</code> 三模型统一 <b>2000</b>（上次四任务评估定值，oracle 在 xhard 最长 1312 步）（4.6）</td></tr>
+<tr><td>T14</td><td><span class="quote">「video demo 有一个 padding…没有满三十二帧，就是满十六帧的也要做 padding 的一个机制」「这个你也要实现」</span></td><td>已实现、沿用：训练库布局 <code>motion-768-grid16-demopad17-v1</code> 与在线推理同契约——demo 段起点剩 ≥17 个真实帧即保留、不足 33 用 demo 末帧重复补齐（<code>repeat_last</code>），恰好 16 帧不编；执行段不补帧。门槛 17 是训练库定死的，推理改 16 会与训练不一致，故不改；从 run 快照核 <code>DEMO_PAD=PASS min_real=17 pad=repeat_last</code>（4.6，图 3）</td></tr>
+<tr><td>T15</td><td><span class="quote">「你再次对抗验证，核实一下上一次的实现有哪些特殊的机制，都要检查一下」「上一次训练的四个 task 的评估」</span></td><td>两轮全 Sonnet 对抗验证（7 视角 99 条：23 确认、72 部分成立、4 驳回）盘点出的机制全部补进 4.7 与第二部分二；判定行相应新增</td></tr>
 </table>
 
 <h2>二、分工</h2>
@@ -338,37 +340,663 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 
 <h2>四、评估侧机制（策略仓库分支）</h2>
 <h3>4.1 一条链路评三个模型</h3>
-<p>评估是「模型进程 + 仿真进程」两进程：仿真进程按清单逐局用 seed 建环境，把画面与指令经 websocket 发给模型进程、收动作执行，环境判 <code>task_success</code>。三个模型只换模型进程：你的两条 run 用本分支 <code>scripts/training/serve_policy.py --policy.config=mme_vla_suite_b128_80k --policy.dir=&lt;run&gt;/60000</code>（torch；motion 开关由 run 目录里的 <code>history_config.resolved.yaml</code> 快照决定，所以下载必须带 run 级文件）；官方 79999 用 mme-vla <code>ecf086c</code> 检出的 <code>serve_policy.py --policy.config=mme_vla_suite</code>（JAX，零 diff）。仿真进程只有一份：以 927c56d 的清单模式 <code>eval.py</code> 为底，改建环境三处（<code>&lt;Task&gt;XHard</code>、经环境变量读 XHard metadata 副本、<code>check_seed</code> 比清单 difficulty）。两版客户端同源（共同祖先 ecf086c，<code>openpi-client</code> 零差异，websocket 的 <code>reset／add_buffer／infer</code> 字段未改），所以一份客户端能服务三个模型。</p>
+<p>评估是「模型进程 + 仿真进程」两进程：仿真进程按清单逐局用 seed 建环境，把画面与指令经 websocket 发给模型进程、收动作执行，直到终局（<code>max_steps=2000</code> 到顶记 timeout；成功与否取环境 <code>info["status"]</code>）。三个模型只换模型进程：你的两条 run 用本分支 <code>scripts/training/serve_policy.py --policy.config=mme_vla_suite_b128_80k --policy.dir=&lt;run&gt;/60000</code>（JAX；motion sidecar 是 torch 子进程；motion 开关由 run 目录里的 <code>history_config.resolved.yaml</code> 快照决定，所以下载必须带 run 级文件）；官方 79999 用 mme-vla <code>ecf086c</code> 检出的 <code>serve_policy.py --policy.config=mme_vla_suite</code>（JAX，零 diff）。仿真进程只有一份：以 927c56d 的清单模式 <code>eval.py</code> 为底，改建环境三处（<code>&lt;Task&gt;XHard</code>、经环境变量读 XHard metadata 副本、<code>check_seed</code> 比清单 difficulty）。两版客户端同源（共同祖先 ecf086c，<code>openpi-client</code> 零差异，websocket 的 <code>reset／add_buffer／infer</code> 字段未改），所以一份客户端能服务三个模型。</p>
 <h3>4.2 仿真环境与 metadata 来自本仓库 tag</h3>
-<p>评估分支把子模块 <code>third_party/robomme_benchmark</code> 的 url 改为 <code>hongzefu/robomme_benchmark_MotionJEPA</code>、gitlink 锁 <code>testx-metadata-v1</code>（含 <code>robomme</code>、<code>robomme_xhard</code> 与追加后的 metadata）；客户端起跑断言 <code>robomme.__file__</code> 与 <code>robomme_xhard.__file__</code> 都在子模块下。不另建子模块，不用 PYTHONPATH 兜底。</p>
+<p>评估分支把子模块 <code>third_party/robomme_benchmark</code> 的 url 改为 <code>hongzefu/robomme_benchmark_MotionJEPA</code>、gitlink 锁 <code>testx-metadata-v1</code>（含 <code>robomme</code>、<code>robomme_xhard</code> 与追加后的 metadata）；客户端起跑断言 <code>robomme.__file__</code> 与 <code>robomme_xhard.__file__</code> 都在子模块下、<code>robomme_hard</code> 不在 <code>sys.modules</code>。不另建子模块，不用 PYTHONPATH 兜底。<b>建环境按清单行难度分流</b>：xhard 档用 <code>&lt;Task&gt;XHard</code> + XHard metadata 副本；easy／medium／hard 档用原任务名 + 官方 test metadata（<code>XHardMixin.__init__</code> 对非 xhard 难度直接 raise）；MoveCube／InsertPeg 没有 XHard 类，全程原环境。建成后断言 <code>env.unwrapped.difficulty</code> 等于清单难度。</p>
 <h3>4.3 清单：1200 局，三模型共用</h3>
-<p>从子模块的 test metadata 导出：每任务每档 episode 升序前 12（easy／medium／hard 从官方 ep0–49 取，xhard 五档就是生成的全部）。8 档任务 96 局、StopCube 84、PickHighlight 72、VideoPlaceButton 60、单档任务 48、MoveCube／InsertPeg 36，合计 1200；两片各 600（按任务分）。清单记 sha256，三轮评估都核对同一个值。</p>
+<p>从子模块的 test metadata 导出：每任务每档 episode 升序前 12（easy／medium／hard 从官方 ep0–49 取，xhard 五档就是生成的全部）。8 档任务 96 局、StopCube 84、PickHighlight 72、VideoPlaceButton 60、单档任务 48、MoveCube／InsertPeg 36，合计 1200；两片各 600，按 <code>(task, difficulty, episode)</code> 排序后 idx%2 发牌（两片每档每任务条数相同、负载均衡），收尾断言两片不相交且并集为 1200。清单记 sha256，三轮评估都核对同一个值；10k 冒烟清单 = 每格升序第 1 条共 100 行，断言是正式清单的子集、另记 sha。官方 test 每任务 medium／hard 恰 12 条、easy 取前 12 条，导出脚本对每格断言 ≥12。</p>
 <h3>4.4 顺序、规模与耗时</h3>
 <table>
 <tr><th>轮</th><th>模型</th><th>局数</th><th>用途</th><th>耗时估（两卡，未实测）</th></tr>
 <tr><td>0</td><td>官方 79999</td><td>2</td><td>链路冒烟</td><td>0.5 小时（含编译）</td></tr>
 <tr><td>1</td><td>512 @10k</td><td>100（每任务每档 1 条）</td><td>自家链路冒烟 + 校准单局耗时</td><td>约 1 小时</td></tr>
-<tr><td>2</td><td>512 @60k</td><td>1200</td><td>正式</td><td>5～8 小时</td></tr>
-<tr><td>3</td><td>512+motion @60k</td><td>1200</td><td>正式</td><td>5～8 小时（motion sidecar 同卡）</td></tr>
-<tr><td>4</td><td>官方 79999</td><td>1200</td><td>正式对照</td><td>5～8 小时</td></tr>
-<tr><th colspan="2">合计</th><th>3702</th><th></th><th>约 17～26 小时 + 生成 1～1.5 小时</th></tr>
+<tr><td>2</td><td>512 @60k</td><td>1200</td><td>正式</td><td>6～10 小时（2000 步下超时局更长）</td></tr>
+<tr><td>3</td><td>512+motion @60k</td><td>1200</td><td>正式</td><td>6～10 小时（motion sidecar 同卡，每窗约 1.5 s）</td></tr>
+<tr><td>4</td><td>官方 79999</td><td>1200</td><td>正式对照</td><td>6～10 小时</td></tr>
+<tr><th colspan="2">合计</th><th>3702</th><th></th><th>约 20～32 小时 + 生成 1～1.5 小时</th></tr>
 </table>
-<p class="small">锚点：本机两卡上次 1200 局（4 个较易任务）GPU 工作 3 小时 45 分；本轮 16 任务含 xhard、超时局跑满 1300 步，按 1.5～2 倍。每卡默认一对进程；10k 冒烟后若显存允许再决定每卡两对（<code>POLICY_MEM_FRACTION=0.4</code> 两对合计 0.8）。</p>
+<p class="small">锚点：本机两卡上次 1200 局（4 个较易任务）GPU 工作 3 小时 45 分；本轮 16 任务含 xhard、超时局跑满 2000 步，按 1.5～2 倍。每卡固定一对进程（GPU 空闲硬闸会拒绝同卡第二对）；自家 server <code>XLA_PYTHON_CLIENT_MEM_FRACTION=0.4</code>、官方 0.75。上次 2000 步口径的 692 局结果不与本轮并排比。</p>
 <h3>4.5 一致性保证</h3>
 <table>
 <tr><th>要一致的</th><th>怎么保证</th><th>判定行</th></tr>
 <tr><td>仿真代码与 seed</td><td>子模块锁本仓库 tag；起跑断言 import 路径在子模块下</td><td><code>ENV_PIN=PASS gitlink=&lt;sha&gt; tag=testx-metadata-v1</code></td></tr>
 <tr><td>评估对象</td><td>三模型同一清单文件，记 sha256；收尾比对三份结果的 (task, episode, seed, difficulty) 集合相等</td><td><code>MANIFEST_SHARED=PASS sha=&lt;8&gt; models=3 rows=1200</code></td></tr>
 <tr><td>seed 与难度</td><td>每局 <code>BenchmarkEnvBuilder</code> 解析值与清单比对，不符中止整片</td><td><code>SEED_MATCH=PASS n=1200 mismatch=0</code>（每模型）</td></tr>
-<tr><td>评估口径</td><td><code>max_steps=1300</code>、策略 seed 7、终态 success／fail／timeout／error、只重跑 error、不为挑成功重试，写死在同一启动器</td><td><code>EVAL_&lt;model&gt;=DONE episodes=1200 success= fail= timeout= error=</code></td></tr>
+<tr><td>评估口径</td><td><code>max_steps=2000</code>（上次四任务评估定值，三模型同用；与官方 1300 步公布值不并排比）、策略 seed 7、终态 success／fail／timeout／error、只重跑 error、不为挑成功重试，写死在同一启动器</td><td><code>EVAL_&lt;model&gt;=DONE episodes=1200 success= fail= timeout= error=</code></td></tr>
 <tr><td>模型身份</td><td>官方：mme-vla 零 diff；自家：<code>hf sync</code> 后 <code>sha256sum -c SHA256SUMS.pre.txt</code>、<code>check_ckpt_param_tree.py</code>、<code>check_config_provenance.py</code></td><td><code>SERVER_PIN=PASS</code>、<code>CKPT_SHA=PASS</code>、<code>PARAM_TREE_EXACT=PASS</code>、<code>TIC_L0=PASS</code></td></tr>
-<tr><td>motion encoder 同源</td><td>provenance 逐键比对，只豁免四个硬件键</td><td><code>MOTION_PROV=PASS exempt=gpu_name,compute_cap,sm_count,driver</code></td></tr>
-<tr><td>160 窗预算</td><td>导清单前预算核算；超限按 drop_oldest 继续并逐局记录</td><td><code>EVAL_ES_BOUND=DONE max_windows=&lt;n&gt; over=&lt;k&gt;</code>、<code>MOTION_OVERFLOW=drop_oldest episodes_affected=&lt;k&gt;</code></td></tr>
+<tr><td>建环境类</td><td>按难度分流：base 档原环境、xhard 档 XHard，建成后断言 difficulty；冒烟每任务各取一条 base 与一条 xhard 行确认都能建</td><td><code>ENV_ROUTE=PASS base=&lt;n&gt; xhard=&lt;n&gt;</code></td></tr>
+<tr><td>完整性</td><td>每片收尾断言已评局数（含 error）= 清单局数；视频数 = 非 error 局数且逐个可解码</td><td><code>SHARDS_UNION=PASS total=1200 overlap=0</code>、<code>EVAL_VIDEO=PASS</code></td></tr>
+<tr><td>motion encoder 同源</td><td>provenance 逐键比对，只豁免四个硬件键</td><td><code>MOTION_PROV=PASS exempt=4 other_diffs=0</code>（先做只握手不评估的 dry-run，四键之外任何差异交用户）</td></tr>
+<tr><td>160 窗预算与 pos 表上界</td><td>导清单前按 h5 demo 帧数 + 2000 步核算窗数与最大帧号（pos 表 4096 行）；超 160 按 resample 继续并逐局记录</td><td><code>EVAL_ES_BOUND=DONE max_windows=&lt;n&gt; over=&lt;k&gt; max_step_idx=&lt;m&gt; over4096=0</code>、<code>MOTION_OVERFLOW=resample episodes_affected=&lt;k&gt;</code></td></tr>
 <tr><td>协议</td><td>开工前核实本分支 <code>policy.py</code> 的 <code>add_buffer</code> 段边界状态机与 927c56d 客户端的 <code>exec_start_idx</code> 发送方式兼容（字段未变、语义收紧）</td><td><code>PROTO_CHECK=PASS</code></td></tr>
 </table>
-<h3>4.6 motion 模型的 encoder 输入与 160 窗预算（T13）</h3>
-<p><b>encoder 送入怎么保证对</b>：motion encoder 不读 h5，sidecar 子进程（Wan VAE + MotionJEPA encoder）按 stride 16、window 33 在线切 256 域原始帧，入口硬断言形制；用哪个 encoder 由 run 目录快照 <code>history_config.resolved.yaml</code>（核 sha256 与 <code>motion_provenance.json</code>）决定；sidecar 握手把 VAE／encoder 权重 sha、源码 sha、torch／cuda／cudnn／diffusers 版本、flags 与离线建库的 <code>store_meta.provenance</code> 逐键比对，不等即 raise；<code>motion_protocol.py</code> 两侧 sha 须同一份。历史上在线现算的 240 个运动窗与离线表逐字节一致（策略仓库 <code>docs/train-infer-consistency.md</code>）。本轮只豁免四个硬件键（离线库在 A100 建、本机是 RTX 6000 Ada），接受 encoder 输出跨 GPU 的数值差并留档写明；下载 ckpt 时连带下载 encoder run 目录与新库的 <code>store_meta.provenance</code>。</p>
-<p><b>160 窗怎么处理</b>：预算是 motion yaml 的 <code>budget: 160</code>，推理侧原契约是零截断、超限 raise（整局落成 error）。本轮：① 清单导出前用真实 h5 的 demo 帧数按 <code>eval_es_bound.py</code> 口径算每局窗数（demo 窗 + 1300 步执行窗），报 <code>EVAL_ES_BOUND=DONE max_windows=&lt;n&gt; over=&lt;k&gt;</code>，超限局不剔除；② 评估分支加 <code>MMEVLA_MOTION_OVERFLOW=drop_oldest</code>：合法起点数超 160 时丢最早的起点、保留最近 160 个窗，每步记丢弃数，结果行加 <code>motion_dropped_max</code>，汇总表单列受影响局数；默认值仍为 raise，训练侧与一致性工具不受影响。这是训练未见过的外推，受影响局的成绩只作参考。</p>
+<h3>4.6 motion 模型：encoder 输入、demo 尾窗 padding、160 窗预算（T13、T14）</h3>
+<p><b>encoder 送入怎么保证对</b>：motion encoder 不读 h5，sidecar 子进程（Wan VAE + MotionJEPA encoder，torch）按 stride 16、window 33 在线切 256 域原始帧，入口硬断言形制；用哪个 encoder 由 run 快照 <code>history_config.resolved.yaml</code>（核 sha256 与 <code>motion_provenance.json</code>）决定；sidecar 握手把 VAE／encoder 权重 sha、源码 sha、torch／cuda／cudnn／diffusers 版本、flags 与离线建库的 <code>store_meta.provenance</code> 逐键比对，不等即 raise；<code>motion_protocol.py</code> 两侧 sha 须同一份。历史上在线现算的 240 个运动窗与离线表逐字节一致（策略仓库 <code>docs/train-infer-consistency.md</code>）。本轮只豁免四个硬件键（离线库在 A100 建、本机是 RTX 6000 Ada），豁免同时作用于 vae 与 encoder 两段；起跑前先做一次只握手不评估的 provenance dry-run，列出四键之外的任何差异交用户，不扩大豁免。sidecar 需要 <code>v1-store/venvs/wan</code> 与 Wan VAE 资产（<code>fetch_assets verify</code>），encoder run 目录落 <code>v1-store/external/motionjepa/&lt;run&gt;</code>；本轮不做跨卡逐位对拍（TIC 只跑 L0）。</p>
+<p><b>demo 尾窗 padding（图 3）</b>：训练库布局 <code>motion-768-grid16-demopad17-v1</code>，在线推理同契约——demo 段起点 f 只要剩余真实帧 ≥17（超过半窗）就编，不足 33 的部分用 demo 末帧重复补齐；恰好 16 帧不编；执行段每窗必须 33 个真实帧。从 run 快照核两键 <code>demo_min_real_frames=17 / demo_tail_pad=repeat_last</code>，判定行 <code>DEMO_PAD=PASS</code>。</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 570">
+  <defs>
+    <pattern id="pad-hatch" width="6" height="6" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="6" height="6" fill="#fde3cf"/>
+      <line x1="0" y1="6" x2="6" y2="0" stroke="#e07b39" stroke-width="1.2"/>
+    </pattern>
+  </defs>
+  <rect x="0" y="0" width="1000" height="570" fill="#ffffff"/>
+
+  <!-- 标题 -->
+  <text x="20" y="26" font-family="sans-serif" font-size="15" font-weight="bold" fill="#222">图 3：motion 窗口的切法与 demo 段尾窗 padding（训练库 motion-768-grid16-demopad17-v1，在线推理同契约）</text>
+
+  <!-- ===== 第一行：demo 段 es=100（比例：x = 70 + 4.5·帧号） ===== -->
+  <text x="70" y="53" font-family="sans-serif" font-size="13" fill="#222">第一行：demo 段，es = 100 帧（帧 0–99），之后是执行段</text>
+  <!-- 数轴 -->
+  <line x1="70" y1="115" x2="625" y2="115" stroke="#333" stroke-width="1.5"/>
+  <!-- 刻度 -->
+  <line x1="70" y1="115" x2="70" y2="120" stroke="#333"/>
+  <line x1="142" y1="115" x2="142" y2="120" stroke="#333"/>
+  <line x1="214" y1="115" x2="214" y2="120" stroke="#333"/>
+  <line x1="286" y1="115" x2="286" y2="120" stroke="#333"/>
+  <line x1="358" y1="115" x2="358" y2="120" stroke="#333"/>
+  <line x1="430" y1="115" x2="430" y2="120" stroke="#333"/>
+  <line x1="502" y1="115" x2="502" y2="120" stroke="#333"/>
+  <line x1="574" y1="115" x2="574" y2="120" stroke="#333"/>
+  <text x="70" y="131" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">0</text>
+  <text x="142" y="131" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">16</text>
+  <text x="214" y="131" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">32</text>
+  <text x="286" y="131" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">48</text>
+  <text x="358" y="131" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">64</text>
+  <text x="430" y="131" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">80</text>
+  <text x="502" y="131" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">96</text>
+  <text x="574" y="131" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">112</text>
+  <!-- es 竖虚线 -->
+  <line x1="520" y1="45" x2="520" y2="121" stroke="#c0392b" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <text x="526" y="53" font-family="sans-serif" font-size="12" fill="#c0392b">es = 100（执行段起点）</text>
+  <!-- 窗口（层 0 y=99，层 1 y=86，层 2 y=73） -->
+  <rect x="70" y="99" width="148.5" height="10" fill="#2b5d9b"/>
+  <rect x="142" y="86" width="148.5" height="10" fill="#2b5d9b"/>
+  <rect x="214" y="73" width="148.5" height="10" fill="#2b5d9b"/>
+  <rect x="286" y="99" width="148.5" height="10" fill="#2b5d9b"/>
+  <rect x="358" y="86" width="148.5" height="10" fill="#2b5d9b"/>
+  <!-- 起点 80：真实 80–99（20 帧）+ 补 13 -->
+  <rect x="430" y="73" width="90" height="10" fill="#2b5d9b"/>
+  <rect x="520" y="73" width="58.5" height="10" fill="url(#pad-hatch)" stroke="#e07b39" stroke-width="0.8"/>
+  <text x="515" y="68" font-family="sans-serif" font-size="12" fill="#222" text-anchor="end">起点 80：真实 20 + 补 13（补帧 = 重复帧 99）</text>
+  <!-- 起点 96：不编 -->
+  <rect x="502" y="99" width="148.5" height="10" fill="none" stroke="#999" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <line x1="572" y1="100" x2="580" y2="108" stroke="#999" stroke-width="1.5"/>
+  <line x1="580" y1="100" x2="572" y2="108" stroke="#999" stroke-width="1.5"/>
+  <text x="502" y="149" font-family="sans-serif" font-size="12" fill="#666">起点 96：剩 4 个真实帧 &lt; 17，不编</text>
+
+  <!-- ===== 第二行：demo 段 es=96 ===== -->
+  <text x="70" y="178" font-family="sans-serif" font-size="13" fill="#222">第二行：demo 段，es = 96 帧（16 的整倍数，帧 0–95）</text>
+  <line x1="70" y1="240" x2="625" y2="240" stroke="#333" stroke-width="1.5"/>
+  <line x1="70" y1="240" x2="70" y2="245" stroke="#333"/>
+  <line x1="142" y1="240" x2="142" y2="245" stroke="#333"/>
+  <line x1="214" y1="240" x2="214" y2="245" stroke="#333"/>
+  <line x1="286" y1="240" x2="286" y2="245" stroke="#333"/>
+  <line x1="358" y1="240" x2="358" y2="245" stroke="#333"/>
+  <line x1="430" y1="240" x2="430" y2="245" stroke="#333"/>
+  <line x1="502" y1="240" x2="502" y2="245" stroke="#333"/>
+  <line x1="574" y1="240" x2="574" y2="245" stroke="#333"/>
+  <text x="70" y="256" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">0</text>
+  <text x="142" y="256" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">16</text>
+  <text x="214" y="256" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">32</text>
+  <text x="286" y="256" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">48</text>
+  <text x="358" y="256" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">64</text>
+  <text x="430" y="256" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">80</text>
+  <text x="502" y="256" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">96</text>
+  <text x="574" y="256" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">112</text>
+  <line x1="502" y1="170" x2="502" y2="246" stroke="#c0392b" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <text x="508" y="178" font-family="sans-serif" font-size="12" fill="#c0392b">es = 96</text>
+  <!-- 窗口 -->
+  <rect x="70" y="224" width="148.5" height="10" fill="#2b5d9b"/>
+  <rect x="142" y="211" width="148.5" height="10" fill="#2b5d9b"/>
+  <rect x="214" y="198" width="148.5" height="10" fill="#2b5d9b"/>
+  <rect x="286" y="224" width="148.5" height="10" fill="#2b5d9b"/>
+  <!-- 起点 64：真实 64–95（32 帧）+ 补 1 -->
+  <rect x="358" y="211" width="144" height="10" fill="#2b5d9b"/>
+  <rect x="502" y="211" width="4.5" height="10" fill="url(#pad-hatch)" stroke="#e07b39" stroke-width="0.8"/>
+  <text x="498" y="193" font-family="sans-serif" font-size="12" fill="#222" text-anchor="end">起点 64：真实 32 + 补 1</text>
+  <!-- 起点 80：恰好 16 帧，不编 -->
+  <rect x="430" y="198" width="148.5" height="10" fill="none" stroke="#999" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <line x1="500" y1="199" x2="508" y2="207" stroke="#999" stroke-width="1.5"/>
+  <line x1="508" y1="199" x2="500" y2="207" stroke="#999" stroke-width="1.5"/>
+  <text x="430" y="274" font-family="sans-serif" font-size="12" fill="#666">起点 80：恰好 16 帧，现行契约不编（门槛 17 = 超过半窗）</text>
+
+  <!-- ===== 第三行：执行段 ===== -->
+  <text x="70" y="303" font-family="sans-serif" font-size="13" fill="#222">第三行：执行段（从 es 起，示例 es = 100、L = 80，帧 100–179），不补帧</text>
+  <line x1="448" y1="365" x2="934" y2="365" stroke="#333" stroke-width="1.5"/>
+  <line x1="520" y1="365" x2="520" y2="370" stroke="#333"/>
+  <line x1="592" y1="365" x2="592" y2="370" stroke="#333"/>
+  <line x1="664" y1="365" x2="664" y2="370" stroke="#333"/>
+  <line x1="736" y1="365" x2="736" y2="370" stroke="#333"/>
+  <line x1="808" y1="365" x2="808" y2="370" stroke="#333"/>
+  <line x1="880" y1="365" x2="880" y2="370" stroke="#333"/>
+  <text x="484" y="381" font-family="sans-serif" font-size="12" fill="#999" text-anchor="middle">←demo</text>
+  <text x="520" y="381" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">100</text>
+  <text x="592" y="381" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">116</text>
+  <text x="664" y="381" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">132</text>
+  <text x="736" y="381" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">148</text>
+  <text x="808" y="381" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">164</text>
+  <text x="880" y="381" font-family="sans-serif" font-size="12" fill="#333" text-anchor="middle">180</text>
+  <line x1="520" y1="295" x2="520" y2="371" stroke="#c0392b" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <text x="526" y="303" font-family="sans-serif" font-size="12" fill="#c0392b">es = 100</text>
+  <line x1="880" y1="295" x2="880" y2="371" stroke="#c0392b" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <text x="886" y="303" font-family="sans-serif" font-size="12" fill="#c0392b">es + L = 180</text>
+  <!-- 窗口：起点 es, es+16, es+32 各 33 帧全真实 -->
+  <rect x="520" y="349" width="148.5" height="10" fill="#2b5d9b"/>
+  <rect x="592" y="336" width="148.5" height="10" fill="#2b5d9b"/>
+  <rect x="664" y="323" width="148.5" height="10" fill="#2b5d9b"/>
+  <text x="520" y="318" font-family="sans-serif" font-size="12" fill="#222">起点 es、es+16、es+32：每窗 33 帧全为真实帧</text>
+  <!-- 起点 es+48=148：剩 32 帧，不编 -->
+  <rect x="736" y="349" width="148.5" height="10" fill="none" stroke="#999" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <line x1="806" y1="350" x2="814" y2="358" stroke="#999" stroke-width="1.5"/>
+  <line x1="814" y1="350" x2="806" y2="358" stroke="#999" stroke-width="1.5"/>
+  <text x="980" y="399" font-family="sans-serif" font-size="12" fill="#666" text-anchor="end">起点 148：剩 32 个真实帧 &lt; 33，不编（执行段契约 33，不补帧）</text>
+
+  <!-- ===== 图例与公式 ===== -->
+  <line x1="70" y1="418" x2="980" y2="418" stroke="#ddd" stroke-width="1"/>
+  <rect x="70" y="433" width="18" height="12" fill="#2b5d9b"/>
+  <text x="95" y="444" font-family="sans-serif" font-size="12" fill="#222">深色 = 真实帧</text>
+  <rect x="70" y="453" width="18" height="12" fill="url(#pad-hatch)" stroke="#e07b39" stroke-width="0.8"/>
+  <text x="95" y="464" font-family="sans-serif" font-size="12" fill="#222">浅色斜纹 = 补帧（用 demo 末帧重复补齐，repeat_last；只在 demo 段）</text>
+  <rect x="70" y="473" width="18" height="12" fill="none" stroke="#999" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <text x="95" y="484" font-family="sans-serif" font-size="12" fill="#222">灰色虚框 = 不编的起点（demo 段剩余真实帧 &lt; 17；执行段剩余真实帧 &lt; 33）</text>
+  <text x="70" y="512" font-family="sans-serif" font-size="12" fill="#222">窗长 33 帧、步长 16。demo 窗数 = len(range(0, max(0, es−16), 16))，即起点取 0,16,… 且起点 &lt; es−16（剩余真实帧 ≥ 17）；</text>
+  <text x="70" y="532" font-family="sans-serif" font-size="12" fill="#222">执行窗数 = len(range(0, max(0, L−32), 16))，L 为执行帧数（每窗须 33 个真实帧）。</text>
+  <text x="70" y="552" font-family="sans-serif" font-size="12" fill="#555">示例核对：es=100 → 6 窗（起点 0…80）；es=96 → 5 窗（起点 0…64）；L=80 → 3 窗（起点 es、es+16、es+32）。</text>
+</svg>
+<figcaption>图 3：motion 窗口切法与 demo 段尾窗 padding（训练库 demopad17 布局，在线推理同契约；恰好 16 帧不编）。</figcaption></figure>
+<p><b>160 窗预算（图 4）</b>：预算是 motion yaml 的 <code>budget: 160</code>，默认契约零截断、超限 raise。本轮：① 清单导出前用真实 h5 的 demo 帧数按 2000 步核算每局窗数（demo 窗 + 执行窗 124）与最大帧号（pos 表 4096 行上界），报 <code>EVAL_ES_BOUND</code>，超限局不剔除；② 沿用上次评估分支的 <code>MMEVLA_MOTION_OVERFLOW=resample</code>：k &gt; 160 时 demo 优先保留（最多 80）、执行段等距抽稀、恰好填满 160，被抽掉的窗留在缓冲不重编、每步重算，打印 <code>MOTION_DOWNSAMPLE</code> 行；<code>policy.py</code> 把 <code>motion_k／downsample</code> 计数随 infer 回传，客户端写进逐局结果，汇总表单列受影响局。2000 步下执行段恒 124 窗，长 demo 任务超 160 会常态化，这是上次已验证过的路径。</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" font-family="sans-serif">
+  <rect x="0" y="0" width="1000" height="650" fill="#ffffff"/>
+  <!-- 标题 -->
+  <text x="20" y="26" font-size="16" font-weight="bold" fill="#111827">图 4：motion 窗超 160 预算时的 resample</text>
+  <text x="20" y="46" font-size="13" fill="#374151">（demo 段优先保留、执行段等距抽稀、恰好填满 160）</text>
+  <!-- 图例 -->
+  <rect x="20" y="58" width="12" height="12" fill="#1f3a93"/>
+  <text x="38" y="70" font-size="12" fill="#374151">深色竖线／矩形 = 保留的窗</text>
+  <line x1="235" y1="58" x2="235" y2="70" stroke="#c8ccd4" stroke-width="2"/>
+  <text x="245" y="70" font-size="12" fill="#374151">浅灰竖线 = 被抽掉的窗</text>
+  <rect x="420" y="58" width="14" height="12" fill="#f4f6fa" stroke="#8a94a6"/>
+  <text x="440" y="70" font-size="12" fill="#374151">配额框（块 1）</text>
+
+  <!-- 块 1 -->
+  <text x="20" y="96" font-size="14" font-weight="bold" fill="#111827">块 1　配额怎么分（_motion_quota）</text>
+  <rect x="20" y="106" width="960" height="70" fill="#f4f6fa" stroke="#8a94a6"/>
+  <text x="32" y="128" font-size="12" fill="#1f2937">① k = k_demo + k_exec ≤ 160 → 全部送入，不变</text>
+  <text x="32" y="150" font-size="12" fill="#1f2937">② k &gt; 160 → keep_demo = min(k_demo, 80)；keep_exec = min(k_exec, 160 − keep_demo)；执行段吃不满则余额退回 demo，使 keep_demo + keep_exec = 160</text>
+  <text x="32" y="172" font-size="12" fill="#1f2937">③ 段内按 linspace(0, n−1, keep) 等距取窗（首尾必取）</text>
+
+  <!-- 块 2：示例 A -->
+  <text x="20" y="204" font-size="14" font-weight="bold" fill="#111827">块 2　示例 A：max_steps 2000、demo 1247 帧</text>
+  <text x="20" y="226" font-size="12" fill="#374151">demo 段 77 窗（起点 0,16,…,1216）：k_demo = 77 ≤ 80 → 全保</text>
+  <text x="20" y="250" font-size="12" fill="#1f2937">demo 段</text>
+  <rect x="150" y="234" width="462" height="24" fill="#ffffff" stroke="#6b7280"/>
+  <line x1="153" y1="238" x2="153" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="159" y1="238" x2="159" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="165" y1="238" x2="165" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="171" y1="238" x2="171" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="177" y1="238" x2="177" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="183" y1="238" x2="183" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="189" y1="238" x2="189" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="195" y1="238" x2="195" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="201" y1="238" x2="201" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="207" y1="238" x2="207" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="213" y1="238" x2="213" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="219" y1="238" x2="219" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="225" y1="238" x2="225" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="231" y1="238" x2="231" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="237" y1="238" x2="237" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="243" y1="238" x2="243" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="249" y1="238" x2="249" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="255" y1="238" x2="255" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="261" y1="238" x2="261" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="267" y1="238" x2="267" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="273" y1="238" x2="273" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="279" y1="238" x2="279" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="285" y1="238" x2="285" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="291" y1="238" x2="291" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="297" y1="238" x2="297" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="303" y1="238" x2="303" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="309" y1="238" x2="309" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="315" y1="238" x2="315" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="321" y1="238" x2="321" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="327" y1="238" x2="327" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="333" y1="238" x2="333" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="339" y1="238" x2="339" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="345" y1="238" x2="345" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="351" y1="238" x2="351" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="357" y1="238" x2="357" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="363" y1="238" x2="363" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="369" y1="238" x2="369" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="375" y1="238" x2="375" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="381" y1="238" x2="381" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="387" y1="238" x2="387" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="393" y1="238" x2="393" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="399" y1="238" x2="399" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="405" y1="238" x2="405" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="411" y1="238" x2="411" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="417" y1="238" x2="417" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="423" y1="238" x2="423" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="429" y1="238" x2="429" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="435" y1="238" x2="435" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="441" y1="238" x2="441" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="447" y1="238" x2="447" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="453" y1="238" x2="453" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="459" y1="238" x2="459" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="465" y1="238" x2="465" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="471" y1="238" x2="471" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="477" y1="238" x2="477" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="483" y1="238" x2="483" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="489" y1="238" x2="489" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="495" y1="238" x2="495" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="501" y1="238" x2="501" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="507" y1="238" x2="507" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="513" y1="238" x2="513" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="519" y1="238" x2="519" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="525" y1="238" x2="525" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="531" y1="238" x2="531" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="537" y1="238" x2="537" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="543" y1="238" x2="543" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="549" y1="238" x2="549" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="555" y1="238" x2="555" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="561" y1="238" x2="561" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="567" y1="238" x2="567" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="573" y1="238" x2="573" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="579" y1="238" x2="579" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="585" y1="238" x2="585" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="591" y1="238" x2="591" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="597" y1="238" x2="597" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="603" y1="238" x2="603" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="609" y1="238" x2="609" y2="254" stroke="#1f3a93" stroke-width="1.5"/>
+  <text x="624" y="250" font-size="12" font-weight="bold" fill="#1f3a93">77 → 77</text>
+  <text x="150" y="272" font-size="12" fill="#6b7280">帧 0</text>
+  <text x="586" y="272" font-size="12" fill="#6b7280">1216</text>
+
+  <text x="20" y="294" font-size="12" fill="#374151">执行段 124 窗（起点 es, es+16, …）：keep_exec = 160 − 77 = 83 → 124 中等距取 83</text>
+  <text x="20" y="318" font-size="12" fill="#1f2937">执行段</text>
+  <rect x="150" y="302" width="744" height="24" fill="#ffffff" stroke="#6b7280"/>
+  <line x1="153" y1="306" x2="153" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="159" y1="306" x2="159" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="165" y1="306" x2="165" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="171" y1="306" x2="171" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="177" y1="306" x2="177" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="183" y1="306" x2="183" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="189" y1="306" x2="189" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="195" y1="306" x2="195" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="201" y1="306" x2="201" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="207" y1="306" x2="207" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="213" y1="306" x2="213" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="219" y1="306" x2="219" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="225" y1="306" x2="225" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="231" y1="306" x2="231" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="237" y1="306" x2="237" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="243" y1="306" x2="243" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="249" y1="306" x2="249" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="255" y1="306" x2="255" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="261" y1="306" x2="261" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="267" y1="306" x2="267" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="273" y1="306" x2="273" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="279" y1="306" x2="279" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="285" y1="306" x2="285" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="291" y1="306" x2="291" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="297" y1="306" x2="297" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="303" y1="306" x2="303" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="309" y1="306" x2="309" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="315" y1="306" x2="315" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="321" y1="306" x2="321" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="327" y1="306" x2="327" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="333" y1="306" x2="333" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="339" y1="306" x2="339" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="345" y1="306" x2="345" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="351" y1="306" x2="351" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="357" y1="306" x2="357" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="363" y1="306" x2="363" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="369" y1="306" x2="369" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="375" y1="306" x2="375" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="381" y1="306" x2="381" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="387" y1="306" x2="387" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="393" y1="306" x2="393" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="399" y1="306" x2="399" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="405" y1="306" x2="405" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="411" y1="306" x2="411" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="417" y1="306" x2="417" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="423" y1="306" x2="423" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="429" y1="306" x2="429" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="435" y1="306" x2="435" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="441" y1="306" x2="441" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="447" y1="306" x2="447" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="453" y1="306" x2="453" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="459" y1="306" x2="459" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="465" y1="306" x2="465" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="471" y1="306" x2="471" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="477" y1="306" x2="477" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="483" y1="306" x2="483" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="489" y1="306" x2="489" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="495" y1="306" x2="495" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="501" y1="306" x2="501" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="507" y1="306" x2="507" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="513" y1="306" x2="513" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="519" y1="306" x2="519" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="525" y1="306" x2="525" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="531" y1="306" x2="531" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="537" y1="306" x2="537" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="543" y1="306" x2="543" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="549" y1="306" x2="549" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="555" y1="306" x2="555" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="561" y1="306" x2="561" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="567" y1="306" x2="567" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="573" y1="306" x2="573" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="579" y1="306" x2="579" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="585" y1="306" x2="585" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="591" y1="306" x2="591" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="597" y1="306" x2="597" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="603" y1="306" x2="603" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="609" y1="306" x2="609" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="615" y1="306" x2="615" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="621" y1="306" x2="621" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="627" y1="306" x2="627" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="633" y1="306" x2="633" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="639" y1="306" x2="639" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="645" y1="306" x2="645" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="651" y1="306" x2="651" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="657" y1="306" x2="657" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="663" y1="306" x2="663" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="669" y1="306" x2="669" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="675" y1="306" x2="675" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="681" y1="306" x2="681" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="687" y1="306" x2="687" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="693" y1="306" x2="693" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="699" y1="306" x2="699" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="705" y1="306" x2="705" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="711" y1="306" x2="711" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="717" y1="306" x2="717" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="723" y1="306" x2="723" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="729" y1="306" x2="729" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="735" y1="306" x2="735" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="741" y1="306" x2="741" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="747" y1="306" x2="747" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="753" y1="306" x2="753" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="759" y1="306" x2="759" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="765" y1="306" x2="765" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="771" y1="306" x2="771" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="777" y1="306" x2="777" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="783" y1="306" x2="783" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="789" y1="306" x2="789" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="795" y1="306" x2="795" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="801" y1="306" x2="801" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="807" y1="306" x2="807" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="813" y1="306" x2="813" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="819" y1="306" x2="819" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="825" y1="306" x2="825" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="831" y1="306" x2="831" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="837" y1="306" x2="837" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="843" y1="306" x2="843" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="849" y1="306" x2="849" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="855" y1="306" x2="855" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="861" y1="306" x2="861" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="867" y1="306" x2="867" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="873" y1="306" x2="873" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="879" y1="306" x2="879" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="885" y1="306" x2="885" y2="322" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="891" y1="306" x2="891" y2="322" stroke="#1f3a93" stroke-width="1.5"/>
+  <text x="150" y="344" font-size="12" font-weight="bold" fill="#1f3a93">124 → 83，平均每 1.5 个窗取 1 个 ≈ 每 24 帧一个窗，首尾必取（保留下标 int(linspace(0,123,83))：每 3 个抽掉第 3 个，共 41 个）</text>
+  <text x="20" y="364" font-size="12" fill="#1f2937">k = 201 → 160，mask 全真，恰好填满</text>
+
+  <!-- 块 3：示例 B -->
+  <text x="20" y="392" font-size="14" font-weight="bold" fill="#111827">块 3　示例 B：demo 1500 帧（93 窗）</text>
+  <text x="20" y="414" font-size="12" fill="#374151">demo 段 93 窗：keep_demo = min(93, 80) = 80 → 93 中等距取 80（抽掉 13）</text>
+  <text x="20" y="438" font-size="12" fill="#1f2937">demo 段</text>
+  <rect x="150" y="422" width="558" height="24" fill="#ffffff" stroke="#6b7280"/>
+  <line x1="153" y1="426" x2="153" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="159" y1="426" x2="159" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="165" y1="426" x2="165" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="171" y1="426" x2="171" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="177" y1="426" x2="177" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="183" y1="426" x2="183" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="189" y1="426" x2="189" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="195" y1="426" x2="195" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="201" y1="426" x2="201" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="207" y1="426" x2="207" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="213" y1="426" x2="213" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="219" y1="426" x2="219" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="225" y1="426" x2="225" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="231" y1="426" x2="231" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="237" y1="426" x2="237" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="243" y1="426" x2="243" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="249" y1="426" x2="249" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="255" y1="426" x2="255" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="261" y1="426" x2="261" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="267" y1="426" x2="267" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="273" y1="426" x2="273" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="279" y1="426" x2="279" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="285" y1="426" x2="285" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="291" y1="426" x2="291" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="297" y1="426" x2="297" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="303" y1="426" x2="303" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="309" y1="426" x2="309" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="315" y1="426" x2="315" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="321" y1="426" x2="321" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="327" y1="426" x2="327" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="333" y1="426" x2="333" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="339" y1="426" x2="339" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="345" y1="426" x2="345" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="351" y1="426" x2="351" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="357" y1="426" x2="357" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="363" y1="426" x2="363" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="369" y1="426" x2="369" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="375" y1="426" x2="375" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="381" y1="426" x2="381" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="387" y1="426" x2="387" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="393" y1="426" x2="393" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="399" y1="426" x2="399" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="405" y1="426" x2="405" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="411" y1="426" x2="411" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="417" y1="426" x2="417" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="423" y1="426" x2="423" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="429" y1="426" x2="429" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="435" y1="426" x2="435" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="441" y1="426" x2="441" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="447" y1="426" x2="447" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="453" y1="426" x2="453" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="459" y1="426" x2="459" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="465" y1="426" x2="465" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="471" y1="426" x2="471" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="477" y1="426" x2="477" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="483" y1="426" x2="483" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="489" y1="426" x2="489" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="495" y1="426" x2="495" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="501" y1="426" x2="501" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="507" y1="426" x2="507" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="513" y1="426" x2="513" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="519" y1="426" x2="519" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="525" y1="426" x2="525" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="531" y1="426" x2="531" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="537" y1="426" x2="537" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="543" y1="426" x2="543" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="549" y1="426" x2="549" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="555" y1="426" x2="555" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="561" y1="426" x2="561" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="567" y1="426" x2="567" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="573" y1="426" x2="573" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="579" y1="426" x2="579" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="585" y1="426" x2="585" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="591" y1="426" x2="591" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="597" y1="426" x2="597" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="603" y1="426" x2="603" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="609" y1="426" x2="609" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="615" y1="426" x2="615" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="621" y1="426" x2="621" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="627" y1="426" x2="627" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="633" y1="426" x2="633" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="639" y1="426" x2="639" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="645" y1="426" x2="645" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="651" y1="426" x2="651" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="657" y1="426" x2="657" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="663" y1="426" x2="663" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="669" y1="426" x2="669" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="675" y1="426" x2="675" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="681" y1="426" x2="681" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="687" y1="426" x2="687" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="693" y1="426" x2="693" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="699" y1="426" x2="699" y2="442" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="705" y1="426" x2="705" y2="442" stroke="#1f3a93" stroke-width="1.5"/>
+  <text x="720" y="438" font-size="12" font-weight="bold" fill="#1f3a93">93 → 80（每 7 个抽掉 1 个）</text>
+
+  <text x="20" y="474" font-size="12" fill="#374151">执行段 124 窗：keep_exec = 160 − 80 = 80 → 124 中等距取 80（抽掉 44）</text>
+  <text x="20" y="498" font-size="12" fill="#1f2937">执行段</text>
+  <rect x="150" y="482" width="744" height="24" fill="#ffffff" stroke="#6b7280"/>
+  <line x1="153" y1="486" x2="153" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="159" y1="486" x2="159" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="165" y1="486" x2="165" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="171" y1="486" x2="171" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="177" y1="486" x2="177" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="183" y1="486" x2="183" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="189" y1="486" x2="189" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="195" y1="486" x2="195" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="201" y1="486" x2="201" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="207" y1="486" x2="207" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="213" y1="486" x2="213" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="219" y1="486" x2="219" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="225" y1="486" x2="225" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="231" y1="486" x2="231" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="237" y1="486" x2="237" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="243" y1="486" x2="243" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="249" y1="486" x2="249" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="255" y1="486" x2="255" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="261" y1="486" x2="261" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="267" y1="486" x2="267" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="273" y1="486" x2="273" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="279" y1="486" x2="279" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="285" y1="486" x2="285" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="291" y1="486" x2="291" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="297" y1="486" x2="297" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="303" y1="486" x2="303" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="309" y1="486" x2="309" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="315" y1="486" x2="315" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="321" y1="486" x2="321" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="327" y1="486" x2="327" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="333" y1="486" x2="333" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="339" y1="486" x2="339" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="345" y1="486" x2="345" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="351" y1="486" x2="351" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="357" y1="486" x2="357" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="363" y1="486" x2="363" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="369" y1="486" x2="369" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="375" y1="486" x2="375" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="381" y1="486" x2="381" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="387" y1="486" x2="387" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="393" y1="486" x2="393" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="399" y1="486" x2="399" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="405" y1="486" x2="405" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="411" y1="486" x2="411" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="417" y1="486" x2="417" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="423" y1="486" x2="423" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="429" y1="486" x2="429" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="435" y1="486" x2="435" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="441" y1="486" x2="441" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="447" y1="486" x2="447" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="453" y1="486" x2="453" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="459" y1="486" x2="459" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="465" y1="486" x2="465" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="471" y1="486" x2="471" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="477" y1="486" x2="477" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="483" y1="486" x2="483" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="489" y1="486" x2="489" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="495" y1="486" x2="495" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="501" y1="486" x2="501" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="507" y1="486" x2="507" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="513" y1="486" x2="513" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="519" y1="486" x2="519" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="525" y1="486" x2="525" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="531" y1="486" x2="531" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="537" y1="486" x2="537" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="543" y1="486" x2="543" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="549" y1="486" x2="549" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="555" y1="486" x2="555" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="561" y1="486" x2="561" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="567" y1="486" x2="567" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="573" y1="486" x2="573" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="579" y1="486" x2="579" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="585" y1="486" x2="585" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="591" y1="486" x2="591" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="597" y1="486" x2="597" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="603" y1="486" x2="603" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="609" y1="486" x2="609" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="615" y1="486" x2="615" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="621" y1="486" x2="621" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="627" y1="486" x2="627" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="633" y1="486" x2="633" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="639" y1="486" x2="639" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="645" y1="486" x2="645" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="651" y1="486" x2="651" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="657" y1="486" x2="657" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="663" y1="486" x2="663" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="669" y1="486" x2="669" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="675" y1="486" x2="675" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="681" y1="486" x2="681" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="687" y1="486" x2="687" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="693" y1="486" x2="693" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="699" y1="486" x2="699" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="705" y1="486" x2="705" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="711" y1="486" x2="711" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="717" y1="486" x2="717" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="723" y1="486" x2="723" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="729" y1="486" x2="729" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="735" y1="486" x2="735" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="741" y1="486" x2="741" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="747" y1="486" x2="747" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="753" y1="486" x2="753" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="759" y1="486" x2="759" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="765" y1="486" x2="765" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="771" y1="486" x2="771" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="777" y1="486" x2="777" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="783" y1="486" x2="783" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="789" y1="486" x2="789" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="795" y1="486" x2="795" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="801" y1="486" x2="801" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="807" y1="486" x2="807" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="813" y1="486" x2="813" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="819" y1="486" x2="819" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="825" y1="486" x2="825" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="831" y1="486" x2="831" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="837" y1="486" x2="837" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="843" y1="486" x2="843" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="849" y1="486" x2="849" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="855" y1="486" x2="855" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="861" y1="486" x2="861" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="867" y1="486" x2="867" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="873" y1="486" x2="873" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="879" y1="486" x2="879" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <line x1="885" y1="486" x2="885" y2="502" stroke="#c8ccd4" stroke-width="1.5"/>
+  <line x1="891" y1="486" x2="891" y2="502" stroke="#1f3a93" stroke-width="1.5"/>
+  <text x="150" y="524" font-size="12" font-weight="bold" fill="#1f3a93">124 → 80，抽掉 44，首尾必取（保留下标 int(linspace(0,123,80))）</text>
+  <text x="20" y="544" font-size="12" fill="#1f2937">k = 217 → 160</text>
+
+  <!-- 底部注释 -->
+  <text x="20" y="576" font-size="12" fill="#4b5563">注 1：被抽掉的窗仍在缓冲里（已编码、不重编）；每一步 k_exec 增 1 就重新分配额与取点，</text>
+  <text x="20" y="594" font-size="12" fill="#4b5563">　　　所以某一步没送的窗下一步可能又被选中。位置编码用窗的真实帧号。</text>
+  <text x="20" y="616" font-size="12" fill="#4b5563">注 2：现行默认契约：k &gt; 160 直接 raise（该局 error）。本机制经环境变量 MMEVLA_MOTION_OVERFLOW=resample 开启，</text>
+  <text x="20" y="634" font-size="12" fill="#4b5563">　　　上次四任务评估（max_steps 2000）已用过并留档；每步打印 MOTION_DOWNSAMPLE 行并计数。</text>
+</svg>
+<figcaption>图 4：motion 窗超 160 时的 resample（demo 优先、执行段等距抽稀、恰好填满 160；沿用上次评估分支实现）。</figcaption></figure>
+<h3>4.7 上次四任务评估的机制清单（两轮对抗验证补入）</h3>
+<table>
+<tr><th>机制</th><th>本轮怎么做</th><th>判定行／出处</th></tr>
+<tr><td>Vulkan 静态 TLS 泄漏（每次 <code>make_env</code> 泄 64 B，默认第 28 局崩 <code>ErrorIncompatibleDriver</code>）</td><td>客户端 <code>GLIBC_TUNABLES=glibc.rtld.optional_static_tls=65536</code>，并每 20 局一个客户端进程（<code>--args.max_new_episodes</code>），靠 <code>episodes.jsonl</code> 续评衔接；崩溃局不算 error 重试额度</td><td><code>incompatible_driver=0</code>；上次 <code>run_shard.sh</code> 与 <code>vulkan-fix-30ep</code> 留档</td></tr>
+<tr><td><code>make_env</code> 容错</td><td>移植清单模式时把 <code>make_env</code> 并入 try，异常记 error 带原因、<code>finally</code> 关环境；<code>check_seed</code> 不符仍中止整片</td><td>CLIENT_DIFF 内；上次分支 <code>eval.py</code> 第 442–459 行</td></tr>
+<tr><td>reset／make_env 原生卡死（SIGALRM 打不断）</td><td>外部看门狗：客户端日志静默 ≥12 分钟且末行为「setup finished」即记 error（原因 reset_hang）、括号技巧 pkill、<code>ALLOW_RESUME=1</code> 续跑；同一局连续卡死视为确定性卡死不再重试、计入分母</td><td><code>EVAL_STALL=&lt;n&gt;</code>；Monitor 词表含它</td></tr>
+<tr><td>GPU 空闲硬闸</td><td><code>check_local_gpu</code> 起跑前与起 server 前各查一次（<code>nvidia-smi --query-compute-apps</code>），有计算进程即停；每卡固定一对</td><td><code>GPU_IDLE=PASS</code></td></tr>
+<tr><td>端口与 server 就绪</td><td><code>/dev/tcp</code> 探 19300／19400，占用即停不换端口；就绪循环 20 分钟上限 + <code>kill -0</code> server 存活；<code>healthz</code> 后按整棵进程树核对 <code>/proc/net/tcp</code> 监听 inode，确认监听者是自己；<code>trap cleanup</code> 叶到根 TERM，轮间确认端口释放、无孤儿 sidecar</td><td><code>SERVER_READY=PASS port= own=1</code>；历史事故：连上别人的服务 12 秒跑 0 局退出码 0</td></tr>
+<tr><td>防覆盖与续评</td><td>每轮每模型每片独立 <code>&lt;out&gt;/&lt;model&gt;-&lt;step&gt;-&lt;smoke|full&gt;/s&lt;shard&gt;</code>；起跑写 <code>.created</code>（清单 sha+shard+model+ckpt）；已有结果须 <code>ALLOW_RESUME=1</code> 且 <code>.created</code> 一致才续</td><td><code>RUN_DIR_FRESH|RESUME_OK</code></td></tr>
+<tr><td>完整性</td><td>每片收尾断言已评局数 = 清单局数（不只看退出码）；<code>EVAL_&lt;model&gt;=DONE</code> 的条件是 pending=0 且退出码 0；<code>RETRY_CAP_HIT／SERVER_DIED</code> 不写 DONE</td><td><code>EVAL_*=DONE</code></td></tr>
+<tr><td>视频验收</td><td>视频数 = 非 error 局数，逐个 mp4 解码帧数 &gt;1；视频名里的 <code>xhard0</code> 字面量改为清单难度</td><td><code>EVAL_VIDEO=PASS</code></td></tr>
+<tr><td>模型身份</td><td>官方 79999 用本机已有副本（策略仓库 <code>v1-store/models/official-mme-vla/perceptual-framesamp-modul/79999</code>，含 <code>history_config.txt</code>），逐文件 sha256；自家 ckpt 按 run 登记表核 budget／stride／window／source_run／norm_stats sha；<code>hf sync --dry-run</code> 先核清单</td><td><code>OFFICIAL_CKPT_SHA</code>、<code>CKPT_SHA</code>、<code>PARAM_TREE_EXACT</code>、<code>TIC_L0</code>（写明 <code>--lib／--store-subdir／--norm-stats／--provenance</code> 参数）</td></tr>
+<tr><td>clean HEAD 与横幅</td><td>起跑前 <code>git status --porcelain</code> 空、HEAD = Beta、子模块 gitlink = tag；横幅打印 host、HEAD、子模块 sha、server 仓库、ckpt、三个开关环境变量</td><td><code>ENV_PIN</code></td></tr>
+<tr><td>渲染与环境变量</td><td>脚本开头 <code>unset SAPIEN_DISABLE_RAY_TRACING ROBOMME_GPU_RASTER __EGL_VENDOR_LIBRARY_DIRS XLA_FLAGS</code>，设 <code>VK_ICD_FILENAMES</code>；客户端 <code>env -u</code> 六个代理变量 + <code>NO_PROXY=127.0.0.1,localhost</code>；官方 server 照抄 <code>env -u JAX_* XLA_PYTHON_CLIENT_MEM_FRACTION=0.75</code></td><td>横幅</td></tr>
+<tr><td>口径</td><td>策略 seed 7、<code>max_steps=2000</code>、<code>obs_horizon=16</code>、<code>use_history=True</code> 显式传；error 计入分母 12 按失败算、成功率是下界、表里 <code>n/12（err k）</code>；BinFill 不注入 demo（与 P4 和 mixed8 训练一致，<code>PROTO_CHECK</code> 顺带核训练集 BinFill）；prompt 取环境 <code>task_goal</code> 原样，冒烟每格抽一条留档；三模型只在本轮内部互比</td><td><code>EVAL_*</code> 行字段</td></tr>
+<tr><td>首批 add_buffer 显存</td><td>官方 JAX server 首批整段 demo 一次编码，按 demo 长度重编译；10k 冒烟纳入 demo 最长的局，记首批帧数、耗时与显存峰值</td><td><code>EVAL_SMOKE_10K</code> 字段</td></tr>
+<tr><td>sidecar 卡号</td><td><code>MMEVLA_MOTION_ONLINE_GPU</code> 传物理卡号；冒烟用 <code>nvidia-smi</code> 核 sidecar 落在本片卡上</td><td><code>SIDECAR_GPU=PASS</code></td></tr>
+</table>
 <div class="warn">⚠ 已知要改一行的地方：motion sidecar 的卡号取自快照 <code>online_gpu</code>（AWS 上写的物理卡号），本分支 <code>policy_config.py</code> 不读 <code>MMEVLA_MOTION_ONLINE_GPU</code>；本机两片各占一卡时 sidecar 必须跟策略同卡，评估分支要让它读该环境变量（legacy-eval README 已记录此坑）。</div>
 
 <h2>五、验收判定行（两侧合一）</h2>
@@ -378,9 +1006,10 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>生成</td><td><code>H5_SCHEMA／H5_CONTENT／H5_COUNTS／PLAN_VS_RECORD／IDENTITY_AUDIT=PASS group=G*</code></td><td>每组一套（1013 工具加 <code>--layout test --tasks</code>）</td></tr>
 <tr><td>生成</td><td><code>META_APPEND=PASS added_records=624 holes=0</code>；<code>PROTECTED_APPEND_ONLY=PASS files=14 deleted_lines=28 old_records_unchanged=14 env_id_unchanged=14</code>；<code>TAG=testx-metadata-v1 sha=&lt;sha&gt;</code></td><td>P1 范围核对；tag 推到远端</td></tr>
 <tr><td>生成（长尾）</td><td><code>SHA256SUMS=PASS h5=624</code>、<code>HF_UPLOAD=PASS</code>、<code>HF_VERIFY=PASS missing=0 extra=0</code></td><td>GL job 日志末行</td></tr>
-<tr><td>评估</td><td><code>ENV_PIN</code>、<code>PROTO_CHECK</code>、<code>CLIENT_DIFF=PASS files=3</code>、<code>MANIFEST=PASS rows=1200 cells=100 shard0=600 shard1=600</code></td><td>分支就绪</td></tr>
+<tr><td>评估</td><td><code>ENV_PIN</code>、<code>PROTO_CHECK</code>、<code>CLIENT_DIFF=PASS base=82e5175 files=&lt;n&gt;</code>（基准改为评估分支起点，逐项列允许改动文件）、<code>MANIFEST=PASS rows=1200 cells=100 shard0=600 shard1=600</code></td><td>分支就绪</td></tr>
 <tr><td>评估</td><td><code>CKPT_SHA／PARAM_TREE_EXACT／TIC_L0=PASS</code>（每个自家 ckpt）、<code>MOTION_PROV=PASS exempt=4</code>（motion 模型）、<code>SERVER_PIN=PASS</code>（官方）</td><td>模型身份</td></tr>
-<tr><td>评估</td><td><code>EVAL_ES_BOUND=DONE max_windows=&lt;n&gt; over=&lt;k&gt;</code>、<code>MOTION_OVERFLOW=drop_oldest episodes_affected=&lt;k&gt;</code></td><td>160 窗预算核算与丢弃记录</td></tr>
+<tr><td>评估</td><td><code>EVAL_ES_BOUND=DONE max_windows=&lt;n&gt; over=&lt;k&gt; max_step_idx=&lt;m&gt; over4096=0</code>、<code>MOTION_OVERFLOW=resample episodes_affected=&lt;k&gt;</code>、<code>DEMO_PAD=PASS min_real=17 pad=repeat_last</code></td><td>160 窗预算核算、抽稀记录、补帧契约</td></tr>
+<tr><td>评估</td><td><code>ENV_ROUTE</code>、<code>GPU_IDLE</code>、<code>SERVER_READY</code>、<code>RUN_DIR_FRESH|RESUME_OK</code>、<code>SHARDS_UNION</code>、<code>EVAL_VIDEO</code>、<code>EVAL_STALL</code>、<code>OFFICIAL_CKPT_SHA</code>、<code>SIDECAR_GPU</code>、<code>SMOKE_SUBSET=PASS rows=100 subset_of_full=yes</code></td><td>4.7 补入的机制各一行</td></tr>
 <tr><td>评估</td><td><code>EVAL_SMOKE_OFFICIAL=DONE episodes=2</code>、<code>EVAL_SMOKE_10K=DONE episodes=100 per_episode_s=&lt;t&gt;</code></td><td>两次冒烟，<code>error=0</code> 才起正式</td></tr>
 <tr><td>评估</td><td><code>EVAL_512_60K／EVAL_512M_60K／EVAL_OFFICIAL=DONE episodes=1200 …</code>、<code>SEED_MATCH=PASS</code> × 3、<code>MANIFEST_SHARED=PASS</code>、<code>EVAL_TABLE=DONE models=3 cells=100</code></td><td>正式三轮与汇总</td></tr>
 <tr><td>两侧</td><td><code>LIGHT_TESTS</code>、<code>PROTECTED</code>、<code>PRE/POST_MERGE_REVIEW</code>、<code>HANDOFF_WRITE</code></td><td>各自仓库的短测、受保护目录、合并审查、交接</td></tr>
@@ -415,7 +1044,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <ol>
 <li>本仓库 <code>src/robomme/</code> 零 diff，唯一例外是 14 个 test metadata 的纯追加；<code>pyproject.toml</code>／<code>uv.lock</code>／ManiSkill 钉 <code>07be6fbc</code> 不动；不换 seed 清单、不补 seed（T10 例外待确认）。</li>
 <li>生成只用 GPU0、32 worker、detached tmux；评估用双卡；不提交 Slurm 跑生成或评估；集群只跑 HF 读回校验 job。</li>
-<li>策略仓库：只在 <code>test1017</code> 分支改，<code>v2-motionmem</code> 与训练中的东西不碰；评估分支改动限于 <code>examples/robomme/</code>、<code>.gitmodules</code>／gitlink、<code>scripts/eval-testx/</code>、以及 <code>src/mme_vla_suite/policies/</code> 下三处开关式小改（<code>policy_config.py</code> 读 sidecar 卡号、<code>motion_client.py</code> 硬件四键豁免、<code>framesamp_memory.py</code> 超预算 drop_oldest），都经环境变量开启、默认行为不变；模型前向不改。</li>
+<li>策略仓库：只在 <code>test1017</code> 分支改，<code>v2-motionmem</code> 与训练中的东西不碰；评估分支改动限于 <code>examples/robomme/</code>、<code>.gitmodules</code>／gitlink、<code>scripts/eval-testx/</code>、以及 <code>src/mme_vla_suite/policies/</code> 下四处开关式小改（<code>policy_config.py</code> 读 sidecar 卡号、<code>motion_client.py</code> 硬件四键豁免、<code>framesamp_memory.py</code> 从上次评估分支移植 <code>resample</code>、<code>policy.py</code> 回传 motion 计数），都经环境变量开启、默认行为不变；模型前向不改。</li>
 <li>官方服务端 mme-vla <code>ecf086c</code> 零 diff；原版客户端 NFS 工作树只读。</li>
 <li>评估只报数不设阈值；只重跑 <code>error</code>；不为挑成功重跑。</li>
 <li>Beta 锚点：生成全量前（本仓库）、每轮评估前（评估分支）；冻结期不 commit。</li>
@@ -444,24 +1073,24 @@ uv run --no-sync python scripts/data-generation-newSeed/utils/append_train_metad
 <tr><th>文件（分支 <code>test1017</code>）</th><th>改什么</th></tr>
 <tr><td><code>.gitmodules</code>、gitlink <code>third_party/robomme_benchmark</code></td><td>url 改 <code>https://github.com/hongzefu/robomme_benchmark_MotionJEPA.git</code>，gitlink = tag <code>testx-metadata-v1</code> 的 commit；<code>git submodule update --init</code></td></tr>
 <tr><td><code>examples/robomme/eval.py</code>、<code>xhard0_manifest.py</code>（新）</td><td>从 927c56d 移植清单模式（<code>Args.episode_manifest／shard／video_dir</code>、<code>evaluate_manifest</code>、<code>done_keys</code>），不移植 VLM 子目标部分；保留本分支的 <code>dataset／episode_stride</code> 参数</td></tr>
-<tr><td><code>examples/robomme/env_runner.py</code></td><td>三处：<code>import robomme_xhard</code>；<code>BenchmarkEnvBuilder(env_id=f"{env_id}XHard", override_metadata_path=Path(os.environ["XHARD_METADATA_DIR"]))</code>；<code>self.env_id</code> 仍为原任务名。<code>check_seed</code> 比清单 <code>difficulty</code></td></tr>
+<tr><td><code>examples/robomme/env_runner.py</code></td><td><code>import robomme_xhard</code>（在 <code>from robomme.robomme_env import *</code> 之后）；按清单行难度建 builder：xhard 用 <code>f"{env_id}XHard"</code> + <code>override_metadata_path=Path(os.environ["XHARD_METADATA_DIR"])</code>，base 档与 MoveCube／InsertPeg 用原任务名 + 官方 metadata；<code>self.env_id</code> 仍为原任务名；建成后断言 <code>env.unwrapped.difficulty</code> 等于清单难度；保留 <code>EVAL_EPISODE</code> 逐局打印。<code>check_seed</code> 比清单 <code>difficulty</code>；<code>make_env</code> 并入 try</td></tr>
 <tr><td><code>src/mme_vla_suite/policies/policy_config.py</code></td><td>一行：<code>online_gpu</code> 优先读环境变量 <code>MMEVLA_MOTION_ONLINE_GPU</code>，缺省回快照值</td></tr>
 <tr><td><code>src/mme_vla_suite/policies/motion_client.py</code></td><td><code>check_provenance</code>：<code>MMEVLA_PROV_EXEMPT_HW=1</code> 时跳过 <code>gpu_name／compute_cap／sm_count／driver</code> 四键，并把实际差异打进日志与 <code>MOTION_PROV</code> 行；默认仍全比</td></tr>
-<tr><td><code>src/mme_vla_suite/policies/framesamp_memory.py</code></td><td><code>_prepare_motion</code>：<code>MMEVLA_MOTION_OVERFLOW=drop_oldest</code> 时合法起点数超 budget 丢最早起点、保留最近 budget 个，计数写 <code>self.motion_dropped_max</code>；默认仍 raise。客户端把该计数写进每局结果</td></tr>
-<tr><td><code>scripts/eval-testx/es_bound.py</code>（新）</td><td>对清单每局按 h5 demo 帧数算窗数（复用 <code>eval_es_bound.py::predicted_windows</code> 口径，max_steps 1300），出 <code>EVAL_ES_BOUND</code> 行与超限局清单</td></tr>
-<tr><td><code>scripts/eval-testx/make_manifest.py</code>（新）</td><td>从子模块 test metadata 导出 1200 局清单与 <code>record_dataset_&lt;Task&gt;XHard_metadata.json</code> 副本（<code>env_id</code>／<code>task</code> 改写）；末行 <code>MANIFEST=PASS</code></td></tr>
-<tr><td><code>scripts/eval-testx/run_shard.sh</code>（新）</td><td>参数 <code>&lt;model&gt; &lt;gpu&gt; &lt;shard&gt; &lt;port&gt;</code>；按 model 选服务端命令；客户端 <code>eval.py --args.episode_manifest … --args.shard … --args.model_seed=7 --args.max_steps=1300</code>；三遍只重跑 error；看门狗 2400／1800 s；末行 <code>EVAL_&lt;model&gt;_s&lt;shard&gt;=DONE …</code></td></tr>
-<tr><td><code>scripts/eval-testx/fetch_ckpt.sh</code>（新）</td><td><code>hf sync hf://buckets/&lt;bucket&gt; v1-store/models/&lt;run&gt; --include '&lt;step&gt;/*' --include 'history_config.*' --include 'motion_provenance.json' --include 'SHA256SUMS.pre.txt'</code>，motion 模型另拉 encoder run 目录（<code>checkpoint_epoch_72.pt</code>）与新库 <code>store_meta.provenance</code> → <code>sha256sum -c</code> → <code>check_ckpt_param_tree.py</code> → <code>check_config_provenance.py</code></td></tr>
-<tr><td><code>scripts/eval-testx/summarize.py</code>（新）</td><td>三模型「任务 × 档」表（官网顺序，分母 12，另列 timeout）、<code>MANIFEST_SHARED</code>、<code>EVAL_TABLE</code></td></tr>
+<tr><td><code>src/mme_vla_suite/policies/framesamp_memory.py</code>、<code>policy.py</code></td><td>从上次评估分支 <code>v2-eval-0918-motion</code> 移植 <code>MMEVLA_MOTION_OVERFLOW=resample</code>（<code>_motion_quota</code>、<code>_even_pick</code>、<code>MOTION_DOWNSAMPLE</code> 计数；只在 <code>_prepare_motion</code> 装配阶段生效，不碰增量编码与 <code>_raw_frames</code> 清理）；<code>policy.py</code> 的 infer 回传 <code>motion_k／motion_budget／downsample_steps／downsample_max_k</code>；默认仍 raise。单测：合成 k=B+5 断言填满 B、次序递增、默认 raise</td></tr>
+<tr><td><code>scripts/eval-testx/es_bound.py</code>（新）</td><td>对清单每局读本机 <code>artifacts/test-xhard</code> 产物的 demo 帧数（base 档按官方 h5 不在本机，记 demo 帧数为 0 并标注），按 max_steps 2000 算窗数（demo 窗 + 执行窗 124）与最大帧号（demo 帧数 + 2000，上界 4096），出 <code>EVAL_ES_BOUND</code> 行与超限局清单；抽 2～3 局用 <code>reset</code> 的 <code>es=len(images)−1</code> 对拍</td></tr>
+<tr><td><code>scripts/eval-testx/make_manifest.py</code>（新）</td><td>从子模块 test metadata 导出 1200 局清单（行含 <code>difficulty</code>，shard 按 <code>(task, difficulty, episode)</code> 排序 idx%2）、100 局冒烟子清单（每格第 1 条，断言为子集）、XHard metadata 副本（仅 14 个 xhard 任务）；每格断言 ≥12；末行 <code>MANIFEST=PASS</code>、<code>SMOKE_SUBSET=PASS</code></td></tr>
+<tr><td><code>scripts/eval-testx/run_shard.sh</code>（新，骨架沿用上次分支 <code>scripts/evaluation/run_shard.sh</code>）</td><td>参数 <code>&lt;model&gt; &lt;gpu&gt; &lt;shard&gt; &lt;port&gt;</code>；起跑前：<code>git status --porcelain</code> 空、子模块 gitlink = tag、<code>check_local_gpu</code>、<code>/dev/tcp</code> 探端口、<code>.created</code>／<code>ALLOW_RESUME</code>、unset 渲染开关、横幅；按 model 起服务端（自家／官方两条命令）；就绪循环（20 分钟、<code>kill -0</code>、<code>healthz</code>、监听 inode 归属）；客户端 <code>GLIBC_TUNABLES=…=65536</code>，每 20 局一个进程（<code>--args.max_new_episodes 20</code>）循环直到 pending=0，<code>--args.model_seed=7 --args.max_steps=2000 --args.obs_horizon=16 --args.use_history=True</code>；三遍只重跑 error；外部看门狗（静默 12 分钟）与 server／sidecar 存活守卫；<code>trap cleanup</code> 叶到根 TERM；收尾断言局数 = 清单局数、视频核对、<code>TIMING_SUMMARY</code>；末行 <code>EVAL_&lt;model&gt;_s&lt;shard&gt;=DONE …</code></td></tr>
+<tr><td><code>scripts/eval-testx/fetch_ckpt.sh</code>（新）</td><td>先 <code>hf sync --dry-run</code> 核清单，再 <code>hf sync hf://buckets/&lt;bucket&gt; v1-store/models/&lt;run&gt; --include '&lt;step&gt;/*' --include 'history_config.*' --include 'motion_provenance.json' --include 'SHA256SUMS.pre.txt'</code>；motion 模型另拉 encoder run 目录到 <code>v1-store/external/motionjepa/&lt;run&gt;</code>、新库 <code>store_meta.provenance</code>、Wan VAE 资产 → <code>sha256sum -c</code> → 按 run 登记表核 budget／stride／window／source_run／norm_stats sha → <code>check_ckpt_param_tree.py</code> → <code>check_config_provenance.py --ckpt … --lib … --store-subdir … --norm-stats … --provenance …</code>（两 run 参数分别写）→ 只握手不评估的 provenance dry-run。官方 79999 从本机 <code>v1-store/models/official-mme-vla/perceptual-framesamp-modul/79999</code> 复制并逐文件 sha256（<code>OFFICIAL_CKPT_SHA</code>）</td></tr>
+<tr><td><code>scripts/eval-testx/summarize.py</code>（新）</td><td>按 <code>(task, source_episode)</code> 取最后一条，回查清单取 difficulty；三模型「任务 × 档」表（官网顺序，<code>n/12（err k）</code>，另列 timeout、motion 抽稀局）；<code>MANIFEST_SHARED</code>（键 <code>(task, source_episode, seed)</code>）、<code>SHARDS_UNION</code>、<code>EVAL_VIDEO</code>、<code>EVAL_TABLE</code></td></tr>
 <tr><td><code>examples/robomme/pyproject.toml</code>、<code>uv.lock</code>（新，客户端子项目）</td><td>依赖按 <code>requirements.txt</code>（含 <code>ms_swift</code>、<code>transformers</code>、<code>torch==2.9.1</code>）+ 子模块 editable + <code>packages/openpi-client</code> editable；不再用 micromamba</td></tr>
 <tr><td><code>docs/handoff/current.json</code>（新）、<code>docs/training-doc/eval-testx-1017/</code>、<code>1017-eval-testx-plan.html</code>（指向本文件的短页）</td><td>第 27 条登记、留档、仓库内索引</td></tr>
 </table>
 <pre># 自家服务端（每片一对，卡 g、端口 p）
-CUDA_VISIBLE_DEVICES=$g MMEVLA_MOTION_ONLINE_GPU=$g MMEVLA_PROV_EXEMPT_HW=1 MMEVLA_MOTION_OVERFLOW=drop_oldest XLA_PYTHON_CLIENT_MEM_FRACTION=0.4 UV_LINK_MODE=copy uv run --no-sync python scripts/training/serve_policy.py --seed=7 --port=$p policy:checkpoint --policy.dir=v1-store/models/&lt;run&gt;/60000 --policy.config=mme_vla_suite_b128_80k
+CUDA_VISIBLE_DEVICES=$g MMEVLA_MOTION_ONLINE_GPU=$g MMEVLA_PROV_EXEMPT_HW=1 MMEVLA_MOTION_OVERFLOW=resample XLA_PYTHON_CLIENT_MEM_FRACTION=0.4 UV_LINK_MODE=copy uv run --no-sync python scripts/training/serve_policy.py --seed=7 --port=$p policy:checkpoint --policy.dir=v1-store/models/&lt;run&gt;/60000 --policy.config=mme_vla_suite_b128_80k
 # 官方服务端
-cd /data/hongzefu/RoboMME-benchmark-OOD-eval/third_party/mme-vla &amp;&amp; CUDA_VISIBLE_DEVICES=$g XLA_PYTHON_CLIENT_MEM_FRACTION=0.75 .venv/bin/python scripts/serve_policy.py --seed=7 --port=$p policy:checkpoint --policy.dir=/data/hongzefu/mmevla-ckpt-framesamp-modul-79999 --policy.config=mme_vla_suite
+cd /data/hongzefu/RoboMME-benchmark-OOD-eval/third_party/mme-vla &amp;&amp; env -u XLA_FLAGS -u JAX_COMPILATION_CACHE_DIR -u JAX_PERSISTENT_CACHE_MIN_COMPILE_TIME_SECS -u JAX_PERSISTENT_CACHE_MIN_ENTRY_SIZE_BYTES -u JAX_ENABLE_COMPILATION_CACHE CUDA_VISIBLE_DEVICES=$g XLA_PYTHON_CLIENT_MEM_FRACTION=0.75 .venv/bin/python scripts/serve_policy.py --seed=7 --port=$p policy:checkpoint --policy.dir=/data/hongzefu/mmevla-ckpt-framesamp-modul-79999 --policy.config=mme_vla_suite
 # 客户端（两种服务端同一条）
-cd examples/robomme &amp;&amp; CUDA_VISIBLE_DEVICES=$g XHARD_METADATA_DIR=&lt;清单目录&gt;/metadata uv run --no-sync python eval.py --args.host=127.0.0.1 --args.port=$p --args.model_seed=7 --args.model_ckpt_id=&lt;step&gt; --args.policy_name=&lt;model&gt; --args.episode_manifest=&lt;清单&gt; --args.shard=$s --args.video_dir=&lt;out&gt;/videos --args.save_dir=&lt;out&gt;
+cd examples/robomme &amp;&amp; env -u http_proxy -u https_proxy -u HTTP_PROXY -u HTTPS_PROXY -u all_proxy -u ALL_PROXY NO_PROXY=127.0.0.1,localhost GLIBC_TUNABLES=glibc.rtld.optional_static_tls=65536 CUDA_VISIBLE_DEVICES=$g XHARD_METADATA_DIR=&lt;清单目录&gt;/metadata uv run --no-sync python eval.py --args.host=127.0.0.1 --args.port=$p --args.model_seed=7 --args.model_ckpt_id=&lt;step&gt; --args.policy_name=&lt;model&gt; --args.episode_manifest=&lt;清单&gt; --args.shard=$s --args.max_steps=2000 --args.obs_horizon=16 --args.use_history=True --args.max_new_episodes=20 --args.video_dir=&lt;out&gt;/s$s/videos --args.save_dir=&lt;out&gt;/s$s   # 外层循环直到 pending=0
 # 两片：tmux xh-testx-eval-&lt;model&gt;-s0（GPU0, 19300）、xh-testx-eval-&lt;model&gt;-s1（GPU1, 19400）</pre>
 
 <h2>三、子代理分配表</h2>
@@ -469,7 +1098,7 @@ cd examples/robomme &amp;&amp; CUDA_VISIBLE_DEVICES=$g XHARD_METADATA_DIR=&lt;�
 <tr><th>编号</th><th>仓库／分支</th><th>目标</th><th>可写集合</th><th>验收（worktree 内，CPU）</th></tr>
 <tr><td>W3（opus，worktree）</td><td>本仓库</td><td><code>check_mixed_h5.py</code> 加 <code>--layout</code>／<code>--tasks</code></td><td>该文件 + <code>tests/lightweight/test_check_mixed_h5_layout.py</code></td><td>定向 pytest（<code>UV_PROJECT_ENVIRONMENT=&lt;主 .venv&gt; PYTHONPATH=&lt;worktree&gt;/src</code>）</td></tr>
 <tr><td>W2（opus，worktree）</td><td>本仓库</td><td>sha 清单、上传、GL 校验脚本</td><td><code>scripts/hf-upload/**</code> + <code>tests/lightweight/test_hf_sha256sums.py</code></td><td>定向 pytest；<code>grep</code> 无 token 字面量</td></tr>
-<tr><td>E1（opus，worktree）</td><td>策略仓库 <code>test1017</code></td><td>二节全部文件</td><td>二节清单；禁触 <code>src/mme_vla_suite</code> 除 <code>policies/</code> 下三处开关式小改、训练脚本、<code>v1-store</code></td><td>清单导出单测（合成 metadata，断言 1200／100 格／600／600 与 G4／G3 取样）；<code>diff -ru -x '*_test.py' -x __pycache__ &lt;927c56d&gt; examples/robomme</code> 只差允许文件</td></tr>
+<tr><td>E1（opus，worktree）</td><td>策略仓库 <code>test1017</code></td><td>二节全部文件</td><td>二节清单；禁触 <code>src/mme_vla_suite</code> 除 <code>policies/</code> 下四处开关式小改、训练脚本、<code>v1-store</code></td><td>清单导出单测（合成 metadata，断言 1200／100 格／600／600 与 G4／G3 取样）；<code>diff -ru -x '*_test.py' -x __pycache__ &lt;927c56d&gt; examples/robomme</code> 只差允许文件</td></tr>
 <tr><td>A1–A3（sonnet）</td><td>各自</td><td>合并前审查</td><td>无</td><td><code>PRE_MERGE_REVIEW</code></td></tr>
 <tr><td>R1／R2／R3（opus，运行型）</td><td>各自主检出</td><td>起生成全量／每轮评估两片／上传 tmux，立即交回</td><td>只写产物目录</td><td>起跑判据原始输出、<code>tmux ls</code></td></tr>
 <tr><td>主会话</td><td>两侧</td><td>只读核实、环境、smoke、metadata 追加、tag、ckpt 下载核验、GL job、Beta／handoff／留档、Monitor、清理</td><td>—</td><td>—</td></tr>
@@ -491,7 +1120,7 @@ cd examples/robomme &amp;&amp; CUDA_VISIBLE_DEVICES=$g XHARD_METADATA_DIR=&lt;�
 <table>
 <tr><th>tmux</th><th>日志</th><th>Monitor 过滤词</th></tr>
 <tr><td><code>xh-testx-smoke2</code>、<code>xh-testx-full</code></td><td><code>artifacts/test-xhard/{smoke2,full}/*.log</code></td><td><code>succeeded with seed|GROUP_EXIT|EXIT_CODE=|failed|进程池已损坏|ERROR:|Traceback|BrokenProcessPool|svulkan2|out of memory|NO RECORD</code></td></tr>
-<tr><td><code>xh-testx-eval-&lt;model&gt;-s{0,1}</code>（每轮两个）</td><td>策略仓库 <code>v1-store/logs/eval-testx/&lt;model&gt;-s{0,1}.log</code>（各一个 Monitor）</td><td><code>EVAL_|SERVER_DIED|RETRY_CAP_HIT|Traceback|out of memory|svulkan2|BrokenProcessPool|failed|ERROR:|EXIT_CODE=</code></td></tr>
+<tr><td><code>xh-testx-eval-&lt;model&gt;-s{0,1}</code>（每轮两个）</td><td>策略仓库 <code>v1-store/logs/eval-testx/&lt;model&gt;-s{0,1}.log</code>（各一个 Monitor）</td><td><code>=DONE|SERVER_DIED|RETRY_CAP_HIT|EVAL_STALL|MOTION_DOWNSAMPLE|ErrorIncompatibleDriver|Traceback|out of memory|svulkan2|BrokenProcessPool|failed|ERROR:|EXIT_CODE=</code></td></tr>
 <tr><td><code>xh-testx-upload</code>；GL job <code>testx-hfverify</code></td><td><code>artifacts/test-xhard/upload/upload.log</code>；<code>&lt;NFS&gt;/logs/testx-hfverify/*.out</code></td><td><code>SHA256SUMS=|HF_UPLOAD=|HF_VERIFY=|Error|Traceback|EXIT_CODE=</code></td></tr>
 </table>
 <p class="small">每份日志一个 Monitor，行缓冲管道；清理只用 <code>tmux kill-session -t '=名'</code>，删前删后 <code>tmux ls</code>。</p>
@@ -503,8 +1132,9 @@ cd examples/robomme &amp;&amp; CUDA_VISIBLE_DEVICES=$g XHARD_METADATA_DIR=&lt;�
 <tr><td>同卡上策略进程（JAX／torch）+ 仿真渲染 + motion sidecar 显存不够</td><td>10k 冒烟先验证；不够则每卡一对、sidecar 同卡，仍不够交用户</td></tr>
 <tr><td><code>add_buffer</code> 段边界状态机对 927c56d 客户端的 <code>exec_start_idx</code> 发送方式报错</td><td><code>PROTO_CHECK</code> 在开工前核实；不兼容则客户端按本分支逻辑同步一处并记入 <code>CLIENT_DIFF</code></td></tr>
 <tr><td>两条 run 的 60k bucket 迟到</td><td>评估任务 <code>depends_on</code> 挂起，先跑官方 2 局冒烟与分支搭建；10k 冒烟只等 512 的 10000</td></tr>
-<tr><td><code>max_steps=1300</code> 对 xhard18／20 偏短</td><td>沿用官方口径，表里单列 timeout</td></tr>
-<tr><td>motion 窗超 160 的局（xhard 长 demo）走 drop_oldest，是训练未见的外推</td><td>逐局记 <code>motion_dropped_max</code>，汇总单列受影响局；不改 160</td></tr>
+<tr><td><code>max_steps=2000</code> 仍可能不够 xhard20 最长的局</td><td>表里单列 timeout；不再加长</td></tr>
+<tr><td>2000 步下长 demo 任务 motion 窗常态超 160，走 resample（执行段抽稀到约每 24 帧一窗）</td><td>上次评估已用过的路径；逐局记抽稀计数，汇总单列；不改 160</td></tr>
+<tr><td>demo 帧数 + 2000 超过 pos 表 4096 行</td><td><code>EVAL_ES_BOUND</code> 预检 <code>over4096=0</code>；超限局记 error 并报用户</td></tr>
 <tr><td>豁免硬件键后 encoder 输出跨 GPU 有数值差</td><td>留档写明；不做跨机逐位对拍</td></tr>
 <tr><td>评估耗时远超估计</td><td>10k 冒烟校准；单轮外推超 10 小时先报用户</td></tr>
 <tr><td>客户端子项目依赖重（<code>ms_swift</code>、<code>transformers</code>）解析慢或冲突</td><td>按 <code>requirements.txt</code> 钉版本；失败记录原始报错交用户</td></tr>
@@ -515,7 +1145,8 @@ cd examples/robomme &amp;&amp; CUDA_VISIBLE_DEVICES=$g XHARD_METADATA_DIR=&lt;�
 <li>生成器「循环里无 base 档」与校验工具加参数后的行为靠 smoke 与单测证实。</li>
 <li>单局评估耗时、同卡三进程显存、两条 run 的 bucket 名与 run 级文件是否齐全，都未实测。</li>
 <li>策略分支 <code>policy.py</code> 的段边界状态机与官方客户端的兼容性未逐行核。</li>
-<li>test xhard 的 demo 帧数分布未算，超 160 窗的局数要等 <code>EVAL_ES_BOUND</code>；drop_oldest 对成绩的影响无先例。</li>
+<li>test xhard 的 demo 帧数分布未算，超 160 窗的局数要等 <code>EVAL_ES_BOUND</code>；resample 在 xhard 长 demo 上的影响只能靠汇总单列观察。</li>
+<li>单进程 20 局分块与 65536 的 TLS 值是上次口径，本机未复测；10k 冒烟 100 局即验证。</li>
 <li>52 格各 12 局、base 档各 12 局，样本小，只能看趋势。</li>
 </ul>
 
