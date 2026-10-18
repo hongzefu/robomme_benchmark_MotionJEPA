@@ -42,8 +42,8 @@
         },
         {
           "what": "seed 追加进官方 test metadata 并打 tag",
-          "evidence": "META_APPEND=PASS added_records=624 holes=0; PROTECTED_APPEND_ONLY=PASS files=14 deleted_lines=28 old_records_unchanged=14 env_id_unchanged=14; TAG=testx-metadata-v1 sha=<sha>",
-          "where": "S5 commit sha；git ls-remote --tags origin testx-metadata-v1",
+          "evidence": "META_APPEND=PASS added_records=624 holes=0; PROTECTED_APPEND_ONLY=PASS files=14 deleted_lines=28 old_records_unchanged=14 env_id_unchanged=14; TAG=v2-motionmem-eval-test1017-metadata sha=<sha>",
+          "where": "S5 commit sha；git ls-remote --tags origin v2-motionmem-eval-test1017-metadata",
           "status": "pending"
         },
         {
@@ -75,7 +75,7 @@
           "kind": "decision",
           "date": "2026-10-17",
           "quote": "同意硬件豁免。然后如果超过一百六十，你需要加入一个丢弃的机制，保证能够继续做。",
-          "scope": "评估分支 test1017：provenance 豁免 gpu_name/compute_cap/sm_count/driver（vae 与 encoder 两段）"
+          "scope": "评估分支 v2-motionmem-eval-test1017：provenance 豁免 gpu_name/compute_cap/sm_count/driver（vae 与 encoder 两段）"
         },
         {
           "kind": "decision",
@@ -93,7 +93,7 @@
           "kind": "decision",
           "date": "2026-10-17",
           "quote": "所有的任务改为在 Great Lakes 上评估，每个都是单卡 / 延续十二条 / 放行 8 个占位 job（各 1 × A40）；其余按你建议",
-          "scope": "评估改 GL：8 个占位 job（超默认 4 个已放行）、每单元单卡；每格 12 条；test1017 移植 v2-eval-0918-motion 的 scripts/evaluation；落点 NFS；本机只生成"
+          "scope": "评估改 GL：8 个占位 job（超默认 4 个已放行）、每单元单卡；每格 12 条；v2-motionmem-eval-test1017 移植 v2-eval-0918-motion 的 scripts/evaluation；落点 NFS；本机只生成"
         },
         {
           "kind": "decision",
@@ -113,9 +113,9 @@
       "downstream": [
         {
           "path": "/data/hongzefu/robomme_policy_learning_MotionJEPA",
-          "branch": "test1017",
+          "branch": "v2-motionmem-eval-test1017",
           "task": "eval-testx-3models",
-          "note": "评估分支子模块锁本任务打的 tag testx-metadata-v1；本任务 done 后方可开工"
+          "note": "评估分支子模块锁本任务打的 tag v2-motionmem-eval-test1017-metadata；本任务 done 后方可开工"
         }
       ]
     }
