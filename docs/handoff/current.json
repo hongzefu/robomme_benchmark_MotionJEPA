@@ -21,10 +21,10 @@
       },
       "state": "planned",
       "state_changed_at": "2026-10-17T23:37:27Z",
-      "state_reason": "计划 2.142：T10／T11／T19 已认可写入；仍 planned，等用户开工令与 PLAN_CONSISTENCY_REVIEW",
+      "state_reason": "计划 2.148：生成侧改在 sled-aspen 执行（aspen 检出已快进到 a3f9ab69），GL 操作留 vail；仍 planned，等用户开工令与 PLAN_CONSISTENCY_REVIEW",
       "owner": {
         "session": null,
-        "host": "sled-vail"
+        "host": "sled-aspen（生成侧）；GL 操作由 sled-vail 会话执行"
       },
       "depends_on": [],
       "pre_handoff": [
@@ -100,6 +100,12 @@
           "date": "2026-10-17",
           "quote": "全部认可 写入计划",
           "scope": "T10：公式 seed 任务性失败 attempt+1 重试上限 100（P8 例外）；T11：P2 扩展到 scripts/hf-upload、check_mixed_h5 两参数、两个测试；T19：评估缓存落 NFS v1-store/cache"
+        },
+        {
+          "kind": "decision",
+          "date": "2026-10-17",
+          "quote": "把这个仓库迁移到 Aspen之后都用 aspen 来执行，还是放在 data 盘里",
+          "scope": "生成侧在 sled-aspen /data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006 执行；aspen 无集群访问，HF 读回校验 job、占位 job 与 worker 由 vail 会话执行"
         }
       ],
       "pending_decisions": [],
