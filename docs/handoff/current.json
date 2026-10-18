@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "written_at": {
-    "utc": "2026-10-18T00:05:51Z",
-    "america_new_york": "2026-10-17T20:05:51-0400"
+    "utc": "2026-10-18T01:05:49Z",
+    "america_new_york": "2026-10-17T21:05:49-0400"
   },
   "repo": {
     "branch": "newtask-v3-MotionJepa1006",
-    "base_head": "1a6548fa"
+    "base_head": "fbabc3df"
   },
   "freeze": {
     "active": false,
@@ -21,7 +21,7 @@
       },
       "state": "planned",
       "state_changed_at": "2026-10-17T23:37:27Z",
-      "state_reason": "计划 2.135（对抗验证修订版）已写、未开工；等待用户开工令（含 T10、T11 确认）与 PLAN_CONSISTENCY_REVIEW",
+      "state_reason": "计划 2.136（统一版：生成侧在本仓库，评估侧移到策略仓库分支 v2-motionmem-eval-testx）已写、未开工；等待用户开工令（含 T10、T11 确认）与 PLAN_CONSISTENCY_REVIEW",
       "owner": {
         "session": null,
         "host": "sled-vail"
@@ -30,7 +30,7 @@
       "pre_handoff": [
         {
           "what": "五组全量生成",
-          "evidence": "GEN_FULL=PASS requested=624",
+          "evidence": "GEN_FULL=PASS requested=624 exhausted=0",
           "where": "artifacts/test-xhard/full/G*/run_summary.json",
           "status": "pending"
         },
@@ -41,20 +41,14 @@
           "status": "pending"
         },
         {
-          "what": "seed 追加进官方 test metadata",
-          "evidence": "META_APPEND=PASS groups=5 tasks=14 added_records=624 holes=0; PROTECTED_APPEND_ONLY=PASS files=14 deleted_lines=28 old_records_unchanged=14 env_id_unchanged=14 added_records=624",
-          "where": "S5 commit sha（待填）",
-          "status": "pending"
-        },
-        {
-          "what": "官方 ckpt 双卡评估",
-          "evidence": "EVAL_XHARD=DONE gpu=0 shard=0 episodes=81 success=<s> fail=<f> timeout=<t> error=<e>; EVAL_XHARD=DONE gpu=1 shard=1 episodes=75 …; EVAL_TABLE=DONE cells=52 episodes=156",
-          "where": "artifacts/test-xhard/eval/shard{0,1}/eval.log, summary.md",
+          "what": "seed 追加进官方 test metadata 并打 tag",
+          "evidence": "META_APPEND=PASS added_records=624 holes=0; PROTECTED_APPEND_ONLY=PASS files=14 deleted_lines=28 old_records_unchanged=14 env_id_unchanged=14; TAG=testx-metadata-v1 sha=<sha>",
+          "where": "S5 commit sha；git ls-remote --tags origin testx-metadata-v1",
           "status": "pending"
         },
         {
           "what": "第 13 条留档",
-          "evidence": "留档 commit sha（待填）",
+          "evidence": "留档 commit sha",
           "where": "docs/xhard-doc/test-xhard5-1017/",
           "status": "pending"
         }
@@ -83,7 +77,7 @@
           "since": "2026-10-17"
         },
         {
-          "what": "T11：对 P2 的显式扩展（scripts/eval-xhard、scripts/hf-upload、check_mixed_h5 两参数）随开工令认可",
+          "what": "T11：对 P2 的显式扩展（scripts/hf-upload、check_mixed_h5 两参数）随开工令认可",
           "since": "2026-10-17"
         }
       ],
@@ -92,6 +86,14 @@
           "what": "等用户开工令；开工后先派 sonnet 只读审查计划自相矛盾",
           "command": "（见计划第一部分五 步 0）",
           "verdict_line": "PLAN_CONSISTENCY_REVIEW=PASS base=<sha> findings=<n> blocking=0"
+        }
+      ],
+      "downstream": [
+        {
+          "path": "/data/hongzefu/robomme_policy_learning_MotionJEPA",
+          "branch": "v2-motionmem-eval-testx",
+          "task": "eval-testx-3models",
+          "note": "评估分支子模块锁本任务打的 tag testx-metadata-v1；本任务 done 后方可开工"
         }
       ]
     }
