@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "written_at": {
-    "utc": "2026-10-18T04:14:15Z",
-    "america_new_york": "2026-10-18T00:14:15-0400"
+    "utc": "2026-10-18T04:20:04Z",
+    "america_new_york": "2026-10-18T00:20:04-0400"
   },
   "repo": {
     "branch": "newtask-v3-MotionJepa1006",
-    "base_head": "01e59196"
+    "base_head": "1ee8003f"
   },
   "freeze": {
     "active": false,
@@ -21,7 +21,7 @@
       },
       "state": "running",
       "state_changed_at": "2026-10-18T04:14:15Z",
-      "state_reason": "开工；PLAN_CONSISTENCY_REVIEW=FAIL base=781bb2c6 findings=10 blocking=1（F1 只影响评估侧冒烟时点，待用户裁决）；用户「尽可能不要阻塞」，不受 F1 影响的生成侧 W3／W2 与 E1 开发先行",
+      "state_reason": "running：PLAN_CONSISTENCY_REVIEW F1 已裁决 (a)；SMOKE1=PASS；W3／W2／E1 worktree 子代理进行中；8 个占位 job 已提交（PENDING）",
       "owner": {
         "session": "https://claude.ai/code/session_01LMCMAVs6vXp1XMWZZALH3N",
         "host": "sled-aspen"
@@ -112,16 +112,20 @@
           "date": "2026-10-18",
           "quote": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/1017-test-xhard5-12per-plan.html 开工 有问题问用户 尽可能不要阻塞",
           "scope": "1017-test-xhard5-12per-plan.html @781bb2c6 全部步骤（生成侧与评估侧），开工前先过 PLAN_CONSISTENCY_REVIEW"
+        },
+        {
+          "kind": "decision",
+          "date": "2026-10-18",
+          "quote": "1a 2同意现在交",
+          "scope": "F1 取 (a)：官方 2 局冒烟与 512+motion@10k 冒烟等本仓库 tag 推远端后再起，不等 HF 上传与读回；8 个 GL 占位 job 立即提交（JobID 64233473–64233480，清单 NFS v1-store/logs/hold-jobs-testx.txt）"
         }
       ],
-      "pending_decisions": [
-        "F1：官方 2 局冒烟与 10k 冒烟是否等本仓库 tag 推远端（ENV_PIN／MANIFEST 依赖 tag，与状态机「冒烟不等它」冲突）；推荐 (a) 冒烟等 tag、不等 HF 上传与读回"
-      ],
+      "pending_decisions": [],
       "next_steps": [
         {
-          "what": "W3、W2 worktree 子代理合并审查后起 smoke 一／二",
+          "what": "W3 合并审查后起 smoke 二，再 Beta 与全量",
           "command": "见计划第二部分一节",
-          "verdict_line": "SMOKE1、SMOKE2=PASS requested=28"
+          "verdict_line": "SMOKE2=PASS requested=28"
         }
       ],
       "downstream": [
