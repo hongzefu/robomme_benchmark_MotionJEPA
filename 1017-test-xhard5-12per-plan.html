@@ -50,6 +50,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>T10</td><td><b>待开工令确认</b>：test 布局公式 seed 任务性失败按 attempt+1 重试、上限 100（对 P8 的例外，出处只有 1013 K3／K10；官方 train 1600 条里 280 条重试过、最大 attempt 7）</td><td>不认可则 attempt 固定 0、缺条如实报</td></tr>
 <tr><td>T11</td><td>对 P2 的显式扩展：本仓库新增 <code>scripts/hf-upload/</code>、改 <code>check_mixed_h5.py</code> 加 <code>--layout</code>／<code>--tasks</code>（它写死 train 布局、默认 16 任务）</td><td>开工令即认可</td></tr>
 <tr><td>T12</td><td><span class="quote">「HTML 里面细节太多了，尽可能缩减，我只关心 high level 的事情」「写在一份统一的 HTML 里」</span></td><td>本文件</td></tr>
+<tr><td>T13</td><td><span class="quote">「同意硬件豁免。然后如果超过一百六十，你需要加入一个丢弃的机制，保证能够继续做。」</span></td><td>评估分支两处小改：sidecar provenance 比对豁免 <code>gpu_name／compute_cap／sm_count／driver</code> 四键（其余 sha、版本照比）；motion 窗超 160 时按「丢最早起点、保留最近 160」继续，不再 raise。两者都经环境变量开启、默认行为不变（4.6）</td></tr>
 </table>
 
 <h2>二、分工</h2>
@@ -361,8 +362,13 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>seed 与难度</td><td>每局 <code>BenchmarkEnvBuilder</code> 解析值与清单比对，不符中止整片</td><td><code>SEED_MATCH=PASS n=1200 mismatch=0</code>（每模型）</td></tr>
 <tr><td>评估口径</td><td><code>max_steps=1300</code>、策略 seed 7、终态 success／fail／timeout／error、只重跑 error、不为挑成功重试，写死在同一启动器</td><td><code>EVAL_&lt;model&gt;=DONE episodes=1200 success= fail= timeout= error=</code></td></tr>
 <tr><td>模型身份</td><td>官方：mme-vla 零 diff；自家：<code>hf sync</code> 后 <code>sha256sum -c SHA256SUMS.pre.txt</code>、<code>check_ckpt_param_tree.py</code>、<code>check_config_provenance.py</code></td><td><code>SERVER_PIN=PASS</code>、<code>CKPT_SHA=PASS</code>、<code>PARAM_TREE_EXACT=PASS</code>、<code>TIC_L0=PASS</code></td></tr>
+<tr><td>motion encoder 同源</td><td>provenance 逐键比对，只豁免四个硬件键</td><td><code>MOTION_PROV=PASS exempt=gpu_name,compute_cap,sm_count,driver</code></td></tr>
+<tr><td>160 窗预算</td><td>导清单前预算核算；超限按 drop_oldest 继续并逐局记录</td><td><code>EVAL_ES_BOUND=DONE max_windows=&lt;n&gt; over=&lt;k&gt;</code>、<code>MOTION_OVERFLOW=drop_oldest episodes_affected=&lt;k&gt;</code></td></tr>
 <tr><td>协议</td><td>开工前核实本分支 <code>policy.py</code> 的 <code>add_buffer</code> 段边界状态机与 927c56d 客户端的 <code>exec_start_idx</code> 发送方式兼容（字段未变、语义收紧）</td><td><code>PROTO_CHECK=PASS</code></td></tr>
 </table>
+<h3>4.6 motion 模型的 encoder 输入与 160 窗预算（T13）</h3>
+<p><b>encoder 送入怎么保证对</b>：motion encoder 不读 h5，sidecar 子进程（Wan VAE + MotionJEPA encoder）按 stride 16、window 33 在线切 256 域原始帧，入口硬断言形制；用哪个 encoder 由 run 目录快照 <code>history_config.resolved.yaml</code>（核 sha256 与 <code>motion_provenance.json</code>）决定；sidecar 握手把 VAE／encoder 权重 sha、源码 sha、torch／cuda／cudnn／diffusers 版本、flags 与离线建库的 <code>store_meta.provenance</code> 逐键比对，不等即 raise；<code>motion_protocol.py</code> 两侧 sha 须同一份。历史上在线现算的 240 个运动窗与离线表逐字节一致（策略仓库 <code>docs/train-infer-consistency.md</code>）。本轮只豁免四个硬件键（离线库在 A100 建、本机是 RTX 6000 Ada），接受 encoder 输出跨 GPU 的数值差并留档写明；下载 ckpt 时连带下载 encoder run 目录与新库的 <code>store_meta.provenance</code>。</p>
+<p><b>160 窗怎么处理</b>：预算是 motion yaml 的 <code>budget: 160</code>，推理侧原契约是零截断、超限 raise（整局落成 error）。本轮：① 清单导出前用真实 h5 的 demo 帧数按 <code>eval_es_bound.py</code> 口径算每局窗数（demo 窗 + 1300 步执行窗），报 <code>EVAL_ES_BOUND=DONE max_windows=&lt;n&gt; over=&lt;k&gt;</code>，超限局不剔除；② 评估分支加 <code>MMEVLA_MOTION_OVERFLOW=drop_oldest</code>：合法起点数超 160 时丢最早的起点、保留最近 160 个窗，每步记丢弃数，结果行加 <code>motion_dropped_max</code>，汇总表单列受影响局数；默认值仍为 raise，训练侧与一致性工具不受影响。这是训练未见过的外推，受影响局的成绩只作参考。</p>
 <div class="warn">⚠ 已知要改一行的地方：motion sidecar 的卡号取自快照 <code>online_gpu</code>（AWS 上写的物理卡号），本分支 <code>policy_config.py</code> 不读 <code>MMEVLA_MOTION_ONLINE_GPU</code>；本机两片各占一卡时 sidecar 必须跟策略同卡，评估分支要让它读该环境变量（legacy-eval README 已记录此坑）。</div>
 
 <h2>五、验收判定行（两侧合一）</h2>
@@ -373,7 +379,8 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>生成</td><td><code>META_APPEND=PASS added_records=624 holes=0</code>；<code>PROTECTED_APPEND_ONLY=PASS files=14 deleted_lines=28 old_records_unchanged=14 env_id_unchanged=14</code>；<code>TAG=testx-metadata-v1 sha=&lt;sha&gt;</code></td><td>P1 范围核对；tag 推到远端</td></tr>
 <tr><td>生成（长尾）</td><td><code>SHA256SUMS=PASS h5=624</code>、<code>HF_UPLOAD=PASS</code>、<code>HF_VERIFY=PASS missing=0 extra=0</code></td><td>GL job 日志末行</td></tr>
 <tr><td>评估</td><td><code>ENV_PIN</code>、<code>PROTO_CHECK</code>、<code>CLIENT_DIFF=PASS files=3</code>、<code>MANIFEST=PASS rows=1200 cells=100 shard0=600 shard1=600</code></td><td>分支就绪</td></tr>
-<tr><td>评估</td><td><code>CKPT_SHA／PARAM_TREE_EXACT／TIC_L0=PASS</code>（每个自家 ckpt）、<code>SERVER_PIN=PASS</code>（官方）</td><td>模型身份</td></tr>
+<tr><td>评估</td><td><code>CKPT_SHA／PARAM_TREE_EXACT／TIC_L0=PASS</code>（每个自家 ckpt）、<code>MOTION_PROV=PASS exempt=4</code>（motion 模型）、<code>SERVER_PIN=PASS</code>（官方）</td><td>模型身份</td></tr>
+<tr><td>评估</td><td><code>EVAL_ES_BOUND=DONE max_windows=&lt;n&gt; over=&lt;k&gt;</code>、<code>MOTION_OVERFLOW=drop_oldest episodes_affected=&lt;k&gt;</code></td><td>160 窗预算核算与丢弃记录</td></tr>
 <tr><td>评估</td><td><code>EVAL_SMOKE_OFFICIAL=DONE episodes=2</code>、<code>EVAL_SMOKE_10K=DONE episodes=100 per_episode_s=&lt;t&gt;</code></td><td>两次冒烟，<code>error=0</code> 才起正式</td></tr>
 <tr><td>评估</td><td><code>EVAL_512_60K／EVAL_512M_60K／EVAL_OFFICIAL=DONE episodes=1200 …</code>、<code>SEED_MATCH=PASS</code> × 3、<code>MANIFEST_SHARED=PASS</code>、<code>EVAL_TABLE=DONE models=3 cells=100</code></td><td>正式三轮与汇总</td></tr>
 <tr><td>两侧</td><td><code>LIGHT_TESTS</code>、<code>PROTECTED</code>、<code>PRE/POST_MERGE_REVIEW</code>、<code>HANDOFF_WRITE</code></td><td>各自仓库的短测、受保护目录、合并审查、交接</td></tr>
@@ -408,7 +415,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <ol>
 <li>本仓库 <code>src/robomme/</code> 零 diff，唯一例外是 14 个 test metadata 的纯追加；<code>pyproject.toml</code>／<code>uv.lock</code>／ManiSkill 钉 <code>07be6fbc</code> 不动；不换 seed 清单、不补 seed（T10 例外待确认）。</li>
 <li>生成只用 GPU0、32 worker、detached tmux；评估用双卡；不提交 Slurm 跑生成或评估；集群只跑 HF 读回校验 job。</li>
-<li>策略仓库：只在 <code>test1017</code> 分支改，<code>v2-motionmem</code> 与训练中的东西不碰；评估分支改动限于 <code>examples/robomme/</code>、<code>.gitmodules</code>／gitlink、<code>scripts/eval-testx/</code>、<code>policy_config.py</code> 读 sidecar 卡号的一行、<code>docs/</code>；服务端模型代码不改。</li>
+<li>策略仓库：只在 <code>test1017</code> 分支改，<code>v2-motionmem</code> 与训练中的东西不碰；评估分支改动限于 <code>examples/robomme/</code>、<code>.gitmodules</code>／gitlink、<code>scripts/eval-testx/</code>、以及 <code>src/mme_vla_suite/policies/</code> 下三处开关式小改（<code>policy_config.py</code> 读 sidecar 卡号、<code>motion_client.py</code> 硬件四键豁免、<code>framesamp_memory.py</code> 超预算 drop_oldest），都经环境变量开启、默认行为不变；模型前向不改。</li>
 <li>官方服务端 mme-vla <code>ecf086c</code> 零 diff；原版客户端 NFS 工作树只读。</li>
 <li>评估只报数不设阈值；只重跑 <code>error</code>；不为挑成功重跑。</li>
 <li>Beta 锚点：生成全量前（本仓库）、每轮评估前（评估分支）；冻结期不 commit。</li>
@@ -439,15 +446,18 @@ uv run --no-sync python scripts/data-generation-newSeed/utils/append_train_metad
 <tr><td><code>examples/robomme/eval.py</code>、<code>xhard0_manifest.py</code>（新）</td><td>从 927c56d 移植清单模式（<code>Args.episode_manifest／shard／video_dir</code>、<code>evaluate_manifest</code>、<code>done_keys</code>），不移植 VLM 子目标部分；保留本分支的 <code>dataset／episode_stride</code> 参数</td></tr>
 <tr><td><code>examples/robomme/env_runner.py</code></td><td>三处：<code>import robomme_xhard</code>；<code>BenchmarkEnvBuilder(env_id=f"{env_id}XHard", override_metadata_path=Path(os.environ["XHARD_METADATA_DIR"]))</code>；<code>self.env_id</code> 仍为原任务名。<code>check_seed</code> 比清单 <code>difficulty</code></td></tr>
 <tr><td><code>src/mme_vla_suite/policies/policy_config.py</code></td><td>一行：<code>online_gpu</code> 优先读环境变量 <code>MMEVLA_MOTION_ONLINE_GPU</code>，缺省回快照值</td></tr>
+<tr><td><code>src/mme_vla_suite/policies/motion_client.py</code></td><td><code>check_provenance</code>：<code>MMEVLA_PROV_EXEMPT_HW=1</code> 时跳过 <code>gpu_name／compute_cap／sm_count／driver</code> 四键，并把实际差异打进日志与 <code>MOTION_PROV</code> 行；默认仍全比</td></tr>
+<tr><td><code>src/mme_vla_suite/policies/framesamp_memory.py</code></td><td><code>_prepare_motion</code>：<code>MMEVLA_MOTION_OVERFLOW=drop_oldest</code> 时合法起点数超 budget 丢最早起点、保留最近 budget 个，计数写 <code>self.motion_dropped_max</code>；默认仍 raise。客户端把该计数写进每局结果</td></tr>
+<tr><td><code>scripts/eval-testx/es_bound.py</code>（新）</td><td>对清单每局按 h5 demo 帧数算窗数（复用 <code>eval_es_bound.py::predicted_windows</code> 口径，max_steps 1300），出 <code>EVAL_ES_BOUND</code> 行与超限局清单</td></tr>
 <tr><td><code>scripts/eval-testx/make_manifest.py</code>（新）</td><td>从子模块 test metadata 导出 1200 局清单与 <code>record_dataset_&lt;Task&gt;XHard_metadata.json</code> 副本（<code>env_id</code>／<code>task</code> 改写）；末行 <code>MANIFEST=PASS</code></td></tr>
 <tr><td><code>scripts/eval-testx/run_shard.sh</code>（新）</td><td>参数 <code>&lt;model&gt; &lt;gpu&gt; &lt;shard&gt; &lt;port&gt;</code>；按 model 选服务端命令；客户端 <code>eval.py --args.episode_manifest … --args.shard … --args.model_seed=7 --args.max_steps=1300</code>；三遍只重跑 error；看门狗 2400／1800 s；末行 <code>EVAL_&lt;model&gt;_s&lt;shard&gt;=DONE …</code></td></tr>
-<tr><td><code>scripts/eval-testx/fetch_ckpt.sh</code>（新）</td><td><code>hf sync hf://buckets/&lt;bucket&gt; v1-store/models/&lt;run&gt; --include '&lt;step&gt;/*' --include 'history_config.*' --include 'motion_provenance.json' --include 'SHA256SUMS.pre.txt'</code> → <code>sha256sum -c</code> → <code>check_ckpt_param_tree.py</code> → <code>check_config_provenance.py</code></td></tr>
+<tr><td><code>scripts/eval-testx/fetch_ckpt.sh</code>（新）</td><td><code>hf sync hf://buckets/&lt;bucket&gt; v1-store/models/&lt;run&gt; --include '&lt;step&gt;/*' --include 'history_config.*' --include 'motion_provenance.json' --include 'SHA256SUMS.pre.txt'</code>，motion 模型另拉 encoder run 目录（<code>checkpoint_epoch_72.pt</code>）与新库 <code>store_meta.provenance</code> → <code>sha256sum -c</code> → <code>check_ckpt_param_tree.py</code> → <code>check_config_provenance.py</code></td></tr>
 <tr><td><code>scripts/eval-testx/summarize.py</code>（新）</td><td>三模型「任务 × 档」表（官网顺序，分母 12，另列 timeout）、<code>MANIFEST_SHARED</code>、<code>EVAL_TABLE</code></td></tr>
 <tr><td><code>examples/robomme/pyproject.toml</code>、<code>uv.lock</code>（新，客户端子项目）</td><td>依赖按 <code>requirements.txt</code>（含 <code>ms_swift</code>、<code>transformers</code>、<code>torch==2.9.1</code>）+ 子模块 editable + <code>packages/openpi-client</code> editable；不再用 micromamba</td></tr>
 <tr><td><code>docs/handoff/current.json</code>（新）、<code>docs/training-doc/eval-testx-1017/</code>、<code>1017-eval-testx-plan.html</code>（指向本文件的短页）</td><td>第 27 条登记、留档、仓库内索引</td></tr>
 </table>
 <pre># 自家服务端（每片一对，卡 g、端口 p）
-CUDA_VISIBLE_DEVICES=$g MMEVLA_MOTION_ONLINE_GPU=$g XLA_PYTHON_CLIENT_MEM_FRACTION=0.4 UV_LINK_MODE=copy uv run --no-sync python scripts/training/serve_policy.py --seed=7 --port=$p policy:checkpoint --policy.dir=v1-store/models/&lt;run&gt;/60000 --policy.config=mme_vla_suite_b128_80k
+CUDA_VISIBLE_DEVICES=$g MMEVLA_MOTION_ONLINE_GPU=$g MMEVLA_PROV_EXEMPT_HW=1 MMEVLA_MOTION_OVERFLOW=drop_oldest XLA_PYTHON_CLIENT_MEM_FRACTION=0.4 UV_LINK_MODE=copy uv run --no-sync python scripts/training/serve_policy.py --seed=7 --port=$p policy:checkpoint --policy.dir=v1-store/models/&lt;run&gt;/60000 --policy.config=mme_vla_suite_b128_80k
 # 官方服务端
 cd /data/hongzefu/RoboMME-benchmark-OOD-eval/third_party/mme-vla &amp;&amp; CUDA_VISIBLE_DEVICES=$g XLA_PYTHON_CLIENT_MEM_FRACTION=0.75 .venv/bin/python scripts/serve_policy.py --seed=7 --port=$p policy:checkpoint --policy.dir=/data/hongzefu/mmevla-ckpt-framesamp-modul-79999 --policy.config=mme_vla_suite
 # 客户端（两种服务端同一条）
@@ -459,7 +469,7 @@ cd examples/robomme &amp;&amp; CUDA_VISIBLE_DEVICES=$g XHARD_METADATA_DIR=&lt;�
 <tr><th>编号</th><th>仓库／分支</th><th>目标</th><th>可写集合</th><th>验收（worktree 内，CPU）</th></tr>
 <tr><td>W3（opus，worktree）</td><td>本仓库</td><td><code>check_mixed_h5.py</code> 加 <code>--layout</code>／<code>--tasks</code></td><td>该文件 + <code>tests/lightweight/test_check_mixed_h5_layout.py</code></td><td>定向 pytest（<code>UV_PROJECT_ENVIRONMENT=&lt;主 .venv&gt; PYTHONPATH=&lt;worktree&gt;/src</code>）</td></tr>
 <tr><td>W2（opus，worktree）</td><td>本仓库</td><td>sha 清单、上传、GL 校验脚本</td><td><code>scripts/hf-upload/**</code> + <code>tests/lightweight/test_hf_sha256sums.py</code></td><td>定向 pytest；<code>grep</code> 无 token 字面量</td></tr>
-<tr><td>E1（opus，worktree）</td><td>策略仓库 <code>test1017</code></td><td>二节全部文件</td><td>二节清单；禁触 <code>src/mme_vla_suite</code> 除 <code>policy_config.py</code> 一行、训练脚本、<code>v1-store</code></td><td>清单导出单测（合成 metadata，断言 1200／100 格／600／600 与 G4／G3 取样）；<code>diff -ru -x '*_test.py' -x __pycache__ &lt;927c56d&gt; examples/robomme</code> 只差允许文件</td></tr>
+<tr><td>E1（opus，worktree）</td><td>策略仓库 <code>test1017</code></td><td>二节全部文件</td><td>二节清单；禁触 <code>src/mme_vla_suite</code> 除 <code>policies/</code> 下三处开关式小改、训练脚本、<code>v1-store</code></td><td>清单导出单测（合成 metadata，断言 1200／100 格／600／600 与 G4／G3 取样）；<code>diff -ru -x '*_test.py' -x __pycache__ &lt;927c56d&gt; examples/robomme</code> 只差允许文件</td></tr>
 <tr><td>A1–A3（sonnet）</td><td>各自</td><td>合并前审查</td><td>无</td><td><code>PRE_MERGE_REVIEW</code></td></tr>
 <tr><td>R1／R2／R3（opus，运行型）</td><td>各自主检出</td><td>起生成全量／每轮评估两片／上传 tmux，立即交回</td><td>只写产物目录</td><td>起跑判据原始输出、<code>tmux ls</code></td></tr>
 <tr><td>主会话</td><td>两侧</td><td>只读核实、环境、smoke、metadata 追加、tag、ckpt 下载核验、GL job、Beta／handoff／留档、Monitor、清理</td><td>—</td><td>—</td></tr>
@@ -494,6 +504,8 @@ cd examples/robomme &amp;&amp; CUDA_VISIBLE_DEVICES=$g XHARD_METADATA_DIR=&lt;�
 <tr><td><code>add_buffer</code> 段边界状态机对 927c56d 客户端的 <code>exec_start_idx</code> 发送方式报错</td><td><code>PROTO_CHECK</code> 在开工前核实；不兼容则客户端按本分支逻辑同步一处并记入 <code>CLIENT_DIFF</code></td></tr>
 <tr><td>两条 run 的 60k bucket 迟到</td><td>评估任务 <code>depends_on</code> 挂起，先跑官方 2 局冒烟与分支搭建；10k 冒烟只等 512 的 10000</td></tr>
 <tr><td><code>max_steps=1300</code> 对 xhard18／20 偏短</td><td>沿用官方口径，表里单列 timeout</td></tr>
+<tr><td>motion 窗超 160 的局（xhard 长 demo）走 drop_oldest，是训练未见的外推</td><td>逐局记 <code>motion_dropped_max</code>，汇总单列受影响局；不改 160</td></tr>
+<tr><td>豁免硬件键后 encoder 输出跨 GPU 有数值差</td><td>留档写明；不做跨机逐位对拍</td></tr>
 <tr><td>评估耗时远超估计</td><td>10k 冒烟校准；单轮外推超 10 小时先报用户</td></tr>
 <tr><td>客户端子项目依赖重（<code>ms_swift</code>、<code>transformers</code>）解析慢或冲突</td><td>按 <code>requirements.txt</code> 钉版本；失败记录原始报错交用户</td></tr>
 </table>
@@ -503,6 +515,7 @@ cd examples/robomme &amp;&amp; CUDA_VISIBLE_DEVICES=$g XHARD_METADATA_DIR=&lt;�
 <li>生成器「循环里无 base 档」与校验工具加参数后的行为靠 smoke 与单测证实。</li>
 <li>单局评估耗时、同卡三进程显存、两条 run 的 bucket 名与 run 级文件是否齐全，都未实测。</li>
 <li>策略分支 <code>policy.py</code> 的段边界状态机与官方客户端的兼容性未逐行核。</li>
+<li>test xhard 的 demo 帧数分布未算，超 160 窗的局数要等 <code>EVAL_ES_BOUND</code>；drop_oldest 对成绩的影响无先例。</li>
 <li>52 格各 12 局、base 档各 12 局，样本小，只能看趋势。</li>
 </ul>
 

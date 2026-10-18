@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "written_at": {
-    "utc": "2026-10-18T01:05:49Z",
-    "america_new_york": "2026-10-17T21:05:49-0400"
+    "utc": "2026-10-18T01:20:00Z",
+    "america_new_york": "2026-10-17T21:20:00-0400"
   },
   "repo": {
     "branch": "newtask-v3-MotionJepa1006",
@@ -70,7 +70,14 @@
         }
       ],
       "running_handles": [],
-      "authorizations": [],
+      "authorizations": [
+        {
+          "kind": "decision",
+          "date": "2026-10-17",
+          "quote": "同意硬件豁免。然后如果超过一百六十，你需要加入一个丢弃的机制，保证能够继续做。",
+          "scope": "评估分支 test1017：provenance 豁免 gpu_name/compute_cap/sm_count/driver；motion 窗超 160 按 drop_oldest 继续"
+        }
+      ],
       "pending_decisions": [
         {
           "what": "T10：test 布局公式 seed 的 attempt+1 重试（对 P8 的例外）是否认可",
