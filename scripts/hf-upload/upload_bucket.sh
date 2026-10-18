@@ -16,6 +16,13 @@
 # 末行判定行：HF_UPLOAD=PASS|FAIL objects=<n> bytes=<n>
 set -euo pipefail
 
+# 任何退出路径（set -e、信号）都保证有且只有一行末行判定行
+VERDICT_DONE=0
+on_exit() { if [ "$VERDICT_DONE" = 0 ]; then echo "HF_UPLOAD=FAIL objects=? bytes=?"; fi; }
+trap on_exit EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM HUP
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$REPO_ROOT"
@@ -29,7 +36,7 @@ BATCH="${BATCH:-10}"
 read -r -a HF_CMD <<< "${HF_CLI:-uvx --python 3.11 --from huggingface_hub==1.30.0 hf}"
 read -r -a DIRS <<< "$GROUP_DIRS"
 
-fail() { echo "错误: $*"; echo "HF_UPLOAD=FAIL objects=0 bytes=0"; exit 1; }
+fail() { echo "错误: $*"; echo "HF_UPLOAD=FAIL objects=0 bytes=0"; VERDICT_DONE=1; exit 1; }
 hf() { "${HF_CMD[@]}" "$@"; }
 
 [ -n "${HF_TOKEN:-}" ] || fail "环境变量 HF_TOKEN 未设置（在交互 shell 里 export 后再起 tmux）"
@@ -99,7 +106,9 @@ bytes="$(printf '%s\n' "$list_line" | sed -n 's/.* bytes=\([0-9]*\).*/\1/p')"
 echo "结束时间(UTC): $(date -u +%FT%TZ)"
 if [ "$rc" = 0 ] && [[ "$list_line" == HF_LIST=PASS* ]]; then
   echo "HF_UPLOAD=PASS objects=${objects:-0} bytes=${bytes:-0}"
+  VERDICT_DONE=1
 else
   echo "HF_UPLOAD=FAIL objects=${objects:-0} bytes=${bytes:-0}"
+  VERDICT_DONE=1
   exit 1
 fi

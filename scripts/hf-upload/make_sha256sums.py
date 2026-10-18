@@ -77,7 +77,17 @@ def format_manifest(rows: list[tuple[str, int, str]]) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    """读文件异常（OSError、字节数与 stat 不符）也输出末行 FAIL 判定行并非 0 退出。"""
+    try:
+        return _main(argv)
+    except (OSError, RuntimeError) as e:
+        print(f"错误: {type(e).__name__}: {e}")
+        print("SHA256SUMS=FAIL h5=0 files=0 bytes=0")
+        return 1
+
+
+def _main(argv: list[str] | None = None) -> int:
+    ap =argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("dirs", nargs="+", type=Path, help="产物目录（basename 作为 bucket 内前缀）")
     ap.add_argument("--out-dir", type=Path, required=True, help="SHA256SUMS 与 MANIFEST.tsv 的输出目录")
     ap.add_argument("--expect-h5", type=int, default=None, help="断言 .h5 文件总数，不符即 FAIL")

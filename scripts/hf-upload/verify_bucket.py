@@ -243,7 +243,23 @@ def stream_with_retry(url: str, token: str | None, label: str) -> tuple[int, str
 
 
 # ----------------------------------------------------------------- 主流程
+FAIL_LINE_UNKNOWN = "HF_VERIFY=FAIL objects=-1 sha_match=-1 size_equal=-1 missing=-1 extra=-1 mismatch=-1 checked=-1"
+
+
 def main(argv: list[str] | None = None) -> int:
+    """异常（重试耗尽、401/403/404、清单缺失或格式错）也输出末行 FAIL 判定行；错误信息不含 token。"""
+    try:
+        return _main(argv)
+    except Exception as e:  # noqa: BLE001
+        print(f"错误: {type(e).__name__}: {e}")
+        if "--list-only" in (sys.argv[1:] if argv is None else argv):
+            print("HF_LIST=FAIL objects=-1 bytes=-1 missing=-1 extra=-1 size_mismatch=-1")
+        else:
+            print(FAIL_LINE_UNKNOWN)
+        return 1
+
+
+def _main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--bucket", default=DEFAULT_BUCKET)
     ap.add_argument("--endpoint", default=os.environ.get("HF_ENDPOINT", "https://huggingface.co").rstrip("/"))

@@ -229,3 +229,84 @@ def test_next_link_parsing():
     assert vb._next_link('<https://h/api/x?cursor=abc>; rel="next"') == "https://h/api/x?cursor=abc"
     assert vb._next_link(None) is None
     assert vb._next_link('<https://h/p>; rel="prev"') is None
+
+
+# ----------------------------------------------------------------- 异常路径也必须输出末行判定行
+def test_make_sha256sums_read_error_prints_fail(groups, tmp_path, monkeypatch, capsys):
+    root, _ = groups
+
+    def boom(path, chunk_bytes=0):
+        raise OSError("模拟读盘失败")
+
+    monkeypatch.setattr(ms, "sha256_file", boom)
+    rc = ms.main(["--out-dir", str(tmp_path / "o"), str(root / "G5"), str(root / "G1")])
+    assert rc != 0
+    assert capsys.readouterr().out.strip().splitlines()[-1] == "SHA256SUMS=FAIL h5=0 files=0 bytes=0"
+
+
+def test_make_sha256sums_size_mismatch_prints_fail(groups, tmp_path, monkeypatch, capsys):
+    root, _ = groups
+    monkeypatch.setattr(ms, "sha256_file", lambda path, chunk_bytes=0: ("0" * 64, -1))
+    rc = ms.main(["--out-dir", str(tmp_path / "o"), str(root / "G5"), str(root / "G1")])
+    assert rc != 0
+    out = capsys.readouterr().out
+    assert "RuntimeError" in out
+    assert out.strip().splitlines()[-1].startswith("SHA256SUMS=FAIL ")
+
+
+def test_verify_bucket_network_error_prints_fail(monkeypatch, capsys):
+    monkeypatch.setenv("HF_TOKEN", "dummy-token-value")
+    rc = vb.main(["--endpoint", "http://127.0.0.1:9", "--bucket", "x/y"])
+    assert rc != 0
+    out = capsys.readouterr().out
+    last = out.strip().splitlines()[-1]
+    assert last.startswith("HF_VERIFY=FAIL objects=")
+    for key in ("sha_match=", "size_equal=", "missing=", "extra=", "mismatch=", "checked="):
+        assert key in last
+    assert "dummy-token-value" not in out
+
+
+def test_verify_bucket_list_only_error_prints_hf_list_fail(monkeypatch, capsys):
+    monkeypatch.delenv("HF_TOKEN", raising=False)
+    rc = vb.main(["--endpoint", "http://127.0.0.1:9", "--bucket", "x/y", "--list-only"])
+    assert rc != 0
+    assert capsys.readouterr().out.strip().splitlines()[-1].startswith("HF_LIST=FAIL ")
+
+
+def _run_upload(tmp_path, groups_root, hf_cli, group_dirs=None):
+    import os
+
+    env = dict(os.environ)
+    env.update(
+        HF_TOKEN="dummy",
+        HF_CLI=hf_cli,
+        HF_ENDPOINT="http://127.0.0.1:9",
+        EXPECT_H5="3",
+        GROUP_DIRS=group_dirs or f"{groups_root / 'G5'} {groups_root / 'G1'}",
+        OUT_DIR=str(tmp_path / "upload"),
+    )
+    return subprocess.run(
+        ["bash", str(HF_DIR / "upload_bucket.sh")], capture_output=True, text=True, env=env, timeout=120
+    )
+
+
+def test_upload_bucket_fail_path_single_verdict(groups, tmp_path):
+    root, _ = groups
+    r = _run_upload(tmp_path, root, "true", group_dirs=str(tmp_path / "不存在的目录" / "G1"))
+    assert r.returncode != 0
+    lines = r.stdout.strip().splitlines()
+    assert lines[-1].startswith("HF_UPLOAD=FAIL ")
+    assert sum(ln.startswith("HF_UPLOAD=") for ln in lines) == 1  # fail() 之后 EXIT trap 不重复输出
+
+
+def test_upload_bucket_signal_exit_still_prints_fail(groups, tmp_path):
+    root, _ = groups
+    stub = tmp_path / "hf_stub.sh"
+    # 桩 hf：被 upload_bucket.sh 直接调用时给父进程发 SIGTERM，模拟非 fail() 的意外退出
+    stub.write_text('#!/bin/bash\nkill -TERM "$PPID"\nsleep 2\n')
+    stub.chmod(0o755)
+    r = _run_upload(tmp_path, root, str(stub))
+    assert r.returncode != 0
+    lines = r.stdout.strip().splitlines()
+    assert lines[-1] == "HF_UPLOAD=FAIL objects=? bytes=?"
+    assert sum(ln.startswith("HF_UPLOAD=") for ln in lines) == 1
