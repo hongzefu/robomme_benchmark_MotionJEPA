@@ -450,7 +450,7 @@ nproc; free -g | sed -n 2p
     - **4 模仿 Imitation**：4.1 MoveCube、4.2 InsertPeg、4.3 PatternLock、4.4 RouteStick。
     - 不按 env_code、字母序或改法分组排任务；表格要编号时用官网编号（如 `2.3`），可另加「类别」列。只列部分任务时，保持上述相对顺序。代码里需要任务顺序时（如 `vis/synthesize_reference_timeline.py::SUITE_ORDER`）同样照此顺序；`seed_layout.py` 的 env_code 是 seed 公式的一部分，不受本条影响、不改。
 - **P7. 本仓库生成一律本机执行，不设计任何 GreatLakes（gl）生成机制**（2026-10-12 用户原话「就本仓库的这个生成计划不要再做任何的gl生成的机制都使用本机来生成」；同日此前用户原话「改为在本机用gpu0」）。
-    - 生成计划、runbook 与留档里不写 sbatch、srun、占位 job、集群提交器、集群校验 job 等任何集群步骤；长任务只用本机 detached tmux（正本第 7 条，会话名前缀 `xh-`）。
+    - 生成计划、runbook 与留档里不写 sbatch、srun、占位 job、集群提交器等任何集群步骤；长任务只用本机 detached tmux（正本第 7 条，会话名前缀 `xh-`）。**唯一例外是第 15 条的 HF 读回校验纯 CPU job**（2026-10-17 用户原话「Hugging Face 读回用 Great Lakes 来实现」；规格见覆盖第 8 条），它只校验已上传对象，不生成、不评估。
     - `1012-swap-collision-plan.html` 碰撞计划的 smoke 与全量用卡固定本机 GPU0（`--gpus 0`）；起跑前只核对 GPU0，被他人占满即停下问用户，不自行换卡、不上集群。
     - **环境 C 条文（2026-10-13，计划 1013 K17 用户「9 全部同意」）**：AWS p4de 上用卡与 worker 数由测速阶梯（`calibrate_parallelism.py`，默认 L32／L64／L96，卡序按 NUMA）决定、不限 GPU0；其余照旧——不用 Slurm／集群，长任务只用本机 detached tmux（会话名前缀 `xh-`），git 提交只在 vail。
     - 与「覆盖第 8 条」的关系：覆盖第 8 条描述的是本环境当前无集群访问这一事实，P7 是对本仓库生成计划的显式约束——即使将来本机获得集群访问，本仓库的生成也不适用集群路径，确需变更须用户另行明确决定。

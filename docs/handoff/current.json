@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "written_at": {
-    "utc": "2026-10-17T23:37:27Z",
-    "america_new_york": "2026-10-17T19:37:27-0400"
+    "utc": "2026-10-18T00:05:51Z",
+    "america_new_york": "2026-10-17T20:05:51-0400"
   },
   "repo": {
     "branch": "newtask-v3-MotionJepa1006",
-    "base_head": "026c43a1162689c89fd04c9e1c8677e7f2f5e273"
+    "base_head": "1a6548fa"
   },
   "freeze": {
     "active": false,
@@ -21,7 +21,7 @@
       },
       "state": "planned",
       "state_changed_at": "2026-10-17T23:37:27Z",
-      "state_reason": "计划已写、未开工；等待用户开工令与 PLAN_CONSISTENCY_REVIEW",
+      "state_reason": "计划 2.135（对抗验证修订版）已写、未开工；等待用户开工令（含 T10、T11 确认）与 PLAN_CONSISTENCY_REVIEW",
       "owner": {
         "session": null,
         "host": "sled-vail"
@@ -42,13 +42,13 @@
         },
         {
           "what": "seed 追加进官方 test metadata",
-          "evidence": "META_APPEND=PASS groups=5 tasks=14 added_records=624 holes=0; PROTECTED_APPEND_ONLY=PASS files=14 deleted_lines=0",
+          "evidence": "META_APPEND=PASS groups=5 tasks=14 added_records=624 holes=0; PROTECTED_APPEND_ONLY=PASS files=14 deleted_lines=28 old_records_unchanged=14 env_id_unchanged=14 added_records=624",
           "where": "S5 commit sha（待填）",
           "status": "pending"
         },
         {
           "what": "官方 ckpt 双卡评估",
-          "evidence": "EVAL_XHARD=DONE gpu=0 shard=0 episodes=81; EVAL_XHARD=DONE gpu=1 shard=1 episodes=75; EVAL_TABLE=DONE cells=52 episodes=156",
+          "evidence": "EVAL_XHARD=DONE gpu=0 shard=0 episodes=81 success=<s> fail=<f> timeout=<t> error=<e>; EVAL_XHARD=DONE gpu=1 shard=1 episodes=75 …; EVAL_TABLE=DONE cells=52 episodes=156",
           "where": "artifacts/test-xhard/eval/shard{0,1}/eval.log, summary.md",
           "status": "pending"
         },
@@ -61,14 +61,14 @@
       ],
       "long_tail": [
         {
-          "what": "HF bucket 上传",
+          "what": "HF bucket 上传（含本机算 SHA256SUMS）",
           "tmux": "xh-testx-upload",
           "log": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/test-xhard/upload/upload.log",
           "done_line": "HF_UPLOAD=PASS",
           "status": "pending"
         },
         {
-          "what": "GL 纯 CPU job 读回校验",
+          "what": "GL 纯 CPU job 读回校验（HF_UPLOAD=PASS 后须由当时的会话提交 job）",
           "tmux": null,
           "log": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/logs/testx-hfverify/testx-hfverify_<jobid>.out",
           "done_line": "HF_VERIFY=",
@@ -77,7 +77,16 @@
       ],
       "running_handles": [],
       "authorizations": [],
-      "pending_decisions": [],
+      "pending_decisions": [
+        {
+          "what": "T10：test 布局公式 seed 的 attempt+1 重试（对 P8 的例外）是否认可",
+          "since": "2026-10-17"
+        },
+        {
+          "what": "T11：对 P2 的显式扩展（scripts/eval-xhard、scripts/hf-upload、check_mixed_h5 两参数）随开工令认可",
+          "since": "2026-10-17"
+        }
+      ],
       "next_steps": [
         {
           "what": "等用户开工令；开工后先派 sonnet 只读审查计划自相矛盾",
