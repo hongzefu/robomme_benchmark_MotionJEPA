@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<title>1017-test-xhard5-12per-plan — test 布局 xhard 五档生成（本仓库）＋三模型本机双卡评估（策略仓库评估分支）</title>
+<title>1017-test-xhard5-12per-plan — test 布局 xhard 五档生成（本仓库）＋三模型 Great Lakes 八卡评估（策略仓库评估分支）</title>
 <style>
 body{font-family:-apple-system,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;max-width:1120px;margin:24px auto;padding:0 16px;line-height:1.6;color:#1b1b1b;background:#fff}
 h1{border-bottom:3px solid #333;padding-bottom:6px;margin-top:44px}
@@ -25,12 +25,12 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 </head>
 <body>
 
-<h1 style="margin-top:0;border:none">1017-test-xhard5-12per-plan.html — test 布局 xhard 五档生成（本仓库）＋三模型本机双卡评估（策略仓库评估分支）</h1>
+<h1 style="margin-top:0;border:none">1017-test-xhard5-12per-plan.html — test 布局 xhard 五档生成（本仓库）＋三模型 Great Lakes 八卡评估（策略仓库评估分支）</h1>
 
 <div class="intro">
-<p><b>这份计划管两件事</b>：① 本仓库生成 test 布局的 xhard 五档、每格 12 条，追加进官方 test metadata 并上传 HF；② 在策略仓库 <code>robomme_policy_learning_MotionJEPA</code> 开评估分支 <code>test1017</code>，用同一份清单在本机两张卡上评三个模型：512 @60k、512+motion @60k、官方 FrameSamp+Modulation 79999（顺序如此，官方最后）。只写高层决策，细节以第二部分的命令与判据为准；本版（2.136）在 2.135（已过一轮全 Sonnet 对抗验证，修订记录见 commit <code>fbabc3df</code>）基础上按用户 10-17 晚的裁决改写为统一版。</p>
+<p><b>这份计划管两件事</b>：① 本仓库生成 test 布局的 xhard 五档、每格 12 条，追加进官方 test metadata 并上传 HF；② 在策略仓库 <code>robomme_policy_learning_MotionJEPA</code> 开评估分支 <code>test1017</code>，用同一份清单在 Great Lakes 上（8 个占位 job、各 1×A40、每单元单卡）评三个模型：512 @60k、512+motion @60k、官方 FrameSamp+Modulation 79999（顺序如此，官方最后）。只写高层决策，细节以第二部分的命令与判据为准；本版（2.136）在 2.135（已过一轮全 Sonnet 对抗验证，修订记录见 commit <code>fbabc3df</code>）基础上按用户 10-17 晚的裁决改写为统一版。</p>
 <p><b>锚点</b>：本仓库 HEAD <code>fbabc3df</code>；策略仓库本机检出 <code>/data/hongzefu/robomme_policy_learning_MotionJEPA</code> 分支 <code>v2-motionmem</code> @ <code>82e5175</code>（评估分支从它分出，下一功能编号 <code>commitV11.22</code>）；官方服务端代码 mme-vla <code>ecf086c</code>（本机检出 <code>/data/hongzefu/RoboMME-benchmark-OOD-eval/third_party/mme-vla</code>）；官方清单模式客户端 <code>927c56d</code>（NFS 工作树 <code>robomme_policy_learning-official-xhard0</code>）；两条训练 run（1016 计划，AWS）：512 = <code>mixed8-200-m8x8-modul-b128-80k</code>，512+motion = <code>mixed8-200-m8x8-modul-motion-b128-80k</code>，各取 step 60000（10k 冒烟取 512 的 10000）。</p>
-<p><b>授权边界</b>：只规划不实施；开工令按第 2 条，开工前派 sonnet 只读审本版出 <code>PLAN_CONSISTENCY_REVIEW</code>。一切生成与评估都在本机 sled-vail（GPU0 生成，双卡评估）；集群只用于 HF 读回校验纯 CPU job。</p>
+<p><b>授权边界</b>：只规划不实施；开工令按第 2 条，开工前派 sonnet 只读审本版出 <code>PLAN_CONSISTENCY_REVIEW</code>。生成在本机 sled-vail GPU0；评估在 Great Lakes（用户 2026-10-17 放行 8 个占位 job，各 1×A40，超出默认 4 个的部分已获放行）；另有 HF 读回校验纯 CPU job。集群操作按策略仓库自带的 <code>greatlakes.md</code>（account chaijy2、spgpu、占位 job + <code>srun --overlap --exact --gpu_cmode=shared</code>）。</p>
 </div>
 
 <h1>第一部分（给人看）</h1>
@@ -45,7 +45,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>T5</td><td><span class="quote">「Seed 加入 metadata 同意，直接加在 test 后面」</span></td><td>追加到 <code>src/robomme/env_metadata/test/</code> 14 个文件、ep50 起、只纯追加（P1 范围）</td></tr>
 <tr><td>T6</td><td><span class="quote">「同意反过来。派生 seed 的任务全部在本 repo 进行，所有的评估…都在新的 repo 来实现」「新的 repo 指的是 policy learning 这个 repo 开一个新的 branch」</span></td><td>本仓库零评估代码；评估全部在策略仓库分支 <code>test1017</code></td></tr>
 <tr><td>T7</td><td><span class="quote">「60k 两个 checkpoint 的评估都只需要每个难度评十二集，easy…也只需要十二集」「官方 FrameSamp 也按同一清单 1200 局同意」</span></td><td>每任务每档 episode 升序前 12，共 1200 局；三模型共用一份清单</td></tr>
-<tr><td>T8</td><td><span class="quote">「所有的评估都在本机两个卡进行，不需要考虑 Great Lakes」「有两个 GPU，你要分开跑」</span></td><td>每模型一轮，两卡各一片 600 局；不用集群</td></tr>
+<tr><td>T8</td><td><span class="quote">「所有的任务改为在 Great Lakes 上评估，每个都是单卡」「放行 8 个占位 job（各 1 × A40）；其余按你建议」</span>（取代此前「本机两卡」口径）</td><td>8 个占位 job（1×A40／1 CPU／24 G／48 h／<code>gpu_cmode=shared</code>），登录节点 8 个 worker 动态抢单元，每单元一个 <code>srun</code> step、模型进程与仿真进程同卡；本机不再跑任何评估</td></tr>
 <tr><td>T9</td><td><span class="quote">「官方的 frame sample modulation 最后再跑，优先跑我要的这两个」「可以先拿十 K 的跑冒烟」</span></td><td>顺序：官方 2 局链路冒烟 → 512 @10k 100 局冒烟 → 512 @60k → 512+motion @60k → 官方 79999</td></tr>
 <tr><td>T10</td><td><b>待开工令确认</b>：test 布局公式 seed 任务性失败按 attempt+1 重试、上限 100（对 P8 的例外，出处只有 1013 K3／K10；官方 train 1600 条里 280 条重试过、最大 attempt 7）</td><td>不认可则 attempt 固定 0、缺条如实报</td></tr>
 <tr><td>T11</td><td>对 P2 的显式扩展：本仓库新增 <code>scripts/hf-upload/</code>、改 <code>check_mixed_h5.py</code> 加 <code>--layout</code>／<code>--tasks</code>（它写死 train 布局、默认 16 任务）</td><td>开工令即认可</td></tr>
@@ -53,6 +53,8 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>T13</td><td><span class="quote">「同意硬件豁免。然后如果超过一百六十，你需要加入一个丢弃的机制，保证能够继续做。」「用 2000」「超出的量全由执行段等距抽稀承担，恰好填满 160 个窗…先沿用」</span></td><td>provenance 比对豁免 <code>gpu_name／compute_cap／sm_count／driver</code> 四键（vae 与 encoder 两段都豁免，其余 sha、版本照比）；motion 窗超 160 沿用上次评估分支已有的 <code>MMEVLA_MOTION_OVERFLOW=resample</code>（demo 优先、执行段等距抽稀、恰好填满 160），移植到 <code>test1017</code>；<code>max_steps</code> 三模型统一 <b>2000</b>（上次四任务评估定值，oracle 在 xhard 最长 1312 步）（4.6）</td></tr>
 <tr><td>T14</td><td><span class="quote">「video demo 有一个 padding…没有满三十二帧，就是满十六帧的也要做 padding 的一个机制」「这个你也要实现」</span></td><td>已实现、沿用：训练库布局 <code>motion-768-grid16-demopad17-v1</code> 与在线推理同契约——demo 段起点剩 ≥17 个真实帧即保留、不足 33 用 demo 末帧重复补齐（<code>repeat_last</code>），恰好 16 帧不编；执行段不补帧。门槛 17 是训练库定死的，推理改 16 会与训练不一致，故不改；从 run 快照核 <code>DEMO_PAD=PASS min_real=17 pad=repeat_last</code>（4.6，图 3）</td></tr>
 <tr><td>T15</td><td><span class="quote">「你再次对抗验证，核实一下上一次的实现有哪些特殊的机制，都要检查一下」「上一次训练的四个 task 的评估」</span></td><td>两轮全 Sonnet 对抗验证（7 视角 99 条：23 确认、72 部分成立、4 驳回）盘点出的机制全部补进 4.7 与第二部分二；判定行相应新增</td></tr>
+<tr><td>T16</td><td><span class="quote">「延续十二条」</span>（在看过「每格 5 条 vs 12 条」的抽样模拟后）</td><td>每格 12 条不变；模拟结论：5 条只能分辨模型间 ≥10 个百分点的差距，12 条到 5～7 个百分点</td></tr>
+<tr><td>T17</td><td>代码基底（用户「其余按你建议」）</td><td><code>test1017</code> 从 <code>v2-motionmem</code> HEAD 分出，整目录移植上次 GL 评估分支 <code>v2-eval-0918-motion</code> 的 <code>scripts/evaluation/</code>（占位 job 模板、<code>gl_hold_pool</code>／<code>gl_hold_queue</code> 抢单、<code>run_shard.sh</code> 分块与探针、resample、<code>check_checkpoint</code>、<code>merge_shards</code>），不再移植 927c56d 清单模式；GL 执行副本 = NFS 检出切到 <code>test1017</code></td></tr>
 </table>
 
 <h2>二、分工</h2>
@@ -60,128 +62,143 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><th>方</th><th>做什么</th><th>产出与交接物</th></tr>
 <tr><td>本仓库（生成侧）</td><td>624 条生成 → 五组校验 → seed 追加 metadata → <b>打 tag <code>testx-metadata-v1</code></b> → 上传 HF、GL 读回校验 → 留档</td><td>tag（评估侧子模块锁它）；bucket；<code>docs/xhard-doc/test-xhard5-1017/</code></td></tr>
 <tr><td>训练侧（策略仓库 <code>v2-motionmem</code>，AWS，1016 计划）</td><td>两条 run 训到 60k 并按 1016 口径上传 HF</td><td>两个 run 的 bucket（含 run 级 <code>history_config.resolved.yaml</code>、<code>motion_provenance.json</code>、<code>SHA256SUMS.pre.txt</code> 与 step 目录）</td></tr>
-<tr><td>评估侧（策略仓库分支 <code>test1017</code>，本机双卡）</td><td>子模块改指本仓库 tag；一份清单模式客户端；三套服务端启动；清单、双卡启动器、汇总；留档</td><td>三模型「任务 × 档」成功率表；<code>v1-store/evaluation/testx/</code>；<code>docs/training-doc/eval-testx-1017/</code></td></tr>
+<tr><td>评估侧（策略仓库分支 <code>test1017</code>，NFS 检出 + Great Lakes 8 卡）</td><td>子模块改指本仓库 tag；移植上次 GL 流水线并加三处改动（按难度分流建环境、1200 局清单替换 4 任务写死、<code>episode_ids</code> 参数）；三套服务端；8 个占位 job + 8 个 worker 抢单；汇总；留档</td><td>三模型「任务 × 档」成功率表；NFS <code>v1-store/evaluation/testx-*/</code>；<code>docs/training-doc/eval-testx-1017/</code></td></tr>
 </table>
 
-<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 715" font-family="sans-serif" font-size="12" fill="#1f2937">
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 730" font-family="sans-serif" font-size="12">
   <defs>
-    <marker id="arr" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/>
-    </marker>
-    <marker id="arrA" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#b45309"/>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333333"/>
     </marker>
   </defs>
+  <rect x="0" y="0" width="1000" height="730" fill="#ffffff"/>
 
-  <rect x="0" y="0" width="1000" height="715" fill="#ffffff"/>
-  <text x="500" y="30" text-anchor="middle" font-size="17" font-weight="bold">图 2：两仓库分工与三模型共用一条评估链路</text>
+  <!-- 标题 -->
+  <text x="500" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#222222">图 2：两仓库分工与 Great Lakes 八卡评估流水线</text>
 
-  <!-- ===== 生成侧（左上虚线框） ===== -->
-  <rect x="20" y="52" width="485" height="148" fill="#eef6ff" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="6,4"/>
-  <text x="32" y="70" font-weight="bold">生成侧：本仓库 robomme_benchmark_newtask-v3</text>
-  <text x="32" y="86" font-weight="bold">（分支 newtask-v3-MotionJepa1006）</text>
+  <!-- 图例 -->
+  <rect x="700" y="50" width="285" height="70" fill="#ffffff" stroke="#999999" stroke-width="1"/>
+  <rect x="712" y="60" width="30" height="14" fill="none" stroke="#666666" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="750" y="72" fill="#222222">虚线框 = 仓库／机器边界</text>
+  <rect x="712" y="80" width="30" height="14" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="750" y="92" fill="#222222">实线框 = 步骤或进程</text>
+  <line x1="712" y1="107" x2="742" y2="107" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="750" y="111" fill="#222222">箭头标注 = 一致性锚点</text>
 
-  <rect x="34" y="98" width="134" height="88" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
-  <text x="101" y="130" text-anchor="middle">生成 624 条 xhard</text>
-  <text x="101" y="146" text-anchor="middle">（test 布局 ep50 起，</text>
-  <text x="101" y="162" text-anchor="middle">52 格 × 12）</text>
+  <!-- 生成侧 虚线框 -->
+  <rect x="15" y="50" width="460" height="150" fill="#f4f8ff" stroke="#666666" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="25" y="70" fill="#222222" font-weight="bold">生成侧：本仓库（sled-vail GPU0）</text>
+  <!-- 框 A -->
+  <rect x="30" y="90" width="130" height="90" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="95" y="112" text-anchor="middle" fill="#222222">生成 624 条 xhard</text>
+  <text x="95" y="129" text-anchor="middle" fill="#222222">（test 布局</text>
+  <text x="95" y="146" text-anchor="middle" fill="#222222">ep50 起，</text>
+  <text x="95" y="163" text-anchor="middle" fill="#222222">52 格 × 12）</text>
+  <line x1="160" y1="135" x2="185" y2="135" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- 框 B -->
+  <rect x="185" y="90" width="130" height="90" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="250" y="121" text-anchor="middle" fill="#222222">校验 + seed</text>
+  <text x="250" y="138" text-anchor="middle" fill="#222222">追加进官方</text>
+  <text x="250" y="155" text-anchor="middle" fill="#222222">test metadata</text>
+  <line x1="315" y1="135" x2="340" y2="135" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- 框 C -->
+  <rect x="340" y="90" width="130" height="90" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="405" y="112" text-anchor="middle" fill="#222222">commit 打 tag</text>
+  <text x="405" y="129" text-anchor="middle" fill="#222222">testx-metadata-v1</text>
+  <text x="405" y="146" text-anchor="middle" fill="#222222">并 push；</text>
+  <text x="405" y="163" text-anchor="middle" fill="#222222">产物上传 HF bucket</text>
 
-  <line x1="168" y1="142" x2="190" y2="142" stroke="#1f2937" stroke-width="1.4" marker-end="url(#arr)"/>
+  <!-- 训练侧 虚线框 -->
+  <rect x="15" y="250" width="460" height="180" fill="#fff7f0" stroke="#666666" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="25" y="270" fill="#222222" font-weight="bold">训练侧：策略仓库 v2-motionmem（AWS）</text>
+  <rect x="30" y="290" width="200" height="40" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="130" y="315" text-anchor="middle" fill="#222222">512 @60k</text>
+  <rect x="30" y="345" width="200" height="40" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="130" y="370" text-anchor="middle" fill="#222222">512+motion @60k</text>
+  <text x="30" y="412" fill="#555555">ckpt 经 HF bucket 下载到 NFS v1-store/models</text>
 
-  <rect x="190" y="98" width="134" height="88" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
-  <text x="257" y="138" text-anchor="middle">校验 + seed 追加进</text>
-  <text x="257" y="154" text-anchor="middle">官方 test metadata</text>
-
-  <line x1="324" y1="142" x2="346" y2="142" stroke="#1f2937" stroke-width="1.4" marker-end="url(#arr)"/>
-
-  <rect x="346" y="98" width="134" height="88" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
-  <text x="413" y="130" text-anchor="middle">commit 打 tag</text>
-  <text x="413" y="146" text-anchor="middle">testx-metadata-v1；</text>
-  <text x="413" y="162" text-anchor="middle">产物上传 HF bucket</text>
-
-  <!-- ===== 训练侧（左下虚线框） ===== -->
-  <rect x="20" y="286" width="485" height="154" fill="#fff7ed" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="6,4"/>
-  <text x="32" y="306" font-weight="bold">训练侧：策略仓库 v2-motionmem（AWS）</text>
-
-  <rect x="90" y="346" width="150" height="52" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
-  <text x="165" y="376" text-anchor="middle">512+motion @60k</text>
-
-  <rect x="290" y="346" width="150" height="52" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
-  <text x="365" y="376" text-anchor="middle">512 @60k</text>
-
-  <text x="265" y="424" text-anchor="middle" font-size="12" fill="#4b5563">ckpt 经 HF bucket 下载到本机 /data</text>
-
-  <!-- ===== 评估侧（右侧虚线框） ===== -->
-  <rect x="525" y="140" width="460" height="486" fill="#f0fdf4" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="6,4"/>
-  <text x="537" y="160" font-weight="bold">评估侧：策略仓库新分支 test1017（本机 sled-vail 两卡）</text>
+  <!-- 评估侧 虚线框 -->
+  <rect x="490" y="130" width="495" height="575" fill="#f5fff5" stroke="#666666" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="500" y="150" fill="#222222" font-weight="bold">评估侧：策略仓库分支 test1017 的 NFS 检出 + Great Lakes</text>
+  <text x="500" y="166" fill="#222222" font-weight="bold">（8 个占位 job，各 1×A40，48 h）</text>
 
   <!-- 子模块框 -->
-  <rect x="545" y="176" width="420" height="60" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
-  <text x="755" y="196" text-anchor="middle">子模块 third_party/robomme_benchmark</text>
-  <text x="755" y="212" text-anchor="middle">→ 锁本仓库 tag testx-metadata-v1</text>
-  <text x="755" y="228" text-anchor="middle">（环境 + robomme_xhard + 追加后的 metadata）</text>
-
-  <line x1="755" y1="236" x2="755" y2="256" stroke="#1f2937" stroke-width="1.4" marker-end="url(#arr)"/>
+  <rect x="505" y="185" width="310" height="66" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="660" y="206" text-anchor="middle" fill="#222222">子模块 third_party/robomme_benchmark</text>
+  <text x="660" y="223" text-anchor="middle" fill="#222222">→ 锁本仓库 tag testx-metadata-v1</text>
+  <text x="660" y="240" text-anchor="middle" fill="#222222">（环境 + robomme_xhard + 追加后 metadata）</text>
+  <line x1="660" y1="251" x2="660" y2="275" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- 清单框 -->
-  <rect x="545" y="256" width="420" height="56" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
-  <text x="755" y="279" text-anchor="middle">清单 eval-testx-1200.jsonl：每任务每档 episode 升序前 12，</text>
-  <text x="755" y="295" text-anchor="middle">共 1200 局；三模型共用、记 sha256</text>
+  <rect x="505" y="275" width="310" height="80" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="660" y="296" text-anchor="middle" fill="#222222">清单 eval-testx-1200.jsonl</text>
+  <text x="660" y="313" text-anchor="middle" fill="#222222">（每任务每档升序前 12）→ make_shard_plan：</text>
+  <text x="660" y="330" text-anchor="middle" fill="#222222">3 模型 × 10 片 = 30 个单元 + 冒烟单元，</text>
+  <text x="660" y="347" text-anchor="middle" fill="#222222">写 manifest.tsv</text>
+  <line x1="660" y1="355" x2="660" y2="380" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-  <!-- 服务端三框 -->
-  <rect x="545" y="390" width="118" height="94" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
-  <text x="604" y="407" text-anchor="middle">官方 FrameSamp</text>
-  <text x="604" y="422" text-anchor="middle">79999</text>
-  <text x="604" y="437" text-anchor="middle">（mme-vla 代码</text>
-  <text x="604" y="452" text-anchor="middle">ecf086c 零 diff，</text>
-  <text x="604" y="467" text-anchor="middle">JAX）</text>
+  <!-- worker 框 -->
+  <rect x="505" y="380" width="310" height="44" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="660" y="397" text-anchor="middle" fill="#222222">登录节点 tmux：</text>
+  <text x="660" y="414" text-anchor="middle" fill="#222222">8 个 gl_hold_pool worker 动态抢单元</text>
 
-  <rect x="687" y="390" width="118" height="94" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
-  <text x="746" y="415" text-anchor="middle">512 @60k</text>
-  <text x="746" y="430" text-anchor="middle">（本分支</text>
-  <text x="746" y="445" text-anchor="middle">serve_policy.py</text>
-  <text x="746" y="460" text-anchor="middle">，torch）</text>
+  <!-- worker → 四个 job -->
+  <line x1="540" y1="424" x2="540" y2="450" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="620" y1="424" x2="620" y2="450" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="700" y1="424" x2="700" y2="450" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="780" y1="424" x2="780" y2="450" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-  <rect x="829" y="390" width="118" height="94" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
-  <text x="888" y="432" text-anchor="middle">512+motion @60k</text>
-  <text x="888" y="448" text-anchor="middle">（同左）</text>
+  <!-- 四个占位 job 框 -->
+  <rect x="505" y="450" width="70" height="44" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="540" y="477" text-anchor="middle" fill="#222222">占位 job 1</text>
+  <rect x="585" y="450" width="70" height="44" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="620" y="477" text-anchor="middle" fill="#222222">占位 job 2</text>
+  <rect x="665" y="450" width="70" height="44" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="700" y="477" text-anchor="middle" fill="#222222">…</text>
+  <rect x="745" y="450" width="70" height="44" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="780" y="477" text-anchor="middle" fill="#222222">占位 job 8</text>
+  <text x="830" y="468" fill="#555555">各 1×A40，</text>
+  <text x="830" y="485" fill="#555555">gpu_cmode=shared</text>
 
-  <!-- 客户端框 -->
-  <rect x="545" y="520" width="420" height="90" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
-  <text x="755" y="541" text-anchor="middle">一份客户端 eval.py（927c56d 清单模式</text>
-  <text x="755" y="557" text-anchor="middle">+ 建环境改 &lt;Task&gt;XHard 三处）</text>
-  <text x="755" y="573" text-anchor="middle">→ 每卡一对进程、两卡各 600 局 → episodes.jsonl</text>
-  <text x="755" y="589" text-anchor="middle">→ 任务 × 档 成功率表（三模型并排，分母 12）</text>
+  <!-- job → 单元框 -->
+  <line x1="540" y1="494" x2="540" y2="520" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="620" y1="494" x2="620" y2="520" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="700" y1="494" x2="700" y2="520" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="780" y1="494" x2="780" y2="520" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-  <!-- 清单 → 客户端（走右侧通道） -->
-  <line x1="957" y1="312" x2="957" y2="520" stroke="#1f2937" stroke-width="1.4" marker-end="url(#arr)"/>
+  <!-- 单元框 -->
+  <rect x="505" y="520" width="310" height="170" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="660" y="541" text-anchor="middle" fill="#222222">每个单元 = 一个 srun --overlap</text>
+  <text x="660" y="558" text-anchor="middle" fill="#222222">--exact step：同卡起模型进程</text>
+  <text x="660" y="575" text-anchor="middle" fill="#222222">（512／512+motion：本分支</text>
+  <text x="660" y="592" text-anchor="middle" fill="#222222">serve_policy.py；</text>
+  <text x="660" y="609" text-anchor="middle" fill="#222222">官方 79999：mme-vla ecf086c）</text>
+  <text x="660" y="626" text-anchor="middle" fill="#222222">+ 仿真进程 eval.py</text>
+  <text x="660" y="643" text-anchor="middle" fill="#222222">（按清单行难度分流建环境，</text>
+  <text x="660" y="660" text-anchor="middle" fill="#222222">每 20 局一个进程，GLIBC_TUNABLES）</text>
+  <text x="660" y="677" text-anchor="middle" fill="#222222">→ v1-store/evaluation/&lt;run&gt;/s&lt;k&gt;/</text>
 
-  <!-- 服务端 ↔ 客户端 websocket 双向箭头 -->
-  <line x1="604" y1="484" x2="604" y2="520" stroke="#1f2937" stroke-width="1.4" marker-start="url(#arr)" marker-end="url(#arr)"/>
-  <line x1="746" y1="484" x2="746" y2="520" stroke="#1f2937" stroke-width="1.4" marker-start="url(#arr)" marker-end="url(#arr)"/>
-  <line x1="888" y1="484" x2="888" y2="520" stroke="#1f2937" stroke-width="1.4" marker-start="url(#arr)" marker-end="url(#arr)"/>
-  <text x="675" y="506" text-anchor="middle" fill="#b45309">websocket</text>
+  <!-- 单元 → 本机汇总 -->
+  <line x1="815" y1="605" x2="850" y2="605" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="832" y="578" text-anchor="middle" fill="#8a4b00">NFS</text>
+  <text x="832" y="594" text-anchor="middle" fill="#8a4b00">结果</text>
+  <rect x="850" y="560" width="130" height="95" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="915" y="582" text-anchor="middle" fill="#222222">本机 sled-vail：</text>
+  <text x="915" y="599" text-anchor="middle" fill="#222222">tail -F NFS 日志</text>
+  <text x="915" y="616" text-anchor="middle" fill="#222222">挂 Monitor；</text>
+  <text x="915" y="633" text-anchor="middle" fill="#222222">汇总三模型</text>
+  <text x="915" y="650" text-anchor="middle" fill="#222222">任务 × 档表</text>
 
-  <!-- ===== 跨框连线 ===== -->
-  <!-- 生成侧第三框底边 → 下 → 右 → 子模块框左边 -->
-  <polyline points="413,186 413,206 545,206" fill="none" stroke="#b45309" stroke-width="1.6" marker-end="url(#arrA)"/>
-  <text x="479" y="221" text-anchor="middle" fill="#b45309">tag 锁定</text>
+  <!-- 生成侧 C 框底边 → 子模块框左边 -->
+  <polyline points="405,180 405,215 505,215" fill="none" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="445" y="230" text-anchor="middle" fill="#8a4b00">tag 锁定</text>
 
-  <!-- 训练侧 512+motion → 上 → 右 → 服务端第三框左边（经第二、三框间通道） -->
-  <polyline points="165,346 165,326 817,326 817,437 829,437" fill="none" stroke="#b45309" stroke-width="1.6" marker-end="url(#arrA)"/>
-  <!-- 训练侧 512 → 右 → 服务端第二框左边（经第一、二框间通道） -->
-  <polyline points="440,372 675,372 675,437 687,437" fill="none" stroke="#b45309" stroke-width="1.6" marker-end="url(#arrA)"/>
-  <text x="552" y="355" fill="#b45309">HF 下载 + sha256 核验</text>
-
-  <!-- ===== 图例（右下角） ===== -->
-  <rect x="700" y="648" width="28" height="14" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="4,3"/>
-  <text x="736" y="660">虚线框 = 仓库／机器边界</text>
-  <rect x="700" y="670" width="28" height="14" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
-  <text x="736" y="682">实线框 = 步骤或进程</text>
-  <line x1="700" y1="699" x2="728" y2="699" stroke="#b45309" stroke-width="1.6" marker-end="url(#arrA)"/>
-  <text x="736" y="704">箭头上的<tspan fill="#b45309">标注</tspan> = 一致性锚点</text>
+  <!-- 训练侧两框 → worker 框左边（汇成一条，标注一次） -->
+  <polyline points="230,365 485,365" fill="none" stroke="#333333" stroke-width="1.5"/>
+  <polyline points="230,310 485,310 485,402 505,402" fill="none" stroke="#333333" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="350" y="300" text-anchor="middle" fill="#8a4b00">HF 下载 + sha256 核验</text>
 </svg>
-<figcaption>图 2：两仓库分工与三模型共用一条评估链路（箭头上的标注是一致性锚点）。</figcaption></figure>
+<figcaption>图 2：两仓库分工与 Great Lakes 八卡评估流水线（8 个占位 job 各 1×A40，登录节点 worker 从 manifest 动态抢单元，每单元同卡起模型进程与仿真进程）。</figcaption></figure>
 
 <h2>三、生成侧机制（本仓库）</h2>
 <h3>3.1 五组、每格 12 条</h3>
@@ -340,22 +357,22 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 
 <h2>四、评估侧机制（策略仓库分支）</h2>
 <h3>4.1 一条链路评三个模型</h3>
-<p>评估是「模型进程 + 仿真进程」两进程：仿真进程按清单逐局用 seed 建环境，把画面与指令经 websocket 发给模型进程、收动作执行，直到终局（<code>max_steps=2000</code> 到顶记 timeout；成功与否取环境 <code>info["status"]</code>）。三个模型只换模型进程：你的两条 run 用本分支 <code>scripts/training/serve_policy.py --policy.config=mme_vla_suite_b128_80k --policy.dir=&lt;run&gt;/60000</code>（JAX；motion sidecar 是 torch 子进程；motion 开关由 run 目录里的 <code>history_config.resolved.yaml</code> 快照决定，所以下载必须带 run 级文件）；官方 79999 用 mme-vla <code>ecf086c</code> 检出的 <code>serve_policy.py --policy.config=mme_vla_suite</code>（JAX，零 diff）。仿真进程只有一份：以 927c56d 的清单模式 <code>eval.py</code> 为底，改建环境三处（<code>&lt;Task&gt;XHard</code>、经环境变量读 XHard metadata 副本、<code>check_seed</code> 比清单 difficulty）。两版客户端同源（共同祖先 ecf086c，<code>openpi-client</code> 零差异，websocket 的 <code>reset／add_buffer／infer</code> 字段未改），所以一份客户端能服务三个模型。</p>
+<p>评估是「模型进程 + 仿真进程」两进程：仿真进程按清单逐局用 seed 建环境，把画面与指令经 websocket 发给模型进程、收动作执行，直到终局（<code>max_steps=2000</code> 到顶记 timeout；成功与否取环境 <code>info["status"]</code>）。三个模型只换模型进程：你的两条 run 用本分支 <code>scripts/training/serve_policy.py --policy.config=mme_vla_suite_b128_80k --policy.dir=&lt;run&gt;/60000</code>（JAX；motion sidecar 是 torch 子进程；motion 开关由 run 目录里的 <code>history_config.resolved.yaml</code> 快照决定，所以下载必须带 run 级文件）；官方 79999 用 mme-vla <code>ecf086c</code> 检出的 <code>serve_policy.py --policy.config=mme_vla_suite</code>（JAX，零 diff）。仿真进程只有一份：上次 GL 评估分支的 <code>examples/robomme/eval.py</code>（按 split + episode 范围扫描）加一个 <code>--args.episode_ids</code> 参数接收分片的 episode 列表，建环境按难度分流（<code>&lt;Task&gt;XHard</code> 或原任务名）、建成后断言难度。两版客户端同源（共同祖先 ecf086c，<code>openpi-client</code> 零差异，websocket 的 <code>reset／add_buffer／infer</code> 字段未改），所以一份客户端能服务三个模型。每个单元在一个 <code>srun --overlap --exact</code> step 里同卡起模型进程与仿真进程（上次 GL 口径）。</p>
 <h3>4.2 仿真环境与 metadata 来自本仓库 tag</h3>
-<p>评估分支把子模块 <code>third_party/robomme_benchmark</code> 的 url 改为 <code>hongzefu/robomme_benchmark_MotionJEPA</code>、gitlink 锁 <code>testx-metadata-v1</code>（含 <code>robomme</code>、<code>robomme_xhard</code> 与追加后的 metadata）；客户端起跑断言 <code>robomme.__file__</code> 与 <code>robomme_xhard.__file__</code> 都在子模块下、<code>robomme_hard</code> 不在 <code>sys.modules</code>。不另建子模块，不用 PYTHONPATH 兜底。<b>建环境按清单行难度分流</b>：xhard 档用 <code>&lt;Task&gt;XHard</code> + XHard metadata 副本；easy／medium／hard 档用原任务名 + 官方 test metadata（<code>XHardMixin.__init__</code> 对非 xhard 难度直接 raise）；MoveCube／InsertPeg 没有 XHard 类，全程原环境。建成后断言 <code>env.unwrapped.difficulty</code> 等于清单难度。</p>
+<p>评估分支把子模块 <code>third_party/robomme_benchmark</code> 的 url 改为 <code>hongzefu/robomme_benchmark_MotionJEPA</code>、gitlink 锁 <code>testx-metadata-v1</code>（含 <code>robomme</code>、<code>robomme_xhard</code> 与追加后的 metadata）；客户端起跑断言 <code>robomme.__file__</code> 与 <code>robomme_xhard.__file__</code> 都在子模块下、<code>robomme_hard</code> 不在 <code>sys.modules</code>。GL 执行副本是 NFS 检出 <code>/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_policy_learning_MotionJEPA</code> 切到 <code>test1017</code>，<code>git submodule update --init</code> 拉 tag；两个 uv 环境按上次 <code>env.sh</code> 取法落 <code>v1-store/envs/</code>（NFS Python 3.11.14），缓存全部指到 <code>v1-store/cache/policy-eval/</code>。不另建子模块，不用 PYTHONPATH 兜底。<b>建环境按清单行难度分流</b>：xhard 档用 <code>&lt;Task&gt;XHard</code> + XHard metadata 副本；easy／medium／hard 档用原任务名 + 官方 test metadata（<code>XHardMixin.__init__</code> 对非 xhard 难度直接 raise）；MoveCube／InsertPeg 没有 XHard 类，全程原环境。建成后断言 <code>env.unwrapped.difficulty</code> 等于清单难度。</p>
 <h3>4.3 清单：1200 局，三模型共用</h3>
-<p>从子模块的 test metadata 导出：每任务每档 episode 升序前 12（easy／medium／hard 从官方 ep0–49 取，xhard 五档就是生成的全部）。8 档任务 96 局、StopCube 84、PickHighlight 72、VideoPlaceButton 60、单档任务 48、MoveCube／InsertPeg 36，合计 1200；两片各 600，按 <code>(task, difficulty, episode)</code> 排序后 idx%2 发牌（两片每档每任务条数相同、负载均衡），收尾断言两片不相交且并集为 1200。清单记 sha256，三轮评估都核对同一个值；10k 冒烟清单 = 每格升序第 1 条共 100 行，断言是正式清单的子集、另记 sha。官方 test 每任务 medium／hard 恰 12 条、easy 取前 12 条，导出脚本对每格断言 ≥12。</p>
-<h3>4.4 顺序、规模与耗时</h3>
+<p>从子模块的 test metadata 导出：每任务每档 episode 升序前 12（easy／medium／hard 从官方 ep0–49 取，xhard 五档就是生成的全部）。8 档任务 96 局、StopCube 84、PickHighlight 72、VideoPlaceButton 60、单档任务 48、MoveCube／InsertPeg 36，合计 1200；<code>make_shard_plan.py</code> 改读这份清单（去掉 4 任务与 50 条写死），按 <code>(task, difficulty, episode)</code> 排序后 idx%10 发牌成 10 片各 120 局，每片一个单元；3 模型 × 10 片 = 30 个单元，加官方 2 局冒烟 1 单元、512@10k 100 局冒烟 2 单元，写成六列 <code>manifest.tsv</code>（run、ckpt、history yaml、config、step、片号）按「冒烟 → 512 → 512+motion → 官方」排序；收尾断言各模型 10 片不相交且并集为 1200。清单记 sha256，三轮评估都核对同一个值；10k 冒烟清单 = 每格升序第 1 条共 100 行，断言是正式清单的子集、另记 sha。官方 test 每任务 medium／hard 恰 12 条、easy 取前 12 条，导出脚本对每格断言 ≥12。</p>
+<h3>4.4 顺序、规模与耗时（Great Lakes，8 × A40 单卡）</h3>
 <table>
-<tr><th>轮</th><th>模型</th><th>局数</th><th>用途</th><th>耗时估（两卡，未实测）</th></tr>
-<tr><td>0</td><td>官方 79999</td><td>2</td><td>链路冒烟</td><td>0.5 小时（含编译）</td></tr>
-<tr><td>1</td><td>512 @10k</td><td>100（每任务每档 1 条）</td><td>自家链路冒烟 + 校准单局耗时</td><td>约 1 小时</td></tr>
-<tr><td>2</td><td>512 @60k</td><td>1200</td><td>正式</td><td>6～10 小时（2000 步下超时局更长）</td></tr>
-<tr><td>3</td><td>512+motion @60k</td><td>1200</td><td>正式</td><td>6～10 小时（motion sidecar 同卡，每窗约 1.5 s）</td></tr>
-<tr><td>4</td><td>官方 79999</td><td>1200</td><td>正式对照</td><td>6～10 小时</td></tr>
-<tr><th colspan="2">合计</th><th>3702</th><th></th><th>约 20～32 小时 + 生成 1～1.5 小时</th></tr>
+<tr><th>轮</th><th>模型</th><th>局数／单元</th><th>用途</th><th>耗时估（8 卡并行，未实测）</th></tr>
+<tr><td>0</td><td>官方 79999</td><td>2 局／1 单元</td><td>链路冒烟（含渲染探针、端口归属）</td><td>0.5 小时（含 JIT 编译）</td></tr>
+<tr><td>1</td><td>512 @10k</td><td>100 局／2 单元</td><td>自家链路冒烟 + 校准单局耗时与首批显存</td><td>约 1 小时</td></tr>
+<tr><td>2</td><td>512 @60k</td><td>1200 局／10 单元</td><td>正式</td><td>5～10 小时</td></tr>
+<tr><td>3</td><td>512+motion @60k</td><td>1200 局／10 单元</td><td>正式（sidecar 同卡，每窗约 1.5 s）</td><td>6～12 小时</td></tr>
+<tr><td>4</td><td>官方 79999</td><td>1200 局／10 单元</td><td>正式对照</td><td>5～10 小时</td></tr>
+<tr><th colspan="2">合计</th><th>3702 局／33 单元</th><th></th><th>约 17～33 小时墙钟（120～240 GPU·h）+ 本机生成 1～1.5 小时</th></tr>
 </table>
-<p class="small">锚点：本机两卡上次 1200 局（4 个较易任务）GPU 工作 3 小时 45 分；本轮 16 任务含 xhard、超时局跑满 2000 步，按 1.5～2 倍。每卡固定一对进程（GPU 空闲硬闸会拒绝同卡第二对）；自家 server <code>XLA_PYTHON_CLIENT_MEM_FRACTION=0.4</code>、官方 0.75。上次 2000 步口径的 692 局结果不与本轮并排比。</p>
+<p class="small">锚点：上次 GL 四任务 692 局 10 片在 8 个占位 job 上跑完；A40 单卡 2000 步一局按 2～4 分钟估（motion 更长）。8 个 worker 从 manifest 动态抢单元，顺序由 manifest 行序保证，一个模型没抢完不会跳到下一个模型；占位 job 48 h 到期按 <code>greatlakes.md</code> 重新申请。上次 2000 步口径的 692 局结果不与本轮并排比。</p>
 <h3>4.5 一致性保证</h3>
 <table>
 <tr><th>要一致的</th><th>怎么保证</th><th>判定行</th></tr>
@@ -365,13 +382,14 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>评估口径</td><td><code>max_steps=2000</code>（上次四任务评估定值，三模型同用；与官方 1300 步公布值不并排比）、策略 seed 7、终态 success／fail／timeout／error、只重跑 error、不为挑成功重试，写死在同一启动器</td><td><code>EVAL_&lt;model&gt;=DONE episodes=1200 success= fail= timeout= error=</code></td></tr>
 <tr><td>模型身份</td><td>官方：mme-vla 零 diff；自家：<code>hf sync</code> 后 <code>sha256sum -c SHA256SUMS.pre.txt</code>、<code>check_ckpt_param_tree.py</code>、<code>check_config_provenance.py</code></td><td><code>SERVER_PIN=PASS</code>、<code>CKPT_SHA=PASS</code>、<code>PARAM_TREE_EXACT=PASS</code>、<code>TIC_L0=PASS</code></td></tr>
 <tr><td>建环境类</td><td>按难度分流：base 档原环境、xhard 档 XHard，建成后断言 difficulty；冒烟每任务各取一条 base 与一条 xhard 行确认都能建</td><td><code>ENV_ROUTE=PASS base=&lt;n&gt; xhard=&lt;n&gt;</code></td></tr>
-<tr><td>完整性</td><td>每片收尾断言已评局数（含 error）= 清单局数；视频数 = 非 error 局数且逐个可解码</td><td><code>SHARDS_UNION=PASS total=1200 overlap=0</code>、<code>EVAL_VIDEO=PASS</code></td></tr>
+<tr><td>完整性</td><td>每片收尾断言已评局数（含 error）= 该片清单局数；<code>merge_shards.py</code> 合并 10 片；视频数 = 非 error 局数且逐个可解码</td><td><code>SHARDS_UNION=PASS total=1200 overlap=0</code>、<code>EVAL_VIDEO=PASS</code></td></tr>
+<tr><td>代码冻结</td><td>每个单元起跑时 <code>EXPECTED_GIT_HEAD</code> 闸核 NFS 检出 HEAD = Beta，评测期间不 commit</td><td><code>QUEUE_SHARD_DONE … rc=0</code>、<code>QUEUE_DONE failed=0</code></td></tr>
 <tr><td>motion encoder 同源</td><td>provenance 逐键比对，只豁免四个硬件键</td><td><code>MOTION_PROV=PASS exempt=4 other_diffs=0</code>（先做只握手不评估的 dry-run，四键之外任何差异交用户）</td></tr>
 <tr><td>160 窗预算与 pos 表上界</td><td>导清单前按 h5 demo 帧数 + 2000 步核算窗数与最大帧号（pos 表 4096 行）；超 160 按 resample 继续并逐局记录</td><td><code>EVAL_ES_BOUND=DONE max_windows=&lt;n&gt; over=&lt;k&gt; max_step_idx=&lt;m&gt; over4096=0</code>、<code>MOTION_OVERFLOW=resample episodes_affected=&lt;k&gt;</code></td></tr>
 <tr><td>协议</td><td>开工前核实本分支 <code>policy.py</code> 的 <code>add_buffer</code> 段边界状态机与 927c56d 客户端的 <code>exec_start_idx</code> 发送方式兼容（字段未变、语义收紧）</td><td><code>PROTO_CHECK=PASS</code></td></tr>
 </table>
 <h3>4.6 motion 模型：encoder 输入、demo 尾窗 padding、160 窗预算（T13、T14）</h3>
-<p><b>encoder 送入怎么保证对</b>：motion encoder 不读 h5，sidecar 子进程（Wan VAE + MotionJEPA encoder，torch）按 stride 16、window 33 在线切 256 域原始帧，入口硬断言形制；用哪个 encoder 由 run 快照 <code>history_config.resolved.yaml</code>（核 sha256 与 <code>motion_provenance.json</code>）决定；sidecar 握手把 VAE／encoder 权重 sha、源码 sha、torch／cuda／cudnn／diffusers 版本、flags 与离线建库的 <code>store_meta.provenance</code> 逐键比对，不等即 raise；<code>motion_protocol.py</code> 两侧 sha 须同一份。历史上在线现算的 240 个运动窗与离线表逐字节一致（策略仓库 <code>docs/train-infer-consistency.md</code>）。本轮只豁免四个硬件键（离线库在 A100 建、本机是 RTX 6000 Ada），豁免同时作用于 vae 与 encoder 两段；起跑前先做一次只握手不评估的 provenance dry-run，列出四键之外的任何差异交用户，不扩大豁免。sidecar 需要 <code>v1-store/venvs/wan</code> 与 Wan VAE 资产（<code>fetch_assets verify</code>），encoder run 目录落 <code>v1-store/external/motionjepa/&lt;run&gt;</code>；本轮不做跨卡逐位对拍（TIC 只跑 L0）。</p>
+<p><b>encoder 送入怎么保证对</b>：motion encoder 不读 h5，sidecar 子进程（Wan VAE + MotionJEPA encoder，torch）按 stride 16、window 33 在线切 256 域原始帧，入口硬断言形制；用哪个 encoder 由 run 快照 <code>history_config.resolved.yaml</code>（核 sha256 与 <code>motion_provenance.json</code>）决定；sidecar 握手把 VAE／encoder 权重 sha、源码 sha、torch／cuda／cudnn／diffusers 版本、flags 与离线建库的 <code>store_meta.provenance</code> 逐键比对，不等即 raise；<code>motion_protocol.py</code> 两侧 sha 须同一份。历史上在线现算的 240 个运动窗与离线表逐字节一致（策略仓库 <code>docs/train-infer-consistency.md</code>）。本轮只豁免四个硬件键（离线库在 A100 建、评估卡是 A40），豁免同时作用于 vae 与 encoder 两段；起跑前先做一次只握手不评估的 provenance dry-run，列出四键之外的任何差异交用户，不扩大豁免。sidecar 需要 <code>v1-store/venvs/wan</code> 与 Wan VAE 资产（<code>fetch_assets verify</code>），encoder run 目录落 <code>v1-store/external/motionjepa/&lt;run&gt;</code>；本轮不做跨卡逐位对拍（TIC 只跑 L0）。</p>
 <p><b>demo 尾窗 padding（图 3）</b>：训练库布局 <code>motion-768-grid16-demopad17-v1</code>，在线推理同契约——demo 段起点 f 只要剩余真实帧 ≥17（超过半窗）就编，不足 33 的部分用 demo 末帧重复补齐；恰好 16 帧不编；执行段每窗必须 33 个真实帧。从 run 快照核两键 <code>demo_min_real_frames=17 / demo_tail_pad=repeat_last</code>，判定行 <code>DEMO_PAD=PASS</code>。</p>
 <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 570">
   <defs>
@@ -985,17 +1003,19 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>Vulkan 静态 TLS 泄漏（每次 <code>make_env</code> 泄 64 B，默认第 28 局崩 <code>ErrorIncompatibleDriver</code>）</td><td>客户端 <code>GLIBC_TUNABLES=glibc.rtld.optional_static_tls=65536</code>，并每 20 局一个客户端进程（<code>--args.max_new_episodes</code>），靠 <code>episodes.jsonl</code> 续评衔接；崩溃局不算 error 重试额度</td><td><code>incompatible_driver=0</code>；上次 <code>run_shard.sh</code> 与 <code>vulkan-fix-30ep</code> 留档</td></tr>
 <tr><td><code>make_env</code> 容错</td><td>移植清单模式时把 <code>make_env</code> 并入 try，异常记 error 带原因、<code>finally</code> 关环境；<code>check_seed</code> 不符仍中止整片</td><td>CLIENT_DIFF 内；上次分支 <code>eval.py</code> 第 442–459 行</td></tr>
 <tr><td>reset／make_env 原生卡死（SIGALRM 打不断）</td><td>外部看门狗：客户端日志静默 ≥12 分钟且末行为「setup finished」即记 error（原因 reset_hang）、括号技巧 pkill、<code>ALLOW_RESUME=1</code> 续跑；同一局连续卡死视为确定性卡死不再重试、计入分母</td><td><code>EVAL_STALL=&lt;n&gt;</code>；Monitor 词表含它</td></tr>
-<tr><td>GPU 空闲硬闸</td><td><code>check_local_gpu</code> 起跑前与起 server 前各查一次（<code>nvidia-smi --query-compute-apps</code>），有计算进程即停；每卡固定一对</td><td><code>GPU_IDLE=PASS</code></td></tr>
-<tr><td>端口与 server 就绪</td><td><code>/dev/tcp</code> 探 19300／19400，占用即停不换端口；就绪循环 20 分钟上限 + <code>kill -0</code> server 存活；<code>healthz</code> 后按整棵进程树核对 <code>/proc/net/tcp</code> 监听 inode，确认监听者是自己；<code>trap cleanup</code> 叶到根 TERM，轮间确认端口释放、无孤儿 sidecar</td><td><code>SERVER_READY=PASS port= own=1</code>；历史事故：连上别人的服务 12 秒跑 0 局退出码 0</td></tr>
-<tr><td>防覆盖与续评</td><td>每轮每模型每片独立 <code>&lt;out&gt;/&lt;model&gt;-&lt;step&gt;-&lt;smoke|full&gt;/s&lt;shard&gt;</code>；起跑写 <code>.created</code>（清单 sha+shard+model+ckpt）；已有结果须 <code>ALLOW_RESUME=1</code> 且 <code>.created</code> 一致才续</td><td><code>RUN_DIR_FRESH|RESUME_OK</code></td></tr>
+<tr><td>GPU 独占</td><td>每单元独占占位 job 的那张 A40（<code>check_local_gpu</code> 的 Slurm 分支：<code>gpu_cmode=Default</code> 且无计算进程）；一个占位 job 同一时刻只跑一个单元</td><td><code>GPU_IDLE=PASS</code></td></tr>
+<tr><td>占位 job 与抢单</td><td>8 个 <code>hold_job.sbatch</code>（1×A40／1 CPU／24 G／48 h／<code>gpu_cmode=shared</code>），JobID 写进 <code>launch.md</code>；登录节点 detached tmux 各起一个 <code>gl_hold_pool.sh &lt;jobid&gt;</code>（<code>MANIFEST</code> 模式，NFS <code>mkdir claims/</code> 原子抢单）；结束按 JobID 逐个 <code>scancel</code>，不 <code>scancel -u</code></td><td><code>WORKER_START／CLAIM／ITEM_DONE／WORKER_DONE</code></td></tr>
+<tr><td>端口与 server 就绪</td><td>计算节点上按 Slurm 作业号错开端口基准、<code>/dev/tcp</code> 探空闲；就绪循环 20 分钟上限 + <code>kill -0</code> server 存活；<code>healthz</code> 后按整棵进程树核对 <code>/proc/net/tcp</code> 监听 inode，确认监听者是自己；<code>trap cleanup</code> 叶到根 TERM，轮间确认端口释放、无孤儿 sidecar</td><td><code>SERVER_READY=PASS port= own=1</code>；历史事故：连上别人的服务 12 秒跑 0 局退出码 0</td></tr>
+<tr><td>防覆盖与续评</td><td>每单元独立 <code>v1-store/evaluation/&lt;run&gt;/s&lt;k&gt;/</code>（run 名含模型与 step，冒烟加 <code>-smoke</code> 后缀）；运行目录已存在即拒绝起跑，续跑须 <code>ALLOW_RESUME=1</code> 且核对本次 HEAD、清单 sha、ckpt sha 与首次相同；<code>rc≠0</code> 的单元不自动重试，合并阶段按 <code>retry_plan.json</code> 处理</td><td><code>RUN_DIR_FRESH|RESUME_OK</code></td></tr>
 <tr><td>完整性</td><td>每片收尾断言已评局数 = 清单局数（不只看退出码）；<code>EVAL_&lt;model&gt;=DONE</code> 的条件是 pending=0 且退出码 0；<code>RETRY_CAP_HIT／SERVER_DIED</code> 不写 DONE</td><td><code>EVAL_*=DONE</code></td></tr>
 <tr><td>视频验收</td><td>视频数 = 非 error 局数，逐个 mp4 解码帧数 &gt;1；视频名里的 <code>xhard0</code> 字面量改为清单难度</td><td><code>EVAL_VIDEO=PASS</code></td></tr>
 <tr><td>模型身份</td><td>官方 79999 用本机已有副本（策略仓库 <code>v1-store/models/official-mme-vla/perceptual-framesamp-modul/79999</code>，含 <code>history_config.txt</code>），逐文件 sha256；自家 ckpt 按 run 登记表核 budget／stride／window／source_run／norm_stats sha；<code>hf sync --dry-run</code> 先核清单</td><td><code>OFFICIAL_CKPT_SHA</code>、<code>CKPT_SHA</code>、<code>PARAM_TREE_EXACT</code>、<code>TIC_L0</code>（写明 <code>--lib／--store-subdir／--norm-stats／--provenance</code> 参数）</td></tr>
-<tr><td>clean HEAD 与横幅</td><td>起跑前 <code>git status --porcelain</code> 空、HEAD = Beta、子模块 gitlink = tag；横幅打印 host、HEAD、子模块 sha、server 仓库、ckpt、三个开关环境变量</td><td><code>ENV_PIN</code></td></tr>
-<tr><td>渲染与环境变量</td><td>脚本开头 <code>unset SAPIEN_DISABLE_RAY_TRACING ROBOMME_GPU_RASTER __EGL_VENDOR_LIBRARY_DIRS XLA_FLAGS</code>，设 <code>VK_ICD_FILENAMES</code>；客户端 <code>env -u</code> 六个代理变量 + <code>NO_PROXY=127.0.0.1,localhost</code>；官方 server 照抄 <code>env -u JAX_* XLA_PYTHON_CLIENT_MEM_FRACTION=0.75</code></td><td>横幅</td></tr>
+<tr><td>clean HEAD 与横幅</td><td>NFS 检出 <code>git status --porcelain</code> 空、HEAD = Beta、子模块 gitlink = tag；<code>verify_sources.py</code> 核 editable 指向与 ManiSkill commit；<code>render_probe.py</code> 180 秒渲染探针；横幅打印 host、JobID、HEAD、子模块 sha、ckpt、开关环境变量</td><td><code>ENV_PIN</code>、<code>RENDER_PASS</code></td></tr>
+<tr><td>渲染与环境变量</td><td><code>gl_hold_queue.sh</code> 的 <code>env -u ROBOMME_GPU_RASTER -u SAPIEN_DISABLE_RAY_TRACING -u MANIFEST</code>；<code>env.sh</code> 把 uv／HF／torch／ManiSkill／JAX 缓存全指到 <code>v1-store/cache/policy-eval/</code>，<code>XLA_PYTHON_CLIENT_MEM_FRACTION=0.7</code>；PASS 白名单透传 <code>MMEVLA_MOTION_OVERFLOW／MMEVLA_PROV_EXEMPT_HW／XHARD_METADATA_DIR</code> 等（srun 不靠默认带环境）</td><td>横幅</td></tr>
 <tr><td>口径</td><td>策略 seed 7、<code>max_steps=2000</code>、<code>obs_horizon=16</code>、<code>use_history=True</code> 显式传；error 计入分母 12 按失败算、成功率是下界、表里 <code>n/12（err k）</code>；BinFill 不注入 demo（与 P4 和 mixed8 训练一致，<code>PROTO_CHECK</code> 顺带核训练集 BinFill）；prompt 取环境 <code>task_goal</code> 原样，冒烟每格抽一条留档；三模型只在本轮内部互比</td><td><code>EVAL_*</code> 行字段</td></tr>
 <tr><td>首批 add_buffer 显存</td><td>官方 JAX server 首批整段 demo 一次编码，按 demo 长度重编译；10k 冒烟纳入 demo 最长的局，记首批帧数、耗时与显存峰值</td><td><code>EVAL_SMOKE_10K</code> 字段</td></tr>
-<tr><td>sidecar 卡号</td><td><code>MMEVLA_MOTION_ONLINE_GPU</code> 传物理卡号；冒烟用 <code>nvidia-smi</code> 核 sidecar 落在本片卡上</td><td><code>SIDECAR_GPU=PASS</code></td></tr>
+<tr><td>sidecar 卡号</td><td>占位 job 内 <code>CUDA_VISIBLE_DEVICES</code> 只有一张卡，<code>MMEVLA_MOTION_ONLINE_GPU</code> 传同一卡号；冒烟用 <code>nvidia-smi</code> 核 sidecar 在同卡</td><td><code>SIDECAR_GPU=PASS</code></td></tr>
+<tr><td>监听</td><td>每单元日志 tee 到 NFS <code>v1-store/logs/policy-eval/&lt;run&gt;-s&lt;k&gt;.log</code>，本机对每份日志 <code>tail -F</code> 挂 Monitor；登录节点 tmux 不依赖 ssh 会话存活；ssh 前 <code>ssh -O check greatlakes</code>，master 不活问用户 Okta</td><td>Monitor 事件</td></tr>
 </table>
 <div class="warn">⚠ 已知要改一行的地方：motion sidecar 的卡号取自快照 <code>online_gpu</code>（AWS 上写的物理卡号），本分支 <code>policy_config.py</code> 不读 <code>MMEVLA_MOTION_ONLINE_GPU</code>；本机两片各占一卡时 sidecar 必须跟策略同卡，评估分支要让它读该环境变量（legacy-eval README 已记录此坑）。</div>
 
@@ -1009,7 +1029,7 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>评估</td><td><code>ENV_PIN</code>、<code>PROTO_CHECK</code>、<code>CLIENT_DIFF=PASS base=82e5175 files=&lt;n&gt;</code>（基准改为评估分支起点，逐项列允许改动文件）、<code>MANIFEST=PASS rows=1200 cells=100 shard0=600 shard1=600</code></td><td>分支就绪</td></tr>
 <tr><td>评估</td><td><code>CKPT_SHA／PARAM_TREE_EXACT／TIC_L0=PASS</code>（每个自家 ckpt）、<code>MOTION_PROV=PASS exempt=4</code>（motion 模型）、<code>SERVER_PIN=PASS</code>（官方）</td><td>模型身份</td></tr>
 <tr><td>评估</td><td><code>EVAL_ES_BOUND=DONE max_windows=&lt;n&gt; over=&lt;k&gt; max_step_idx=&lt;m&gt; over4096=0</code>、<code>MOTION_OVERFLOW=resample episodes_affected=&lt;k&gt;</code>、<code>DEMO_PAD=PASS min_real=17 pad=repeat_last</code></td><td>160 窗预算核算、抽稀记录、补帧契约</td></tr>
-<tr><td>评估</td><td><code>ENV_ROUTE</code>、<code>GPU_IDLE</code>、<code>SERVER_READY</code>、<code>RUN_DIR_FRESH|RESUME_OK</code>、<code>SHARDS_UNION</code>、<code>EVAL_VIDEO</code>、<code>EVAL_STALL</code>、<code>OFFICIAL_CKPT_SHA</code>、<code>SIDECAR_GPU</code>、<code>SMOKE_SUBSET=PASS rows=100 subset_of_full=yes</code></td><td>4.7 补入的机制各一行</td></tr>
+<tr><td>评估</td><td><code>HOLD_JOBS=8 running=8</code>、<code>ENV_ROUTE</code>、<code>GPU_IDLE</code>、<code>RENDER_PASS</code>、<code>SERVER_READY</code>、<code>RUN_DIR_FRESH|RESUME_OK</code>、<code>QUEUE_DONE failed=0</code>（每 worker）、<code>SHARDS_UNION</code>、<code>EVAL_VIDEO</code>、<code>EVAL_STALL</code>、<code>OFFICIAL_CKPT_SHA</code>、<code>SIDECAR_GPU</code>、<code>SMOKE_SUBSET=PASS rows=100 subset_of_full=yes</code></td><td>4.7 补入的机制各一行</td></tr>
 <tr><td>评估</td><td><code>EVAL_SMOKE_OFFICIAL=DONE episodes=2</code>、<code>EVAL_SMOKE_10K=DONE episodes=100 per_episode_s=&lt;t&gt;</code></td><td>两次冒烟，<code>error=0</code> 才起正式</td></tr>
 <tr><td>评估</td><td><code>EVAL_512_60K／EVAL_512M_60K／EVAL_OFFICIAL=DONE episodes=1200 …</code>、<code>SEED_MATCH=PASS</code> × 3、<code>MANIFEST_SHARED=PASS</code>、<code>EVAL_TABLE=DONE models=3 cells=100</code></td><td>正式三轮与汇总</td></tr>
 <tr><td>两侧</td><td><code>LIGHT_TESTS</code>、<code>PROTECTED</code>、<code>PRE/POST_MERGE_REVIEW</code>、<code>HANDOFF_WRITE</code></td><td>各自仓库的短测、受保护目录、合并审查、交接</td></tr>
@@ -1021,21 +1041,21 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <tr><td>0</td><td>两侧</td><td>开工令（含 T10、T11）→ sonnet 审本版 → 本仓库 handoff commit（<code>running</code>）；策略仓库建分支与 <code>docs/handoff/current.json</code></td><td><code>PLAN_CONSISTENCY_REVIEW blocking=0</code></td></tr>
 <tr><td>1</td><td>生成</td><td>W3（校验工具两参数）、W2（上传脚本）两个 worktree 子代理并发，审查合并</td><td>合并审查、<code>LIGHT_TESTS</code></td></tr>
 <tr><td>2</td><td>生成</td><td>smoke 一、smoke 二 → Beta commit（带 <code>launch.md</code> 第一段）→ 全量五组 → 五组校验 → 追加 metadata 单独 commit → 打 tag 并 push</td><td>五节生成行</td></tr>
-<tr><td>3</td><td>评估</td><td>E1（子模块改指 tag、客户端移植、清单导出、启动器、汇总、sidecar 卡号一行）在策略仓库 worktree 做，sonnet 审查，合入评估分支并 push；建两个环境（主 venv <code>uv sync</code>、客户端子项目）；官方 server 用 mme-vla 检出 <code>uv sync --frozen</code></td><td><code>ENV_PIN</code>、<code>PROTO_CHECK</code>、<code>CLIENT_DIFF</code>、<code>MANIFEST</code></td></tr>
-<tr><td>4</td><td>评估</td><td>官方 2 局冒烟；<code>hf sync</code> 512 的 10000 → 核验 → 100 局冒烟，记单局耗时</td><td><code>EVAL_SMOKE_*</code></td></tr>
-<tr><td>5</td><td>评估</td><td>512 @60k 1200 局（两卡两片）→ 512+motion @60k → 官方 79999；每轮起前 <code>hf sync</code> + 核验，起跑 Beta commit，结束汇总</td><td><code>EVAL_*=DONE</code>、<code>SEED_MATCH</code></td></tr>
+<tr><td>3</td><td>评估</td><td>E1（移植 <code>scripts/evaluation/</code>、子模块改指 tag、三处改动、四处开关小改）在本机策略仓库 worktree 做，sonnet 审查，合入 <code>test1017</code> 并 push；NFS 检出 <code>git fetch && checkout test1017</code>、<code>submodule update --init</code>、<code>setup.sh</code> 建两个 uv 环境与 wan venv；官方 server 用 NFS 上的 mme-vla <code>ecf086c</code> 检出</td><td><code>ENV_PIN</code>、<code>PROTO_CHECK</code>、<code>CLIENT_DIFF</code>、<code>MANIFEST</code></td></tr>
+<tr><td>4</td><td>评估</td><td>主会话 <code>ssh -O check</code> → 提交 8 个占位 job、记 JobID → 运行型子代理在登录节点 tmux 起 8 个 <code>gl_hold_pool.sh</code>（manifest 先只放冒烟 3 单元）；<code>hf sync</code> 512 的 10000 到 NFS → 核验；官方 2 局 + 10k 100 局冒烟，记单局耗时与首批显存</td><td><code>HOLD_JOBS</code>、<code>EVAL_SMOKE_*</code></td></tr>
+<tr><td>5</td><td>评估</td><td>Beta commit（NFS 检出 HEAD 冻结）→ manifest 追加 30 个正式单元（顺序 512 → 512+motion → 官方）→ worker 自动续抢；每模型 ckpt 到位即 <code>hf sync</code> + 核验；10 片跑完 <code>merge_shards.py</code> 合并、<code>check_shard.py</code> 验收；三模型完成后汇总</td><td><code>EVAL_*=DONE</code>、<code>SEED_MATCH</code>、<code>QUEUE_DONE</code></td></tr>
 <tr><td>6</td><td>生成（长尾）</td><td>算 sha、上传、GL 读回校验（放评估结束后起以免争 IO）</td><td><code>HF_*</code></td></tr>
-<tr><td>7</td><td>两侧</td><td>留档、汇总表、状态机 <code>done</code>、<code>handoff:</code> commit</td><td><code>HANDOFF_WRITE</code></td></tr>
+<tr><td>7</td><td>两侧</td><td>按 JobID 逐个 <code>scancel</code> 占位 job、删前删后 <code>squeue</code>；留档、汇总表、状态机 <code>done</code>、<code>handoff:</code> commit</td><td><code>HANDOFF_WRITE</code></td></tr>
 </table>
 
 <h2>七、子代理分工与合并（简述）</h2>
-<p>本仓库两块：W3 改校验工具（<code>check_mixed_h5.py</code> + 单测），W2 写上传与 GL 校验脚本（<code>scripts/hf-upload/</code> + 单测）；各一个 opus worktree，sonnet 审，<code>--no-ff</code> 合入 <code>newtask-v3-MotionJepa1006</code>。策略仓库一块：E1 在评估分支的 worktree 里做子模块改指、客户端移植（<code>evaluate_manifest</code>、<code>xhard0_manifest.py</code>、三处建环境改动）、清单导出、双卡启动器、汇总与 sidecar 卡号一行；opus worktree，sonnet 审，合入 <code>test1017</code>，不碰 <code>v2-motionmem</code>。运行型子代理只起 tmux 交回句柄（生成全量、每轮评估、上传各一批）；受保护目录追加、tag、GL job 提交、Beta／handoff／留档 commit 由主会话自做。</p>
+<p>本仓库两块：W3 改校验工具（<code>check_mixed_h5.py</code> + 单测），W2 写上传与 GL 校验脚本（<code>scripts/hf-upload/</code> + 单测）；各一个 opus worktree，sonnet 审，<code>--no-ff</code> 合入 <code>newtask-v3-MotionJepa1006</code>。策略仓库一块：E1 在评估分支的 worktree 里移植 <code>scripts/evaluation/</code>、改指子模块、加 <code>episode_ids</code> 与难度分流、改 <code>make_shard_plan</code> 读 1200 清单、四处开关式小改；opus worktree，sonnet 审，合入 <code>test1017</code>，不碰 <code>v2-motionmem</code>。运行型子代理只起 tmux 交回句柄（本机生成全量、登录节点 8 个 worker、上传各一批）；占位 job 提交（ssh）、受保护目录追加、tag、GL 校验 job、Beta／handoff／留档 commit、scancel 由主会话自做。</p>
 
 <h2>八、状态机登记（第 27 条）</h2>
 <table>
 <tr><th>任务</th><th>仓库</th><th>依赖</th><th>交接前必须完成</th><th>长尾</th></tr>
 <tr><td><code>test-xhard5-12per</code>（已登记 planned）</td><td>本仓库</td><td>无</td><td><code>GEN_FULL</code>、五组校验、<code>META_APPEND</code>／<code>PROTECTED_APPEND_ONLY</code>、tag 推远端、留档 commit</td><td><code>HF_UPLOAD</code>、<code>HF_VERIFY</code>（含「<code>HF_UPLOAD=PASS</code> 后由当时会话提交 GL job」）</td></tr>
-<tr><td><code>eval-testx-3models</code>（评估分支建 <code>docs/handoff/current.json</code> 时登记）</td><td>策略仓库 <code>test1017</code></td><td>跨仓库：本仓库 <code>test-xhard5-12per</code> 为 done；训练侧两条 run 的 60k bucket 到位（10k 冒烟不等）</td><td><code>ENV_PIN</code>、<code>MANIFEST</code>、两次冒烟、三轮 <code>EVAL_*=DONE</code>、<code>MANIFEST_SHARED</code>、<code>EVAL_TABLE</code>、留档 commit</td><td>无</td></tr>
+<tr><td><code>eval-testx-3models</code>（评估分支建 <code>docs/handoff/current.json</code> 时登记）</td><td>策略仓库 <code>test1017</code></td><td>跨仓库：本仓库 <code>test-xhard5-12per</code> 为 done；训练侧两条 run 的 60k bucket 到位（10k 冒烟不等）</td><td><code>ENV_PIN</code>、<code>MANIFEST</code>、两次冒烟、三轮 <code>EVAL_*=DONE</code>、<code>MANIFEST_SHARED</code>、<code>EVAL_TABLE</code>、留档 commit；<code>running_handles</code> 记 8 个 JobID 与 8 个登录节点 tmux</td><td>无</td></tr>
 </table>
 
 <h1>第二部分（技术细节，供 agent 追踪）</h1>
@@ -1043,12 +1063,12 @@ figcaption{font-size:13px;color:#555;margin-top:4px}
 <h2>〇、红线</h2>
 <ol>
 <li>本仓库 <code>src/robomme/</code> 零 diff，唯一例外是 14 个 test metadata 的纯追加；<code>pyproject.toml</code>／<code>uv.lock</code>／ManiSkill 钉 <code>07be6fbc</code> 不动；不换 seed 清单、不补 seed（T10 例外待确认）。</li>
-<li>生成只用 GPU0、32 worker、detached tmux；评估用双卡；不提交 Slurm 跑生成或评估；集群只跑 HF 读回校验 job。</li>
-<li>策略仓库：只在 <code>test1017</code> 分支改，<code>v2-motionmem</code> 与训练中的东西不碰；评估分支改动限于 <code>examples/robomme/</code>、<code>.gitmodules</code>／gitlink、<code>scripts/eval-testx/</code>、以及 <code>src/mme_vla_suite/policies/</code> 下四处开关式小改（<code>policy_config.py</code> 读 sidecar 卡号、<code>motion_client.py</code> 硬件四键豁免、<code>framesamp_memory.py</code> 从上次评估分支移植 <code>resample</code>、<code>policy.py</code> 回传 motion 计数），都经环境变量开启、默认行为不变；模型前向不改。</li>
+<li>生成只用本机 GPU0、32 worker、detached tmux，不上集群（P7）；评估在 GL 8 个占位 job 内（用户放行），一切集群操作按策略仓库 <code>greatlakes.md</code>：account chaijy2、spgpu、占位 job 规格不放大、不 <code>scancel -u</code>、评测期间 HEAD 冻结；HF 读回校验纯 CPU job 另算。</li>
+<li>策略仓库：只在 <code>test1017</code> 分支改，<code>v2-motionmem</code> 与训练中的东西不碰；评估分支改动限于 <code>examples/robomme/</code>、<code>.gitmodules</code>／gitlink、<code>scripts/evaluation/</code>（整目录移植自 <code>v2-eval-0918-motion</code>）、以及 <code>src/mme_vla_suite/policies/</code> 下四处开关式小改（<code>policy_config.py</code> 读 sidecar 卡号、<code>motion_client.py</code> 硬件四键豁免、<code>framesamp_memory.py</code> 从上次评估分支移植 <code>resample</code>、<code>policy.py</code> 回传 motion 计数），都经环境变量开启、默认行为不变；模型前向不改。</li>
 <li>官方服务端 mme-vla <code>ecf086c</code> 零 diff；原版客户端 NFS 工作树只读。</li>
 <li>评估只报数不设阈值；只重跑 <code>error</code>；不为挑成功重跑。</li>
 <li>Beta 锚点：生成全量前（本仓库）、每轮评估前（评估分支）；冻结期不 commit。</li>
-<li>ckpt 本地副本落策略仓库 <code>v1-store/models/</code> 与 <code>/data/hongzefu/mmevla-ckpt-framesamp-modul-79999/</code>（官方），NFS／HF 原件只读。</li>
+<li>ckpt 落 NFS 检出的 <code>v1-store/models/</code>（自家经 <code>hf sync</code>；官方 79999 用 NFS 既有 <code>v1-store/models/official-mme-vla/…/79999</code>），HF 原件只读；评估结果与日志落 NFS <code>v1-store/</code>，留档再 rsync 回本机提交。</li>
 </ol>
 
 <h2>一、生成侧命令（本仓库）</h2>
@@ -1068,40 +1088,41 @@ uv run --no-sync python scripts/data-generation-newSeed/utils/append_train_metad
 # 上传（tmux xh-testx-upload）：scripts/hf-upload/upload_bucket.sh（先 make_sha256sums.py 再 hf buckets create/上传）；校验：ssh greatlakes env HF_TOKEN="$HF_TOKEN" sbatch --export=ALL &lt;NFS&gt;/hfverify.sbatch（规格见 AGENTS.md 覆盖第 8 条）</pre>
 <p class="small">smoke 一：<code>--env VideoUnmaskSwap --episodes 1 --workers 1</code> 输出 <code>artifacts/test-xhard/smoke1</code>；smoke 二：14 任务 <code>--episodes 2</code> 输出 <code>smoke2</code>，tmux <code>xh-testx-smoke2</code>。tmux 串一律 <code>set -o pipefail; PYTHONUNBUFFERED=1 … 2&gt;&amp;1 | tee &lt;log&gt;; echo "EXIT_CODE=$?" &gt;&gt; &lt;log&gt;</code>。</p>
 
-<h2>二、评估侧改动清单与命令（策略仓库分支）</h2>
+<h2>二、评估侧改动清单与命令（策略仓库分支 <code>test1017</code>）</h2>
 <table>
 <tr><th>文件（分支 <code>test1017</code>）</th><th>改什么</th></tr>
-<tr><td><code>.gitmodules</code>、gitlink <code>third_party/robomme_benchmark</code></td><td>url 改 <code>https://github.com/hongzefu/robomme_benchmark_MotionJEPA.git</code>，gitlink = tag <code>testx-metadata-v1</code> 的 commit；<code>git submodule update --init</code></td></tr>
-<tr><td><code>examples/robomme/eval.py</code>、<code>xhard0_manifest.py</code>（新）</td><td>从 927c56d 移植清单模式（<code>Args.episode_manifest／shard／video_dir</code>、<code>evaluate_manifest</code>、<code>done_keys</code>），不移植 VLM 子目标部分；保留本分支的 <code>dataset／episode_stride</code> 参数</td></tr>
-<tr><td><code>examples/robomme/env_runner.py</code></td><td><code>import robomme_xhard</code>（在 <code>from robomme.robomme_env import *</code> 之后）；按清单行难度建 builder：xhard 用 <code>f"{env_id}XHard"</code> + <code>override_metadata_path=Path(os.environ["XHARD_METADATA_DIR"])</code>，base 档与 MoveCube／InsertPeg 用原任务名 + 官方 metadata；<code>self.env_id</code> 仍为原任务名；建成后断言 <code>env.unwrapped.difficulty</code> 等于清单难度；保留 <code>EVAL_EPISODE</code> 逐局打印。<code>check_seed</code> 比清单 <code>difficulty</code>；<code>make_env</code> 并入 try</td></tr>
-<tr><td><code>src/mme_vla_suite/policies/policy_config.py</code></td><td>一行：<code>online_gpu</code> 优先读环境变量 <code>MMEVLA_MOTION_ONLINE_GPU</code>，缺省回快照值</td></tr>
-<tr><td><code>src/mme_vla_suite/policies/motion_client.py</code></td><td><code>check_provenance</code>：<code>MMEVLA_PROV_EXEMPT_HW=1</code> 时跳过 <code>gpu_name／compute_cap／sm_count／driver</code> 四键，并把实际差异打进日志与 <code>MOTION_PROV</code> 行；默认仍全比</td></tr>
-<tr><td><code>src/mme_vla_suite/policies/framesamp_memory.py</code>、<code>policy.py</code></td><td>从上次评估分支 <code>v2-eval-0918-motion</code> 移植 <code>MMEVLA_MOTION_OVERFLOW=resample</code>（<code>_motion_quota</code>、<code>_even_pick</code>、<code>MOTION_DOWNSAMPLE</code> 计数；只在 <code>_prepare_motion</code> 装配阶段生效，不碰增量编码与 <code>_raw_frames</code> 清理）；<code>policy.py</code> 的 infer 回传 <code>motion_k／motion_budget／downsample_steps／downsample_max_k</code>；默认仍 raise。单测：合成 k=B+5 断言填满 B、次序递增、默认 raise</td></tr>
-<tr><td><code>scripts/eval-testx/es_bound.py</code>（新）</td><td>对清单每局读本机 <code>artifacts/test-xhard</code> 产物的 demo 帧数（base 档按官方 h5 不在本机，记 demo 帧数为 0 并标注），按 max_steps 2000 算窗数（demo 窗 + 执行窗 124）与最大帧号（demo 帧数 + 2000，上界 4096），出 <code>EVAL_ES_BOUND</code> 行与超限局清单；抽 2～3 局用 <code>reset</code> 的 <code>es=len(images)−1</code> 对拍</td></tr>
-<tr><td><code>scripts/eval-testx/make_manifest.py</code>（新）</td><td>从子模块 test metadata 导出 1200 局清单（行含 <code>difficulty</code>，shard 按 <code>(task, difficulty, episode)</code> 排序 idx%2）、100 局冒烟子清单（每格第 1 条，断言为子集）、XHard metadata 副本（仅 14 个 xhard 任务）；每格断言 ≥12；末行 <code>MANIFEST=PASS</code>、<code>SMOKE_SUBSET=PASS</code></td></tr>
-<tr><td><code>scripts/eval-testx/run_shard.sh</code>（新，骨架沿用上次分支 <code>scripts/evaluation/run_shard.sh</code>）</td><td>参数 <code>&lt;model&gt; &lt;gpu&gt; &lt;shard&gt; &lt;port&gt;</code>；起跑前：<code>git status --porcelain</code> 空、子模块 gitlink = tag、<code>check_local_gpu</code>、<code>/dev/tcp</code> 探端口、<code>.created</code>／<code>ALLOW_RESUME</code>、unset 渲染开关、横幅；按 model 起服务端（自家／官方两条命令）；就绪循环（20 分钟、<code>kill -0</code>、<code>healthz</code>、监听 inode 归属）；客户端 <code>GLIBC_TUNABLES=…=65536</code>，每 20 局一个进程（<code>--args.max_new_episodes 20</code>）循环直到 pending=0，<code>--args.model_seed=7 --args.max_steps=2000 --args.obs_horizon=16 --args.use_history=True</code>；三遍只重跑 error；外部看门狗（静默 12 分钟）与 server／sidecar 存活守卫；<code>trap cleanup</code> 叶到根 TERM；收尾断言局数 = 清单局数、视频核对、<code>TIMING_SUMMARY</code>；末行 <code>EVAL_&lt;model&gt;_s&lt;shard&gt;=DONE …</code></td></tr>
-<tr><td><code>scripts/eval-testx/fetch_ckpt.sh</code>（新）</td><td>先 <code>hf sync --dry-run</code> 核清单，再 <code>hf sync hf://buckets/&lt;bucket&gt; v1-store/models/&lt;run&gt; --include '&lt;step&gt;/*' --include 'history_config.*' --include 'motion_provenance.json' --include 'SHA256SUMS.pre.txt'</code>；motion 模型另拉 encoder run 目录到 <code>v1-store/external/motionjepa/&lt;run&gt;</code>、新库 <code>store_meta.provenance</code>、Wan VAE 资产 → <code>sha256sum -c</code> → 按 run 登记表核 budget／stride／window／source_run／norm_stats sha → <code>check_ckpt_param_tree.py</code> → <code>check_config_provenance.py --ckpt … --lib … --store-subdir … --norm-stats … --provenance …</code>（两 run 参数分别写）→ 只握手不评估的 provenance dry-run。官方 79999 从本机 <code>v1-store/models/official-mme-vla/perceptual-framesamp-modul/79999</code> 复制并逐文件 sha256（<code>OFFICIAL_CKPT_SHA</code>）</td></tr>
-<tr><td><code>scripts/eval-testx/summarize.py</code>（新）</td><td>按 <code>(task, source_episode)</code> 取最后一条，回查清单取 difficulty；三模型「任务 × 档」表（官网顺序，<code>n/12（err k）</code>，另列 timeout、motion 抽稀局）；<code>MANIFEST_SHARED</code>（键 <code>(task, source_episode, seed)</code>）、<code>SHARDS_UNION</code>、<code>EVAL_VIDEO</code>、<code>EVAL_TABLE</code></td></tr>
-<tr><td><code>examples/robomme/pyproject.toml</code>、<code>uv.lock</code>（新，客户端子项目）</td><td>依赖按 <code>requirements.txt</code>（含 <code>ms_swift</code>、<code>transformers</code>、<code>torch==2.9.1</code>）+ 子模块 editable + <code>packages/openpi-client</code> editable；不再用 micromamba</td></tr>
+<tr><td><code>.gitmodules</code>、gitlink <code>third_party/robomme_benchmark</code></td><td>url 改 <code>https://github.com/hongzefu/robomme_benchmark_MotionJEPA.git</code>，gitlink = tag <code>testx-metadata-v1</code> 的 commit；NFS 检出 <code>git submodule update --init</code></td></tr>
+<tr><td><code>scripts/evaluation/</code>（整目录从 <code>v2-eval-0918-motion</code> 移植：<code>run_shard.sh</code>、<code>gl_eval_shard.sbatch</code>、<code>gl_hold_pool.sh</code>、<code>gl_hold_queue.sh</code>、<code>make_shard_plan.py</code>、<code>merge_shards.py</code>、<code>check_shard.py</code>、<code>check_result.py</code>、<code>check_checkpoint.py</code>、<code>verify_sources.py</code>、<code>render_probe.py</code>、<code>env.sh</code>、<code>setup.sh</code>、<code>download.sh</code>、<code>client/</code> 子项目）</td><td>原样移植；<code>make_shard_plan.py</code> 改读 1200 局清单（去掉 <code>injection_candidates</code>、4 任务与 50 条写死），输出每片 (task, episode 列表) 与难度；<code>gl_hold_queue.sh</code> PASS 白名单加 <code>MMEVLA_PROV_EXEMPT_HW</code>、<code>XHARD_METADATA_DIR</code>；<code>gl_hold_pool.sh</code> 的 manifest 模式对 policy 名以 <code>-motion</code> 结尾自动设 <code>MMEVLA_MOTION_OVERFLOW=resample</code>（原有行为）；<code>check_shard.py</code> 的难度期望改读清单；不再用 BinFill demo 注入（<code>EXPECT_DEMO_INJECT=0</code>）</td></tr>
+<tr><td><code>examples/robomme/eval.py</code>、<code>env_runner.py</code></td><td><code>eval.py</code> 加 <code>--args.episode_ids</code>（逗号列表，与 <code>episode_start／stride</code> 互斥）；<code>env_runner.py</code>：<code>import robomme_xhard</code>（在 <code>from robomme.robomme_env import *</code> 之后），按清单行难度建 builder（xhard 用 <code>f"{env_id}XHard"</code> + <code>override_metadata_path=Path(os.environ["XHARD_METADATA_DIR"])</code>，base 档与 MoveCube／InsertPeg 用原任务名 + 官方 metadata），<code>self.env_id</code> 仍为原任务名，建成后断言 <code>env.unwrapped.difficulty</code> 等于清单难度，保留 <code>EVAL_EPISODE</code> 行；<code>make_env</code> 已在 try 内（该分支原有）</td></tr>
+<tr><td><code>src/mme_vla_suite/policies/policy_config.py</code>、<code>motion_client.py</code>、<code>framesamp_memory.py</code>、<code>policy.py</code></td><td>四处开关式小改：<code>online_gpu</code> 优先读 <code>MMEVLA_MOTION_ONLINE_GPU</code>；<code>check_provenance</code> 在 <code>MMEVLA_PROV_EXEMPT_HW=1</code> 时跳过四个硬件键（vae、encoder 两段）并把差异打进日志；从 <code>v2-eval-0918-motion</code> 移植 <code>MMEVLA_MOTION_OVERFLOW=resample</code>（<code>_motion_quota</code>、<code>_even_pick</code>、<code>MOTION_DOWNSAMPLE</code> 计数，只在 <code>_prepare_motion</code> 生效）；<code>policy.py</code> infer 回传 <code>motion_k／downsample</code> 计数；默认行为全部不变；单测各一条</td></tr>
+<tr><td><code>scripts/evaluation/make_manifest.py</code>（新）</td><td>从子模块 test metadata 导出 1200 局清单（行含 <code>difficulty</code>）、100 局冒烟子清单（每格第 1 条，断言为子集）、XHard metadata 副本（仅 14 个 xhard 任务）；每格断言 ≥12；末行 <code>MANIFEST=PASS</code>、<code>SMOKE_SUBSET=PASS</code></td></tr>
+<tr><td><code>scripts/evaluation/es_bound.py</code>（新）</td><td>对清单每局按本机 <code>artifacts/test-xhard</code> 产物的 demo 帧数（base 档记 0 并标注）按 max_steps 2000 算窗数与最大帧号（上界 4096），出 <code>EVAL_ES_BOUND</code>；在本机算、结果随清单提交</td></tr>
+<tr><td><code>scripts/evaluation/fetch_ckpt.sh</code>（新）</td><td>对 NFS 执行：先 <code>hf sync --dry-run</code>，再 <code>hf sync hf://buckets/&lt;bucket&gt; v1-store/models/&lt;run&gt; --include '&lt;step&gt;/*' --include 'history_config.*' --include 'motion_provenance.json' --include 'SHA256SUMS.pre.txt'</code>；motion 模型另拉 encoder run 目录到 <code>v1-store/external/motionjepa/&lt;run&gt;</code>、<code>store_meta.provenance</code>、Wan VAE 资产 → <code>sha256sum -c</code> → run 登记表核验 → <code>check_checkpoint.py</code>／<code>check_ckpt_param_tree.py</code> → <code>check_config_provenance.py</code>（两 run 参数分别写）→ provenance dry-run；官方 79999 用 NFS 既有副本逐文件 sha256（<code>OFFICIAL_CKPT_SHA</code>）</td></tr>
+<tr><td><code>scripts/evaluation/summarize.py</code>（新）</td><td>读三模型合并结果，按 <code>(task, episode)</code> 回查清单取 difficulty；「任务 × 档」表（官网顺序，<code>n/12（err k）</code>，另列 timeout、motion 抽稀局）；<code>MANIFEST_SHARED</code>、<code>SHARDS_UNION</code>、<code>EVAL_VIDEO</code>、<code>EVAL_TABLE</code></td></tr>
 <tr><td><code>docs/handoff/current.json</code>（新）、<code>docs/training-doc/eval-testx-1017/</code>、<code>1017-eval-testx-plan.html</code>（指向本文件的短页）</td><td>第 27 条登记、留档、仓库内索引</td></tr>
 </table>
-<pre># 自家服务端（每片一对，卡 g、端口 p）
-CUDA_VISIBLE_DEVICES=$g MMEVLA_MOTION_ONLINE_GPU=$g MMEVLA_PROV_EXEMPT_HW=1 MMEVLA_MOTION_OVERFLOW=resample XLA_PYTHON_CLIENT_MEM_FRACTION=0.4 UV_LINK_MODE=copy uv run --no-sync python scripts/training/serve_policy.py --seed=7 --port=$p policy:checkpoint --policy.dir=v1-store/models/&lt;run&gt;/60000 --policy.config=mme_vla_suite_b128_80k
-# 官方服务端
-cd /data/hongzefu/RoboMME-benchmark-OOD-eval/third_party/mme-vla &amp;&amp; env -u XLA_FLAGS -u JAX_COMPILATION_CACHE_DIR -u JAX_PERSISTENT_CACHE_MIN_COMPILE_TIME_SECS -u JAX_PERSISTENT_CACHE_MIN_ENTRY_SIZE_BYTES -u JAX_ENABLE_COMPILATION_CACHE CUDA_VISIBLE_DEVICES=$g XLA_PYTHON_CLIENT_MEM_FRACTION=0.75 .venv/bin/python scripts/serve_policy.py --seed=7 --port=$p policy:checkpoint --policy.dir=/data/hongzefu/mmevla-ckpt-framesamp-modul-79999 --policy.config=mme_vla_suite
-# 客户端（两种服务端同一条）
-cd examples/robomme &amp;&amp; env -u http_proxy -u https_proxy -u HTTP_PROXY -u HTTPS_PROXY -u all_proxy -u ALL_PROXY NO_PROXY=127.0.0.1,localhost GLIBC_TUNABLES=glibc.rtld.optional_static_tls=65536 CUDA_VISIBLE_DEVICES=$g XHARD_METADATA_DIR=&lt;清单目录&gt;/metadata uv run --no-sync python eval.py --args.host=127.0.0.1 --args.port=$p --args.model_seed=7 --args.model_ckpt_id=&lt;step&gt; --args.policy_name=&lt;model&gt; --args.episode_manifest=&lt;清单&gt; --args.shard=$s --args.max_steps=2000 --args.obs_horizon=16 --args.use_history=True --args.max_new_episodes=20 --args.video_dir=&lt;out&gt;/s$s/videos --args.save_dir=&lt;out&gt;/s$s   # 外层循环直到 pending=0
-# 两片：tmux xh-testx-eval-&lt;model&gt;-s0（GPU0, 19300）、xh-testx-eval-&lt;model&gt;-s1（GPU1, 19400）</pre>
-
+<pre># 占位 job ×8（登录节点，主会话；模板 slurm-holds/hold_job.sbatch：1×A40 / 1 CPU / 24G / --time=2-00:00:00 / --gpu_cmode=shared）
+for i in 1 2 3 4 5 6 7 8; do sbatch --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=gpu:1 --gpu_cmode=shared \
+  --cpus-per-task=1 --mem=24G --time=2-00:00:00 --job-name=testx-hold-$i --wrap='sleep infinity'; done   # JobID 逐个记入 launch.md
+# worker ×8（登录节点 detached tmux，运行型子代理）
+tmux new-session -d -s xh-testx-pool-&lt;jobid&gt; "set -o pipefail; cd $REPO &amp;&amp; MANIFEST=$REPO/v1-store/evaluation/testx/manifest.tsv QUEUE_DIR=$REPO/v1-store/evaluation/testx/queue \
+  CHUNK_EPISODES=20 SEED=7 EVAL_MAX_STEPS=2000 MMEVLA_PROV_EXEMPT_HW=1 XHARD_METADATA_DIR=$REPO/v1-store/evaluation/testx/metadata \
+  bash scripts/evaluation/gl_hold_pool.sh &lt;jobid&gt; 2&gt;&amp;1 | tee -a $REPO/v1-store/logs/policy-eval/pool-&lt;jobid&gt;.log; echo \"EXIT_CODE=\$?\" &gt;&gt; …"
+# 每单元内（gl_hold_queue.sh → srun --jobid --overlap --exact --gpu_cmode=shared → gl_eval_shard.sbatch → run_shard.sh）：
+#   自家：serve_policy.py --seed=7 --port=$PORT policy:checkpoint --policy.dir=v1-store/models/&lt;run&gt;/60000 --policy.config=mme_vla_suite_b128_80k
+#   官方：mme-vla ecf086c 检出 serve_policy.py --policy.config=mme_vla_suite（env -u JAX_* XLA_PYTHON_CLIENT_MEM_FRACTION=0.7）
+#   客户端：GLIBC_TUNABLES=glibc.rtld.optional_static_tls=65536，每 20 局一个进程；eval.py --args.episode_ids=&lt;片内列表&gt; --args.model_seed=7 --args.max_steps=2000 --args.obs_horizon=16 --args.use_history=True
+# 本机监听：对每份 $REPO/v1-store/logs/policy-eval/&lt;run&gt;-s&lt;k&gt;.log 各挂一个 Monitor（tail -F NFS 文件）</pre>
 <h2>三、子代理分配表</h2>
 <table>
 <tr><th>编号</th><th>仓库／分支</th><th>目标</th><th>可写集合</th><th>验收（worktree 内，CPU）</th></tr>
 <tr><td>W3（opus，worktree）</td><td>本仓库</td><td><code>check_mixed_h5.py</code> 加 <code>--layout</code>／<code>--tasks</code></td><td>该文件 + <code>tests/lightweight/test_check_mixed_h5_layout.py</code></td><td>定向 pytest（<code>UV_PROJECT_ENVIRONMENT=&lt;主 .venv&gt; PYTHONPATH=&lt;worktree&gt;/src</code>）</td></tr>
 <tr><td>W2（opus，worktree）</td><td>本仓库</td><td>sha 清单、上传、GL 校验脚本</td><td><code>scripts/hf-upload/**</code> + <code>tests/lightweight/test_hf_sha256sums.py</code></td><td>定向 pytest；<code>grep</code> 无 token 字面量</td></tr>
-<tr><td>E1（opus，worktree）</td><td>策略仓库 <code>test1017</code></td><td>二节全部文件</td><td>二节清单；禁触 <code>src/mme_vla_suite</code> 除 <code>policies/</code> 下四处开关式小改、训练脚本、<code>v1-store</code></td><td>清单导出单测（合成 metadata，断言 1200／100 格／600／600 与 G4／G3 取样）；<code>diff -ru -x '*_test.py' -x __pycache__ &lt;927c56d&gt; examples/robomme</code> 只差允许文件</td></tr>
+<tr><td>E1（opus，worktree）</td><td>策略仓库 <code>test1017</code></td><td>二节全部文件</td><td>二节清单；禁触 <code>src/mme_vla_suite</code> 除 <code>policies/</code> 下四处开关式小改、训练脚本、<code>v1-store</code></td><td>清单导出单测（合成 metadata，断言 1200／100 格／10 片各 120 与 G4／G3 取样）；<code>diff -r scripts/evaluation &lt;v2-eval-0918-motion&gt;:scripts/evaluation</code> 只差允许文件；<code>test_control.py</code>／<code>test_result.py</code> 照跑</td></tr>
 <tr><td>A1–A3（sonnet）</td><td>各自</td><td>合并前审查</td><td>无</td><td><code>PRE_MERGE_REVIEW</code></td></tr>
-<tr><td>R1／R2／R3（opus，运行型）</td><td>各自主检出</td><td>起生成全量／每轮评估两片／上传 tmux，立即交回</td><td>只写产物目录</td><td>起跑判据原始输出、<code>tmux ls</code></td></tr>
-<tr><td>主会话</td><td>两侧</td><td>只读核实、环境、smoke、metadata 追加、tag、ckpt 下载核验、GL job、Beta／handoff／留档、Monitor、清理</td><td>—</td><td>—</td></tr>
+<tr><td>R1／R3（opus，运行型，本机）</td><td>本仓库主检出</td><td>起生成全量／上传 tmux，立即交回</td><td>只写产物目录</td><td>起跑判据原始输出、<code>tmux ls</code></td></tr>
+<tr><td>R2（opus，运行型，GL 登录节点）</td><td>策略仓库 NFS 检出</td><td>对 8 个已 RUNNING 的占位 job 各起一个 <code>xh-testx-pool-&lt;jobid&gt;</code> tmux worker，立即交回；不提交 job、不 scancel</td><td>只写 NFS <code>v1-store/evaluation/testx/**</code>、<code>v1-store/logs/policy-eval/**</code></td><td>每个 pool 日志出现 <code>WORKER_START</code> 与第一条 <code>CLAIM</code>；8 个 tmux 名、JobID 对应表、<code>tmux ls</code></td></tr>
+<tr><td>主会话</td><td>两侧</td><td>只读核实、NFS 环境搭建、smoke、metadata 追加、tag、ckpt 下载核验、8 个占位 job 提交与 scancel、HF 校验 job、Beta／handoff／留档、Monitor、清理</td><td>—</td><td>—</td></tr>
 </table>
 
 <h2>四、闸门</h2>
@@ -1111,8 +1132,8 @@ cd examples/robomme &amp;&amp; env -u http_proxy -u https_proxy -u HTTP_PROXY -u
 <tr><td>合并</td><td>写集 ⊆ 分配表、<code>PRE_MERGE_REVIEW=PASS</code>、worktree 测试通过</td><td>续改，两轮仍 FAIL 交用户</td></tr>
 <tr><td>生成→追加</td><td><code>GEN_FULL exhausted=0</code> 且五组校验 PASS</td><td>停在追加前交用户</td></tr>
 <tr><td>评估分支就绪</td><td><code>ENV_PIN</code>、<code>PROTO_CHECK</code>、<code>MANIFEST</code>、<code>CLIENT_DIFF</code> PASS</td><td>不起冒烟</td></tr>
-<tr><td>冒烟→正式</td><td>两次冒烟 <code>error=0</code>；10k 的 <code>per_episode_s</code> 外推单轮 ≤ 10 小时</td><td>超 10 小时先报用户</td></tr>
-<tr><td>每轮起跑</td><td><code>CKPT_SHA／PARAM_TREE_EXACT／TIC_L0</code>（自家）或 <code>SERVER_PIN</code>（官方）PASS，两卡空闲</td><td>不起</td></tr>
+<tr><td>冒烟→正式</td><td>两次冒烟 <code>error=0</code>、<code>RENDER_PASS</code>；10k 的 <code>per_episode_s</code> 外推单模型 8 卡 ≤ 12 小时</td><td>超 12 小时先报用户</td></tr>
+<tr><td>每模型入队</td><td><code>CKPT_SHA／PARAM_TREE_EXACT／TIC_L0</code>（自家）或 <code>SERVER_PIN／OFFICIAL_CKPT_SHA</code>（官方）PASS，8 个占位 job RUNNING</td><td>不追加 manifest 行</td></tr>
 <tr><td>交接</td><td><code>pre_handoff</code> 全 pass、非长尾 tmux 全退</td><td>保持 running／stopped</td></tr>
 </table>
 
@@ -1120,16 +1141,18 @@ cd examples/robomme &amp;&amp; env -u http_proxy -u https_proxy -u HTTP_PROXY -u
 <table>
 <tr><th>tmux</th><th>日志</th><th>Monitor 过滤词</th></tr>
 <tr><td><code>xh-testx-smoke2</code>、<code>xh-testx-full</code></td><td><code>artifacts/test-xhard/{smoke2,full}/*.log</code></td><td><code>succeeded with seed|GROUP_EXIT|EXIT_CODE=|failed|进程池已损坏|ERROR:|Traceback|BrokenProcessPool|svulkan2|out of memory|NO RECORD</code></td></tr>
-<tr><td><code>xh-testx-eval-&lt;model&gt;-s{0,1}</code>（每轮两个）</td><td>策略仓库 <code>v1-store/logs/eval-testx/&lt;model&gt;-s{0,1}.log</code>（各一个 Monitor）</td><td><code>=DONE|SERVER_DIED|RETRY_CAP_HIT|EVAL_STALL|MOTION_DOWNSAMPLE|ErrorIncompatibleDriver|Traceback|out of memory|svulkan2|BrokenProcessPool|failed|ERROR:|EXIT_CODE=</code></td></tr>
+<tr><td>GL 登录节点 <code>xh-testx-pool-&lt;jobid&gt;</code> × 8；每单元日志 <code>&lt;run&gt;-s&lt;k&gt;.log</code></td><td>NFS <code>v1-store/logs/policy-eval/pool-&lt;jobid&gt;.log</code> 与 <code>&lt;run&gt;-s&lt;k&gt;.log</code>（本机 <code>tail -F</code> NFS 文件，每份一个 Monitor）</td><td><code>WORKER_START|CLAIM|ITEM_DONE|WORKER_DONE|QUEUE_SHARD_DONE|SERVER_DIED|RETRY_CAP_HIT|EVAL_STALL|MOTION_DOWNSAMPLE|ErrorIncompatibleDriver|Traceback|out of memory|svulkan2|ERROR:|EXIT_CODE=</code></td></tr>
 <tr><td><code>xh-testx-upload</code>；GL job <code>testx-hfverify</code></td><td><code>artifacts/test-xhard/upload/upload.log</code>；<code>&lt;NFS&gt;/logs/testx-hfverify/*.out</code></td><td><code>SHA256SUMS=|HF_UPLOAD=|HF_VERIFY=|Error|Traceback|EXIT_CODE=</code></td></tr>
 </table>
-<p class="small">每份日志一个 Monitor，行缓冲管道；清理只用 <code>tmux kill-session -t '=名'</code>，删前删后 <code>tmux ls</code>。</p>
+<p class="small">每份日志一个 Monitor，行缓冲管道；清理只用 <code>tmux kill-session -t '=名'</code>（本机与登录节点各自），删前删后 <code>tmux ls</code>；占位 job 按 <code>launch.md</code> 的 JobID 逐个 <code>scancel</code>，删前删后 <code>squeue -u</code> 对照。</p>
 
 <h2>六、风险</h2>
 <table>
 <tr><th>风险</th><th>处置</th></tr>
 <tr><td>某 episode 耗尽（1013 冒烟曾见 VideoPlaceOrder 连续三次非任务性失败）</td><td>停在追加前交用户，不自动补</td></tr>
-<tr><td>同卡上策略进程（JAX／torch）+ 仿真渲染 + motion sidecar 显存不够</td><td>10k 冒烟先验证；不够则每卡一对、sidecar 同卡，仍不够交用户</td></tr>
+<tr><td>A40（48 GB）同卡上策略进程 + 仿真渲染 + motion sidecar 显存不够</td><td>10k 冒烟（含 demo 最长的局）先验证；不够交用户</td></tr>
+<tr><td>占位 job PENDING（AssocGrpGRES／MemLimit）或 48 h 到期</td><td>先起已 RUNNING 的 worker，后到的 job 直接接着抢；到期前按 <code>greatlakes.md</code> 重新申请并换 JobID；不 <code>scancel -u</code></td></tr>
+<tr><td>NFS 读 ckpt 与写视频慢、登录节点 tmux 被清</td><td>缓存指到 <code>v1-store/cache</code>；tmux 消失按日志无 <code>EXIT_CODE=</code> 判 FAIL，续跑用 <code>ALLOW_RESUME=1</code></td></tr>
 <tr><td><code>add_buffer</code> 段边界状态机对 927c56d 客户端的 <code>exec_start_idx</code> 发送方式报错</td><td><code>PROTO_CHECK</code> 在开工前核实；不兼容则客户端按本分支逻辑同步一处并记入 <code>CLIENT_DIFF</code></td></tr>
 <tr><td>两条 run 的 60k bucket 迟到</td><td>评估任务 <code>depends_on</code> 挂起，先跑官方 2 局冒烟与分支搭建；10k 冒烟只等 512 的 10000</td></tr>
 <tr><td><code>max_steps=2000</code> 仍可能不够 xhard20 最长的局</td><td>表里单列 timeout；不再加长</td></tr>
@@ -1146,7 +1169,7 @@ cd examples/robomme &amp;&amp; env -u http_proxy -u https_proxy -u HTTP_PROXY -u
 <li>单局评估耗时、同卡三进程显存、两条 run 的 bucket 名与 run 级文件是否齐全，都未实测。</li>
 <li>策略分支 <code>policy.py</code> 的段边界状态机与官方客户端的兼容性未逐行核。</li>
 <li>test xhard 的 demo 帧数分布未算，超 160 窗的局数要等 <code>EVAL_ES_BOUND</code>；resample 在 xhard 长 demo 上的影响只能靠汇总单列观察。</li>
-<li>单进程 20 局分块与 65536 的 TLS 值是上次口径，本机未复测；10k 冒烟 100 局即验证。</li>
+<li>单进程 20 局分块与 65536 的 TLS 值是上次 GL 口径，A40 单卡 2000 步一局 2～4 分钟是估计；10k 冒烟 100 局即校准。</li>
 <li>52 格各 12 局、base 档各 12 局，样本小，只能看趋势。</li>
 </ul>
 
