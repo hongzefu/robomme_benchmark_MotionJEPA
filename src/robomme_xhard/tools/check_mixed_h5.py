@@ -22,7 +22,7 @@ for directory in (REPO_ROOT / "scripts/data-generation", REPO_ROOT / "scripts/da
     if str(directory) not in sys.path:
         sys.path.insert(0, str(directory))
 from validate_generated_dataset_contract import inspect_episode_terminal, timestep_indices  # noqa: E402
-from seed_layout import get_layout, parse_difficulty_cycle  # noqa: E402
+from seed_layout import DEFAULT_LAYOUT, LAYOUTS, get_layout, parse_difficulty_cycle  # noqa: E402
 
 REVISION = "a5e4e25ffe8af34f64944f9533d06455ce5f8337"
 DEFAULT_CYCLE = "easy,medium,hard,xhard12,xhard14,xhard16,xhard18,xhard20"
@@ -48,7 +48,7 @@ def effective_cycle(task, cycle):
     return result
 
 
-def expected_identity(task, episode, attempt, cycle):
+def expected_identity(task, episode, attempt, cycle, layout=DEFAULT_LAYOUT):
     tiers = effective_cycle(task, cycle)
     difficulty = tiers[episode % len(tiers)]
     mode = None
@@ -56,7 +56,7 @@ def expected_identity(task, episode, attempt, cycle):
         ordinal = sum(tiers[index % len(tiers)] in BASE_TIERS for index in range(episode))
         mode = "z" if ordinal < 3 else "xy" if ordinal < 6 else None
     return {"task": task, "episode": episode, "attempt": attempt,
-            "seed": get_layout("train").seed(task, episode, attempt),
+            "seed": get_layout(layout).seed(task, episode, attempt),
             "difficulty": difficulty, "recovery_mode": mode}
 
 
@@ -159,7 +159,8 @@ def read_products(output_dir):
     return {"results": results, "metadata": metadata, "files": files, "errors": errors}
 
 
-def audit_dataset(output_dir, cycle, episode_start, episodes, max_attempts=100, tasks=TASK_ORDER, products=None):
+def audit_dataset(output_dir, cycle, episode_start, episodes, max_attempts=100, tasks=TASK_ORDER, products=None,
+                  layout=DEFAULT_LAYOUT):
     products = products or read_products(output_dir)
     expected = {(task, episode) for task in tasks for episode in range(episode_start, episode_start + episodes)}
     errors = list(products["errors"])
@@ -199,7 +200,7 @@ def audit_dataset(output_dir, cycle, episode_start, episodes, max_attempts=100, 
             if type(attempt) is not int or not 0 <= attempt < max_attempts or attempt >= 100:
                 counts["mismatch"] += 1
                 continue
-            target = expected_identity(*key, attempt, cycle)
+            target = expected_identity(*key, attempt, cycle, layout)
             if type(row.get("seed")) is not int or any(row.get(field) != target[field] for field in ("seed", "difficulty", "recovery_mode")):
                 counts["mismatch"] += 1
                 errors.append(f"{key} 结果 seed/difficulty/recovery_mode 不符，预期 {target}")
@@ -299,7 +300,7 @@ def semantic_checks(task, difficulty, boundaries, record):
             "exempt": len(exemptions), "mismatch": len(errors), "errors": errors, "details": details}
 
 
-def check_file(file_row, record, metadata, golden, cycle):
+def check_file(file_row, record, metadata, golden, cycle, layout=DEFAULT_LAYOUT):
     task, episode_number = file_row["task"], file_row["episode"]
     path = Path(file_row["path"])
     result = {"file": str(path), "task": task, "episode": episode_number,
@@ -317,7 +318,7 @@ def check_file(file_row, record, metadata, golden, cycle):
             result["content_errors"].extend(errors)
             if completed is not True:
                 result["content_errors"].append("末步未完成")
-            target = expected_identity(task, episode_number, record["attempt"], cycle)
+            target = expected_identity(task, episode_number, record["attempt"], cycle, layout)
             for section, group in [("setup", episode["setup"])] + [("timestep", episode[f"timestep_{index}"]) for index in indices]:
                 findings = schema_errors(group, golden, section)
                 for kind, keys in findings.items():
@@ -371,7 +372,7 @@ def check_file(file_row, record, metadata, golden, cycle):
     return result
 
 
-def check_counts(products, cycle, episode_start, episodes, tasks):
+def check_counts(products, cycle, episode_start, episodes, tasks, layout=DEFAULT_LAYOUT):
     expected = Counter((task, effective_cycle(task, cycle)[ep % len(effective_cycle(task, cycle))])
                        for task in tasks for ep in range(episode_start, episode_start + episodes))
     actual = Counter((row.get("task"), row.get("difficulty")) for row in products["results"] if row.get("ok") is True)
@@ -379,7 +380,7 @@ def check_counts(products, cycle, episode_start, episodes, tasks):
     metadata = Counter((row.get("task"), row.get("difficulty")) for row in products["metadata"])
     file_counts = Counter(row.get("task") for row in products["files"])
     counts_ok = actual == expected and metadata == expected and file_counts == Counter({task: episodes for task in tasks})
-    audit = audit_dataset(".", cycle, episode_start, episodes, tasks=tasks, products=products)
+    audit = audit_dataset(".", cycle, episode_start, episodes, tasks=tasks, products=products, layout=layout)
     return {"pass": counts_ok and audit["pass"], "tasks": len(tasks), "episodes": episodes,
             "per_tier_ok": int(counts_ok and audit["pass"]),
             "per_tier": [{"task": task, "difficulty": tier, "expected": count, "actual": actual[(task, tier)],
@@ -430,7 +431,7 @@ def compare_joint_actions(samples, compare_dir):
 
 
 def check_dataset(output_dir, golden_dir, cycle, episodes, sample="first-per-tier", workers=32,
-                  episode_start=0, tasks=TASK_ORDER, compare_dir=None):
+                  episode_start=0, tasks=TASK_ORDER, compare_dir=None, layout=DEFAULT_LAYOUT):
     products = read_products(output_dir)
     success = defaultdict(list)
     metadata = defaultdict(list)
@@ -457,7 +458,7 @@ def check_dataset(output_dir, golden_dir, cycle, episodes, sample="first-per-tie
                 missing_samples.append(f"{key} 首条样本缺失或重复")
                 continue
             selected.append((files[key][0], success[key][0], metadata[key],
-                             json.loads((Path(golden_dir) / f"{task}.json").read_text(encoding="utf-8")), cycle))
+                             json.loads((Path(golden_dir) / f"{task}.json").read_text(encoding="utf-8")), cycle, layout))
     with ThreadPoolExecutor(max_workers=workers) as pool:
         samples = list(pool.map(lambda values: check_file(*values), selected))
     schema = {"files": len(samples), "steps": sum(row["steps"] for row in samples),
@@ -474,7 +475,7 @@ def check_dataset(output_dir, golden_dir, cycle, episodes, sample="first-per-tie
     plan["mismatch"] += sum(expected_xhard[key] for key in set(expected_xhard) - set(semantics))
     plan["pass"] = plan["mismatch"] == 0 and plan["rules_expected"] == plan["rules_run"]
     report = {"schema": schema, "content": content,
-              "counts": check_counts(products, cycle, episode_start, episodes, tasks), "plan": plan,
+              "counts": check_counts(products, cycle, episode_start, episodes, tasks, layout), "plan": plan,
               "sample": sample, "samples": samples, "missing_samples": missing_samples,
               "product_errors": products["errors"]}
     if compare_dir is not None:
@@ -538,6 +539,8 @@ def main(argv=None):
         command.add_argument("--cycle", default=DEFAULT_CYCLE)
         command.add_argument("--episode-start", type=int, default=0)
         command.add_argument("--episodes", type=int, required=True)
+        command.add_argument("--layout", default=DEFAULT_LAYOUT, choices=sorted(LAYOUTS), help="seed 布局代")
+        command.add_argument("--tasks", default=",".join(TASK_ORDER), help="逗号分隔的任务子集，默认全部 16 个")
     export = commands.add_parser("export-golden", help="从原版 episode_0 导出结构")
     export.add_argument("--official", type=Path, required=True)
     export.add_argument("--out-dir", type=Path, required=True)
@@ -549,6 +552,11 @@ def main(argv=None):
         if args.episodes <= 0 or args.episode_start < 0:
             parser.error("episodes 必须为正整数，episode-start 不能为负")
         cycle = parse_difficulty_cycle(args.cycle, DIFFICULTIES)
+        requested = {item.strip() for item in args.tasks.split(",")}
+        if not requested <= set(TASK_ORDER):
+            parser.error(f"未知任务：{sorted(requested - set(TASK_ORDER))}")
+        # 与生成器一致：任务按官网顺序排列。
+        tasks = tuple(task for task in TASK_ORDER if task in requested)
     if args.command == "export-golden":
         print(json.dumps(export_golden(args.official, args.out_dir), ensure_ascii=False))
         return 0
@@ -558,7 +566,8 @@ def main(argv=None):
     if args.command == "audit":
         if not 1 <= args.max_attempts <= 100:
             parser.error("max-attempts 必须在 1..100")
-        report = audit_dataset(args.output_dir, cycle, args.episode_start, args.episodes, args.max_attempts)
+        report = audit_dataset(args.output_dir, cycle, args.episode_start, args.episodes, args.max_attempts,
+                              tasks=tasks, layout=args.layout)
         print(decision_line("IDENTITY_AUDIT", report, ("episodes", "missing", "dup", "unknown", "mismatch")))
         for error in report["errors"]:
             print(error)
@@ -566,7 +575,7 @@ def main(argv=None):
     if args.workers < 1:
         parser.error("workers 必须为正整数")
     report = check_dataset(args.output_dir, args.golden_dir, cycle, args.episodes, args.sample, args.workers,
-                           args.episode_start, compare_dir=args.compare_dir)
+                           args.episode_start, tasks=tasks, compare_dir=args.compare_dir, layout=args.layout)
     lines = check_lines(report)
     write_json(args.out_json, report)
     args.out_md.parent.mkdir(parents=True, exist_ok=True)
