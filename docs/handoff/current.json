@@ -93,7 +93,7 @@
           "kind": "decision",
           "date": "2026-10-17",
           "quote": "所有的任务改为在 Great Lakes 上评估，每个都是单卡 / 延续十二条 / 放行 8 个占位 job（各 1 × A40）；其余按你建议",
-          "scope": "评估改 GL：8 个占位 job（超默认 4 个已放行）、每单元单卡；每格 12 条；v2-motionmem-eval-test1017 移植 v2-eval-0918-motion 的 scripts/evaluation；落点 NFS；本机只生成"
+          "scope": "评估改 GL：8 个占位 job（超默认 4 个已放行）、每 job 1×A40／4 CPU／24 G（2026-10-17 用户「不要使用一 CPU，任务改为使用四 CPU」）、每单元单卡；每格 12 条；v2-motionmem-eval-test1017 移植 v2-eval-0918-motion 的 scripts/evaluation；落点 NFS；本机只生成"
         },
         {
           "kind": "decision",
