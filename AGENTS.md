@@ -39,7 +39,7 @@ nproc; free -g | sed -n 2p
 
 **冲突即停**（正本第 0 条）：判定输出与上表不符（主机名不是 `sled-aspen`、NFS 不存在、出现第二套 GPU、`~/.ssh/config` 出现集群别名等），一律停下把原始输出交用户裁决，不得自行套用，也不得按「多数判据像 A」推断。本仓库现有三个环境列：环境 A（sled-aspen）、环境 B（sled-vail，2026-10-12 仓库迁入，见 `1012-migrate-vail-plan.md`）与环境 C（AWS p4de，2026-10-13 按正本 `docs/machine-aws-p4de.md` 预填，首次开工时现场判定逐行核对后才算接入，见 `1013-mixed8-400ep-plan.html` 3.5）；先按主机名选列，再逐行核对该列，任一判据与所选列不符（如 vail 上 GPU 型号或数量变化、`~/.ssh/config` 别名变化，aspen 上 `greatlakes` 别名消失或 GPU 型号变化，AWS 上出现 `~/.ssh/config`、GPU 不是 8 × A100-80GB、`/scratch/hongze` 不存在）同样冲突即停；出现第四台机器时先补判据表再开工。
 
-<!-- AGENTMETARULES:BEGIN common-agents src=a68d021376bec87817730b20f0f2d44a0effc3a0 blob=cf97b9265e0d4a6267028e0c86c2ca27a0490aa4 -->
+<!-- AGENTMETARULES:BEGIN common-agents src=bdb8e02ab051cabfd8283f87f3e5d9d8a50c31f7 blob=cf97b9265e0d4a6267028e0c86c2ca27a0490aa4 -->
 
 ## 强制规则（最高优先级）
 
@@ -440,7 +440,7 @@ nproc; free -g | sed -n 2p
 | `<COMMIT_SUBJECT_STYLE>` | commit subject 体例 | 第 11 条 |
 | `<PLAN_EXEMPLAR>` | 计划密度标杆文档 | 第 2 条 |
 
-<!-- AGENTMETARULES:END common-agents src=a68d021376bec87817730b20f0f2d44a0effc3a0 blob=cf97b9265e0d4a6267028e0c86c2ca27a0490aa4 -->
+<!-- AGENTMETARULES:END common-agents src=bdb8e02ab051cabfd8283f87f3e5d9d8a50c31f7 blob=cf97b9265e0d4a6267028e0c86c2ca27a0490aa4 -->
 
 ## 项目专属规则（P1…Pn）
 
