@@ -47,8 +47,10 @@ G5-r2 的 `hdf5_files/` 下另有 5 个 `FAILED_VideoRepick_*.h5`，videos 目�
 
 | 事项 | tmux | 日志 | 完成行 |
 |---|---|---|---|
-| HF bucket 上传（`HongzeFu/robomme-test-xhard5-12per-1017`，私有；G5 的前缀为 `G5-r2/`） | `xh-testx-upload` | `artifacts/test-xhard/upload/upload.log` | `HF_UPLOAD=PASS` |
-| GL 纯 CPU 读回校验（`HF_UPLOAD=PASS` 后提交） | 无 | NFS `logs/testx-hfverify/testx-hfverify_<jobid>.out` | `HF_VERIFY=` |
+| HF bucket 上传（`HongzeFu/robomme-test-xhard5-12per-1017`，2026-10-19 改为公开；G5 的前缀为 `G5-r2/`） | `xh-testx-upload` | `artifacts/test-xhard/upload/upload.log` | `HF_UPLOAD=PASS objects=1452 bytes=380899594935` |
+| GL 纯 CPU 读回校验（job 64268308） | 无 | NFS `logs/testx-hfverify/testx-hfverify_64268308.out` | `HF_VERIFY=PASS objects=1452 sha_match=1452 size_equal=1452 missing=0 extra=0 mismatch=0 checked=1452` |
+
+长尾经过：第 1、2 轮上传因 HongzeFu 私有存储额度满报 403（需开自动充值），停在约 60 G；用户 2026-10-19 裁决「bucket改为公开 上传」，第 3 轮 `run_upload3.sh` 先 `hf buckets settings --public` 再按 BATCH=1 续传，美东 10-19 02:40 前后 `HF_UPLOAD=PASS`。GL 读回首次冒烟（job 64268290）因计算节点 uv managed Python 找不到 CA 证书 `CERTIFICATE_VERIFY_FAILED`，提交时加 `SSL_CERT_FILE=/etc/pki/tls/certs/ca-bundle.crt` 后冒烟 64268304 与全量 64268308 均 PASS，未改脚本。
 
 ## 归档
 

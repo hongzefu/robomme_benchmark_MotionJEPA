@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "written_at": {
-    "utc": "2026-10-18T07:52:06Z",
-    "america_new_york": "2026-10-18T03:52:06-0400"
+    "utc": "2026-10-19T07:50:00Z",
+    "america_new_york": "2026-10-19T03:50:00-04:00"
   },
   "repo": {
     "branch": "newtask-v3-MotionJepa1006",
-    "base_head": "ec46cb7c"
+    "base_head": "6da85dec"
   },
   "freeze": {
     "active": false,
@@ -19,9 +19,12 @@
         "file": "1017-test-xhard5-12per-plan.html",
         "sha": "781bb2c6"
       },
-      "state": "done",
-      "state_changed_at": "2026-10-18T06:36:46Z",
-      "state_reason": "pre_handoff 四项全 pass、非长尾 tmux 全退出；上传与 GL 读回校验为长尾",
+      "state": "closed",
+      "state_changed_at": {
+        "utc": "2026-10-19T07:50:00Z",
+        "america_new_york": "2026-10-19T03:50:00-04:00"
+      },
+      "state_reason": "长尾两项（HF 上传、GL 读回校验）均 PASS",
       "owner": {
         "session": "https://claude.ai/code/session_01LMCMAVs6vXp1XMWZZALH3N",
         "host": "sled-aspen"
@@ -59,15 +62,16 @@
           "tmux": "xh-testx-upload",
           "log": "/data/hongzefu/robomme_benchmark_newtask-v3-MotionJepa1006/artifacts/test-xhard/upload/upload.log",
           "done_line": "HF_UPLOAD=PASS",
-          "status": "fail",
-          "evidence": "HF_UPLOAD=FAIL（两轮：BATCH=10 与 BATCH=1）；服务端 403 Forbidden: You need to set up automatic credit recharge to use more storage（HongzeFu 存储额度满）；已上传 G1–G3 全部与 G4 的 5 个 h5 及根文件，约 60 G"
+          "status": "pass",
+          "evidence": "HF_UPLOAD=PASS objects=1452 bytes=380899594935；HF_LIST=PASS missing=0 extra=0 size_mismatch=0（第 3 轮 run_upload3.sh：先 hf buckets settings --public，用户 2026-10-19「bucket改为公开 上传」）"
         },
         {
           "what": "GL 纯 CPU job 读回校验（HF_UPLOAD=PASS 后须由当时的会话提交 job）",
           "tmux": null,
-          "log": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/logs/testx-hfverify/testx-hfverify_<jobid>.out",
+          "log": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/logs/testx-hfverify/testx-hfverify_64268308.out",
           "done_line": "HF_VERIFY=",
-          "status": "pending"
+          "status": "pass",
+          "evidence": "HF_VERIFY=PASS objects=1452 sha_match=1452 size_equal=1452 missing=0 extra=0 mismatch=0 checked=1452（GL standard 纯 CPU job 64268308；冒烟 64268304 PASS；首次冒烟 64268290 因计算节点 CA 证书 FAIL，改设 SSL_CERT_FILE=/etc/pki/tls/certs/ca-bundle.crt 后重提）"
         }
       ],
       "running_handles": [],
@@ -125,11 +129,15 @@
           "date": "2026-10-18",
           "quote": "同意你再追加四个 job 去并行。",
           "scope": "GL 占位 job 由 8 个增至 12 个（追加 64233525–64233528，同规格 1×A40／4 CPU／24G／48h），清单 hold-jobs-testx.txt 共 12 行；评估 worker 相应按 12 个起"
+        },
+        {
+          "kind": "decision",
+          "date": "2026-10-19",
+          "quote": "bucket改为公开 上传",
+          "scope": "HF bucket HongzeFu/robomme-test-xhard5-12per-1017 改公开后重传"
         }
       ],
-      "pending_decisions": [
-        "HF 存储额度：开启 https://huggingface.co/settings/billing 自动充值后重跑 run_upload2.sh（已传部分 sync 跳过），或指定腾出空间／改公开 bucket；裁决前 HF_VERIFY 不提交"
-      ],
+      "pending_decisions": [],
       "next_steps": [
         {
           "what": "用户裁决额度后重起上传，HF_UPLOAD=PASS 后提交 GL hfverify（先 --limit 1）",
