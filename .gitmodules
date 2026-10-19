@@ -1,0 +1,4 @@
+[submodule ".agentmetarules"]
+	path = .agentmetarules
+	url = https://github.com/hongzefu/AgentMetaRules-hongzefu.git
+	branch = main
