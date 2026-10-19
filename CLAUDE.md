@@ -4,15 +4,15 @@
 
 @AGENTS.md
 
-<!-- AGENTMETARULES:BEGIN common-claude src=0b00dfcf143b93c89e71bb1a22d4df1f6bd24f47 blob=bf2dede924c26d5ea6cb77099f214269065fe197 -->
+<!-- AGENTMETARULES:BEGIN common-claude src=a68d021376bec87817730b20f0f2d44a0effc3a0 blob=a089b079601f89542e398f2d6fb5dbce7d5f6dbe -->
 
 ## 规则来源与优先级
 
-- `AGENTS.md` 是通用规则的唯一来源（第 0–27 条；仅第 20 条只对 Codex 生效，Claude Code 忽略；第 26 条统一两宿主子代理职责，宿主专节各自执行）。上面的 `@AGENTS.md` 会把它的正文内联进上下文。
+- `AGENTS.md` 是通用规则的唯一来源（第 0–28 条；仅第 20 条只对 Codex 生效，Claude Code 忽略；第 26 条统一两宿主子代理职责，宿主专节各自执行）。上面的 `@AGENTS.md` 会把它的正文内联进上下文。
 - **即便该导入失效，动手前也必须先完整读一遍 `AGENTS.md`。** 官方文档（2026-09-26 核实 code.claude.com/docs/en/memory）：工作目录或其上级存在 `CLAUDE.md` / `CLAUDE.local.md` 时，Claude Code 只读 `CLAUDE.md` 系文件、**不再自动读 `AGENTS.md`**——没有本文件的显式 `@AGENTS.md` 导入，`AGENTS.md` 不会进入会话上下文（早期实测于 Claude Code 2.1.232 时 memory 发现列表根本不含 `AGENTS.md`）。这一条是兜底，不可省略。
 - **动手前必须先按 `AGENTS.md` 第 0 条做运行环境判定**，并在当轮第一条回复里写明结论是环境 A 还是环境 B；判据矛盾或出现第三套硬件时按该条冲突即停。
 - 本文件只补 `AGENTS.md` 覆盖不到的 Claude Code 独有机制，共五块：Workflow 与 Agent 模型、Monitor 工具、会话交接、Skill 调用、plan mode 与计划文件。两份文件的分工、冲突处理（一律以 `AGENTS.md` 为准）与跨宿主中立见 `AGENTS.md` 第 25 条。
-- 本机全局 `CLAUDE.md`（`$CLAUDE_CONFIG_DIR/CLAUDE.md`，默认 `~/.claude/CLAUDE.md`）里的 `common-global` 标记块是本文件「Workflow 与 Agent 模型」「Monitor 工具」与 `AGENTS.md` 第 1、3、7、11、26 条的自包含摘录（正本 `CLAUDE.global.md`，机制见 `AGENTS.md` 第 25 条「全局配置也是回流目标」，2026-10-16），用于未接入正本的目录；在接入的仓库里以本文件与 `AGENTS.md` 为准，两者冲突按仓库内规则执行。改本文件 Agent／Monitor 节时同一 commit 里同步改 `CLAUDE.global.md`。
+- 本机全局 `CLAUDE.md`（`$CLAUDE_CONFIG_DIR/CLAUDE.md`，默认 `~/.claude/CLAUDE.md`）里的 `common-global` 标记块是本文件「Workflow 与 Agent 模型」「Monitor 工具」与 `AGENTS.md` 第 1、3、7、11、26、28 条的自包含摘录（正本 `CLAUDE.global.md`，机制见 `AGENTS.md` 第 25 条「全局配置也是回流目标」，2026-10-16），用于未接入正本的目录；在接入的仓库里以本文件与 `AGENTS.md` 为准，两者冲突按仓库内规则执行。改本文件 Agent／Monitor 节时同一 commit 里同步改 `CLAUDE.global.md`。
 
 ## Workflow 与 Agent 模型（强制）
 
@@ -120,7 +120,7 @@
 - **写 HTML 计划不进 plan mode；进 plan mode 前先问用户（2026-10-12 新增）**：用户要的计划交付物是仓库内的 HTML 文件（`AGENTS.md` 第 2 条），而 plan mode 只允许写宿主的 `~/.claude/plans/<slug>.md`、写不了这份交付物，两者冲突。因此用户要求「写计划 / 出计划 / 写 HTML plan」时**直接在普通模式下写 HTML 计划并提交推送**，不调 `EnterPlanMode`；核实事实仍只读（探索子代理、`git show`、grep），写计划文件与画图子代理不算实施。计划呈现后按第 2 条「开工令」等用户对该 HTML 不改而直接认可（「同意」「开工」等）才动手，不用 `ExitPlanMode` 代替。只有用户明确要求使用 plan mode、或 agent 认为需要宿主 plan mode 的只读保护时，才**先问用户一句是否进入 plan mode**，得到同意再调 `EnterPlanMode`；上面两条 `ExitPlanMode` / `AskUserQuestion` 的约束只在真的处于 plan mode 时适用。实测踩坑：2026-10-12 benchmark 仓库在用户说「出个计划」后径自 `EnterPlanMode`，被用户两次叫停（「不要进入plan模式 只画这个图」「让我确认了之后再进入plan模式」），最后用户原话：「写html不要进入plan模式 把这个写入agentmetarules」。
 - plan mode 期间除该计划文件外一律只读：不改代码、不改配置、不 commit、不跑任何有副作用的命令。**在只读阶段把事实核实清楚**——仓库的坑（如 editable 指向、安装顺序、源码来源、已知缺陷）都是只读就能查清的，带着未经核实的假设进入实施阶段代价远高于多花几分钟查证。
 
-<!-- AGENTMETARULES:END common-claude src=0b00dfcf143b93c89e71bb1a22d4df1f6bd24f47 blob=bf2dede924c26d5ea6cb77099f214269065fe197 -->
+<!-- AGENTMETARULES:END common-claude src=a68d021376bec87817730b20f0f2d44a0effc3a0 blob=a089b079601f89542e398f2d6fb5dbce7d5f6dbe -->
 
 ## 项目专属补充
 
