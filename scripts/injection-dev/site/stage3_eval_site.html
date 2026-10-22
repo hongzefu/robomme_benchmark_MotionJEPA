@@ -88,8 +88,8 @@ const LADDER = [
   ["RouteStick", ["路线段数"], {hard:["4～7"], xhard1:["8～10"], xhard2:["11～13"], xhard3:["14～16"]}],
   ["VideoPlaceButton", ["放置次数"], {hard:["2"], xhard1:["3"], xhard2:["4"]}],
   ["VideoPlaceOrder", ["访问总次数"], {hard:["3"], xhard1:["5"], xhard2:["6"]}],
-  ["MoveCube", ["生成区域", "杆朝向"], {hard:["原版区域", "原版"], xhard4:["圆环 0.24–0.42 m ∩ 离基座 0.31–0.80 m", "±180°"]}],
-  ["InsertPeg", ["杆数", "杆朝向"], {hard:["3 根", "原版"], xhard4:["4 根（杆区 x≤0.1）", "±180°"]}],
+  ["MoveCube", ["生成区域", "杆朝向"], {hard:["方块与 goal 中心 xy 各 ±0.1 m 方框", "±45°"], xhard4:["圆环 0.24–0.42 m ∩ 离基座 0.31–0.80 m（方块、goal、杆抓取点共用）", "±180°"]}],
+  ["InsertPeg", ["杆数", "杆朝向", "杆区 x"], {hard:["3", "±45°", "−0.2～0.2 m"], xhard4:["4", "±180°", "−0.2～0.1 m"]}],
   ["StopCube", ["停止序号", "方块速度"], {hard:["2～5", "60·80·120 随机"], xhard1:["6", "60"], xhard2:["7", "60"], xhard3:["8", "60"], xhard4:["9", "60"], xhard5:["10", "60"]}],
 ];
 function drawLadder(){
@@ -110,7 +110,7 @@ function drawLadder(){
       if (hard) tr.className = "hard";
       if (i === 0) { tr.classList.add("task-start"); const th = document.createElement("th"); th.scope = "rowgroup"; th.rowSpan = names.length; th.textContent = task; tr.append(th); }
       const t = document.createElement("td"); t.className = "tier"; t.textContent = hard ? "原版 hard" : tier;
-      const scale = document.createElement("td"); scale.textContent = hard ? dims.map((d, j) => d + " " + tiers[tier][j]).join("／") : tiers[tier].join("／");
+      const scale = document.createElement("td"); scale.textContent = dims.map((d, j) => d + " " + tiers[tier][j]).join("／");
       tr.append(t, scale);
       const c = cells.get(task + "|" + tier);
       for (const m of catalog.models) {
