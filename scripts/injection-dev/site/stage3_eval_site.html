@@ -39,28 +39,28 @@
 <main class="shell">
   <nav class="mast" aria-label="站点信息"><span class="mark" aria-hidden="true"></span><strong>RoboMME 视频观察室</strong><span class="tag">第三阶段 OOD · 86 局</span></nav>
   <section class="layout-section" aria-labelledby="layout-title">
-  <header class="hero"><h1 id="layout-title">xhard1～5 与原版 hard 的规模布局</h1><p class="lede">原版 hard 取 V8 梯度计划（1001-newtask-v8-xhard-gradient-plan）的 xhard0 列（官方 hard，不改动）；xhard1～5 取 V9 规格（hard-specs/4）逐局汇总。只列本页交付并评估的档，「—」表示该任务无此档；最后一列为本页任务难度格数／局数（每格 2 局）。</p></header>
+  <header class="hero"><h1 id="layout-title">xhard1～5 与原版 hard 的规模布局</h1><p class="lede">原版 hard 取 V8 梯度计划（1001-newtask-v8-xhard-gradient-plan）的 xhard0 列（官方 hard，不改动）；xhard1～5 取 V9 规格（hard-specs/4）逐局汇总。只列本页交付并评估的档，「—」表示该任务无此档。</p></header>
   <div class="rates-wrap"><table class="rates layout" id="tier-layout" aria-label="xhard1～5 与原版 hard 的规模布局">
-    <thead><tr><th>Task</th><th>维度</th><th>原版 hard</th><th>xhard1</th><th>xhard2</th><th>xhard3</th><th>xhard4</th><th>xhard5</th><th>本页格／局</th></tr></thead>
+    <thead><tr><th>Task</th><th>维度</th><th>原版 hard</th><th>xhard1</th><th>xhard2</th><th>xhard3</th><th>xhard4</th><th>xhard5</th></tr></thead>
     <tbody>
-      <tr><td>BinFill</td><td>投入块数</td><td class="hard">3～5</td><td>6</td><td>7</td><td class="none">—</td><td class="none">—</td><td class="none">—</td><td>2／4</td></tr>
-      <tr><td>PickXtimes</td><td>抓放次数／干扰块</td><td class="hard">4～5／0</td><td>6／1</td><td>7／2</td><td>8／3</td><td class="none">—</td><td class="none">—</td><td>3／6</td></tr>
-      <tr><td>SwingXtimes</td><td>摆动轮数／干扰块</td><td class="hard">3／0</td><td>4／1</td><td>5／2</td><td>6／3</td><td>7／4</td><td>8／4</td><td>5／10</td></tr>
-      <tr><td>PickHighlight</td><td>抓取数／总方块数</td><td class="hard">3／6</td><td>4／7</td><td>5／8</td><td class="none">—</td><td class="none">—</td><td class="none">—</td><td>2／4</td></tr>
-      <tr><td>VideoUnmask</td><td>抓取数／干扰容器／干扰方块</td><td class="hard">2／0／0</td><td>2／4／2</td><td>3／4／2</td><td>3／8／4</td><td>3／12／6</td><td class="none">—</td><td>4／8</td></tr>
-      <tr><td>ButtonUnmask</td><td>抓取数／干扰容器／干扰方块</td><td class="hard">2／0／0</td><td>2／4／2</td><td>3／4／2</td><td>3／8／4</td><td>3／12／6</td><td class="none">—</td><td>4／8</td></tr>
-      <tr><td>VideoUnmaskSwap</td><td>换位次数／抓取数／外圈干扰</td><td class="hard">2～3／2／0</td><td>5／2／2</td><td>7／3／4</td><td class="none">—</td><td class="none">—</td><td class="none">—</td><td>2／4</td></tr>
-      <tr><td>ButtonUnmaskSwap</td><td>换位次数／抓取数／外圈干扰</td><td class="hard">2～3／2／0</td><td>3／2／2</td><td>5／3／4</td><td class="none">—</td><td class="none">—</td><td class="none">—</td><td>2／4</td></tr>
-      <tr><td>VideoRepick</td><td>方块数／换位／重抓</td><td class="hard">原布局／0／1～3</td><td>4／4／2</td><td>5／6／3</td><td class="none">—</td><td class="none">—</td><td class="none">—</td><td>2／4</td></tr>
-      <tr><td>PatternLock</td><td>图案节点数</td><td class="hard">4～8</td><td>9～12</td><td>13～15</td><td>16～18</td><td class="none">—</td><td class="none">—</td><td>3／6</td></tr>
-      <tr><td>RouteStick</td><td>路线段数</td><td class="hard">4～7</td><td>8～10</td><td>11～13</td><td>14～16</td><td class="none">—</td><td class="none">—</td><td>3／6</td></tr>
-      <tr><td>VideoPlaceButton</td><td>放置次数</td><td class="hard">2</td><td>3</td><td>4</td><td class="none">—</td><td class="none">—</td><td class="none">—</td><td>2／4</td></tr>
-      <tr><td>VideoPlaceOrder</td><td>访问总次数</td><td class="hard">3</td><td>5</td><td>6</td><td class="none">—</td><td class="none">—</td><td class="none">—</td><td>2／4</td></tr>
-      <tr><td>MoveCube</td><td>生成区域／杆朝向</td><td class="hard">原版区域</td><td class="none">—</td><td class="none">—</td><td class="none">—</td><td>圆环 0.24–0.42 m ∩ 离基座 0.31–0.80 m，杆 ±180°</td><td class="none">—</td><td>1／2</td></tr>
-      <tr><td>InsertPeg</td><td>杆数／杆朝向</td><td class="hard">3 根</td><td class="none">—</td><td class="none">—</td><td class="none">—</td><td>4 根，杆 ±180°，杆区 x≤0.1</td><td class="none">—</td><td>1／2</td></tr>
-      <tr><td>StopCube</td><td>停止序号／方块速度</td><td class="hard">2～5／60·80·120 随机</td><td>6／60</td><td>7／60</td><td>8／60</td><td>9／60</td><td>10／60</td><td>5／10</td></tr>
+      <tr><td>BinFill</td><td>投入块数</td><td class="hard">3～5</td><td>6</td><td>7</td><td class="none">—</td><td class="none">—</td><td class="none">—</td></tr>
+      <tr><td>PickXtimes</td><td>抓放次数／干扰块</td><td class="hard">4～5／0</td><td>6／1</td><td>7／2</td><td>8／3</td><td class="none">—</td><td class="none">—</td></tr>
+      <tr><td>SwingXtimes</td><td>摆动轮数／干扰块</td><td class="hard">3／0</td><td>4／1</td><td>5／2</td><td>6／3</td><td>7／4</td><td>8／4</td></tr>
+      <tr><td>PickHighlight</td><td>抓取数／总方块数</td><td class="hard">3／6</td><td>4／7</td><td>5／8</td><td class="none">—</td><td class="none">—</td><td class="none">—</td></tr>
+      <tr><td>VideoUnmask</td><td>抓取数／干扰容器／干扰方块</td><td class="hard">2／0／0</td><td>2／4／2</td><td>3／4／2</td><td>3／8／4</td><td>3／12／6</td><td class="none">—</td></tr>
+      <tr><td>ButtonUnmask</td><td>抓取数／干扰容器／干扰方块</td><td class="hard">2／0／0</td><td>2／4／2</td><td>3／4／2</td><td>3／8／4</td><td>3／12／6</td><td class="none">—</td></tr>
+      <tr><td>VideoUnmaskSwap</td><td>换位次数／抓取数／外圈干扰</td><td class="hard">2～3／2／0</td><td>5／2／2</td><td>7／3／4</td><td class="none">—</td><td class="none">—</td><td class="none">—</td></tr>
+      <tr><td>ButtonUnmaskSwap</td><td>换位次数／抓取数／外圈干扰</td><td class="hard">2～3／2／0</td><td>3／2／2</td><td>5／3／4</td><td class="none">—</td><td class="none">—</td><td class="none">—</td></tr>
+      <tr><td>VideoRepick</td><td>方块数／换位／重抓</td><td class="hard">原布局／0／1～3</td><td>4／4／2</td><td>5／6／3</td><td class="none">—</td><td class="none">—</td><td class="none">—</td></tr>
+      <tr><td>PatternLock</td><td>图案节点数</td><td class="hard">4～8</td><td>9～12</td><td>13～15</td><td>16～18</td><td class="none">—</td><td class="none">—</td></tr>
+      <tr><td>RouteStick</td><td>路线段数</td><td class="hard">4～7</td><td>8～10</td><td>11～13</td><td>14～16</td><td class="none">—</td><td class="none">—</td></tr>
+      <tr><td>VideoPlaceButton</td><td>放置次数</td><td class="hard">2</td><td>3</td><td>4</td><td class="none">—</td><td class="none">—</td><td class="none">—</td></tr>
+      <tr><td>VideoPlaceOrder</td><td>访问总次数</td><td class="hard">3</td><td>5</td><td>6</td><td class="none">—</td><td class="none">—</td><td class="none">—</td></tr>
+      <tr><td>MoveCube</td><td>生成区域／杆朝向</td><td class="hard">原版区域</td><td class="none">—</td><td class="none">—</td><td class="none">—</td><td>圆环 0.24–0.42 m ∩ 离基座 0.31–0.80 m，杆 ±180°</td><td class="none">—</td></tr>
+      <tr><td>InsertPeg</td><td>杆数／杆朝向</td><td class="hard">3 根</td><td class="none">—</td><td class="none">—</td><td class="none">—</td><td>4 根，杆 ±180°，杆区 x≤0.1</td><td class="none">—</td></tr>
+      <tr><td>StopCube</td><td>停止序号／方块速度</td><td class="hard">2～5／60·80·120 随机</td><td>6／60</td><td>7／60</td><td>8／60</td><td>9／60</td><td>10／60</td></tr>
     </tbody>
-    <tfoot><tr><th>全部任务</th><td>执行步上限</td><td class="hard">1300（生成）</td><td colspan="5">1600（生成）；本页评估 1800</td><td>43／86</td></tr></tfoot>
+    <tfoot><tr><th>全部任务</th><td>执行步上限</td><td class="hard">1300（生成）</td><td colspan="5">1600（生成）；本页评估 1800</td></tr></tfoot>
   </table></div>
   </section>
   <header class="hero"><h1>Task 成功率</h1><p class="lede">每个 Task 的局数随难度格数不同（43 个任务难度格 × 每格 2 局 = 86 局）。GroundSG+Oracle 一列条件不同（1004 轮本机、1600 步），以灰色显示，仅作参考。</p></header>
