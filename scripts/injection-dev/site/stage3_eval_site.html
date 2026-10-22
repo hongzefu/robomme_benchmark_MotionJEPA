@@ -45,8 +45,6 @@
     <tbody></tbody>
   </table></div>
   </section>
-  <header class="hero"><h1>Task 成功率</h1><p class="lede">每个 Task 的局数随难度格数不同（43 个任务难度格 × 每格 2 局 = 86 局）。GroundSG+Oracle 一列条件不同（1004 轮本机、1600 步），以灰色显示，仅作参考。</p></header>
-  <div class="rates-wrap"><table class="rates" id="success-rates" aria-label="Task 成功率"><thead><tr id="rates-head"><th>Task</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
   <p class="notice" id="scope-notice">—</p>
   <nav class="task-navigation" aria-label="Task 视频栏目"><h2>按 Task 浏览视频</h2><div id="task-tabs" class="task-tabs"></div></nav>
   <section class="controls" aria-label="显示控制">
@@ -76,16 +74,6 @@ function store(){ try { localStorage.setItem("stage3-hidden", JSON.stringify([..
 function load(){ try { return new Set(JSON.parse(localStorage.getItem("stage3-hidden") || "[]")); } catch (e) { return new Set(); } }
 function columns(){ return [{id:"gt", name:"生成真值", note:"V9 专家轨迹"}, ...catalog.models]; }
 function setHash(){ if(current) history.replaceState(null, "", "#task=" + encodeURIComponent(currentTask) + "&episode=" + encodeURIComponent(current.key)); }
-function pct(r){ return (100 * r.success / r.total).toFixed(1) + "%"; }
-function cell(r, ref){ const td = document.createElement("td"), f = document.createElement("span"); td.textContent = pct(r); if(ref) td.className = "ref"; f.className = "fraction"; f.textContent = r.success + " / " + r.total; td.append(f); return td; }
-function drawRates(){
-  for (const m of catalog.models) { const th = document.createElement("th"), s = document.createElement("small"); th.textContent = m.name; s.textContent = m.note; th.append(s); $("rates-head").append(th); }
-  const body = $("success-rates").tBodies[0];
-  for (const row of catalog.success_rates) { const tr = document.createElement("tr"), t = document.createElement("td"); t.textContent = row.task; tr.append(t); for (const m of catalog.models) tr.append(cell(row[m.id], m.id === "groundsg-oracle")); body.append(tr); }
-  const tr = document.createElement("tr"), th = document.createElement("th"); th.scope = "row"; th.textContent = "总体"; tr.append(th);
-  for (const m of catalog.models) tr.append(cell({success: m.success, total: m.episodes}, m.id === "groundsg-oracle"));
-  tr.id = "overall-rate"; $("success-rates").tFoot.append(tr);
-}
 const LADDER = [
   ["BinFill", ["投入块数"], {hard:["3～5"], xhard1:["6"], xhard2:["7"]}],
   ["PickXtimes", ["抓放次数", "干扰块"], {hard:["4～5", "0"], xhard1:["6", "1"], xhard2:["7", "2"], xhard3:["8", "3"]}],
@@ -215,7 +203,7 @@ addEventListener("hashchange", () => { if (catalog && new URLSearchParams(locati
   const r = await fetch("/api/catalog"); if (!r.ok) throw new Error("视频目录请求失败");
   catalog = await r.json();
   if (catalog.schema !== "stage3-eval-site/2" || catalog.episodes.length !== 86 || catalog.success_rates?.length !== 16 || catalog.models?.length !== 6) throw new Error("视频目录或成功率表不完整");
-  hidden = load(); text("scope-notice", catalog.notice); drawLadder(); drawRates(); drawToggles();
+  hidden = load(); text("scope-notice", catalog.notice); drawLadder(); drawToggles();
   for (const t of catalog.tasks) { const b = document.createElement("button"), n = document.createElement("span"), s = document.createElement("small"); b.className = "task-tab"; b.dataset.task = t.id; b.setAttribute("aria-pressed", "false"); n.textContent = t.id; s.textContent = t.episodes + " 局"; b.append(n, s); b.addEventListener("click", () => chooseTask(t.id)); $("task-tabs").append(b); }
   for (const tier of catalog.tiers) { const o = document.createElement("option"); o.value = o.textContent = tier; $("filter-tier").append(o); }
   $("workspace").hidden = false; selectFromHash(); window.__officialSiteReady = true;
